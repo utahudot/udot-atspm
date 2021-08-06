@@ -53,3 +53,5 @@ dkms.conf
 /ATSPMf/.vs/ATSPMf/v16
 /.vs
 /ATSPM/.vs
+/ATSPM/ApplicationCore/obj
+/ATSPM/DomainCore/obj

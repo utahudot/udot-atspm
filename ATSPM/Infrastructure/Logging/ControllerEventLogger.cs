@@ -1,0 +1,118 @@
+﻿using ControllerLogger.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Microsoft.Extensions.Logging
+{
+    public class ColorConsoleLoggerConfiguration
+    {
+        public int EventId { get; set; }
+
+        public Dictionary<LogLevel, ConsoleColor> LogLevels { get; set; } = new Dictionary<LogLevel, ConsoleColor>()
+        {
+            [LogLevel.Information] = ConsoleColor.Green
+        };
+    }
+
+    public class ControllerEventLoggerProvider : ILoggerProvider
+    {
+        private readonly IDisposable _onChangeToken;
+        private ColorConsoleLoggerConfiguration _currentConfig;
+        private readonly ConcurrentDictionary<string, ControllerEventLogger> _loggers = new ConcurrentDictionary<string, ControllerEventLogger>();
+
+        public ControllerEventLoggerProvider(IOptionsMonitor<ColorConsoleLoggerConfiguration> config)
+        {
+            _currentConfig = config.CurrentValue;
+            _onChangeToken = config.OnChange(updatedConfig => _currentConfig = updatedConfig);
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            _loggers.GetOrAdd(categoryName, name => new ControllerEventLogger(name, GetCurrentConfig));
+
+            return new ControllerEventLogger(categoryName);
+        }
+
+        private ColorConsoleLoggerConfiguration GetCurrentConfig() => _currentConfig;
+
+        public void Dispose()
+        {
+            _loggers.Clear();
+            _onChangeToken.Dispose();
+        }
+    }
+
+    //https://docs.microsoft.com/en-us/dotnet/core/extensions/custom-logging-provider
+    public class ControllerEventLogger : ILogger
+    {
+        private readonly string _name;
+        private readonly Func<ColorConsoleLoggerConfiguration> _getCurrentConfig;
+
+        public ControllerEventLogger(string name, Func<ColorConsoleLoggerConfiguration> getCurrentConfig) => (_name, _getCurrentConfig) = (name, getCurrentConfig);
+
+        public ControllerEventLogger(string name) => (_name) = (name);
+
+        public IDisposable BeginScope<TState>(TState state) => default;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            //check if valid log leven
+            if (!IsEnabled(logLevel))
+            {
+                return;
+            }
+
+            // public int EventCode { get; set; }
+            //public int EventParam { get; set; }
+            if (state is IReadOnlyList<KeyValuePair<string, object>> parameters)
+            {
+                ControllerEventLog logEvent = new ControllerEventLog()
+                {
+                    SignalId = parameters.Where(k => k.Key == "SignalID")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
+                    Timestamp = DateTime.Now,
+                    EventCode = eventId.Id,
+                    EventParam = Convert.ToInt32(parameters.Where(k => k.Key == "EventParam")?.Select(v => v.Value)?.FirstOrDefault() ?? 0)
+                };
+
+                //using (MOEEntities db = new MOEEntities())
+                //{
+                //    db.ApplicationEvents.Add(applicationEvent);
+                //    db.SaveChanges();
+                //}
+            }
+        }
+    }
+
+    public static class ColorConsoleLoggerExtensions
+    {
+        public static ILoggingBuilder AddControllerEventLogger(this ILoggingBuilder builder)
+        {
+            builder.AddConfiguration();
+
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, ControllerEventLoggerProvider>());
+
+            LoggerProviderOptions.RegisterProviderOptions<ColorConsoleLoggerConfiguration, ControllerEventLoggerProvider>(builder.Services);
+
+            return builder;
+        }
+
+        public static ILoggingBuilder AddControllerEventLogger(this ILoggingBuilder builder, Action<ColorConsoleLoggerConfiguration> configure)
+        {
+            builder.AddControllerEventLogger();
+            builder.Services.Configure(configure);
+
+            return builder;
+        }
+    }
+}

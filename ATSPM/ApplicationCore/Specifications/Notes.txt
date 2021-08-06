@@ -1,0 +1,56 @@
+﻿Specification Pattern:
+https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-implementation-entity-framework-core
+https://medium.com/aspnetrun/layered-architecture-with-asp-net-core-entity-framework-core-and-razor-pages-53a54c4028e3
+
+Specification Pattern
+Specification Design Pattern is created to ensure that the logical rules in an object are received from the outside. The rules of business are in a chain of successive chains, which may also reveal a more complex business rule.
+I want to continue with a code example to understand the pattern. In repository Specification Pattern implemented by interface definition ;
+public interface ISpecification<T>
+    {
+        Expression<Func<T, bool>> Criteria { get; }
+        List<Expression<Func<T, object>>> Includes { get; }
+        List<string> IncludeStrings { get; }
+        Expression<Func<T, object>> OrderBy { get; }
+        Expression<Func<T, object>> OrderByDescending { get; }
+        int Take { get; }
+        int Skip { get; }
+        bool isPagingEnabled { get; }
+    }
+These definition and below implementation located in Core Layer. Because these classes not included Entity Framework Core related dependencies.
+public abstract class BaseSpecification<T> : ISpecification<T>
+    {
+        protected BaseSpecification(Expression<Func<T, bool>> criteria)
+        {
+            Criteria = criteria;
+        }
+        public Expression<Func<T, bool>> Criteria { get; }
+        public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
+        public List<string> IncludeStrings { get; } = new List<string>();
+        public Expression<Func<T, object>> OrderBy { get; private set; }
+        public Expression<Func<T, object>> OrderByDescending { get; private set; }
+        public int Take { get; private set; }
+        public int Skip { get; private set; }
+        public bool isPagingEnabled { get; private set; } = false;
+        protected virtual void AddInclude(Expression<Func<T, object>> includeExpression)
+        {
+            Includes.Add(includeExpression);
+        }
+        protected virtual void AddInclude(string includeString)
+        {
+            IncludeStrings.Add(includeString);
+        }
+        protected virtual void ApplyPaging(int skip, int take)
+        {
+            Skip = skip;
+            Take = take;
+            isPagingEnabled = true;
+        }
+        protected virtual void ApplyOrderBy(Expression<Func<T, object>> orderByExpression)
+        {
+            OrderBy = orderByExpression;
+        }
+        protected virtual void ApplyOrderByDescending(Expression<Func<T, object>> orderByDescendingExpression)
+        {
+            OrderByDescending = orderByDescendingExpression;
+        }
+    }
