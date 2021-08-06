@@ -50,3 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/ATSPMf/.vs/ATSPMf/v16
+/.vs
+/ATSPM/.vs
