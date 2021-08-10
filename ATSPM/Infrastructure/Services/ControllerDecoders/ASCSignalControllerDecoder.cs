@@ -42,7 +42,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public bool CanExecute(FileInfo parameter)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
@@ -52,6 +52,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
         {
+            //TODO: check if can execute first and add a separate methode for just decoding streams. easier for testings and stuff
+            
             HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
             var memoryStream = parameter.ToMemoryStream();
