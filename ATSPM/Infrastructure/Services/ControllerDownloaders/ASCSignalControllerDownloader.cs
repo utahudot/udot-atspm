@@ -70,15 +70,15 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
             //check valid ipaddress
             //TODO: replace this with options setting
-            && value.Ipaddress.IsValidIPAddress(true);
+            && value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
         }
 
         public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default)
         {
-            return await ExecuteAsync<object>(parameter, cancelToken);
+            return await ExecuteAsync(parameter, cancelToken, default);
         }
 
-        public async Task<DirectoryInfo> ExecuteAsync<T>(Signal parameter, CancellationToken cancelToken = default, IProgress<T> progress = default)
+        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default)
         {
             //return directory
             DirectoryInfo dir = null;

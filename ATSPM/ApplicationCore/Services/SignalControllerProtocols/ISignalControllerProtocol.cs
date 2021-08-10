@@ -6,5 +6,6 @@ namespace ATSPM.Application.Services.SignalControllerProtocols
     {
         SignalControllerType ControllerType { get; }
         ISignalControllerDownloader Downloader { get; }
+        ISignalControllerDecoder Decoder { get; }
     }
 }
