@@ -30,7 +30,10 @@ namespace ATSPM.Domain.Common
         bool CanExecute(Tin parameter);
 
         Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default);
+    }
 
-        Task<Tout> ExecuteAsync<T>(Tin parameter, CancellationToken cancelToken = default, IProgress<T> progress = default);
+    public interface IExecuteAsyncWithProgress<Tin, Tout, Tp> : IExecuteAsync<Tin, Tout>
+    {
+        Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default, IProgress<Tp> progress = default);
     }
 }
