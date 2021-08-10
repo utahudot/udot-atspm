@@ -57,3 +57,5 @@ dkms.conf
 /ATSPM/DomainCore/obj
 /ATSPM/ApplicationCore/bin/Debug/netcoreapp3.1
 /ATSPM/SignalControllerLogger/bin/Debug/netcoreapp3.1
+/ATSPM/DomainCoreTests/bin/Debug/netcoreapp3.1
+/ATSPM/DomainCoreTests/obj/Debug/netcoreapp3.1

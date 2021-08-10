@@ -78,13 +78,18 @@ namespace ATSPM.Domain.Extensions
 
         public static bool IsCompressed(this byte[] bytes)
         {
-            var magicHeader = bytes.Take(2);
+            if (bytes.Length >= 2)
+            {
+                var magicHeader = bytes?.Take(2);
 
-            return magicHeader.SequenceEqual(ZlibHeaderNoCompression) 
-                || magicHeader.SequenceEqual(ZlibHeaderDefaultCompression) 
-                || magicHeader.SequenceEqual(ZlibHeaderBestCompression)
-                || magicHeader.SequenceEqual(GZipHeader)
-                || magicHeader.SequenceEqual(EOSHeader);
+                return magicHeader.SequenceEqual(ZlibHeaderNoCompression)
+                    || magicHeader.SequenceEqual(ZlibHeaderDefaultCompression)
+                    || magicHeader.SequenceEqual(ZlibHeaderBestCompression)
+                    || magicHeader.SequenceEqual(GZipHeader)
+                    || magicHeader.SequenceEqual(EOSHeader);
+            }
+
+            return false;
         }
     }
 }
