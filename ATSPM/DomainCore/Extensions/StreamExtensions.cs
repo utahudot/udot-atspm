@@ -9,12 +9,17 @@ namespace ATSPM.Domain.Extensions
     {
         public static MemoryStream ToMemoryStream(this FileInfo file)
         {
-            var fileStream = File.Open(file.FullName, FileMode.Open, FileAccess.Read);
-            var memoryStream = new MemoryStream();
-            fileStream.CopyTo(memoryStream);
-            fileStream.Close();
+            if (file.Exists)
+            {
+                var fileStream = File.Open(file.FullName, FileMode.Open, FileAccess.Read);
+                var memoryStream = new MemoryStream();
+                fileStream.CopyTo(memoryStream);
+                fileStream.Close();
 
-            return memoryStream;
+                return memoryStream;
+            }
+
+            throw new FileNotFoundException("File not found", file.FullName);
         }
     }
 }
