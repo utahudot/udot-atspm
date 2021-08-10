@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ControllerLogger.Helpers
+namespace ATSPM.Domain.Common
 {
     /// <summary>
     /// Versitile IEqualityComparer<T> implementation that provides passing of delegate functions

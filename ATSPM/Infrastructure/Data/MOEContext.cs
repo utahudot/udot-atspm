@@ -1,13 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using ControllerLogger.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Net;
+using ATSPM.Application.Models;
 
 #nullable disable
 
-namespace ControllerLogger.Data
+namespace ATSPM.Infrasturcture.Data
 {
     public partial class MOEContext : DbContext
     {
@@ -20,7 +20,7 @@ namespace ControllerLogger.Data
         {
         }
 
-        public virtual DbSet<Models.Action> Actions { get; set; }
+        public virtual DbSet<Application.Models.Action> Actions { get; set; }
         public virtual DbSet<ActionLog> ActionLogs { get; set; }
         public virtual DbSet<ActionLogAction> ActionLogActions { get; set; }
         public virtual DbSet<ActionLogMetricType> ActionLogMetricTypes { get; set; }
@@ -99,7 +99,7 @@ namespace ControllerLogger.Data
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<Models.Action>(entity =>
+            modelBuilder.Entity<Application.Models.Action>(entity =>
             {
                 entity.Property(e => e.ActionId).HasColumnName("ActionID");
 
@@ -926,7 +926,7 @@ namespace ControllerLogger.Data
                       .IsUnicode(false)
                       .HasColumnName("IPAddress")
                       .HasDefaultValueSql("('')");
-                      //.HasConversion(new IPAddressToStringConverter(null));
+                  //.HasConversion(new IPAddressToStringConverter(null));
 
                   entity.Property(e => e.Latitude)
                       .IsRequired()
@@ -1016,14 +1016,14 @@ namespace ControllerLogger.Data
                 entity.ToTable("Speed_Events");
 
                 entity.HasIndex(e => new { e.Timestamp, e.DetectorId }, "ByTimestampByDetID")
-                    .HasFillFactor((byte)90);
+                    .HasFillFactor(90);
 
                 entity.HasIndex(e => new { e.DetectorId, e.Timestamp }, "IX_ByDetID")
-                    .HasFillFactor((byte)90);
+                    .HasFillFactor(90);
 
                 entity.HasIndex(e => e.Timestamp, "IX_Clustered_Speed_Events")
                     .IsClustered()
-                    .HasFillFactor((byte)90);
+                    .HasFillFactor(90);
 
                 entity.Property(e => e.DetectorId)
                     .IsRequired()

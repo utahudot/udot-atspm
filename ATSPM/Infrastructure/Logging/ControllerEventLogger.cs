@@ -1,4 +1,4 @@
-﻿using ControllerLogger.Models;
+﻿using ATSPM.Application.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -59,7 +59,7 @@ namespace Microsoft.Extensions.Logging
 
         public ControllerEventLogger(string name, Func<ColorConsoleLoggerConfiguration> getCurrentConfig) => (_name, _getCurrentConfig) = (name, getCurrentConfig);
 
-        public ControllerEventLogger(string name) => (_name) = (name);
+        public ControllerEventLogger(string name) => _name = name;
 
         public IDisposable BeginScope<TState>(TState state) => default;
 
