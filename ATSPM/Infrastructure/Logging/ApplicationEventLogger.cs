@@ -1,5 +1,5 @@
-﻿using ControllerLogger.Data;
-using ControllerLogger.Models;
+﻿using ATSPM.Application.Models;
+using ATSPM.Infrasturcture.Data;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

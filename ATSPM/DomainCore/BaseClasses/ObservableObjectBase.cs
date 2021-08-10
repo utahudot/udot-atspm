@@ -1,11 +1,11 @@
-﻿using ControllerLogger.Helpers;
+﻿using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ControllerLogger.Domain.BaseClasses
+namespace ATSPM.Domain.BaseClasses
 {
     public abstract class ObservableObjectBase : INotifyPropertyChanged, INotifyPropertyChanging
     {

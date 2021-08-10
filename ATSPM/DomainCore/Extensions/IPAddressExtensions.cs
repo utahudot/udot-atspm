@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 
-namespace ControllerLogger.Helpers
+namespace ATSPM.Domain.Extensions
 {
     public static class IPAddressExtensions
     {

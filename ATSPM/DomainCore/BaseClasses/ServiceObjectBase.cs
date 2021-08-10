@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ControllerLogger.Domain.BaseClasses
+namespace ATSPM.Domain.BaseClasses
 {
     public abstract class ServiceObjectBase : ObservableObjectBase, ISupportInitializeNotification, IDisposable
     {
@@ -48,7 +48,7 @@ namespace ControllerLogger.Domain.BaseClasses
         public event EventHandler Initialized;
 
         private bool _isInitialized;
-        [Newtonsoft.Json.JsonIgnore]
+        //[Newtonsoft.Json.JsonIgnore]
         public bool IsInitialized
         {
             get { return _isInitialized; }

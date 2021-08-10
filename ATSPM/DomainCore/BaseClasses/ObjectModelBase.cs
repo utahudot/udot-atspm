@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ControllerLogger.Domain.BaseClasses
+namespace ATSPM.Domain.BaseClasses
 {
     public abstract class ObjectModelBase : ObservableObjectBase, IEditableObject, INotifyDataErrorInfo, IRevertibleChangeTracking, ICloneable
     {
@@ -105,7 +105,7 @@ namespace ControllerLogger.Domain.BaseClasses
 
         #region INotifyDataErrorInfo
 
-        [Newtonsoft.Json.JsonIgnore]
+        //[Newtonsoft.Json.JsonIgnore]
         public bool HasErrors => _errors.Keys.Count > 0;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
@@ -162,7 +162,7 @@ namespace ControllerLogger.Domain.BaseClasses
 
         #region IRevertibleChangeTracking
 
-        [Newtonsoft.Json.JsonIgnore]
+        //[Newtonsoft.Json.JsonIgnore]
         public bool IsChanged => changes.Keys.Count > 0;
 
         public void AcceptChanges()

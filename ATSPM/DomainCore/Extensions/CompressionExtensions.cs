@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace ControllerLogger.Domain.Extensions
+namespace ATSPM.Domain.Extensions
 {
     public static class CompressionExtensions
     {

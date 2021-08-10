@@ -1,5 +1,5 @@
-﻿using ControllerLogger.Application.Common.EqualityComparers;
-using ControllerLogger.Models;
+﻿using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Application.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 
-namespace ControllerLogger.Services
+namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 {
     public class Asc3Decoder
     {
