@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ControllerLogger.Application.Enums
+namespace ATSPM.Application.Enums
 {
     public enum SignalControllerType
     {

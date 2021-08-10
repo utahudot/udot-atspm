@@ -3,6 +3,44 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>ATSPM.SignalControllerLogger</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ControllerFTPService.cs" />
+    <Compile Remove="ControllerFTPServiceTest.cs" />
+    <Compile Remove="FileETLHostedService.cs" />
+    <Compile Remove="PipelineBackgroundServiceTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\DomainCore\DomainCore.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PipelineManagerLibrary">
+      <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ControllerFTPService.cs" />
+    <Resource Include="ControllerFTPServiceTest.cs" />
+    <Resource Include="FileETLHostedService.cs" />
+    <Resource Include="PipelineBackgroundServiceTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

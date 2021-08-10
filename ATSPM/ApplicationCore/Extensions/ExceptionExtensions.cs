@@ -2,9 +2,9 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace ControllerLogger.Helpers
+namespace ATSPM.Application.Extensions
 {
-    public static class ExceptionHelpers
+    public static class ExceptionExtensions
     {
         public static bool LogE(this Exception e, LogLevel level = LogLevel.Warning, [CallerMemberName] string caller = "")
         {
@@ -26,7 +26,7 @@ namespace ControllerLogger.Helpers
                 case LogLevel.Error:
                 case LogLevel.Critical:
                     return true; ;
-            } 
+            }
         }
     }
 }

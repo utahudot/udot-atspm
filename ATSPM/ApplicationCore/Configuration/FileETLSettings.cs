@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ControllerLogger.Configuration
+namespace ATSPM.Application.Configuration
 {
     public class FileETLSettings
     {

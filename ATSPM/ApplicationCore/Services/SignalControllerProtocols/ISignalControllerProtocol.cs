@@ -1,11 +1,6 @@
-﻿using ControllerLogger.Application.Enums;
-using ControllerLogger.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using ATSPM.Application.Enums;
 
-namespace ControllerLogger.Application.Services
+namespace ATSPM.Application.Services.SignalControllerProtocols
 {
     public interface ISignalControllerProtocol
     {
