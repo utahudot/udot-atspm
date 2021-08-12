@@ -156,7 +156,7 @@ namespace ATSPM.SignalControllerLogger
                     //{
                     //    //await writer.Writer.WriteAsync(value);
                     //}
-                    if (await writer.Writer.WaitToWriteAsync())
+                    if (await writer.Writer.WaitToWriteAsync(cancellationToken))
                     {
                         await writer.Writer.WriteAsync(value);
                     }
@@ -253,7 +253,7 @@ namespace ATSPM.SignalControllerLogger
             {
                 try
                 {
-                    logList.AddRange(Asc3Decoder.DecodeAsc3File(value.FullName, value.Directory.Name, _options.Value.EarliestAcceptableDate));
+                    //logList.AddRange(Asc3Decoder.DecodeAsc3File(value.FullName, value.Directory.Name, _options.Value.EarliestAcceptableDate));
 
                     value.MoveTo(Path.Combine(di.FullName, value.Name));
                 }
@@ -276,57 +276,55 @@ namespace ATSPM.SignalControllerLogger
                 string signalId = input.First().SignalId;
                 if (!string.IsNullOrEmpty(signalId))
                 {
-                    using (var scope = _serviceProvider.CreateScope())
+                    using var scope = _serviceProvider.CreateScope();
+                    //signalList = _serviceProvider.GetService<MOEContext>().Signals.Where(i => i.Enabled == true).Include(i => i.ControllerType).ToList();
+                    var db = scope.ServiceProvider.GetRequiredService<MOEContext>();
+
+                    //group all logs by day
+                    foreach (var date in input.GroupBy(g => g.Timestamp.Date))
                     {
-                        //signalList = _serviceProvider.GetService<MOEContext>().Signals.Where(i => i.Enabled == true).Include(i => i.ControllerType).ToList();
-                        var db = scope.ServiceProvider.GetRequiredService<MOEContext>();
+                        //see if there is already an entry in the db
+                        var archive = await db.ControllerLogArchives.FindAsync(signalId, date.Key.Date);
 
-                        //group all logs by day
-                        foreach (var date in input.GroupBy(g => g.Timestamp.Date))
+                        //var archiveList = _archiveList.Where(l => l.SignalId == signalId && l.ArchiveDate == date.Key.Date).ToList();
+                        Console.WriteLine($"----------------retrieved archive logs: {archive?.SignalId} - {archive?.ArchiveDate}");
+
+                        if (archive != null)
                         {
-                            //see if there is already an entry in the db
-                            var archive = await db.ControllerLogArchives.FindAsync(signalId, date.Key.Date);
+                            HashSet<ControllerEventLog> eventLogs = new HashSet<ControllerEventLog>(JsonSerializer.Deserialize<List<ControllerEventLog>>(archive.LogData.GZipDecompressToString()), new ControllerEventLogEqualityComparer());
 
-                            //var archiveList = _archiveList.Where(l => l.SignalId == signalId && l.ArchiveDate == date.Key.Date).ToList();
-                            Console.WriteLine($"----------------retrieved archive logs: {archive?.SignalId} - {archive?.ArchiveDate}");
+                            HashSet<ControllerEventLog> union = new HashSet<ControllerEventLog>(Enumerable.Union(eventLogs, date.ToHashSet(new ControllerEventLogEqualityComparer()), new ControllerEventLogEqualityComparer()));
 
-                            if (archive != null)
+                            Console.WriteLine($"----------------decoded event logs: {eventLogs.Count}-{date.AsEnumerable().Count()} = {union.Count()} - huh?{union.Except(date.AsEnumerable()).FirstOrDefault()}");
+
+
+
+                            archive.LogData = JsonSerializer.Serialize(union.Select(s => new { s.Timestamp, s.EventCode, s.EventParam }).AsEnumerable().Select(s => new Tuple<DateTime, int, int>(s.Timestamp, s.EventCode, s.EventParam)).ToList()).GZipCompressToByte();
+
+                            try
                             {
-                                HashSet<ControllerEventLog> eventLogs = new HashSet<ControllerEventLog>(JsonSerializer.Deserialize<List<ControllerEventLog>>(archive.LogData.GZipDecompressToString()), new ControllerEventLogEqualityComparer());
-
-                                HashSet<ControllerEventLog> union = new HashSet<ControllerEventLog>(Enumerable.Union(eventLogs, date.ToHashSet(new ControllerEventLogEqualityComparer()), new ControllerEventLogEqualityComparer()));
-
-                                Console.WriteLine($"----------------decoded event logs: {eventLogs.Count}-{date.AsEnumerable().Count()} = {union.Count()} - huh?{union.Except(date.AsEnumerable()).FirstOrDefault()}");
-
-
-
-                                archive.LogData = JsonSerializer.Serialize(union.Select(s => new { s.Timestamp, s.EventCode, s.EventParam }).AsEnumerable().Select(s => new Tuple<DateTime, int, int>(s.Timestamp, s.EventCode, s.EventParam)).ToList()).GZipCompressToByte();
-
-                                try
-                                {
-                                    await db.SaveChangesAsync();
-                                }
-                                catch (InvalidOperationException)
-                                {
-
-                                    Console.WriteLine($"InvalidOperationException-----------------------------------------{archive.SignalId}");
-                                }
-
-
-                                return archive;
-                            }
-                            else
-                            {
-                                ControllerLogArchive cla = new ControllerLogArchive()
-                                {
-                                    SignalId = signalId,
-                                    ArchiveDate = date.Key,
-                                    LogData = JsonSerializer.Serialize(date.Select(s => new { s.Timestamp, s.EventCode, s.EventParam }).AsEnumerable().Select(s => new Tuple<DateTime, int, int>(s.Timestamp, s.EventCode, s.EventParam)).ToList()).GZipCompressToByte()
-                                };
-
-                                await db.ControllerLogArchives.AddAsync(cla);
                                 await db.SaveChangesAsync();
                             }
+                            catch (InvalidOperationException)
+                            {
+
+                                Console.WriteLine($"InvalidOperationException-----------------------------------------{archive.SignalId}");
+                            }
+
+
+                            return archive;
+                        }
+                        else
+                        {
+                            ControllerLogArchive cla = new ControllerLogArchive()
+                            {
+                                SignalId = signalId,
+                                ArchiveDate = date.Key,
+                                LogData = JsonSerializer.Serialize(date.Select(s => new { s.Timestamp, s.EventCode, s.EventParam }).AsEnumerable().Select(s => new Tuple<DateTime, int, int>(s.Timestamp, s.EventCode, s.EventParam)).ToList()).GZipCompressToByte()
+                            };
+
+                            await db.ControllerLogArchives.AddAsync(cla);
+                            await db.SaveChangesAsync();
                         }
                     }
                 }

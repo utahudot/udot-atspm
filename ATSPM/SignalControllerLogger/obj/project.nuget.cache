@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "OYJsXCmXPMGqMAGw9D1TjZJzcJdB0l1uhbxsitvChsaJ01Th9x21UL2U4Hj2MW0RVm8RZlH227mdp1xnxzUevQ==",
+  "dgSpecHash": "9Njm/Me/E3+oEUwi4h0bK2MI9quecVd+0AI2H7CCGDafG3izq/KMcXHfJtJwa3kfwT+uHEFlMPMu+oiTH9e45g==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\34.0.2\\fluentftp.34.0.2.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\5.0.3\\microsoft.codeanalysis.netanalyzers.5.0.3.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.0.1\\microsoft.data.sqlclient.sni.runtime.2.0.1.nupkg.sha512",

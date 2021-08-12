@@ -31,18 +31,17 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public override void Initialize()
         {
-            
         }
 
         #region ISignalControllerDecoder
 
         public event EventHandler CanExecuteChanged;
 
-        public SignalControllerType ControllerType => throw new NotImplementedException();
+        public SignalControllerType ControllerType => SignalControllerType.ASC3;
 
         public bool CanExecute(FileInfo parameter)
         {
-            return true;
+            return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ");
         }
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
@@ -52,97 +51,22 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
         {
-            //TODO: check if can execute first and add a separate methode for just decoding streams. easier for testings and stuff
-            
-            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //TODO: integrate CancellationToken
+            //TODO: write out detailed logs
 
-            var memoryStream = parameter.ToMemoryStream();
-
-            // set the memory position to beggining
-            memoryStream.Position = 0;
-
-            //check to see if data is compressed
-            if (memoryStream.IsCompressed())
+            if (CanExecute(parameter))
             {
-                // ok it is compressed, let's decompress it before we procced
-                memoryStream = memoryStream.GZipDecompressToStream();
+                //convert file to stream
+                var memoryStream = parameter.ToMemoryStream();
+
+                //check if stream is compressed
+                memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
+
+                //decode stream
+                return Decode(parameter.Directory.Name, memoryStream).AsTask();
             }
 
-            using (var br = new BinaryReader(memoryStream, Encoding.ASCII))
-            {
-                if (br.BaseStream.Position + 21 < br.BaseStream.Length)
-                {
-                    //Find the start Date
-                    var dateString = "";
-                    for (var i = 1; i < 21; i++)
-                    {
-                        var c = br.ReadChar();
-                        dateString += c;
-                    }
-
-                    var startTime = new DateTime();
-                    if (DateTime.TryParse(dateString, out startTime) && br.BaseStream.Position < br.BaseStream.Length)
-                    {
-                        //find  line feed characters, that should take us to the end of the header.
-                        // First line break is after Version
-                        // Second LF is after FileName
-                        // Third LF is after Interseciton number, which isn't used as far as I can tell
-                        // Fourth LF is after IP address
-                        // Fifth is after MAC Address
-                        // Sixth is after "Controller data log beginning:," and then the date
-                        // Seven is after "Phases in use:," and then the list of phases, seperated by commas
-
-                        var i = 0;
-
-                        while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
-                        {
-                            var c = br.ReadChar();
-                            if (c == '\n')
-                                i++;
-                        }
-
-                        // after that, we start reading until we reach the end 
-                        while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
-                        {
-                            var eventTime = new DateTime();
-                            var eventCode = new int();
-                            var eventParam = new int();
-
-                            for (var eventPart = 1; eventPart < 4; eventPart++)
-                            {
-                                //getting the EventCode
-                                if (eventPart == 1)
-                                    eventCode = Convert.ToInt32(br.ReadByte());
-
-                                if (eventPart == 2)
-                                    eventParam = Convert.ToInt32(br.ReadByte());
-
-                                //getting the time offset
-                                if (eventPart == 3)
-                                {
-                                    //var rawoffset = new byte[2];
-                                    var rawoffset = br.ReadBytes(2);
-                                    Array.Reverse(rawoffset);
-                                    int offset = BitConverter.ToInt16(rawoffset, 0);
-                                    var tenths = Convert.ToDouble(offset) / 10;
-                                    eventTime = startTime.AddSeconds(tenths);
-                                }
-                            }
-
-
-                            //going to write to new ControllerLogEvent object
-                            if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
-                            {
-                                logList.Add(new ControllerEventLog() { SignalId = parameter.DirectoryName, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
-                            }
-                        }
-                    }
-                    //this is what we do when the datestring doesn't parse
-                }
-                //this is what we do when the datestring doesn't parse
-            }
-
-            return logList.AsTask();
+            return null;
         }
 
         Task IExecuteAsync.ExecuteAsync(object parameter)
@@ -167,186 +91,119 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         #endregion
 
+        private MemoryStream GZipDecompressToStreamTemp(Stream stream)
+        {
+            using (var gs = new DeflateStream(stream, CompressionMode.Decompress))
+            {
+                var mso = new MemoryStream();
+                gs.CopyTo(mso);
+                mso.Position = 0;
+                return mso;
+            }
+        }
+
+        public bool IsCompressed(Stream stream)
+        {
+            return stream.IsCompressed();
+        }
+
+        public bool IsEncoded(Stream stream)
+        {
+            MemoryStream memoryStream = (MemoryStream)stream;
+            var bytes = memoryStream.ToArray();
+
+            //ASCII doesn't have anything above 0x80
+            return bytes.Any(b => b >= 0x80);
+        }
+
+        //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
+        public Stream Decompress(Stream stream)
+        {
+            // read past the first two bytes of the zlib header
+            stream?.Seek(2, SeekOrigin.Begin);
+
+            // decompress the file
+            using (DeflateStream deflateStream = new DeflateStream(stream, CompressionMode.Decompress))
+            {
+                // copy decompressed data into return stream
+                MemoryStream returnStream = new MemoryStream();
+                deflateStream.CopyTo(returnStream);
+                returnStream.Position = 0;
+
+                return returnStream;
+            }
+        }
+
+        public HashSet<ControllerEventLog> Decode(string signalId, Stream stream)
+        {
+            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+
+            using (var br = new BinaryReader(stream, Encoding.ASCII))
+            {
+                br.BaseStream.Position = 0;
+
+                if (br.BaseStream.Position + 20 <= br.BaseStream.Length && DateTime.TryParse(br.ReadChars(20), out DateTime startTime))
+                {
+                    //find  line feed characters, that should take us to the end of the header.
+                    // First line break is after Version
+                    // Second LF is after FileName
+                    // Third LF is after Interseciton number, which isn't used as far as I can tell
+                    // Fourth LF is after IP address
+                    // Fifth is after MAC Address
+                    // Sixth is after "Controller data log beginning:," and then the date
+                    // Seven is after "Phases in use:," and then the list of phases, seperated by commas
+
+                    var i = 0;
+
+                    while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        var c = br.ReadChar();
+                        if (c == '\n')
+                            i++;
+                    }
+
+                    // after that, we start reading until we reach the end 
+                    while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
+                    {
+                        var eventTime = new DateTime();
+                        var eventCode = new int();
+                        var eventParam = new int();
+
+                        for (var eventPart = 1; eventPart < 4; eventPart++)
+                        {
+                            //getting the EventCode
+                            if (eventPart == 1)
+                                eventCode = Convert.ToInt32(br.ReadByte());
+
+                            if (eventPart == 2)
+                                eventParam = Convert.ToInt32(br.ReadByte());
+
+                            //getting the time offset
+                            if (eventPart == 3)
+                            {
+                                //var rawoffset = new byte[2];
+                                var rawoffset = br.ReadBytes(2);
+                                Array.Reverse(rawoffset);
+                                int offset = BitConverter.ToInt16(rawoffset, 0);
+                                var tenths = Convert.ToDouble(offset) / 10;
+                                eventTime = startTime.AddSeconds(tenths);
+                            }
+                        }
 
 
-        //TODO: replace file name as string with FileInfo type
-        //public static IEnumerable<ControllerEventLog> DecodeAsc3File(FileInfo file, Signal signal, DateTime earliestAcceptableDate)
-        //{
-        //    HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+                        //going to write to new ControllerLogEvent object
+                        if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
+                        {
+                            logList.Add(new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
+                        }
+                    }
 
-        //    var memoryStream = file.ToMemoryStream();
+                    return logList;
+                }
+            }
 
-        //    // set the memory position to beggining
-        //    memoryStream.Position = 0;
-
-        //    //check to see if data is compressed
-        //    if (memoryStream.IsCompressed())
-        //    {
-        //        // ok it is compressed, let's decompress it before we procced
-        //        memoryStream = memoryStream.GZipDecompressToStream();
-        //    }
-
-        //    using (var br = new BinaryReader(memoryStream, Encoding.ASCII))
-        //    {
-        //        if (br.BaseStream.Position + 21 < br.BaseStream.Length)
-        //        {
-        //            //Find the start Date
-        //            var dateString = "";
-        //            for (var i = 1; i < 21; i++)
-        //            {
-        //                var c = br.ReadChar();
-        //                dateString += c;
-        //            }
-
-        //            var startTime = new DateTime();
-        //            if (DateTime.TryParse(dateString, out startTime) && br.BaseStream.Position < br.BaseStream.Length)
-        //            {
-        //                //find  line feed characters, that should take us to the end of the header.
-        //                // First line break is after Version
-        //                // Second LF is after FileName
-        //                // Third LF is after Interseciton number, which isn't used as far as I can tell
-        //                // Fourth LF is after IP address
-        //                // Fifth is after MAC Address
-        //                // Sixth is after "Controller data log beginning:," and then the date
-        //                // Seven is after "Phases in use:," and then the list of phases, seperated by commas
-
-        //                var i = 0;
-
-        //                while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
-        //                {
-        //                    var c = br.ReadChar();
-        //                    if (c == '\n')
-        //                        i++;
-        //                }
-
-        //                // after that, we start reading until we reach the end 
-        //                while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
-        //                {
-        //                    var eventTime = new DateTime();
-        //                    var eventCode = new int();
-        //                    var eventParam = new int();
-
-        //                    for (var eventPart = 1; eventPart < 4; eventPart++)
-        //                    {
-        //                        //getting the EventCode
-        //                        if (eventPart == 1)
-        //                            eventCode = Convert.ToInt32(br.ReadByte());
-
-        //                        if (eventPart == 2)
-        //                            eventParam = Convert.ToInt32(br.ReadByte());
-
-        //                        //getting the time offset
-        //                        if (eventPart == 3)
-        //                        {
-        //                            //var rawoffset = new byte[2];
-        //                            var rawoffset = br.ReadBytes(2);
-        //                            Array.Reverse(rawoffset);
-        //                            int offset = BitConverter.ToInt16(rawoffset, 0);
-        //                            var tenths = Convert.ToDouble(offset) / 10;
-        //                            eventTime = startTime.AddSeconds(tenths);
-        //                        }
-        //                    }
-
-
-        //                    //going to write to new ControllerLogEvent object
-        //                    if (eventTime <= DateTime.Now && eventTime > earliestAcceptableDate)
-        //                    {
-        //                        logList.Add(new ControllerEventLog() { SignalId = signal.SignalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
-        //                    }
-        //                }
-        //            }
-        //            //this is what we do when the datestring doesn't parse
-        //        }
-        //        //this is what we do when the datestring doesn't parse
-        //    }
-
-        //    return logList;
-        //}
-
-        //public static MemoryStream FileToMemoryStream(string fileName)
-        //{
-        //    // load the file into memory stream
-        //    var fileStream = File.Open(fileName, FileMode.Open);
-        //    var memoryStream = new MemoryStream();
-        //    fileStream.CopyTo(memoryStream);
-        //    fileStream.Close();
-
-        //    return memoryStream;
-        //}
-
-        /// <summary>
-        /// Determines if filestream passed in contains a hex signature of one of the known compression algorithms
-        /// </summary>
-        /// <param name="fileStream"></param>
-        /// <returns>true or false if compression is detected</returns>
-        //public static bool IsCompressed(MemoryStream fileStream)
-        //{
-        //    // read the magic header
-        //    byte[] header = new byte[2];
-        //    fileStream.Read(header, 0, 2);
-
-        //    // let seek to back of file
-        //    fileStream.Seek(0, SeekOrigin.Begin);
-
-        //    // let's check for zlib compression
-        //    if (AreEqual(header, _ZlibHeaderNoCompression) || AreEqual(header, _ZlibHeaderDefaultCompression) || AreEqual(header, _ZlibHeaderBestCompression))
-        //    {
-        //        return true;
-        //    }
-        //    // let's make sure it is not another compression 
-        //    else if (AreEqual(header, _GZipHeader) || AreEqual(header, _EOSHeader))
-        //    {
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
-
-        /// <summary>
-        /// Decompresses the passed in filestream using deflatestream
-        /// </summary>
-        /// <param name="fileStream"></param>
-        /// <returns>decompressed filestream</returns>
-        //public static MemoryStream DecompessedStream(MemoryStream fileStream)
-        //{
-        //    // read past the first two bytes of the zlib header
-        //    fileStream.Seek(2, SeekOrigin.Begin);
-
-        //    // decompress the file
-        //    using (DeflateStream deflateStream = new DeflateStream(fileStream, CompressionMode.Decompress))
-        //    {
-        //        // copy decompressed data into return stream
-        //        MemoryStream returnStream = new MemoryStream();
-        //        deflateStream.CopyTo(returnStream);
-        //        returnStream.Position = 0;
-
-        //        return returnStream;
-        //    }
-        //}
-
-
-        /// <summary>
-        /// Compares if two byte arrays are equal
-        /// </summary>
-        /// <param name="a1"></param>
-        /// <param name="b1"></param>
-        /// <returns>returns true if they are equal and false if they are not equal</returns>
-        //private static bool AreEqual(byte[] a1, byte[] b1)
-        //{
-        //    if (a1.Length != b1.Length)
-        //    {
-        //        return false;
-        //    }
-
-        //    for (int i = 0; i < a1.Length; i++)
-        //    {
-        //        if (a1[i] != b1[i])
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //    return true;
-        //}
+            throw new InvalidDataException($"Decoding error, not a valid file or stream format {signalId}");
+        }
 
         public override void Dispose()
         {

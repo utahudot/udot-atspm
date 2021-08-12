@@ -98,3 +98,4 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\Sign
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\appsettings.json
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.GeneratedMSBuildEditorConfig.editorconfig
