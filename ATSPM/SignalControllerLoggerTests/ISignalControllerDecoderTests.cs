@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -196,6 +198,33 @@ namespace SignalControllerLoggerTests
             Assert.Throws<InvalidDataException>(() => _decoder.Decode("1210", memoryStream));
         }
 
+        [Fact]
+        public void DecodeWithProgress()
+        {
+            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+
+            int actual = 0;
+            var progress = new Progress<int>(i => actual = i);
+
+            var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream(), progress);
+            var expected = collection.Count;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void DecodeWithTokenCancelled()
+        {
+            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream(), null, cts.Token);
+
+            Assert.Null(collection);
+        }
+
         #endregion
 
         #endregion
@@ -242,14 +271,35 @@ namespace SignalControllerLoggerTests
         [EncodedControllerTestFiles]
         public void ExecuteAsyncValidFromDat(FileInfo fileInfo, string expected)
         {
-            //FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
-
-            //var expected = "1053(dat)";
             var collection = _decoder.ExecuteAsync(fileInfo).Result;
             var condition = collection.Count > 0;
 
             Assert.True(condition);
             Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+        }
+
+        [Fact]
+        public void ExecuteAsyncTokenCancelled()
+        {
+            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromMilliseconds(1));
+
+            Assert.Throws<OperationCanceledException>(() => _decoder.ExecuteAsync(fileInfo, cts.Token).Result);
+        }
+
+        [Theory]
+        [EncodedControllerTestFiles]
+        public void ExecuteAsyncWithProgress(FileInfo fileInfo, string expected)
+        {
+            int actual = 0;
+            var progress = new Progress<int>(i => actual = i);
+
+            var collection = _decoder.ExecuteAsync(fileInfo, progress: progress).Result;
+            var realExpected = collection.Count;
+
+            Assert.Equal(realExpected, actual);
         }
 
         #endregion

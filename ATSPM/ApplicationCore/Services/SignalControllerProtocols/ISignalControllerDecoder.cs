@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
@@ -18,6 +19,6 @@ namespace ATSPM.Application.Services.SignalControllerProtocols
 
         Stream Decompress(Stream stream);
 
-        HashSet<ControllerEventLog> Decode (string signalId, Stream stream);
+        HashSet<ControllerEventLog> Decode (string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default);
     }
 }
