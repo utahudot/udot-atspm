@@ -80,6 +80,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default)
         {
+            //TODO: integrate CancellationToken
+            //TODO: write out detailed logs
+
             //return directory
             DirectoryInfo dir = null;
 
@@ -114,7 +117,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                                 //if (items.Where(i => i.Name.Contains("dat")).Count() > 0)
                                 //{
                                     //download directory with filter
-                                    var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datz" }) };
+                                    var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
                                     results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
                                 //}
                                 //else
@@ -236,7 +239,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         Task IExecuteAsync.ExecuteAsync(object parameter)
         {
             if (parameter is Signal p)
-                return Task.Run(() => ExecuteAsync(p));
+                return Task.Run(() => ExecuteAsync(p, default, default));
             return default;
         }
 
@@ -250,7 +253,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         void ICommand.Execute(object parameter)
         {
             if (parameter is Signal p)
-                Task.Run(() => ExecuteAsync(p));
+                Task.Run(() => ExecuteAsync(p, default, default));
         }
 
         public override void Dispose()
