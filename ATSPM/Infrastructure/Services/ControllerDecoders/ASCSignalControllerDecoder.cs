@@ -53,8 +53,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         {
             //TODO: integrate CancellationToken
             //TODO: write out detailed logs
-
-            if (CanExecute(parameter))
+            if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             {
                 //convert file to stream
                 var memoryStream = parameter.ToMemoryStream();
@@ -63,7 +62,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
 
                 //decode stream
-                return Decode(parameter.Directory.Name, memoryStream).AsTask();
+                cancelToken.ThrowIfCancellationRequested();
+                return Decode(parameter.Directory.Name, memoryStream, progress, cancelToken).AsTask();
             }
 
             return null;
@@ -90,17 +90,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         }
 
         #endregion
-
-        private MemoryStream GZipDecompressToStreamTemp(Stream stream)
-        {
-            using (var gs = new DeflateStream(stream, CompressionMode.Decompress))
-            {
-                var mso = new MemoryStream();
-                gs.CopyTo(mso);
-                mso.Position = 0;
-                return mso;
-            }
-        }
 
         public bool IsCompressed(Stream stream)
         {
@@ -134,8 +123,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public HashSet<ControllerEventLog> Decode(string signalId, Stream stream)
+        public HashSet<ControllerEventLog> Decode(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
+            if (cancelToken.IsCancellationRequested)
+                return null;
+
             HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
             using (var br = new BinaryReader(stream, Encoding.ASCII))
@@ -195,9 +187,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                         if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
                         {
                             logList.Add(new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
+
+                            //report progress
+                            //TODO: make a decoder progess object that tracks number of decoded vs number of added with current date and signalid
+                            progress?.Report(logList.Count);
                         }
                     }
 
+                    progress?.Report(logList.Count);
                     return logList;
                 }
             }
