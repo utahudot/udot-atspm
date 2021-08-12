@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "Wym/nsPHZxA6trh6SMVkBWJO/0p/i36IAVMBHp8OmdGYhf2j6cSfysCTzht8FB9eIeR4anZeQcw14iuVAJ4Dgw==",
+  "dgSpecHash": "YoWkX3WPwWTPX7sL7vGodLJxlNjPzScjKCIiTrBKTTLAVtPlVXsDUYzwsDXOD8fUI3fAiUvOM/bcbHPDHpWxWA==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\34.0.2\\fluentftp.34.0.2.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.codeanalysis.netanalyzers\\5.0.3\\microsoft.codeanalysis.netanalyzers.5.0.3.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.data.sqlclient\\2.0.1\\microsoft.data.sqlclient.2.0.1.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\2.0.1\\microsoft.data.sqlclient.sni.runtime.2.0.1.nupkg.sha512",

@@ -106,7 +106,7 @@ namespace ATSPM.SignalControllerLogger
                     {
                         var downloader = new ASCSignalControllerDownloader(serviceProvider.GetService<ILogger<ASCSignalControllerDownloader>>(), serviceProvider, serviceProvider.GetService<IOptions<SignalControllerDownloaderConfiguration>>());
 
-                        var result = await downloader.Execute(s, cts.Token);
+                        var result = await downloader.ExecuteAsync(s, cts.Token);
 
                         //if (result == null)
                         //    Console.WriteLine($"Result: {s.SignalId} - {s.ControllerType.Description} - {result?.FullName}");

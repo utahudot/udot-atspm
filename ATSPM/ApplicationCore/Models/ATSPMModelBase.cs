@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ATSPM.Application.Models
 {
-    public class ATSPMModelBase : ObjectModelBase
+    public abstract class ATSPMModelBase : ObjectModelBase
     {
     }
 }

@@ -16,8 +16,9 @@ namespace DomainCoreTests
         public void GZipCompressToByteArray()
         {
             var bytes = TestString.GZipCompressToByte();
+            var gzipheader = FileSignatureExtensions.FileSignatures.FirstOrDefault(f => f.Extension == ".gz").MagicHeader;
 
-            Assert.Equal(bytes.Take(2), CompressionExtensions.GZipHeader);
+            Assert.Equal(bytes.Take(gzipheader.Length), gzipheader);
         }
 
         [Fact]
