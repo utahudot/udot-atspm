@@ -191,7 +191,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeNotValidFromBadData()
         {
-            byte[] badData = Encoding.UTF8.GetBytes(string.Join("", Enumerable.Range(1, 500).Select(i => i.ToString())));  
+            byte[] badData = Encoding.UTF8.GetBytes(string.Join("", Enumerable.Range(1, 500).Select(i => i.ToString())));
 
             var memoryStream = new MemoryStream(badData);
 

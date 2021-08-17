@@ -44,11 +44,12 @@ namespace Microsoft.Extensions.Logging
                     Function = parameters.Where(k => k.Key == "Function").Select(v => v.Value).FirstOrDefault().ToString()
                 };
 
-                using (MOEContext db = new MOEContext())
-                {
-                    db.ApplicationEvents.Add(applicationEvent);
-                    db.SaveChanges();
-                }
+                //TODO: took this out for testing
+                //using (MOEContext db = new MOEContext())
+                //{
+                //    db.ApplicationEvents.Add(applicationEvent);
+                //    db.SaveChanges();
+                //}
             }
         }
     }
