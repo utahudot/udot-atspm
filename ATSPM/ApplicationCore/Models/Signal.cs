@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Signal
+    public partial class Signal : ATSPMModelBase
     {
         public string SignalId { get; set; }
         public string Latitude { get; set; }

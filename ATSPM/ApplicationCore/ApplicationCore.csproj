@@ -19,4 +19,10 @@
     <ProjectReference Include="..\DomainCore\DomainCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Attributes\" />
+  </ItemGroup>
+
 </Project>

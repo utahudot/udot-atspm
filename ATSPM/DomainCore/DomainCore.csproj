@@ -12,4 +12,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+    <Folder Include="Enums\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Handlers\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>
