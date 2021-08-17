@@ -37,34 +37,34 @@ namespace ATSPM.Infrasturcture.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public void AddRange(IEnumerable<T> items)
+        public void AddRange(IReadOnlyList<T> items)
         {
             _table.AddRange(items);
             _db.SaveChanges();
         }
 
-        public async Task AddRangeAsync(IEnumerable<T> items)
+        public async Task AddRangeAsync(IReadOnlyList<T> items)
         {
             await _table.AddRangeAsync(items).ConfigureAwait(false);
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public IEnumerable<T> GetList(Expression<Func<T, bool>> criteria)
+        public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
         {
-            return _table.Where(criteria);
+            return _table.Where(criteria).ToList();
         }
 
-        public IEnumerable<T> GetList(ISpecification<T> criteria)
+        public IReadOnlyList<T> GetList(ISpecification<T> criteria)
         {
-            return _table.Where(criteria.Criteria);
+            return _table.Where(criteria.Criteria).ToList();
         }
 
-        public async Task<IEnumerable<T>> GetListAsync(Expression<Func<T, bool>> criteria)
+        public async Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>> criteria)
         {
             return await _table.Where(criteria).ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetListAsync(ISpecification<T> criteria)
+        public async Task<IReadOnlyList<T>> GetListAsync(ISpecification<T> criteria)
         {
             return await _table.Where(criteria.Criteria.Compile()).AsQueryable().ToListAsync().ConfigureAwait(false);
         }
@@ -91,13 +91,13 @@ namespace ATSPM.Infrasturcture.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public void RemoveRange(IEnumerable<T> items)
+        public void RemoveRange(IReadOnlyList<T> items)
         {
             _table.RemoveRange(items);
             _db.SaveChanges();
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<T> items)
+        public async Task RemoveRangeAsync(IReadOnlyList<T> items)
         {
             _table.RemoveRange(items);
             await _db.SaveChangesAsync().ConfigureAwait(false);

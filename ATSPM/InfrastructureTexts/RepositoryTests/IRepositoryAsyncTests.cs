@@ -11,7 +11,6 @@ using Xunit.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace InfrastructureTests.RepositoryTests
 {
