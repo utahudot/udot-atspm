@@ -158,3 +158,4 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLoggerTests\bin\Debug\netcoreapp3.1
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLoggerTests\bin\Debug\netcoreapp3.1\Infrastructure.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLoggerTests\bin\Debug\netcoreapp3.1\DomainCore.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLoggerTests\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.pdb
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLoggerTests\bin\Debug\netcoreapp3.1\DomainCore.xml

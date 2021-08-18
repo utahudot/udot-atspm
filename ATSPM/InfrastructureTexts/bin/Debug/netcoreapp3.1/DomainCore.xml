@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DomainCore</name>
+    </assembly>
+    <members>
+        <member name="T:ATSPM.Domain.Common.LambdaEqualityComparer`1">
+            <summary>
+            Versitile IEqualityComparer implementation that provides passing of delegate functions
+            </summary>
+            <typeparam name="T">Type to compare</typeparam>
+            <example>
+            <code>new LambdaEqualityComparer((x, y) => Equals(x, y))</code>
+            </example>
+            <exception cref="T:System.ArgumentNullException">Thrown either parameters are null</exception>
+            <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-5.0">Wiki</seealso>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.#ctor(System.Func{`0,`0,System.Boolean})">
+            <summary>
+            Creates a new IEqualityComparer with delegate functions
+            </summary>
+            <param name="lambdaComparer">Function that defines what to compare</param>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.#ctor(System.Func{`0,`0,System.Boolean},System.Func{`0,System.Int32})">
+            <summary>
+            Creates a new IEqualityComparer with delegate functions
+            </summary>
+            <param name="lambdaComparer">Function that defines what to compare</param>
+            <param name="lambdaHash">Function that defines how to generate HashCode</param>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.Equals(`0,`0)">
+            <summary>
+            Compares two objects of type "T" using supplied delegate functions
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns>Returns true if equal</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.GetHashCode(`0)">
+            <summary>
+            Generates hashcode based on supplied delegate function
+            </summary>
+            <param name="obj"></param>
+            <returns>HashCode</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.LambdaComparer`1">
+            <summary>
+            Versitile IComparer implementation that provides passing of delegate functions
+            </summary>
+            <typeparam name="T">Type to compare</typeparam>
+            <exception cref="T:System.ArgumentNullException">Thrown when parameter is null</exception>
+            <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icomparer-1?view=net-5.0">Wiki</seealso>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:ATSPM.Domain.Common.LambdaComparer`1.#ctor(System.Func{`0,`0,System.Int32})" -->
+        <member name="M:ATSPM.Domain.Common.LambdaComparer`1.Compare(`0,`0)">
+            <summary>
+            Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other based on a delegate function
+            </summary>
+            <param name="x">First object to compare</param>
+            <param name="y">Second object to compare</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.QueryExtensions">
+            <summary>
+            Extensions specific to IQueryable
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.FromSpecification``1(System.Linq.IQueryable{``0},ATSPM.Domain.Specifications.ISpecification{``0})">
+            <summary>
+            Creates a query based on an <c>string</c> ISpecification&lt;<typeparamref name="T"/>&gt;
+            <see href="ControllerLogArchive"/>
+            </summary>
+            <typeparam name="T">POCO that the query pertains to</typeparam>
+            <param name="query">Input query</param>
+            <param name="specification"></param>
+            <returns>Returns the query created from the ISpecification<typeparamref name="T"/></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.IfCondition``1(System.Linq.IQueryable{``0},System.Func{System.Boolean},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}})">
+            <summary>
+            Use to create an if statement on an linline linq query
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="condition">Condition that will pass or fail</param>
+            <param name="pass">query to return if <paramref name="condition"/> passes</param>
+            <param name="fail">query <see cref="T:System.String"/> to return if <paramref name="condition"/> should fail</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.FireAndForget(System.Threading.Tasks.Task)">
+            <summary>
+            Trigger a Task in an async method without having to await
+            Otherwise you have to markd the tas with #pragma warning disable CS4014
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.StartAndWaitAllThrottledAsync(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Starts the given tasks and waits for them to complete. This will run, at most, the specified number of tasks in parallel.
+            <para>NOTE: If one of the given tasks has already been started, an exception will be thrown.</para>
+            </summary>
+            <param name="tasksToRun">The tasks to run.</param>
+            <param name="maxTasksToRunInParallel">The maximum number of tasks to run in parallel.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.TaskExtensions.StartAndWaitAllThrottledAsync(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task},System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Starts the given tasks and waits for them to complete. This will run the specified number of tasks in parallel.
+            <para>NOTE: If a timeout is reached before the Task completes, another Task may be started, potentially running more than the specified maximum allowed.</para>
+            <para>NOTE: If one of the given tasks has already been started, an exception will be thrown.</para>
+            </summary>
+            <param name="tasksToRun">The tasks to run.</param>
+            <param name="maxTasksToRunInParallel">The maximum number of tasks to run in parallel.</param>
+            <param name="timeoutInMilliseconds">The maximum milliseconds we should allow the max tasks to run in parallel before allowing another task to start. Specify -1 to wait indefinitely.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+        </member>
+    </members>
+</doc>

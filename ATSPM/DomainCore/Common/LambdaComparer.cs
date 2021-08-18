@@ -5,11 +5,11 @@ using System.Text;
 namespace ATSPM.Domain.Common
 {
     /// <summary>
-    /// Versitile IEqualityComparer<T> implementation that provides passing of delegate functions
+    /// Versitile IEqualityComparer implementation that provides passing of delegate functions
     /// </summary>
     /// <typeparam name="T">Type to compare</typeparam>
     /// <example>
-    /// <code>new LambdaEqualityComparer<T>((x, y) => Equals(x, y))</code>
+    /// <code>new LambdaEqualityComparer((x, y) => Equals(x, y))</code>
     /// </example>
     /// <exception cref="ArgumentNullException">Thrown either parameters are null</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-5.0">Wiki</seealso>
@@ -60,7 +60,7 @@ namespace ATSPM.Domain.Common
     }
 
     /// <summary>
-    /// Versitile IComparer<T> implementation that provides passing of delegate functions
+    /// Versitile IComparer implementation that provides passing of delegate functions
     /// </summary>
     /// <typeparam name="T">Type to compare</typeparam>
     /// <exception cref="ArgumentNullException">Thrown when parameter is null</exception>
