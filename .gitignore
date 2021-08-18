@@ -55,3 +55,5 @@ dkms.conf
 /ATSPM/.vs
 /ATSPM/ApplicationCore/obj
 /ATSPM/DomainCore/obj
+/ATSPM/DomainCoreTests/obj
+/ATSPM/InfrastructureTexts/obj
