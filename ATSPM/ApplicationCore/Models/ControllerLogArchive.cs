@@ -9,6 +9,8 @@ namespace ATSPM.Application.Models
     {
         public string SignalId { get; set; }
         public DateTime ArchiveDate { get; set; }
-        public byte[] LogData { get; set; }
+        //public byte[] LogData { get; set; }
+
+        public IList<ControllerEventLog> LogData;
     }
 }
