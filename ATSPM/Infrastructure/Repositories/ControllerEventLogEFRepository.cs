@@ -49,6 +49,10 @@ namespace ATSPM.Infrasturcture.Repositories
         public bool CheckForRecords(string signalId, DateTime startTime, DateTime endTime)
         {
             throw new NotImplementedException();
+
+            //return _db.ControllerEventLogs.Any(r => r.SignalID == signalId
+            //                                             && r.Timestamp >= startTime
+            //                                             && r.Timestamp < endTime);
         }
 
         public IReadOnlyList<ControllerEventLog> GetAllAggregationCodes(string signalId, DateTime startTime, DateTime endTime)
@@ -67,7 +71,7 @@ namespace ATSPM.Infrasturcture.Repositories
             var approachCodes = new List<int> { 1, 8, 10 };
 
             //HACK: this should come from IServiceLocator
-            IApproachRepository ar = new ApproachEFRepository(db, (ILogger<ApproachEFRepository>)log);
+            IApproachRepository ar = new ApproachEFRepository(_db, (ILogger<ApproachEFRepository>)_log);
             Approach approach = ar.Lookup(new Approach() { ApproachId = approachId });
 
             return GetEventsByEventCodesParam(approach.SignalId, startTime, endTime, approachCodes, phaseNumber).Count;

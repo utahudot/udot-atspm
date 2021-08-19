@@ -45,10 +45,9 @@ namespace InfrastructureTests
             _output.WriteLine($"Created database: {_db.Database.EnsureCreated()}");
         }
 
-        [Fact]
+        [Fact(Skip = "Not ready yet")]
         public void CheckForRecords()
         {
-            Assert.Throws<NotImplementedException>(() => _repo.CheckForRecords("", DateTime.Now, DateTime.Now));
         }
 
         [Fact]
@@ -72,6 +71,121 @@ namespace InfrastructureTests
 
         [Fact(Skip = "Not ready yet")]
         public void GetApproachEventsCountBetweenDates()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetDetectorActivationCount()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventCountByEventCodesParamDateTimeRange()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsBetweenDates()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamOverloadOne()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamOverloadTwo()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamOverloadTHree()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamDateTimeRange()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamWithLatencyCorrection()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetEventsByEventCodesParamWithOffsetAndLatencyCorrection()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetFirstEventBeforeDate()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetFirstEventBeforeDateByEventCodeAndParameter()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetMostRecentRecordTimestamp()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetRecordCount()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetRecordCountByParameterAndEvent()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetRecordsByParameterAndEvent()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetSignalEventsBetweenDates()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetSignalEventsByEventCode()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetSignalEventsByEventCodes()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetSignalEventsCountBetweenDates()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetSplitEvents()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetTmcVolume()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetTopEventsAfterDateByEventCodesParam()
+        {
+        }
+
+        [Fact(Skip = "Not ready yet")]
+        public void GetTopNumberOfSignalEventsBetweenDates()
         {
         }
 
