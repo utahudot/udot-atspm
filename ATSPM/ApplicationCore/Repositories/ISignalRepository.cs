@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
-    public interface ISignalRepository : IRepository<Signal>
+    public interface ISignalRepository : IAsyncRepository<Signal>
     {
         IReadOnlyList<Signal> GetAllSignals();
         string GetSignalDescription(string signalId);
