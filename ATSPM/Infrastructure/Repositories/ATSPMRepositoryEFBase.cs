@@ -14,39 +14,39 @@ namespace ATSPM.Infrasturcture.Repositories
 {
     public abstract class ATSPMRepositoryEFBase<T> : IAsyncRepository<T> where T : ATSPMModelBase
     {
-        protected readonly ILogger log;
-        protected readonly DbContext db;
+        protected readonly ILogger _log;
+        protected readonly DbContext _db;
         protected readonly DbSet<T> table;
 
         public ATSPMRepositoryEFBase(DbContext db, ILogger<ATSPMRepositoryEFBase<T>> log)
         {
-            log = log;
-            db = db;
-            table = db.Set<T>();
+            _log = log;
+            _db = db;
+            table = _db.Set<T>();
         }
 
         public void Add(T item)
         {
             table.Add(item);
-            db.SaveChanges();
+            _db.SaveChanges();
         }
 
         public async Task AddAsync(T item)
         {
             await table.AddAsync(item).ConfigureAwait(false);
-            await db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public void AddRange(IReadOnlyList<T> items)
         {
             table.AddRange(items);
-            db.SaveChanges();
+            _db.SaveChanges();
         }
 
         public async Task AddRangeAsync(IReadOnlyList<T> items)
         {
             await table.AddRangeAsync(items).ConfigureAwait(false);
-            await db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
@@ -71,36 +71,36 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public T Lookup(T item)
         {
-            return table.Find(db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+            return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
         }
 
         public async Task<T> LookupAsync(T item)
         {
-            return await table.FindAsync(db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+            return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
         }
 
         public void Remove(T item)
         {
             table.Remove(item);
-            db.SaveChanges();
+            _db.SaveChanges();
         }
 
         public async Task RemoveAsync(T item)
         {
             table.Remove(item);
-            await db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public void RemoveRange(IReadOnlyList<T> items)
         {
             table.RemoveRange(items);
-            db.SaveChanges();
+            _db.SaveChanges();
         }
 
         public async Task RemoveRangeAsync(IReadOnlyList<T> items)
         {
             table.RemoveRange(items);
-            await db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }
