@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Approach
+    public partial class Approach : ATSPMModelBase
     {
         public Approach()
         {

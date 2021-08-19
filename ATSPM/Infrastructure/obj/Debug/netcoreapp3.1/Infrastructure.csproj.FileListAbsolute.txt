@@ -18,3 +18,4 @@ C:\Projects\udot-atsmp\ATSPM\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructu
 C:\Projects\udot-atsmp\ATSPM\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.pdb
 C:\Projects\udot-atsmp\ATSPM\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\Infrastructure\obj\Debug\netcoreapp3.1\Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\udot-atsmp\ATSPM\Infrastructure\bin\Debug\netcoreapp3.1\DomainCore.xml
