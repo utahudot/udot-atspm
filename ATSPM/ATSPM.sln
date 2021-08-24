@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalControllerLogger", "SignalControllerLogger\SignalControllerLogger.csproj", "{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalControllerLoggerTests", "SignalControllerLoggerTests\SignalControllerLoggerTests.csproj", "{C906CB68-6F5A-481A-AA87-51FAC08C6C92}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCore", "ApplicationCore\ApplicationCore.csproj", "{28293DD5-2476-46EB-92B5-77FFD257EAC9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainCore", "DomainCore\DomainCore.csproj", "{95EDDA04-9E9A-47AF-AE60-87F1B7F9E825}"
@@ -23,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureTests", "InfrastructureTexts\InfrastructureTests.csproj", "{CBA9DA8B-5322-4474-9694-165499C8C943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InfrastructureTests", "InfrastructureTexts\InfrastructureTests.csproj", "{CBA9DA8B-5322-4474-9694-165499C8C943}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C906CB68-6F5A-481A-AA87-51FAC08C6C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C906CB68-6F5A-481A-AA87-51FAC08C6C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C906CB68-6F5A-481A-AA87-51FAC08C6C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C906CB68-6F5A-481A-AA87-51FAC08C6C92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{28293DD5-2476-46EB-92B5-77FFD257EAC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28293DD5-2476-46EB-92B5-77FFD257EAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28293DD5-2476-46EB-92B5-77FFD257EAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
