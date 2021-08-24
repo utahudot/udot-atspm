@@ -1017,21 +1017,21 @@ namespace ATSPM.Infrasturcture.Data
 
                   entity.Property(e => e.VersionActionId).HasDefaultValueSql("((10))");
 
-                  //entity.HasOne(d => d.ControllerType)
-                  //    .WithMany(p => p.Signals)
-                  //    .HasForeignKey(d => d.ControllerTypeId)
-                  //    .OnDelete(DeleteBehavior.ClientSetNull)
-                  //    .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeID");
+                  entity.HasOne(d => d.ControllerType)
+                      .WithMany(p => p.Signals)
+                      .HasForeignKey(d => d.ControllerTypeId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeID");
 
                   //entity.HasOne(d => d.Region)
                   //    .WithMany(p => p.Signals)
                   //    .HasForeignKey(d => d.RegionId)
                   //    .HasConstraintName("FK_dbo.Signals_dbo.Region_RegionID");
 
-                  entity.Ignore(e => e.ControllerType);
-                  entity.Ignore(e => e.Region);
+                  //entity.Ignore(e => e.ControllerType);
+                  //entity.Ignore(e => e.Region);
 
-                  });
+              });
 
                   //modelBuilder.Entity<SignalEventCountAggregation>(entity =>
                   //{

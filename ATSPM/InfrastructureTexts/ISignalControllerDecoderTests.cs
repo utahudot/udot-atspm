@@ -23,6 +23,8 @@ namespace SignalControllerLoggerTests
 {
     public class ISignalControllerDecoderTests : IDisposable
     {
+        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\TestData";
+
         private readonly ITestOutputHelper _output;
         private ISignalControllerDecoder _decoder;
         private ILogger<ASCSignalControllerDecoder> _nullLogger;
@@ -59,7 +61,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void IsCompressedTrueFromDatz()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
 
             var condition = _decoder.IsCompressed(fileInfo.ToMemoryStream());
 
@@ -69,7 +71,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void IsCompressedFalseFromDat()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             var condition = _decoder.IsCompressed(fileInfo.ToMemoryStream());
 
@@ -83,7 +85,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void IsEncodedNotEncoded()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\Hello.csv");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"Hello.csv"));
             var memoryStream = fileInfo.ToMemoryStream();
 
             var condition = _decoder.IsEncoded(memoryStream);
@@ -94,7 +96,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void IsEncodedIsEncoded()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
             var memoryStream = fileInfo.ToMemoryStream();
 
             var condition = _decoder.IsEncoded(memoryStream);
@@ -109,7 +111,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecompressValidFromDatz()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
             var memoryStream = fileInfo.ToMemoryStream();
 
             var result = _decoder.Decompress(memoryStream);
@@ -144,7 +146,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeValidFromDat()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             var expected = "1053";
             var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream());
@@ -157,7 +159,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeValidFromDatz()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
 
             var memoryStream = fileInfo.ToMemoryStream();
             memoryStream = _decoder.IsCompressed(memoryStream) ? (MemoryStream)_decoder.Decompress(memoryStream) : memoryStream;
@@ -173,7 +175,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeNotValidFromDatz()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
 
             var memoryStream = fileInfo.ToMemoryStream();
 
@@ -201,7 +203,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeWithProgress()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             int actual = 0;
             var progress = new Progress<int>(i => actual = i);
@@ -215,14 +217,12 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void DecodeWithTokenCancelled()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
-            var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream(), null, cts.Token);
-
-            Assert.Null(collection);
+            Assert.Throws<OperationCanceledException>(() => _decoder.Decode("1053", fileInfo.ToMemoryStream(), null, cts.Token));
         }
 
         #endregion
@@ -236,7 +236,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void CanExecuteValidFromDat()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             var condition = _decoder.CanExecute(fileInfo);
 
@@ -246,7 +246,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void CanExecuteValidFromDatz()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
 
             var condition = _decoder.CanExecute(fileInfo);
 
@@ -256,7 +256,7 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void CanExecuteNotValid()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1210(datz)\\ECON_10.204.12.179_2021_08_09_1831.bad");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.12.179_2021_08_09_1831.bad"));
 
             var condition = _decoder.CanExecute(fileInfo);
 
@@ -281,12 +281,18 @@ namespace SignalControllerLoggerTests
         [Fact]
         public void ExecuteAsyncTokenCancelled()
         {
-            FileInfo fileInfo = new FileInfo("C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLoggerTests\\TestData\\1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             CancellationTokenSource cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMilliseconds(1));
+            cts.Cancel();
 
-            Assert.Throws<OperationCanceledException>(() => _decoder.ExecuteAsync(fileInfo, cts.Token).Result);
+            var expected = TaskStatus.Canceled;
+            TaskStatus actual = _decoder.ExecuteAsync(fileInfo, cts.Token).Status;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
         }
 
         [Theory]

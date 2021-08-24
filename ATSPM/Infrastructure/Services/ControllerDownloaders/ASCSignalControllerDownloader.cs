@@ -69,7 +69,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             && !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
 
             //check valid ipaddress
-            //TODO: replace this with options setting
             && value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
         }
 

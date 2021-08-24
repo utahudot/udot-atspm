@@ -51,9 +51,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
         {
+            _log.LogDebug("Decoding {FileName}", parameter.FullName);
+
+            Task<HashSet<ControllerEventLog>> result = null;
+
+            if (cancelToken.IsCancellationRequested)
+                result = Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
+
             //TODO: integrate CancellationToken
             //TODO: write out detailed logs
-            if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
+            if (CanExecute(parameter))
             {
                 //convert file to stream
                 var memoryStream = parameter.ToMemoryStream();
@@ -62,11 +69,17 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
 
                 //decode stream
-                cancelToken.ThrowIfCancellationRequested();
-                return Decode(parameter.Directory.Name, memoryStream, progress, cancelToken).AsTask();
+                try
+                {
+                    result = Task.FromResult(Decode(parameter.Directory.Name, memoryStream, progress, cancelToken));
+                }
+                catch (OperationCanceledException)
+                {
+                    result = Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
+                }
             }
 
-            return null;
+            return result;
         }
 
         Task IExecuteAsync.ExecuteAsync(object parameter)
@@ -126,7 +139,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         public HashSet<ControllerEventLog> Decode(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             if (cancelToken.IsCancellationRequested)
-                return null;
+                cancelToken.ThrowIfCancellationRequested();
 
             HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
@@ -191,6 +204,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                             //report progress
                             //TODO: make a decoder progess object that tracks number of decoded vs number of added with current date and signalid
                             progress?.Report(logList.Count);
+
+                            //_log.LogDebug("Decoded {ListCount} items from {SignalID}", logList.Count, signalId);
                         }
                     }
 

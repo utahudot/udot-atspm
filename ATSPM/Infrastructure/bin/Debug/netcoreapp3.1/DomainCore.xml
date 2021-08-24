@@ -113,5 +113,17 @@
             <param name="timeoutInMilliseconds">The maximum milliseconds we should allow the max tasks to run in parallel before allowing another task to start. Specify -1 to wait indefinitely.</param>
             <param name="cancellationToken">The cancellation token.</param>
         </member>
+        <member name="T:ATSPM.Domain.Specifications.GenericSpecification`1">
+            <summary>
+            Generic Specification class for making adhoc specifications
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Specifications.GenericSpecification`1.#ctor(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            Pass critera function
+            </summary>
+            <param name="criteria">Specification Criteria</param>
+        </member>
     </members>
 </doc>
