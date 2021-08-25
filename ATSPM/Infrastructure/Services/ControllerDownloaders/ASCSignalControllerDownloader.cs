@@ -40,7 +40,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         #region Properties
 
-        public SignalControllerType ControllerType => SignalControllerType.ASC3;
+        public SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS | SignalControllerType.Cobalt;
 
         #endregion
 
@@ -63,7 +63,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         public bool CanExecute(Signal value)
         {
             //check valid controller type
-            return value.ControllerType.ControllerTypeId == Convert.ToInt32(ControllerType)
+            return ((ControllerType & (SignalControllerType)value.ControllerType.ControllerTypeId) == (SignalControllerType)value.ControllerType.ControllerTypeId)
 
             //check directory
             && !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
@@ -85,7 +85,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             //return directory
             DirectoryInfo dir = null;
 
-            //_log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
+            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
 
             if (CanExecute(parameter))
             {
@@ -93,8 +93,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                     //TODO: replace this with options setting
-                    client.ConnectTimeout = 5000;
-                    client.ReadTimeout = 5000;
+                    client.ConnectTimeout = 1000;
+                    client.ReadTimeout = 1000;
                     if (parameter.ControllerType.ActiveFtp)
                     {
                         client.DataConnectionType = FtpDataConnectionType.AutoActive;

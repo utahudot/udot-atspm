@@ -4,17 +4,18 @@ using System.Text;
 
 namespace ATSPM.Application.Enums
 {
+    [Flags]
     public enum SignalControllerType
     {
-        Unknown,
-        ASC3,
-        Cobalt,
-        ASC32070,
-        MaxTime,
-        Trafficware,
-        SiemensSEPAC,
-        McCainATCEX,
-        Peek,
-        EOS
+        Unknown = 0,
+        ASC3 = 1 << 1,
+        Cobalt = 1 << 2,
+        ASC32070 = 1 << 3,
+        MaxTime = 1 << 4,
+        Trafficware = 1 << 5,
+        SiemensSEPAC = 1 << 6,
+        McCainATCEX = 1 << 7,
+        Peek = 1 << 8,
+        EOS = 1 << 9
     }
 }

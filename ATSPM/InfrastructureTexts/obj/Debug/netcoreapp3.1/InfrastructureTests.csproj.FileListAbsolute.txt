@@ -181,3 +181,5 @@ C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\netcoreapp3.1\Infrast
 C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\netcoreapp3.1\InfrastructureTests.pdb
 C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\netcoreapp3.1\InfrastructureTests.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\bin\Debug\netcoreapp3.1\DomainCore.xml
+C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\bin\Debug\netcoreapp3.1\Castle.Core.dll
+C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\bin\Debug\netcoreapp3.1\Moq.dll

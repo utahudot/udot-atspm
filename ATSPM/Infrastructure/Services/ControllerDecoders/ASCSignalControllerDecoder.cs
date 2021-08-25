@@ -37,7 +37,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public event EventHandler CanExecuteChanged;
 
-        public SignalControllerType ControllerType => SignalControllerType.ASC3;
+        public SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS | SignalControllerType.Cobalt;
 
         public bool CanExecute(FileInfo parameter)
         {
