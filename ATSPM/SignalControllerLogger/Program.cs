@@ -45,13 +45,13 @@ namespace ATSPM.SignalControllerLogger
                 .ConfigureServices((h, s) =>
                 {
                     s.AddLogging();
-                    s.AddDbContext<MOEContext>(); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+                    s.AddDbContext<DbContext,MOEContext>(); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
                     s.AddHostedService<ControllerLoggerBackgroundService>();
                     s.AddTransient<ISignalControllerDownloader, ASCSignalControllerDownloader>();
                     s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
 
-                    s.AddTransient<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
 
                     //s.AddDbContext<MOEContext>();
@@ -66,16 +66,12 @@ namespace ATSPM.SignalControllerLogger
                 })
                 .ConfigureLogging(c =>
                 {
-                    c.SetMinimumLevel(LogLevel.Debug);
+                    c.SetMinimumLevel(LogLevel.Warning);
                 })
                 .UseConsoleLifetime()
                 .Build();
 
-            //host.RunAsync();
-
-            var repo = host.Services.GetService<IControllerEventLogRepository>();
-
-
+            host.RunAsync();
 
             Console.ReadKey();
         }

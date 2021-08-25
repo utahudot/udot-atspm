@@ -39,8 +39,9 @@ namespace ATSPM.SignalControllerLogger
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<MOEContext>();
-                _signalList = db.Signals.Take(10).Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
+                var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+                _signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
+                //_signalList = db.Set<Signal>().Take(100).Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().Where(i => i.SignalId == "10407").ToList();
             }
 
             var downloader = _serviceProvider.GetService<ISignalControllerDownloader>();
@@ -52,8 +53,8 @@ namespace ATSPM.SignalControllerLogger
             //add steps
             _pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory", downloader, i => true, i => true);
             _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => true, i => true);
-            _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true, progress);
-            _pipelineManager.AddStep<HashSet<ControllerEventLog>, ControllerLogArchive>("CombineEventLogs", (i, c) => CombineEventLogs(i), i => true, i => true);
+            _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true);
+            _pipelineManager.AddStep<HashSet<ControllerEventLog>, List<ControllerLogArchive>>("CombineEventLogs", (i, c) => CombineEventLogs(i, c), i => true, i => true);
 
             //add pipes
             _pipelineManager.AddPipe<Signal>("SeedPipe", 0);
@@ -61,7 +62,7 @@ namespace ATSPM.SignalControllerLogger
             //_pipelineManager.AddPipe<DirectoryInfo>("FTPToDirectoryPostFail");
             _pipelineManager.AddPipe<List<FileInfo>>("FileListToDecoding");
             _pipelineManager.AddPipe<HashSet<ControllerEventLog>>("EventLogsToMerge");
-            _pipelineManager.AddPipe<ControllerLogArchive>("MergedControllerLogArchive");
+            _pipelineManager.AddPipe<List<ControllerLogArchive>>("MergedControllerLogArchive");
 
             //connect pipes
             _pipelineManager["FTPToDirectory"].Input = _pipelineManager.Pipes["SeedPipe"];
@@ -79,9 +80,16 @@ namespace ATSPM.SignalControllerLogger
 
             await SeedPipeline((PipelinePipe<Signal>)_pipelineManager.Pipes["SeedPipe"], _signalList, stoppingToken);
 
+
+            var sw = new System.Diagnostics.Stopwatch();
+
+            sw.Start();
+
             await _pipelineManager.ExecuteAsync(null);
 
-            Console.WriteLine($"Stopping======================================================================");
+            Console.WriteLine($"Stopping: {sw.Elapsed}======================================================================");
+
+            sw.Stop();
         }
 
         private async Task<bool> SeedPipeline<T>(PipelinePipe<T> pipe, IEnumerable<T> seeds, CancellationToken cancellationToken = default)
@@ -122,88 +130,62 @@ namespace ATSPM.SignalControllerLogger
 
             foreach (var value in input)
             {
-                var temp = await decoder.ExecuteAsync(value, cancellationToken);
+                //HACK: this needs to be removed and needs to work with .DAT files!!!!!!!!
+                if (value.Extension != ".DAT")
+                {
+                    var temp = await decoder.ExecuteAsync(value, cancellationToken);
 
-                logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
+                    logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
+                }
+                
+                
+                
 
 
                 //value.MoveTo(Path.Combine(di.FullName, value.Name));
             }
 
-            _log.LogDebug("--------------------------------------------Decoding {FileCount} - {LogCount} from Directory", input.Count.ToString(), logList.Count());
-
             return logList;
         }
 
-        private Task<ControllerLogArchive> CombineEventLogs(HashSet<ControllerEventLog> input)
+        private async Task<List<ControllerLogArchive>> CombineEventLogs(HashSet<ControllerEventLog> input, CancellationToken cancellationToken = default)
         {
-            ControllerLogArchive result = null;
+            List<ControllerLogArchive> result = new List<ControllerLogArchive>();
 
-            HashSet<ControllerEventLog> eventLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //TODO: create an extension method for this!
+            var archiveDate = input.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
 
-            //IControllerEventLogRepository EventLogArchive = _serviceProvider.GetService<IControllerEventLogRepository>();
-
-            //get and validate signalid
-            string signalId = input.First().SignalId;
-            if (!string.IsNullOrEmpty(signalId))
+            foreach (ControllerLogArchive archive in archiveDate)
             {
-                //using var scope = _serviceProvider.CreateScope();
-                //var db = scope.ServiceProvider.GetRequiredService<MOEContext>();
-
-                //group all logs by day
-                foreach (var date in input.GroupBy(g => g.Timestamp.Date))
+                //see if there is already an entry in the db
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    //_log.LogWarning("eventLogs {SignalId} count {Count}", signalId, eventLogs.Count);
-                    
-                    
-                    eventLogs = (HashSet<ControllerEventLog>)Enumerable.Union(eventLogs, date.ToHashSet(new ControllerEventLogEqualityComparer()));
+                    IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+                    var searchLog = await EventLogArchive.LookupAsync(archive);
 
+                    if (searchLog != null)
+                    {
+                        var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
 
-                    ////see if there is already an entry in the db
-                    //result = await db.ControllerLogArchives.FindAsync(signalId, date.Key.Date);
+                        Console.WriteLine($"Union logs: {eventLogs.Count} - {searchLog.LogData.Count()} = {archive.LogData.Count()}");
 
+                        searchLog.LogData = eventLogs.ToList();
 
-                    //////var archiveList = _archiveList.Where(l => l.SignalId == signalId && l.ArchiveDate == date.Key.Date).ToList();
-                    //Console.WriteLine($"----------------retrieved archive logs: {result?.SignalId} - {result?.ArchiveDate}");
+                        DbContext db = scope.ServiceProvider.GetService<DbContext>();
+                        await db.SaveChangesAsync(cancellationToken);
 
-                    //if (result != null)
-                    //{
-                    //    HashSet<ControllerEventLog> eventLogs = new HashSet<ControllerEventLog>(result.LogData, new ControllerEventLogEqualityComparer());
-
-                    //    HashSet<ControllerEventLog> union = new HashSet<ControllerEventLog>(Enumerable.Union(eventLogs, date.ToHashSet(new ControllerEventLogEqualityComparer()), new ControllerEventLogEqualityComparer()));
-
-                    //    Console.WriteLine($"----------------decoded event logs: {eventLogs.Count}-{date.AsEnumerable().Count()} = {union.Count()} - huh?{union.Except(date.AsEnumerable()).FirstOrDefault()}");
-
-
-
-                    //    result.LogData = union.ToList();
-
-                    //    try
-                    //    {
-                    //        await db.SaveChangesAsync();
-                    //    }
-                    //    catch (InvalidOperationException)
-                    //    {
-
-                    //        Console.WriteLine($"InvalidOperationException-----------------------------------------{result.SignalId}");
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    result = new ControllerLogArchive()
-                    //    {
-                    //        SignalId = signalId,
-                    //        ArchiveDate = date.Key,
-                    //        LogData = date.ToList()
-                    //    };
-
-                    //    await db.ControllerLogArchives.AddAsync(result);
-                    //    await db.SaveChangesAsync();
-                    //}
+                        result.Add(searchLog);
+                    }
+                    else
+                    {
+                        //add to database
+                        await EventLogArchive.AddAsync(archive);
+                        result.Add(archive);
+                    }
                 }
             }
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }
