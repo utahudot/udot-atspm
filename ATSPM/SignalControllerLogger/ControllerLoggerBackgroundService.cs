@@ -52,9 +52,11 @@ namespace ATSPM.SignalControllerLogger
 
             //add steps
             _pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory", downloader, i => true, i => true);
-            _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => true, i => true);
+            _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => i.Parent.Name == "ControlLogs", i => i.Count > 0);
             _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true);
             _pipelineManager.AddStep<HashSet<ControllerEventLog>, List<ControllerLogArchive>>("CombineEventLogs", (i, c) => CombineEventLogs(i, c), i => true, i => true);
+
+            //_pipelineManager.AddStep<List<ControllerLogArchive>, DirectoryInfo>("CleanupDirectories", (i, c) => CleanupDirectories(i, c), i => true, i => true);
 
             //add pipes
             _pipelineManager.AddPipe<Signal>("SeedPipe", 0);
@@ -63,11 +65,11 @@ namespace ATSPM.SignalControllerLogger
             _pipelineManager.AddPipe<List<FileInfo>>("FileListToDecoding");
             _pipelineManager.AddPipe<HashSet<ControllerEventLog>>("EventLogsToMerge");
             _pipelineManager.AddPipe<List<ControllerLogArchive>>("MergedControllerLogArchive");
+            _pipelineManager.AddPipe<DirectoryInfo>("DeletedDirectories");
 
             //connect pipes
             _pipelineManager["FTPToDirectory"].Input = _pipelineManager.Pipes["SeedPipe"];
             _pipelineManager["FTPToDirectory"].Output = _pipelineManager.Pipes["FTPToDirectoryOutput"];
-            //plm["FTPToDirectory1"].PostFailOutput = plm.Pipes["FTPToDirectoryPostFail"];
 
             _pipelineManager["GetFilesFromDirectory"].Input = _pipelineManager.Pipes["FTPToDirectoryOutput"];
             _pipelineManager["GetFilesFromDirectory"].Output = _pipelineManager.Pipes["FileListToDecoding"];
@@ -78,12 +80,17 @@ namespace ATSPM.SignalControllerLogger
             _pipelineManager["CombineEventLogs"].Input = _pipelineManager.Pipes["EventLogsToMerge"];
             _pipelineManager["CombineEventLogs"].Output = _pipelineManager.Pipes["MergedControllerLogArchive"];
 
+            //_pipelineManager["CleanupDirectories"].Input = _pipelineManager.Pipes["MergedControllerLogArchive"];
+            //_pipelineManager["CleanupDirectories"].Output = _pipelineManager.Pipes["DeletedDirectories"];
+
             await SeedPipeline((PipelinePipe<Signal>)_pipelineManager.Pipes["SeedPipe"], _signalList, stoppingToken);
 
 
             var sw = new System.Diagnostics.Stopwatch();
 
             sw.Start();
+
+            Console.WriteLine($"Starting: {sw.Elapsed}======================================================================");
 
             await _pipelineManager.ExecuteAsync(null);
 
@@ -117,7 +124,7 @@ namespace ATSPM.SignalControllerLogger
                 list = dir.GetFiles("*.*", SearchOption.AllDirectories).ToList();
             }
 
-            //_log.LogDebug("Getting {FileCount} from Directory {Directory}", list.Count.ToString(), dir.Name);
+            _log.LogDebug("Getting {FileCount} from Directory {Directory}", list.Count.ToString(), dir.FullName);
 
             return Task.FromResult(list);
         }
@@ -130,20 +137,14 @@ namespace ATSPM.SignalControllerLogger
 
             foreach (var value in input)
             {
-                //HACK: this needs to be removed and needs to work with .DAT files!!!!!!!!
-                if (value.Extension != ".DAT")
-                {
-                    var temp = await decoder.ExecuteAsync(value, cancellationToken);
+                var temp = await decoder.ExecuteAsync(value, cancellationToken);
 
-                    logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
-                }
-                
-                
-                
+                logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
 
-
-                //value.MoveTo(Path.Combine(di.FullName, value.Name));
+                value.Delete();
             }
+
+            _log.LogDebug("Loglist {Count}", logList.Count);
 
             return logList;
         }
@@ -152,7 +153,6 @@ namespace ATSPM.SignalControllerLogger
         {
             List<ControllerLogArchive> result = new List<ControllerLogArchive>();
 
-            //TODO: create an extension method for this!
             var archiveDate = input.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
 
             foreach (ControllerLogArchive archive in archiveDate)
@@ -167,7 +167,7 @@ namespace ATSPM.SignalControllerLogger
                     {
                         var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
 
-                        Console.WriteLine($"Union logs: {eventLogs.Count} - {searchLog.LogData.Count()} = {archive.LogData.Count()}");
+                        //Console.WriteLine($"Union logs: {eventLogs.Count} - {searchLog.LogData.Count()} = {archive.LogData.Count()}");
 
                         searchLog.LogData = eventLogs.ToList();
 
@@ -185,7 +185,32 @@ namespace ATSPM.SignalControllerLogger
                 }
             }
 
+            _log.LogInformation($"result count: {result.Count}");
+
             return result;
+        }
+
+        private Task<DirectoryInfo> CleanupDirectories(List<ControllerLogArchive> input, CancellationToken cancellationToken = default)
+        {
+            DirectoryInfo dir = null;
+
+            if (input.Count > 0)
+            {
+                _log.LogWarning($"Directory: {_options.Value.RootPath} - {input.FirstOrDefault().SignalId}");
+
+                dir = new DirectoryInfo(Path.Combine(_options.Value.RootPath, input.FirstOrDefault().SignalId));
+
+                //_log.LogWarning($"Directory: {dir.FullName}");
+
+                if (dir.Exists && dir.GetFiles().Count() == 0)
+                {
+                    dir.Delete();
+
+                    //dir.MoveTo(Path.Combine(_options.Value.RootPath, "DELETED", dir.Name));
+                }
+            }
+            
+            return Task.FromResult(dir);
         }
     }
 }
