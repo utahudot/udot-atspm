@@ -90,7 +90,7 @@ namespace ATSPM.Infrasturcture.Data
         //public virtual DbSet<ToBeProcessedTableIndex> ToBeProcessedTableIndexes { get; set; }
         //public virtual DbSet<ToBeProcessededIndex> ToBeProcessededIndexes { get; set; }
         //public virtual DbSet<ToBeProcessededTable> ToBeProcessededTables { get; set; }
-        //public virtual DbSet<VersionAction> VersionActions { get; set; }
+        public virtual DbSet<VersionAction> VersionActions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1023,6 +1023,9 @@ namespace ATSPM.Infrasturcture.Data
                       .OnDelete(DeleteBehavior.ClientSetNull)
                       .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeID");
 
+                  entity.Ignore(i => i.Approaches);
+                  entity.Ignore(i => i.VersionAction);
+
                   //entity.HasOne(d => d.Region)
                   //    .WithMany(p => p.Signals)
                   //    .HasForeignKey(d => d.RegionId)
@@ -1033,155 +1036,155 @@ namespace ATSPM.Infrasturcture.Data
 
               });
 
-                  //modelBuilder.Entity<SignalEventCountAggregation>(entity =>
-                  //{
-                  //    entity.HasKey(e => new { e.BinStartTime, e.SignalId })
-                  //        .HasName("PK_dbo.SignalEventCountAggregations");
+            //modelBuilder.Entity<SignalEventCountAggregation>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.BinStartTime, e.SignalId })
+            //        .HasName("PK_dbo.SignalEventCountAggregations");
 
-                  //    entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            //    entity.Property(e => e.BinStartTime).HasColumnType("datetime");
 
-                  //    entity.Property(e => e.SignalId).HasMaxLength(10);
-                  //});
+            //    entity.Property(e => e.SignalId).HasMaxLength(10);
+            //});
 
-                  //modelBuilder.Entity<SignalPlanAggregation>(entity =>
-                  //{
-                  //    entity.HasKey(e => new { e.SignalId, e.Start, e.End })
-                  //        .HasName("PK_dbo.SignalPlanAggregations");
+            //modelBuilder.Entity<SignalPlanAggregation>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.SignalId, e.Start, e.End })
+            //        .HasName("PK_dbo.SignalPlanAggregations");
 
-                  //    entity.Property(e => e.SignalId).HasMaxLength(128);
+            //    entity.Property(e => e.SignalId).HasMaxLength(128);
 
-                  //    entity.Property(e => e.Start).HasColumnType("datetime");
+            //    entity.Property(e => e.Start).HasColumnType("datetime");
 
-                  //    entity.Property(e => e.End).HasColumnType("datetime");
-                  //});
+            //    entity.Property(e => e.End).HasColumnType("datetime");
+            //});
 
-                  //modelBuilder.Entity<SignalToAggregate>(entity =>
-                  //{
-                  //    entity.HasKey(e => e.SignalId)
-                  //        .HasName("PK_dbo.SignalToAggregates");
+            //modelBuilder.Entity<SignalToAggregate>(entity =>
+            //{
+            //    entity.HasKey(e => e.SignalId)
+            //        .HasName("PK_dbo.SignalToAggregates");
 
-                  //    entity.Property(e => e.SignalId)
-                  //        .HasMaxLength(10)
-                  //        .HasColumnName("SignalID");
-                  //});
+            //    entity.Property(e => e.SignalId)
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
+            //});
 
-                  //modelBuilder.Entity<SpeedEvent>(entity =>
-                  //{
-                  //    entity.HasNoKey();
+            //modelBuilder.Entity<SpeedEvent>(entity =>
+            //{
+            //    entity.HasNoKey();
 
-                  //    entity.ToTable("Speed_Events");
+            //    entity.ToTable("Speed_Events");
 
-                  //    entity.HasIndex(e => new { e.Timestamp, e.DetectorId }, "ByTimestampByDetID")
-                  //        .HasFillFactor(90);
+            //    entity.HasIndex(e => new { e.Timestamp, e.DetectorId }, "ByTimestampByDetID")
+            //        .HasFillFactor(90);
 
-                  //    entity.HasIndex(e => new { e.DetectorId, e.Timestamp }, "IX_ByDetID")
-                  //        .HasFillFactor(90);
+            //    entity.HasIndex(e => new { e.DetectorId, e.Timestamp }, "IX_ByDetID")
+            //        .HasFillFactor(90);
 
-                  //    entity.HasIndex(e => e.Timestamp, "IX_Clustered_Speed_Events")
-                  //        .IsClustered()
-                  //        .HasFillFactor(90);
+            //    entity.HasIndex(e => e.Timestamp, "IX_Clustered_Speed_Events")
+            //        .IsClustered()
+            //        .HasFillFactor(90);
 
-                  //    entity.Property(e => e.DetectorId)
-                  //        .IsRequired()
-                  //        .HasMaxLength(50)
-                  //        .HasColumnName("DetectorID");
+            //    entity.Property(e => e.DetectorId)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .HasColumnName("DetectorID");
 
-                  //    entity.Property(e => e.Kph).HasColumnName("KPH");
+            //    entity.Property(e => e.Kph).HasColumnName("KPH");
 
-                  //    entity.Property(e => e.Mph).HasColumnName("MPH");
+            //    entity.Property(e => e.Mph).HasColumnName("MPH");
 
-                  //    entity.Property(e => e.Timestamp).HasColumnName("timestamp");
-                  //});
+            //    entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+            //});
 
-                  //modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
-                  //{
-                  //    entity.ToTable("SPMWatchDogErrorEvents");
+            //modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
+            //{
+            //    entity.ToTable("SPMWatchDogErrorEvents");
 
-                  //    entity.Property(e => e.Id).HasColumnName("ID");
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-                  //    entity.Property(e => e.DetectorId).HasColumnName("DetectorID");
+            //    entity.Property(e => e.DetectorId).HasColumnName("DetectorID");
 
-                  //    entity.Property(e => e.Direction).IsRequired();
+            //    entity.Property(e => e.Direction).IsRequired();
 
-                  //    entity.Property(e => e.Message).IsRequired();
+            //    entity.Property(e => e.Message).IsRequired();
 
-                  //    entity.Property(e => e.SignalId)
-                  //        .IsRequired()
-                  //        .HasMaxLength(10)
-                  //        .HasColumnName("SignalID");
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
 
-                  //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
-                  //});
+            //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            //});
 
-                  //modelBuilder.Entity<StagingControllerEventLog20190915>(entity =>
-                  //{
-                  //    entity.HasNoKey();
+            //modelBuilder.Entity<StagingControllerEventLog20190915>(entity =>
+            //{
+            //    entity.HasNoKey();
 
-                  //    entity.ToTable("staging_Controller_Event_Log_2019-09-15");
+            //    entity.ToTable("staging_Controller_Event_Log_2019-09-15");
 
-                  //    entity.HasIndex(e => e.Timestamp, "staging_Controller_Event_Log_2019-09-15_IX_Clustered_Controller_Event_Log_Timestamp")
-                  //        .IsClustered();
+            //    entity.HasIndex(e => e.Timestamp, "staging_Controller_Event_Log_2019-09-15_IX_Clustered_Controller_Event_Log_Timestamp")
+            //        .IsClustered();
 
-                  //    entity.HasIndex(e => new { e.SignalId, e.Timestamp, e.EventCode, e.EventParam }, "staging_Controller_Event_Log_2019-09-15_IX_SignalID_Timestamp_EventCode_EventParam");
+            //    entity.HasIndex(e => new { e.SignalId, e.Timestamp, e.EventCode, e.EventParam }, "staging_Controller_Event_Log_2019-09-15_IX_SignalID_Timestamp_EventCode_EventParam");
 
-                  //    entity.Property(e => e.SignalId)
-                  //        .IsRequired()
-                  //        .HasMaxLength(10)
-                  //        .HasColumnName("SignalID");
-                  //});
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
+            //});
 
-                  //modelBuilder.Entity<StatusOfProcessedTable>(entity =>
-                  //{
-                  //    entity.Property(e => e.SqlstatementOrMessage).HasColumnName("SQLStatementOrMessage");
+            //modelBuilder.Entity<StatusOfProcessedTable>(entity =>
+            //{
+            //    entity.Property(e => e.SqlstatementOrMessage).HasColumnName("SQLStatementOrMessage");
 
-                  //    entity.Property(e => e.TimeEntered).HasColumnType("datetime");
-                  //});
+            //    entity.Property(e => e.TimeEntered).HasColumnType("datetime");
+            //});
 
-                  //modelBuilder.Entity<TablePartitionProcessed>(entity =>
-                  //{
-                  //    entity.Property(e => e.FileGroupName).IsRequired();
+            //modelBuilder.Entity<TablePartitionProcessed>(entity =>
+            //{
+            //    entity.Property(e => e.FileGroupName).IsRequired();
 
-                  //    entity.Property(e => e.SwapTableName).IsRequired();
+            //    entity.Property(e => e.SwapTableName).IsRequired();
 
-                  //    entity.Property(e => e.TimeIndexdropped).HasColumnType("datetime");
+            //    entity.Property(e => e.TimeIndexdropped).HasColumnType("datetime");
 
-                  //    entity.Property(e => e.TimeSwappedTableDropped).HasColumnType("datetime");
-                  //});
+            //    entity.Property(e => e.TimeSwappedTableDropped).HasColumnType("datetime");
+            //});
 
-                  //modelBuilder.Entity<ToBeProcessededIndex>(entity =>
-                  //{
-                  //    entity.Property(e => e.ClusterText).IsRequired();
+            //modelBuilder.Entity<ToBeProcessededIndex>(entity =>
+            //{
+            //    entity.Property(e => e.ClusterText).IsRequired();
 
-                  //    entity.Property(e => e.IndexName).IsRequired();
+            //    entity.Property(e => e.IndexName).IsRequired();
 
-                  //    entity.Property(e => e.TextForIndex).IsRequired();
-                  //});
+            //    entity.Property(e => e.TextForIndex).IsRequired();
+            //});
 
-                  //modelBuilder.Entity<ToBeProcessededTable>(entity =>
-                  //{
-                  //    entity.Property(e => e.CreateColumns4Table).IsRequired();
+            //modelBuilder.Entity<ToBeProcessededTable>(entity =>
+            //{
+            //    entity.Property(e => e.CreateColumns4Table).IsRequired();
 
-                  //    entity.Property(e => e.DataBaseName).IsRequired();
+            //    entity.Property(e => e.DataBaseName).IsRequired();
 
-                  //    entity.Property(e => e.InsertValues).IsRequired();
+            //    entity.Property(e => e.InsertValues).IsRequired();
 
-                  //    entity.Property(e => e.PartitionedTableName).IsRequired();
+            //    entity.Property(e => e.PartitionedTableName).IsRequired();
 
-                  //    entity.Property(e => e.PreserveDataSelect).IsRequired();
+            //    entity.Property(e => e.PreserveDataSelect).IsRequired();
 
-                  //    entity.Property(e => e.PreserveDataWhere).IsRequired();
+            //    entity.Property(e => e.PreserveDataWhere).IsRequired();
 
-                  //    entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
-                  //});
+            //    entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+            //});
 
-                  //modelBuilder.Entity<VersionAction>(entity =>
-                  //{
-                  //    entity.Property(e => e.Id)
-                  //        .ValueGeneratedNever()
-                  //        .HasColumnName("ID");
-                  //});
+            modelBuilder.Entity<VersionAction>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID");
+            });
 
-                  OnModelCreatingPartial(modelBuilder);
+            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -171,6 +171,21 @@ namespace SignalControllerLoggerTests
             Assert.True(condition);
             Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
         }
+        [Fact]
+        public void DecodeValidFromDAT()
+        {
+            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath, "E~999948.DAT"));
+
+            var memoryStream = fileInfo.ToMemoryStream();
+            memoryStream = _decoder.IsCompressed(memoryStream) ? (MemoryStream)_decoder.Decompress(memoryStream) : memoryStream;
+
+            var expected = "1210";
+            var collection = _decoder.Decode("1210", memoryStream);
+            var condition = collection.Count > 0;
+
+            Assert.True(condition);
+            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+        }
 
         [Fact]
         public void DecodeNotValidFromDatz()
@@ -272,7 +287,7 @@ namespace SignalControllerLoggerTests
         public void ExecuteAsyncValidFromDat(FileInfo fileInfo, string expected)
         {
             var collection = _decoder.ExecuteAsync(fileInfo).Result;
-            var condition = collection.Count > 0;
+            var condition = collection?.Count > 0;
 
             Assert.True(condition);
             Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
