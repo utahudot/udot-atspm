@@ -41,7 +41,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public bool CanExecute(FileInfo parameter)
         {
-            return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ");
+            return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ" || parameter.Extension == ".DAT");
         }
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
@@ -53,10 +53,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         {
             _log.LogDebug("Decoding {FileName}", parameter.FullName);
 
-            Task<HashSet<ControllerEventLog>> result = null;
-
             if (cancelToken.IsCancellationRequested)
-                result = Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
+                return Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
 
             //TODO: integrate CancellationToken
             //TODO: write out detailed logs
@@ -71,15 +69,15 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 //decode stream
                 try
                 {
-                    result = Task.FromResult(Decode(parameter.Directory.Name, memoryStream, progress, cancelToken));
+                    return Task.FromResult(Decode(parameter.Directory.Name, memoryStream, progress, cancelToken));
                 }
                 catch (OperationCanceledException)
                 {
-                    result = Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
+                    return Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
                 }
             }
 
-            return result;
+            return Task.FromResult(new HashSet<ControllerEventLog>());
         }
 
         Task IExecuteAsync.ExecuteAsync(object parameter)

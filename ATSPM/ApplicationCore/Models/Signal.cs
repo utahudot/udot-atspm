@@ -23,6 +23,8 @@ namespace ATSPM.Application.Models
 
         public virtual ControllerType ControllerType { get; set; }
         public virtual Region Region { get; set; }
+        public virtual VersionAction VersionAction { get; set; }
+        public virtual ICollection<Approach> Approaches { get; set; }
 
         public override string ToString()
         {

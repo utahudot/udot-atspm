@@ -62,14 +62,19 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public bool CanExecute(Signal value)
         {
+            //if (!value.Ipaddress.IsValidIPAddress(false))
+            //    _log.LogWarning(new EventId(Convert.ToInt32(value.SignalId)), $"Cant Execute: {value.Ipaddress} - {value.PrimaryName}");
+
             //check valid controller type
-            return ((ControllerType & (SignalControllerType)value.ControllerType.ControllerTypeId) == (SignalControllerType)value.ControllerType.ControllerTypeId)
+            //return ((ControllerType & (SignalControllerType)value.ControllerType.ControllerTypeId) == (SignalControllerType)value.ControllerType.ControllerTypeId)
 
             //check directory
-            && !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
+            //&& !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
+            return !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
 
             //check valid ipaddress
-            && value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
+            //&& value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
+            && value.Ipaddress.IsValidIPAddress(false);
         }
 
         public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default)
@@ -85,9 +90,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             //return directory
             DirectoryInfo dir = null;
 
-            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
+            //_log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
 
-            if (CanExecute(parameter))
+            if (CanExecute(parameter) && parameter.ControllerType.ControllerTypeId != 4)
             {
                 using FtpClient client = new FtpClient(parameter.Ipaddress);
                 {
@@ -105,24 +110,18 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                     try
                     {
-                        await client?.AutoConnectAsync(cancelToken);
+                        var profile = await client?.AutoConnectAsync(cancelToken);
+                        //await client?.ConnectAsync(cancelToken);
+
+                        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
+
 
                         try
                         {
                             if (client.IsConnected && await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory))
                             {
-                                //make sure there are valid files
-                                //var items = await client.GetListingAsync(parameter.ControllerType.Ftpdirectory, cancelToken);
-                                //if (items.Where(i => i.Name.Contains("dat")).Count() > 0)
-                                //{
-                                    //download directory with filter
-                                    var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
-                                    results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
-                                //}
-                                //else
-                                //{
-                                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "No Files", parameter.SignalId));
-                                //}
+                                var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
+                                results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
                             }
                         }
                         catch (Exception e)
@@ -136,18 +135,20 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         }
                     }
                     //catch (FtpAuthenticationException e) when (e.LogE()) { }
-                    catch (FtpAuthenticationException)
-                    {
-                        dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "FtpAuthenticationException", parameter.SignalId));
-                    }
+                    //catch (FtpAuthenticationException e)
+                    //{
+                    //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "FtpAuthenticationException", parameter.SignalId));
+                    //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FtpAuthenticationException");
+                    //}
                     //catch (FtpCommandException e) when (e.LogE()) { }
                     //catch (FtpException e) when (e.LogE()) { }
                     //catch (SocketException e) when (e.LogE()) { }
                     //catch (IOException e) when (e.LogE()) { }
-                    catch (TimeoutException e)
-                    {
-                        _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "TimeoutException");
-                    }
+                    //catch (TimeoutException e)
+                    //{
+                    //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "TimeoutException", e.GetType().ToString(), parameter.SignalId));
+                    //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "TimeoutException");
+                    //}
                     catch (Exception e)
                     {
                         dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
@@ -165,8 +166,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
             else
             {
-                dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", parameter.SignalId));
+                dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
             }
+
+
+            dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "NO IDEA", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
 
             if (dir != null && !dir.Exists)
                 dir.Create();

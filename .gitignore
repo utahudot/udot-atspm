@@ -59,3 +59,13 @@ dkms.conf
 /ATSPM/SignalControllerLogger/bin/Debug/netcoreapp3.1
 /ATSPM/DomainCoreTests/bin/Debug/netcoreapp3.1
 /ATSPM/DomainCoreTests/obj/Debug/netcoreapp3.1
+/ATSPM/SignalControllerLogger/bin/Release/netcoreapp3.1
+/ATSPM/SignalControllerLogger/obj/Release/netcoreapp3.1
+/ATSPM/InfrastructureTexts/bin/Release/netcoreapp3.1
+/ATSPM/InfrastructureTexts/obj/Release/netcoreapp3.1
+/ATSPM/Infrastructure/bin/Release/netcoreapp3.1
+/ATSPM/Infrastructure/obj/Release/netcoreapp3.1
+/ATSPM/DomainCoreTests/bin/Release/netcoreapp3.1
+/ATSPM/DomainCoreTests/obj/Release/netcoreapp3.1
+/ATSPM/ApplicationCore/bin/Release/netcoreapp3.1
+/ATSPM/DomainCore/bin/Release/netcoreapp3.1

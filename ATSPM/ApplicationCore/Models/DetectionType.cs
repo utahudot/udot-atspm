@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class DetectionType
+    public partial class DetectionType : ATSPMModelBase
     {
         public DetectionType()
         {
