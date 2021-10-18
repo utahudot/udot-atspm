@@ -54,7 +54,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         public bool CanExecute(Signal value)
         {
             //check valid controller type
-            return ((int)ControllerType >> value.ControllerType.ControllerTypeId) == 1
+            return ControllerType.HasFlag((SignalControllerType)(1 << value.ControllerType.ControllerTypeId))
 
             //check valid ipaddress
             && value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
@@ -80,35 +80,43 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 //TODO: replace this with options setting
                 using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(1)})
                 {
-                    var builder = new UriBuilder("http", "10.209.2.120", 80, "v1/asclog/xml/full");
+                    var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full");
                     //builder.Query = "since=09-19-2021 23:59:59.9";
-                    builder.Query = $"since={new DateTime(2021, 9, 19).ToString("MM-dd-yyyy")} 00:00:00.0";
+                    builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
 
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
                     _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri}", builder.Uri);
 
-                    var response = await client.GetAsync(builder.Uri);
-
-                    if (response.IsSuccessStatusCode && response?.Content != null)
+                    try
                     {
-                        string data = await response.Content.ReadAsStringAsync();
+                        var response = await client.GetAsync(builder.Uri);
 
-                        XmlDocument xml = new XmlDocument();
-                        xml.LoadXml(data);
-
-                        dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
-                        dir.Create();
-
-                        try
+                        if (response.IsSuccessStatusCode && response?.Content != null)
                         {
-                            xml.Save(Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
+                            string data = await response.Content.ReadAsStringAsync();
 
-                            _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded! {path}", Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
+                            XmlDocument xml = new XmlDocument();
+                            xml.LoadXml(data);
+
+                            dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
+                            dir.Create();
+
+                            try
+                            {
+                                xml.Save(Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
+
+                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded {path}", Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
+                            }
+                            catch (Exception e) when (e.LogE()) { }
                         }
-                        catch (Exception e) when (e.LogE()) { }
+                        else
+                        {
+                            _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Failed {response}", response.StatusCode);
+                        }
                     }
+                    catch (Exception e) when (e.LogE()) { }
                 }
             }
             else

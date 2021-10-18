@@ -17,5 +17,15 @@ namespace ATSPM.Application.Enums
         McCainATCEX = 1 << 7,
         Peek = 1 << 8,
         EOS = 1 << 9
+        //Unknown = 0,
+        //ASC3 = 1,
+        //Cobalt = 2,
+        //ASC32070 = 3,
+        //MaxTime = 4,
+        //Trafficware = 5,
+        //SiemensSEPAC = 6,
+        //McCainATCEX = 7,
+        //Peek = 8,
+        //EOS = 9
     }
 }
