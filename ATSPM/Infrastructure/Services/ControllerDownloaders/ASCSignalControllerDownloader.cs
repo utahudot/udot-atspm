@@ -62,15 +62,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public bool CanExecute(Signal value)
         {
-            //if (!value.Ipaddress.IsValidIPAddress(false))
-            //    _log.LogWarning(new EventId(Convert.ToInt32(value.SignalId)), $"Cant Execute: {value.Ipaddress} - {value.PrimaryName}");
-
             //check valid controller type
-            //return ((ControllerType & (SignalControllerType)value.ControllerType.ControllerTypeId) == (SignalControllerType)value.ControllerType.ControllerTypeId)
+            return ControllerType.HasFlag((SignalControllerType)(1 << value.ControllerType.ControllerTypeId))
 
             //check directory
-            //&& !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
-            return !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
+            && !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
 
             //check valid ipaddress
             //&& value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
