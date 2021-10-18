@@ -49,7 +49,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddDbContext<DbContext,MOEContext>(); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
                     s.AddHostedService<ControllerLoggerBackgroundService>();
-                    //s.AddTransient<ISignalControllerDownloader, ASCSignalControllerDownloader>();
+
+                    s.AddTransient<ISignalControllerDownloader, ASCSignalControllerDownloader>();
                     s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
 
                     s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
@@ -77,7 +78,7 @@ namespace ATSPM.SignalControllerLogger
             //host.RunAsync();
 
 
-            Signal s = new Signal()
+            Signal s1 = new Signal()
             {
                 Ipaddress = "10.209.2.120",
                 Enabled = true,
@@ -87,11 +88,41 @@ namespace ATSPM.SignalControllerLogger
                 ControllerType = new ControllerType() { ControllerTypeId = 4 }
             };
 
-            var d = host.Services.GetService<ISignalControllerDownloader>();
+            Signal s2 = new Signal()
+            {
+                Ipaddress = "10.209.2.108",
+                Enabled = true,
+                PrimaryName = "Cobalt Test",
+                SignalId = "9731",
+                ControllerTypeId = 2,
+                ControllerType = new ControllerType() { ControllerTypeId = 2 }
+            };
 
-            Console.WriteLine($"CanExecute: {d.CanExecute(s)}");
+            var l = new List<Signal>();
+            l.Add(s1);
+            l.Add(s2);
 
-            Task.Run(() => d.ExecuteAsync(s));
+            //var d = host.Services.GetService<ISignalControllerDownloader>();
+
+            //Console.WriteLine($"CanExecute: {d.CanExecute(s1)}");
+
+            //Task.Run(() => d.ExecuteAsync(s1));
+
+            var downloaders = host.Services.GetServices<ISignalControllerDownloader>();
+
+            Console.WriteLine($"Downloader Count: {downloaders.Count()}");
+
+            foreach (Signal s in l)
+            {
+                var downloader = downloaders.FirstOrDefault(d => d.CanExecute(s));
+
+                if (downloader != null)
+                {
+                    Console.WriteLine($"Downloader: {downloader.CanExecute(s)} - {s.PrimaryName} - {downloader.GetType().Name}");
+
+                    Task.Run(() => downloader.ExecuteAsync(s));
+                }
+            }
 
 
             Console.ReadKey();
