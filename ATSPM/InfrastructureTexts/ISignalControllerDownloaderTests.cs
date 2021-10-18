@@ -22,15 +22,15 @@ namespace SignalControllerLoggerTests
 
         private readonly ITestOutputHelper _output;
         private ISignalControllerDownloader _downloader;
-        private ILogger<ASCSignalControllerDownloader> _nullLogger;
+        private ILogger _nullLogger;
         private IOptions<SignalControllerDownloaderConfiguration> _nullOptions;
 
         public ISignalControllerDownloaderTests(ITestOutputHelper output)
         {
             _output = output;
-            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ASCSignalControllerDownloader>();
+            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ControllerDownloaderBase>();
             _nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime() });
-            _downloader = new ASCSignalControllerDownloader(_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
+            _downloader = new ASCSignalControllerDownloader((ILogger<ASCSignalControllerDownloader>)_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
 
             _output.WriteLine($"Created ISignalControllerDownloader Instance: {_downloader.GetHashCode()}");
         }

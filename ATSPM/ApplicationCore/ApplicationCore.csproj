@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Handlers\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Handlers\" />
     <Folder Include="Attributes\" />
   </ItemGroup>
 

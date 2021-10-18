@@ -5,6 +5,7 @@ using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -23,23 +25,14 @@ using System.Xml.Serialization;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class MaxTimeSignalControllerDownloader : ServiceObjectBase, ISignalControllerDownloader
+    public class MaxTimeSignalControllerDownloader : ControllerDownloaderBase
     {
-        public event EventHandler CanExecuteChanged;
 
-        #region Fields
-
-        private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
-
-        #endregion
-
-        public MaxTimeSignalControllerDownloader(ILogger<MaxTimeSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+        public MaxTimeSignalControllerDownloader(ILogger<MaxTimeSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
-        public SignalControllerType ControllerType => SignalControllerType.MaxTime;
+
+        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
 
         #endregion
 
@@ -49,108 +42,66 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         {
         }
 
-        #region IPipelineExecute<Tin, Tout>
-
-        public bool CanExecute(Signal value)
+        protected override async Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
         {
-            //check valid controller type
-            return ControllerType.HasFlag((SignalControllerType)(1 << value.ControllerType.ControllerTypeId))
-
-            //check valid ipaddress
-            && value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
-        }
-
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default)
-        {
-            return await ExecuteAsync(parameter, cancelToken, default);
-        }
-
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default)
-        {
-            //TODO: integrate CancellationToken
-            //TODO: write out detailed logs
-
             //return directory
             DirectoryInfo dir = null;
 
-            //_log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
-
-            if (CanExecute(parameter))
+            //TODO: replace this with options setting
+            using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(1) })
             {
-                //TODO: replace this with options setting
-                using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(1)})
+                var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full");
+                //builder.Query = "since=09-19-2021 23:59:59.9";
+                builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
+
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
+
+                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri}", builder.Uri);
+
+                try
                 {
-                    var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full");
-                    //builder.Query = "since=09-19-2021 23:59:59.9";
-                    builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
+                    var response = await client.GetAsync(builder.Uri);
 
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
-
-                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri}", builder.Uri);
-
-                    try
+                    if (response.IsSuccessStatusCode && response?.Content != null)
                     {
-                        var response = await client.GetAsync(builder.Uri);
+                        string data = await response.Content.ReadAsStringAsync();
 
-                        if (response.IsSuccessStatusCode && response?.Content != null)
+                        XmlDocument xml = new XmlDocument();
+                        xml.LoadXml(data);
+
+                        dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
+                        dir.Create();
+
+                        try
                         {
-                            string data = await response.Content.ReadAsStringAsync();
+                            xml.Save(Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
 
-                            XmlDocument xml = new XmlDocument();
-                            xml.LoadXml(data);
-
-                            dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
-                            dir.Create();
-
-                            try
-                            {
-                                xml.Save(Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
-
-                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded {path}", Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
-                            }
-                            catch (Exception e) when (e.LogE()) { }
+                            _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded {path}", Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
                         }
-                        else
+                        catch (Exception e)
                         {
-                            _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Failed {response}", response.StatusCode);
+                            e.LogE();
+
+                            return await Task.FromException<DirectoryInfo>(e);
                         }
                     }
-                    catch (Exception e) when (e.LogE()) { }
+                    else
+                    {
+                        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Failed {response}", response.StatusCode);
+
+                        return await Task.FromException<DirectoryInfo>(new Exception($"Download Failed {response.StatusCode}"));
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.LogE();
+
+                    return await Task.FromException<DirectoryInfo>(e);
                 }
             }
-            else
-            {
-                dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
-                dir.Create();
-            }
-
-            //if (dir != null && !dir.Exists)
-                //dir.Create();
 
             return dir;
-        }
-
-        #endregion
-
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is Signal p)
-                return Task.Run(() => ExecuteAsync(p, default, default));
-            return default;
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is Signal p)
-                return CanExecute(p);
-            return default;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is Signal p)
-                Task.Run(() => ExecuteAsync(p, default, default));
         }
 
         public override void Dispose()
