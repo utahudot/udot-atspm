@@ -5,6 +5,7 @@ using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using FluentFTP;
 using FluentFTP.Rules;
@@ -23,24 +24,14 @@ using Utah.Gov.Udot.PipelineManager;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class ASCSignalControllerDownloader : ServiceObjectBase, ISignalControllerDownloader
+    public class ASCSignalControllerDownloader : ControllerDownloaderBase
     {
-        public event EventHandler CanExecuteChanged;
 
-        #region Fields
-
-        private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
-
-        #endregion
-
-        public ASCSignalControllerDownloader(ILogger<ASCSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+        public ASCSignalControllerDownloader(ILogger<ASCSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
 
-        public SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS | SignalControllerType.Cobalt;
+        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
 
         #endregion
 
@@ -48,128 +39,82 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public override void Initialize()
         {
-            //using FtpClient client = new FtpClient(s.Ipaddress);
-            //client.Credentials = new NetworkCredential(s.ControllerType.UserName, s.ControllerType.Password);
-            //client.ConnectTimeout = 1000;
-            //client.ReadTimeout = 1000;
-            //if (s.ControllerType.ActiveFtp)
-            //{
-            //    client.DataConnectionType = FtpDataConnectionType.AutoActive;
-            //}
         }
 
-        #region IPipelineExecute<Tin, Tout>
-
-        public bool CanExecute(Signal value)
+        protected override async Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
         {
-            //check valid controller type
-            return ControllerType.HasFlag((SignalControllerType)(1 << value.ControllerType.ControllerTypeId))
-
-            //check directory
-            && !string.IsNullOrEmpty(value.ControllerType.Ftpdirectory)
-
-            //check valid ipaddress
-            //&& value.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify);
-            && value.Ipaddress.IsValidIPAddress(false);
-        }
-
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default)
-        {
-            return await ExecuteAsync(parameter, cancelToken, default);
-        }
-
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default)
-        {
-            //TODO: integrate CancellationToken
-            //TODO: write out detailed logs
-
             //return directory
             DirectoryInfo dir = null;
 
-            //_log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {parameter.ControllerType.Ftpdirectory}");
-
-            if (CanExecute(parameter) && parameter.ControllerType.ControllerTypeId != 4)
+            using FtpClient client = new FtpClient(parameter.Ipaddress);
             {
-                using FtpClient client = new FtpClient(parameter.Ipaddress);
+                client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
+                //TODO: replace this with options setting
+                client.ConnectTimeout = 1000;
+                client.ReadTimeout = 1000;
+                if (parameter.ControllerType.ActiveFtp)
                 {
-                    client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
-                    //TODO: replace this with options setting
-                    client.ConnectTimeout = 1000;
-                    client.ReadTimeout = 1000;
-                    if (parameter.ControllerType.ActiveFtp)
-                    {
-                        client.DataConnectionType = FtpDataConnectionType.AutoActive;
-                    }
+                    client.DataConnectionType = FtpDataConnectionType.AutoActive;
+                }
 
-                    //all results go into this list
-                    List<FtpResult> results = new List<FtpResult>();
+                //all results go into this list
+                List<FtpResult> results = new List<FtpResult>();
+
+                try
+                {
+                    var profile = await client?.AutoConnectAsync(cancelToken);
+                    //await client?.ConnectAsync(cancelToken);
+
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
+
 
                     try
                     {
-                        var profile = await client?.AutoConnectAsync(cancelToken);
-                        //await client?.ConnectAsync(cancelToken);
-
-                        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
-
-
-                        try
+                        if (client.IsConnected && await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory))
                         {
-                            if (client.IsConnected && await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory))
-                            {
-                                var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
-                                results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "EXECUTION ERROR", e.GetType().ToString(), parameter.SignalId));
-                            _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "EXECUTION ERROR");
-                        }
-                        finally
-                        {
-                            dir ??= ProcessResults(results, parameter);
+                            var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
+                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
                         }
                     }
-                    //catch (FtpAuthenticationException e) when (e.LogE()) { }
-                    //catch (FtpAuthenticationException e)
-                    //{
-                    //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "FtpAuthenticationException", parameter.SignalId));
-                    //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FtpAuthenticationException");
-                    //}
-                    //catch (FtpCommandException e) when (e.LogE()) { }
-                    //catch (FtpException e) when (e.LogE()) { }
-                    //catch (SocketException e) when (e.LogE()) { }
-                    //catch (IOException e) when (e.LogE()) { }
-                    //catch (TimeoutException e)
-                    //{
-                    //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "TimeoutException", e.GetType().ToString(), parameter.SignalId));
-                    //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "TimeoutException");
-                    //}
                     catch (Exception e)
                     {
-                        dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
-                        _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "CONNECTION ERROR");
+                        dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "EXECUTION ERROR", e.GetType().ToString(), parameter.SignalId));
+                        _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "EXECUTION ERROR");
                     }
-                    //finally
-                    //{
-                    //    if (client.IsConnected)
-                    //        await client.DisconnectAsync();
-                    //}
-
-                    if (client.IsConnected)
-                        await client.DisconnectAsync();
+                    finally
+                    {
+                        dir ??= ProcessResults(results, parameter);
+                    }
                 }
+                //catch (FtpAuthenticationException e) when (e.LogE()) { }
+                //catch (FtpAuthenticationException e)
+                //{
+                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "FtpAuthenticationException", parameter.SignalId));
+                //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FtpAuthenticationException");
+                //}
+                //catch (FtpCommandException e) when (e.LogE()) { }
+                //catch (FtpException e) when (e.LogE()) { }
+                //catch (SocketException e) when (e.LogE()) { }
+                //catch (IOException e) when (e.LogE()) { }
+                //catch (TimeoutException e)
+                //{
+                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "TimeoutException", e.GetType().ToString(), parameter.SignalId));
+                //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "TimeoutException");
+                //}
+                catch (Exception e)
+                {
+                    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
+                    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "CONNECTION ERROR");
+                }
+                //finally
+                //{
+                //    if (client.IsConnected)
+                //        await client.DisconnectAsync();
+                //}
+
+                if (client.IsConnected)
+                    await client.DisconnectAsync();
             }
-            else
-            {
-                dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
-            }
-
-
-            dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "NO IDEA", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
-
-            if (dir != null && !dir.Exists)
-                dir.Create();
 
             return dir;
         }
@@ -231,28 +176,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
 
             return dir;
-        }
-
-        #endregion
-
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is Signal p)
-                return Task.Run(() => ExecuteAsync(p, default, default));
-            return default;
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is Signal p)
-                return CanExecute(p);
-            return default;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is Signal p)
-                Task.Run(() => ExecuteAsync(p, default, default));
         }
 
         public override void Dispose()
