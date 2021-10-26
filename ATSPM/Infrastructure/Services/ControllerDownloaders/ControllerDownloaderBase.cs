@@ -93,7 +93,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
             else
             {
-                dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
+                //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
 
                 return await Task.FromException<DirectoryInfo>(new ExecuteException());
             }

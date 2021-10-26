@@ -31,7 +31,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         #region Properties
 
-        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
+        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
 
         #endregion
 
