@@ -13,6 +13,10 @@ using Moq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using InfrastructureTests.Attributes;
+using ATSPM.Application.Models;
+using ATSPM.Domain.Exceptions;
+using System.IO;
 
 namespace SignalControllerLoggerTests
 {
@@ -28,69 +32,97 @@ namespace SignalControllerLoggerTests
         public ISignalControllerDownloaderTests(ITestOutputHelper output)
         {
             _output = output;
-            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ControllerDownloaderBase>();
-            _nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime() });
-            _downloader = new ASCSignalControllerDownloader((ILogger<ASCSignalControllerDownloader>)_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
+            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubSignalControllerDownloader>();
+            _nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime(), PingControllerToVerify = false });
+
+
+
+            //var s = new ServiceCollection();
+            //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
+
+
+
+
+
+
+            _downloader = new StubSignalControllerDownloader((ILogger<StubSignalControllerDownloader>)_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
 
             _output.WriteLine($"Created ISignalControllerDownloader Instance: {_downloader.GetHashCode()}");
         }
 
         #region ISignalControllerDownloader
 
-        [Theory]
-        [InlineData(SignalControllerType.Unknown)]
-        [InlineData(SignalControllerType.ASC3)]
-        [InlineData(SignalControllerType.Cobalt)]
-        [InlineData(SignalControllerType.ASC32070)]
-        [InlineData(SignalControllerType.MaxTime)]
-        [InlineData(SignalControllerType.Trafficware)]
-        [InlineData(SignalControllerType.SiemensSEPAC)]
-        [InlineData(SignalControllerType.McCainATCEX)]
-        [InlineData(SignalControllerType.Peek)]
-        [InlineData(SignalControllerType.EOS)]
-        public void SignalControllerTypeValid(SignalControllerType type)
+        [Fact]
+        public void CanExecuteValid()
         {
-            _output.WriteLine($"ControllerType: {_downloader.ControllerType}");
-            _output.WriteLine($"TestType: {type}");
+            Signal signal = new Signal()
+            {
+                ControllerType = new ControllerType() { ControllerTypeId = 4 }
+            };
 
-            var expected = type;
-            var actual = _downloader.ControllerType & type;
+            _output.WriteLine($"ControllerTypeId: {signal.ControllerType.ControllerTypeId}");
 
-            Assert.Equal(expected, actual);
+            var condition = _downloader.CanExecute(signal);
+
+            Assert.True(condition);
         }
-
-        #endregion
-
-        #region IExecuteAsyncWithProgress
-
-        #region IExecuteAsyncWithProgress.CanExecute
 
         [Fact]
-        public async Task CanExecuteSucceedAsync()
+        public void CanExecuteInValid()
         {
-            //arrange
-            var mockResults = new List<FtpResult>() { new FtpResult() { Exception = null, IsDownload = true, IsFailed = false, IsSkipped = false, IsSuccess = true } };
-            var cts = new CancellationTokenSource();
+            Signal signal = new Signal()
+            {
+                ControllerType = new ControllerType() { ControllerTypeId = 2 }
+            };
 
-            var sut = new Mock<IFtpClient>();
-            sut.Setup(s => s.ConnectAsync(It.IsAny<CancellationToken>()));
-            sut.Setup(s => s.DownloadDirectoryAsync(It.IsAny<string>(), It.IsAny<string>(), FtpFolderSyncMode.Update, FtpLocalExists.Skip, FtpVerify.None, null, null, cts.Token).Result).Returns(() => mockResults);
+            _output.WriteLine($"ControllerTypeId: {signal.ControllerType.ControllerTypeId}");
 
-            IFtpClient client = sut.Object;
+            var condition = _downloader.CanExecute(signal);
 
-            //act
-            //await client.ConnectAsync(cts.Token);
-            var results = await client.DownloadDirectoryAsync("C:\\", "C:\\", FtpFolderSyncMode.Update, FtpLocalExists.Skip, FtpVerify.None, null, null, cts.Token);
-
-            //assert
-            Assert.True(results.Count > 0);
+            Assert.False(condition);
         }
 
-        #endregion
+        [Fact]
+        public async void ExecuteAsyncCanExecuteInvalid()
+        {
+            Signal signal = new Signal()
+            {
+                Ipaddress = "10.209.2.108",
+                Enabled = true,
+                PrimaryName = "Cobalt Test",
+                SignalId = "9731",
+                ControllerTypeId = 2,
+                ControllerType = new ControllerType() { ControllerTypeId = 2 }
+            };
 
-        #region IExecuteAsyncWithProgress.ExecuteAsync
+            _output.WriteLine($"Signal: {signal}");
 
-        #endregion
+            await Assert.ThrowsAsync<ExecuteException>(async () => await _downloader.ExecuteAsync(signal));
+        }
+
+        [Fact]
+        public async void ExecuteAsyncIpAddressInvalid()
+        {
+            Signal signal = new Signal()
+            {
+                //Ipaddress = "10.209.2.120",
+                Ipaddress = "hello",
+                Enabled = true,
+                PrimaryName = "Maxtime Test",
+                SignalId = "0",
+                ControllerTypeId = 4,
+                ControllerType = new ControllerType() { ControllerTypeId = 4 }
+            };
+
+            _output.WriteLine($"Signal: {signal}");
+
+            await Assert.ThrowsAsync<FormatException>(async () => await _downloader.ExecuteAsync(signal));
+        }
+
+
+
+
+
 
         #endregion
 
@@ -107,5 +139,7 @@ namespace SignalControllerLoggerTests
             _nullLogger = null;
             _nullOptions = null;
         }
+
+        
     }
 }

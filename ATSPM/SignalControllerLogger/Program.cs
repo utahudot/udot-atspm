@@ -80,8 +80,8 @@ namespace ATSPM.SignalControllerLogger
 
             Signal s1 = new Signal()
             {
-                //Ipaddress = "10.209.2.120",
-                Ipaddress = "hello",
+                Ipaddress = "10.209.2.120",
+                //Ipaddress = "hello",
                 Enabled = true,
                 PrimaryName = "Maxtime Test",
                 SignalId = "0",
@@ -121,7 +121,7 @@ namespace ATSPM.SignalControllerLogger
                 {
                     Console.WriteLine($"Downloader: {downloader.CanExecute(s)} - {s.PrimaryName} - {downloader.GetType().Name}");
 
-                    Task.Run(() => downloader.ExecuteAsync(s)).ContinueWith(t => Console.WriteLine($"task result: {t.Exception}"));
+                    Task.Run(() => downloader.ExecuteAsync(s)).ContinueWith(t => Console.WriteLine($"task result: {t.Exception}-{t.Status}"));
 
                     
                 }
