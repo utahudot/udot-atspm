@@ -14,11 +14,9 @@ namespace SignalControllerLoggerTests.Attributes
         
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat")), "1053(dat)" };
-            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1053(dat)\\ECON_10.204.12.167_2021_08_09_1841.dat")), "1053(dat)" };
-            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ")), "1210(datz)" };
-            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1210(datz)\\ECON_10.204.7.239_2021_08_09_1911.datZ")), "1210(datz)" };
-            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "E~999948.DAT")), "TestData" };
+            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat")), false, true };
+            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ")), true, true };
+            yield return new object[] { new FileInfo(Path.Combine(TestDataPath, "XML\\0_637709235474596368.xml")), false, false };
         }
     }
 }

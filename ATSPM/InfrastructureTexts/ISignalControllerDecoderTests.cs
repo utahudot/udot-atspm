@@ -27,15 +27,15 @@ namespace SignalControllerLoggerTests
 
         private readonly ITestOutputHelper _output;
         private ISignalControllerDecoder _decoder;
-        private ILogger<ASCSignalControllerDecoder> _nullLogger;
+        private ILogger _nullLogger;
         private IOptions<SignalControllerDownloaderConfiguration> _nullOptions;
 
         public ISignalControllerDecoderTests(ITestOutputHelper output)
         {
             _output = output;
-            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ASCSignalControllerDecoder>();
+            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubSignalControllerDecoder>();
             _nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime() });
-            _decoder = new ASCSignalControllerDecoder(_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
+            _decoder = new StubSignalControllerDecoder((ILogger<StubSignalControllerDecoder>)_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
 
             _output.WriteLine($"Created ISignalControllerDecoder Instance: {_decoder.GetHashCode()}");
         }
@@ -45,11 +45,13 @@ namespace SignalControllerLoggerTests
         #region ISignalControllerDecoder.ControllerType
 
         [Fact]
-        public void ControllerTypeNotValid()
+        public void ControllerType()
         {
             var expected = SignalControllerType.Unknown;
+            _output.WriteLine($"Expected: {expected}");
 
             var actual = _decoder.ControllerType;
+            _output.WriteLine($"Actual: {actual}");
 
             Assert.NotEqual(expected, actual);
         }
@@ -58,189 +60,140 @@ namespace SignalControllerLoggerTests
 
         #region ISignalControllerDecoder.IsCompressed
 
-        [Fact]
-        public void IsCompressedTrueFromDatz()
+        [Theory]
+        [EncodedControllerTestFiles]
+        public void IsCompressed(FileInfo fileInfo, bool isCompressed, bool isEncoded)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
+            var expected = isCompressed;
+            _output.WriteLine($"Expected: {expected}");
 
-            var condition = _decoder.IsCompressed(fileInfo.ToMemoryStream());
+            var actual = _decoder.IsCompressed(fileInfo.ToMemoryStream());
+            _output.WriteLine($"Actual: {actual}");
 
-            Assert.True(condition);
-        }
-
-        [Fact]
-        public void IsCompressedFalseFromDat()
-        {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
-
-            var condition = _decoder.IsCompressed(fileInfo.ToMemoryStream());
-
-            Assert.False(condition);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
 
         #region ISignalControllerDecoder.IsEncoded
 
-        [Fact]
-        public void IsEncodedNotEncoded()
+        [Theory]
+        [EncodedControllerTestFiles]
+        public void IsEncoded(FileInfo fileInfo, bool isCompressed, bool isEncoded)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"Hello.csv"));
-            var memoryStream = fileInfo.ToMemoryStream();
+            var expected = isEncoded;
+            _output.WriteLine($"Expected: {expected}");
 
-            var condition = _decoder.IsEncoded(memoryStream);
+            var actual = _decoder.IsEncoded(fileInfo.ToMemoryStream());
+            _output.WriteLine($"Actual: {actual}");
 
-            Assert.False(condition);
-        }
-
-        [Fact]
-        public void IsEncodedIsEncoded()
-        {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
-            var memoryStream = fileInfo.ToMemoryStream();
-
-            var condition = _decoder.IsEncoded(memoryStream);
-
-            Assert.True(condition);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
 
         #region ISignalControllerDecoder.Decompress
 
-        [Fact]
-        public void DecompressValidFromDatz()
+        [Theory]
+        [EncodedControllerTestFiles]
+        public void Decompress(FileInfo fileInfo, bool isCompressed, bool isEncoded)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
-            var memoryStream = fileInfo.ToMemoryStream();
+            if (isCompressed)
+            {
+                var decompressed =_decoder.Decompress(fileInfo.ToMemoryStream());
 
-            var result = _decoder.Decompress(memoryStream);
+                var condition = decompressed.IsCompressed();
+                _output.WriteLine($"Condition: {condition}");
 
-            Assert.NotNull(result);
-        }
-
-        [Fact(Skip = "Method isn't testing if stream is compressed or not")]
-        public void DecompressNotValidFromUncompressedStream()
-        {
-            var expected = new MemoryStream(Encoding.UTF8.GetBytes(string.Join("", Enumerable.Range(1, 500).Select(i => i.ToString()))));
-
-            _output.WriteLine($"expected length: {expected.Length}");
-
-            var actual = _decoder.Decompress(expected);
-
-            _output.WriteLine($"actual length: {actual.Length}");
-
-            Assert.Equal(expected.Length, actual.Length);
-        }
-
-        [Fact]
-        public void DecompressNotValidFromNullStream()
-        {
-            Assert.Throws<ArgumentNullException>(() => _decoder.Decompress(null));
+                Assert.False(condition);
+            }
+            else
+            {
+                Assert.False(isCompressed);
+            }
         }
 
         #endregion
 
         #region ISignalControllerDecoder.Decode
 
-        [Fact]
-        public void DecodeValidFromDat()
+        [Theory]
+        [EncodedControllerTestFiles]
+        public async void DecodeAsync(FileInfo fileInfo, bool isCompressed, bool isEncoded)
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
+            if (_decoder.CanExecute(fileInfo))
+            {
+                var logs = await _decoder.DecodeAsync("0", fileInfo.ToMemoryStream());
 
-            var expected = "1053";
-            var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream());
-            var condition = collection.Count > 0;
+                var condition = logs.Count > 0;
 
-            Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+                Assert.True(condition);
+            }
+            else
+            {
+                Assert.False(true);
+            }
         }
 
         [Fact]
-        public void DecodeValidFromDatz()
-        {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
-
-            var memoryStream = fileInfo.ToMemoryStream();
-            memoryStream = _decoder.IsCompressed(memoryStream) ? (MemoryStream)_decoder.Decompress(memoryStream) : memoryStream;
-
-            var expected = "1210";
-            var collection = _decoder.Decode("1210", memoryStream);
-            var condition = collection.Count > 0;
-
-            Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
-        }
-        [Fact]
-        public void DecodeValidFromDAT()
-        {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath, "E~999948.DAT"));
-
-            var memoryStream = fileInfo.ToMemoryStream();
-            memoryStream = _decoder.IsCompressed(memoryStream) ? (MemoryStream)_decoder.Decompress(memoryStream) : memoryStream;
-
-            var expected = "1210";
-            var collection = _decoder.Decode("1210", memoryStream);
-            var condition = collection.Count > 0;
-
-            Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
-        }
-
-        [Fact]
-        public void DecodeNotValidFromDatz()
-        {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1210(datz)\\ECON_10.204.7.239_2021_08_09_1841.datZ"));
-
-            var memoryStream = fileInfo.ToMemoryStream();
-
-            Assert.Throws<InvalidDataException>(() => _decoder.Decode("1210", memoryStream));
-        }
-
-        [Fact]
-        public void DecodeNotValidFromNullData()
+        public async Task DecodeNotValidFromNullData()
         {
             var memoryStream = new MemoryStream();
 
-            Assert.Throws<InvalidDataException>(() => _decoder.Decode("1210", memoryStream));
+            await Assert.ThrowsAnyAsync<ArgumentNullException>(() => _decoder.DecodeAsync(string.Empty, memoryStream));
         }
 
         [Fact]
-        public void DecodeNotValidFromBadData()
+        public async Task DecodeNotValidFromInvalidData()
         {
-            byte[] badData = Encoding.UTF8.GetBytes(string.Join("", Enumerable.Range(1, 500).Select(i => i.ToString())));
+            var memoryStream = new MemoryStream();
 
-            var memoryStream = new MemoryStream(badData);
-
-            Assert.Throws<InvalidDataException>(() => _decoder.Decode("1210", memoryStream));
+            await Assert.ThrowsAnyAsync<InvalidDataException>(() => _decoder.DecodeAsync("0", memoryStream));
         }
 
         [Fact]
-        public void DecodeWithProgress()
+        public async Task DecodeNotValidFromBadData()
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
+            //byte[] badData = Encoding.UTF8.GetBytes(string.Join(",", Enumerable.Range(1, 100).Select(i => i.ToString())));
+
+            //var memoryStream = new MemoryStream(badData);
+
+            var test = await _decoder.DecodeAsync("0", new MemoryStream());
+
+            _output.WriteLine($"test: {test.Count}");
+
+            //await Assert.ThrowsAnyAsync<InvalidDataException>(() => _decoder.DecodeAsync("0", memoryStream));
+            Assert.True(false);
+        }
+
+        [Fact]
+        public async Task DecodeWithProgress()
+        {
+            //FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath, "1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
 
             int actual = 0;
             var progress = new Progress<int>(i => actual = i);
 
-            var collection = _decoder.Decode("1053", fileInfo.ToMemoryStream(), progress);
+            var collection = await _decoder.DecodeAsync("0", new MemoryStream(), progress);
             var expected = collection.Count;
 
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void DecodeWithTokenCancelled()
+        public async Task DecodeWithTokenCancelled()
         {
-            FileInfo fileInfo = new FileInfo(Path.Combine(TestDataPath,"1053(dat)\\ECON_10.204.12.167_2021_08_09_1831.dat"));
-
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
 
-            Assert.Throws<OperationCanceledException>(() => _decoder.Decode("1053", fileInfo.ToMemoryStream(), null, cts.Token));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => _decoder.DecodeAsync("0", new MemoryStream(), null, cts.Token));
         }
 
         #endregion
+
+        /*
+
+        
 
         #endregion
 
@@ -324,6 +277,8 @@ namespace SignalControllerLoggerTests
         }
 
         #endregion
+
+        */
 
         #endregion
 

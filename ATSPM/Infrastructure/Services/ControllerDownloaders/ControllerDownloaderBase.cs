@@ -35,6 +35,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         #region Properties
+
         public abstract SignalControllerType ControllerType { get; }
 
         #endregion

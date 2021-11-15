@@ -20,6 +20,8 @@ using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Enums;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -53,7 +55,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddTransient<ISignalControllerDownloader, ASCSignalControllerDownloader>();
                     s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
 
-                    s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    //s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
@@ -109,23 +112,66 @@ namespace ATSPM.SignalControllerLogger
 
             //Task.Run(() => d.ExecuteAsync(s1));
 
-            var downloaders = host.Services.GetServices<ISignalControllerDownloader>();
+            //var downloaders = host.Services.GetServices<ISignalControllerDownloader>();
 
-            Console.WriteLine($"Downloader Count: {downloaders.Count()}");
+            //Console.WriteLine($"Downloader Count: {downloaders.Count()}");
 
-            foreach (Signal s in l)
-            {
-                var downloader = downloaders.FirstOrDefault(d => d.CanExecute(s));
+            //foreach (Signal s in l)
+            //{
+            //    var downloader = downloaders.FirstOrDefault(d => d.CanExecute(s));
 
-                if (downloader != null)
+            //    if (downloader != null)
+            //    {
+            //        Console.WriteLine($"Downloader: {downloader.CanExecute(s)} - {s.PrimaryName} - {downloader.GetType().Name}");
+
+            //        Task.Run(() => downloader.ExecuteAsync(s)).ContinueWith(t => Console.WriteLine($"task result: {t.Exception}-{t.Status}"));
+
+
+            //    }
+            //}
+
+
+            var decoder = host.Services.GetService<ISignalControllerDecoder>();
+            var file1 = new FileInfo("C:\\ControlLogs\\0\\0_637709235474596368.xml");
+            var file2 = new FileInfo("C:\\ControlLogs\\9731\\ECON_10.204.12.167_2021_08_09_1831.dat");
+            var file3 = new FileInfo("C:\\ControlLogs\\9731\\ECON_10.204.7.239_2021_08_09_1841.datZ");
+
+            Console.WriteLine($"IsCompressed: {decoder.IsCompressed(file1.ToMemoryStream())}");
+            Console.WriteLine($"IsEncoded: {decoder.IsEncoded(file1.ToMemoryStream())}");
+            Console.WriteLine($"CanExecute: {decoder.CanExecute(file1)}");
+
+            Console.WriteLine($"IsCompressed: {decoder.IsCompressed(file2.ToMemoryStream())}");
+            Console.WriteLine($"IsEncoded: {decoder.IsEncoded(file2.ToMemoryStream())}");
+            Console.WriteLine($"CanExecute: {decoder.CanExecute(file2)}");
+
+            Console.WriteLine($"IsCompressed: {decoder.IsCompressed(file3.ToMemoryStream())}");
+            Console.WriteLine($"IsEncoded: {decoder.IsEncoded(file3.ToMemoryStream())}");
+            Console.WriteLine($"CanExecute: {decoder.CanExecute(file2)}");
+
+            var logs = decoder.ExecuteAsync(file1);
+
+            logs.ContinueWith(t => 
+            { 
+                Console.WriteLine($"ExecuteAsync: {t.Result.Count}");
+                
+                foreach (ControllerEventLog log in t.Result)
                 {
-                    Console.WriteLine($"Downloader: {downloader.CanExecute(s)} - {s.PrimaryName} - {downloader.GetType().Name}");
-
-                    Task.Run(() => downloader.ExecuteAsync(s)).ContinueWith(t => Console.WriteLine($"task result: {t.Exception}-{t.Status}"));
-
-                    
+                    Console.WriteLine($"{log.SignalId} - {log.EventCode} - {log.EventParam} - {log.Timestamp}");
                 }
-            }
+            });
+
+
+
+            //using (FileStream stream = new FileStream("C:\\ControlLogs\\0\\0_637709235474596368.xml", FileMode.Open))
+            //{
+            //    //StepList result = (StepList)serializer.Deserialize(fileStream);
+            //    XDocument xml = XDocument.Load(stream);
+            //    //var test = xml.Descendants("EventResponses");
+            //    foreach (var a in xml.Descendants().Where(d => d.Name == "Event"))
+            //    {
+            //        Console.WriteLine($"stuff: {a.Attribute("Parameter").Value} - {a.Attribute("EventTypeID").Value} - {a.Attribute("TimeStamp").Value}  - {a.Attribute("ID").Value}");
+            //    }
+            //}
 
 
             Console.ReadKey();

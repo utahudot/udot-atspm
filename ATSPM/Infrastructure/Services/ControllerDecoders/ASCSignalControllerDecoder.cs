@@ -20,112 +20,44 @@ using System.Windows.Input;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 {
-    public class ASCSignalControllerDecoder : ServiceObjectBase, ISignalControllerDecoder
+    public class ASCSignalControllerDecoder : ControllerDecoderBase
     {
-        private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
+        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
-        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+        #region Properties
+
+        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
+
+        #endregion
+
+        #region Methods
 
         public override void Initialize()
         {
         }
 
-        #region ISignalControllerDecoder
-
-        public event EventHandler CanExecuteChanged;
-
-        public SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS | SignalControllerType.Cobalt;
-
-        public bool CanExecute(FileInfo parameter)
+        public override bool CanExecute(FileInfo parameter)
         {
             return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ" || parameter.Extension == ".DAT");
         }
 
-        public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
+        public override bool IsCompressed(Stream stream)
         {
-            return ExecuteAsync(parameter, cancelToken);
+            return base.IsCompressed(stream);
         }
 
-        public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
+        public override bool IsEncoded(Stream stream)
         {
-            _log.LogDebug("Decoding {FileName}", parameter.FullName);
-
-            if (cancelToken.IsCancellationRequested)
-                return Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
-
-            //TODO: integrate CancellationToken
-            //TODO: write out detailed logs
-            if (CanExecute(parameter))
-            {
-                //convert file to stream
-                var memoryStream = parameter.ToMemoryStream();
-
-                //check if stream is compressed
-                memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
-
-                //decode stream
-                try
-                {
-                    return Task.FromResult(Decode(parameter.Directory.Name, memoryStream, progress, cancelToken));
-                }
-                catch (OperationCanceledException)
-                {
-                    return Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
-                }
-            }
-
-            return Task.FromResult(new HashSet<ControllerEventLog>());
-        }
-
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is FileInfo p)
-                return Task.Run(() => ExecuteAsync(p, default, default));
-            return default;
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is FileInfo p)
-                return CanExecute(p);
-            return default;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is FileInfo p)
-                Task.Run(() => ExecuteAsync(p, default, default));
-        }
-
-        #endregion
-
-        public bool IsCompressed(Stream stream)
-        {
-            return stream.IsCompressed();
-        }
-
-        public bool IsEncoded(Stream stream)
-        {
-            MemoryStream memoryStream = (MemoryStream)stream;
-            var bytes = memoryStream.ToArray();
-
-            //ASCII doesn't have anything above 0x80
-            return bytes.Any(b => b >= 0x80);
+            return base.IsEncoded(stream);
         }
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
-        public Stream Decompress(Stream stream)
+        public override Stream Decompress(Stream stream)
         {
-            // read past the first two bytes of the zlib header
             stream?.Seek(2, SeekOrigin.Begin);
 
-            // decompress the file
             using (DeflateStream deflateStream = new DeflateStream(stream, CompressionMode.Decompress))
             {
-                // copy decompressed data into return stream
                 MemoryStream returnStream = new MemoryStream();
                 deflateStream.CopyTo(returnStream);
                 returnStream.Position = 0;
@@ -134,10 +66,15 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public HashSet<ControllerEventLog> Decode(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override Task<HashSet<ControllerEventLog>> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            if (cancelToken.IsCancellationRequested)
-                cancelToken.ThrowIfCancellationRequested();
+            cancelToken.ThrowIfCancellationRequested();
+
+            if (string.IsNullOrEmpty(signalId))
+                throw new ArgumentNullException(nameof(signalId));
+
+            if (stream?.Length == 0)
+                throw new InvalidDataException("Stream is empty");
 
             HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
@@ -208,7 +145,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     }
 
                     progress?.Report(logList.Count);
-                    return logList;
+                    return Task.FromResult(logList);
                 }
             }
 
@@ -219,5 +156,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         {
             //throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
