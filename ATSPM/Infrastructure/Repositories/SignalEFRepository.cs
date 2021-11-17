@@ -107,6 +107,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
+            var result = table 
+                .Where(v => v.VersionActionId != 3)
+                .Include(i => i.ControllerType)
+                .AsNoTracking()
+                .AsEnumerable()
+                .GroupBy(r => r.SignalId)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
+
+            return result;
+
             //var activeSignals = _db.Set<Signal>().Where(r => r.VersionActionId != 3)
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionTypes)))
             //    .Include(signal =>
@@ -118,7 +129,7 @@ namespace ATSPM.Infrasturcture.Repositories
             //    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
             //return activeSignals;
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         //public IReadOnlyList<Signal> GetLatestVersionOfAllSignalsForFtp()

@@ -48,16 +48,18 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             DirectoryInfo dir = null;
 
             //TODO: replace this with options setting
-            using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(1) })
+            //using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(5) })
+            using (HttpClient client = new HttpClient())
             {
                 var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full");
                 //builder.Query = "since=09-19-2021 23:59:59.9";
-                builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
+                //builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
+                builder.Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0";
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri}", builder.Uri);
+                _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri} : {controllertype}", builder.Uri, parameter.ControllerType.ControllerTypeId);
 
                 try
                 {
@@ -81,7 +83,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         }
                         catch (Exception e)
                         {
-                            e.LogE();
+                            //e.LogE();
+
+                            _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), "XML error: {error} : {ip}", e.GetType(), parameter.Ipaddress);
 
                             return await Task.FromException<DirectoryInfo>(e);
                         }
@@ -95,7 +99,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 }
                 catch (Exception e)
                 {
-                    e.LogE();
+                    //e.LogE();
+
+                    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), "client error: {error} : {ip}", e.GetType(), parameter.Ipaddress);
 
                     return await Task.FromException<DirectoryInfo>(e);
                 }

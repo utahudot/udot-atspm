@@ -30,28 +30,39 @@ namespace ATSPM.SignalControllerLogger
 
         PipelineManager _pipelineManager;
 
-        private List<Signal> _signalList;
+        private IReadOnlyList<Signal> _signalList;
 
         public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<FileETLSettings> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
+        
+        private ISignalControllerDownloader DownloadSelector(Signal signal)
+        {
+            foreach (ISignalControllerDownloader d in _serviceProvider.GetServices<ISignalControllerDownloader>())
+            {
+                if (d.CanExecute(signal))
+                    return d;
+            }
+
+            return null;
+        }
+        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<DbContext>();
-                _signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
-                //_signalList = db.Set<Signal>().Take(100).Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().Where(i => i.SignalId == "10407").ToList();
-            }
+                //var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+                //_signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
 
-            var downloader = _serviceProvider.GetService<ISignalControllerDownloader>();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals();
+            }
 
             Progress<PipelineProgress> progress = new Progress<PipelineProgress>(p => Console.Write($"{p}"));
 
             _pipelineManager = new PipelineManager(stoppingToken);
 
             //add steps
-            _pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory", downloader, i => true, i => true);
+            _pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory",(i, c) => DownloadSelector(i).ExecuteAsync(i,c), i => true, i => true);
             _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => i.Parent.Name == "ControlLogs", i => i.Count > 0);
             _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true);
             _pipelineManager.AddStep<HashSet<ControllerEventLog>, List<ControllerLogArchive>>("CombineEventLogs", (i, c) => CombineEventLogs(i, c), i => true, i => true);
@@ -190,27 +201,27 @@ namespace ATSPM.SignalControllerLogger
             return result;
         }
 
-        private Task<DirectoryInfo> CleanupDirectories(List<ControllerLogArchive> input, CancellationToken cancellationToken = default)
-        {
-            DirectoryInfo dir = null;
+        //private Task<DirectoryInfo> CleanupDirectories(List<ControllerLogArchive> input, CancellationToken cancellationToken = default)
+        //{
+        //    DirectoryInfo dir = null;
 
-            if (input.Count > 0)
-            {
-                _log.LogWarning($"Directory: {_options.Value.RootPath} - {input.FirstOrDefault().SignalId}");
+        //    if (input.Count > 0)
+        //    {
+        //        _log.LogWarning($"Directory: {_options.Value.RootPath} - {input.FirstOrDefault().SignalId}");
 
-                dir = new DirectoryInfo(Path.Combine(_options.Value.RootPath, input.FirstOrDefault().SignalId));
+        //        dir = new DirectoryInfo(Path.Combine(_options.Value.RootPath, input.FirstOrDefault().SignalId));
 
-                //_log.LogWarning($"Directory: {dir.FullName}");
+        //        //_log.LogWarning($"Directory: {dir.FullName}");
 
-                if (dir.Exists && dir.GetFiles().Count() == 0)
-                {
-                    dir.Delete();
+        //        if (dir.Exists && dir.GetFiles().Count() == 0)
+        //        {
+        //            dir.Delete();
 
-                    //dir.MoveTo(Path.Combine(_options.Value.RootPath, "DELETED", dir.Name));
-                }
-            }
+        //            //dir.MoveTo(Path.Combine(_options.Value.RootPath, "DELETED", dir.Name));
+        //        }
+        //    }
             
-            return Task.FromResult(dir);
-        }
+        //    return Task.FromResult(dir);
+        //}
     }
 }

@@ -68,15 +68,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
             cancelToken.ThrowIfCancellationRequested();
             
-            if (!parameter.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify))
-            //if (!parameter.Ipaddress.IsValidIPAddress(false))
-                return await Task.FromException<DirectoryInfo>(new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}"));
+            
 
             //return directory
             DirectoryInfo dir = null;
 
             if (CanExecute(parameter))
             {
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify))
+                    return await Task.FromException<DirectoryInfo>(new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}"));
+
                 try
                 {
                     dir = await ExecutionTask(parameter, cancelToken, progress);
