@@ -431,7 +431,10 @@ namespace ATSPM.Infrasturcture.Data
                 entity.HasIndex(e => new { e.SignalId, e.ArchiveDate }, "IX_Controller_Log_Archive")
                     .IsUnique();
 
-                entity.Property(e => e.ArchiveDate).HasColumnType("date");
+                entity.Property(e => e.ArchiveDate)
+                .HasColumnType("date")
+                .Metadata.AddAnnotation("KeyNameFormat", "dd-mm-yyyy");
+                
 
                 entity.Property(e => e.SignalId)
                     .IsRequired()
