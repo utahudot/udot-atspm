@@ -52,7 +52,10 @@ namespace ATSPM.SignalControllerLogger
 
                     //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+
+
+                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogParquetRepository>();
 
                     //background services
                     s.AddHostedService<ControllerLoggerBackgroundService>();
@@ -66,7 +69,7 @@ namespace ATSPM.SignalControllerLogger
                     //s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    
+
 
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
@@ -81,7 +84,22 @@ namespace ATSPM.SignalControllerLogger
                 .UseConsoleLifetime()
                 .Build();
 
-            host.RunAsync();
+            //host.RunAsync();
+
+
+            var test = host.Services.GetService<IControllerEventLogRepository>();
+
+            var log = new ControllerLogArchive() { SignalId = "1234", ArchiveDate = DateTime.Now };
+
+            var list = new List<ControllerEventLog>();
+
+            list.Add(new ControllerEventLog() { EventCode = 1, EventParam = 101, SignalId = "1234", Timestamp = DateTime.Now });
+            list.Add(new ControllerEventLog() { EventCode = 2, EventParam = 102, SignalId = "1234", Timestamp = DateTime.Now });
+            list.Add(new ControllerEventLog() { EventCode = 3, EventParam = 103, SignalId = "1234", Timestamp = DateTime.Now });
+
+            log.LogData = list;
+
+            test.Add(log);
 
             Console.ReadKey();
         }

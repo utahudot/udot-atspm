@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATSPM.Application.Models
 {
-    public partial class ControllerEventLog
+    public partial class ControllerEventLog : ATSPMModelBase
     {
         //[Key]
         //[Column("SignalID")]
