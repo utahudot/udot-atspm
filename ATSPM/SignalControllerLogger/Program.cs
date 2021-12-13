@@ -22,6 +22,11 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Enums;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text.Json;
+using System.Text;
+using ATSPM.Application.Specifications;
+using System.Linq.Expressions;
+using ATSPM.Domain.Specifications;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -88,6 +93,7 @@ namespace ATSPM.SignalControllerLogger
 
 
             var test = host.Services.GetService<IControllerEventLogRepository>();
+            var db = host.Services.GetService<DbContext>();
 
             var log = new ControllerLogArchive() { SignalId = "1234", ArchiveDate = DateTime.Now };
 
@@ -101,9 +107,76 @@ namespace ATSPM.SignalControllerLogger
 
             test.Add(log);
 
+
+
+            var specification = new ControllerLogDateRangeSpecification("1234", DateTime.Now.Subtract(TimeSpan.FromHours(24)), DateTime.Now.Subtract(TimeSpan.FromHours(0)));
+
+
+
+            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(Path.Combine("C:", "ControlLogs", $"{log.ArchiveDate.Year}", $"{log.ArchiveDate.Month}", $"{log.ArchiveDate.Day}"));
+
+            if (!dir.Exists)
+                dir.Create();
+
+            var fileQuery = dir.GetFiles("ControllerLogArchive*.json", System.IO.SearchOption.AllDirectories).AsQueryable();
+
+
+
+
+
+            var result1 = fileQuery.GetModelKeys<ControllerLogArchive>(db);
+
+            foreach (ControllerLogArchive item in result1)
+            {
+                Console.WriteLine($"result1: {item}");
+            }
+
+            var result2 = result1.FromSpecification(specification);
+
+            foreach (ControllerLogArchive item in result2)
+            {
+                Console.WriteLine($"result2: {item}");
+            }
+
             Console.ReadKey();
         }
     }
 
-    
+    public static class FileInfoExtensions
+    {
+        public static IQueryable<T> GetModelKeys<T>(this IQueryable<FileInfo> files, DbContext db) where T : ATSPMModelBase
+        {
+            return files.Select(s => s.ToModelKeys<T>(db));
+        }
+
+        public static T ToModelKeys<T>(this FileInfo file, DbContext db) where T : ATSPMModelBase
+        {
+            var split = file.Name.Substring(0, file.Name.IndexOf(".")).Split("_").ToList();
+
+            if (split[0] == typeof(T).Name)
+            {
+                split.RemoveAt(0);
+
+                var model = Activator.CreateInstance(typeof(T));
+
+                var keys = db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.Name).Zip(split).ToDictionary(d => d.First, d => d.Second);
+
+                foreach (var t in model.GetType().GetProperties().Where(p => keys.Keys.Contains(p.Name)))
+                {
+                    if (t.PropertyType == typeof(DateTime))
+                    {
+                        t.SetValue(model, DateTime.ParseExact(keys[t.Name], "dd-MM-yyyy", null));
+                    }
+                    else
+                    {
+                        t.SetValue(model, Convert.ChangeType(keys[t.Name], t.PropertyType));
+                    }
+                }
+
+                return (T)model;
+            }
+
+            return null;
+        }
+    }
 }
