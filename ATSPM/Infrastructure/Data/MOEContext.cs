@@ -433,7 +433,7 @@ namespace ATSPM.Infrasturcture.Data
 
                 entity.Property(e => e.ArchiveDate)
                 .HasColumnType("date")
-                .Metadata.AddAnnotation("KeyNameFormat", "dd-mm-yyyy");
+                .Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
                 
 
                 entity.Property(e => e.SignalId)

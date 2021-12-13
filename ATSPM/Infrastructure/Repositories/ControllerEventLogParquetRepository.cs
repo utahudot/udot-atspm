@@ -12,12 +12,23 @@ using System.Linq;
 using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
+using System.IO;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
     public class ControllerEventLogParquetRepository : ATSPMRepositoryParquetBase<ControllerLogArchive>, IControllerEventLogRepository
     {
         public ControllerEventLogParquetRepository(DbContext db, ILogger<ControllerEventLogParquetRepository> log) : base(db, log) { }
+
+        protected override string GenerateFileName(ControllerLogArchive item)
+        {
+            var folder = new DirectoryInfo(Path.Combine("C:", "ControlLogs", $"{item.ArchiveDate.Year}", $"{item.ArchiveDate.Month}", $"{item.ArchiveDate.Day}"));
+
+            if (!folder.Exists)
+                folder.Create();
+
+            return Path.Combine(folder.FullName, $"{_db.CreateKeyValueName(item)}.json");
+        }
 
         private IQueryable<ControllerEventLog> GetFromDateRange(string signalId, DateTime startTime, DateTime endTime)
         {
@@ -343,5 +354,7 @@ namespace ATSPM.Infrasturcture.Repositories
             //var emptyEvents = new List<ControllerEventLog>();
             //return emptyEvents;
         }
+
+        
     }
 }
