@@ -22,7 +22,7 @@ namespace ATSPM.Infrasturcture.Repositories
     {
         public static string CreateKeyValueName(this DbContext db, ATSPMModelBase item)
         {
-            return string.Join("_", db.Model.FindEntityType(item.GetType()).FindPrimaryKey().Properties.Select(p => String.Format(p.FindAnnotation("KeyNameFormat")?.Value.ToString() ?? "{0}", p.PropertyInfo.GetValue(item, null))));
+            return item.GetType().Name + "_" + string.Join("_", db.Model.FindEntityType(item.GetType()).FindPrimaryKey().Properties.Select(p => String.Format(p.FindAnnotation("KeyNameFormat") != null ? "{0:" + p.FindAnnotation("KeyNameFormat")?.Value.ToString() + "}" : "{0}", p.PropertyInfo.GetValue(item, null))));
         }
     }
 
@@ -41,13 +41,15 @@ namespace ATSPM.Infrasturcture.Repositories
 
         protected virtual byte[] SerializeFile(T item)
         {
-            return JsonSerializer.Serialize(item).GZipCompressToByte();
+            //return JsonSerializer.Serialize(item).GZipCompressToByte();
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(item));
         }
 
-        //protected virtual T DeserializeFile(Stream stream)
-        //{
-        //    return stream.DeserializeObjectFromStream<T>();
-        //}
+        protected virtual T DeserializeFile(byte[] data)
+        {
+            //return JsonSerializer.Deserialize<T>(stream.GZipDecompressToString(), null);
+            return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(data), null);
+        }
 
         #endregion
 
@@ -87,6 +89,8 @@ namespace ATSPM.Infrasturcture.Repositories
         public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
         {
             DirectoryInfo dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs"));
+
+            IEnumerable<FileInfo> fileList = dir.GetFiles("*.*", SearchOption.AllDirectories);
 
             //return table.Where(criteria).ToList();
 
