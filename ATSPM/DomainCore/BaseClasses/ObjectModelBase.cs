@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace ATSPM.Domain.BaseClasses
 {
@@ -105,7 +106,7 @@ namespace ATSPM.Domain.BaseClasses
 
         #region INotifyDataErrorInfo
 
-        //[Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool HasErrors => _errors.Keys.Count > 0;
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
@@ -162,7 +163,7 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IRevertibleChangeTracking
 
-        //[Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public bool IsChanged => changes.Keys.Count > 0;
 
         public void AcceptChanges()

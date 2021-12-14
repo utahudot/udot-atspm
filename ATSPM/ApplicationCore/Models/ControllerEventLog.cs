@@ -7,13 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATSPM.Application.Models
 {
-    public partial class ControllerEventLog : ATSPMModelBase
+    public partial class ControllerEventLog
     {
-        //[Key]
-        //[Column("SignalID")]
         public string SignalId { get; set; }
-        //[Key]
-        //[Column("ArchiveDate")]
         public DateTime Timestamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
