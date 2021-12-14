@@ -30,9 +30,27 @@ namespace ATSPM.Infrasturcture.Repositories
             return Path.Combine(folder.FullName, $"{_db.CreateKeyValueName(item)}.json");
         }
 
+        private IQueryable<ControllerLogArchive> GetFromDirectoriesByDateRange(IEnumerable<DateTime> range)
+        {
+            var items = new List<ControllerLogArchive>();
+
+            foreach (DateTime d in range)
+            {
+                var folder = new DirectoryInfo(Path.Combine("C:", "ControlLogs", $"{d.Year}", $"{d.Month}", $"{d.Day}"));
+
+                var fileQuery = folder.GetFiles($"ControllerLogArchive*{d:dd-MM-yyyy}*.json", System.IO.SearchOption.AllDirectories).AsQueryable();
+
+                items.AddRange(fileQuery.Select(s => File.ReadAllBytes(s.FullName).ToJson<ControllerLogArchive>()).ToList());
+            }
+
+            return items.AsQueryable();
+        }
+
         private IQueryable<ControllerEventLog> GetFromDateRange(string signalId, DateTime startTime, DateTime endTime)
         {
-            var result = table
+            var range = Enumerable.Range(0, 1 + endTime.Subtract(startTime).Days).Select(o => startTime.AddDays(o)).ToList();
+
+            var result = GetFromDirectoriesByDateRange(range)
                 .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()

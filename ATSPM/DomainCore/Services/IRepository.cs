@@ -16,11 +16,11 @@ namespace ATSPM.Domain.Services
 
         void Add(T item);
 
-        void AddRange(IReadOnlyList<T> items);
+        void AddRange(IEnumerable<T> items);
 
         void Remove(T item);
 
-        void RemoveRange(IReadOnlyList<T> items);
+        void RemoveRange(IEnumerable<T> items);
     }
 
     public interface IAsyncRepository<T> : IRepository<T>
@@ -33,10 +33,10 @@ namespace ATSPM.Domain.Services
 
         Task AddAsync(T item);
 
-        Task AddRangeAsync(IReadOnlyList<T> items);
+        Task AddRangeAsync(IEnumerable<T> items);
 
         Task RemoveAsync(T item);
 
-        Task RemoveRangeAsync(IReadOnlyList<T> items);
+        Task RemoveRangeAsync(IEnumerable<T> items);
     }
 }

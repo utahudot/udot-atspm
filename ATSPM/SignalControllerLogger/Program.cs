@@ -92,53 +92,42 @@ namespace ATSPM.SignalControllerLogger
             //host.RunAsync();
 
 
-            var test = host.Services.GetService<IControllerEventLogRepository>();
-            var db = host.Services.GetService<DbContext>();
+            var repo = host.Services.GetService<IControllerEventLogRepository>();
 
-            var log = new ControllerLogArchive() { SignalId = "1234", ArchiveDate = DateTime.Now };
+            var start = DateTime.Now.Subtract(TimeSpan.FromDays(5));
+            var end = DateTime.Now.Subtract(TimeSpan.FromDays(1));
 
-            var list = new List<ControllerEventLog>();
+            var events = repo.GetEventsBetweenDates(start, end);
 
-            list.Add(new ControllerEventLog() { EventCode = 1, EventParam = 101, SignalId = "1234", Timestamp = DateTime.Now });
-            list.Add(new ControllerEventLog() { EventCode = 2, EventParam = 102, SignalId = "1234", Timestamp = DateTime.Now });
-            list.Add(new ControllerEventLog() { EventCode = 3, EventParam = 103, SignalId = "1234", Timestamp = DateTime.Now });
-
-            log.LogData = list;
-
-            test.Add(log);
-
-
-
-            var specification = new ControllerLogDateRangeSpecification("1234", DateTime.Now.Subtract(TimeSpan.FromHours(24)), DateTime.Now.Subtract(TimeSpan.FromHours(0)));
-
-
-
-            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(Path.Combine("C:", "ControlLogs", $"{log.ArchiveDate.Year}", $"{log.ArchiveDate.Month}", $"{log.ArchiveDate.Day}"));
-
-            if (!dir.Exists)
-                dir.Create();
-
-            var fileQuery = dir.GetFiles("ControllerLogArchive*.json", System.IO.SearchOption.AllDirectories).AsQueryable();
-
-
-
-
-
-            var result1 = fileQuery.GetModelKeys<ControllerLogArchive>(db);
-
-            foreach (ControllerLogArchive item in result1)
+            foreach (var e in events)
             {
-                Console.WriteLine($"result1: {item}");
-            }
-
-            var result2 = result1.FromSpecification(specification);
-
-            foreach (ControllerLogArchive item in result2)
-            {
-                Console.WriteLine($"result2: {item}");
+                Console.WriteLine($"event: {e}");
             }
 
             Console.ReadKey();
+        }
+
+        public static IList<ControllerLogArchive> GenerateLogArchives()
+        {
+            List<ControllerLogArchive> archives = new List<ControllerLogArchive>();
+            var random = new Random();
+
+            foreach (int i in Enumerable.Range(1, 100))
+            {
+                var archive = new ControllerLogArchive() { SignalId = $"{1000 + i}", ArchiveDate = DateTime.Now.Subtract(TimeSpan.FromDays(random.Next(1, 10))) };
+                var list = new List<ControllerEventLog>();
+
+                list.Add(new ControllerEventLog() { EventCode = random.Next(1,50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
+                list.Add(new ControllerEventLog() { EventCode = random.Next(1, 50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
+                list.Add(new ControllerEventLog() { EventCode = random.Next(1, 50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
+
+                archive.LogData = list;
+
+                archives.Add(archive);
+            }
+
+            return archives;
+            
         }
     }
 
