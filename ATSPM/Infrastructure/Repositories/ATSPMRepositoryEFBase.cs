@@ -37,13 +37,13 @@ namespace ATSPM.Infrasturcture.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public void AddRange(IReadOnlyList<T> items)
+        public void AddRange(IEnumerable<T> items)
         {
             table.AddRange(items);
             _db.SaveChanges();
         }
 
-        public async Task AddRangeAsync(IReadOnlyList<T> items)
+        public async Task AddRangeAsync(IEnumerable<T> items)
         {
             await table.AddRangeAsync(items).ConfigureAwait(false);
             await _db.SaveChangesAsync().ConfigureAwait(false);
@@ -91,13 +91,13 @@ namespace ATSPM.Infrasturcture.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public void RemoveRange(IReadOnlyList<T> items)
+        public void RemoveRange(IEnumerable<T> items)
         {
             table.RemoveRange(items);
             _db.SaveChanges();
         }
 
-        public async Task RemoveRangeAsync(IReadOnlyList<T> items)
+        public async Task RemoveRangeAsync(IEnumerable<T> items)
         {
             table.RemoveRange(items);
             await _db.SaveChangesAsync().ConfigureAwait(false);

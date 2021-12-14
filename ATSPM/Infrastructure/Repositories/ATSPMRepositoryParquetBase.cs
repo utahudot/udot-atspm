@@ -48,7 +48,7 @@ namespace ATSPM.Infrasturcture.Repositories
         protected virtual T DeserializeFile(byte[] data)
         {
             //return JsonSerializer.Deserialize<T>(stream.GZipDecompressToString(), null);
-            return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(data), null);
+            return data.ToJson<T>();
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace ATSPM.Infrasturcture.Repositories
             await File.WriteAllBytesAsync(GenerateFileName(item), SerializeFile(item));
         }
 
-        public void AddRange(IReadOnlyList<T> items)
+        public void AddRange(IEnumerable<T> items)
         {
             foreach (T item in items)
             {
@@ -78,7 +78,7 @@ namespace ATSPM.Infrasturcture.Repositories
             }
         }
 
-        public async Task AddRangeAsync(IReadOnlyList<T> items)
+        public async Task AddRangeAsync(IEnumerable<T> items)
         {
             foreach (T item in items)
             {
@@ -148,7 +148,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public void RemoveRange(IReadOnlyList<T> items)
+        public void RemoveRange(IEnumerable<T> items)
         {
             //table.RemoveRange(items);
             //_db.SaveChanges();
@@ -156,7 +156,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task RemoveRangeAsync(IReadOnlyList<T> items)
+        public async Task RemoveRangeAsync(IEnumerable<T> items)
         {
             //table.RemoveRange(items);
             //await _db.SaveChangesAsync().ConfigureAwait(false);
