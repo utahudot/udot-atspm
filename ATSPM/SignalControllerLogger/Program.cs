@@ -27,6 +27,8 @@ using System.Text;
 using ATSPM.Application.Specifications;
 using System.Linq.Expressions;
 using ATSPM.Domain.Specifications;
+using ATSPM.Domain.Common;
+using ATSPM.Application.Converters;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -56,11 +58,15 @@ namespace ATSPM.SignalControllerLogger
                     s.AddDbContext<DbContext,MOEContext>(); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
                     //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
+                    //s.AddScoped<ISignalRepository, SignalEFRepository>();
                     //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
 
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogParquetRepository>();
+                    s.AddSingleton<IFileTranscoder, JsonFileTranscoder>();
+
+
+                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    s.AddScoped<ISignalRepository, SignalFileRepository>();
 
                     //background services
                     s.AddHostedService<ControllerLoggerBackgroundService>();
@@ -78,9 +84,10 @@ namespace ATSPM.SignalControllerLogger
 
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
-                    s.Configure<FileETLSettings>(h.Configuration.GetSection("FileETLSettings"));
-                    //s.Configure<ControllerFTPSettings>(h.Configuration.GetSection("ControllerFTPSettings"));
+                    //s.Configure<FileETLSettings>(h.Configuration.GetSection("FileETLSettings"));
+                    s.Configure<ControllerFTPSettings>(h.Configuration.GetSection("ControllerFTPSettings"));
                     s.Configure<SignalControllerDownloaderConfiguration>(h.Configuration.GetSection("SignalControllerDownloaderConfiguration"));
+                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
                 .ConfigureLogging(c =>
                 {
@@ -96,32 +103,9 @@ namespace ATSPM.SignalControllerLogger
             var repo = host.Services.GetService<IControllerEventLogRepository>();
 
             var archives = GenerateLogArchives();
+
             repo.AddRange(archives);
 
-            var start = DateTime.Now.Subtract(TimeSpan.FromDays(5));
-            var end = DateTime.Now.Subtract(TimeSpan.FromDays(1));
-
-            var events = repo.GetEventsBetweenDates(start, end);
-
-            //foreach (var e in events)
-            //{
-            //    Console.WriteLine($"event: {e}");
-            //}
-
-            Console.WriteLine($"Lookup: {repo.Lookup(archives[0])}");
-
-            Task.Run(() => repo.LookupAsync(archives[0]).ContinueWith(t => Console.WriteLine($"LookupAsync: {t.Result}")));
-
-            //Console.WriteLine($"found: {events.Count}/{archives.Count}");
-
-            //Console.WriteLine($"GetList: {repo.GetList(c => c.SignalId == archives[0].SignalId).Count}");
-
-            //var test = Task.Run(() => repo.GetListAsync(c => c.SignalId == archives[0].SignalId).ContinueWith(t => Console.WriteLine($"GetList: {t.Result.Count}")));
-
-            //repo.Remove(archives[0]);
-            //repo.RemoveRange(repo.GetList(c => true));
-
-            //Console.WriteLine($"GetListAsync: {repo.GetListAsync(c => c.SignalId == archives[0].SignalId).ContinueWith(t => t.Result.Count)}");
 
             Console.ReadKey();
         }

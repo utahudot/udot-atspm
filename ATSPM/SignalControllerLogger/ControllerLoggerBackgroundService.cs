@@ -26,13 +26,13 @@ namespace ATSPM.SignalControllerLogger
     {
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<FileETLSettings> _options;
+        protected readonly IOptions<ControllerFTPSettings> _options;
 
         PipelineManager _pipelineManager;
 
         private IReadOnlyList<Signal> _signalList;
 
-        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<FileETLSettings> options) =>
+        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<ControllerFTPSettings> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         
