@@ -91,18 +91,37 @@ namespace ATSPM.SignalControllerLogger
 
             //host.RunAsync();
 
+            
 
             var repo = host.Services.GetService<IControllerEventLogRepository>();
+
+            var archives = GenerateLogArchives();
+            repo.AddRange(archives);
 
             var start = DateTime.Now.Subtract(TimeSpan.FromDays(5));
             var end = DateTime.Now.Subtract(TimeSpan.FromDays(1));
 
             var events = repo.GetEventsBetweenDates(start, end);
 
-            foreach (var e in events)
-            {
-                Console.WriteLine($"event: {e}");
-            }
+            //foreach (var e in events)
+            //{
+            //    Console.WriteLine($"event: {e}");
+            //}
+
+            Console.WriteLine($"Lookup: {repo.Lookup(archives[0])}");
+
+            Task.Run(() => repo.LookupAsync(archives[0]).ContinueWith(t => Console.WriteLine($"LookupAsync: {t.Result}")));
+
+            //Console.WriteLine($"found: {events.Count}/{archives.Count}");
+
+            //Console.WriteLine($"GetList: {repo.GetList(c => c.SignalId == archives[0].SignalId).Count}");
+
+            //var test = Task.Run(() => repo.GetListAsync(c => c.SignalId == archives[0].SignalId).ContinueWith(t => Console.WriteLine($"GetList: {t.Result.Count}")));
+
+            //repo.Remove(archives[0]);
+            //repo.RemoveRange(repo.GetList(c => true));
+
+            //Console.WriteLine($"GetListAsync: {repo.GetListAsync(c => c.SignalId == archives[0].SignalId).ContinueWith(t => t.Result.Count)}");
 
             Console.ReadKey();
         }
