@@ -8,7 +8,7 @@ namespace ATSPM.Domain.Extensions
 {
     public static class JsonExtensions
     {
-        public static T ToJson<T>(this byte[] bytes) where T : class
+        public static T FromEncodedJson<T>(this byte[] bytes) where T : class
         {
             return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes), null);
         }

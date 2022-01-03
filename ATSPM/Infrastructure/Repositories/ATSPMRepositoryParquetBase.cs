@@ -34,10 +34,11 @@ namespace ATSPM.Infrasturcture.Repositories
 
         #region ClassSpecific
 
-        protected virtual string GenerateFileName(T item)
-        {
-            return Path.Combine("C:", "ControlLogs", $"{_db.CreateKeyValueName(item)}.txt");
-        }
+        protected virtual string FileExtension { get; set; } = ".json";
+
+        protected abstract string GenerateFileName(T item);
+
+        protected abstract string GenerateFilePath(T item);
 
         protected virtual byte[] SerializeFile(T item)
         {
@@ -48,7 +49,7 @@ namespace ATSPM.Infrasturcture.Repositories
         protected virtual T DeserializeFile(byte[] data)
         {
             //return JsonSerializer.Deserialize<T>(stream.GZipDecompressToString(), null);
-            return data.ToJson<T>();
+            return data.FromEncodedJson<T>();
         }
 
         #endregion
@@ -62,12 +63,12 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public void Add(T item)
         {
-            File.WriteAllBytes(GenerateFileName(item), SerializeFile(item));
+            File.WriteAllBytes(Path.Combine(GenerateFilePath(item), GenerateFileName(item)), SerializeFile(item));
         }
 
         public async Task AddAsync(T item)
         {
-            await File.WriteAllBytesAsync(GenerateFileName(item), SerializeFile(item));
+            await File.WriteAllBytesAsync(Path.Combine(GenerateFilePath(item), GenerateFileName(item)), SerializeFile(item));
         }
 
         public void AddRange(IEnumerable<T> items)
@@ -88,80 +89,82 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
         {
-            DirectoryInfo dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs"));
+            var dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs", typeof(T).Name));
 
-            IEnumerable<FileInfo> fileList = dir.GetFiles("*.*", SearchOption.AllDirectories);
-
-            //return table.Where(criteria).ToList();
-
-            throw new NotImplementedException();
+            return dir.GetFiles("*.*", SearchOption.AllDirectories).Select(s => DeserializeFile(File.ReadAllBytes(s.FullName))).AsQueryable().Where(criteria).ToList();
         }
 
         public IReadOnlyList<T> GetList(ISpecification<T> criteria)
         {
-            //return table.Where(criteria.Criteria).ToList();
+            var dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs", typeof(T).Name));
 
-            throw new NotImplementedException();
+            return dir.GetFiles("*.*", SearchOption.AllDirectories).Select(s => DeserializeFile(File.ReadAllBytes(s.FullName))).AsQueryable().Where(criteria.Criteria).ToList();
         }
 
         public async Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>> criteria)
         {
-            //return await table.Where(criteria).ToListAsync();
+            var dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs", typeof(T).Name));
 
-            throw new NotImplementedException();
+            return (await Task.WhenAll(dir.GetFiles("*.*", SearchOption.AllDirectories).Select(async s => DeserializeFile(await File.ReadAllBytesAsync(s.FullName))))).AsQueryable().Where(criteria).ToList();
         }
 
         public async Task<IReadOnlyList<T>> GetListAsync(ISpecification<T> criteria)
         {
-            //return await table.Where(criteria.Criteria.Compile()).AsQueryable().ToListAsync().ConfigureAwait(false);
+            var dir = new DirectoryInfo(Path.Combine("C:", "ControlLogs", typeof(T).Name));
 
-            throw new NotImplementedException();
+            return (await Task.WhenAll(dir.GetFiles("*.*", SearchOption.AllDirectories).Select(async s => DeserializeFile(await File.ReadAllBytesAsync(s.FullName))))).AsQueryable().Where(criteria.Criteria).ToList();
         }
 
         public T Lookup(T item)
         {
-            //return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+            var file = new FileInfo(Path.Combine(GenerateFilePath(item), GenerateFileName(item)));
 
-            throw new NotImplementedException();
+            if (file.Exists)
+            {
+                return DeserializeFile(File.ReadAllBytes(file.FullName));
+            }
+
+            return null;
         }
 
         public async Task<T> LookupAsync(T item)
         {
-            //return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+            var file = new FileInfo(Path.Combine(GenerateFilePath(item), GenerateFileName(item)));
 
-            throw new NotImplementedException();
+            if (file.Exists)
+            {
+                return DeserializeFile(await File.ReadAllBytesAsync(file.FullName));
+            }
+
+            return null;
         }
 
         public void Remove(T item)
         {
-            //table.Remove(item);
-            //_db.SaveChanges();
+            var file = new FileInfo(Path.Combine(GenerateFilePath(item), GenerateFileName(item)));
 
-            throw new NotImplementedException();
+            if (file.Exists)
+            {
+                file.Delete();
+            }
         }
 
         public async Task RemoveAsync(T item)
         {
-            //table.Remove(item);
-            //await _db.SaveChangesAsync().ConfigureAwait(false);
-
-            throw new NotImplementedException();
+            await Task.Run(() => Remove(item));
         }
 
         public void RemoveRange(IEnumerable<T> items)
         {
-            //table.RemoveRange(items);
-            //_db.SaveChanges();
-
-            throw new NotImplementedException();
+            foreach (var item in items)
+            {
+                Remove(item);
+            }
         }
 
         public async Task RemoveRangeAsync(IEnumerable<T> items)
         {
-            //table.RemoveRange(items);
-            //await _db.SaveChangesAsync().ConfigureAwait(false);
-
-            throw new NotImplementedException();
+            await Task.Run(() => RemoveRange(items));
         }
     }
 }
