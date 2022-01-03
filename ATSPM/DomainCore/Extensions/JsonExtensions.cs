@@ -12,5 +12,10 @@ namespace ATSPM.Domain.Extensions
         {
             return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes), null);
         }
+
+        public static byte[] ToEncodedJson<T>(this T item) where T : class
+        {
+            return Encoding.UTF8.GetBytes(JsonSerializer.Serialize(item));
+        }
     }
 }

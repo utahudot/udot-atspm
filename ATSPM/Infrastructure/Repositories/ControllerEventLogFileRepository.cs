@@ -13,16 +13,18 @@ using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
 using System.IO;
+using Microsoft.Extensions.Options;
+using ATSPM.Application.Configuration;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
-    public class ControllerEventLogParquetRepository : ATSPMRepositoryParquetBase<ControllerLogArchive>, IControllerEventLogRepository
+    public class ControllerEventLogFileRepository : ATSPMFileRepositoryBase<ControllerLogArchive>, IControllerEventLogRepository
     {
-        public ControllerEventLogParquetRepository(DbContext db, ILogger<ControllerEventLogParquetRepository> log) : base(db, log) { }
+        public ControllerEventLogFileRepository(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<ControllerLogArchive>> log) : base(fileTranscoder, options, log) { }
 
         protected string GenerateFolderStructure(DateTime date)
         {
-            var folder = new DirectoryInfo(Path.Combine("C:", "ControlLogs", typeof(ControllerLogArchive).Name, $"{date.Year}", $"{date.Month}", $"{date.Day}"));
+            var folder = new DirectoryInfo(Path.Combine(_options.Value.RootPath, typeof(ControllerLogArchive).Name, $"{date.Year}", $"{date.Month}", $"{date.Day}"));
 
             //if (!folder.Exists)
             //    folder.Create();
@@ -36,7 +38,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
             //return _db.CreateKeyValueName(item);
 
-            return $"{item.GetType().Name}_{item.SignalId}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{FileExtension}";
+            return $"{item.GetType().Name}_{item.SignalId}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
         }
 
         protected override string GenerateFilePath(ControllerLogArchive item)
@@ -57,9 +59,9 @@ namespace ATSPM.Infrasturcture.Repositories
             {
                 var folder = new DirectoryInfo(GenerateFolderStructure(d));
 
-                var fileQuery = folder.GetFiles($"{typeof(ControllerLogArchive).Name}*{d:dd-MM-yyyy}*{FileExtension}", SearchOption.AllDirectories).AsQueryable();
+                var fileQuery = folder.GetFiles($"{typeof(ControllerLogArchive).Name}*{d:dd-MM-yyyy}*{_fileTranscoder.FileExtension}", SearchOption.AllDirectories).AsQueryable();
 
-                items.AddRange(fileQuery.Select(s => DeserializeFile(File.ReadAllBytes(s.FullName))).ToList());
+                items.AddRange(fileQuery.Select(s => _fileTranscoder.DecodeItem<ControllerLogArchive>(File.ReadAllBytes(s.FullName))).ToList());
             }
 
             return items.AsQueryable();
@@ -116,13 +118,15 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public int GetApproachEventsCountBetweenDates(int approachId, DateTime startTime, DateTime endTime, int phaseNumber)
         {
-            var approachCodes = new List<int> { 1, 8, 10 };
+            //var approachCodes = new List<int> { 1, 8, 10 };
 
-            //HACK: this should come from IServiceLocator
-            IApproachRepository ar = new ApproachEFRepository(_db, (ILogger<ApproachEFRepository>)_log);
-            Approach approach = ar.Lookup(new Approach() { ApproachId = approachId });
+            ////HACK: this should come from IServiceLocator
+            //IApproachRepository ar = new ApproachEFRepository(_db, (ILogger<ApproachEFRepository>)_log);
+            //Approach approach = ar.Lookup(new Approach() { ApproachId = approachId });
 
-            return GetEventsByEventCodesParam(approach.SignalId, startTime, endTime, approachCodes, phaseNumber).Count;
+            //return GetEventsByEventCodesParam(approach.SignalId, startTime, endTime, approachCodes, phaseNumber).Count;
+
+            throw new NotImplementedException();
         }
 
         public int GetDetectorActivationCount(string signalId, DateTime startTime, DateTime endTime, int detectorChannel)

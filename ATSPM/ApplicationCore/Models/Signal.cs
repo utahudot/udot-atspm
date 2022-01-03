@@ -28,7 +28,7 @@ namespace ATSPM.Application.Models
 
         public override string ToString()
         {
-            return $"{SignalId} - {PrimaryName} - {SecondaryName}";
+            return $"{SignalId}";
         }
     }
 }
