@@ -9,8 +9,8 @@ namespace ATSPM.Domain.Common
     {
         string FileExtension { get; }
 
-        byte[] EncodeItem<T>(T item) where T : class;
+        byte[] EncodeItem<T>(T item) where T : new();
 
-        T DecodeItem<T>(byte[] data) where T : class;
+        T DecodeItem<T>(byte[] data) where T : new();
     }
 }

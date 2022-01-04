@@ -28,7 +28,7 @@ using ATSPM.Application.Specifications;
 using System.Linq.Expressions;
 using ATSPM.Domain.Specifications;
 using ATSPM.Domain.Common;
-using ATSPM.Application.Converters;
+using ATSPM.Infrasturcture.Converters;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -62,7 +62,9 @@ namespace ATSPM.SignalControllerLogger
                     //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
 
-                    s.AddSingleton<IFileTranscoder, JsonFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
 
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
@@ -102,9 +104,17 @@ namespace ATSPM.SignalControllerLogger
 
             var repo = host.Services.GetService<IControllerEventLogRepository>();
 
-            var archives = GenerateLogArchives();
+            //var archives = GenerateLogArchives();
 
-            repo.AddRange(archives);
+            //repo.AddRange(archives);
+
+            var archives = repo.GetList(a => true);
+
+            foreach (var item in archives)
+            {
+                Console.WriteLine($"item: {item}");
+            }
+
 
 
             Console.ReadKey();

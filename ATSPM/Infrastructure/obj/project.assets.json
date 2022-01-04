@@ -30,6 +30,18 @@
           "lib/netstandard2.0/Humanizer.dll": {}
         }
       },
+      "IronSnappy/1.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.3"
+        },
+        "compile": {
+          "lib/netstandard2.1/IronSnappy.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/IronSnappy.dll": {}
+        }
+      },
       "Microsoft.CodeAnalysis.NetAnalyzers/5.0.3": {
         "type": "package",
         "build": {
@@ -581,6 +593,18 @@
         },
         "runtime": {
           "lib/netstandard1.3/Newtonsoft.Json.dll": {}
+        }
+      },
+      "Parquet.Net/3.9.1": {
+        "type": "package",
+        "dependencies": {
+          "IronSnappy": "1.3.0"
+        },
+        "compile": {
+          "lib/netcoreapp3.1/Parquet.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Parquet.dll": {}
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
@@ -1151,6 +1175,15 @@
         },
         "runtime": {
           "lib/netstandard1.6/System.Linq.Expressions.dll": {}
+        }
+      },
+      "System.Memory/4.5.3": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
         }
       },
       "System.Net.NameResolution/4.3.0": {
@@ -2190,6 +2223,22 @@
         "logo.png"
       ]
     },
+    "IronSnappy/1.3.0": {
+      "sha512": "EFkwQ8C0RlQHM1UraPL6Yaino+JbPlj5NOVlX4PbnAW8YcN6uEFqfxZAkkIuTZTVKyc9IIpUAt+nZv1Tp4PGiA==",
+      "type": "package",
+      "path": "ironsnappy/1.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "ironsnappy.1.3.0.nupkg.sha512",
+        "ironsnappy.nuspec",
+        "lib/netstandard1.4/IronSnappy.dll",
+        "lib/netstandard1.6/IronSnappy.dll",
+        "lib/netstandard2.0/IronSnappy.dll",
+        "lib/netstandard2.1/IronSnappy.dll"
+      ]
+    },
     "Microsoft.CodeAnalysis.NetAnalyzers/5.0.3": {
       "sha512": "7rw0JUPSAVGR0HPekQiQvwGPor44p/Ek21+wZABraG4bVYNrSkx98ZZsxSxG5jJ4oqjACJxea8E62UO0dsKDBw==",
       "type": "package",
@@ -3227,6 +3276,39 @@
         "newtonsoft.json.10.0.1.nupkg.sha512",
         "newtonsoft.json.nuspec",
         "tools/install.ps1"
+      ]
+    },
+    "Parquet.Net/3.9.1": {
+      "sha512": "Xk+AMojCyl9Gi292zxbLe9oPJgFq0SkRu+lqUv0YFy7Ht0D4RX/0xVYMmOfRDQrsJ0VJmaG5Fp8YJU21Okh5XQ==",
+      "type": "package",
+      "path": "parquet.net/3.9.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net5.0/Parquet.dll",
+        "lib/net5.0/Parquet.pdb",
+        "lib/net5.0/Parquet.xml",
+        "lib/netcoreapp2.1/Parquet.dll",
+        "lib/netcoreapp2.1/Parquet.pdb",
+        "lib/netcoreapp2.1/Parquet.xml",
+        "lib/netcoreapp3.1/Parquet.dll",
+        "lib/netcoreapp3.1/Parquet.pdb",
+        "lib/netcoreapp3.1/Parquet.xml",
+        "lib/netstandard1.4/Parquet.dll",
+        "lib/netstandard1.4/Parquet.pdb",
+        "lib/netstandard1.4/Parquet.xml",
+        "lib/netstandard1.6/Parquet.dll",
+        "lib/netstandard1.6/Parquet.pdb",
+        "lib/netstandard1.6/Parquet.xml",
+        "lib/netstandard2.0/Parquet.dll",
+        "lib/netstandard2.0/Parquet.pdb",
+        "lib/netstandard2.0/Parquet.xml",
+        "lib/netstandard2.1/Parquet.dll",
+        "lib/netstandard2.1/Parquet.pdb",
+        "lib/netstandard2.1/Parquet.xml",
+        "parquet.net.3.9.1.nupkg.sha512",
+        "parquet.net.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
@@ -4828,6 +4910,27 @@
         "runtimes/aot/lib/netcore50/System.Linq.Expressions.dll",
         "system.linq.expressions.4.3.0.nupkg.sha512",
         "system.linq.expressions.nuspec"
+      ]
+    },
+    "System.Memory/4.5.3": {
+      "sha512": "3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA==",
+      "type": "package",
+      "path": "system.memory/4.5.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/netcoreapp2.1/_._",
+        "lib/netstandard1.1/System.Memory.dll",
+        "lib/netstandard1.1/System.Memory.xml",
+        "lib/netstandard2.0/System.Memory.dll",
+        "lib/netstandard2.0/System.Memory.xml",
+        "ref/netcoreapp2.1/_._",
+        "system.memory.4.5.3.nupkg.sha512",
+        "system.memory.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
       ]
     },
     "System.Net.NameResolution/4.3.0": {
@@ -7512,7 +7615,8 @@
       "Microsoft.EntityFrameworkCore.Abstractions >= 5.0.8",
       "Microsoft.EntityFrameworkCore.Design >= 5.0.8",
       "Microsoft.EntityFrameworkCore.SqlServer >= 5.0.8",
-      "Microsoft.EntityFrameworkCore.Tools >= 5.0.8"
+      "Microsoft.EntityFrameworkCore.Tools >= 5.0.8",
+      "Parquet.Net >= 3.9.1"
     ]
   },
   "packageFolders": {
@@ -7599,6 +7703,10 @@
             "suppressParent": "All",
             "target": "Package",
             "version": "[5.0.8, )"
+          },
+          "Parquet.Net": {
+            "target": "Package",
+            "version": "[3.9.1, )"
           }
         },
         "imports": [
