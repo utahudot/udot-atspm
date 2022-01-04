@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
-    public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : ATSPMModelBase
+    public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : ATSPMModelBase, new()
     {
         protected readonly IFileTranscoder _fileTranscoder;
         protected readonly IOptions<FileRepositoryConfiguration> _options;
@@ -51,7 +51,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public void Add(T item)
         {
-            File.WriteAllBytes(Path.Combine(GenerateFilePath(item), GenerateFileName(item)), _fileTranscoder.EncodeItem(item));
+            File.WriteAllBytes(Path.Combine(GenerateFilePath(item), GenerateFileName(item)), _fileTranscoder.EncodeItem<T>(item));
         }
 
         public async Task AddAsync(T item)

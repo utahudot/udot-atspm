@@ -26,23 +26,21 @@ namespace ATSPM.Infrasturcture.Repositories
         {
             var folder = new DirectoryInfo(Path.Combine(_options.Value.RootPath, typeof(ControllerLogArchive).Name, $"{date.Year}", $"{date.Month}", $"{date.Day}"));
 
-            //if (!folder.Exists)
-            //    folder.Create();
-
             return Path.Combine(folder.FullName);
         }
         
         protected override string GenerateFileName(ControllerLogArchive item)
         {
-            //return GenerateFolderStructure(item.ArchiveDate);
-
-            //return _db.CreateKeyValueName(item);
-
             return $"{item.GetType().Name}_{item.SignalId}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
         }
 
         protected override string GenerateFilePath(ControllerLogArchive item)
         {
+            if (item == null)
+            {
+                return base.GenerateFilePath(item);
+            }
+            
             var folder = new DirectoryInfo(Path.Combine(GenerateFolderStructure(item.ArchiveDate)));
 
             if (!folder.Exists)
