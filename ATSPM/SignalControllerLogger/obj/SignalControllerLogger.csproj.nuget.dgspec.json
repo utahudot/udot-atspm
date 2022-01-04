@@ -232,6 +232,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[5.0.8, )"
+            },
+            "Parquet.Net": {
+              "target": "Package",
+              "version": "[3.9.1, )"
             }
           },
           "imports": [

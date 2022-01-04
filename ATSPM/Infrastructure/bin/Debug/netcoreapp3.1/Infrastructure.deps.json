@@ -17,6 +17,7 @@
           "Microsoft.EntityFrameworkCore.Design": "5.0.8",
           "Microsoft.EntityFrameworkCore.SqlServer": "5.0.8",
           "Microsoft.EntityFrameworkCore.Tools": "5.0.8",
+          "Parquet.Net": "3.9.1",
           "PipelineManagerLibrary": "1.0.0.0"
         },
         "runtime": {
@@ -46,6 +47,17 @@
           "lib/netstandard2.0/Humanizer.dll": {
             "assemblyVersion": "2.8.0.0",
             "fileVersion": "2.8.26.1919"
+          }
+        }
+      },
+      "IronSnappy/1.3.0": {
+        "dependencies": {
+          "System.Memory": "4.5.3"
+        },
+        "runtime": {
+          "lib/netstandard2.1/IronSnappy.dll": {
+            "assemblyVersion": "1.3.0.0",
+            "fileVersion": "1.3.0.0"
           }
         }
       },
@@ -518,6 +530,17 @@
           }
         }
       },
+      "Parquet.Net/3.9.1": {
+        "dependencies": {
+          "IronSnappy": "1.3.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Parquet.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.9.1.0"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
       "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {},
@@ -843,6 +866,7 @@
           "System.Threading": "4.3.0"
         }
       },
+      "System.Memory/4.5.3": {},
       "System.Net.NameResolution/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -1468,6 +1492,13 @@
       "path": "humanizer.core/2.8.26",
       "hashPath": "humanizer.core.2.8.26.nupkg.sha512"
     },
+    "IronSnappy/1.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EFkwQ8C0RlQHM1UraPL6Yaino+JbPlj5NOVlX4PbnAW8YcN6uEFqfxZAkkIuTZTVKyc9IIpUAt+nZv1Tp4PGiA==",
+      "path": "ironsnappy/1.3.0",
+      "hashPath": "ironsnappy.1.3.0.nupkg.sha512"
+    },
     "Microsoft.CodeAnalysis.NetAnalyzers/5.0.3": {
       "type": "package",
       "serviceable": true,
@@ -1726,6 +1757,13 @@
       "sha512": "sha512-ebWzW9j2nwxQeBo59As2TYn7nYr9BHicqqCwHOD1Vdo+50HBtLPuqdiCYJcLdTRknpYis/DSEOQz5KmZxwrIAg==",
       "path": "newtonsoft.json/10.0.1",
       "hashPath": "newtonsoft.json.10.0.1.nupkg.sha512"
+    },
+    "Parquet.Net/3.9.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Xk+AMojCyl9Gi292zxbLe9oPJgFq0SkRu+lqUv0YFy7Ht0D4RX/0xVYMmOfRDQrsJ0VJmaG5Fp8YJU21Okh5XQ==",
+      "path": "parquet.net/3.9.1",
+      "hashPath": "parquet.net.3.9.1.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.2": {
       "type": "package",
@@ -2020,6 +2058,13 @@
       "sha512": "sha512-PGKkrd2khG4CnlyJwxwwaWWiSiWFNBGlgXvJpeO0xCXrZ89ODrQ6tjEWS/kOqZ8GwEOUATtKtzp1eRgmYNfclg==",
       "path": "system.linq.expressions/4.3.0",
       "hashPath": "system.linq.expressions.4.3.0.nupkg.sha512"
+    },
+    "System.Memory/4.5.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3oDzvc/zzetpTKWMShs1AADwZjQ/36HnsufHRPcOjyRAAMLDlu2iD33MBI2opxnezcVUtXyqDXXjoFMOU9c7SA==",
+      "path": "system.memory/4.5.3",
+      "hashPath": "system.memory.4.5.3.nupkg.sha512"
     },
     "System.Net.NameResolution/4.3.0": {
       "type": "package",
