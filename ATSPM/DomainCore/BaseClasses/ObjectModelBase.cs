@@ -10,12 +10,56 @@ using System.Text.Json.Serialization;
 
 namespace ATSPM.Domain.BaseClasses
 {
+    /// <summary>
+    /// <c>ObjectModelBase</c> for data object models implementing:
+    /// <list type="table">
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanged"/></term>
+    /// <description>Notifies clients that a property value has changed.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanging"/></term>
+    /// <description>Notifies clients that a property value is changing.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="IEditableObject"/></term>
+    /// <description>Provides functionality to commit or rollback changes to an object that is used as a data source.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyDataErrorInfo"/></term>
+    /// <description>Defines members that data entity classes can implement to provide custom synchronous and asynchronous validation support.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="IRevertibleChangeTracking"/></term>
+    /// <description>Provides support for rolling back the changes.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="ICloneable"/></term>
+    /// <description>Supports cloning, which creates a new instance of a class with the same value as an existing instance.</description>
+    /// </item>
+    /// 
+    /// </list>
+    /// </summary>
     public abstract class ObjectModelBase : ObservableObjectBase, IEditableObject, INotifyDataErrorInfo, IRevertibleChangeTracking, ICloneable
     {
         private Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
         private Dictionary<string, Dictionary<string, LambdaExpression>> _validationDictionary = new Dictionary<string, Dictionary<string, LambdaExpression>>();
+
+        /// <summary>
+        /// Dictionary of properties that have pending changes.
+        /// </summary>
         protected Dictionary<string, object> changes = new Dictionary<string, object>();
 
+        /// <summary>
+        /// Sets a properties value and raises the <see cref="ObservableObjectBase.PropertyChanging"/> and <see cref="ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+        /// </summary>
+        /// <remarks>Overriden from <see cref="ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
         protected override bool Set<T>(ref T currentValue, T newValue, IEqualityComparer<T> comparer, [CallerMemberName] string propertyName = "")
         {
             //check for validation errors
@@ -42,6 +86,20 @@ namespace ATSPM.Domain.BaseClasses
             return true;
         }
 
+        /// <summary>
+        /// Add a validation rule. Object model will not set property values if rules are not met.
+        /// <para>
+        /// <example> Example:
+        /// <code>AddValidationRule("TelephoneNumber", "Invalid Telephone Number", (DataModel, Value) => !DateModel.TelephoneNumber.IsValidTelephoneNumber(Value))</code>
+        /// </example>
+        /// </para>
+        /// </summary>
+        /// <remarks>Normally, rules would be defined in constructor of Object Model.</remarks>
+        /// <typeparam name="T1">Object Model</typeparam>
+        /// <typeparam name="T2"></typeparam>
+        /// <param name="propertyName">Name of property to apply rule to.</param>
+        /// <param name="message">Notification message if rule is not met.</param>
+        /// <param name="rule">Rule expression to add to rules list for <paramref name="propertyName"/>.</param>
         protected void AddValidationRule<T1, T2>(string propertyName, string message, Expression<Func<T1, T2, bool>> rule) where T1 : ObjectModelBase
         {
             if (!_validationDictionary.ContainsKey(propertyName))
@@ -83,6 +141,12 @@ namespace ATSPM.Domain.BaseClasses
                 return false;
         }
 
+        /// <summary>
+        /// Add change to <see cref="changes"/> for tracking.
+        /// </summary>
+        /// <typeparam name="T">Changed property type.</typeparam>
+        /// <param name="propertyName">Changed property name.</param>
+        /// <param name="value">Changed property value.</param>
         protected virtual void AddChange<T>(string propertyName, T value)
         {
             //if IEditableObject is active don't store changes
@@ -176,7 +240,7 @@ namespace ATSPM.Domain.BaseClasses
         {
             //_changes?.Clear();
             //RaisePropertyChanged(nameof(IsChanged));
-            throw new NotImplementedException("RejectChanges is not complete");
+            throw new NotImplementedException("RejectChanges has not been implemented");
         }
 
         #endregion
@@ -190,6 +254,10 @@ namespace ATSPM.Domain.BaseClasses
 
         #endregion
 
+        /// <summary>
+        /// Raise <see cref="ErrorsChanged"/> event that property has pending changes.
+        /// </summary>
+        /// <param name="propertyName">Name of property that has pending changes</param>
         protected void RaiseErrorChanged([CallerMemberName] string propertyName = null)
         {
             RaisePropertyChanged(nameof(HasErrors));
