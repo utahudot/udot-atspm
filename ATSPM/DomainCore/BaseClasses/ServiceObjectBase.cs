@@ -6,20 +6,57 @@ using System.Text;
 
 namespace ATSPM.Domain.BaseClasses
 {
+    /// <summary>
+    /// <c>ServiceObjectBase</c> For services implementing:
+    /// <list type="table">
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanged"/></term>
+    /// <description>Notifies clients that a property value has changed.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanging"/></term>
+    /// <description>Notifies clients that a property value is changing.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="ISupportInitializeNotification"/></term>
+    /// <description>Allows coordination of initialization for a component and its dependent properties.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="IDisposable"/></term>
+    /// <description>Provides a mechanism for releasing unmanaged resources.</description>
+    /// </item>
+    /// 
+    /// </list>
+    /// </summary>
     public abstract class ServiceObjectBase : ObservableObjectBase, ISupportInitializeNotification, IDisposable
     {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="BeginInit"/>
+        /// </summary>
         public ServiceObjectBase()
         {
             //intialize object
             BeginInit();
         }
 
+        /// <summary>
+        /// Initialize service
+        /// </summary>
+        /// <remarks>Constructor calls <see cref="BeginInit"/> and initializes on instantiation.</remarks>
         public virtual void Initialize()
         {
             //initialize complete
             EndInit();
         }
 
+        /// <summary>
+        /// Sets a properties value and raises the <see cref="ObservableObjectBase.PropertyChanging"/> and <see cref="ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+        /// </summary>
+        /// <remarks>Overriden from <see cref="ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
         protected override bool Set<T>(ref T currentValue, T newValue, IEqualityComparer<T> comparer, [CallerMemberName] string propertyName = "")
         {
             //check IEquatable<T>
@@ -30,9 +67,6 @@ namespace ATSPM.Domain.BaseClasses
 
             //raise property changing
             if (IsInitialized) { RaisePropertyChanging(propertyName); }
-
-            //IsChanged
-            //if (IsInitialized) { AddChange(propertyName, currentValue); }
 
             //update value
             currentValue = newValue;
@@ -83,6 +117,9 @@ namespace ATSPM.Domain.BaseClasses
 
         #endregion
 
+        /// <summary>
+        /// Raise <see cref="Initialized"/> when initialization is complete.
+        /// </summary>
         protected void RaiseInitialized()
         {
             RaisePropertyChanged(string.Empty);
