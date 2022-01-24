@@ -29,6 +29,7 @@ using System.Linq.Expressions;
 using ATSPM.Domain.Specifications;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
+using Microsoft.Extensions.Primitives;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -38,24 +39,31 @@ namespace ATSPM.SignalControllerLogger
         {
             //register based on environment https://stackoverflow.com/questions/59501699/dependency-injection-call-different-services-based-on-the-environment
 
-            var host = new HostBuilder()
+
+
+            var host = Host.CreateDefaultBuilder()
+            //var host = new HostBuilder()
+
                 .ConfigureLogging((h, l) =>
                 {
+                    l.SetMinimumLevel(LogLevel.Information);
                     l.AddConsole();
                 })
-                .ConfigureHostConfiguration(b =>
-                {
-                    b.SetBasePath(Directory.GetCurrentDirectory());
-                })
-                .ConfigureAppConfiguration(b =>
-                {
-                    b.SetBasePath(Directory.GetCurrentDirectory());
-                    b.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                })
+                //.ConfigureHostConfiguration(b =>
+                //{
+                //    b.SetBasePath(Directory.GetCurrentDirectory());
+                //})
+                //.ConfigureAppConfiguration(b =>
+                //{
+                //    b.SetBasePath(Directory.GetCurrentDirectory());
+                //    b.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                //    b.AddEnvironmentVariables();
+                //})
                 .ConfigureServices((h, s) =>
                 {
                     s.AddLogging();
-                    s.AddDbContext<DbContext,MOEContext>(); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+                    s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+
 
                     //repositories
                     //s.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -71,7 +79,7 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalRepository, SignalFileRepository>();
 
                     //background services
-                    s.AddHostedService<ControllerLoggerBackgroundService>();
+                    //s.AddHostedService<ControllerLoggerBackgroundService>();
 
                     //downloaders
                     s.AddTransient<ISignalControllerDownloader, ASCSignalControllerDownloader>();
@@ -82,42 +90,36 @@ namespace ATSPM.SignalControllerLogger
                     //s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-
-
-
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
                     //s.Configure<FileETLSettings>(h.Configuration.GetSection("FileETLSettings"));
                     s.Configure<ControllerFTPSettings>(h.Configuration.GetSection("ControllerFTPSettings"));
                     s.Configure<SignalControllerDownloaderConfiguration>(h.Configuration.GetSection("SignalControllerDownloaderConfiguration"));
                     s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
-                .ConfigureLogging(c =>
-                {
-                    c.SetMinimumLevel(LogLevel.Information);
-                })
+
                 .UseConsoleLifetime()
                 .Build();
 
-            //host.RunAsync();
+            host.RunAsync();
 
-            
+            var config = host.Services.GetRequiredService<IConfiguration>();
 
-            var repo = host.Services.GetService<IControllerEventLogRepository>();
-
-            //var archives = GenerateLogArchives();
-
-            //repo.AddRange(archives);
-
-            var archives = repo.GetList(a => true);
-
-            foreach (var item in archives)
+            using (var scope = host.Services.CreateScope())
             {
-                Console.WriteLine($"item: {item}");
+                var db = scope.ServiceProvider.GetRequiredService<DbContext>();
+
+
+                Console.WriteLine($"string: {db.Database.GetConnectionString()}");
             }
 
-
+            //Console.WriteLine($"environment: {hostEnvironment.EnvironmentName}");
 
             Console.ReadKey();
+        }
+
+        public static void DoSomething(IOptionsMonitor<ControllerFTPSettings> test)
+        {
+            
         }
 
         public static IList<ControllerLogArchive> GenerateLogArchives()
@@ -179,6 +181,34 @@ namespace ATSPM.SignalControllerLogger
             }
 
             return null;
+        }
+    }
+
+    public class test : IConfigurationProvider
+    {
+        public IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IChangeToken GetReloadToken()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Load()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Set(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGet(string key, out string value)
+        {
+            throw new NotImplementedException();
         }
     }
 }
