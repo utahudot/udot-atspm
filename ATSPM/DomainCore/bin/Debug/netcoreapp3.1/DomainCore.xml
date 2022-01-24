@@ -4,6 +4,270 @@
         <name>DomainCore</name>
     </assembly>
     <members>
+        <member name="T:ATSPM.Domain.BaseClasses.ObjectModelBase">
+            <summary>
+            <c>ObjectModelBase</c> for data object models implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.IEditableObject"/></term>
+            <description>Provides functionality to commit or rollback changes to an object that is used as a data source.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyDataErrorInfo"/></term>
+            <description>Defines members that data entity classes can implement to provide custom synchronous and asynchronous validation support.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.IRevertibleChangeTracking"/></term>
+            <description>Provides support for rolling back the changes.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ICloneable"/></term>
+            <description>Supports cloning, which creates a new instance of a class with the same value as an existing instance.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="F:ATSPM.Domain.BaseClasses.ObjectModelBase.changes">
+            <summary>
+            Dictionary of properties that have pending changes.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AddValidationRule``2(System.String,System.String,System.Linq.Expressions.Expression{System.Func{``0,``1,System.Boolean}})">
+            <summary>
+            Add a validation rule. Object model will not set property values if rules are not met.
+            <para>
+            <example> Example:
+            <code>AddValidationRule("TelephoneNumber", "Invalid Telephone Number", (DataModel, Value) => !DateModel.TelephoneNumber.IsValidTelephoneNumber(Value))</code>
+            </example>
+            </para>
+            </summary>
+            <remarks>Normally, rules would be defined in constructor of Object Model.</remarks>
+            <typeparam name="T1">Object Model</typeparam>
+            <typeparam name="T2"></typeparam>
+            <param name="propertyName">Name of property to apply rule to.</param>
+            <param name="message">Notification message if rule is not met.</param>
+            <param name="rule">Rule expression to add to rules list for <paramref name="propertyName"/>.</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AddChange``1(System.String,``0)">
+            <summary>
+            Add change to <see cref="F:ATSPM.Domain.BaseClasses.ObjectModelBase.changes"/> for tracking.
+            </summary>
+            <typeparam name="T">Changed property type.</typeparam>
+            <param name="propertyName">Changed property name.</param>
+            <param name="value">Changed property value.</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.RaiseErrorChanged(System.String)">
+            <summary>
+            Raise <see cref="E:ATSPM.Domain.BaseClasses.ObjectModelBase.ErrorsChanged"/> event that property has pending changes.
+            </summary>
+            <param name="propertyName">Name of property that has pending changes</param>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ObservableObjectBase">
+            <summary>
+            <c>ObservableObjectBase</c> for observable objects implementing:
+            <list type="table">
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.Set``1(``0@,``0,System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="currentValue">Current property value.</param>
+            <param name="newValue">New value to change property to.</param>
+            <param name="propertyName">Name of property to change value of.</param>
+            <returns>Returns <c>false</c> if property is changed to <paramref name="newValue"/>, else returns <c>false</c> </returns>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="currentValue">Current property value.</param>
+            <param name="newValue">New value to change property to.</param>
+            <param name="comparer">Custom <see cref="T:System.Collections.IEqualityComparer"/> to compare <paramref name="newValue"/> and <paramref name="currentValue"/> </param>
+            <param name="propertyName">Name of property to change value of.</param>
+            <returns>Returns <c>false</c> if property is changed to <paramref name="newValue"/>, else returns <c>false</c> </returns>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.RaisePropertyChanging(System.String)">
+            <summary>
+            Rasie <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> event that property is changing.
+            </summary>
+            <param name="propertyName">Name of property that is changing.</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.RaisePropertyChanged(System.String)">
+            <summary>
+            Rasie <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> event that property has changed.
+            </summary>
+            <param name="propertyName">Name of property that has changed.</param>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ServiceObjectBase">
+            <summary>
+            <c>ServiceObjectBase</c> For services implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.#ctor">
+            <summary>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialize">
+            <summary>
+            Initialize service
+            </summary>
+            <remarks>Constructor calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> and initializes on instantiation.</remarks>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Set``1(``0@,``0,System.Collections.Generic.IEqualityComparer{``0},System.String)">
+            <summary>
+            Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+            </summary>
+            <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.RaiseInitialized">
+            <summary>
+            Raise <see cref="E:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialized"/> when initialization is complete.
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsync">
+            <summary>
+            Defines an async command or process which can conditionally be executed.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync.ExecuteAsync(System.Object)">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecute">
+            <summary>
+            Defines a command which can conditionally be executed.
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecute`2">
+            <summary>
+            Defines a command with input and ouput parameters which can conditionally be executed.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecute`2.CanExecute(`0)">
+            <summary>
+            Defines the method that determines whether the command can execute in its current state.
+            </summary>
+            <param name="parameter">Input parameter</param>
+            <returns>true if this command can be executed; otherwise, false.</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecute`2.Execute(`0,System.Threading.CancellationToken)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecute`2.Execute``1(`0,System.Threading.CancellationToken,System.IProgress{``0})">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <param name="progress">IProgress reporting implmentation</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsync`2">
+            <summary>
+            Defines an async command or process with input and ouput parameters which can conditionally be executed.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync`2.CanExecute(`0)">
+            <summary>
+            Defines the method that determines whether the command can execute in its current state.
+            </summary>
+            <param name="parameter">Input parameter</param>
+            <returns>true if this command can be executed; otherwise, false.</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsync`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <returns>Ouput result.</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3">
+            <summary>
+            Defines an async command or operation with input and ouput parameters which can conditionally be executed and use IProgress./>
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+            /// <typeparam name="Tp">IProgress type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3.ExecuteAsync(`0,System.Threading.CancellationToken,System.IProgress{`2})">
+            <summary>
+            Defines the async method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to null.</param>
+            <param name="cancelToken">Token to cancel command</param>
+            <param name="progress">IProgress reporting implmentation</param>
+            <returns>Ouput result.</returns>
+        </member>
         <member name="T:ATSPM.Domain.Common.LambdaEqualityComparer`1">
             <summary>
             Versitile IEqualityComparer implementation that provides passing of delegate functions
