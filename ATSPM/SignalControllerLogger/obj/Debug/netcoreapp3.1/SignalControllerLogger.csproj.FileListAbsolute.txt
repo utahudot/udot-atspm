@@ -6,6 +6,7 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Sign
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\SignalControllerLogger.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\SignalControllerLogger.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\FluentFTP.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\IronSnappy.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -47,6 +48,7 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Micr
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Microsoft.Win32.Registry.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Parquet.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.Collections.Immutable.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.ComponentModel.Annotations.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.Configuration.ConfigurationManager.dll
@@ -73,7 +75,6 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runt
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\Microsoft.Win32.Registry.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
-C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Diagnostics.EventLog.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
@@ -100,5 +101,10 @@ C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\Sign
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.dll
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.pdb
 C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\obj\Debug\netcoreapp3.1\SignalControllerLogger.genruntimeconfig.cache
-C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\IronSnappy.dll
-C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Parquet.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\Renci.SshNet.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\SshNet.Security.Cryptography.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.Text.Encodings.Web.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\System.Threading.Tasks.Dataflow.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Diagnostics.EventLog.Messages.dll
+C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.1\System.Diagnostics.EventLog.dll

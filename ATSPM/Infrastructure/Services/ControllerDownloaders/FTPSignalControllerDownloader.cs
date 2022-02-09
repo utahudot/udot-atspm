@@ -24,14 +24,15 @@ using Utah.Gov.Udot.PipelineManager;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class ASCSignalControllerDownloader : ControllerDownloaderBase
+    public class FTPSignalControllerDownloader : ControllerDownloaderBase
     {
 
-        public ASCSignalControllerDownloader(ILogger<ASCSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public FTPSignalControllerDownloader(ILogger<FTPSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
 
-        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
+        //public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
+        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS;
 
         #endregion
 
@@ -73,17 +74,19 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         if (client.IsConnected && await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory))
                         {
                             var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
-                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, progress: null, cancelToken);
+
+                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite,FtpVerify.None, rules, progress: null, cancelToken);
                         }
                     }
                     catch (Exception e)
                     {
-                        dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "EXECUTION ERROR", e.GetType().ToString(), parameter.SignalId));
+                        //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "EXECUTION ERROR", e.GetType().ToString(), parameter.SignalId));
                         _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "EXECUTION ERROR");
                     }
                     finally
                     {
-                        dir ??= ProcessResults(results, parameter);
+                        //dir ??= ProcessResults(results, parameter);
+                        ProcessResults(results, parameter);
                     }
                 }
                 //catch (FtpAuthenticationException e) when (e.LogE()) { }
@@ -103,7 +106,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 //}
                 catch (Exception e)
                 {
-                    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
+                    //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
                     _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "CONNECTION ERROR");
                 }
                 //finally
@@ -115,6 +118,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 if (client.IsConnected)
                     await client.DisconnectAsync();
             }
+
+            dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
 
             return dir;
         }
@@ -159,10 +164,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 }
 
                 //at least one file had a failure
-                if (results.Any(r => r.IsFailed || r.Exception != null))
-                {
-                    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "ErrorOrFailedException", input.SignalId));
-                }
+                //if (results.Any(r => r.IsFailed || r.Exception != null))
+                //{
+                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "ErrorOrFailedException", input.SignalId));
+                //}
 
                 //all files were return successfully
                 //else
@@ -172,7 +177,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
             else
             {
-                dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "NoUsableFiles", input.SignalId));
+                //dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "NoUsableFiles", input.SignalId));
             }
 
             return dir;

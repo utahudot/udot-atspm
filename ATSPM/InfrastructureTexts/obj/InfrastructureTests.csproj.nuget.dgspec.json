@@ -332,6 +332,10 @@
             "Parquet.Net": {
               "target": "Package",
               "version": "[3.9.1, )"
+            },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2020.0.1, )"
             }
           },
           "imports": [
