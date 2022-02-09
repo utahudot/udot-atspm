@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "QBuD/scOd6FoI5GVty+jWbOHu2X1VaM8Li7hO6nsbE3JoGN8G+xxilmp9yGIP9zTSf1TTr9yCH4pwGkGdQej9A==",
+  "dgSpecHash": "cBJuy1V/DkSfEVutpg1csbbBtA0pFRE2pRY1iuk5hMBHrdhaU0pCnWoWcMZ7w88JRNWvnb64US3vGcdJnmvIVQ==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\InfrastructureTests.csproj",
   "expectedPackageFiles": [
@@ -76,6 +76,8 @@
     "C:\\Users\\christianbaker\\.nuget\\packages\\sqlitepclraw.core\\2.0.4\\sqlitepclraw.core.2.0.4.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.0.4\\sqlitepclraw.lib.e_sqlite3.2.0.4.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\sqlitepclraw.provider.dynamic_cdecl\\2.0.4\\sqlitepclraw.provider.dynamic_cdecl.2.0.4.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\ssh.net\\2020.0.1\\ssh.net.2020.0.1.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\sshnet.security.cryptography\\1.3.0\\sshnet.security.cryptography.1.3.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\system.appcontext\\4.3.0\\system.appcontext.4.3.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\system.buffers\\4.3.0\\system.buffers.4.3.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
