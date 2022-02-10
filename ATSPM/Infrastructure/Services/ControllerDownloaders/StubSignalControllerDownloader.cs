@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Models;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,11 +30,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
     public class StubSignalControllerDownloader : ControllerDownloaderBase
     {
 
-        public StubSignalControllerDownloader(ILogger<StubSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public StubSignalControllerDownloader(ILogger<StubSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
 
-        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
+        public override SignalControllerType ControllerType => SignalControllerType.Unknown;
 
         #endregion
 
@@ -42,18 +44,34 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         {
         }
 
-        protected override Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
+        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            //return directory
-            DirectoryInfo dir = null;
+            foreach (var i in Enumerable.Range(1, 10))
+            {
+                var file = new FileInfo(Path.Combine(_options.LocalPath, parameter.SignalId, $"File {i}.txt"));
 
-            return Task.FromResult<DirectoryInfo>(dir);
+                //if (!file.Exists)
+                //{
+                //    file.Create();
+                //}
+
+                await Task.Delay(TimeSpan.FromSeconds(2), cancelToken);
+
+                progress?.Report(new ControllerDownloadProgress(file, i, 10));
+
+                yield return file;
+            }
         }
 
         public override void Dispose()
         {
             //throw new NotImplementedException();
         }
+
+        //public override bool CanExecute(Signal value)
+        //{
+        //    return true;
+        //}
 
         #endregion
     }

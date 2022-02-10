@@ -22,8 +22,6 @@ namespace SignalControllerLoggerTests
 {
     public class ISignalControllerDownloaderTests : IDisposable
     {
-        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\TestData";
-
         private readonly ITestOutputHelper _output;
         private ISignalControllerDownloader _downloader;
         private ILogger _nullLogger;
@@ -82,42 +80,42 @@ namespace SignalControllerLoggerTests
             Assert.False(condition);
         }
 
-        [Fact]
-        public async void ExecuteAsyncCanExecuteInvalid()
-        {
-            Signal signal = new Signal()
-            {
-                Ipaddress = "10.209.2.108",
-                Enabled = true,
-                PrimaryName = "Cobalt Test",
-                SignalId = "9731",
-                ControllerTypeId = 2,
-                ControllerType = new ControllerType() { ControllerTypeId = 2 }
-            };
+        //[Fact]
+        //public async void ExecuteAsyncCanExecuteInvalid()
+        //{
+        //    Signal signal = new Signal()
+        //    {
+        //        Ipaddress = "10.209.2.108",
+        //        Enabled = true,
+        //        PrimaryName = "Cobalt Test",
+        //        SignalId = "9731",
+        //        ControllerTypeId = 2,
+        //        ControllerType = new ControllerType() { ControllerTypeId = 2 }
+        //    };
 
-            _output.WriteLine($"Signal: {signal}");
+        //    _output.WriteLine($"Signal: {signal}");
 
-            await Assert.ThrowsAsync<ExecuteException>(async () => await _downloader.ExecuteAsync(signal));
-        }
+        //    await Assert.ThrowsAsync<ExecuteException>(async () => await _downloader.ExecuteAsync(signal));
+        //}
 
-        [Fact]
-        public async void ExecuteAsyncIpAddressInvalid()
-        {
-            Signal signal = new Signal()
-            {
-                //Ipaddress = "10.209.2.120",
-                Ipaddress = "hello",
-                Enabled = true,
-                PrimaryName = "Maxtime Test",
-                SignalId = "0",
-                ControllerTypeId = 4,
-                ControllerType = new ControllerType() { ControllerTypeId = 4 }
-            };
+        //[Fact]
+        //public async void ExecuteAsyncIpAddressInvalid()
+        //{
+        //    Signal signal = new Signal()
+        //    {
+        //        //Ipaddress = "10.209.2.120",
+        //        Ipaddress = "hello",
+        //        Enabled = true,
+        //        PrimaryName = "Maxtime Test",
+        //        SignalId = "0",
+        //        ControllerTypeId = 4,
+        //        ControllerType = new ControllerType() { ControllerTypeId = 4 }
+        //    };
 
-            _output.WriteLine($"Signal: {signal}");
+        //    _output.WriteLine($"Signal: {signal}");
 
-            await Assert.ThrowsAsync<FormatException>(async () => await _downloader.ExecuteAsync(signal));
-        }
+        //    await Assert.ThrowsAsync<FormatException>(async () => await _downloader.ExecuteAsync(signal));
+        //}
 
 
 
