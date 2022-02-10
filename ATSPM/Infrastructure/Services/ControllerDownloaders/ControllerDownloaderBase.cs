@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Models;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,12 +30,17 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected readonly ILogger _log;
         protected readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
+        //protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
+        protected readonly SignalControllerDownloaderConfiguration _options;
 
         #endregion
 
-        public ControllerDownloaderBase(ILogger log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+        public ControllerDownloaderBase(ILogger log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options)
+        {
+            _log = log;
+            _serviceProvider = serviceProvider;
+            _options = options.Get(this.GetType().Name) ?? options.Value;
+        }
 
         #region Properties
 
@@ -43,13 +51,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         #region Methods
 
-        protected abstract Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default);
+        protected abstract IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = default, CancellationToken cancelToken = default);
 
         //public override void Initialize()
         //{
         //}
 
-        #region IPipelineExecute<Tin, Tout>
+        #region IExecuteWithProgress
 
         public virtual bool CanExecute(Signal value)
         {
@@ -57,62 +65,43 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             return ControllerType.HasFlag((SignalControllerType)(1 << value.ControllerType.ControllerTypeId));
         }
 
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default)
+        public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            return await ExecuteAsync(parameter, cancelToken, default);
+            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
+            {
+                yield return item;
+            }
         }
 
-        public async Task<DirectoryInfo> ExecuteAsync(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = default)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FormatException"></exception>
+        public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            //TODO: write out detailed logs
-
-            cancelToken.ThrowIfCancellationRequested();
-            
-            
-
-            //return directory
-            DirectoryInfo dir = null;
-
-            if (CanExecute(parameter))
+            if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.Value.PingControllerToVerify))
-                    return await Task.FromException<DirectoryInfo>(new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}"));
+                if (parameter == null)
+                {
+                    progress?.Report(new ControllerDownloadProgress(new ArgumentNullException(nameof(parameter), $"Signal parameter can not be null")));
 
-                try
-                {
-                    dir = await ExecutionTask(parameter, cancelToken, progress);
+                    throw new ArgumentNullException(nameof(parameter), $"Signal parameter can not be null");
                 }
-                catch (TaskCanceledException e)
+                    
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
                 {
-                    e.LogE();
-                    return await Task.FromCanceled<DirectoryInfo>(cancelToken);
+                    progress?.Report(new ControllerDownloadProgress(new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}")));
+
+                    throw new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}");
                 }
-                catch (Exception e)
+                    
+                await foreach (var item in ExecutionTask(parameter, progress, cancelToken).WithCancellation(cancelToken))
                 {
-                    e.LogE();
-                    return await Task.FromException<DirectoryInfo>(e);
+                    yield return item;
                 }
             }
             else
             {
-                //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "DidNotPassCanExecute", $"{parameter.SignalId} - {parameter.ControllerTypeId}"));
-
-                return await Task.FromException<DirectoryInfo>(new ExecuteException());
+                progress?.Report(new ControllerDownloadProgress(file: null));
             }
-
-            if (dir != null && !dir.Exists)
-                dir.Create();
-
-            return dir;
-        }
-
-        #endregion
-
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is Signal p)
-                return Task.Run(() => ExecuteAsync(p, default, default));
-            return default;
         }
 
         bool ICommand.CanExecute(object parameter)
@@ -125,8 +114,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         void ICommand.Execute(object parameter)
         {
             if (parameter is Signal p)
-                Task.Run(() => ExecuteAsync(p, default, default));
+                Task.Run(() => Execute(p, default, default));
         }
+
+        #endregion
 
         //public override void Dispose()
         //{

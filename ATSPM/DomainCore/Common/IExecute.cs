@@ -48,7 +48,16 @@ namespace ATSPM.Domain.Common
         /// <param name="cancelToken">Token to cancel command</param>
         /// <returns>Ouput result.</returns>
         Tout Execute(Tin parameter, CancellationToken cancelToken = default);
+    }
 
+    /// <summary>
+    /// Defines a command with input and ouput parameters which can conditionally be executed and use IProgress.
+    /// </summary>
+    /// <typeparam name="Tin">Input paramter type.</typeparam>
+    /// <typeparam name="Tout">Output parameter type.</typeparam>
+    /// <typeparam name="Tp">IProgress type.</typeparam>
+    public interface IExecuteWithProgress<Tin, Tout, Tp> : IExecute<Tin, Tout>
+    {
         /// <summary>
         /// Defines the method to be called when the command is invoked.
         /// </summary>
@@ -56,7 +65,7 @@ namespace ATSPM.Domain.Common
         /// <param name="cancelToken">Token to cancel command</param>
         /// <param name="progress">IProgress reporting implmentation</param>
         /// <returns>Ouput result.</returns>
-        Tout Execute<T>(Tin parameter, CancellationToken cancelToken = default, IProgress<T> progress = default);
+        Tout Execute(Tin parameter, IProgress<Tp> progress = default, CancellationToken cancelToken = default);
     }
 
     /// <summary>
@@ -87,7 +96,7 @@ namespace ATSPM.Domain.Common
     /// </summary>
     /// <typeparam name="Tin">Input paramter type.</typeparam>
     /// <typeparam name="Tout">Output parameter type.</typeparam>
-    /// /// <typeparam name="Tp">IProgress type.</typeparam>
+    /// <typeparam name="Tp">IProgress type.</typeparam>
     public interface IExecuteAsyncWithProgress<Tin, Tout, Tp> : IExecuteAsync<Tin, Tout>
     {
         /// <summary>
@@ -97,6 +106,6 @@ namespace ATSPM.Domain.Common
         /// <param name="cancelToken">Token to cancel command</param>
         /// <param name="progress">IProgress reporting implmentation</param>
         /// <returns>Ouput result.</returns>
-        Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default, IProgress<Tp> progress = default);
+        Task<Tout> ExecuteAsync(Tin parameter, IProgress<Tp> progress = default, CancellationToken cancelToken = default);
     }
 }

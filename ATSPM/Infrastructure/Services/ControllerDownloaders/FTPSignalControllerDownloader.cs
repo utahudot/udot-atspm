@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Models;
@@ -16,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +29,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
     public class FTPSignalControllerDownloader : ControllerDownloaderBase
     {
 
-        public FTPSignalControllerDownloader(ILogger<FTPSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public FTPSignalControllerDownloader(ILogger<FTPSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
 
@@ -42,11 +44,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         {
         }
 
-        protected override async Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
+        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            //return directory
-            DirectoryInfo dir = null;
-
             using FtpClient client = new FtpClient(parameter.Ipaddress);
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
@@ -64,123 +63,80 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 try
                 {
                     var profile = await client?.AutoConnectAsync(cancelToken);
-                    //await client?.ConnectAsync(cancelToken);
 
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), $"Controller Type: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
-
-
-                    try
-                    {
-                        if (client.IsConnected && await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory))
-                        {
-                            var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
-
-                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.Value.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite,FtpVerify.None, rules, progress: null, cancelToken);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "EXECUTION ERROR", e.GetType().ToString(), parameter.SignalId));
-                        _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "EXECUTION ERROR");
-                    }
-                    finally
-                    {
-                        //dir ??= ProcessResults(results, parameter);
-                        ProcessResults(results, parameter);
-                    }
+                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), $"Connected to Controller: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
                 }
-                //catch (FtpAuthenticationException e) when (e.LogE()) { }
-                //catch (FtpAuthenticationException e)
-                //{
-                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "FtpAuthenticationException", parameter.SignalId));
-                //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FtpAuthenticationException");
-                //}
-                //catch (FtpCommandException e) when (e.LogE()) { }
-                //catch (FtpException e) when (e.LogE()) { }
-                //catch (SocketException e) when (e.LogE()) { }
-                //catch (IOException e) when (e.LogE()) { }
-                //catch (TimeoutException e)
-                //{
-                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "TimeoutException", e.GetType().ToString(), parameter.SignalId));
-                //    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "TimeoutException");
-                //}
                 catch (Exception e)
                 {
-                    //dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "CONNECTION ERROR", e.GetType().ToString(), parameter.SignalId));
-                    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), e, "CONNECTION ERROR");
+                    progress?.Report(new ControllerDownloadProgress(e));
+
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Connection Error {ip}", parameter.Ipaddress);
                 }
-                //finally
-                //{
-                //    if (client.IsConnected)
-                //        await client.DisconnectAsync();
-                //}
 
                 if (client.IsConnected)
-                    await client.DisconnectAsync();
-            }
-
-            dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
-
-            return dir;
-        }
-
-        private DirectoryInfo ProcessResults(List<FtpResult> results, Signal input)
-        {
-            //return directory
-            DirectoryInfo dir = null;
-
-            if (results.Count > 0)
-            {
-                //process results
-                foreach (FtpResult r in results)
                 {
-                    if (r.IsSuccess && r.IsDownload && !r.IsSkippedByRule)
+                    if (await client.DirectoryExistsAsync(parameter.ControllerType.Ftpdirectory, cancelToken))
                     {
-                        _log.LogInformation(new EventId(Convert.ToInt32(input.SignalId)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
-                    }
+                        var rules = new List<FtpRule> { new FtpFileExtensionRule(true, new List<string> { "dat", "datZ" }) };
 
-                    if (r.IsFailed)
-                    {
-                        _log.LogWarning(new EventId(Convert.ToInt32(input.SignalId)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
-                    }
+                        Progress<FtpProgress> ftpProgress = new Progress<FtpProgress>(p => Console.WriteLine($"FTP Progress: {p.Progress} - {p.FileIndex}/{p.FileCount} - {p.LocalPath}"));
 
-                    if (r.Exception != null)
-                    {
-                        if (r.Exception.InnerException != null)
+                        try
                         {
-                            r.Exception.InnerException.LogE(LogLevel.Error);
+                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, ftpProgress, cancelToken);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            r.Exception.LogE(LogLevel.Error);
+                            progress?.Report(new ControllerDownloadProgress(e));
+
+                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Download Error {ip}", parameter.Ipaddress);
                         }
                     }
+
+                    if (results.Count > 0)
+                    {
+                        //process results
+                        foreach (FtpResult r in results)
+                        {
+                            if (r.IsSuccess && r.IsDownload && !r.IsSkippedByRule)
+                            {
+                                var file = new FileInfo(r.LocalPath);
+
+                                progress?.Report(new ControllerDownloadProgress(file));
+
+                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+
+                                yield return file;
+                            }
+
+                            if (r.IsFailed)
+                            {
+                                progress?.Report(new ControllerDownloadProgress(file: null));
+
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+                            }
+
+                            if (r.Exception != null)
+                            {
+                                if (r.Exception.InnerException != null)
+                                {
+                                    progress?.Report(new ControllerDownloadProgress(r.Exception.InnerException));
+
+                                    r.Exception.InnerException.LogE(LogLevel.Error);
+                                }
+                                else
+                                {
+                                    progress?.Report(new ControllerDownloadProgress(r.Exception));
+
+                                    r.Exception.LogE(LogLevel.Error);
+                                }
+                            }
+                        }
+                    }
+
+                    await client.DisconnectAsync(cancelToken);
                 }
-
-                //at least on file succeeded
-                if (results.Any(r => r.IsSuccess && r.IsDownload && !r.IsSkippedByRule))
-                {
-                    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, input.SignalId));
-                }
-
-                //at least one file had a failure
-                //if (results.Any(r => r.IsFailed || r.Exception != null))
-                //{
-                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "ErrorOrFailedException", input.SignalId));
-                //}
-
-                //all files were return successfully
-                //else
-                //{
-                //    dir ??= new DirectoryInfo(Path.Combine(_options.Value.LocalPath, input.SignalId));
-                //}
             }
-            else
-            {
-                //dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, "NoUsableFiles", input.SignalId));
-            }
-
-            return dir;
         }
 
         public override void Dispose()

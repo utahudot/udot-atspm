@@ -220,7 +220,15 @@
             <param name="cancelToken">Token to cancel command</param>
             <returns>Ouput result.</returns>
         </member>
-        <member name="M:ATSPM.Domain.Common.IExecute`2.Execute``1(`0,System.Threading.CancellationToken,System.IProgress{``0})">
+        <member name="T:ATSPM.Domain.Common.IExecuteWithProgress`3">
+            <summary>
+            Defines a command with input and ouput parameters which can conditionally be executed and use IProgress.
+            </summary>
+            <typeparam name="Tin">Input paramter type.</typeparam>
+            <typeparam name="Tout">Output parameter type.</typeparam>
+            <typeparam name="Tp">IProgress type.</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IExecuteWithProgress`3.Execute(`0,System.IProgress{`2},System.Threading.CancellationToken)">
             <summary>
             Defines the method to be called when the command is invoked.
             </summary>
@@ -257,9 +265,9 @@
             </summary>
             <typeparam name="Tin">Input paramter type.</typeparam>
             <typeparam name="Tout">Output parameter type.</typeparam>
-            /// <typeparam name="Tp">IProgress type.</typeparam>
+            <typeparam name="Tp">IProgress type.</typeparam>
         </member>
-        <member name="M:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3.ExecuteAsync(`0,System.Threading.CancellationToken,System.IProgress{`2})">
+        <member name="M:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3.ExecuteAsync(`0,System.IProgress{`2},System.Threading.CancellationToken)">
             <summary>
             Defines the async method to be called when the command is invoked.
             </summary>

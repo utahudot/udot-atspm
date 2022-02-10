@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Models;
@@ -15,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +30,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
     public class MaxTimeSignalControllerDownloader : ControllerDownloaderBase
     {
 
-        public MaxTimeSignalControllerDownloader(ILogger<MaxTimeSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public MaxTimeSignalControllerDownloader(ILogger<MaxTimeSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
 
         #region Properties
 
@@ -42,72 +44,68 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         {
         }
 
-        protected override async Task<DirectoryInfo> ExecutionTask(Signal parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
+        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            //return directory
-            DirectoryInfo dir = null;
-
             //TODO: replace this with options setting
             //using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(5) })
             using (HttpClient client = new HttpClient())
             {
-                var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full");
-                //builder.Query = "since=09-19-2021 23:59:59.9";
-                //builder.Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0";
-                builder.Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0";
+                var builder = new UriBuilder("http", parameter.Ipaddress, 80, "v1/asclog/xml/full")
+                {
+                    //Query = "since=09-19-2021 23:59:59.9",
+                    //Query = $"since={new DateTime(2021, 9, 19):MM-dd-yyyy} 00:00:00.0",
+                    Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0"
+                };
 
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));
 
-                _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri} : {controllertype}", builder.Uri, parameter.ControllerType.ControllerTypeId);
+                HttpResponseMessage response = new HttpResponseMessage();
 
                 try
                 {
-                    var response = await client.GetAsync(builder.Uri);
+                    response = await client.GetAsync(builder.Uri, cancelToken);
 
-                    if (response.IsSuccessStatusCode && response?.Content != null)
-                    {
-                        string data = await response.Content.ReadAsStringAsync();
-
-                        XmlDocument xml = new XmlDocument();
-                        xml.LoadXml(data);
-
-                        dir = new DirectoryInfo(Path.Combine(_options.Value.LocalPath, parameter.SignalId));
-                        dir.Create();
-
-                        try
-                        {
-                            xml.Save(Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
-
-                            _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded {path}", Path.Combine(dir.FullName, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
-                        }
-                        catch (Exception e)
-                        {
-                            //e.LogE();
-
-                            _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), "XML error: {error} : {ip}", e.GetType(), parameter.Ipaddress);
-
-                            return await Task.FromException<DirectoryInfo>(e);
-                        }
-                    }
-                    else
-                    {
-                        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Failed {response}", response.StatusCode);
-
-                        return await Task.FromException<DirectoryInfo>(new Exception($"Download Failed {response.StatusCode}"));
-                    }
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), "Uri: {uri} : {controllertype}", builder.Uri, parameter.ControllerType.ControllerTypeId);
                 }
                 catch (Exception e)
                 {
-                    //e.LogE();
+                    progress?.Report(new ControllerDownloadProgress(e));
 
-                    _log.LogError(new EventId(Convert.ToInt32(parameter.SignalId)), "client error: {error} : {ip}", e.GetType(), parameter.Ipaddress);
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception connecting to {ip}", parameter.Ipaddress);
+                }
 
-                    return await Task.FromException<DirectoryInfo>(e);
+                if (response.IsSuccessStatusCode && response?.Content != null)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+
+                    FileInfo file = new FileInfo(Path.Combine(_options.LocalPath, parameter.SignalId, $"{parameter.SignalId}_{DateTime.Now.Ticks}.xml"));
+                    
+                    XmlDocument xml = new XmlDocument();
+
+                    try
+                    {
+                        xml.LoadXml(data);
+
+                        xml.Save(file.FullName);
+                    }
+                    catch (XmlException e)
+                    {
+                        progress?.Report(new ControllerDownloadProgress(e));
+
+                        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception downloading XML Document");
+                    }
+
+                    if (file.Exists)
+                    {
+                        progress?.Report(new ControllerDownloadProgress(file));
+
+                        _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Download Succeeded {path}", file.FullName);
+
+                        yield return file;
+                    }   
                 }
             }
-
-            return dir;
         }
 
         public override void Dispose()
