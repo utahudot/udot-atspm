@@ -56,7 +56,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return ExecuteAsync(parameter, cancelToken);
         }
 
-        public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default, IProgress<int> progress = null)
+        public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             cancelToken.ThrowIfCancellationRequested();
 

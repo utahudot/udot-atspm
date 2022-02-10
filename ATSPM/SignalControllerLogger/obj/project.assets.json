@@ -8484,6 +8484,7 @@
       "DomainCore >= 1.0.0",
       "Infrastructure >= 1.0.0",
       "Microsoft.CodeAnalysis.NetAnalyzers >= 6.0.0",
+      "Microsoft.Extensions.Configuration.Abstractions >= 6.0.0",
       "Microsoft.Extensions.Hosting >= 6.0.1",
       "Microsoft.Extensions.Hosting.Abstractions >= 6.0.0",
       "SSH.NET >= 2020.0.1",
@@ -8547,6 +8548,10 @@
           "Microsoft.CodeAnalysis.NetAnalyzers": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
+            "target": "Package",
+            "version": "[6.0.0, )"
+          },
+          "Microsoft.Extensions.Configuration.Abstractions": {
             "target": "Package",
             "version": "[6.0.0, )"
           },

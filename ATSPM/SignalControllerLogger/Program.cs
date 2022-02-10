@@ -1,4 +1,6 @@
-﻿using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Configuration;
+using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Common;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using System;
@@ -74,8 +77,10 @@ namespace ATSPM.SignalControllerLogger
                     s.AddHostedService<TPLDataflowService>();
 
                     //downloaders
-                    s.AddTransient<ISignalControllerDownloader, FTPSignalControllerDownloader>();
-                    s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    //s.AddTransient<ISignalControllerDownloader, FTPSignalControllerDownloader>();
+                    //s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    s.AddTransient<ISignalControllerDownloader, SFTPSignalControllerDownloader>();
+                    //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
 
 
                     //decoders
@@ -83,9 +88,12 @@ namespace ATSPM.SignalControllerLogger
                     s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
-                    //s.Configure<FileETLSettings>(h.Configuration.GetSection("FileETLSettings"));
-                    s.Configure<ControllerFTPSettings>(h.Configuration.GetSection("ControllerFTPSettings"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(h.Configuration.GetSection("SignalControllerDownloaderConfiguration"));
+
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(SFTPSignalControllerDownloader), h.Configuration.GetSection(nameof(SFTPSignalControllerDownloader)));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(FTPSignalControllerDownloader), h.Configuration.GetSection(nameof(FTPSignalControllerDownloader)));
+
+
+
                     s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
@@ -96,101 +104,60 @@ namespace ATSPM.SignalControllerLogger
             //1St0p$h0p
             //ecpi2ecpi
 
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var temp = scope.ServiceProvider.GetServices<IOptionsMonitor<SignalControllerDownloaderConfiguration>>();
+            //}
 
-            
+            var temp = host.Services.GetService<IOptionsMonitor<SignalControllerDownloaderConfiguration>>();
 
-
-            
-
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: Start");
-
-            
-
-            var block = new TransformManyBlock<int, FileInfo>(async s =>
-            {
-                var list = new List<FileInfo>();
-
-                await foreach (var item in AsyncTest())
-                {
-                    list.Add(item);
-                }
-
-                return list;
+            var temp1 = temp.Get("SFTPSignalControllerDownloader");
 
 
 
-            });
+            temp.OnChange((c, s) => Console.WriteLine($"options have changed: {c.ConnectionTimeout} - {s}"));
 
-            block.Post(1);
+            //IReadOnlyList<Signal> _signalList;
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Take(1).ToList();
+            //}
 
-            //await foreach (var item in AsyncTest())
-            await foreach (var item in block.ReceiveAllAsync())
-            {
-                Console.WriteLine($"{DateTime.Now}: {item}");
-            }
+            //var testSignal = new Signal()
+            //{
+            //    SignalId = "9704",
+            //    Ipaddress = "10.209.2.126",
+            //    ControllerType = new ControllerType()
+            //    {
+            //        ControllerTypeId = 2,
+            //        ActiveFtp = true,
+            //        Ftpdirectory = "/set1",
+            //        UserName = "econolite",
+            //        Password = "ecpi2ecpi"
+            //    }
+            //};
 
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: End");
+            //_signalList = new List<Signal>(new Signal[] { testSignal });
+
+            //var progress = new Progress<ControllerDownloadProgress>(p => Console.WriteLine($"Progress={p}"));
+
+            //ISignalControllerDownloader downloader = host.Services.GetService<ISignalControllerDownloader>();
+
+            //foreach (var signal in _signalList)
+            //{
+            //    //var items = downloader.Execute(signal, progress);
+
+            //    await foreach (var item in downloader.Execute(signal, progress))
+            //    {
+            //        Console.WriteLine($"Returned: {item.FullName}");
+            //    }
+            //}
+
 
             Console.ReadKey();
         }
 
-        private static async IAsyncEnumerable<FileInfo> AsyncTest()
-        {
-            //var dirFiles = new List<FileInfo>();
-            
-            var connectionInfo = new ConnectionInfo("10.209.2.126", "econolite", new PasswordAuthenticationMethod("econolite", "ecpi2ecpi"));
-
-            using (var client = new SftpClient(connectionInfo))
-            {
-                try
-                {
-                    client.Connect();
-                }
-                catch (SshException e)
-                {
-                    Console.WriteLine($"SshException: {e}");
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine($"IOException: {e}");
-                }
-
-                if (client.IsConnected)
-                {
-                    var files = client.ListDirectory("/opt/econolite/set1").Where(f => f.FullName.Contains(".dat")).ToList();
-
-                    foreach (var file in files)
-                    {
-                        Console.WriteLine($"File: {file.FullName}");
-
-                        using (FileStream fileStream = File.OpenWrite(Path.Combine(@"C:\ControlLogs", file.Name)))
-                        {
-                            try
-                            {
-                                await Task.Factory.FromAsync(client.BeginDownloadFile(file.FullName, fileStream), client.EndDownloadFile);
-                            }
-                            catch (SshException e)
-                            {
-                                Console.WriteLine($"SshException: {e}");
-                            }
-                            catch (IOException e)
-                            {
-                                Console.WriteLine($"IOException: {e}");
-                            }
-
-                            var fileInfo = new FileInfo(fileStream.Name);
-
-                            if (fileInfo.Exists)
-                                yield return fileInfo;
-                        }
-                    }
-
-                    client.Disconnect();
-                }
-            }
-
-            //return dirFiles;
-        }
+        
 
     //    public static IList<ControllerLogArchive> GenerateLogArchives()
     //    {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ATSPM.Application.Configuration
 {
-    public class ControllerFTPSettings
+    public class SignalControllerLoggerConfiguration
     {
         public string RootPath { get; set; }
         public int PollTime { get; set; }

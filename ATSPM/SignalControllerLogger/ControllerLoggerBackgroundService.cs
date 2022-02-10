@@ -26,13 +26,13 @@ namespace ATSPM.SignalControllerLogger
     {
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<ControllerFTPSettings> _options;
+        protected readonly IOptions<SignalControllerLoggerConfiguration> _options;
 
         PipelineManager _pipelineManager;
 
         private IReadOnlyList<Signal> _signalList;
 
-        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<ControllerFTPSettings> options) =>
+        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<SignalControllerLoggerConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         
@@ -62,7 +62,7 @@ namespace ATSPM.SignalControllerLogger
             _pipelineManager = new PipelineManager(stoppingToken);
 
             //add steps
-            _pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory",(i, c) => DownloadSelector(i).ExecuteAsync(i,c), i => true, i => true);
+            //_pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory",(i, c) => DownloadSelector(i).ExecuteAsync(i,c), i => true, i => true);
             _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => i.Parent.Name == "ControlLogs", i => i.Count > 0);
             _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true);
             _pipelineManager.AddStep<HashSet<ControllerEventLog>, List<ControllerLogArchive>>("CombineEventLogs", (i, c) => CombineEventLogs(i, c), i => true, i => true);

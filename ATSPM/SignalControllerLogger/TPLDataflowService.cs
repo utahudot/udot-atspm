@@ -27,13 +27,13 @@ namespace ATSPM.SignalControllerLogger
     {
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<ControllerFTPSettings> _options;
+        protected readonly IOptions<SignalControllerLoggerConfiguration> _options;
 
         private int _bufferSize = 10;
 
         private IReadOnlyList<Signal> _signalList;
 
-        public TPLDataflowService(ILogger<TPLDataflowService> log, IServiceProvider serviceProvider, IOptions<ControllerFTPSettings> options) =>
+        public TPLDataflowService(ILogger<TPLDataflowService> log, IServiceProvider serviceProvider, IOptions<SignalControllerLoggerConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         
@@ -220,17 +220,15 @@ namespace ATSPM.SignalControllerLogger
 
                 //Console.WriteLine($"{blockName} is processing {s?.SignalId}");
 
-                try
-                {
-                    //return await DownloadSelector(s).ExecuteAsync(s, cancellationToken).ConfigureAwait(false);
-
-                    var stuff = await DownloadSelector(s).ExecuteAsync(s, cancellationToken).ConfigureAwait(false);
-                    return stuff?.GetFiles("*.*", SearchOption.AllDirectories).ToArray();
-                }
-                catch (Exception ex)
-                {
-                    //Console.WriteLine($"--------------------------------------------signalDownload catch: {ex}");
-                }
+                //try
+                //{
+                //    var stuff = await DownloadSelector(s).ExecuteAsync(s, cancellationToken).ConfigureAwait(false);
+                //    return stuff?.GetFiles("*.*", SearchOption.AllDirectories).ToArray();
+                //}
+                //catch (Exception ex)
+                //{
+                //    //Console.WriteLine($"--------------------------------------------signalDownload catch: {ex}");
+                //}
 
                 //return await Task.FromResult<DirectoryInfo>(null);
                 return await Task.FromResult<FileInfo[]>(null);
