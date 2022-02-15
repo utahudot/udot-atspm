@@ -210,6 +210,9 @@ namespace ATSPM.SignalControllerLogger
             Console.WriteLine($"Stopping: {sw.Elapsed}======================================================================");
 
             sw.Stop();
+
+            // TODO: dispose array of await tasks for flow stemps
+            // TODO: run GC
         }
 
         private IPropagatorBlock<Signal, FileInfo> CreateDownloaderStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)

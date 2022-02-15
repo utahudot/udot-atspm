@@ -63,14 +63,80 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
         }
 
-        public override void Dispose()
-        {
-            //throw new NotImplementedException();
-        }
+        //public override void Dispose()
+        //{
+        //    //throw new NotImplementedException();
+        //}
 
         //public override bool CanExecute(Signal value)
         //{
         //    return true;
+        //}
+
+        #endregion
+    }
+
+    public class TestignalControllerDownloader : ServiceObjectBase, ISignalControllerDownloader
+    {
+
+        protected readonly ILogger<TestignalControllerDownloader> _log;
+        protected readonly ISFTPDownloaderClient _downloaderClient;
+        //protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
+        protected readonly SignalControllerDownloaderConfiguration _options;
+
+        public event EventHandler CanExecuteChanged;
+
+        //public TestignalControllerDownloader(ILogger<StubSignalControllerDownloader> log, ISFTPDownloaderClient downloaderClient, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+
+        public TestignalControllerDownloader(ILogger<TestignalControllerDownloader> log, ISFTPDownloaderClient downloaderClient, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options)
+        {
+            _log = log;
+            _downloaderClient = downloaderClient;
+            _options = options.Get(this.GetType().Name) ?? options.Value;
+        }
+
+        #region Properties
+
+        public SignalControllerType ControllerType => SignalControllerType.Unknown;
+
+        #endregion
+
+        #region Methods
+
+        public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
+            {
+                yield return item;
+            }
+        }
+
+        public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            yield return null;
+        }
+
+        public bool CanExecute(Signal parameter)
+        {
+            return true;
+        }
+
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (parameter is Signal p)
+                return CanExecute(p);
+            return default;
+        }
+
+        void ICommand.Execute(object parameter)
+        {
+            if (parameter is Signal p)
+                Task.Run(() => Execute(p, default, default));
+        }
+
+        //public override void Dispose()
+        //{
+        //    _downloaderClient.Dispose();
         //}
 
         #endregion
