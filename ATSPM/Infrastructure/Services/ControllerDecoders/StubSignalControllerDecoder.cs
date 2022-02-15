@@ -100,10 +100,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             throw new InvalidDataException($"Decoding error, not a valid file or stream format {signalId}");
         }
 
-        public override void Dispose()
-        {
-            //throw new NotImplementedException();
-        }
+        //public override void Dispose()
+        //{
+        //    //throw new NotImplementedException();
+        //}
 
         #endregion
     }

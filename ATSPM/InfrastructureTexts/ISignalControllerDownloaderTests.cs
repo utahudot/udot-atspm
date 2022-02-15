@@ -31,8 +31,7 @@ namespace SignalControllerLoggerTests
         {
             _output = output;
             _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubSignalControllerDownloader>();
-            _nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime(), PingControllerToVerify = false });
-
+            //_nullOptions = Options.Create(new SignalControllerDownloaderConfiguration() { EarliestAcceptableDate = new DateTime(), PingControllerToVerify = false });
 
 
             //var s = new ServiceCollection();
@@ -43,7 +42,7 @@ namespace SignalControllerLoggerTests
 
 
 
-            _downloader = new StubSignalControllerDownloader((ILogger<StubSignalControllerDownloader>)_nullLogger, new ServiceCollection().BuildServiceProvider(), _nullOptions);
+            _downloader = new StubSignalControllerDownloader((ILogger<StubSignalControllerDownloader>)_nullLogger, new ServiceCollection().BuildServiceProvider(), new Mock<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>().Object);
 
             _output.WriteLine($"Created ISignalControllerDownloader Instance: {_downloader.GetHashCode()}");
         }

@@ -79,13 +79,21 @@ namespace ATSPM.SignalControllerLogger
                     //downloaders
                     //s.AddTransient<ISignalControllerDownloader, FTPSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    s.AddTransient<ISignalControllerDownloader, SFTPSignalControllerDownloader>();
+                    //s.AddTransient<ISignalControllerDownloader, SFTPSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
+                    s.AddScoped<ISignalControllerDownloader, TestignalControllerDownloader>();
 
 
                     //decoders
                     s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+
+
+
+                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloader>();
+
+
+
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
 
@@ -103,19 +111,46 @@ namespace ATSPM.SignalControllerLogger
             //host.RunAsync();
             //1St0p$h0p
             //ecpi2ecpi
+            //"/opt/econolite/set1"
 
             //using (var scope = host.Services.CreateScope())
             //{
             //    var temp = scope.ServiceProvider.GetServices<IOptionsMonitor<SignalControllerDownloaderConfiguration>>();
             //}
 
-            var temp = host.Services.GetService<IOptionsMonitor<SignalControllerDownloaderConfiguration>>();
+            //var client = host.Services.GetService<ISFTPDownloaderClient>();
 
-            var temp1 = temp.Get("SFTPSignalControllerDownloader");
+            var testSignal = new Signal()
+            {
+                SignalId = "9704",
+                Ipaddress = "10.209.2.126",
+                ControllerType = new ControllerType()
+                {
+                    ControllerTypeId = 2,
+                    ActiveFtp = true,
+                    Ftpdirectory = "/set1",
+                    UserName = "econolite",
+                    Password = "ecpi2ecpi"
+                }
+            };
 
 
+            ISFTPDownloaderClient client = new SSHNetSFTPDownloader();
 
-            temp.OnChange((c, s) => Console.WriteLine($"options have changed: {c.ConnectionTimeout} - {s}"));
+            await client.ConnectAsync(new System.Net.NetworkCredential("econolite", "ecpi2ecpi", "10.209.2.126"), 1000);
+
+            if (client.IsConnected)
+            {
+                var files = await client.ListDirectoryAsync("/opt/econolite/set1", default, ".dat");
+
+                foreach (var file in files.Take(10))
+                {
+                    var localFile = await client.DownloadFileAsync(Path.Combine("C:\\ControlLogs", "9704", Path.GetFileName(file)), file);
+
+                    Console.WriteLine($"downloaded: {localFile.FullName}");
+                }
+            }
+
 
             //IReadOnlyList<Signal> _signalList;
             //using (var scope = host.Services.CreateScope())
@@ -123,19 +158,28 @@ namespace ATSPM.SignalControllerLogger
             //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Take(1).ToList();
             //}
 
-            //var testSignal = new Signal()
+
+
+            //var configuration = new LoggerDownloaderClientConfiguration()
             //{
-            //    SignalId = "9704",
-            //    Ipaddress = "10.209.2.126",
-            //    ControllerType = new ControllerType()
-            //    {
-            //        ControllerTypeId = 2,
-            //        ActiveFtp = true,
-            //        Ftpdirectory = "/set1",
-            //        UserName = "econolite",
-            //        Password = "ecpi2ecpi"
-            //    }
+            //    Signal = testSignal,
+            //    DownloadTimeout = 1000,
+            //    ConnectionTimeout = 1000,
+            //    LocalDirectory = Path.Combine("C:\\ControlLogs", testSignal.SignalId),
+            //    RemoteDirectory = "/opt/econolite/set1",
+            //    Credentials = new System.Net.NetworkCredential(testSignal.ControllerType.UserName, testSignal.ControllerType.Password, testSignal.Ipaddress)
             //};
+
+
+
+
+
+            //await foreach (var file in client.DownloadLogDirectory(configuration, default, ".dat"))
+            //{
+            //    Console.WriteLine($"file: {file.FullName}");
+            //}
+
+
 
             //_signalList = new List<Signal>(new Signal[] { testSignal });
 
