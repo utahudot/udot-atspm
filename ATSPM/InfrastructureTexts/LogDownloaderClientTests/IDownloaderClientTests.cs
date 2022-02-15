@@ -27,15 +27,22 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.LogDownloaderClientTests
 {
-    public class SFTPDownloaderClientTests : IDisposable
+    public class IDownloaderClientTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
         private ISFTPDownloaderClient _client;
 
-        public SFTPDownloaderClientTests(ITestOutputHelper output)
+        private const string ClientNotConnectedMessage = "Client not connected";
+
+        public IDownloaderClientTests(ITestOutputHelper output)
         {
             _output = output;
             _client = new SSHNetSFTPDownloader();
+
+            //var s = new ServiceCollection();
+            //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
+
+
 
             _output.WriteLine($"Created Instance: {_client.GetHashCode()}");
         }
@@ -178,11 +185,29 @@ namespace InfrastructureTests.LogDownloaderClientTests
         }
 
         [Fact]
-        public async Task DownloadFileAsyncIsConnectedFalse()
+        public async Task DownloadFileAsyncFailed()
         {
             if (_client is SSHNetSFTPDownloader sut)
             {
                 await Assert.ThrowsAsync<ControllerDownloadFileException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty));
+            }
+            else
+            {
+                Assert.False(true);
+            }
+        }
+
+        [Fact]
+        public async Task DownloadFileAsyncNotConnected()
+        {
+            if (_client is SSHNetSFTPDownloader sut)
+            {
+                var exception = await Assert.ThrowsAsync<ControllerDownloadFileException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty));
+
+                var expected = ClientNotConnectedMessage;
+                var actual = exception.Message;
+
+                Assert.Equal(expected, actual);
             }
             else
             {

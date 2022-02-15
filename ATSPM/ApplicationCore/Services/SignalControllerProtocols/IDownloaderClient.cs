@@ -12,11 +12,11 @@ namespace ATSPM.Application.Services.SignalControllerProtocols
     {
         bool IsConnected { get; }
 
-        //int FileCount { get; }
-        
         Task ConnectAsync(NetworkCredential credentials, int timeout = 1000, CancellationToken token = default);
 
         Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters);
+
+        IAsyncEnumerable<FileInfo> DownloadFilesAsync(string directory, CancellationToken token = default, params string[] filters);
 
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default);
 

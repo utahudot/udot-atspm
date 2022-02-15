@@ -29,7 +29,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int timeout, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int timeout = 1000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -55,23 +55,46 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
         }
 
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
+        public async Task DeleteFileAsync(string path, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
-            
-            if (IsConnected)
+
+            if (!IsConnected)
+                throw new ControllerConnectionException("", this, "Client not connected");
+
+            try
             {
-                var files = await Task.Factory.FromAsync(Client.BeginListDirectory(directory, null, null), Client.EndListDirectory);
-
-                return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
+                await Task.Run(() => Client.DeleteFile(path), token);
             }
+            catch (Exception e)
+            {
+                throw new ControllerDeleteFileException(path, this, e.Message, e);
+            }
+        }
 
-            return null;
+        public async Task DisconnectAsync(CancellationToken token = default)
+        {
+            token.ThrowIfCancellationRequested();
+
+            if (!IsConnected)
+                throw new ControllerConnectionException("", this, "Client not connected");
+
+            try
+            {
+                await Task.Run(() => Client.Disconnect(), token);
+            }
+            catch (Exception e)
+            {
+                throw new ControllerConnectionException(Client.ConnectionInfo.Host, this, e.Message, e);
+            }
         }
 
         public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
+
+            if (!IsConnected)
+                throw new ControllerConnectionException("", this, "Client not connected");
 
             try
             {
@@ -83,30 +106,33 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
         }
 
-        public Task DeleteFileAsync(string path, CancellationToken token = default)
+        public async IAsyncEnumerable<FileInfo> DownloadFilesAsync(string directory, [EnumeratorCancellation] CancellationToken token = default, params string[] filters)
         {
             token.ThrowIfCancellationRequested();
 
-            try
-            {
-                return Task.Run(() => Client.DeleteFile(path), token);
-            }
-            catch (Exception e)
-            {
-                throw new ControllerDeleteFileException(path, this, e.Message, e);
-            }
+            if (!IsConnected)
+                throw new ControllerConnectionException("", this, "Client not connected");
+
+            //throw new NotImplementedException();
+
+            yield return null;
         }
 
-        public Task DisconnectAsync(CancellationToken token = default)
+        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
         {
-            try
+            token.ThrowIfCancellationRequested();
+
+            if (!IsConnected)
+                throw new ControllerConnectionException("", this, "Client not connected");
+
+            if (IsConnected)
             {
-                return Task.Run(() => Client.Disconnect(), token);
+                var files = await Task.Factory.FromAsync(Client.BeginListDirectory(directory, null, null), Client.EndListDirectory);
+
+                return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
             }
-            catch (Exception e)
-            {
-                throw new ControllerConnectionException(Client.ConnectionInfo.Host, this, e.Message, e);
-            }
+
+            return null;
         }
 
         #endregion
