@@ -29,7 +29,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int timeout = 1000, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 1000, int operationTImeout = 1000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -40,12 +40,12 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 credentials.UserName,
                 new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
                 {
-                    Timeout = TimeSpan.FromSeconds(timeout)
+                    Timeout = TimeSpan.FromSeconds(connectionTimeout)
                 };
 
                 Client ??= new SftpClientWrapper(connectionInfo);
 
-                Client.OperationTimeout = TimeSpan.FromSeconds(1000);
+                Client.OperationTimeout = TimeSpan.FromSeconds(operationTImeout);
 
                 await Task.Run(() => Client.Connect(), token);
             }
@@ -106,18 +106,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
         }
 
-        public async IAsyncEnumerable<FileInfo> DownloadFilesAsync(string directory, [EnumeratorCancellation] CancellationToken token = default, params string[] filters)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (!IsConnected)
-                throw new ControllerConnectionException("", this, "Client not connected");
-
-            //throw new NotImplementedException();
-
-            yield return null;
-        }
-
         public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, CancellationToken token = default, params string[] filters)
         {
             token.ThrowIfCancellationRequested();
@@ -125,14 +113,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            if (IsConnected)
-            {
-                var files = await Task.Factory.FromAsync(Client.BeginListDirectory(directory, null, null), Client.EndListDirectory);
-
-                return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
-            }
-
-            return null;
+            return await Client.ListDirectoryAsync(directory, filters);
         }
 
         #endregion
@@ -147,7 +128,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     {
                         Client.Disconnect();
                     }
-
                     Client.Dispose();
                     Client = null;
                 }
@@ -175,6 +155,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         void SendKeepAlive();
 
         Task<FileInfo> DownloadFileAsync(string localPath, string remotePath);
+
+        Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters);
     }
 
     /// <summary>
@@ -203,6 +185,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
 
             return fileInfo;
+        }
+
+        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters)
+        {
+            var files = await Task.Factory.FromAsync(BeginListDirectory(directory, null, null), EndListDirectory);
+
+            return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
         }
     }
 }
