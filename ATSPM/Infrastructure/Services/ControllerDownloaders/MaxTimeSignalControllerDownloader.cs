@@ -108,10 +108,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
         }
 
-        public override void Dispose()
-        {
-            //throw new NotImplementedException();
-        }
+        //public override void Dispose()
+        //{
+        //    //throw new NotImplementedException();
+        //}
 
         #endregion
     }

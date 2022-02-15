@@ -82,6 +82,8 @@ namespace ATSPM.Domain.BaseClasses
         public event EventHandler Initialized;
 
         private bool _isInitialized;
+        
+
         //[Newtonsoft.Json.JsonIgnore]
         public bool IsInitialized
         {
@@ -113,7 +115,29 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IDisposable
 
-        public abstract void Dispose();
+        private bool disposedValue;
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // // TODO: dispose managed state (managed objects)
+                }
+
+                // // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
 
         #endregion
 
@@ -126,5 +150,14 @@ namespace ATSPM.Domain.BaseClasses
 
             Initialized?.Invoke(this, new EventArgs());
         }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ServiceObjectBase()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        
     }
 }
