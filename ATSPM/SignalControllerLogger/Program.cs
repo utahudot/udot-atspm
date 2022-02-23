@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Common;
-using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
@@ -14,15 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Renci.SshNet;
 using Renci.SshNet.Common;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -31,8 +26,6 @@ namespace ATSPM.SignalControllerLogger
         static async Task Main(string[] args)
         {
             //register based on environment https://stackoverflow.com/questions/59501699/dependency-injection-call-different-services-based-on-the-environment
-
-
 
             var host = Host.CreateDefaultBuilder()
             //var host = new HostBuilder()
@@ -81,7 +74,6 @@ namespace ATSPM.SignalControllerLogger
                     //s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, SFTPSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, TestignalControllerDownloader>();
 
 
                     //decoders
