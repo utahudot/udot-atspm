@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
-    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, int>
+    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, int>, IDisposable
     {
         SignalControllerType ControllerType { get; }
 

@@ -28,23 +28,20 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
     public class FTPSignalControllerDownloader : ControllerDownloaderBase
     {
-
-        public FTPSignalControllerDownloader(ILogger<FTPSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        //public FTPSignalControllerDownloader(IFTPDownloaderClient client, ILogger<FTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public FTPSignalControllerDownloader(IFTPDownloaderClient client, ILogger<FTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
-        //public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
-        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.EOS;
+        public override int ControllerType => 1;
+
+        public override string[] FileFilters { get; set; } = new string[] { "dat", "datZ" };
 
         #endregion
 
         #region Methods
 
-        public override void Initialize()
-        {
-        }
-
-        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             using FtpClient client = new FtpClient(parameter.Ipaddress);
             {
@@ -138,11 +135,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 }
             }
         }
-
-        //public override void Dispose()
-        //{
-        //    //throw new NotImplementedException();
-        //}
 
         #endregion
     }

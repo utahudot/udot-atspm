@@ -2475,6 +2475,9 @@
       "DomainCore/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "5.0.0"
+        },
         "compile": {
           "bin/placeholder/DomainCore.dll": {}
         },
@@ -8487,7 +8490,6 @@
       "Microsoft.Extensions.Configuration.Abstractions >= 6.0.0",
       "Microsoft.Extensions.Hosting >= 6.0.1",
       "Microsoft.Extensions.Hosting.Abstractions >= 6.0.0",
-      "SSH.NET >= 2020.0.1",
       "System.Threading.Tasks.Dataflow >= 6.0.0"
     ]
   },
@@ -8563,10 +8565,6 @@
             "target": "Package",
             "version": "[6.0.0, )"
           },
-          "SSH.NET": {
-            "target": "Package",
-            "version": "[2020.0.1, )"
-          },
           "System.Threading.Tasks.Dataflow": {
             "target": "Package",
             "version": "[6.0.0, )"
@@ -8587,7 +8585,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.405\\RuntimeIdentifierGraph.json"
       }
     }
   }
