@@ -11,7 +11,7 @@ namespace ATSPM.Domain.Extensions
     {
         /// <summary>
         /// Trigger a Task in an async method without having to await
-        /// Otherwise you have to markd the tas with #pragma warning disable CS4014
+        /// Otherwise you have to mark the task with #pragma warning disable CS4014
         /// </summary>
         /// <param name="task"></param>
         public static void FireAndForget(this Task task)

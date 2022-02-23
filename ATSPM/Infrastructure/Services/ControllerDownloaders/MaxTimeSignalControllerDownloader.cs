@@ -29,22 +29,19 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
     public class MaxTimeSignalControllerDownloader : ControllerDownloaderBase
     {
-
-        public MaxTimeSignalControllerDownloader(ILogger<MaxTimeSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public MaxTimeSignalControllerDownloader(IHTTPDownloaderClient client, ILogger<FTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
-        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
+        public override int ControllerType => 4;
+
+        public override string[] FileFilters { get; set; } = new string[] { ".xml" };
 
         #endregion
 
         #region Methods
 
-        public override void Initialize()
-        {
-        }
-
-        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             //TODO: replace this with options setting
             //using (HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(5) })

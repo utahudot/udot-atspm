@@ -2,6 +2,7 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Models;
+using ATSPM.Application.Services.SignalControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Renci.SshNet;
@@ -19,86 +20,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
     public class SFTPSignalControllerDownloader : ControllerDownloaderBase
     {
-
-        public SFTPSignalControllerDownloader(ILogger<SFTPSignalControllerDownloader> log, IServiceProvider serviceProvider, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public SFTPSignalControllerDownloader(ISFTPDownloaderClient client, ILogger<SFTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
-        public override SignalControllerType ControllerType => SignalControllerType.Cobalt;
+        public override int ControllerType => 2;
 
-        #endregion
-
-        #region Methods
-
-        protected override async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
-        {
-            var connectionInfo = new ConnectionInfo
-                (parameter.Ipaddress, 
-                parameter.ControllerType.UserName, 
-                new PasswordAuthenticationMethod(parameter.ControllerType.UserName, parameter.ControllerType.Password));
-
-            using (var client = new SftpClient(connectionInfo))
-            {
-                try
-                {
-                    client.Connect();
-                }
-                catch (SshException e)
-                {
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception connecting to {ip}", parameter.Ipaddress);
-
-                    progress?.Report(new ControllerDownloadProgress(e));
-                }
-                catch (SocketException e)
-                {
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception connecting to {ip}", parameter.Ipaddress);
-
-                    progress?.Report(new ControllerDownloadProgress(e));
-                }
-
-                if (client.IsConnected)
-                {
-                    var files = client.ListDirectory("/opt/econolite/set1").Where(f => f.FullName.Contains(".dat")).ToList();
-
-                    foreach (var file in files)
-                    {
-                        var fileInfo = new FileInfo(Path.Combine(_options.LocalPath, parameter.SignalId, file.Name));
-                        fileInfo.Directory.Create();
-
-                        using (FileStream fileStream = fileInfo.Create())
-                        {
-                            try
-                            {
-                                await Task.Factory.FromAsync(client.BeginDownloadFile(file.FullName, fileStream), client.EndDownloadFile);
-                            }
-                            catch (SshException e)
-                            {
-                                _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception downloading file {file}", file.FullName);
-
-                                progress?.Report(new ControllerDownloadProgress(e, files.IndexOf(file) + 1, files.Count));
-                            }
-                            catch (IOException e)
-                            {
-                                _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception downloading file {file}", file.FullName);
-
-                                progress?.Report(new ControllerDownloadProgress(e, files.IndexOf(file) + 1, files.Count));
-                            }
-
-                            if (fileInfo.Exists)
-                            {
-                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), "Downloaded {file}", fileInfo.FullName);
-
-                                progress?.Report(new ControllerDownloadProgress(fileInfo, files.IndexOf(file) + 1, files.Count));
-
-                                yield return fileInfo;
-                            }
-                        }
-                    }
-
-                    client.Disconnect();
-                }
-            }
-        }
+        public override string[] FileFilters { get; set; } = new string[] { "dat", "datZ" };
 
         #endregion
     }
