@@ -37,7 +37,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         public IDownloaderClientTests(ITestOutputHelper output)
         {
             _output = output;
-            _client = new SSHNetSFTPDownloader();
+            _client = new SSHNetSFTPDownloaderClient();
 
             //var s = new ServiceCollection();
             //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
@@ -56,7 +56,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             var client = new Mock<ISftpClientWrapper>();
             client.Setup(s => s.Connect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true)).Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -85,7 +85,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             var client = new Mock<ISftpClientWrapper>();
             client.Setup(s => s.Connect()).Throws<Exception>();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -103,7 +103,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ConnectAsync")]
         public async void ConnectAsyncCredentialsSuccess()
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var expected1 = "username";
                 var expected2 = "password";
@@ -145,7 +145,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [InlineData("username", "password", null)]
         public async void ConnectAsyncCredentialsFail(string username, string password, string domain)
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var credentials = new NetworkCredential(username, password, domain);
 
@@ -165,7 +165,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             tokenSource.Cancel();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var credentials = new NetworkCredential("username", "password", "domain");
 
@@ -193,7 +193,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             client.SetupGet(s => s.IsConnected).Returns(true);
             client.Setup(s => s.DeleteFile(It.Is<string>(r => r == expected))).Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -215,7 +215,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             client.SetupGet(s => s.IsConnected).Returns(true);
             client.Setup(s => s.DeleteFile(It.IsNotNull<string>())).Throws<ArgumentNullException>();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -231,7 +231,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async void DeleteFileAsyncNotConnected()
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var exception = await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.DeleteFileAsync(string.Empty));
 
@@ -254,7 +254,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             tokenSource.Cancel();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await sut.DeleteFileAsync(string.Empty, tokenSource.Token));
             }
@@ -283,7 +283,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             client.Setup(s => s.DownloadFileAsync(It.Is<string>(l => l == expected), It.Is<string>(r => r == remotePath))).ReturnsAsync(fileInfo).Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -309,7 +309,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             client.SetupGet(s => s.IsConnected).Returns(true);
             client.Setup(s => s.DownloadFileAsync(It.IsNotNull<string>(), It.IsNotNull<string>())).Throws<ArgumentNullException>();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
                 
@@ -325,7 +325,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async void DownloadFileAsyncNotConnected()
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var exception = await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty));
 
@@ -348,7 +348,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             tokenSource.Cancel();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await sut.DownloadFileAsync(string.Empty, string.Empty, tokenSource.Token));
             }
@@ -378,7 +378,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
                 .ReturnsAsync(returnFiles)
                 .Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -399,7 +399,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ListDirectoryAsync")]
         public async void ListDirectoryAsyncNotConnected()
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var exception = await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.ListDirectoryAsync(string.Empty));
 
@@ -422,7 +422,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             tokenSource.Cancel();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await sut.ListDirectoryAsync(string.Empty, tokenSource.Token, null));
             }
@@ -444,7 +444,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             client.SetupGet(s => s.IsConnected).Returns(true);
             client.Setup(s => s.Disconnect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(false)).Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -471,7 +471,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             var client = new Mock<ISftpClientWrapper>();
             client.Setup(s => s.Disconnect()).Throws<Exception>();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
@@ -487,7 +487,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
         public async void DisconnectAsyncNotConnected()
         {
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 var exception = await Assert.ThrowsAsync<ControllerConnectionException>(async () => await sut.DisconnectAsync());
 
@@ -510,7 +510,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             tokenSource.Cancel();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await sut.DisconnectAsync(tokenSource.Token));
             }
@@ -530,7 +530,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             client.SetupGet(p => p.IsConnected).Returns(true);
             client.Setup(s => s.Disconnect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(false)).Verifiable();
 
-            if (_client is SSHNetSFTPDownloader sut)
+            if (_client is SSHNetSFTPDownloaderClient sut)
             {
                 sut.Client = client.Object;
 
