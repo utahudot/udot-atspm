@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class SFTPSignalControllerDownloader : ControllerDownloaderBase
+    public class ASC3SignalControllerDownloader : ControllerDownloaderBase
     {
-        public SFTPSignalControllerDownloader(ISFTPDownloaderClient client, ILogger<SFTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public ASC3SignalControllerDownloader(IFTPDownloaderClient client, ILogger<ASC3SignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
-        public override int ControllerType => 2;
+        public override int ControllerType => 1;
 
         public override string[] FileFilters { get; set; } = new string[] { "dat", "datZ" };
 
