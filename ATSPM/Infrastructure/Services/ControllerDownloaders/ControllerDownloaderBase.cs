@@ -151,8 +151,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         yield return downloadedFile;
                     }
 
-                    progress?.Report(new ControllerDownloadProgress(new FileInfo(Path.Combine(_options.LocalPath, parameter.SignalId)), current, total));
-
                     try
                     {
                         await _client.DisconnectAsync(cancelToken);
@@ -166,10 +164,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Operation canceled connecting to {ip}", parameter.Ipaddress);
                     }
                 }
-            }
-            else
-            {
-                progress?.Report(new ControllerDownloadProgress(file: null));
             }
         }
 
