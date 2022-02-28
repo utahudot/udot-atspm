@@ -29,7 +29,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
     public class MaxTimeSignalControllerDownloader : ControllerDownloaderBase
     {
-        public MaxTimeSignalControllerDownloader(IHTTPDownloaderClient client, ILogger<FTPSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public MaxTimeSignalControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

@@ -72,7 +72,7 @@ namespace ATSPM.SignalControllerLogger
                     //downloaders
                     //s.AddTransient<ISignalControllerDownloader, FTPSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    //s.AddTransient<ISignalControllerDownloader, SFTPSignalControllerDownloader>();
+                    //s.AddTransient<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
                     //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
 
 
@@ -82,14 +82,14 @@ namespace ATSPM.SignalControllerLogger
 
 
 
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloader>();
+                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
 
 
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
 
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(SFTPSignalControllerDownloader), h.Configuration.GetSection(nameof(SFTPSignalControllerDownloader)));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
                     s.Configure<SignalControllerDownloaderConfiguration>(nameof(FTPSignalControllerDownloader), h.Configuration.GetSection(nameof(FTPSignalControllerDownloader)));
 
 
@@ -112,36 +112,38 @@ namespace ATSPM.SignalControllerLogger
 
             //var client = host.Services.GetService<ISFTPDownloaderClient>();
 
-            var testSignal = new Signal()
+            var signal = new Signal()
             {
-                SignalId = "9704",
-                Ipaddress = "10.209.2.126",
+                SignalId = "1076",
+                Ipaddress = "10.204.13.51",
                 ControllerType = new ControllerType()
                 {
-                    ControllerTypeId = 2,
+                    ControllerTypeId = 1,
                     ActiveFtp = true,
-                    Ftpdirectory = "/set1",
+                    Ftpdirectory = "//Set1",
                     UserName = "econolite",
                     Password = "ecpi2ecpi"
                 }
             };
 
 
-            ISFTPDownloaderClient client = new SSHNetSFTPDownloader();
+            IFTPDownloaderClient client = new FluentFTPDownloaderClient();
 
-            await client.ConnectAsync(new System.Net.NetworkCredential("econolite", "ecpi2ecpi", "10.209.2.126"), 1000);
+            await client.ConnectAsync(new System.Net.NetworkCredential(signal.ControllerType.UserName, signal.ControllerType.Password, signal.Ipaddress), 1000, 1000);
 
             if (client.IsConnected)
             {
-                var files = await client.ListDirectoryAsync("/opt/econolite/set1", default, ".dat");
+                var files = await client.ListDirectoryAsync(signal.ControllerType.Ftpdirectory, default, ".dat", ".datZ");
 
-                foreach (var file in files.Take(10))
+                foreach (var file in files)
                 {
-                    var localFile = await client.DownloadFileAsync(Path.Combine("C:\\ControlLogs", "9704", Path.GetFileName(file)), file);
+                    var localFile = await client.DownloadFileAsync(Path.Combine("C:\\ControlLogs", signal.SignalId, Path.GetFileName(file)), file);
 
                     Console.WriteLine($"downloaded: {localFile.FullName}");
                 }
             }
+
+            await client.DisconnectAsync();
 
 
             //IReadOnlyList<Signal> _signalList;

@@ -4,6 +4,7 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
+using FluentFTP;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 using Renci.SshNet.Common;
@@ -21,9 +22,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class SSHNetSFTPDownloader : ServiceObjectBase, ISFTPDownloaderClient
+    public class FluentFTPDownloaderClient : ServiceObjectBase, IFTPDownloaderClient
     {
-        public ISftpClientWrapper Client;
+        public IFtpClient Client;
 
         #region ISFTPDownloaderClient
 
@@ -43,11 +44,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     Timeout = TimeSpan.FromSeconds(connectionTimeout)
                 };
 
-                Client ??= new SftpClientWrapper(connectionInfo);
+                Client ??= new FtpClient(credentials.Domain, credentials);
 
-                Client.OperationTimeout = TimeSpan.FromSeconds(operationTImeout);
+                Client.ConnectTimeout = connectionTimeout;
+                Client.ReadTimeout = operationTImeout;
+                Client.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-                await Task.Run(() => Client.Connect(), token);
+                await Client?.AutoConnectAsync(token);
             }
             catch (Exception e)
             {
@@ -64,7 +67,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
             try
             {
-                await Task.Run(() => Client.DeleteFile(path), token);
+                await Client.DeleteFileAsync(path, token);
             }
             catch (Exception e)
             {
@@ -81,11 +84,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
             try
             {
-                await Task.Run(() => Client.Disconnect(), token);
+                await Client.DisconnectAsync(token);
             }
             catch (Exception e)
             {
-                throw new ControllerConnectionException(Client.ConnectionInfo.Host, this, e.Message, e);
+                throw new ControllerConnectionException(Client.Host, this, e.Message, e);
             }
         }
 
@@ -96,9 +99,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
+            var fileInfo = new FileInfo(localPath);
+            fileInfo.Directory.Create();
+
             try
             {
-                return await Client.DownloadFileAsync(localPath, remotePath);
+                await Client.DownloadFileAsync(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                    
+                return fileInfo;
             }
             catch (Exception e)
             {
@@ -113,7 +121,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            return await Client.ListDirectoryAsync(directory, filters);
+            var results = await Client.GetListingAsync(directory, FtpListOption.Auto, token);
+
+            return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
         }
 
         #endregion
@@ -134,64 +144,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             }
 
             base.Dispose(disposing);
-        }
-    }
-
-    /// <summary>
-    /// Interface wrapper for Renci.SshNet so it can be mocked, tested and injected
-    /// </summary>
-    public interface ISftpClientWrapper : ISftpClient
-    {
-        ConnectionInfo ConnectionInfo { get; }
-        bool IsConnected { get; }
-        TimeSpan KeepAliveInterval { get; set; }
-
-        event EventHandler<ExceptionEventArgs> ErrorOccurred;
-        event EventHandler<HostKeyEventArgs> HostKeyReceived;
-
-        void Connect();
-        void Disconnect();
-        void Dispose();
-        void SendKeepAlive();
-
-        Task<FileInfo> DownloadFileAsync(string localPath, string remotePath);
-
-        Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters);
-    }
-
-    /// <summary>
-    /// Implementation wrapper for Renci.SshNet so it can be mocked, tested and injected
-    /// </summary>
-    public class SftpClientWrapper : SftpClient, ISftpClientWrapper
-    {
-        public SftpClientWrapper(ConnectionInfo connectionInfo) : base(connectionInfo) { }
-
-        public SftpClientWrapper(string host, string username, string password) : base(host, username, password) { }
-
-        public SftpClientWrapper(string host, string username, params PrivateKeyFile[] keyFiles) : base(host, username, keyFiles) { }
-
-        public SftpClientWrapper(string host, int port, string username, string password) : base(host, port, username, password) { }
-
-        public SftpClientWrapper(string host, int port, string username, params PrivateKeyFile[] keyFiles) : base(host, port, username, keyFiles) { }
-
-        public async Task<FileInfo> DownloadFileAsync(string localPath, string remotePath)
-        {
-            var fileInfo = new FileInfo(localPath);
-            fileInfo.Directory.Create();
-
-            using (FileStream fileStream = fileInfo.Create())
-            {
-                await Task.Factory.FromAsync(BeginDownloadFile(remotePath, fileStream), EndDownloadFile);
-            }
-
-            return fileInfo;
-        }
-
-        public async Task<IEnumerable<string>> ListDirectoryAsync(string directory, params string[] filters)
-        {
-            var files = await Task.Factory.FromAsync(BeginListDirectory(directory, null, null), EndListDirectory);
-
-            return files.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
         }
     }
 }
