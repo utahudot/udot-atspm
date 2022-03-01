@@ -30,19 +30,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 1000, int operationTImeout = 1000, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
             try
             {
-                var connectionInfo = new ConnectionInfo
-                (credentials.Domain,
-                credentials.UserName,
-                new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
-                {
-                    Timeout = TimeSpan.FromSeconds(connectionTimeout)
-                };
+                if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
+                    throw new ArgumentNullException("Network Credentials can't be null");
 
                 Client ??= new FtpClient(credentials.Domain, credentials);
 
@@ -99,11 +94,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            var fileInfo = new FileInfo(localPath);
-            fileInfo.Directory.Create();
-
             try
             {
+                var fileInfo = new FileInfo(localPath);
+                fileInfo.Directory.Create();
+
                 await Client.DownloadFileAsync(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
                     
                 return fileInfo;

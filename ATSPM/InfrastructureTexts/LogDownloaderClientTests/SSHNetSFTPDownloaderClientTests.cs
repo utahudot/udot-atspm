@@ -27,14 +27,14 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.LogDownloaderClientTests
 {
-    public class IDownloaderClientTests : IDisposable
+    public class SSHNetSFTPDownloaderClientTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
         private ISFTPDownloaderClient _client;
 
         private const string ClientNotConnectedMessage = "Client not connected";
 
-        public IDownloaderClientTests(ITestOutputHelper output)
+        public SSHNetSFTPDownloaderClientTests(ITestOutputHelper output)
         {
             _output = output;
             _client = new SSHNetSFTPDownloaderClient();
@@ -107,9 +107,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
             {
                 var expected1 = "username";
                 var expected2 = "password";
-                var expected3 = "domain";
-                var expected4 = TimeSpan.FromSeconds(2500);
-                var expected5 = TimeSpan.FromSeconds(5000);
+                var expected3 = "127.0.0.1";
+                var expected4 = TimeSpan.FromSeconds(2);
+                var expected5 = TimeSpan.FromSeconds(4);
 
                 var credentials = new NetworkCredential(expected1, expected2, expected3);
 
@@ -382,8 +382,8 @@ namespace InfrastructureTests.LogDownloaderClientTests
             {
                 sut.Client = client.Object;
 
-                var expected = await sut.ListDirectoryAsync(directory, default, filters);
-                var actual = returnFiles;
+                var actual = await sut.ListDirectoryAsync(directory, default, filters);
+                var expected = returnFiles;
 
                 client.Verify();
 
