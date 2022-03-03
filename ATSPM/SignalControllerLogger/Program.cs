@@ -114,26 +114,26 @@ namespace ATSPM.SignalControllerLogger
 
             var signal = new Signal()
             {
-                SignalId = "1076",
-                Ipaddress = "10.204.13.51",
+                SignalId = "7357",
+                Ipaddress = "10.212.24.15",
                 ControllerType = new ControllerType()
                 {
-                    ControllerTypeId = 1,
+                    ControllerTypeId = 4,
                     ActiveFtp = true,
-                    Ftpdirectory = "//Set1",
-                    UserName = "econolite",
-                    Password = "ecpi2ecpi"
+                    Ftpdirectory = "v1/asclog/xml/full",
+                    UserName = "",
+                    Password = ""
                 }
             };
 
 
-            IFTPDownloaderClient client = new FluentFTPDownloaderClient();
+            IHTTPDownloaderClient client = new HttpDownloaderClient();
 
             await client.ConnectAsync(new System.Net.NetworkCredential(signal.ControllerType.UserName, signal.ControllerType.Password, signal.Ipaddress), 1000, 1000);
 
             if (client.IsConnected)
             {
-                var files = await client.ListDirectoryAsync(signal.ControllerType.Ftpdirectory, default, ".dat", ".datZ");
+                var files = await client.ListDirectoryAsync(signal.ControllerType.Ftpdirectory, default, $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0");
 
                 foreach (var file in files)
                 {
