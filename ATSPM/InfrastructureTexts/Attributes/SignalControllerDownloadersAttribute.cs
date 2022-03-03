@@ -28,7 +28,7 @@ namespace SignalControllerLoggerTests.Attributes
             yield return new object[] { typeof(ASC3SignalControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<ASC3SignalControllerDownloader>(), mockConfig };
             yield return new object[] { typeof(CobaltSignalControllerDownloader), Mock.Of<ISFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<CobaltSignalControllerDownloader>(), mockConfig };
             yield return new object[] { typeof(MaxTimeSignalControllerDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<MaxTimeSignalControllerDownloader>(), mockConfig };
-            yield return new object[] { typeof(EOSSignalControllerDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<EOSSignalControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(EOSSignalControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<EOSSignalControllerDownloader>(), mockConfig };
         }
     }
 }

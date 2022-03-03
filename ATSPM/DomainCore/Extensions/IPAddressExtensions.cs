@@ -45,5 +45,10 @@ namespace ATSPM.Domain.Extensions
 
             return false;
         }
+
+        public static bool IsValidIPAddress(this Uri uri, bool ping = false)
+        {
+            return IsValidIPAddress(uri.ToString(), ping);
+        }
     }
 }
