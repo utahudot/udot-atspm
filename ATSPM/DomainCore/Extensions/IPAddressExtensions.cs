@@ -8,7 +8,7 @@ namespace ATSPM.Domain.Extensions
 {
     public static class IPAddressExtensions
     {
-        public static bool IsValidIPAddress(this string ipaddress, bool ping = false)
+        public static bool IsValidIPAddress(this string ipaddress, bool ping = false, int timeout = 4000)
         {
             if (ipaddress == "0" || ipaddress == "0.0.0.0")
                 return false;
@@ -18,17 +18,11 @@ namespace ATSPM.Domain.Extensions
                 if (ping)
                 {
                     Ping pingSender = new Ping();
-                    PingOptions pingOptions = new PingOptions();
-
-                    // Use the default Ttl value which is 128,  
-                    // but change the fragmentation behavior. 
-                    pingOptions.DontFragment = true;
-
                     byte[] buffer = new byte[32];
-                    int timeout = 120;
+
                     try
                     {
-                        PingReply reply = pingSender.Send(ip, timeout, buffer, pingOptions);
+                        PingReply reply = pingSender.Send(ip, timeout, buffer, new PingOptions(128, true));
                         if (reply != null && reply.Status == IPStatus.Success)
                         {
                             return true;
@@ -44,11 +38,6 @@ namespace ATSPM.Domain.Extensions
             }
 
             return false;
-        }
-
-        public static bool IsValidIPAddress(this Uri uri, bool ping = false)
-        {
-            return IsValidIPAddress(uri.ToString(), ping);
         }
     }
 }

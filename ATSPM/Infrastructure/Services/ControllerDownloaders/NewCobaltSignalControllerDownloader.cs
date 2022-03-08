@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
-    public class CobaltSignalControllerDownloader : ControllerDownloaderBase
+    public class NewCobaltSignalControllerDownloader : ControllerDownloaderBase
     {
-        public CobaltSignalControllerDownloader(IFTPDownloaderClient client, ILogger<CobaltSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public NewCobaltSignalControllerDownloader(ISFTPDownloaderClient client, ILogger<NewCobaltSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
-        public override int ControllerType => 2;
+        public override int ControllerType => 10;
 
         public override string[] FileFilters { get; set; } = new string[] { "dat", "datZ" };
 

@@ -26,7 +26,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
     {
         public IFtpClient Client;
 
-        #region ISFTPDownloaderClient
+        #region IFTPDownloaderClient
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
@@ -45,7 +45,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 Client.ReadTimeout = operationTImeout;
                 Client.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-                await Client?.AutoConnectAsync(token);
+                //await Client.AutoConnectAsync(token);
+                await Client.ConnectAsync(token);
             }
             catch (Exception e)
             {
