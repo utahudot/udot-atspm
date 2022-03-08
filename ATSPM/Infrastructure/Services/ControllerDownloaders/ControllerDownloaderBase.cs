@@ -105,7 +105,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                 if (_client.IsConnected)
                 {
-                    var remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
+                    IEnumerable<string> remoteFiles = new List<string>();
+
+                    try
+                    {
+                        remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
+                    }
+                    catch (Exception e)
+                    {
+                        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception listing Directory {signal} from {ip}", parameter.SignalId, parameter.Ipaddress);
+                    }
 
                     int total = remoteFiles.Count();
                     int current = 0;
