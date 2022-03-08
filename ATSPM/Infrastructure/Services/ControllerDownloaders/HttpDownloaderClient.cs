@@ -30,7 +30,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         public HttpClient Client;
         private Uri _getPath;
 
-        #region ISFTPDownloaderClient
+        #region IHTTPDownloaderClient
 
         public bool IsConnected => Client != null && Client.BaseAddress.Host.IsValidIPAddress();
 

@@ -81,32 +81,15 @@ namespace ATSPM.SignalControllerLogger
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() => Console.WriteLine($"-------------------------------------------------------------------------------------------stoppingToken"));
-            
-            //using (var scope = _serviceProvider.CreateScope())
-            //{
-            //    //var db = scope.ServiceProvider.GetRequiredService<DbContext>();
-            //    //_signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
 
-            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Take(25).ToList();
-            //}
-
-
-            var testSignal = new Signal()
+            using (var scope = _serviceProvider.CreateScope())
             {
-                SignalId = "9704",
-                Ipaddress = "10.209.2.126",
-                ControllerType = new ControllerType()
-                {
-                    ControllerTypeId = 2,
-                    ActiveFtp = true,
-                    Ftpdirectory = "/set1",
-                    UserName = "econolite",
-                    Password = "ecpi2ecpi"
-                }
-            };
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).ToList();
+            }
 
-            _signalList = new List<Signal>(new Signal[] { testSignal });     
-                
+
+
+
 
             Console.WriteLine($"signal list count: {_signalList.Count}");
 
@@ -150,7 +133,11 @@ namespace ATSPM.SignalControllerLogger
             signalSender.LinkTo(downloader, new DataflowLinkOptions { PropagateCompletion = true });
 
 
-            var joinResults = new ActionBlock<FileInfo> (i => Console.WriteLine($"file? {i.FullName}"));
+            var joinResults = new ActionBlock<FileInfo> (i => 
+            {
+                if (i == null)
+                    Console.WriteLine($"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%file? {i?.FullName}");
+            });
             downloader.LinkTo(joinResults);
 
 
@@ -206,8 +193,8 @@ namespace ATSPM.SignalControllerLogger
 
             //await resultAction.Completion.ContinueWith(t => Console.WriteLine($"done?: {sw.Elapsed}"));
 
-
-            Console.WriteLine($"Stopping: {sw.Elapsed}======================================================================");
+            var dir = Directory.GetDirectories("C:\\ControlLogs").ToList();
+            Console.WriteLine($"Stopping: {sw.Elapsed} - {dir.Count}/{_signalList.Count} ======================================================================");
 
             sw.Stop();
 
@@ -219,22 +206,44 @@ namespace ATSPM.SignalControllerLogger
         {
             var block = new TransformManyBlock<Signal, FileInfo>(async s =>
             {
-                //Console.WriteLine($"trying to download: {s.SignalId}|{s.ControllerType.ControllerTypeId}");
+                //Console.WriteLine($"trying to download: {s.SignalId} | {s.ControllerType.ControllerTypeId} | {s.Enabled} | {s.Ipaddress}");
 
                 //Console.WriteLine($"{blockName} is processing {s?.SignalId}");
 
-                //try
-                //{
-                //    var stuff = await DownloadSelector(s).ExecuteAsync(s, cancellationToken).ConfigureAwait(false);
-                //    return stuff?.GetFiles("*.*", SearchOption.AllDirectories).ToArray();
-                //}
-                //catch (Exception ex)
-                //{
-                //    //Console.WriteLine($"--------------------------------------------signalDownload catch: {ex}");
-                //}
+                var fileList = new List<FileInfo>();
 
-                //return await Task.FromResult<DirectoryInfo>(null);
-                return await Task.FromResult<FileInfo[]>(null);
+                try
+                {
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var downloaders = scope.ServiceProvider.GetServices<ISignalControllerDownloader>();
+                        var downloader = downloaders.First(c => c.CanExecute(s));
+
+                        await foreach (var file in downloader.Execute(s, cancellationToken))
+                        {
+                            if (file == null)
+                            {
+                                Console.WriteLine($"why is this file null? {s.SignalId} - {s.ControllerType.ControllerTypeId}");
+                            }
+                            else
+                            {
+                                fileList.Add(file);
+                            }
+                        }
+                    }
+
+                    //Console.WriteLine($"File Count: {s.SignalId} | {fileList.Count}");
+                }
+                catch (FormatException e)
+                {
+                    //Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&signalDownload catch: {e.Message} - {s.SignalId}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"--------------------------------------------signalDownload catch: {s.SignalId} - {s.ControllerType.ControllerTypeId} - {e.Message} - {e.GetType().Name}");
+                }
+
+                return fileList;
 
             }, new ExecutionDataflowBlockOptions()
             {

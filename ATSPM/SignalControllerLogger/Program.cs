@@ -8,6 +8,7 @@ using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using FluentFTP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +16,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet.Common;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -32,7 +35,7 @@ namespace ATSPM.SignalControllerLogger
 
                 .ConfigureLogging((h, l) =>
                 {
-                    l.SetMinimumLevel(LogLevel.None);
+                    l.SetMinimumLevel(LogLevel.Debug);
                     l.AddConsole();
                 })
                 //.ConfigureHostConfiguration(b =>
@@ -50,6 +53,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddLogging();
                     s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
+                    //background services
+                    s.AddHostedService<TPLDataflowService>();
 
                     //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -62,37 +67,29 @@ namespace ATSPM.SignalControllerLogger
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
                     s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
-
-                    
-
-                    //background services
-                    //s.AddHostedService<ControllerLoggerBackgroundService>();
-                    s.AddHostedService<TPLDataflowService>();
+                    //downloader clients
+                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
-                    //s.AddTransient<ISignalControllerDownloader, FTPSignalControllerDownloader>();
-                    //s.AddTransient<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    //s.AddTransient<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-                    //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
-
+                    s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+                    s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+                    s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+                    s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
                     //decoders
                     s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-
-
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
-
-
-
-
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
-
+                    //downloader configurations
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
                     s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(FTPSignalControllerDownloader), h.Configuration.GetSection(nameof(FTPSignalControllerDownloader)));
-
-
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
 
                     s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
@@ -100,162 +97,93 @@ namespace ATSPM.SignalControllerLogger
                 .UseConsoleLifetime()
                 .Build();
 
-            //host.RunAsync();
-            //1St0p$h0p
-            //ecpi2ecpi
-            //"/opt/econolite/set1"
+            await host.RunAsync();
+
+            //var _signalList = new List<Signal>();
 
             //using (var scope = host.Services.CreateScope())
             //{
-            //    var temp = scope.ServiceProvider.GetServices<IOptionsMonitor<SignalControllerDownloaderConfiguration>>();
+            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.ControllerType.ControllerTypeId == 9).Take(25).ToList();
             //}
 
-            //var client = host.Services.GetService<ISFTPDownloaderClient>();
-
-            var signal = new Signal()
-            {
-                SignalId = "7357",
-                Ipaddress = "10.212.24.15",
-                ControllerType = new ControllerType()
-                {
-                    ControllerTypeId = 4,
-                    ActiveFtp = true,
-                    Ftpdirectory = "v1/asclog/xml/full",
-                    UserName = "",
-                    Password = ""
-                }
-            };
-
-
-            IHTTPDownloaderClient client = new HttpDownloaderClient();
-
-            await client.ConnectAsync(new System.Net.NetworkCredential(signal.ControllerType.UserName, signal.ControllerType.Password, signal.Ipaddress), 1000, 1000);
-
-            if (client.IsConnected)
-            {
-                var files = await client.ListDirectoryAsync(signal.ControllerType.Ftpdirectory, default, $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0");
-
-                foreach (var file in files)
-                {
-                    var localFile = await client.DownloadFileAsync(Path.Combine("C:\\ControlLogs", signal.SignalId, Path.GetFileName(file)), file);
-
-                    Console.WriteLine($"downloaded: {localFile.FullName}");
-                }
-            }
-
-            await client.DisconnectAsync();
-
-
-            //IReadOnlyList<Signal> _signalList;
-            //using (var scope = host.Services.CreateScope())
+            //foreach (var s in _signalList)
             //{
-            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Take(1).ToList();
-            //}
+            //    IFtpClient Client = null;
+            //    FtpListItem[] results = null;
 
-
-
-            //var configuration = new LoggerDownloaderClientConfiguration()
-            //{
-            //    Signal = testSignal,
-            //    DownloadTimeout = 1000,
-            //    ConnectionTimeout = 1000,
-            //    LocalDirectory = Path.Combine("C:\\ControlLogs", testSignal.SignalId),
-            //    RemoteDirectory = "/opt/econolite/set1",
-            //    Credentials = new System.Net.NetworkCredential(testSignal.ControllerType.UserName, testSignal.ControllerType.Password, testSignal.Ipaddress)
-            //};
-
-
-
-
-
-            //await foreach (var file in client.DownloadLogDirectory(configuration, default, ".dat"))
-            //{
-            //    Console.WriteLine($"file: {file.FullName}");
-            //}
-
-
-
-            //_signalList = new List<Signal>(new Signal[] { testSignal });
-
-            //var progress = new Progress<ControllerDownloadProgress>(p => Console.WriteLine($"Progress={p}"));
-
-            //ISignalControllerDownloader downloader = host.Services.GetService<ISignalControllerDownloader>();
-
-            //foreach (var signal in _signalList)
-            //{
-            //    //var items = downloader.Execute(signal, progress);
-
-            //    await foreach (var item in downloader.Execute(signal, progress))
+            //    try
             //    {
-            //        Console.WriteLine($"Returned: {item.FullName}");
+            //        var credentials = new NetworkCredential(s.ControllerType?.UserName, s.ControllerType?.Password, s.Ipaddress);
+
+            //        Client ??= new FtpClient(credentials.Domain, credentials);
+
+            //        Client.ConnectTimeout = 2000;
+            //        Client.ReadTimeout = 2000;
+            //        Client.DataConnectionType = FtpDataConnectionType.AutoActive;
+
+            //        //await Client.AutoConnectAsync(token);
+            //        await Client.ConnectAsync();
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine($"Connection Error: {e}");
+            //    }
+
+            //    if (Client.IsConnected)
+            //    {
+            //        try
+            //        {
+            //            //"/econolite/set1"
+            //            results = await Client.GetListingAsync("/opt/econolite/set1", FtpListOption.Auto);
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            Console.WriteLine($"List Directory Error: {e}");
+            //        }
+            //    }
+
+            //    Console.WriteLine($"Directory File Count: {results.Length}");
+            //}
+
+            //directory   "/econolite/set1"   string
+
+
+            //List<Signal> _signalList;
+            //var fileList = new List<FileInfo>();
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.ControllerType.ControllerTypeId == 1).Take(25).ToList();
+
+            //    foreach (var s in _signalList)
+            //    {
+            //        Console.WriteLine($"trying to download: {s.SignalId} | {s.ControllerType.ControllerTypeId}");
+
+            //        try
+            //        {
+            //            var downloaders = scope.ServiceProvider.GetServices<ISignalControllerDownloader>();
+            //            var downloader = downloaders.First(c => c.CanExecute(s));
+
+            //            await foreach (var file in downloader.Execute(s, default))
+            //            {
+            //                Console.WriteLine($"downloaded file: {file.FullName}");
+
+            //                fileList.Add(file);
+            //            }
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            Console.WriteLine($"--------------------------------------------signalDownload catch: {ex}");
+            //        }
             //    }
             //}
 
 
+            //Console.WriteLine($"file count: {fileList.Count}");
+
+
+
             Console.ReadKey();
         }
-
-        
-
-    //    public static IList<ControllerLogArchive> GenerateLogArchives()
-    //    {
-    //        List<ControllerLogArchive> archives = new List<ControllerLogArchive>();
-    //        var random = new Random();
-
-    //        foreach (int i in Enumerable.Range(1, 100))
-    //        {
-    //            var archive = new ControllerLogArchive() { SignalId = $"{1000 + i}", ArchiveDate = DateTime.Now.Subtract(TimeSpan.FromDays(random.Next(1, 10))) };
-    //            var list = new List<ControllerEventLog>();
-
-    //            list.Add(new ControllerEventLog() { EventCode = random.Next(1,50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
-    //            list.Add(new ControllerEventLog() { EventCode = random.Next(1, 50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
-    //            list.Add(new ControllerEventLog() { EventCode = random.Next(1, 50), EventParam = random.Next(1, 50) + 100, SignalId = archive.SignalId, Timestamp = archive.ArchiveDate });
-
-    //            archive.LogData = list;
-
-    //            archives.Add(archive);
-    //        }
-
-    //        return archives;
-            
-    //    }
-    //}
-
-    //public static class FileInfoExtensions
-    //{
-    //    public static IQueryable<T> GetModelKeys<T>(this IQueryable<FileInfo> files, DbContext db) where T : ATSPMModelBase
-    //    {
-    //        return files.Select(s => s.ToModelKeys<T>(db));
-    //    }
-
-    //    public static T ToModelKeys<T>(this FileInfo file, DbContext db) where T : ATSPMModelBase
-    //    {
-    //        var split = file.Name.Substring(0, file.Name.IndexOf(".")).Split("_").ToList();
-
-    //        if (split[0] == typeof(T).Name)
-    //        {
-    //            split.RemoveAt(0);
-
-    //            var model = Activator.CreateInstance(typeof(T));
-
-    //            var keys = db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.Name).Zip(split).ToDictionary(d => d.First, d => d.Second);
-
-    //            foreach (var t in model.GetType().GetProperties().Where(p => keys.Keys.Contains(p.Name)))
-    //            {
-    //                if (t.PropertyType == typeof(DateTime))
-    //                {
-    //                    t.SetValue(model, DateTime.ParseExact(keys[t.Name], "dd-MM-yyyy", null));
-    //                }
-    //                else
-    //                {
-    //                    t.SetValue(model, Convert.ChangeType(keys[t.Name], t.PropertyType));
-    //                }
-    //            }
-
-    //            return (T)model;
-    //        }
-
-    //        return null;
-    //    }
     }
 }
