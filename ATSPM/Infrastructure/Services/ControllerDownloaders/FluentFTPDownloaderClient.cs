@@ -117,9 +117,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            var results = await Client.GetListingAsync(directory, FtpListOption.Auto, token);
+            try
+            {
+                var results = await Client.GetListingAsync(directory, FtpListOption.Auto, token);
 
-            return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
+                return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
+            }
+            catch (Exception e)
+            {
+                throw new ControllerListDirectoryException(directory, this, e.Message);
+            }
         }
 
         #endregion

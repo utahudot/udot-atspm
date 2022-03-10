@@ -113,7 +113,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            return await Client.ListDirectoryAsync(directory, filters);
+            try
+            {
+                return await Client.ListDirectoryAsync(directory, filters);
+            }
+            catch (Exception e)
+            {
+                throw new ControllerListDirectoryException(directory, this, e.Message);
+            }
         }
 
         #endregion

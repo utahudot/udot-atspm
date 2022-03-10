@@ -63,8 +63,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            //check valid controller type
-            //return ControllerType.HasFlag((SignalControllerType)(1 << value?.ControllerType?.ControllerTypeId));
             return value?.ControllerType?.ControllerTypeId == ControllerType && value.Enabled;
         }
 
@@ -77,7 +75,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="FormatException"></exception>
+        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             if (parameter == null)
@@ -86,7 +84,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             {
                 if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
-                    throw new FormatException($"Not a Valid IP Address: {parameter.Ipaddress}");
+                    throw new InvalidSignalControllerIpAddressException(parameter);
 
                 try
                 {
@@ -96,7 +94,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 }
                 catch (ControllerConnectionException e)
                 {
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception connecting to {ip}", parameter.Ipaddress);
+                    _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception connecting to {ip}", parameter.Ipaddress);
                 }
                 catch (OperationCanceledException e)
                 {
@@ -111,7 +109,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     {
                         remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                     }
-                    catch (Exception e)
+                    catch (ControllerListDirectoryException e)
                     {
                         _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception listing Directory {signal} from {ip}", parameter.SignalId, parameter.Ipaddress);
                     }
@@ -131,7 +129,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         }
                         catch (ControllerDownloadFileException e)
                         {
-                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception downloading file {file} from {ip}", file, parameter.Ipaddress);
+                            _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception downloading file {file} from {ip}", file, parameter.Ipaddress);
                         }
                         catch (OperationCanceledException e)
                         {
@@ -147,7 +145,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         //    }
                         //    catch (ControllerDownloadFileException e)
                         //    {
-                        //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception deleting file {file} from {ip}", file, parameter.Ipaddress);
+                        //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception deleting file {file} from {ip}", file, parameter.Ipaddress);
                         //    }
                         //    catch (OperationCanceledException e)
                         //    {
@@ -155,10 +153,20 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         //    }
                         //}
 
-                        progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
+                        //HACK: don't know why files aren't downloading without throwing an error
+                        if (downloadedFile != null)
+                        {
+                            progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
-                        yield return downloadedFile;
+                            yield return downloadedFile;
+                        }
+                        else
+                        {
+                            _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "File failed to download on {signal} file name: {file}", parameter.SignalId, file);
+                        }
                     }
+
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), "Downloaded {current}/{total} files on {signal}", current, total, parameter.SignalId);
 
                     try
                     {
@@ -166,7 +174,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     }
                     catch (ControllerConnectionException e)
                     {
-                        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception diconnecting from {ip}", parameter.Ipaddress);
+                        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception diconnecting from {ip}", parameter.Ipaddress);
                     }
                     catch (OperationCanceledException e)
                     {
