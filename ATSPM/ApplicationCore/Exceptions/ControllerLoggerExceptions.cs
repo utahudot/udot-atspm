@@ -6,6 +6,16 @@ using System.Text;
 
 namespace ATSPM.Application.Exceptions
 {
+    public class InvalidSignalControllerIpAddressException : ATSPMExceptionBase
+    {
+        public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalId} address {signal.Ipaddress} is either invalid or can't be reached")
+        {
+            SignalController = signal;
+        }
+
+        public Signal SignalController { get; private set; }
+    }
+
     public abstract class ControllerLoggerExceptions : ATSPMExceptionBase
     {
         public ControllerLoggerExceptions(IDownloaderClient downloaderClient, string? message) : base(message)
@@ -68,5 +78,20 @@ namespace ATSPM.Application.Exceptions
         }
 
         public string FileName { get; private set; }
+    }
+
+    public class ControllerListDirectoryException : ControllerLoggerExceptions
+    {
+        public ControllerListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
+        {
+            Directory = directory;
+        }
+
+        public ControllerListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
+        {
+            Directory = directory;
+        }
+
+        public string Directory { get; private set; }
     }
 }

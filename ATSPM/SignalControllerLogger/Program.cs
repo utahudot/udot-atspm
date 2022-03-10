@@ -35,7 +35,7 @@ namespace ATSPM.SignalControllerLogger
 
                 .ConfigureLogging((h, l) =>
                 {
-                    l.SetMinimumLevel(LogLevel.Debug);
+                    l.SetMinimumLevel(LogLevel.Warning);
                     l.AddConsole();
                 })
                 //.ConfigureHostConfiguration(b =>

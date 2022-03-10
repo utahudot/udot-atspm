@@ -1,5 +1,7 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
@@ -84,7 +86,7 @@ namespace ATSPM.SignalControllerLogger
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerType.ControllerTypeId == 1).Skip(500).Take(500).ToList();
             }
 
 
@@ -156,47 +158,59 @@ namespace ATSPM.SignalControllerLogger
             //Console.WriteLine($"downloaders count: {downloaders.Count()}");
 
 
-
-            foreach (var signal in _signalList)
+            try
             {
-                //await signalSender.SendAsync(signal);
-                signalSender.Post(signal);
+                foreach (var signal in _signalList)
+                {
+                    //await signalSender.SendAsync(signal);
+                    signalSender.Post(signal);
+                }
+
+
+
+                signalSender.Completion.ContinueWith(t => Console.WriteLine($"signalSender: {t.Status}"));
+
+                downloader.Completion.ContinueWith(t => Console.WriteLine($"downloader: {t.Status}"));
+
+                files.Completion.ContinueWith(t => Console.WriteLine($"files: {t.Status}"));
+
+                fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
+
+                saveToRepo.Completion.ContinueWith(t => Console.WriteLine($"saveToRepo: {t.Status}"));
+
+
+
+
+
+                signalSender.Complete();
+
+
+
+                await signalSender.Completion;
+                await downloader.Completion;
+                //await files.Completion;
+                //await fileToLogs.Completion;
+                //await saveToRepo.Completion;
+
+                //await Task.WhenAll(downloaders.Select(s => s.Completion).ToArray()).ContinueWith(t => resultAction.Complete(), stoppingToken);
+
+                //await resultAction.Completion.ContinueWith(t => Console.WriteLine($"done?: {sw.Elapsed}"));
             }
+            catch (Exception e)
+            {
+                Console.WriteLine($"***********************************{e.Message}*************************************************************");
+            }
+            finally
+            {
+                var dir = Directory.GetDirectories("C:\\ControlLogs").ToList();
+                Console.WriteLine($"Stopping: {sw.Elapsed} - {dir.Count}/{_signalList.Count} ======================================================================");
 
-           
-
-            signalSender.Completion.ContinueWith(t => Console.WriteLine($"signalSender: {t.Status}"));
-
-            downloader.Completion.ContinueWith(t => Console.WriteLine($"downloader: {t.Status}"));
-
-            files.Completion.ContinueWith(t => Console.WriteLine($"files: {t.Status}"));
-
-            fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
-
-            saveToRepo.Completion.ContinueWith(t => Console.WriteLine($"saveToRepo: {t.Status}"));
-
-
-
-
-
-            signalSender.Complete();
+                sw.Stop();
+            }
 
             
 
-            await signalSender.Completion;
-            await downloader.Completion;
-            //await files.Completion;
-            //await fileToLogs.Completion;
-            //await saveToRepo.Completion;
-
-            //await Task.WhenAll(downloaders.Select(s => s.Completion).ToArray()).ContinueWith(t => resultAction.Complete(), stoppingToken);
-
-            //await resultAction.Completion.ContinueWith(t => Console.WriteLine($"done?: {sw.Elapsed}"));
-
-            var dir = Directory.GetDirectories("C:\\ControlLogs").ToList();
-            Console.WriteLine($"Stopping: {sw.Elapsed} - {dir.Count}/{_signalList.Count} ======================================================================");
-
-            sw.Stop();
+            
 
             // TODO: dispose array of await tasks for flow stemps
             // TODO: run GC
@@ -206,44 +220,52 @@ namespace ATSPM.SignalControllerLogger
         {
             var block = new TransformManyBlock<Signal, FileInfo>(async s =>
             {
-                //Console.WriteLine($"trying to download: {s.SignalId} | {s.ControllerType.ControllerTypeId} | {s.Enabled} | {s.Ipaddress}");
-
-                //Console.WriteLine($"{blockName} is processing {s?.SignalId}");
-
-                var fileList = new List<FileInfo>();
-
-                try
+                if (int.TryParse(s.SignalId, out int id))
                 {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var downloaders = scope.ServiceProvider.GetServices<ISignalControllerDownloader>();
-                        var downloader = downloaders.First(c => c.CanExecute(s));
+                    //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Starting step {step} on {signal}", blockName, s);
 
-                        await foreach (var file in downloader.Execute(s, cancellationToken))
+                    var fileList = new List<FileInfo>();
+
+                    try
+                    {
+                        //var progress = new Progress<ControllerDownloadProgress>(p => _log.LogInformation(new EventId(Convert.ToInt32(s.SignalId)), "{progress}", p));
+
+                        using (var scope = _serviceProvider.CreateScope())
                         {
-                            if (file == null)
-                            {
-                                Console.WriteLine($"why is this file null? {s.SignalId} - {s.ControllerType.ControllerTypeId}");
-                            }
-                            else
+                            var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(s));
+
+                            //await foreach (var file in downloader.Execute(s, progress, cancellationToken))
+                            await foreach (var file in downloader.Execute(s, cancellationToken))
                             {
                                 fileList.Add(file);
                             }
                         }
+
+                        //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
+                    }
+                    catch (InvalidSignalControllerIpAddressException e)
+                    {
+                        //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+                    }
+                    catch (ArgumentNullException e)
+                    {
+                        _log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+                    }
+                    catch (Exception e)
+                    {
+                        _log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "Unexpected exception caught on step {step}", blockName);
                     }
 
-                    //Console.WriteLine($"File Count: {s.SignalId} | {fileList.Count}");
+                    return fileList;
                 }
-                catch (FormatException e)
+                
+                else
                 {
-                    //Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&signalDownload catch: {e.Message} - {s.SignalId}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"--------------------------------------------signalDownload catch: {s.SignalId} - {s.ControllerType.ControllerTypeId} - {e.Message} - {e.GetType().Name}");
+                    Console.WriteLine($"###########################################################   {s}   ###########################################################");
+                    return null;
                 }
 
-                return fileList;
+                
 
             }, new ExecutionDataflowBlockOptions()
             {

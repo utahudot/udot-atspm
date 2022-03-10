@@ -127,15 +127,22 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (!IsConnected)
                 throw new ControllerConnectionException("", this, "Client not connected");
 
-            var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory)
+            try
             {
-                //Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0"
-                Query = filters.ToString()
-            };
+                var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory)
+                {
+                    //Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0"
+                    Query = filters.ToString()
+                };
 
-            _getPath = builder.Uri;
+                _getPath = builder.Uri;
 
-            return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
+                return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
+            }
+            catch (Exception e)
+            {
+                throw new ControllerListDirectoryException(directory, this, e.Message);
+            }
         }
 
         #endregion
