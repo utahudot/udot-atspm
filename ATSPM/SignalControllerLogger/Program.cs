@@ -9,6 +9,8 @@ using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
 using FluentFTP;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,10 @@ namespace ATSPM.SignalControllerLogger
     {
         static async Task Main(string[] args)
         {
+            var loggerLabels = new Dictionary<string, string>();
+            loggerLabels.Add("hello", "goodbye");
+            
+            
             //register based on environment https://stackoverflow.com/questions/59501699/dependency-injection-call-different-services-based-on-the-environment
 
             var host = Host.CreateDefaultBuilder()
@@ -35,21 +41,23 @@ namespace ATSPM.SignalControllerLogger
 
                 .ConfigureLogging((h, l) =>
                 {
-                    l.SetMinimumLevel(LogLevel.Warning);
+                    l.SetMinimumLevel(LogLevel.Debug);
                     l.AddConsole();
-                })
-                //.ConfigureHostConfiguration(b =>
-                //{
-                //    b.SetBasePath(Directory.GetCurrentDirectory());
-                //})
-                //.ConfigureAppConfiguration(b =>
-                //{
-                //    b.SetBasePath(Directory.GetCurrentDirectory());
-                //    b.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                //    b.AddEnvironmentVariables();
-                //})
+                    l.AddGoogle(new LoggingServiceOptions 
+                    { 
+                        ProjectId = "1022556126938", 
+                        ServiceName = AppDomain.CurrentDomain.FriendlyName,
+                        Version = "1.0", 
+                        Options = LoggingOptions.Create(LogLevel.Debug, "SlinkyLoggingService", loggerLabels)});
+                    })
+
                 .ConfigureServices((h, s) =>
                 {
+                    //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
+                    //    ProjectId = "1022556126938",
+                    //    ServiceName = "ErrorReporting",
+                    //    Version = "1.1",
+                    //});
                     s.AddLogging();
                     s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
@@ -98,6 +106,15 @@ namespace ATSPM.SignalControllerLogger
                 .Build();
 
             await host.RunAsync();
+
+            //var credential = GoogleCredential.GetApplicationDefault();
+            //Console.WriteLine(credential.UnderlyingCredential);
+
+            ILogger log = host.Services.GetService<ILogger<Program>>();
+
+            //var signal = new Signal() { SignalId = "1234", PrimaryName = "hello" };
+
+            //log.LogWarning(new EventId(67, "Order 67"), new Exception("this is the exception"), "this is an error message {one}, {two}, {signal}", "1", "2", signal);
 
             //var _signalList = new List<Signal>();
 
