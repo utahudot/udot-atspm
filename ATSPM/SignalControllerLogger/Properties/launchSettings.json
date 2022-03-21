@@ -3,6 +3,8 @@
     "SignalControllerLogger": {
       "commandName": "Project",
       "environmentVariables": {
+        "Key": "Value",
+        "GOOGLE_APPLICATION_CREDENTIALS": "M:\\My Drive\\ut-udot-atspm-dev-023438451801.json",
         "DOTNET_ENVIRONMENT": "Development"
       }
     }
