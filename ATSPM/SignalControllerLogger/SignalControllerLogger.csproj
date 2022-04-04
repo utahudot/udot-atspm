@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>ATSPM.SignalControllerLogger</RootNamespace>
     <UserSecretsId>4b3726cc-bb0e-46bc-bf4b-0564cdf0f955</UserSecretsId>
   </PropertyGroup>
