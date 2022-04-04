@@ -86,7 +86,7 @@ namespace ATSPM.SignalControllerLogger
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerType.ControllerTypeId == 1).Skip(500).Take(500).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).ToList();
             }
 
 

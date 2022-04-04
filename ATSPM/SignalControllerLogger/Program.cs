@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -30,26 +31,30 @@ namespace ATSPM.SignalControllerLogger
     {
         static async Task Main(string[] args)
         {
-            var loggerLabels = new Dictionary<string, string>();
-            loggerLabels.Add("hello", "goodbye");
-            
-            
-            //register based on environment https://stackoverflow.com/questions/59501699/dependency-injection-call-different-services-based-on-the-environment
+            var loggerLabels = new Dictionary<string, string>
+            {
+                { "hello", "goodbye" }
+            };
 
             var host = Host.CreateDefaultBuilder()
-            //var host = new HostBuilder()
-
+                //var host = new HostBuilder()
+                //.ConfigureHostConfiguration(c =>
+                //{
+                //})
                 .ConfigureLogging((h, l) =>
                 {
                     l.SetMinimumLevel(LogLevel.Debug);
                     l.AddConsole();
-                    l.AddGoogle(new LoggingServiceOptions 
-                    { 
-                        ProjectId = "1022556126938", 
+
+                    l.AddGoogle(new LoggingServiceOptions
+                    {
+                        //ProjectId = "1022556126938",
+                        ProjectId = "869261868126",
                         ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                        Version = "1.0", 
-                        Options = LoggingOptions.Create(LogLevel.Debug, "SlinkyLoggingService", loggerLabels)});
-                    })
+                        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                        Options = LoggingOptions.Create(LogLevel.Debug, "SignalControllerLogs", loggerLabels)});
+                        //Options = LoggingOptions.Create(LogLevel.Debug, "SignalControllerLogs") });
+                })
 
                 .ConfigureServices((h, s) =>
                 {
@@ -68,7 +73,7 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
                     //s.AddScoped<ISignalRepository, SignalFileRepository>();
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
@@ -110,11 +115,13 @@ namespace ATSPM.SignalControllerLogger
             //var credential = GoogleCredential.GetApplicationDefault();
             //Console.WriteLine(credential.UnderlyingCredential);
 
-            ILogger log = host.Services.GetService<ILogger<Program>>();
+            //ILogger log = host.Services.GetService<ILogger<Program>>();
 
             //var signal = new Signal() { SignalId = "1234", PrimaryName = "hello" };
 
-            //log.LogWarning(new EventId(67, "Order 67"), new Exception("this is the exception"), "this is an error message {one}, {two}, {signal}", "1", "2", signal);
+            //log.WithLabels(new KeyValuePair<string, string>("key", "value"));
+
+            //log.WithLabels(new KeyValuePair<string, string>("key", "value")).LogWarning(new EventId(67, "Order 67"), new Exception("this is the exception"), "this is an error message {one}, {two}, {signal}", "1", "2", signal);
 
             //var _signalList = new List<Signal>();
 
