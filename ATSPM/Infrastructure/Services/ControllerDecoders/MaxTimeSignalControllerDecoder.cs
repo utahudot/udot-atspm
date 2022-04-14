@@ -24,11 +24,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 {
     public class MaxTimeSignalControllerDecoder : ControllerDecoderBase
     {
-        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IOptions<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
-
-        public override SignalControllerType ControllerType => SignalControllerType.MaxTime;
 
         #endregion
 
@@ -58,7 +56,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return base.Decompress(stream);
         }
 
-        public override Task<HashSet<ControllerEventLog>> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             cancelToken.ThrowIfCancellationRequested();
 
