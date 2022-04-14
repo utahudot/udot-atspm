@@ -22,11 +22,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Google.Cloud.Diagnostics.Common;
+using ATSPM.Application.LogMessages;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {   
-    
-    
     public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
     {
         public event EventHandler CanExecuteChanged;
@@ -81,8 +80,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
-
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Signal parameter can not be null");
 
@@ -90,6 +87,8 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             {
                 if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
                     throw new InvalidSignalControllerIpAddressException(parameter);
+
+                var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
 
                 try
                 {

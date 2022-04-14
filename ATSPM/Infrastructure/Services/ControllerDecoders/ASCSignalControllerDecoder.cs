@@ -22,11 +22,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 {
     public class ASCSignalControllerDecoder : ControllerDecoderBase
     {
-        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) : base(log, serviceProvider, options) { }
+        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IOptions<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
-
-        public override SignalControllerType ControllerType => SignalControllerType.ASC3 | SignalControllerType.Cobalt | SignalControllerType.EOS;
 
         #endregion
 
@@ -66,7 +64,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public override Task<HashSet<ControllerEventLog>> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default)
         {
             cancelToken.ThrowIfCancellationRequested();
 
@@ -136,15 +134,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                         {
                             logList.Add(new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
 
-                            //report progress
-                            //TODO: make a decoder progess object that tracks number of decoded vs number of added with current date and signalid
-                            progress?.Report(logList.Count);
-
-                            //_log.LogDebug("Decoded {ListCount} items from {SignalID}", logList.Count, signalId);
                         }
                     }
 
-                    progress?.Report(logList.Count);
                     return Task.FromResult(logList);
                 }
             }

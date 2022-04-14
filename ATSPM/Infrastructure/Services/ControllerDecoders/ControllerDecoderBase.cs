@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
@@ -28,18 +29,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         #region Fields
 
         private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
+        protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IServiceProvider serviceProvider, IOptions<SignalControllerDownloaderConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
-
+        public ControllerDecoderBase(ILogger log, IOptions<SignalControllerDecoderConfiguration> options) => (_log, _options) = (log, options);
 
         #region Properties
-
-        public abstract SignalControllerType ControllerType { get; }
 
         #endregion
 
@@ -56,36 +52,38 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return ExecuteAsync(parameter, cancelToken);
         }
 
-        public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, IProgress<ControllerDecodeProgress> progress = null, CancellationToken cancelToken = default)
         {
-            cancelToken.ThrowIfCancellationRequested();
+            if (parameter == null)
+                return await Task.FromException<HashSet<ControllerEventLog>>(new ArgumentNullException(nameof(parameter), $"FileInfo parameter can not be null"));
 
-            if (parameter == null && !parameter.Exists)
+            // TODO: find best exception to throw for null FileInfo
+            if (!parameter.Exists)
                 return await Task.FromException<HashSet<ControllerEventLog>>(new ArgumentNullException($"parameter"));
 
-            //return value
-            HashSet<ControllerEventLog> returnValue = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            HashSet<ControllerEventLog> decodedLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
             if (CanExecute(parameter))
             {
-                //convert file to stream
                 var memoryStream = parameter.ToMemoryStream();
 
-                //check if stream is compressed
                 memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
 
                 try
                 {
-                    returnValue = await DecodeAsync(parameter.Directory.Name, memoryStream, progress, cancelToken);
+                    await foreach (var log in DecodeAsync(parameter.DirectoryName, memoryStream, cancelToken))
+                    {
+                        decodedLogs.Add(log);
+
+                        progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
+                    }
                 }
-                catch (TaskCanceledException e)
+                catch (TaskCanceledException)
                 {
-                    e.LogE();
                     return await Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
                 }
                 catch (Exception e)
                 {
-                    e.LogE();
                     return await Task.FromException<HashSet<ControllerEventLog>>(e);
                 }
             }
@@ -94,7 +92,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 return await Task.FromException<HashSet<ControllerEventLog>>(new ExecuteException());
             }
 
-            return returnValue;
+            return decodedLogs;
         }
 
         Task IExecuteAsync.ExecuteAsync(object parameter)
@@ -136,12 +134,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return stream.GZipDecompressToStream();
         }
 
-        public abstract Task<HashSet<ControllerEventLog>> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default);
-
-        //public override void Dispose()
-        //{
-        //    //throw new NotImplementedException();
-        //}
+        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }
