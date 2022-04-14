@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
@@ -31,29 +32,22 @@ namespace ATSPM.SignalControllerLogger
     {
         static async Task Main(string[] args)
         {
-            var loggerLabels = new Dictionary<string, string>
-            {
-                { "hello", "goodbye" }
-            };
-
             var host = Host.CreateDefaultBuilder()
-                //var host = new HostBuilder()
-                //.ConfigureHostConfiguration(c =>
-                //{
-                //})
                 .ConfigureLogging((h, l) =>
                 {
-                    l.SetMinimumLevel(LogLevel.Debug);
-                    l.AddConsole();
+                    //l.SetMinimumLevel(LogLevel.Debug);
 
-                    l.AddGoogle(new LoggingServiceOptions
+                    if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     {
-                        //ProjectId = "1022556126938",
-                        ProjectId = "869261868126",
-                        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                        Options = LoggingOptions.Create(LogLevel.Debug, "SignalControllerLogs", loggerLabels)});
-                        //Options = LoggingOptions.Create(LogLevel.Debug, "SignalControllerLogs") });
+                        l.AddGoogle(new LoggingServiceOptions
+                        {
+                            ProjectId = "1022556126938",
+                            //ProjectId = "869261868126",
+                            ServiceName = AppDomain.CurrentDomain.FriendlyName,
+                            Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
+                            //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
+                        });
+                    }
                 })
 
                 .ConfigureServices((h, s) =>
@@ -110,12 +104,12 @@ namespace ATSPM.SignalControllerLogger
                 .UseConsoleLifetime()
                 .Build();
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
             //var credential = GoogleCredential.GetApplicationDefault();
             //Console.WriteLine(credential.UnderlyingCredential);
 
-            //ILogger log = host.Services.GetService<ILogger<Program>>();
+           
 
             //var signal = new Signal() { SignalId = "1234", PrimaryName = "hello" };
 

@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Enums;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Enums;
 using ATSPM.Application.Models;
 using ATSPM.Domain.Common;
 using System;
@@ -10,16 +11,14 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
-    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, int>, IDisposable
+    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>, IDisposable
     {
-        SignalControllerType ControllerType { get; }
-
         bool IsCompressed(Stream stream);
 
         bool IsEncoded(Stream stream);
 
         Stream Decompress(Stream stream);
 
-        Task<HashSet<ControllerEventLog>> DecodeAsync (string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default);
+        IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
     }
 }

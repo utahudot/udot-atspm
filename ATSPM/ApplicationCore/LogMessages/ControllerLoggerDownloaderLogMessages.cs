@@ -15,13 +15,11 @@ namespace ATSPM.Application.LogMessages
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
-                { "SignalID", signal.SignalId },
-                { "SignalName", signal.PrimaryName },
-                { "SignalTypeID", signal.ControllerType.ControllerTypeId.ToString() },
-                { "IPAddress", signal.Ipaddress },
+                { "SignalID", signal?.SignalId },
+                { "SignalName", signal?.PrimaryName },
+                { "SignalTypeID", signal?.ControllerType?.ControllerTypeId.ToString() },
+                { "IPAddress", signal?.Ipaddress },
             });
-
-            _logger = logger;
         }
 
         #region HostConnectionMessages
@@ -67,7 +65,7 @@ namespace ATSPM.Application.LogMessages
         [LoggerMessage(EventId = 1021, EventName = "Downloaded File", Level = LogLevel.Debug, Message = "Downloaded file {file} from {signalId} at {ip}")]
         public partial void DownloadedFileMessage(string file, string signalId, string ip);
 
-        [LoggerMessage(EventId = 1022, EventName = "Downloaded Files", Level = LogLevel.Information, Message = "Downloaded {current}/{total} files from {signal} at {ip}")]
+        [LoggerMessage(EventId = 1022, EventName = "Downloaded Files", Level = LogLevel.Information, Message = "Downloaded {current}/{total} files from {signalId} at {ip}")]
         public partial void DownloadedFilesMessage(int current, int total, string signalId, string ip);
 
         [LoggerMessage(EventId = 1023, EventName = "Download File Exception", Level = LogLevel.Warning, Message = "Exception downloading file {file} from {signalId} at {ip}")]
