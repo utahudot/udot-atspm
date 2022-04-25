@@ -78,12 +78,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
+        /// <exception cref="ExecuteException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Signal parameter can not be null");
 
-            if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
+            //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
+            if (CanExecute(parameter))
             {
                 if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
                     throw new InvalidSignalControllerIpAddressException(parameter);
@@ -206,6 +208,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
                     }
                 }
+            }
+            else
+            {
+                throw new ExecuteException();
             }
         }
 
