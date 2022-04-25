@@ -37,17 +37,17 @@ namespace ATSPM.SignalControllerLogger
                 {
                     //l.SetMinimumLevel(LogLevel.Debug);
 
-                    if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
-                    {
-                        l.AddGoogle(new LoggingServiceOptions
-                        {
-                            ProjectId = "1022556126938",
-                            //ProjectId = "869261868126",
-                            ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                            Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
-                            //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
-                        });
-                    }
+                    //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
+                    //{
+                    //    l.AddGoogle(new LoggingServiceOptions
+                    //    {
+                    //        ProjectId = "1022556126938",
+                    //        //ProjectId = "869261868126",
+                    //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
+                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
+                    //        //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
+                    //    });
+                    //}
                 })
 
                 .ConfigureServices((h, s) =>
@@ -104,7 +104,7 @@ namespace ATSPM.SignalControllerLogger
                 .UseConsoleLifetime()
                 .Build();
 
-            //await host.RunAsync();
+            await host.RunAsync();
 
             //var credential = GoogleCredential.GetApplicationDefault();
             //Console.WriteLine(credential.UnderlyingCredential);

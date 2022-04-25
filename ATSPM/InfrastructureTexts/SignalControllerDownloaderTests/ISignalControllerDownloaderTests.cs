@@ -4,6 +4,7 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Exceptions;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -83,6 +84,8 @@ namespace SignalControllerLoggerTests
         [SignalControllerDownloaders]
         public void CanExecuteTypeNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
+            Mock.Get(mockClient).Setup(s => s.Dispose());
+
             var d = (ISignalControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
             var signal = new Signal()
@@ -90,8 +93,6 @@ namespace SignalControllerLoggerTests
                 Enabled = true,
                 ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType + 1 }
             };
-
-            Mock.Get(mockClient).Setup(s => s.Dispose());
 
             var condition = d.CanExecute(signal);
 
@@ -131,40 +132,63 @@ namespace SignalControllerLoggerTests
                 ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType }
             };
 
-            await Assert.ThrowsAsync<FormatException>(async () =>
+            await Assert.ThrowsAsync<InvalidSignalControllerIpAddressException>(async () =>
             {
                 await foreach (var file in d.Execute(signal)) { }
             });
         }
 
-        //[Theory]
-        //[SignalControllerDownloaders]
-        //public async void ExecuteWithControllerConnectionException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
-        //{
-        //    var signal = new Signal()
-        //    {
-        //        Ipaddress = "127.0.0.1"
-        //    };
+        [Theory]
+        [SignalControllerDownloaders]
+        public async Task ExecuteWithFailedCanExecute(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
+        {
+            Mock.Get(mockClient).Setup(s => s.Dispose());
 
-        //    Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
+            var d = (ISignalControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
-        //    Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default))
-        //        .ThrowsAsync(new ControllerConnectionException(It.Is<string>(s => s == signal.Ipaddress), mockClient, null))
-        //        .Verifiable();
+            var signal = new Signal()
+            {
+                Enabled = true,
+                PrimaryName = "Controller",
+                SignalId = "999",
+                ControllerType = new ControllerType() { ControllerTypeId = 0 }
+            };
 
-        //    Mock.Get(mockClient).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
+            await Assert.ThrowsAsync<ExecuteException>(async () =>
+            {
+                await foreach (var file in d.Execute(signal)) { }
+            });
+        }
 
-        //    Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
-        //    Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
+        [Theory]
+        [SignalControllerDownloaders]
+        public async void ExecuteWithControllerConnectionException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
+        {
+            var signal = new Signal()
+            {
+                Ipaddress = "127.0.0.1",
+                Enabled = true
+            };
 
-        //    var d = (ISignalControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
 
-        //    signal.ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType };
+            Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default))
+                .ThrowsAsync(new ControllerConnectionException(It.Is<string>(s => s == signal.Ipaddress), mockClient, null))
+                .Verifiable();
 
-        //    await foreach (var file in d.Execute(signal)) { }
+            Mock.Get(mockClient).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
 
-        //    Mock.Verify();
-        //}
+            Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
+            Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
+
+            var d = (ISignalControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
+
+            signal.ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType };
+
+            await foreach (var file in d.Execute(signal)) { }
+
+            Mock.Verify();
+        }
 
         //[Theory]
         //[SignalControllerDownloaders]
