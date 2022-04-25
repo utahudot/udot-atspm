@@ -32,80 +32,64 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         #region Methods
 
-        public override void Initialize()
-        {
-        }
-
         public override bool CanExecute(FileInfo parameter)
         {
             return parameter.Exists && (parameter.Extension == ".xml" || parameter.Extension == ".XML");
         }
 
-        public override bool IsCompressed(Stream stream)
+        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default)
         {
-            return base.IsCompressed(stream);
-        }
+            throw new NotImplementedException();
 
-        public override bool IsEncoded(Stream stream)
-        {
-            return base.IsEncoded(stream);
-        }
 
-        public override Stream Decompress(Stream stream)
-        {
-            return base.Decompress(stream);
-        }
+            //cancelToken.ThrowIfCancellationRequested();
 
-        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, IProgress<int> progress = null, CancellationToken cancelToken = default)
-        {
-            cancelToken.ThrowIfCancellationRequested();
+            //if (string.IsNullOrEmpty(signalId))
+            //    throw new ArgumentNullException(nameof(signalId));
 
-            if (string.IsNullOrEmpty(signalId))
-                throw new ArgumentNullException(nameof(signalId));
+            //if (stream?.Length == 0)
+            //    throw new InvalidDataException("Stream is empty");
 
-            if (stream?.Length == 0)
-                throw new InvalidDataException("Stream is empty");
+            //HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
-            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+            //stream.Position = 0;
 
-            stream.Position = 0;
+            //try
+            //{
+            //    XDocument xml = XDocument.Load(stream);
 
-            try
-            {
-                XDocument xml = XDocument.Load(stream);
+            //    foreach (var a in xml.Descendants().Where(d => d.Name == "Event"))
+            //    {
+            //        var log = new ControllerEventLog()
+            //        {
+            //            SignalId = signalId,
+            //            EventCode = Convert.ToInt32(a.Attribute("EventTypeID").Value),
+            //            EventParam = Convert.ToInt32(a.Attribute("Parameter").Value),
+            //            Timestamp = Convert.ToDateTime(a.Attribute("TimeStamp").Value)
+            //        };
 
-                foreach (var a in xml.Descendants().Where(d => d.Name == "Event"))
-                {
-                    var log = new ControllerEventLog()
-                    {
-                        SignalId = signalId,
-                        EventCode = Convert.ToInt32(a.Attribute("EventTypeID").Value),
-                        EventParam = Convert.ToInt32(a.Attribute("Parameter").Value),
-                        Timestamp = Convert.ToDateTime(a.Attribute("TimeStamp").Value)
-                    };
+            //        if (log.Timestamp <= DateTime.Now && log.Timestamp > _options.Value.EarliestAcceptableDate)
+            //        {
+            //            logList.Add(log);
 
-                    if (log.Timestamp <= DateTime.Now && log.Timestamp > _options.Value.EarliestAcceptableDate)
-                    {
-                        logList.Add(log);
+            //            //report progress
+            //            progress?.Report(logList.Count);
 
-                        //report progress
-                        progress?.Report(logList.Count);
+            //            //_log.LogDebug("Decoded {ListCount} items from {SignalID}", logList.Count, signalId);
+            //        }
+            //    }
 
-                        //_log.LogDebug("Decoded {ListCount} items from {SignalID}", logList.Count, signalId);
-                    }
-                }
+            //    progress?.Report(logList.Count);
+            //    return Task.FromResult(logList);
+            //}
+            //catch (Exception e)
+            //{
+            //    e.LogE();
 
-                progress?.Report(logList.Count);
-                return Task.FromResult(logList);
-            }
-            catch (Exception e)
-            {
-                e.LogE();
+            //    return Task.FromException<HashSet<ControllerEventLog>>(e);
+            //}
 
-                return Task.FromException<HashSet<ControllerEventLog>>(e);
-            }
-
-            throw new InvalidDataException($"Decoding error, not a valid file or stream format {signalId}");
+            //throw new InvalidDataException($"Decoding error, not a valid file or stream format {signalId}");
         }
 
         //public override void Dispose()

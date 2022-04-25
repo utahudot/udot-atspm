@@ -5,6 +5,7 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Domain.Exceptions;
 using ATSPM.Infrasturcture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -84,9 +85,12 @@ namespace ATSPM.SignalControllerLogger
         {
             stoppingToken.Register(() => Console.WriteLine($"-------------------------------------------------------------------------------------------stoppingToken"));
 
+
+            var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
+
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(500).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => testSignals.Contains(w.SignalId)).Take(500).ToList();
             }
 
 
@@ -220,6 +224,7 @@ namespace ATSPM.SignalControllerLogger
         {
             var block = new TransformManyBlock<Signal, FileInfo>(async s =>
             {
+                // HACK: remove this when log eventid's are updated
                 if (int.TryParse(s.SignalId, out int id))
                 {
                     //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Starting step {step} on {signal}", blockName, s);
@@ -243,13 +248,17 @@ namespace ATSPM.SignalControllerLogger
 
                         //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
                     }
+                    catch (ExecuteException e)
+                    {
+                        //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+                    }
                     catch (InvalidSignalControllerIpAddressException e)
                     {
                         //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
                     }
                     catch (ArgumentNullException e)
                     {
-                        _log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+                        //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
                     }
                     catch (Exception e)
                     {

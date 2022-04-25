@@ -49,17 +49,19 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
         {
-            return ExecuteAsync(parameter, cancelToken);
+            return ExecuteAsync(parameter, default, cancelToken);
         }
 
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="ExecuteException"></exception>
         public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, IProgress<ControllerDecodeProgress> progress = null, CancellationToken cancelToken = default)
         {
             if (parameter == null)
-                return await Task.FromException<HashSet<ControllerEventLog>>(new ArgumentNullException(nameof(parameter), $"FileInfo parameter can not be null"));
+                throw new ArgumentNullException(nameof(parameter), $"FileInfo parameter can not be null");
 
-            // TODO: find best exception to throw for null FileInfo
             if (!parameter.Exists)
-                return await Task.FromException<HashSet<ControllerEventLog>>(new ArgumentNullException($"parameter"));
+                throw new FileNotFoundException($"File not found {parameter.FullName}", parameter.FullName);
 
             HashSet<ControllerEventLog> decodedLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
 
@@ -78,18 +80,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                         progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
                     }
                 }
-                catch (TaskCanceledException)
+                catch (Exception)
                 {
-                    return await Task.FromCanceled<HashSet<ControllerEventLog>>(cancelToken);
-                }
-                catch (Exception e)
-                {
-                    return await Task.FromException<HashSet<ControllerEventLog>>(e);
+                    throw;
                 }
             }
             else
             {
-                return await Task.FromException<HashSet<ControllerEventLog>>(new ExecuteException());
+                throw new ExecuteException();
             }
 
             return decodedLogs;
