@@ -2,7 +2,9 @@
 using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
+using ATSPM.Application.Exceptions;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.LogMessages;
 using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
@@ -63,16 +65,20 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             if (!parameter.Exists)
                 throw new FileNotFoundException($"File not found {parameter.FullName}", parameter.FullName);
 
-            HashSet<ControllerEventLog> decodedLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
-
             if (CanExecute(parameter))
             {
+                var logMessages = new ControllerLoggerDecoderLogMessages(_log, parameter);
+
+                HashSet<ControllerEventLog> decodedLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+
                 var memoryStream = parameter.ToMemoryStream();
 
                 memoryStream = IsCompressed(memoryStream) ? (MemoryStream)Decompress(memoryStream) : memoryStream;
 
                 try
                 {
+                    logMessages.DecodeLogFile(parameter.FullName);
+
                     await foreach (var log in DecodeAsync(parameter.DirectoryName, memoryStream, cancelToken))
                     {
                         decodedLogs.Add(log);
@@ -80,17 +86,19 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                         progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
                     }
                 }
-                catch (Exception)
+                catch (ControllerLoggerDecoderException e)
                 {
-                    throw;
+                    logMessages.DecodeLogFileException(parameter.FullName, e);
                 }
+
+                logMessages.DecodedLogs(parameter.FullName, decodedLogs.Count);
+
+                return decodedLogs;
             }
             else
             {
                 throw new ExecuteException();
             }
-
-            return decodedLogs;
         }
 
         Task IExecuteAsync.ExecuteAsync(object parameter)
@@ -132,6 +140,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return stream.GZipDecompressToStream();
         }
 
+        /// <exception cref="ControllerLoggerDecoderException"></exception>
         public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion

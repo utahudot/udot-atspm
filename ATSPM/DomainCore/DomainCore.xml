@@ -377,6 +377,19 @@
             <param name="fail">query to return if <paramref name="condition"/> should fail</param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.Domain.Extensions.StreamExtensions">
+            <summary>
+            Stream extensions
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.StreamExtensions.ToMemoryStream(System.IO.FileInfo)">
+            <summary>
+            Converts a <see cref="T:System.IO.FileInfo"/> object to <see cref="T:System.IO.MemoryStream"/> object
+            </summary>
+            <param name="file">File to convert to <see cref="T:System.IO.MemoryStream"/></param>
+            <returns><see cref="T:System.IO.MemoryStream"/></returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
         <member name="M:ATSPM.Domain.Extensions.TaskExtensions.FireAndForget(System.Threading.Tasks.Task)">
             <summary>
             Trigger a Task in an async method without having to await
