@@ -19,6 +19,7 @@ namespace ATSPM.Application.Services.SignalControllerProtocols
 
         Stream Decompress(Stream stream);
 
+        /// <exception cref="ControllerLoggerDecoderException"></exception>
         IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
     }
 }

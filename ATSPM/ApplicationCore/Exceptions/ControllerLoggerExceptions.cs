@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ATSPM.Application.Exceptions
 {
-    public class InvalidSignalControllerIpAddressException : ATSPMExceptionBase
+    public class InvalidSignalControllerIpAddressException : ATSPMException
     {
         public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalId} address {signal.Ipaddress} is either invalid or can't be reached")
         {
@@ -16,15 +16,24 @@ namespace ATSPM.Application.Exceptions
         public Signal SignalController { get; private set; }
     }
 
-    public abstract class ControllerLoggerExceptions : ATSPMExceptionBase
+    public abstract class ControllerLoggerException : ATSPMException
     {
-        public ControllerLoggerExceptions(IDownloaderClient downloaderClient, string? message) : base(message)
+        public ControllerLoggerException(string? message) : base(message) { }
+
+        public ControllerLoggerException(string? message, Exception? innerException) : base(message, innerException) { }
+    }
+
+    #region ControllerLoggerDownloaderExceptions
+
+    public abstract class ControllerLoggerDownloaderException : ControllerLoggerException
+    {
+        public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message) : base(message)
         {
             //Signal = signal;
             DownloaderClient = downloaderClient;
         }
 
-        public ControllerLoggerExceptions(IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(message, innerException) 
+        public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(message, innerException)
         {
             //Signal = signal;
             DownloaderClient = downloaderClient;
@@ -35,14 +44,14 @@ namespace ATSPM.Application.Exceptions
         public IDownloaderClient DownloaderClient { get; private set; }
     }
 
-    public class ControllerConnectionException : ControllerLoggerExceptions
+    public class ControllerConnectionException : ControllerLoggerDownloaderException
     {
         public ControllerConnectionException(string host, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
             Host = host;
         }
 
-        public ControllerConnectionException(string host, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base( downloaderClient, message, innerException)
+        public ControllerConnectionException(string host, IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(downloaderClient, message, innerException)
         {
             Host = host;
         }
@@ -50,7 +59,7 @@ namespace ATSPM.Application.Exceptions
         public string Host { get; private set; }
     }
 
-    public class ControllerDownloadFileException : ControllerLoggerExceptions
+    public class ControllerDownloadFileException : ControllerLoggerDownloaderException
     {
         public ControllerDownloadFileException(string fileName, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
@@ -65,7 +74,7 @@ namespace ATSPM.Application.Exceptions
         public string FileName { get; private set; }
     }
 
-    public class ControllerDeleteFileException : ControllerLoggerExceptions
+    public class ControllerDeleteFileException : ControllerLoggerDownloaderException
     {
         public ControllerDeleteFileException(string fileName, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
@@ -80,7 +89,7 @@ namespace ATSPM.Application.Exceptions
         public string FileName { get; private set; }
     }
 
-    public class ControllerListDirectoryException : ControllerLoggerExceptions
+    public class ControllerListDirectoryException : ControllerLoggerDownloaderException
     {
         public ControllerListDirectoryException(string directory, IDownloaderClient downloaderClient, string? message) : base(downloaderClient, message)
         {
@@ -94,4 +103,17 @@ namespace ATSPM.Application.Exceptions
 
         public string Directory { get; private set; }
     }
+
+    #endregion
+
+    #region ControllerLoggerDecoderExceptions
+
+    public class ControllerLoggerDecoderException : ControllerLoggerException
+    {
+        public ControllerLoggerDecoderException(string? message) : base(message) { }
+
+        public ControllerLoggerDecoderException(string? message, Exception? innerException) : base(message, innerException) { }
+    }
+
+    #endregion
 }

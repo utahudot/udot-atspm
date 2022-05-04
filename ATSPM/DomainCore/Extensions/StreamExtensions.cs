@@ -6,8 +6,17 @@ using System.Text;
 
 namespace ATSPM.Domain.Extensions
 {
+    /// <summary>
+    /// Stream extensions
+    /// </summary>
     public static class StreamExtensions
     {
+        /// <summary>
+        /// Converts a <see cref="FileInfo"/> object to <see cref="MemoryStream"/> object
+        /// </summary>
+        /// <param name="file">File to convert to <see cref="MemoryStream"/></param>
+        /// <returns><see cref="MemoryStream"/></returns>
+        /// <exception cref="FileNotFoundException"></exception>
         public static MemoryStream ToMemoryStream(this FileInfo file)
         {
             if (file.Exists)

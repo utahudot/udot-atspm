@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
+using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,93 +52,74 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(signalId))
+                throw new ControllerLoggerDecoderException("SignalID can not be null", new ArgumentNullException(nameof(signalId)));
 
+            if (stream?.Length == 0)
+                throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
 
-            //cancelToken.ThrowIfCancellationRequested();
+            using (var br = new BinaryReader(stream, Encoding.ASCII))
+            {
+                br.BaseStream.Position = 0;
 
-            //if (string.IsNullOrEmpty(signalId))
-            //    throw new ArgumentNullException(nameof(signalId));
+                if (br.BaseStream.Position + 20 <= br.BaseStream.Length && DateTime.TryParse(br.ReadChars(20), out DateTime startTime))
+                {
+                    //find  line feed characters, that should take us to the end of the header.
+                    // First line break is after Version
+                    // Second LF is after FileName
+                    // Third LF is after Interseciton number, which isn't used as far as I can tell
+                    // Fourth LF is after IP address
+                    // Fifth is after MAC Address
+                    // Sixth is after "Controller data log beginning:," and then the date
+                    // Seven is after "Phases in use:," and then the list of phases, seperated by commas
 
-            //if (stream?.Length == 0)
-            //    throw new InvalidDataException("Stream is empty");
+                    var i = 0;
 
-            //HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+                    while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        var c = br.ReadChar();
+                        if (c == '\n')
+                            i++;
+                    }
 
-            //using (var br = new BinaryReader(stream, Encoding.ASCII))
-            //{
-            //    br.BaseStream.Position = 0;
+                    // after that, we start reading until we reach the end 
+                    while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
+                    {
+                        var eventTime = new DateTime();
+                        var eventCode = new int();
+                        var eventParam = new int();
 
-            //    if (br.BaseStream.Position + 20 <= br.BaseStream.Length && DateTime.TryParse(br.ReadChars(20), out DateTime startTime))
-            //    {
-            //        //find  line feed characters, that should take us to the end of the header.
-            //        // First line break is after Version
-            //        // Second LF is after FileName
-            //        // Third LF is after Interseciton number, which isn't used as far as I can tell
-            //        // Fourth LF is after IP address
-            //        // Fifth is after MAC Address
-            //        // Sixth is after "Controller data log beginning:," and then the date
-            //        // Seven is after "Phases in use:," and then the list of phases, seperated by commas
+                        for (var eventPart = 1; eventPart < 4; eventPart++)
+                        {
+                            //getting the EventCode
+                            if (eventPart == 1)
+                                eventCode = Convert.ToInt32(br.ReadByte());
 
-            //        var i = 0;
+                            if (eventPart == 2)
+                                eventParam = Convert.ToInt32(br.ReadByte());
 
-            //        while (i < 7 && br.BaseStream.Position < br.BaseStream.Length)
-            //        {
-            //            var c = br.ReadChar();
-            //            if (c == '\n')
-            //                i++;
-            //        }
+                            //getting the time offset
+                            if (eventPart == 3)
+                            {
+                                //var rawoffset = new byte[2];
+                                var rawoffset = br.ReadBytes(2);
+                                Array.Reverse(rawoffset);
+                                int offset = BitConverter.ToInt16(rawoffset, 0);
+                                var tenths = Convert.ToDouble(offset) / 10;
+                                eventTime = startTime.AddSeconds(tenths);
+                            }
+                        }
 
-            //        // after that, we start reading until we reach the end 
-            //        while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
-            //        {
-            //            var eventTime = new DateTime();
-            //            var eventCode = new int();
-            //            var eventParam = new int();
-
-            //            for (var eventPart = 1; eventPart < 4; eventPart++)
-            //            {
-            //                //getting the EventCode
-            //                if (eventPart == 1)
-            //                    eventCode = Convert.ToInt32(br.ReadByte());
-
-            //                if (eventPart == 2)
-            //                    eventParam = Convert.ToInt32(br.ReadByte());
-
-            //                //getting the time offset
-            //                if (eventPart == 3)
-            //                {
-            //                    //var rawoffset = new byte[2];
-            //                    var rawoffset = br.ReadBytes(2);
-            //                    Array.Reverse(rawoffset);
-            //                    int offset = BitConverter.ToInt16(rawoffset, 0);
-            //                    var tenths = Convert.ToDouble(offset) / 10;
-            //                    eventTime = startTime.AddSeconds(tenths);
-            //                }
-            //            }
-
-
-            //            //going to write to new ControllerLogEvent object
-            //            if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
-            //            {
-            //                logList.Add(new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime });
-
-            //            }
-            //        }
-
-            //        return Task.FromResult(logList);
-            //    }
-            //}
-
-            //throw new InvalidDataException($"Decoding error, not a valid file or stream format {signalId}");
+                        if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
+                        {
+                            yield return new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime };
+                        }
+                    }
+                }
+            }
         }
-
-        //public override void Dispose()
-        //{
-        //    //throw new NotImplementedException();
-        //}
 
         #endregion
     }

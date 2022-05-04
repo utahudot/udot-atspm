@@ -25,6 +25,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -106,100 +107,50 @@ namespace ATSPM.SignalControllerLogger
 
             await host.RunAsync();
 
-            //var credential = GoogleCredential.GetApplicationDefault();
-            //Console.WriteLine(credential.UnderlyingCredential);
+            //IReadOnlyList<Signal> _signalList;
 
-           
-
-            //var signal = new Signal() { SignalId = "1234", PrimaryName = "hello" };
-
-            //log.WithLabels(new KeyValuePair<string, string>("key", "value"));
-
-            //log.WithLabels(new KeyValuePair<string, string>("key", "value")).LogWarning(new EventId(67, "Order 67"), new Exception("this is the exception"), "this is an error message {one}, {two}, {signal}", "1", "2", signal);
-
-            //var _signalList = new List<Signal>();
+            //int enabled = 0;
+            //int notenabled = 0;
 
             //using (var scope = host.Services.CreateScope())
             //{
-            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.ControllerType.ControllerTypeId == 9).Take(25).ToList();
+            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().ToList();
+            //    //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "9704").ToList();
             //}
+
+            //var signalSender = new BufferBlock<Signal>();
+
+            //var endResult1 = new ActionBlock<Signal>(i =>
+            //{
+            //    enabled++;
+            //    Console.WriteLine($"endResult1 - {i}");
+            //}, new ExecutionDataflowBlockOptions()
+            //{
+            //    //BoundedCapacity = 5
+            //});
+            //signalSender.LinkTo(endResult1, new DataflowLinkOptions() { PropagateCompletion = true }, s => s.Enabled);
+
+            //var endResult2 = new ActionBlock<Signal>(i =>
+            //{
+            //    notenabled++;
+            //    Console.WriteLine($"endResult2 - {i}");
+            //}, new ExecutionDataflowBlockOptions()
+            //{
+            //    //BoundedCapacity = 5
+            //});
+            //signalSender.LinkTo(endResult2, new DataflowLinkOptions() { PropagateCompletion = true });
+
 
             //foreach (var s in _signalList)
             //{
-            //    IFtpClient Client = null;
-            //    FtpListItem[] results = null;
-
-            //    try
-            //    {
-            //        var credentials = new NetworkCredential(s.ControllerType?.UserName, s.ControllerType?.Password, s.Ipaddress);
-
-            //        Client ??= new FtpClient(credentials.Domain, credentials);
-
-            //        Client.ConnectTimeout = 2000;
-            //        Client.ReadTimeout = 2000;
-            //        Client.DataConnectionType = FtpDataConnectionType.AutoActive;
-
-            //        //await Client.AutoConnectAsync(token);
-            //        await Client.ConnectAsync();
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Console.WriteLine($"Connection Error: {e}");
-            //    }
-
-            //    if (Client.IsConnected)
-            //    {
-            //        try
-            //        {
-            //            //"/econolite/set1"
-            //            results = await Client.GetListingAsync("/opt/econolite/set1", FtpListOption.Auto);
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            Console.WriteLine($"List Directory Error: {e}");
-            //        }
-            //    }
-
-            //    Console.WriteLine($"Directory File Count: {results.Length}");
+            //    signalSender.Post(s);
             //}
 
-            //directory   "/econolite/set1"   string
+            //signalSender.Completion.ContinueWith(t => Console.WriteLine($"signalSender: {t.Status}"));
+            //endResult1.Completion.ContinueWith(t => Console.WriteLine($"endResult1: {t.Status} - {enabled}"));
+            //endResult2.Completion.ContinueWith(t => Console.WriteLine($"endResult2: {t.Status} - {notenabled}"));
 
-
-            //List<Signal> _signalList;
-            //var fileList = new List<FileInfo>();
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.ControllerType.ControllerTypeId == 1).Take(25).ToList();
-
-            //    foreach (var s in _signalList)
-            //    {
-            //        Console.WriteLine($"trying to download: {s.SignalId} | {s.ControllerType.ControllerTypeId}");
-
-            //        try
-            //        {
-            //            var downloaders = scope.ServiceProvider.GetServices<ISignalControllerDownloader>();
-            //            var downloader = downloaders.First(c => c.CanExecute(s));
-
-            //            await foreach (var file in downloader.Execute(s, default))
-            //            {
-            //                Console.WriteLine($"downloaded file: {file.FullName}");
-
-            //                fileList.Add(file);
-            //            }
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Console.WriteLine($"--------------------------------------------signalDownload catch: {ex}");
-            //        }
-            //    }
-            //}
-
-
-            //Console.WriteLine($"file count: {fileList.Count}");
-
-
+            //signalSender.Complete();
 
             Console.ReadKey();
         }
