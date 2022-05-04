@@ -87,18 +87,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var eventTime = new DateTime();
-                        var eventCode = new int();
-                        var eventParam = new int();
+                        var log = new ControllerEventLog() { SignalId = signalId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {
                             //getting the EventCode
                             if (eventPart == 1)
-                                eventCode = Convert.ToInt32(br.ReadByte());
+                                log.EventCode = Convert.ToInt32(br.ReadByte());
 
                             if (eventPart == 2)
-                                eventParam = Convert.ToInt32(br.ReadByte());
+                                log.EventParam = Convert.ToInt32(br.ReadByte());
 
                             //getting the time offset
                             if (eventPart == 3)
@@ -108,13 +106,12 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                                 Array.Reverse(rawoffset);
                                 int offset = BitConverter.ToInt16(rawoffset, 0);
                                 var tenths = Convert.ToDouble(offset) / 10;
-                                eventTime = startTime.AddSeconds(tenths);
+                                log.Timestamp = startTime.AddSeconds(tenths);
                             }
                         }
-
-                        if (eventTime <= DateTime.Now && eventTime > _options.Value.EarliestAcceptableDate)
+                        if (IsAcceptableDateRange(log))
                         {
-                            yield return new ControllerEventLog() { SignalId = signalId, EventCode = eventCode, EventParam = eventParam, Timestamp = eventTime };
+                            yield return log;
                         }
                     }
                 }
