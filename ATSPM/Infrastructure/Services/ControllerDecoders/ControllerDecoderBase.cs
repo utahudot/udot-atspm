@@ -47,6 +47,11 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         //{
         //}
 
+        protected bool IsAcceptableDateRange(ControllerEventLog log)
+        {
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.Value.EarliestAcceptableDate;
+        }
+
         public abstract bool CanExecute(FileInfo parameter);
 
         public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
@@ -77,7 +82,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
                 try
                 {
-                    logMessages.DecodeLogFile(parameter.FullName);
+                    logMessages.DecodeLogFileMessage(parameter.FullName);
 
                     await foreach (var log in DecodeAsync(parameter.DirectoryName, memoryStream, cancelToken))
                     {
@@ -91,7 +96,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     logMessages.DecodeLogFileException(parameter.FullName, e);
                 }
 
-                logMessages.DecodedLogs(parameter.FullName, decodedLogs.Count);
+                logMessages.DecodedLogsMessage(parameter.FullName, decodedLogs.Count);
 
                 return decodedLogs;
             }
