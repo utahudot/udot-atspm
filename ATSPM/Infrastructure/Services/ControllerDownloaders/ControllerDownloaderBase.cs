@@ -61,8 +61,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         //{
         //}
 
-        #region IExecuteWithProgress
-
         public virtual bool CanExecute(Signal value)
         {
             return value?.ControllerType?.ControllerTypeId == ControllerType && value.Enabled;
@@ -227,8 +225,6 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             if (parameter is Signal p)
                 Task.Run(() => Execute(p, default, default));
         }
-
-        #endregion
 
         protected override void Dispose(bool disposing)
         {

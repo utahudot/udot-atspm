@@ -23,10 +23,10 @@ namespace ATSPM.Application.LogMessages
         #region DecodeFile
 
         [LoggerMessage(EventId = 1000, EventName = "Decoding Log File", Level = LogLevel.Debug, Message = "Decoding {file}")]
-        public partial void DecodeLogFile(string file);
+        public partial void DecodeLogFileMessage(string file);
 
         [LoggerMessage(EventId = 1001, EventName = "Decoded Log File", Level = LogLevel.Information, Message = "Decoded {count} logs from {file}")]
-        public partial void DecodedLogs(string file, int count);
+        public partial void DecodedLogsMessage(string file, int count);
 
         [LoggerMessage(EventId = 1002, EventName = "Decode Exception", Level = LogLevel.Warning, Message = "Exception decoding {file}")]
         public partial void DecodeLogFileException(string file, Exception ex);
