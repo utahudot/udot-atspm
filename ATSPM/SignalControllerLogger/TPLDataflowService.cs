@@ -5,6 +5,7 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Infrasturcture.Data;
 using Microsoft.EntityFrameworkCore;
@@ -86,11 +87,12 @@ namespace ATSPM.SignalControllerLogger
             stoppingToken.Register(() => Console.WriteLine($"-------------------------------------------------------------------------------------------stoppingToken"));
 
 
-            var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
+            //var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => testSignals.Contains(w.SignalId)).Take(500).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(10).ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "9704").ToList();
             }
 
 
@@ -106,7 +108,7 @@ namespace ATSPM.SignalControllerLogger
             Console.WriteLine($"Starting: {sw.Elapsed}======================================================================");
 
 
-            
+
 
 
             //create initial buffer to send signals
@@ -115,51 +117,50 @@ namespace ATSPM.SignalControllerLogger
             //create downloader step
             //var downloaders = CreateDownloaderBalencer(signalSender, resultAction, _signalList.Count, 10);
             var downloader = CreateDownloaderStep($"Downloader Step", 100, stoppingToken);
-            
+
+
 
             //create Get files step
-            var files = CreateGetFilesStep("Files Step", 100, stoppingToken);
-            
+            var getFiles = CreateGetFilesStep("Files Step", 100, stoppingToken);
+
 
             //create file to controllerlog step
-            var fileToLogs = CreateFiletoEventLogStep("FileToLog Step", 100, stoppingToken);
-            
+            //var fileToLogs = CreateFiletoEventLogStep("FileToLog Step", 100, stoppingToken);
+
 
             //create save to repo step
-            var saveToRepo = CreateSaveToRepositoryStep("Save to Repo Step", 100, stoppingToken);
+            //var saveToRepo = CreateSaveToRepositoryStep("Save to Repo Step", 100, stoppingToken);
 
 
             //action for empty directories
             //var resultAction = new ActionBlock<DirectoryInfo>(s => Console.WriteLine($"{s?.FullName} is empty"));
-            var resultAction = new ActionBlock<DirectoryInfo>(s => s?.Delete());
-
-
+            //var resultAction = new ActionBlock<DirectoryInfo>(s => s?.Delete());
 
             //step linking
             signalSender.LinkTo(downloader, new DataflowLinkOptions { PropagateCompletion = true });
+            downloader.LinkTo(getFiles, new DataflowLinkOptions { PropagateCompletion = true });
 
+            //var bufferedLogs = new BatchBlock<ControllerEventLog>(1000, new GroupingDataflowBlockOptions() { CancellationToken = stoppingToken });
 
-            var joinResults = new ActionBlock<FileInfo> (i => 
-            {
-                if (i == null)
-                    Console.WriteLine($"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%file? {i?.FullName}");
-            });
-            downloader.LinkTo(joinResults);
-
-
-            //downloader.LinkTo(files, new DataflowLinkOptions { PropagateCompletion = true }, p => p?.GetFiles().Length > 0);
-            //downloader.LinkTo(resultAction);
-
-            //files.LinkTo(fileToLogs, new DataflowLinkOptions { PropagateCompletion = true }, p => p?.Count > 0);
-
-
-            //fileToLogs.LinkTo(saveToRepo, new DataflowLinkOptions { PropagateCompletion = true });
+            //fileToLogs.LinkTo(bufferedLogs, new DataflowLinkOptions { PropagateCompletion = true });
 
 
 
+            var endResult = new ActionBlock<FileInfo>(i =>
+           {
+                //if (i == null)
+                Console.WriteLine($"file? {i.FullName}");
+           }, new ExecutionDataflowBlockOptions()
+           {
+               CancellationToken = stoppingToken,
+               NameFormat = "Test Result",
+               MaxDegreeOfParallelism = Environment.ProcessorCount,
+                //BoundedCapacity = capcity,
+                SingleProducerConstrained = true
+           });
+            getFiles.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-            //Console.WriteLine($"downloaders count: {downloaders.Count()}");
 
 
             try
@@ -176,11 +177,17 @@ namespace ATSPM.SignalControllerLogger
 
                 downloader.Completion.ContinueWith(t => Console.WriteLine($"downloader: {t.Status}"));
 
-                files.Completion.ContinueWith(t => Console.WriteLine($"files: {t.Status}"));
+                getFiles.Completion.ContinueWith(t => Console.WriteLine($"files: {t.Status}"));
 
-                fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
+                //fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
 
-                saveToRepo.Completion.ContinueWith(t => Console.WriteLine($"saveToRepo: {t.Status}"));
+                //bufferedLogs.Completion.ContinueWith(t => Console.WriteLine($"bufferedLogs: {t.Status}"));
+
+                endResult.Completion.ContinueWith(t => Console.WriteLine($"endResult:------------------------------------------ {t.Status}"));
+
+                
+
+                //saveToRepo.Completion.ContinueWith(t => Console.WriteLine($"saveToRepo: {t.Status}"));
 
 
 
@@ -192,7 +199,12 @@ namespace ATSPM.SignalControllerLogger
 
                 await signalSender.Completion;
                 await downloader.Completion;
-                //await files.Completion;
+                await getFiles.Completion;
+
+                //await fileToLogs.Completion;
+                //await bufferedLogs.Completion;
+                await endResult.Completion;
+                
                 //await fileToLogs.Completion;
                 //await saveToRepo.Completion;
 
@@ -220,9 +232,9 @@ namespace ATSPM.SignalControllerLogger
             // TODO: run GC
         }
 
-        private IPropagatorBlock<Signal, FileInfo> CreateDownloaderStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
+        private IPropagatorBlock<Signal, DirectoryInfo> CreateDownloaderStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
         {
-            var block = new TransformManyBlock<Signal, FileInfo>(async s =>
+            var block = new TransformManyBlock<Signal, DirectoryInfo>(async s =>
             {
                 // HACK: remove this when log eventid's are updated
                 if (int.TryParse(s.SignalId, out int id))
@@ -265,7 +277,7 @@ namespace ATSPM.SignalControllerLogger
                         _log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "Unexpected exception caught on step {step}", blockName);
                     }
 
-                    return fileList;
+                    return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x,y) => x.FullName == y.FullName));
                 }
                 
                 else
@@ -288,35 +300,11 @@ namespace ATSPM.SignalControllerLogger
             return block;
         }
 
-        private IPropagatorBlock<DirectoryInfo, List<FileInfo>> CreateGetFilesStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
+        private IPropagatorBlock<DirectoryInfo, FileInfo> CreateGetFilesStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
         {
-            var block = new TransformBlock<DirectoryInfo, List<FileInfo>>(s =>
+            var block = new TransformManyBlock<DirectoryInfo, FileInfo>(s =>
             {
                 return s?.GetFiles("*.*", SearchOption.AllDirectories).ToList();
-
-                ////Console.WriteLine($"trying to download: {s.SignalId}|{s.ControllerType.ControllerTypeId}");
-
-                ////Console.WriteLine($"{blockName} is processing {s?.FullName}");
-
-                //try
-                //{
-                //    List<FileInfo> list = new List<FileInfo>();
-
-                //    if (s != null && s.Exists)
-                //    {
-                //        list = s.GetFiles("*.*", SearchOption.AllDirectories).ToList();
-                //    }
-
-
-                //    return await Task.FromResult(list);
-                //}
-                //catch (Exception ex)
-                //{
-                //    //Console.WriteLine($"--------------------------------------------{blockName} catch: {ex}");
-                //}
-
-                //return await Task.FromResult<List<FileInfo>>(null);
-
             }, new ExecutionDataflowBlockOptions()
             {
                 CancellationToken = cancellationToken,
@@ -329,9 +317,9 @@ namespace ATSPM.SignalControllerLogger
             return block;
         }
 
-        private IPropagatorBlock<List<FileInfo>, HashSet<ControllerEventLog>> CreateFiletoEventLogStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
+        private IPropagatorBlock<FileInfo, ControllerEventLog> CreateFiletoEventLogStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
         {
-            var block = new TransformBlock<List<FileInfo>, HashSet<ControllerEventLog>>(async s =>
+            var block = new TransformManyBlock<FileInfo, ControllerEventLog>(async s =>
             {
                 //Console.WriteLine($"trying to download: {s.SignalId}|{s.ControllerType.ControllerTypeId}");
 
@@ -342,24 +330,39 @@ namespace ATSPM.SignalControllerLogger
 
                 try
                 {
-                    foreach (var value in s)
-                    {
+                    //foreach (var value in s)
+                    //{
 
 
-                        var temp = await DecoderSelector(value).ExecuteAsync(value, cancellationToken).ConfigureAwait(false);
+                        var temp = await DecoderSelector(s).ExecuteAsync(s, cancellationToken);
 
                         logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
 
-                        value.Delete();
-                    }
+
+                    Console.WriteLine($"CreateFiletoEventLogStep--------------------------------------------{s.FullName} - {logList.Count}");
+
+                    //s.Delete();
+                    //}
 
                     return logList;
 
                     //_log.LogDebug("Loglist {Count}", logList.Count);
                 }
-                catch (Exception ex)
+                catch (ExecuteException e)
                 {
-                    //Console.WriteLine($"--------------------------------------------{blockName} catch: {ex}");
+                    Console.WriteLine($"ExecuteException--------------------------------------------{blockName} catch: {e}");
+                }
+                catch (FileNotFoundException e)
+                {
+                    Console.WriteLine($"FileNotFoundException--------------------------------------------{blockName} catch: {e}");
+                }
+                catch (ArgumentNullException e)
+                {
+                    Console.WriteLine($"ArgumentNullException--------------------------------------------{blockName} catch: {e}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception--------------------------------------------{blockName} catch: {e}");
                 }
 
                 return logList;
