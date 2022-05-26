@@ -91,7 +91,7 @@ namespace ATSPM.SignalControllerLogger
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(10).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(250).ToList();
                 //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "9704").ToList();
             }
 
@@ -125,7 +125,14 @@ namespace ATSPM.SignalControllerLogger
 
 
             //create file to controllerlog step
-            //var fileToLogs = CreateFiletoEventLogStep("FileToLog Step", 100, stoppingToken);
+            var fileToLogs = CreateFiletoEventLogStep("FileToLog Step", 100, stoppingToken);
+
+
+            //create a batch for creating log archives
+            var logArchiveBatch = new BatchBlock<ControllerEventLog>(50000, new GroupingDataflowBlockOptions() { CancellationToken = stoppingToken });
+
+            //create file to controllerlog step
+            var LogsToArchive = CreateLogArchiveStep("LogsToArchive Step", 100, stoppingToken);
 
 
             //create save to repo step
@@ -139,6 +146,9 @@ namespace ATSPM.SignalControllerLogger
             //step linking
             signalSender.LinkTo(downloader, new DataflowLinkOptions { PropagateCompletion = true });
             downloader.LinkTo(getFiles, new DataflowLinkOptions { PropagateCompletion = true });
+            getFiles.LinkTo(fileToLogs, new DataflowLinkOptions { PropagateCompletion = true });
+            fileToLogs.LinkTo(logArchiveBatch, new DataflowLinkOptions { PropagateCompletion = true });
+            logArchiveBatch.LinkTo(LogsToArchive, new DataflowLinkOptions { PropagateCompletion = true });
 
             //var bufferedLogs = new BatchBlock<ControllerEventLog>(1000, new GroupingDataflowBlockOptions() { CancellationToken = stoppingToken });
 
@@ -146,10 +156,10 @@ namespace ATSPM.SignalControllerLogger
 
 
 
-            var endResult = new ActionBlock<FileInfo>(i =>
+            var endResult = new ActionBlock<ControllerLogArchive>(i =>
            {
                 //if (i == null)
-                Console.WriteLine($"file? {i.FullName}");
+                Console.WriteLine($"LogArchive? {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
            }, new ExecutionDataflowBlockOptions()
            {
                CancellationToken = stoppingToken,
@@ -158,7 +168,7 @@ namespace ATSPM.SignalControllerLogger
                 //BoundedCapacity = capcity,
                 SingleProducerConstrained = true
            });
-            getFiles.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
+            LogsToArchive.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
@@ -179,9 +189,11 @@ namespace ATSPM.SignalControllerLogger
 
                 getFiles.Completion.ContinueWith(t => Console.WriteLine($"files: {t.Status}"));
 
-                //fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
+                fileToLogs.Completion.ContinueWith(t => Console.WriteLine($"fileToLogs: {t.Status}"));
 
-                //bufferedLogs.Completion.ContinueWith(t => Console.WriteLine($"bufferedLogs: {t.Status}"));
+                logArchiveBatch.Completion.ContinueWith(t => Console.WriteLine($"logArchiveBatch: {t.Status}"));
+
+                LogsToArchive.Completion.ContinueWith(t => Console.WriteLine($"LogsToArchive: {t.Status}"));
 
                 endResult.Completion.ContinueWith(t => Console.WriteLine($"endResult:------------------------------------------ {t.Status}"));
 
@@ -200,9 +212,9 @@ namespace ATSPM.SignalControllerLogger
                 await signalSender.Completion;
                 await downloader.Completion;
                 await getFiles.Completion;
-
-                //await fileToLogs.Completion;
-                //await bufferedLogs.Completion;
+                await fileToLogs.Completion;
+                await logArchiveBatch.Completion;
+                await LogsToArchive.Completion;
                 await endResult.Completion;
                 
                 //await fileToLogs.Completion;
@@ -221,6 +233,8 @@ namespace ATSPM.SignalControllerLogger
                 var dir = Directory.GetDirectories("C:\\ControlLogs").ToList();
                 Console.WriteLine($"Stopping: {sw.Elapsed} - {dir.Count}/{_signalList.Count} ======================================================================");
 
+                Console.WriteLine($"{List1.Count} - {List2.Count} = {List1.Count - List2.Count}");
+
                 sw.Stop();
             }
 
@@ -231,6 +245,27 @@ namespace ATSPM.SignalControllerLogger
             // TODO: dispose array of await tasks for flow stemps
             // TODO: run GC
         }
+
+
+
+
+
+        private List<ControllerLogArchive> List1 = new List<ControllerLogArchive>();
+        private List<ControllerLogArchive> List2 = new List<ControllerLogArchive>();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         private IPropagatorBlock<Signal, DirectoryInfo> CreateDownloaderStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
         {
@@ -339,7 +374,14 @@ namespace ATSPM.SignalControllerLogger
                         logList = new HashSet<ControllerEventLog>(Enumerable.Union(logList, temp), new ControllerEventLogEqualityComparer());
 
 
-                    Console.WriteLine($"CreateFiletoEventLogStep--------------------------------------------{s.FullName} - {logList.Count}");
+                    var archiveDate = logList.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+
+                    foreach (var a in archiveDate)
+                    {
+                        Console.WriteLine($"CreateFiletoEventLogStep--------------------------------------------{a.SignalId} - {a.ArchiveDate} - {a.LogData.Count}");
+                    }
+
+                    List1.AddRange(archiveDate);
 
                     //s.Delete();
                     //}
@@ -366,6 +408,28 @@ namespace ATSPM.SignalControllerLogger
                 }
 
                 return logList;
+
+            }, new ExecutionDataflowBlockOptions()
+            {
+                CancellationToken = cancellationToken,
+                NameFormat = blockName,
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
+                //BoundedCapacity = capcity,
+                SingleProducerConstrained = true
+            });
+
+            return block;
+        }
+
+        private IPropagatorBlock<ControllerEventLog[], ControllerLogArchive> CreateLogArchiveStep(string blockName, int capcity = -1, CancellationToken cancellationToken = default)
+        {
+            var block = new TransformManyBlock<ControllerEventLog[], ControllerLogArchive>(async s =>
+            {
+                var archiveDate = s.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+
+                List2.AddRange(archiveDate);
+
+                return archiveDate;
 
             }, new ExecutionDataflowBlockOptions()
             {
