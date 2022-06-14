@@ -102,5 +102,33 @@ namespace ATSPM.Infrasturcture.Repositories
             table.RemoveRange(items);
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
+
+        //TODO: Check item for changes attach/unattach
+        public void Update(T item)
+        {
+            table.Update(item);
+            _db.SaveChanges();
+        }
+
+        //TODO: Check item for changes attach/unattach
+        public async Task UpdateAsync(T item)
+        {
+            table.Update(item);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        //TODO: Check item for changes attach/unattach
+        public void UpdateRange(IEnumerable<T> items)
+        {
+            table.UpdateRange(items);
+            _db.SaveChanges();
+        }
+
+        //TODO: Check item for changes attach/unattach
+        public async Task UpdateRangeAsync(IEnumerable<T> items)
+        {
+            table.UpdateRange(items);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
+        }
     }
 }

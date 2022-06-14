@@ -89,121 +89,123 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     throw new InvalidSignalControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
-
-                try
+                using (_client)
                 {
-                    var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress);
-
-                    logMessages.ConnectingToHostMessage(parameter.SignalId, parameter.Ipaddress);
-
-                    await _client.ConnectAsync(credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
-                }
-                catch (ControllerConnectionException e)
-                {
-                    logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
-                }
-                catch (OperationCanceledException e)
-                {
-                    logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
-                }
-
-                if (_client.IsConnected)
-                {
-                    logMessages.ConnectedToHostMessage(parameter.SignalId, parameter.Ipaddress);
-
-                    IEnumerable<string> remoteFiles = new List<string>();
-
                     try
                     {
-                        logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
+                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress);
 
-                        remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
-                    }
-                    catch (ControllerListDirectoryException e)
-                    {
-                        logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHostMessage(parameter.SignalId, parameter.Ipaddress);
+
+                        await _client.ConnectAsync(credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
                     }
                     catch (ControllerConnectionException e)
                     {
-                        logMessages.NotConnectedToHostException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
+                    }
+                    catch (OperationCanceledException e)
+                    {
+                        logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
                     }
 
-                    int total = remoteFiles.Count();
-                    int current = 0;
-
-                    logMessages.DirectoryListingMessage(total, parameter.SignalId, parameter.Ipaddress);
-
-                    foreach (var file in remoteFiles)
+                    if (_client.IsConnected)
                     {
-                        var localFilePath = Path.Combine(_options.LocalPath,parameter.SignalId, Path.GetFileName(file));
-                        FileInfo downloadedFile = null;
+                        logMessages.ConnectedToHostMessage(parameter.SignalId, parameter.Ipaddress);
+
+                        IEnumerable<string> remoteFiles = new List<string>();
 
                         try
                         {
-                            logMessages.DownloadingFileMessage(file, parameter.SignalId, parameter.Ipaddress);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
 
-                            downloadedFile = await _client.DownloadFileAsync(localFilePath, file, cancelToken);
-                            current++;
+                            remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                         }
-                        catch (ControllerDownloadFileException e)
+                        catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DownloadFileException(file, parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
                         }
                         catch (ControllerConnectionException e)
                         {
                             logMessages.NotConnectedToHostException(parameter.SignalId, parameter.Ipaddress, e);
                         }
+
+                        int total = remoteFiles.Count();
+                        int current = 0;
+
+                        logMessages.DirectoryListingMessage(total, parameter.SignalId, parameter.Ipaddress);
+
+                        foreach (var file in remoteFiles)
+                        {
+                            var localFilePath = Path.Combine(_options.LocalPath, parameter.SignalId, Path.GetFileName(file));
+                            FileInfo downloadedFile = null;
+
+                            try
+                            {
+                                logMessages.DownloadingFileMessage(file, parameter.SignalId, parameter.Ipaddress);
+
+                                downloadedFile = await _client.DownloadFileAsync(localFilePath, file, cancelToken);
+                                current++;
+                            }
+                            catch (ControllerDownloadFileException e)
+                            {
+                                logMessages.DownloadFileException(file, parameter.SignalId, parameter.Ipaddress, e);
+                            }
+                            catch (ControllerConnectionException e)
+                            {
+                                logMessages.NotConnectedToHostException(parameter.SignalId, parameter.Ipaddress, e);
+                            }
+                            catch (OperationCanceledException e)
+                            {
+                                logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
+                            }
+
+                            // TODO: delete file here
+                            //if (_options.DeleteAfterDownload)
+                            //{
+                            //    try
+                            //    {
+                            //        await client.DeleteFileAsync(file, cancelToken);
+                            //    }
+                            //    catch (ControllerDownloadFileException e)
+                            //    {
+                            //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception deleting file {file} from {ip}", file, parameter.Ipaddress);
+                            //    }
+                            //    catch (OperationCanceledException e)
+                            //    {
+                            //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Operation canceled connecting to {ip}", parameter.Ipaddress);
+                            //    }
+                            //}
+
+                            //HACK: don't know why files aren't downloading without throwing an error
+                            if (downloadedFile != null)
+                            {
+                                logMessages.DownloadedFileMessage(file, parameter.SignalId, parameter.Ipaddress);
+
+                                progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
+
+                                yield return downloadedFile;
+                            }
+                            else
+                            {
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "File failed to download on {signal} file name: {file}", parameter.SignalId, file);
+                            }
+                        }
+
+                        logMessages.DownloadedFilesMessage(current, total, parameter.SignalId, parameter.Ipaddress);
+                        try
+                        {
+                            logMessages.DisconnectingFromHostMessage(parameter.SignalId, parameter.Ipaddress);
+
+                            await _client.DisconnectAsync(cancelToken);
+                        }
+                        catch (ControllerConnectionException e)
+                        {
+                            logMessages.DisconnectingFromHostException(parameter.SignalId, parameter.Ipaddress);
+                        }
                         catch (OperationCanceledException e)
                         {
                             logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
                         }
-
-                        // TODO: delete file here
-                        //if (_options.DeleteAfterDownload)
-                        //{
-                        //    try
-                        //    {
-                        //        await client.DeleteFileAsync(file, cancelToken);
-                        //    }
-                        //    catch (ControllerDownloadFileException e)
-                        //    {
-                        //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception deleting file {file} from {ip}", file, parameter.Ipaddress);
-                        //    }
-                        //    catch (OperationCanceledException e)
-                        //    {
-                        //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Operation canceled connecting to {ip}", parameter.Ipaddress);
-                        //    }
-                        //}
-
-                        //HACK: don't know why files aren't downloading without throwing an error
-                        if (downloadedFile != null)
-                        {
-                            logMessages.DownloadedFileMessage(file, parameter.SignalId, parameter.Ipaddress);
-
-                            progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
-
-                            yield return downloadedFile;
-                        }
-                        else
-                        {
-                            _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "File failed to download on {signal} file name: {file}", parameter.SignalId, file);
-                        }
-                    }
-
-                    logMessages.DownloadedFilesMessage(current, total, parameter.SignalId, parameter.Ipaddress);
-                    try
-                    {
-                        logMessages.DisconnectingFromHostMessage(parameter.SignalId, parameter.Ipaddress);
-
-                        await _client.DisconnectAsync(cancelToken);
-                    }
-                    catch (ControllerConnectionException e)
-                    {
-                        logMessages.DisconnectingFromHostException(parameter.SignalId, parameter.Ipaddress);
-                    }
-                    catch (OperationCanceledException e)
-                    {
-                        logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
                     }
                 }
             }

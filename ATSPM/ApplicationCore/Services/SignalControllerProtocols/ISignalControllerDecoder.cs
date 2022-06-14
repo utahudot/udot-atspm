@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
-    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>
+    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>, IDisposable
     {
         bool IsCompressed(Stream stream);
 

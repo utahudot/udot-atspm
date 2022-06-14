@@ -21,6 +21,10 @@ namespace ATSPM.Domain.Services
         void Remove(T item);
 
         void RemoveRange(IEnumerable<T> items);
+
+        void Update(T item);
+
+        void UpdateRange(IEnumerable<T> items);
     }
 
     public interface IAsyncRepository<T> : IRepository<T>
@@ -38,5 +42,9 @@ namespace ATSPM.Domain.Services
         Task RemoveAsync(T item);
 
         Task RemoveRangeAsync(IEnumerable<T> items);
+
+        Task UpdateAsync(T item);
+
+        Task UpdateRangeAsync(IEnumerable<T> items);
     }
 }
