@@ -154,5 +154,25 @@ namespace ATSPM.Infrasturcture.Repositories
         {
             await Task.Run(() => RemoveRange(items));
         }
+
+        public Task UpdateAsync(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRangeAsync(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateRange(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
