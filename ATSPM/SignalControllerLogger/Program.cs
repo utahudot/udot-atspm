@@ -36,8 +36,11 @@ namespace ATSPM.SignalControllerLogger
             var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging((h, l) =>
                 {
-                    //l.SetMinimumLevel(LogLevel.Debug);
+                    //l.SetMinimumLevel(LogLevel.None);
 
+                    //TODO: add a GoogleLogger section
+                    //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
+                    //TODO: remove this to an extension method
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
                     //    l.AddGoogle(new LoggingServiceOptions
@@ -50,6 +53,8 @@ namespace ATSPM.SignalControllerLogger
                     //    });
                     //}
                 })
+
+
 
                 .ConfigureServices((h, s) =>
                 {
@@ -68,7 +73,7 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
                     //s.AddScoped<ISignalRepository, SignalFileRepository>();
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
@@ -78,6 +83,7 @@ namespace ATSPM.SignalControllerLogger
                     //downloader clients
                     s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
                     s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    //s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
@@ -88,8 +94,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
                     //decoders
-                    s.AddTransient<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-                    s.AddTransient<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+                    s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
                     //downloader configurations
@@ -104,53 +110,8 @@ namespace ATSPM.SignalControllerLogger
 
                 .UseConsoleLifetime()
                 .Build();
-
+           
             await host.RunAsync();
-
-            //IReadOnlyList<Signal> _signalList;
-
-            //int enabled = 0;
-            //int notenabled = 0;
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().ToList();
-            //    //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "9704").ToList();
-            //}
-
-            //var signalSender = new BufferBlock<Signal>();
-
-            //var endResult1 = new ActionBlock<Signal>(i =>
-            //{
-            //    enabled++;
-            //    Console.WriteLine($"endResult1 - {i}");
-            //}, new ExecutionDataflowBlockOptions()
-            //{
-            //    //BoundedCapacity = 5
-            //});
-            //signalSender.LinkTo(endResult1, new DataflowLinkOptions() { PropagateCompletion = true }, s => s.Enabled);
-
-            //var endResult2 = new ActionBlock<Signal>(i =>
-            //{
-            //    notenabled++;
-            //    Console.WriteLine($"endResult2 - {i}");
-            //}, new ExecutionDataflowBlockOptions()
-            //{
-            //    //BoundedCapacity = 5
-            //});
-            //signalSender.LinkTo(endResult2, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-            //foreach (var s in _signalList)
-            //{
-            //    signalSender.Post(s);
-            //}
-
-            //signalSender.Completion.ContinueWith(t => Console.WriteLine($"signalSender: {t.Status}"));
-            //endResult1.Completion.ContinueWith(t => Console.WriteLine($"endResult1: {t.Status} - {enabled}"));
-            //endResult2.Completion.ContinueWith(t => Console.WriteLine($"endResult2: {t.Status} - {notenabled}"));
-
-            //signalSender.Complete();
 
             Console.ReadKey();
         }

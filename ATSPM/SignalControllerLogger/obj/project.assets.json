@@ -7781,6 +7781,7 @@
       "Infrastructure >= 1.0.0",
       "Microsoft.CodeAnalysis.NetAnalyzers >= 6.0.0",
       "Microsoft.Extensions.Configuration.Abstractions >= 6.0.0",
+      "Microsoft.Extensions.Configuration.UserSecrets >= 6.0.1",
       "Microsoft.Extensions.Hosting >= 6.0.1",
       "Microsoft.Extensions.Hosting.Abstractions >= 6.0.0",
       "System.Threading.Tasks.Dataflow >= 6.0.0"
@@ -7853,6 +7854,10 @@
           "Microsoft.Extensions.Configuration.Abstractions": {
             "target": "Package",
             "version": "[6.0.0, )"
+          },
+          "Microsoft.Extensions.Configuration.UserSecrets": {
+            "target": "Package",
+            "version": "[6.0.1, )"
           },
           "Microsoft.Extensions.Hosting": {
             "target": "Package",

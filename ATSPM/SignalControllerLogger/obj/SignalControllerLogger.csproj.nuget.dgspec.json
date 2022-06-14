@@ -341,6 +341,10 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
               "version": "[6.0.1, )"
