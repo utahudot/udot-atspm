@@ -84,7 +84,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 {
                     logMessages.DecodeLogFileMessage(parameter.FullName);
 
-                    await foreach (var log in DecodeAsync(parameter.DirectoryName, memoryStream, cancelToken))
+                    await foreach (var log in DecodeAsync(parameter.Directory.Name, memoryStream, cancelToken))
                     {
                         decodedLogs.Add(log);
 

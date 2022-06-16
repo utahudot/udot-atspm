@@ -110,8 +110,10 @@ namespace ATSPM.SignalControllerLogger
 
                 .UseConsoleLifetime()
                 .Build();
-           
+
             await host.RunAsync();
+
+            Console.WriteLine($"done?");
 
             Console.ReadKey();
         }
