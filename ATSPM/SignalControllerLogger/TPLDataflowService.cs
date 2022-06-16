@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -29,14 +30,6 @@ using Utah.Gov.Udot.PipelineManager;
 
 namespace ATSPM.SignalControllerLogger
 {
-    public static class DataFlowExtensions
-    {
-        public static IDisposable PropagateLink<T>(this ISourceBlock<T> source, ITargetBlock<T> target)
-        {
-            return source.LinkTo(target, new DataflowLinkOptions() { PropagateCompletion = true });
-        }
-    }
-
     public class SignalControllerDataFlow : ServiceObjectBase, IExecuteAsyncWithProgress<IList<Signal>, bool, int>
     {
         public event EventHandler CanExecuteChanged;
@@ -83,28 +76,41 @@ namespace ATSPM.SignalControllerLogger
                 var steps = new List<IDataflowBlock>();
 
                 var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
-                var downloader = CreateDownloaderStep(stepOptions);
-                var getFiles = CreateGetFilesStep(stepOptions);
-                var fileToLogs = CreateFiletoEventLogStep(stepOptions);
+                var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadFiles(t, cancelToken), "DownloadFilesStep", stepOptions);
+                var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
+                var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, cancelToken), "DecodeEventLogsStep", stepOptions);
                 var logArchiveBatch = new BatchBlock<ControllerEventLog>(50000, new GroupingDataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Archive Batch" });
-                var logsToArchive = CreateLogArchiveStep(stepOptions);
-                var saveToRepo = CreateSaveToRepositoryStep(stepOptions);
+                var logsToArchive = CreateTransformManyStep<ControllerEventLog[], ControllerLogArchive>(t => ArchiveLogs(t), "ArchiveLogsStep", stepOptions);
+                var saveToRepo = CreateTransformManyStep<ControllerLogArchive, ControllerLogArchive>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
 
                 //step linking
-                signalSender.PropagateLink(downloader);
-                downloader.PropagateLink(getFiles);
-                getFiles.PropagateLink(fileToLogs);
-                fileToLogs.PropagateLink(logArchiveBatch);
-                logArchiveBatch.PropagateLink(logsToArchive);
-                logsToArchive.PropagateLink(saveToRepo);
+                signalSender.LinkTo(downloader, new DataflowLinkOptions() { PropagateCompletion = true });
+                downloader.LinkTo(getFiles, new DataflowLinkOptions() { PropagateCompletion = true });
+                getFiles.LinkTo(fileToLogs, new DataflowLinkOptions() { PropagateCompletion = true });
+                fileToLogs.LinkTo(logArchiveBatch, new DataflowLinkOptions() { PropagateCompletion = true });
+                logArchiveBatch.LinkTo(logsToArchive, new DataflowLinkOptions() { PropagateCompletion = true });
+                logsToArchive.LinkTo(saveToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 var endResult = new ActionBlock<ControllerLogArchive>(i =>
                 {
                     //if (i == null)
-                    Console.WriteLine($"Wrote to repor {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
+                    Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
+
                 }, stepOptions);
 
                 saveToRepo.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 steps.Add(signalSender);
@@ -123,10 +129,6 @@ namespace ATSPM.SignalControllerLogger
                         await signalSender.SendAsync(signal);
                     }
 
-                    //_signalSender.Completion.ContinueWith(t => Console.WriteLine($"signalSender: {t.Status}"));
-                    //_logArchiveBatch.Completion.ContinueWith(t => Console.WriteLine($"logArchiveBatch: {t.Status}"));
-                    //endResult.Completion.ContinueWith(t => Console.WriteLine($"endResult:------------------------------------------ {t.Status}"));
-
                     signalSender.Complete();
 
                     await Task.WhenAll(steps.Select(s => s.Completion));
@@ -139,9 +141,6 @@ namespace ATSPM.SignalControllerLogger
                 }
                 finally
                 {
-                    var dir = Directory.GetDirectories("C:\\ControlLogs").ToList();
-                    //Console.WriteLine($"Stopping: {sw.Elapsed} - {dir.Count}/{parameter?.Count} ======================================================================");
-
                     sw.Stop();
                 }
 
@@ -187,234 +186,157 @@ namespace ATSPM.SignalControllerLogger
 
         #endregion
 
-        private IPropagatorBlock<Signal, DirectoryInfo> CreateDownloaderStep(ExecutionDataflowBlockOptions options)
+        private IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1,Task<IEnumerable<T2>>> process, string processName, ExecutionDataflowBlockOptions options = default)
         {
-            options.NameFormat = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            options.NameFormat = processName;
 
-            var block = new TransformManyBlock<Signal, DirectoryInfo>(async s =>
-            {
-                var fileList = new List<FileInfo>();
-
-                try
-                {
-                    //var progress = new Progress<ControllerDownloadProgress>(p => _log.LogInformation(new EventId(Convert.ToInt32(s.SignalId)), "{progress}", p));
-
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(s));
-
-                        //await foreach (var file in downloader.Execute(s, progress, cancellationToken))
-                        await foreach (var file in downloader.Execute(s, options.CancellationToken))
-                        {
-                            fileList.Add(file);
-                        }
-                    }
-
-                    //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
-                }
-                catch (ExecuteException e)
-                {
-                    //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
-                }
-                catch (InvalidSignalControllerIpAddressException e)
-                {
-                    //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
-                }
-                catch (ArgumentNullException e)
-                {
-                    //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
-                }
-                catch (Exception e)
-                {
-                    //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "Unexpected exception caught on step {step}", blockName);
-                }
-
-                return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x, y) => x.FullName == y.FullName));
-
-            }, options);
+            var block = new TransformManyBlock<T1, T2>(process, options);
 
             block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
 
             return block;
         }
 
-        private IPropagatorBlock<DirectoryInfo, FileInfo> CreateGetFilesStep(ExecutionDataflowBlockOptions options)
+        private IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, IEnumerable<T2>> process, string processName, ExecutionDataflowBlockOptions options = default)
         {
-            options.NameFormat = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            options.NameFormat = processName;
 
-            var block = new TransformManyBlock<DirectoryInfo, FileInfo>(s =>
-            {
-                var files = new List<FileInfo>();
-
-                try
-                {
-                    files = s?.GetFiles("*.*", SearchOption.AllDirectories).ToList();
-                }
-                catch (Exception e)
-                {
-                    _log.LogError("", e);
-                }
-
-                return files;
-
-            }, options);
+            var block = new TransformManyBlock<T1, T2>(process, options);
 
             block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
 
             return block;
         }
 
-        private IPropagatorBlock<FileInfo, ControllerEventLog> CreateFiletoEventLogStep(ExecutionDataflowBlockOptions options)
+        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadFiles(Signal signal, CancellationToken cancellationToken = default)
         {
-            options.NameFormat = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            var fileList = new List<FileInfo>();
 
-            var block = new TransformManyBlock<FileInfo, ControllerEventLog>(async s =>
+            try
             {
-                //Console.WriteLine($"trying to download: {s.SignalId}|{s.ControllerType.ControllerTypeId}");
+                //var progress = new Progress<ControllerDownloadProgress>(p => _log.LogInformation(new EventId(Convert.ToInt32(s.SignalId)), "{progress}", p));
 
-                //Console.WriteLine($"{blockName} is processing {s.Count}");
-
-
-                HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
-
-                try
+                using (var scope = _serviceProvider.CreateScope())
                 {
+                    var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(signal));
 
-                    using (var scope = _serviceProvider.CreateScope())
+                    //await foreach (var file in downloader.Execute(s, progress, cancellationToken))
+                    await foreach (var file in downloader.Execute(signal, cancellationToken))
                     {
-                        var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(s));
-                        logList = await decoder.ExecuteAsync(s, options.CancellationToken);
+                        fileList.Add(file);
                     }
                 }
-                catch (ExecuteException e)
-                {
-                    //Console.WriteLine($"ExecuteException--------------------------------------------{blockName} catch: {e}");
-                }
-                catch (FileNotFoundException e)
-                {
-                    //Console.WriteLine($"FileNotFoundException--------------------------------------------{blockName} catch: {e}");
-                }
-                catch (ArgumentNullException e)
-                {
-                    //Console.WriteLine($"ArgumentNullException--------------------------------------------{blockName} catch: {e}");
-                }
-                catch (Exception e)
-                {
-                    //Console.WriteLine($"Exception--------------------------------------------{blockName} catch: {e}");
-                }
 
-                return logList;
-
-            }, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        private IPropagatorBlock<ControllerEventLog[], ControllerLogArchive> CreateLogArchiveStep(ExecutionDataflowBlockOptions options)
-        {
-            options.NameFormat = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
-            var block = new TransformManyBlock<ControllerEventLog[], ControllerLogArchive>(s =>
+                //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
+            }
+            catch (ExecuteException e)
             {
-                return s.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
-
-            }, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        private IPropagatorBlock<ControllerLogArchive, ControllerLogArchive> CreateSaveToRepositoryStep(ExecutionDataflowBlockOptions options)
-        {
-            options.NameFormat = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
-            var block = new TransformManyBlock<ControllerLogArchive, ControllerLogArchive>(async s =>
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+            }
+            catch (InvalidSignalControllerIpAddressException e)
             {
-                List<ControllerLogArchive> result = new List<ControllerLogArchive>();
-
-                try
-                {
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
-                        var searchLog = await EventLogArchive.LookupAsync(s);
-
-                        if (searchLog != null)
-                        {
-                            var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, s.LogData), new ControllerEventLogEqualityComparer());
-
-                            //Console.WriteLine($"Union logs: {eventLogs.Count} - {searchLog.LogData.Count()} = {archive.LogData.Count()}");
-
-                            searchLog.LogData = eventLogs.ToList();
-
-                            await EventLogArchive.UpdateAsync(searchLog);
-
-                            //DbContext db = scope.ServiceProvider.GetService<DbContext>();
-                            //await db.SaveChangesAsync(options.CancellationToken);
-
-                            result.Add(searchLog);
-                        }
-                        else
-                        {
-                            //add to database
-                            await EventLogArchive.AddAsync(s);
-                            result.Add(s);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
-
-                return result;
-
-                //Console.WriteLine($"{blockName} is processing {result.Count}");
-
-                //_log.LogInformation($"result count: {result.Count}");
-
-            }, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        //public IEnumerable<IPropagatorBlock<Signal, DirectoryInfo>> CreateDownloaderBalencer(ISourceBlock<Signal> source, ITargetBlock<DirectoryInfo> destination, int totalCount, int loadBalance)
-        //{
-        //    List<IPropagatorBlock<Signal, DirectoryInfo>> result = new List<IPropagatorBlock<Signal, DirectoryInfo>>();
-
-        //    int blocksRequired = (totalCount / (loadBalance > 0 ? loadBalance : 1)) + (loadBalance > 0 ? ((totalCount % loadBalance) > 0 ? 1 : 0) : 0);
-
-        //    for (int i = 1; i <= blocksRequired; i++)
-        //    {
-        //        var downloader = CreateDownloaderStep($"DownloaderIstance{i}", loadBalance == 0 ? -1 : loadBalance);
-
-        //        source.LinkTo(downloader, new DataflowLinkOptions { PropagateCompletion = true });
-        //        downloader.LinkTo(destination);
-
-        //        result.Add(downloader);
-        //    }
-
-        //    return result;
-        //}
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+                _log.LogError(e, e.Message);
+            }
+            catch (ArgumentNullException e)
             {
-                //_signalSender = null;
-                //_downloader = null;
-                //_getFiles = null;
-                //_fileToLogs = null;
-                //_logArchiveBatch = null;
-                //_logsToArchive = null;
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
+            }
+            catch (Exception e)
+            {
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "Unexpected exception caught on step {step}", blockName);
             }
 
-            base.Dispose(disposing);
+            return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x, y) => x.FullName == y.FullName));
+        }
+
+        protected virtual IEnumerable<FileInfo> GetFiles(DirectoryInfo directoryInfo)
+        {
+            var files = new List<FileInfo>();
+
+            try
+            {
+                files = directoryInfo?.GetFiles("*.*", SearchOption.AllDirectories).ToList();
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, e.Message);
+            }
+
+            return files;
+        }
+
+        protected async virtual Task<IEnumerable<ControllerEventLog>> CreateEventLogs(FileInfo file, CancellationToken cancellationToken = default)
+        {
+            HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+
+            try
+            {
+
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
+                    logList = await decoder.ExecuteAsync(file, cancellationToken);
+                }
+            }
+            catch (ExecuteException e)
+            {
+                //Console.WriteLine($"ExecuteException--------------------------------------------{blockName} catch: {e}");
+            }
+            catch (FileNotFoundException e)
+            {
+                //Console.WriteLine($"FileNotFoundException--------------------------------------------{blockName} catch: {e}");
+            }
+            catch (ArgumentNullException e)
+            {
+                //Console.WriteLine($"ArgumentNullException--------------------------------------------{blockName} catch: {e}");
+            }
+            catch (Exception e)
+            {
+                //Console.WriteLine($"Exception--------------------------------------------{blockName} catch: {e}");
+            }
+
+            return logList;
+        }
+
+        //TODO: Move into extension method
+        protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
+        {
+            return logs.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+        }
+
+        protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
+        {
+            List<ControllerLogArchive> result = new List<ControllerLogArchive>();
+
+            try
+            {
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+                    var searchLog = await EventLogArchive.LookupAsync(archive);
+
+                    if (searchLog != null)
+                    {
+                        var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
+                        searchLog.LogData = eventLogs.ToList();
+
+                        await EventLogArchive.UpdateAsync(searchLog);
+
+                        result.Add(searchLog);
+                    }
+                    else
+                    {
+                        await EventLogArchive.AddAsync(archive);
+                        result.Add(archive);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: {e}");
+            }
+
+            return result;
         }
     }
 
@@ -429,49 +351,46 @@ namespace ATSPM.SignalControllerLogger
         public TPLDataflowService(ILogger<TPLDataflowService> log, IServiceProvider serviceProvider, IOptions<SignalControllerLoggerConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
-        
-        
 
-        
+
+
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             //stoppingToken.Register(() => Console.WriteLine($"-------------------------------------------------------------------------------------------stoppingToken"));
 
 
-            while(!stoppingToken.IsCancellationRequested)
+            //while(!stoppingToken.IsCancellationRequested)
+            //{
+            //var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
+
+            IReadOnlyList<Signal> _signalList;
+            List<ControllerLogArchive> finalList;
+
+            using (var scope = _serviceProvider.CreateScope())
             {
-                //var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(50).ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "1091").ToList();
+            }
 
-                IReadOnlyList<Signal> _signalList;
-
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(50).ToList();
-                    //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "9704").ToList();
-                }
-
-                using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))
-                {
-                    //await process.ExecuteAsync(_signalList).ContinueWith(t => Console.WriteLine($"-----------------------it's done!!! {t.Status} --- {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64}"));
-                    await process.ExecuteAsync(_signalList);
-                }
-
-                //var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider);
-                //await process.ExecuteAsync(_signalList);
-
-                Console.WriteLine($"PRE: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
-
-                GC.Collect();
-
-                Console.WriteLine($"POST: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
-
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))
+            {
+                await process.ExecuteAsync(_signalList).ContinueWith(t => Console.WriteLine($"-----------------------it's done!!! {t.Status} --- {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64}"));
             }
 
 
-            // TODO: dispose array of await tasks for flow stemps
-            // TODO: run GC
+            //var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider);
+            //await process.ExecuteAsync(_signalList);
+
+            //Console.WriteLine($"PRE: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
+
+            //GC.Collect();
+
+            //Console.WriteLine($"POST: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
+
+            //await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            //}
         }
     }
 }
