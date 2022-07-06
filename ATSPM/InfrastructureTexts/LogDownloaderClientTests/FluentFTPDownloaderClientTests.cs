@@ -50,7 +50,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         public async void ConnectAsyncSuccess()
         {
             var client = new Mock<IFtpClient>();
-            client.Setup(s => s.AutoConnectAsync(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true)).ReturnsAsync(new FtpProfile()).Verifiable();
+            client.Setup(s => s.ConnectAsync(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true).Verifiable());
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -79,7 +79,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
         public async void ConnectAsyncFailed()
         {
             var client = new Mock<IFtpClient>();
-            client.Setup(s => s.AutoConnectAsync(default)).Throws<Exception>();
+            client.Setup(s => s.ConnectAsync(default)).Throws<Exception>();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
