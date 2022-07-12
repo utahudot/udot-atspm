@@ -4,22 +4,59 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace ControllerLogger.Domain.BaseClasses
+namespace ATSPM.Domain.BaseClasses
 {
+    /// <summary>
+    /// <c>ServiceObjectBase</c> For services implementing:
+    /// <list type="table">
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanged"/></term>
+    /// <description>Notifies clients that a property value has changed.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="INotifyPropertyChanging"/></term>
+    /// <description>Notifies clients that a property value is changing.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="ISupportInitializeNotification"/></term>
+    /// <description>Allows coordination of initialization for a component and its dependent properties.</description>
+    /// </item>
+    /// 
+    /// <item>
+    /// <term><see cref="IDisposable"/></term>
+    /// <description>Provides a mechanism for releasing unmanaged resources.</description>
+    /// </item>
+    /// 
+    /// </list>
+    /// </summary>
     public abstract class ServiceObjectBase : ObservableObjectBase, ISupportInitializeNotification, IDisposable
     {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="BeginInit"/>
+        /// </summary>
         public ServiceObjectBase()
         {
             //intialize object
-            //BeginInit();
+            BeginInit();
         }
 
+        /// <summary>
+        /// Initialize service
+        /// </summary>
+        /// <remarks>Constructor calls <see cref="BeginInit"/> and initializes on instantiation.</remarks>
         public virtual void Initialize()
         {
             //initialize complete
             EndInit();
         }
 
+        /// <summary>
+        /// Sets a properties value and raises the <see cref="ObservableObjectBase.PropertyChanging"/> and <see cref="ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
+        /// </summary>
+        /// <remarks>Overriden from <see cref="ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
         protected override bool Set<T>(ref T currentValue, T newValue, IEqualityComparer<T> comparer, [CallerMemberName] string propertyName = "")
         {
             //check IEquatable<T>
@@ -30,9 +67,6 @@ namespace ControllerLogger.Domain.BaseClasses
 
             //raise property changing
             if (IsInitialized) { RaisePropertyChanging(propertyName); }
-
-            //IsChanged
-            //if (IsInitialized) { AddChange(propertyName, currentValue); }
 
             //update value
             currentValue = newValue;
@@ -48,7 +82,9 @@ namespace ControllerLogger.Domain.BaseClasses
         public event EventHandler Initialized;
 
         private bool _isInitialized;
-        [Newtonsoft.Json.JsonIgnore]
+        
+
+        //[Newtonsoft.Json.JsonIgnore]
         public bool IsInitialized
         {
             get { return _isInitialized; }
@@ -79,15 +115,49 @@ namespace ControllerLogger.Domain.BaseClasses
 
         #region IDisposable
 
-        public abstract void Dispose();
+        private bool disposedValue;
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // // TODO: dispose managed state (managed objects)
+                }
+
+                // // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
 
         #endregion
 
+        /// <summary>
+        /// Raise <see cref="Initialized"/> when initialization is complete.
+        /// </summary>
         protected void RaiseInitialized()
         {
             RaisePropertyChanged(string.Empty);
 
             Initialized?.Invoke(this, new EventArgs());
         }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ServiceObjectBase()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        
     }
 }

@@ -1,5 +1,5 @@
-﻿using ControllerLogger.Data;
-using ControllerLogger.Models;
+﻿using ATSPM.Application.Models;
+using ATSPM.Infrasturcture.Data;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -44,11 +44,12 @@ namespace Microsoft.Extensions.Logging
                     Function = parameters.Where(k => k.Key == "Function").Select(v => v.Value).FirstOrDefault().ToString()
                 };
 
-                using (MOEContext db = new MOEContext())
-                {
-                    db.ApplicationEvents.Add(applicationEvent);
-                    db.SaveChanges();
-                }
+                //TODO: took this out for testing
+                //using (MOEContext db = new MOEContext())
+                //{
+                //    db.ApplicationEvents.Add(applicationEvent);
+                //    db.SaveChanges();
+                //}
             }
         }
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace ControllerLogger.Models
+namespace ATSPM.Application.Models
 {
-    public partial class DetectionType
+    public partial class DetectionType : ATSPMModelBase
     {
         public DetectionType()
         {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace ControllerLogger.Models
+namespace ATSPM.Application.Models
 {
-    public partial class Approach
+    public partial class Approach : ATSPMModelBase
     {
         public Approach()
         {
