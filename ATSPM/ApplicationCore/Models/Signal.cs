@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace ControllerLogger.Models
+namespace ATSPM.Application.Models
 {
-    public partial class Signal
+    public partial class Signal : ATSPMModelBase
     {
         public string SignalId { get; set; }
         public string Latitude { get; set; }
@@ -23,10 +23,12 @@ namespace ControllerLogger.Models
 
         public virtual ControllerType ControllerType { get; set; }
         public virtual Region Region { get; set; }
+        public virtual VersionAction VersionAction { get; set; }
+        public virtual ICollection<Approach> Approaches { get; set; }
 
         public override string ToString()
         {
-            return $"{SignalId} - {PrimaryName} - {SecondaryName}";
+            return $"{SignalId}";
         }
     }
 }

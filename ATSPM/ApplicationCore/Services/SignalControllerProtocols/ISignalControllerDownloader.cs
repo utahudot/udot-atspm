@@ -1,16 +1,17 @@
-﻿using ControllerLogger.Application.Enums;
-using ControllerLogger.Models;
+﻿using ATSPM.Application.Common;
+using ATSPM.Application.Enums;
+using ATSPM.Application.Models;
+using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace ControllerLogger.Application.Services
+namespace ATSPM.Application.Services.SignalControllerProtocols
 {
-    public interface ISignalControllerDownloader : IPipelineExecute<Signal, DirectoryInfo>, IPipelineExecute
+    public interface ISignalControllerDownloader : IExecuteWithProgress<Signal, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
     {
-        SignalControllerType ControllerType { get; }
+        int ControllerType { get; }
+
+        string[] FileFilters { get; set; }
     }
 }

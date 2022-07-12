@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ATSPM.Application.Models;
+using System;
 using System.Collections.Generic;
 
 #nullable disable
 
-namespace ControllerLogger.Models
+namespace ATSPM.Application.Models
 {
     public partial class ActionLogAction
     {

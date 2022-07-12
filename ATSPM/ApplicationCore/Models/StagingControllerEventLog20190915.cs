@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace ControllerLogger.Models
+namespace ATSPM.Application.Models
 {
     public partial class StagingControllerEventLog20190915
     {
