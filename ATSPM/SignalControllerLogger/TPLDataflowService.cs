@@ -42,12 +42,13 @@ namespace ATSPM.SignalControllerLogger
             //var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
 
             IReadOnlyList<Signal> _signalList;
-            List<ControllerLogArchive> finalList;
+            //List<ControllerLogArchive> finalList;
 
             using (var scope = _serviceProvider.CreateScope())
             {
                 _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(50).ToList();
                 //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "1091").ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && testSignals.Contains(w.SignalId)).ToList();
             }
 
             using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))
