@@ -5966,24 +5966,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\christianbaker\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\sschollmeyer\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCoreTests\\DomainCoreTests.csproj",
+      "projectUniqueName": "C:\\Users\\sschollmeyer\\source\\repos\\udot-atspm\\ATSPM\\DomainCoreTests\\DomainCoreTests.csproj",
       "projectName": "DomainCoreTests",
-      "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCoreTests\\DomainCoreTests.csproj",
-      "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-      "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCoreTests\\obj\\",
+      "projectPath": "C:\\Users\\sschollmeyer\\source\\repos\\udot-atspm\\ATSPM\\DomainCoreTests\\DomainCoreTests.csproj",
+      "packagesPath": "C:\\Users\\sschollmeyer\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\sschollmeyer\\source\\repos\\udot-atspm\\ATSPM\\DomainCoreTests\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\sschollmeyer\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5997,8 +5992,8 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
-              "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"
+            "C:\\Users\\sschollmeyer\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+              "projectPath": "C:\\Users\\sschollmeyer\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
             }
           }
         }
@@ -6053,7 +6048,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
       }
     }
   }
