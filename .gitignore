@@ -65,3 +65,4 @@ dkms.conf
 /ATSPM/InfrastructureTexts/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
+/ATSPM/Data/obj
