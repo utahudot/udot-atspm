@@ -56,4 +56,13 @@ dkms.conf
 /ATSPM/ApplicationCore/obj
 /ATSPM/ApplicationCore/bin
 /ATSPM/DomainCore/obj
-
+/ATSPM/DomainCore/bin
+/ATSPM/DomainCoreTests/obj
+/ATSPM/DomainCoreTests/bin
+/ATSPM/Infrastructure/obj
+/ATSPM/Infrastructure/bin
+/ATSPM/InfrastructureTexts/obj
+/ATSPM/InfrastructureTexts/bin
+/ATSPM/SignalControllerLogger/obj
+/ATSPM/SignalControllerLogger/bin
+/ATSPM/Data/obj
