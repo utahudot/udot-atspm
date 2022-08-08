@@ -32,28 +32,28 @@ namespace ATSPM.Application.ValueObjects
         /// <param name="hasTMC"></param>
         /// <param name="Region"></param>
 
-        //public Pin(string signalId, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
+        //public Pin(string SignalID, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
         //{
 
-        //    signalID = signalId;
+        //    SignalID = SignalID;
         //    latitude = lat;
         //    longitude = Long;
         //    description = desc;
         //    region = Region;
 
         //    SortedDictionary<int, bool> reports = FindReports(hasPCD,hasSpeed, hasPhase, hasTMC, hasRLM, hasSplitFail);
-        //    box = new InfoBox(signalId, description, reports);
+        //    box = new InfoBox(SignalID, description, reports);
         //}
-        public Pin(string signalId, string lat, string Long, string desc, string Region)
+        public Pin(string signalID, string lat, string Long, string desc, string Region)
         {
-            signalID = signalId;
+            signalID = signalID;
             latitude = lat;
             longitude = Long;
             description = desc;
             region = Region;
 
 
-            //box = new InfoBox(signalId, description, reports);
+            //box = new InfoBox(SignalID, description, reports);
         }
 
         public string SignalID => signalID;
@@ -121,7 +121,7 @@ namespace ATSPM.Application.ValueObjects
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             var y = (Pin)obj;
-            return this != null && y != null && signalID == y.signalID
+            return this != null && y != null && SignalID == y.SignalID
                 ;
         }
 

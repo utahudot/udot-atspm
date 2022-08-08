@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
+using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
@@ -17,15 +15,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Google.Cloud.Diagnostics.Common;
-using ATSPM.Application.LogMessages;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
-{   
+{
     public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
     {
         public event EventHandler CanExecuteChanged;
@@ -63,7 +58,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerType?.ControllerTypeId == ControllerType && value.Enabled;
+            return value?.ControllerType?.ControllerTypeID == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -75,7 +70,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
+        /// <exception cref="InvalidSignalControllerIPAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
@@ -85,7 +80,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
+                if (!parameter.IPAddress.IsValidIPAddress(_options.PingControllerToVerify)) 
                     throw new InvalidSignalControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
@@ -93,70 +88,70 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     try
                     {
-                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress);
+                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.IPAddress);
 
-                        logMessages.ConnectingToHostMessage(parameter.SignalId, parameter.Ipaddress);
+                        logMessages.ConnectingToHostMessage(parameter.SignalID, parameter.IPAddress);
 
                         await _client.ConnectAsync(credentials, _options.ConnectionTimeout, _options.ReadTimeout, cancelToken);
                     }
                     catch (ControllerConnectionException e)
                     {
-                        logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHosException(parameter.SignalID, parameter.IPAddress, e);
                     }
                     catch (OperationCanceledException e)
                     {
-                        logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.OperationCancelledException(parameter.SignalID, parameter.IPAddress, e);
                     }
 
                     if (_client.IsConnected)
                     {
-                        logMessages.ConnectedToHostMessage(parameter.SignalId, parameter.Ipaddress);
+                        logMessages.ConnectedToHostMessage(parameter.SignalID, parameter.IPAddress);
 
                         IEnumerable<string> remoteFiles = new List<string>();
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalID, parameter.IPAddress);
 
                             remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                         }
                         catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.DirectoryListingException(parameter.SignalID, parameter.IPAddress, e);
                         }
                         catch (ControllerConnectionException e)
                         {
-                            logMessages.NotConnectedToHostException(parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.NotConnectedToHostException(parameter.SignalID, parameter.IPAddress, e);
                         }
 
                         int total = remoteFiles.Count();
                         int current = 0;
 
-                        logMessages.DirectoryListingMessage(total, parameter.SignalId, parameter.Ipaddress);
+                        logMessages.DirectoryListingMessage(total, parameter.SignalID, parameter.IPAddress);
 
                         foreach (var file in remoteFiles)
                         {
-                            var localFilePath = Path.Combine(_options.LocalPath, parameter.SignalId, Path.GetFileName(file));
+                            var localFilePath = Path.Combine(_options.LocalPath, parameter.SignalID, Path.GetFileName(file));
                             FileInfo downloadedFile = null;
 
                             try
                             {
-                                logMessages.DownloadingFileMessage(file, parameter.SignalId, parameter.Ipaddress);
+                                logMessages.DownloadingFileMessage(file, parameter.SignalID, parameter.IPAddress);
 
                                 downloadedFile = await _client.DownloadFileAsync(localFilePath, file, cancelToken);
                                 current++;
                             }
                             catch (ControllerDownloadFileException e)
                             {
-                                logMessages.DownloadFileException(file, parameter.SignalId, parameter.Ipaddress, e);
+                                logMessages.DownloadFileException(file, parameter.SignalID, parameter.IPAddress, e);
                             }
                             catch (ControllerConnectionException e)
                             {
-                                logMessages.NotConnectedToHostException(parameter.SignalId, parameter.Ipaddress, e);
+                                logMessages.NotConnectedToHostException(parameter.SignalID, parameter.IPAddress, e);
                             }
                             catch (OperationCanceledException e)
                             {
-                                logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
+                                logMessages.OperationCancelledException(parameter.SignalID, parameter.IPAddress, e);
                             }
 
                             // TODO: delete file here
@@ -168,18 +163,18 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             //    }
                             //    catch (ControllerDownloadFileException e)
                             //    {
-                            //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Exception deleting file {file} from {ip}", file, parameter.Ipaddress);
+                            //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalID)), e, "Exception deleting file {file} from {ip}", file, parameter.IPAddress);
                             //    }
                             //    catch (OperationCanceledException e)
                             //    {
-                            //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "Operation canceled connecting to {ip}", parameter.Ipaddress);
+                            //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalID)), e, "Operation canceled connecting to {ip}", parameter.IPAddress);
                             //    }
                             //}
 
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
                             {
-                                logMessages.DownloadedFileMessage(file, parameter.SignalId, parameter.Ipaddress);
+                                logMessages.DownloadedFileMessage(file, parameter.SignalID, parameter.IPAddress);
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
@@ -187,24 +182,24 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             }
                             else
                             {
-                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), "File failed to download on {signal} file name: {file}", parameter.SignalId, file);
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalID)), "File failed to download on {signal} file name: {file}", parameter.SignalID, file);
                             }
                         }
 
-                        logMessages.DownloadedFilesMessage(current, total, parameter.SignalId, parameter.Ipaddress);
+                        logMessages.DownloadedFilesMessage(current, total, parameter.SignalID, parameter.IPAddress);
                         try
                         {
-                            logMessages.DisconnectingFromHostMessage(parameter.SignalId, parameter.Ipaddress);
+                            logMessages.DisconnectingFromHostMessage(parameter.SignalID, parameter.IPAddress);
 
                             await _client.DisconnectAsync(cancelToken);
                         }
                         catch (ControllerConnectionException e)
                         {
-                            logMessages.DisconnectingFromHostException(parameter.SignalId, parameter.Ipaddress);
+                            logMessages.DisconnectingFromHostException(parameter.SignalID, parameter.IPAddress);
                         }
                         catch (OperationCanceledException e)
                         {
-                            logMessages.OperationCancelledException(parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.OperationCancelledException(parameter.SignalID, parameter.IPAddress, e);
                         }
                     }
                 }

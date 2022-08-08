@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models
 using ATSPM.Application.Repositories;
 using ATSPM.Domain.Services;
 using ATSPM.Infrasturcture.Data;
@@ -57,13 +57,13 @@ namespace InfrastructureTests
         {
             await SeedData();
 
-            var signalId = "1001";
+            var SignalID = "1001";
             var startTime = DateTime.Today;
             var endTime = DateTime.Today.AddDays(1);
 
 
             var expected = codes.OrderBy(o => o).ToList();
-            var actual = _repo.GetAllAggregationCodes(signalId, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
+            var actual = _repo.GetAllAggregationCodes(SignalID, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
 
             _output.WriteLine($"expected: {expected.Count}");
             _output.WriteLine($"actual: {actual.Count}");
@@ -202,7 +202,7 @@ namespace InfrastructureTests
             {
                 for (int z = 0; z <= 4; z++)
                 {
-                    var controlLogArchive = new ControllerLogArchive() { SignalId = (x + 1000).ToString(), ArchiveDate = DateTime.Today.AddDays(z) };
+                    var controlLogArchive = new ControllerLogArchive() { SignalID = (x + 1000).ToString(), ArchiveDate = DateTime.Today.AddDays(z) };
 
                     controlLogArchive.LogData = new List<ControllerEventLog>();
 
@@ -217,9 +217,9 @@ namespace InfrastructureTests
 
             await _db.SaveChangesAsync();
 
-            //await foreach (var i in _db.Set<ControllerLogArchive>().OrderBy(o => o.SignalId).AsAsyncEnumerable())
+            //await foreach (var i in _db.Set<ControllerLogArchive>().OrderBy(o => o.SignalID).AsAsyncEnumerable())
             //{
-            //    _output.WriteLine($"item: {i.SignalId} : {i.ArchiveDate} : {i.LogData.Count()}");
+            //    _output.WriteLine($"item: {i.SignalID} : {i.ArchiveDate} : {i.LogData.Count()}");
             //}
         }
     }

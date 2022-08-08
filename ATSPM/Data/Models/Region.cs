@@ -9,12 +9,12 @@ namespace ATSPM.Data.Models
     {
         public Region()
         {
-            Signals = new HashSet<Signals>();
+            Signals = new HashSet<Signal>();
         }
 
         public int ID { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<Signals> Signals { get; set; }
+        public virtual ICollection<Signal> Signals { get; set; }
     }
 }

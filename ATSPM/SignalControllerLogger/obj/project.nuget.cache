@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "eTz1nmI1iXL1/HunjiLO+qV/aEEERyDeLHjTxexNo5AzlnvWvv1I6ltqEJAK0EP7XOknvr7NTZE+l27hdy+PKQ==",
+  "dgSpecHash": "ysd1HMji/q36VZvtTYbwyWj0m6za3fOGQ4sLy86fi2EJkeRP1OPOhvtfwAizY3fWNA+igEXp25ibuGWwB6UphQ==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\39.0.1\\fluentftp.39.0.1.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\39.1.0\\fluentftp.39.1.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.commonprotos\\2.6.0\\google.api.commonprotos.2.6.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.gax\\4.0.0\\google.api.gax.4.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.gax.grpc\\4.0.0\\google.api.gax.grpc.4.0.0.nupkg.sha512",

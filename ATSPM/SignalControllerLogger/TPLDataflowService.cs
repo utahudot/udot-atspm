@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -47,8 +47,8 @@ namespace ATSPM.SignalControllerLogger
             using (var scope = _serviceProvider.CreateScope())
             {
                 _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(50).ToList();
-                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "1091").ToList();
-                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && testSignals.Contains(w.SignalId)).ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalID == "1091").ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && testSignals.Contains(w.SignalID)).ToList();
             }
 
             using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))

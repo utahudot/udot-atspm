@@ -1,13 +1,8 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
+using ATSPM.Data.Models;
 using FluentFTP;
 using FluentFTP.Rules;
 using Microsoft.Extensions.Logging;
@@ -15,14 +10,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Utah.Gov.Udot.PipelineManager;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
@@ -43,7 +33,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            using FtpClient client = new FtpClient(parameter.Ipaddress);
+            using FtpClient client = new FtpClient(parameter.IPAddress);
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                 //TODO: replace this with options setting
@@ -61,13 +51,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     var profile = await client?.AutoConnectAsync(cancelToken);
 
-                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), $"Connected to Controller: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
+                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalID)), $"Connected to Controller: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
                 }
                 catch (Exception e)
                 {
                     progress?.Report(new ControllerDownloadProgress(e));
 
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Connection Error {ip}", parameter.Ipaddress);
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalID)), e, "FTP Connection Error {ip}", parameter.IPAddress);
                 }
 
                 if (client.IsConnected)
@@ -80,13 +70,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                         try
                         {
-                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, ftpProgress, cancelToken);
+                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.LocalPath, parameter.SignalID), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, ftpProgress, cancelToken);
                         }
                         catch (Exception e)
                         {
                             progress?.Report(new ControllerDownloadProgress(e));
 
-                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Download Error {ip}", parameter.Ipaddress);
+                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalID)), e, "FTP Download Error {ip}", parameter.IPAddress);
                         }
                     }
 
@@ -101,7 +91,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(file));
 
-                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalID)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
 
                                 yield return file;
                             }
@@ -110,7 +100,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             {
                                 progress?.Report(new ControllerDownloadProgress(file: null));
 
-                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalID)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
                             }
 
                             if (r.Exception != null)

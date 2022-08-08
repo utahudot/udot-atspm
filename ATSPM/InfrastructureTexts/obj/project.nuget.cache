@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "rcqUoI8tTXqa8kLd8/aUvtzFBJapnCEu91kVByOxF3ouRdMdJd+om3s9lJFkDT5KnKfAB/uI2a1vboHG19RPmw==",
+  "dgSpecHash": "Zo9bZ2g2uG6jAN+ObRvfk7c6yUBVVWeoEVpLHu850FYBZTLE21oOE7GiV0hSYFTkETKu3wnPPL4qZaeNS56Eag==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\InfrastructureTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\christianbaker\\.nuget\\packages\\castle.core\\5.0.0\\castle.core.5.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",
-    "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\39.0.1\\fluentftp.39.0.1.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\fluentftp\\39.1.0\\fluentftp.39.1.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.commonprotos\\2.6.0\\google.api.commonprotos.2.6.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.gax\\4.0.0\\google.api.gax.4.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.api.gax.grpc\\4.0.0\\google.api.gax.grpc.4.0.0.nupkg.sha512",
@@ -45,6 +45,8 @@
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.0\\microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.dependencymodel\\6.0.0\\microsoft.extensions.dependencymodel.6.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.fileproviders.abstractions\\6.0.0\\microsoft.extensions.fileproviders.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.hosting.abstractions\\6.0.0\\microsoft.extensions.hosting.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.http\\6.0.0\\microsoft.extensions.http.6.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.logging\\6.0.0\\microsoft.extensions.logging.6.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.1\\microsoft.extensions.logging.abstractions.6.0.1.nupkg.sha512",

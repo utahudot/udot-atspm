@@ -20,7 +20,7 @@
           "build/netstandard1.0/coverlet.collector.targets": {}
         }
       },
-      "FluentFTP/39.0.1": {
+      "FluentFTP/39.1.0": {
         "type": "package",
         "compile": {
           "lib/net6.0/FluentFTP.dll": {}
@@ -542,6 +542,35 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.Extensions.DependencyModel.dll": {}
+        }
+      },
+      "Microsoft.Extensions.FileProviders.Abstractions/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {}
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Hosting.Abstractions/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "6.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
+          "Microsoft.Extensions.FileProviders.Abstractions": "6.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.dll": {}
         }
       },
       "Microsoft.Extensions.Http/6.0.0": {
@@ -2759,6 +2788,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "ATSPM.Data": "1.0.0",
           "DomainCore": "1.0.0",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Logging": "6.0.0",
@@ -2772,18 +2802,19 @@
           "bin/placeholder/ApplicationCore.dll": {}
         }
       },
-      "Data/1.0.0": {
+      "ATSPM.Data/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "ApplicationCore": "1.0.0",
-          "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7"
+          "DomainCore": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "6.0.7",
+          "Microsoft.EntityFrameworkCore.Relational": "6.0.7"
         },
         "compile": {
-          "bin/placeholder/Data.dll": {}
+          "bin/placeholder/ATSPM.Data.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Data.dll": {}
+          "bin/placeholder/ATSPM.Data.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -2803,14 +2834,13 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
-          "Data": "1.0.0",
           "DomainCore": "1.0.0",
-          "FluentFTP": "39.0.1",
+          "FluentFTP": "39.1.0",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
-          "Microsoft.EntityFrameworkCore": "6.0.7",
-          "Microsoft.EntityFrameworkCore.Abstractions": "6.0.7",
           "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7",
+          "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.1",
           "Parquet.Net": "3.9.1",
           "SSH.NET": "2020.0.2"
@@ -2900,15 +2930,15 @@
         "coverlet.collector.nuspec"
       ]
     },
-    "FluentFTP/39.0.1": {
-      "sha512": "kRIgScGDMDYR1rz9MogHD/Rk6N7rj8PSwsjklhVPhcQ06G3CVs6vMNDQbCEiY8/JULIrY0faPq6qOPfyuNgQzg==",
+    "FluentFTP/39.1.0": {
+      "sha512": "rkIBFx6grM9jO0FKo6RHvdtjPYTSoTfoI8BdJ3Pj3fYO54wcHCvLHq7md46gcQxCni6g5HgCx6pktoreimJXnw==",
       "type": "package",
-      "path": "fluentftp/39.0.1",
+      "path": "fluentftp/39.1.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.TXT",
-        "fluentftp.39.0.1.nupkg.sha512",
+        "fluentftp.39.1.0.nupkg.sha512",
         "fluentftp.nuspec",
         "lib/net20/FluentFTP.dll",
         "lib/net20/FluentFTP.xml",
@@ -3803,6 +3833,50 @@
         "lib/netstandard2.0/Microsoft.Extensions.DependencyModel.xml",
         "microsoft.extensions.dependencymodel.6.0.0.nupkg.sha512",
         "microsoft.extensions.dependencymodel.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.Extensions.FileProviders.Abstractions/6.0.0": {
+      "sha512": "0pd4/fho0gC12rQswaGQxbU34jOS1TPS8lZPpkFCH68ppQjHNHYle9iRuHeev1LhrJ94YPvzcRd8UmIuFk23Qw==",
+      "type": "package",
+      "path": "microsoft.extensions.fileproviders.abstractions/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.FileProviders.Abstractions.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net461/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.FileProviders.Abstractions.xml",
+        "microsoft.extensions.fileproviders.abstractions.6.0.0.nupkg.sha512",
+        "microsoft.extensions.fileproviders.abstractions.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "Microsoft.Extensions.Hosting.Abstractions/6.0.0": {
+      "sha512": "GcT5l2CYXL6Sa27KCSh0TixsRfADUgth+ojQSD5EkzisZxmGFh7CwzkcYuGwvmXLjr27uWRNrJ2vuuEjMhU05Q==",
+      "type": "package",
+      "path": "microsoft.extensions.hosting.abstractions/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/net461/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.dll",
+        "lib/netstandard2.1/Microsoft.Extensions.Hosting.Abstractions.xml",
+        "microsoft.extensions.hosting.abstractions.6.0.0.nupkg.sha512",
+        "microsoft.extensions.hosting.abstractions.nuspec",
         "useSharedDesignerContext.txt"
       ]
     },
@@ -9040,7 +9114,7 @@
       "path": "../ApplicationCore/ApplicationCore.csproj",
       "msbuildProject": "../ApplicationCore/ApplicationCore.csproj"
     },
-    "Data/1.0.0": {
+    "ATSPM.Data/1.0.0": {
       "type": "project",
       "path": "../Data/Data.csproj",
       "msbuildProject": "../Data/Data.csproj"

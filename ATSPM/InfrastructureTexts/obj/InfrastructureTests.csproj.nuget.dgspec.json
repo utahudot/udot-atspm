@@ -32,6 +32,9 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
+              "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj"
+              },
               "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
                 "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
@@ -94,7 +97,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj",
-        "projectName": "Data",
+        "projectName": "ATSPM.Data",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\obj\\",
@@ -118,8 +121,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -134,19 +137,11 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
-            "Microsoft.EntityFrameworkCore.Design": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.7, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[6.0.7, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
               "version": "[6.0.7, )"
             }
@@ -388,7 +383,7 @@
           "dependencies": {
             "FluentFTP": {
               "target": "Package",
-              "version": "[39.0.1, )"
+              "version": "[39.1.0, )"
             },
             "Google.Cloud.Diagnostics.Common": {
               "target": "Package",
@@ -400,29 +395,13 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[6.0.7, )"
-            },
-            "Microsoft.EntityFrameworkCore.Abstractions": {
-              "target": "Package",
-              "version": "[6.0.7, )"
-            },
-            "Microsoft.EntityFrameworkCore.Design": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[6.0.7, )"
-            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[6.0.7, )"
             },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.Extensions.Hosting.Abstractions": {
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[6.0.0, )"
             },
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",

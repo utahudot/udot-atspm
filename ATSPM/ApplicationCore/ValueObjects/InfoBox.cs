@@ -20,9 +20,9 @@ namespace ATSPM.Application.ValueObjects
         /// <param name="number"></param>
         /// <param name="loc"></param>
         /// <param name="reports"></param>
-        public InfoBox(string signalId, string loc, SortedDictionary<int, bool> reports)
+        public InfoBox(string SignalID, string loc, SortedDictionary<int, bool> reports)
         {
-            id = signalId;
+            id = SignalID;
             location = loc;
             availReports = reports;
         }

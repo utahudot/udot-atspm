@@ -19,47 +19,64 @@ namespace ATSPM.Data
         {
         }
 
-        public virtual DbSet<ActionLogs> ActionLogs { get; set; }
-        public virtual DbSet<Actions> Actions { get; set; }
-        public virtual DbSet<Agencies> Agencies { get; set; }
-        public virtual DbSet<ApplicationSettings> ApplicationSettings { get; set; }
-        public virtual DbSet<Applications> Applications { get; set; }
-        public virtual DbSet<Approaches> Approaches { get; set; }
-        public virtual DbSet<Areas> Areas { get; set; }
-        public virtual DbSet<Comment> Comment { get; set; }
-        public virtual DbSet<ControllerTypes> ControllerTypes { get; set; }
-        public virtual DbSet<DatabaseArchiveExcludedSignals> DatabaseArchiveExcludedSignals { get; set; }
-        public virtual DbSet<DetectionHardwares> DetectionHardwares { get; set; }
-        public virtual DbSet<DetectionTypes> DetectionTypes { get; set; }
-        public virtual DbSet<DetectorComments> DetectorComments { get; set; }
-        public virtual DbSet<Detectors> Detectors { get; set; }
-        public virtual DbSet<DirectionTypes> DirectionTypes { get; set; }
-        public virtual DbSet<ExternalLinks> ExternalLinks { get; set; }
-        public virtual DbSet<FAQs> FAQs { get; set; }
-        public virtual DbSet<Jurisdictions> Jurisdictions { get; set; }
-        public virtual DbSet<LaneTypes> LaneTypes { get; set; }
-        public virtual DbSet<MeasuresDefaults> MeasuresDefaults { get; set; }
-        public virtual DbSet<Menu> Menu { get; set; }
-        public virtual DbSet<MetricComments> MetricComments { get; set; }
-        public virtual DbSet<MetricTypes> MetricTypes { get; set; }
-        public virtual DbSet<MetricsFilterTypes> MetricsFilterTypes { get; set; }
-        public virtual DbSet<MovementTypes> MovementTypes { get; set; }
-        public virtual DbSet<Region> Region { get; set; }
-        public virtual DbSet<RoutePhaseDirections> RoutePhaseDirections { get; set; }
-        public virtual DbSet<RouteSignals> RouteSignals { get; set; }
-        public virtual DbSet<Routes> Routes { get; set; }
-        public virtual DbSet<SignalToAggregates> SignalToAggregates { get; set; }
-        public virtual DbSet<Signals> Signals { get; set; }
-        public virtual DbSet<VersionActions> VersionActions { get; set; }
+        public virtual DbSet<Models.Action> Actions { get; set; }
+        public virtual DbSet<ActionLog> ActionLogs { get; set; }
+        public virtual DbSet<ActionLogAction> ActionLogActions { get; set; }
+        public virtual DbSet<ActionLogMetricType> ActionLogMetricTypes { get; set; }
+        public virtual DbSet<Agency> Agencies { get; set; }
+        public virtual DbSet<Application> Applications { get; set; }
+        public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
+        public virtual DbSet<Approach> Approaches { get; set; }
+        public virtual DbSet<Area> Areas { get; set; }
+        public virtual DbSet<AreaSignal> AreaSignals { get; set; }
+        public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<ControllerType> ControllerTypes { get; set; }
+        public virtual DbSet<DatabaseArchiveExcludedSignal> DatabaseArchiveExcludedSignals { get; set; }
+        public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
+        public virtual DbSet<DetectionType> DetectionTypes { get; set; }
+        public virtual DbSet<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
+        public virtual DbSet<DetectionTypeMetricType> DetectionTypeMetricTypes { get; set; }
+        public virtual DbSet<Detector> Detectors { get; set; }
+        public virtual DbSet<DetectorComment> DetectorComments { get; set; }
+        public virtual DbSet<DirectionType> DirectionTypes { get; set; }
+        public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
+        public virtual DbSet<Faq> Faqs { get; set; }
+        public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
+        public virtual DbSet<LaneType> LaneTypes { get; set; }
+        public virtual DbSet<MeasuresDefault> MeasuresDefaults { get; set; }
+        public virtual DbSet<Menu> Menus { get; set; }
+        public virtual DbSet<MetricComment> MetricComments { get; set; }
+        public virtual DbSet<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
+        public virtual DbSet<MetricType> MetricTypes { get; set; }
+        public virtual DbSet<MetricsFilterType> MetricsFilterTypes { get; set; }
+        public virtual DbSet<MovementType> MovementTypes { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<Route> Routes { get; set; }
+        public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
+        public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        public virtual DbSet<Signal> Signals { get; set; }
+        public virtual DbSet<SignalToAggregate> SignalToAggregates { get; set; }
+        public virtual DbSet<SpmwatchDogErrorEvent> SpmwatchDogErrorEvents { get; set; }
+        public virtual DbSet<VersionAction> VersionActions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ActionLogs>(entity =>
+            modelBuilder.Entity<Models.Action>(entity =>
             {
-                entity.HasKey(e => e.ActionLogID)
-                    .HasName("PK_dbo.ActionLogs");
+                entity.Property(e => e.ActionID).HasColumnName("ActionID");
 
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<ActionLog>(entity =>
+            {
                 entity.HasIndex(e => e.AgencyID, "IX_AgencyID");
+
+                entity.Property(e => e.ActionLogID).HasColumnName("ActionLogID");
+
+                entity.Property(e => e.AgencyID).HasColumnName("AgencyID");
 
                 entity.Property(e => e.Comment).HasMaxLength(255);
 
@@ -71,73 +88,90 @@ namespace ATSPM.Data
 
                 entity.Property(e => e.SignalID)
                     .IsRequired()
-                    .HasMaxLength(10);
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
 
                 entity.HasOne(d => d.Agency)
                     .WithMany(p => p.ActionLogs)
                     .HasForeignKey(d => d.AgencyID)
                     .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
-
-                entity.HasMany(d => d.Action_Action)
-                    .WithMany(p => p.ActionLog_ActionLog)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "ActionLogActions",
-                        l => l.HasOne<Actions>().WithMany().HasForeignKey("Action_ActionID").HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID"),
-                        r => r.HasOne<ActionLogs>().WithMany().HasForeignKey("ActionLog_ActionLogID").HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID"),
-                        j =>
-                        {
-                            j.HasKey("ActionLog_ActionLogID", "Action_ActionID").HasName("PK_dbo.ActionLogActions");
-
-                            j.ToTable("ActionLogActions");
-
-                            j.HasIndex(new[] { "ActionLog_ActionLogID" }, "IX_ActionLog_ActionLogID");
-
-                            j.HasIndex(new[] { "Action_ActionID" }, "IX_Action_ActionID");
-                        });
-
-                entity.HasMany(d => d.MetricType_Metric)
-                    .WithMany(p => p.ActionLog_ActionLog)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "ActionLogMetricTypes",
-                        l => l.HasOne<MetricTypes>().WithMany().HasForeignKey("MetricType_MetricID").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<ActionLogs>().WithMany().HasForeignKey("ActionLog_ActionLogID").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID"),
-                        j =>
-                        {
-                            j.HasKey("ActionLog_ActionLogID", "MetricType_MetricID").HasName("PK_dbo.ActionLogMetricTypes");
-
-                            j.ToTable("ActionLogMetricTypes");
-
-                            j.HasIndex(new[] { "ActionLog_ActionLogID" }, "IX_ActionLog_ActionLogID");
-
-                            j.HasIndex(new[] { "MetricType_MetricID" }, "IX_MetricType_MetricID");
-                        });
             });
 
-            modelBuilder.Entity<Actions>(entity =>
+            modelBuilder.Entity<ActionLogAction>(entity =>
             {
-                entity.HasKey(e => e.ActionID)
-                    .HasName("PK_dbo.Actions");
+                entity.HasKey(e => new { e.ActionLogActionLogID, e.ActionActionID })
+                    .HasName("PK_dbo.ActionLogActions");
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.HasIndex(e => e.ActionLogActionLogID, "IX_ActionLog_ActionLogID");
+
+                entity.HasIndex(e => e.ActionActionID, "IX_Action_ActionID");
+
+                entity.Property(e => e.ActionLogActionLogID).HasColumnName("ActionLog_ActionLogID");
+
+                entity.Property(e => e.ActionActionID).HasColumnName("Action_ActionID");
+
+                entity.HasOne(d => d.ActionAction)
+                    .WithMany(p => p.ActionLogActions)
+                    .HasForeignKey(d => d.ActionActionID)
+                    .HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID");
+
+                entity.HasOne(d => d.ActionLogActionLog)
+                    .WithMany(p => p.ActionLogActions)
+                    .HasForeignKey(d => d.ActionLogActionLogID)
+                    .HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID");
             });
 
-            modelBuilder.Entity<Agencies>(entity =>
+            modelBuilder.Entity<ActionLogMetricType>(entity =>
             {
-                entity.HasKey(e => e.AgencyID)
-                    .HasName("PK_dbo.Agencies");
+                entity.HasKey(e => new { e.ActionLogActionLogID, e.MetricTypeMetricID })
+                    .HasName("PK_dbo.ActionLogMetricTypes");
+
+                entity.HasIndex(e => e.ActionLogActionLogID, "IX_ActionLog_ActionLogID");
+
+                entity.HasIndex(e => e.MetricTypeMetricID, "IX_MetricType_MetricID");
+
+                entity.Property(e => e.ActionLogActionLogID).HasColumnName("ActionLog_ActionLogID");
+
+                entity.Property(e => e.MetricTypeMetricID).HasColumnName("MetricType_MetricID");
+
+                entity.HasOne(d => d.ActionLogActionLog)
+                    .WithMany(p => p.ActionLogMetricTypes)
+                    .HasForeignKey(d => d.ActionLogActionLogID)
+                    .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID");
+
+                entity.HasOne(d => d.MetricTypeMetric)
+                    .WithMany(p => p.ActionLogMetricTypes)
+                    .HasForeignKey(d => d.MetricTypeMetricID)
+                    .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID");
+            });
+
+            modelBuilder.Entity<Agency>(entity =>
+            {
+                entity.Property(e => e.AgencyID).HasColumnName("AgencyID");
 
                 entity.Property(e => e.Description).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<ApplicationSettings>(entity =>
+            modelBuilder.Entity<Application>(entity =>
+            {
+                entity.Property(e => e.ID).HasColumnName("ID");
+            });
+
+            modelBuilder.Entity<ApplicationSetting>(entity =>
             {
                 entity.HasIndex(e => e.ApplicationID, "IX_ApplicationID");
+
+                entity.Property(e => e.ID).HasColumnName("ID");
+
+                entity.Property(e => e.ApplicationID).HasColumnName("ApplicationID");
 
                 entity.Property(e => e.Discriminator)
                     .IsRequired()
                     .HasMaxLength(128);
+
+                entity.Property(e => e.PreviousDayPmpeakEnd).HasColumnName("PreviousDayPMPeakEnd");
+
+                entity.Property(e => e.PreviousDayPmpeakStart).HasColumnName("PreviousDayPMPeakStart");
 
                 entity.HasOne(d => d.Application)
                     .WithMany(p => p.ApplicationSettings)
@@ -145,14 +179,21 @@ namespace ATSPM.Data
                     .HasConstraintName("FK_dbo.ApplicationSettings_dbo.Applications_ApplicationID");
             });
 
-            modelBuilder.Entity<Approaches>(entity =>
+            modelBuilder.Entity<Approach>(entity =>
             {
-                entity.HasKey(e => e.ApproachID)
-                    .HasName("PK_dbo.Approaches");
-
                 entity.HasIndex(e => e.DirectionTypeID, "IX_DirectionTypeID");
 
                 entity.HasIndex(e => e.VersionID, "IX_VersionID");
+
+                entity.Property(e => e.ApproachID).HasColumnName("ApproachID");
+
+                entity.Property(e => e.DirectionTypeID).HasColumnName("DirectionTypeID");
+
+                entity.Property(e => e.Mph).HasColumnName("MPH");
+
+                entity.Property(e => e.SignalID).HasColumnName("SignalID");
+
+                entity.Property(e => e.VersionID).HasColumnName("VersionID");
 
                 entity.HasOne(d => d.DirectionType)
                     .WithMany(p => p.Approaches)
@@ -160,30 +201,41 @@ namespace ATSPM.Data
                     .HasConstraintName("FK_dbo.Approaches_dbo.DirectionTypes_DirectionTypeID");
             });
 
-            modelBuilder.Entity<Areas>(entity =>
+            modelBuilder.Entity<Area>(entity =>
             {
                 entity.Property(e => e.AreaName).HasMaxLength(50);
+            });
 
-                entity.HasMany(d => d.Signal_Version)
-                    .WithMany(p => p.Area)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "AreaSignals",
-                        l => l.HasOne<Signals>().WithMany().HasForeignKey("Signal_VersionID").HasConstraintName("FK_dbo.AreaSignals_dbo.Signals_Signal_VersionID"),
-                        r => r.HasOne<Areas>().WithMany().HasForeignKey("Area_Id").HasConstraintName("FK_dbo.AreaSignals_dbo.Areas_Area_Id"),
-                        j =>
-                        {
-                            j.HasKey("Area_Id", "Signal_VersionID").HasName("PK_dbo.AreaSignals");
+            modelBuilder.Entity<AreaSignal>(entity =>
+            {
+                entity.HasKey(e => new { e.AreaID, e.SignalVersionID })
+                    .HasName("PK_dbo.AreaSignals");
 
-                            j.ToTable("AreaSignals");
+                entity.HasIndex(e => e.AreaID, "IX_Area_ID");
 
-                            j.HasIndex(new[] { "Area_Id" }, "IX_Area_Id");
+                entity.HasIndex(e => e.SignalVersionID, "IX_Signal_VersionID");
 
-                            j.HasIndex(new[] { "Signal_VersionID" }, "IX_Signal_VersionID");
-                        });
+                entity.Property(e => e.AreaID).HasColumnName("Area_ID");
+
+                entity.Property(e => e.SignalVersionID).HasColumnName("Signal_VersionID");
+
+                entity.HasOne(d => d.Area)
+                    .WithMany(p => p.AreaSignals)
+                    .HasForeignKey(d => d.AreaID)
+                    .HasConstraintName("FK_dbo.AreaSignals_dbo.Areas_Area_ID");
+
+                //entity.HasOne(d => d.SignalVersion)
+                //    .WithMany(p => p.AreaSignals)
+                //    .HasForeignKey(d => d.SignalVersionID)
+                //    .HasConstraintName("FK_dbo.AreaSignals_dbo.Signals_Signal_VersionID");
             });
 
             modelBuilder.Entity<Comment>(entity =>
             {
+                entity.ToTable("Comment");
+
+                entity.Property(e => e.CommentID).HasColumnName("CommentID");
+
                 entity.Property(e => e.Comment1)
                     .IsRequired()
                     .IsUnicode(false)
@@ -197,85 +249,107 @@ namespace ATSPM.Data
                 entity.Property(e => e.TimeStamp).HasColumnType("datetime");
             });
 
-            modelBuilder.Entity<ControllerTypes>(entity =>
+            modelBuilder.Entity<ControllerType>(entity =>
             {
-                entity.HasKey(e => e.ControllerTypeID)
-                    .HasName("PK_dbo.ControllerTypes");
+                entity.Property(e => e.ControllerTypeID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ControllerTypeID");
 
-                entity.Property(e => e.ControllerTypeID).ValueGeneratedNever();
+                entity.Property(e => e.ActiveFtp).HasColumnName("ActiveFTP");
 
                 entity.Property(e => e.Description)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FTPDirectory).IsUnicode(false);
+                entity.Property(e => e.Ftpdirectory)
+                    .IsUnicode(false)
+                    .HasColumnName("FTPDirectory");
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Snmpport).HasColumnName("SNMPPort");
 
                 entity.Property(e => e.UserName)
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<DatabaseArchiveExcludedSignals>(entity =>
+            modelBuilder.Entity<DatabaseArchiveExcludedSignal>(entity =>
             {
-                entity.Property(e => e.SignalId).HasMaxLength(10);
+                entity.Property(e => e.SignalID).HasMaxLength(10);
             });
 
-            modelBuilder.Entity<DetectionHardwares>(entity =>
+            modelBuilder.Entity<DetectionHardware>(entity =>
             {
-                entity.Property(e => e.ID).ValueGeneratedNever();
+                entity.Property(e => e.ID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.Name).IsRequired();
             });
 
-            modelBuilder.Entity<DetectionTypes>(entity =>
+            modelBuilder.Entity<DetectionType>(entity =>
             {
-                entity.HasKey(e => e.DetectionTypeID)
-                    .HasName("PK_dbo.DetectionTypes");
-
-                entity.Property(e => e.DetectionTypeID).ValueGeneratedNever();
+                entity.Property(e => e.DetectionTypeID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("DetectionTypeID");
 
                 entity.Property(e => e.Description).IsRequired();
-
-                entity.HasMany(d => d.MetricType_Metric)
-                    .WithMany(p => p.DetectionType_DetectionType)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "DetectionTypeMetricTypes",
-                        l => l.HasOne<MetricTypes>().WithMany().HasForeignKey("MetricType_MetricID").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<DetectionTypes>().WithMany().HasForeignKey("DetectionType_DetectionTypeID").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID"),
-                        j =>
-                        {
-                            j.HasKey("DetectionType_DetectionTypeID", "MetricType_MetricID").HasName("PK_dbo.DetectionTypeMetricTypes");
-
-                            j.ToTable("DetectionTypeMetricTypes");
-
-                            j.HasIndex(new[] { "DetectionType_DetectionTypeID" }, "IX_DetectionType_DetectionTypeID");
-
-                            j.HasIndex(new[] { "MetricType_MetricID" }, "IX_MetricType_MetricID");
-                        });
             });
 
-            modelBuilder.Entity<DetectorComments>(entity =>
+            modelBuilder.Entity<DetectionTypeDetector>(entity =>
             {
-                entity.HasKey(e => e.CommentID)
-                    .HasName("PK_dbo.DetectorComments");
+                entity.HasKey(e => new { e.ID, e.DetectionTypeID })
+                    .HasName("PK_dbo.DetectionTypeDetector");
+
+                entity.ToTable("DetectionTypeDetector");
+
+                entity.HasIndex(e => e.DetectionTypeID, "IX_DetectionTypeID");
 
                 entity.HasIndex(e => e.ID, "IX_ID");
 
-                entity.Property(e => e.CommentText).IsRequired();
+                entity.Property(e => e.ID).HasColumnName("ID");
 
-                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+                entity.Property(e => e.DetectionTypeID).HasColumnName("DetectionTypeID");
 
-                entity.HasOne(d => d.IDNavigation)
-                    .WithMany(p => p.DetectorComments)
+                entity.HasOne(d => d.DetectionType)
+                    .WithMany(p => p.DetectionTypeDetectors)
+                    .HasForeignKey(d => d.DetectionTypeID)
+                    .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithMany(p => p.DetectionTypeDetectors)
                     .HasForeignKey(d => d.ID)
-                    .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
+                    .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID");
             });
 
-            modelBuilder.Entity<Detectors>(entity =>
+            modelBuilder.Entity<DetectionTypeMetricType>(entity =>
+            {
+                entity.HasKey(e => new { e.DetectionTypeDetectionTypeID, e.MetricTypeMetricID })
+                    .HasName("PK_dbo.DetectionTypeMetricTypes");
+
+                entity.HasIndex(e => e.DetectionTypeDetectionTypeID, "IX_DetectionType_DetectionTypeID");
+
+                entity.HasIndex(e => e.MetricTypeMetricID, "IX_MetricType_MetricID");
+
+                entity.Property(e => e.DetectionTypeDetectionTypeID).HasColumnName("DetectionType_DetectionTypeID");
+
+                entity.Property(e => e.MetricTypeMetricID).HasColumnName("MetricType_MetricID");
+
+                entity.HasOne(d => d.DetectionTypeDetectionType)
+                    .WithMany(p => p.DetectionTypeMetricTypes)
+                    .HasForeignKey(d => d.DetectionTypeDetectionTypeID)
+                    .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID");
+
+                entity.HasOne(d => d.MetricTypeMetric)
+                    .WithMany(p => p.DetectionTypeMetricTypes)
+                    .HasForeignKey(d => d.MetricTypeMetricID)
+                    .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID");
+            });
+
+            modelBuilder.Entity<Detector>(entity =>
             {
                 entity.HasIndex(e => e.ApproachID, "IX_ApproachID");
 
@@ -285,13 +359,24 @@ namespace ATSPM.Data
 
                 entity.HasIndex(e => e.MovementTypeID, "IX_MovementTypeID");
 
+                entity.Property(e => e.ID).HasColumnName("ID");
+
+                entity.Property(e => e.ApproachID).HasColumnName("ApproachID");
+
                 entity.Property(e => e.DateAdded).HasColumnType("datetime");
 
                 entity.Property(e => e.DateDisabled).HasColumnType("datetime");
 
+                entity.Property(e => e.DetectionHardwareID).HasColumnName("DetectionHardwareID");
+
                 entity.Property(e => e.DetectorID)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(50)
+                    .HasColumnName("DetectorID");
+
+                entity.Property(e => e.LaneTypeID).HasColumnName("LaneTypeID");
+
+                entity.Property(e => e.MovementTypeID).HasColumnName("MovementTypeID");
 
                 entity.HasOne(d => d.Approach)
                     .WithMany(p => p.Detectors)
@@ -312,74 +397,78 @@ namespace ATSPM.Data
                     .WithMany(p => p.Detectors)
                     .HasForeignKey(d => d.MovementTypeID)
                     .HasConstraintName("FK_dbo.Detectors_dbo.MovementTypes_MovementTypeID");
-
-                entity.HasMany(d => d.DetectionType)
-                    .WithMany(p => p.ID)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "DetectionTypeDetector",
-                        l => l.HasOne<DetectionTypes>().WithMany().HasForeignKey("DetectionTypeID").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID"),
-                        r => r.HasOne<Detectors>().WithMany().HasForeignKey("ID").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID"),
-                        j =>
-                        {
-                            j.HasKey("ID", "DetectionTypeID").HasName("PK_dbo.DetectionTypeDetector");
-
-                            j.ToTable("DetectionTypeDetector");
-
-                            j.HasIndex(new[] { "DetectionTypeID" }, "IX_DetectionTypeID");
-
-                            j.HasIndex(new[] { "ID" }, "IX_ID");
-                        });
             });
 
-            modelBuilder.Entity<DirectionTypes>(entity =>
+            modelBuilder.Entity<DetectorComment>(entity =>
             {
-                entity.HasKey(e => e.DirectionTypeID)
-                    .HasName("PK_dbo.DirectionTypes");
+                entity.HasKey(e => e.CommentID)
+                    .HasName("PK_dbo.DetectorComments");
 
-                entity.Property(e => e.DirectionTypeID).ValueGeneratedNever();
+                entity.HasIndex(e => e.ID, "IX_ID");
+
+                entity.Property(e => e.CommentID).HasColumnName("CommentID");
+
+                entity.Property(e => e.CommentText).IsRequired();
+
+                entity.Property(e => e.ID).HasColumnName("ID");
+
+                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithMany(p => p.DetectorComments)
+                    .HasForeignKey(d => d.ID)
+                    .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
+            });
+
+            modelBuilder.Entity<DirectionType>(entity =>
+            {
+                entity.Property(e => e.DirectionTypeID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("DirectionTypeID");
 
                 entity.Property(e => e.Abbreviation).HasMaxLength(5);
 
                 entity.Property(e => e.Description).HasMaxLength(30);
             });
 
-            modelBuilder.Entity<ExternalLinks>(entity =>
+            modelBuilder.Entity<ExternalLink>(entity =>
             {
-                entity.HasKey(e => e.ExternalLinkID)
-                    .HasName("PK_dbo.ExternalLinks");
+                entity.Property(e => e.ExternalLinkID).HasColumnName("ExternalLinkID");
 
                 entity.Property(e => e.Name).IsRequired();
 
                 entity.Property(e => e.Url).IsRequired();
             });
 
-            modelBuilder.Entity<FAQs>(entity =>
+            modelBuilder.Entity<Faq>(entity =>
             {
-                entity.HasKey(e => e.FAQID)
-                    .HasName("PK_dbo.FAQs");
+                entity.ToTable("FAQs");
+
+                entity.Property(e => e.FaqID).HasColumnName("FAQID");
 
                 entity.Property(e => e.Body).IsRequired();
 
                 entity.Property(e => e.Header).IsRequired();
             });
 
-            modelBuilder.Entity<Jurisdictions>(entity =>
+            modelBuilder.Entity<Jurisdiction>(entity =>
             {
                 entity.Property(e => e.CountyParish).HasMaxLength(50);
 
                 entity.Property(e => e.JurisdictionName).HasMaxLength(50);
 
-                entity.Property(e => e.MPO).HasMaxLength(50);
+                entity.Property(e => e.Mpo)
+                    .HasMaxLength(50)
+                    .HasColumnName("MPO");
 
                 entity.Property(e => e.OtherPartners).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<LaneTypes>(entity =>
+            modelBuilder.Entity<LaneType>(entity =>
             {
-                entity.HasKey(e => e.LaneTypeID)
-                    .HasName("PK_dbo.LaneTypes");
-
-                entity.Property(e => e.LaneTypeID).ValueGeneratedNever();
+                entity.Property(e => e.LaneTypeID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("LaneTypeID");
 
                 entity.Property(e => e.Abbreviation)
                     .IsRequired()
@@ -390,7 +479,7 @@ namespace ATSPM.Data
                     .HasMaxLength(30);
             });
 
-            modelBuilder.Entity<MeasuresDefaults>(entity =>
+            modelBuilder.Entity<MeasuresDefault>(entity =>
             {
                 entity.HasKey(e => new { e.Measure, e.OptionName })
                     .HasName("PK_dbo.MeasuresDefaults");
@@ -402,7 +491,9 @@ namespace ATSPM.Data
 
             modelBuilder.Entity<Menu>(entity =>
             {
-                entity.Property(e => e.MenuId).ValueGeneratedNever();
+                entity.ToTable("Menu");
+
+                entity.Property(e => e.MenuID).ValueGeneratedNever();
 
                 entity.Property(e => e.Action)
                     .IsRequired()
@@ -423,63 +514,79 @@ namespace ATSPM.Data
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<MetricComments>(entity =>
+            modelBuilder.Entity<MetricComment>(entity =>
             {
                 entity.HasKey(e => e.CommentID)
                     .HasName("PK_dbo.MetricComments");
 
                 entity.HasIndex(e => e.VersionID, "IX_VersionID");
 
+                entity.Property(e => e.CommentID).HasColumnName("CommentID");
+
                 entity.Property(e => e.CommentText).IsRequired();
 
-                entity.Property(e => e.SignalID).HasMaxLength(10);
+                entity.Property(e => e.SignalID)
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
 
                 entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
-                entity.HasMany(d => d.MetricType_Metric)
-                    .WithMany(p => p.MetricComment_Comment)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "MetricCommentMetricTypes",
-                        l => l.HasOne<MetricTypes>().WithMany().HasForeignKey("MetricType_MetricID").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<MetricComments>().WithMany().HasForeignKey("MetricComment_CommentID").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID"),
-                        j =>
-                        {
-                            j.HasKey("MetricComment_CommentID", "MetricType_MetricID").HasName("PK_dbo.MetricCommentMetricTypes");
-
-                            j.ToTable("MetricCommentMetricTypes");
-
-                            j.HasIndex(new[] { "MetricComment_CommentID" }, "IX_MetricComment_CommentID");
-
-                            j.HasIndex(new[] { "MetricType_MetricID" }, "IX_MetricType_MetricID");
-                        });
+                entity.Property(e => e.VersionID).HasColumnName("VersionID");
             });
 
-            modelBuilder.Entity<MetricTypes>(entity =>
+            modelBuilder.Entity<MetricCommentMetricType>(entity =>
+            {
+                entity.HasKey(e => new { e.MetricCommentCommentID, e.MetricTypeMetricID })
+                    .HasName("PK_dbo.MetricCommentMetricTypes");
+
+                entity.HasIndex(e => e.MetricCommentCommentID, "IX_MetricComment_CommentID");
+
+                entity.HasIndex(e => e.MetricTypeMetricID, "IX_MetricType_MetricID");
+
+                entity.Property(e => e.MetricCommentCommentID).HasColumnName("MetricComment_CommentID");
+
+                entity.Property(e => e.MetricTypeMetricID).HasColumnName("MetricType_MetricID");
+
+                entity.HasOne(d => d.MetricCommentComment)
+                    .WithMany(p => p.MetricCommentMetricTypes)
+                    .HasForeignKey(d => d.MetricCommentCommentID)
+                    .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID");
+
+                entity.HasOne(d => d.MetricTypeMetric)
+                    .WithMany(p => p.MetricCommentMetricTypes)
+                    .HasForeignKey(d => d.MetricTypeMetricID)
+                    .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID");
+            });
+
+            modelBuilder.Entity<MetricType>(entity =>
             {
                 entity.HasKey(e => e.MetricID)
                     .HasName("PK_dbo.MetricTypes");
 
-                entity.Property(e => e.MetricID).ValueGeneratedNever();
+                entity.Property(e => e.MetricID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("MetricID");
 
                 entity.Property(e => e.Abbreviation).IsRequired();
 
                 entity.Property(e => e.ChartName).IsRequired();
             });
 
-            modelBuilder.Entity<MetricsFilterTypes>(entity =>
+            modelBuilder.Entity<MetricsFilterType>(entity =>
             {
                 entity.HasKey(e => e.FilterID)
                     .HasName("PK_dbo.MetricsFilterTypes");
 
+                entity.Property(e => e.FilterID).HasColumnName("FilterID");
+
                 entity.Property(e => e.FilterName).IsRequired();
             });
 
-            modelBuilder.Entity<MovementTypes>(entity =>
+            modelBuilder.Entity<MovementType>(entity =>
             {
-                entity.HasKey(e => e.MovementTypeID)
-                    .HasName("PK_dbo.MovementTypes");
-
-                entity.Property(e => e.MovementTypeID).ValueGeneratedNever();
+                entity.Property(e => e.MovementTypeID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("MovementTypeID");
 
                 entity.Property(e => e.Abbreviation)
                     .IsRequired()
@@ -492,75 +599,76 @@ namespace ATSPM.Data
 
             modelBuilder.Entity<Region>(entity =>
             {
-                entity.Property(e => e.ID).ValueGeneratedNever();
+                entity.ToTable("Region");
+
+                entity.Property(e => e.ID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.Description).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<RoutePhaseDirections>(entity =>
+            modelBuilder.Entity<Route>(entity =>
             {
-                entity.HasIndex(e => e.DirectionTypeId, "IX_DirectionTypeId");
+                entity.Property(e => e.RouteName).IsRequired();
+            });
 
-                entity.HasIndex(e => e.RouteSignalId, "IX_RouteSignalId");
+            modelBuilder.Entity<RoutePhaseDirection>(entity =>
+            {
+                entity.HasIndex(e => e.DirectionTypeID, "IX_DirectionTypeID");
+
+                entity.HasIndex(e => e.RouteSignalID, "IX_RouteSignalID");
 
                 entity.HasOne(d => d.DirectionType)
                     .WithMany(p => p.RoutePhaseDirections)
-                    .HasForeignKey(d => d.DirectionTypeId)
-                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeId");
+                    .HasForeignKey(d => d.DirectionTypeID)
+                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeID");
 
                 entity.HasOne(d => d.RouteSignal)
                     .WithMany(p => p.RoutePhaseDirections)
-                    .HasForeignKey(d => d.RouteSignalId)
-                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
+                    .HasForeignKey(d => d.RouteSignalID)
+                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalID");
             });
 
-            modelBuilder.Entity<RouteSignals>(entity =>
+            modelBuilder.Entity<RouteSignal>(entity =>
             {
-                entity.HasIndex(e => e.RouteId, "IX_RouteId");
+                entity.HasIndex(e => e.RouteID, "IX_RouteID");
 
-                entity.Property(e => e.SignalId)
+                entity.Property(e => e.SignalID)
                     .IsRequired()
                     .HasMaxLength(10);
 
                 entity.HasOne(d => d.Route)
                     .WithMany(p => p.RouteSignals)
-                    .HasForeignKey(d => d.RouteId)
-                    .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteId");
+                    .HasForeignKey(d => d.RouteID)
+                    .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteID");
             });
 
-            modelBuilder.Entity<Routes>(entity =>
-            {
-                entity.Property(e => e.RouteName).IsRequired();
-            });
-
-            modelBuilder.Entity<SignalToAggregates>(entity =>
-            {
-                entity.HasKey(e => e.SignalID)
-                    .HasName("PK_dbo.SignalToAggregates");
-
-                entity.Property(e => e.SignalID).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<Signals>(entity =>
+            modelBuilder.Entity<Signal>(entity =>
             {
                 entity.HasKey(e => e.VersionID)
                     .HasName("PK_dbo.Signals");
 
                 entity.HasIndex(e => e.ControllerTypeID, "IX_ControllerTypeID");
 
-                entity.HasIndex(e => e.JurisdictionId, "IX_JurisdictionId");
+                entity.HasIndex(e => e.JurisdictionID, "IX_JurisdictionID");
 
                 entity.HasIndex(e => e.RegionID, "IX_RegionID");
 
-                entity.HasIndex(e => e.VersionActionId, "IX_VersionActionId");
+                entity.HasIndex(e => e.VersionActionID, "IX_VersionActionID");
+
+                entity.Property(e => e.VersionID).HasColumnName("VersionID");
+
+                entity.Property(e => e.ControllerTypeID).HasColumnName("ControllerTypeID");
 
                 entity.Property(e => e.IPAddress)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
+                    .HasColumnName("IPAddress")
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.JurisdictionId).HasDefaultValueSql("((1))");
+                entity.Property(e => e.JurisdictionID).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.Latitude)
                     .IsRequired()
@@ -582,6 +690,8 @@ namespace ATSPM.Data
                     .IsUnicode(false)
                     .HasDefaultValueSql("('')");
 
+                entity.Property(e => e.RegionID).HasColumnName("RegionID");
+
                 entity.Property(e => e.SecondaryName)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -590,11 +700,12 @@ namespace ATSPM.Data
 
                 entity.Property(e => e.SignalID)
                     .IsRequired()
-                    .HasMaxLength(10);
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
 
                 entity.Property(e => e.Start).HasColumnType("datetime");
 
-                entity.Property(e => e.VersionActionId).HasDefaultValueSql("((10))");
+                entity.Property(e => e.VersionActionID).HasDefaultValueSql("((10))");
 
                 entity.HasOne(d => d.ControllerType)
                     .WithMany(p => p.Signals)
@@ -604,9 +715,9 @@ namespace ATSPM.Data
 
                 entity.HasOne(d => d.Jurisdiction)
                     .WithMany(p => p.Signals)
-                    .HasForeignKey(d => d.JurisdictionId)
+                    .HasForeignKey(d => d.JurisdictionID)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionId");
+                    .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionID");
 
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Signals)
@@ -614,9 +725,41 @@ namespace ATSPM.Data
                     .HasConstraintName("FK_dbo.Signals_dbo.Region_RegionID");
             });
 
-            modelBuilder.Entity<VersionActions>(entity =>
+            modelBuilder.Entity<SignalToAggregate>(entity =>
             {
-                entity.Property(e => e.ID).ValueGeneratedNever();
+                entity.HasKey(e => e.SignalID)
+                    .HasName("PK_dbo.SignalToAggregates");
+
+                entity.Property(e => e.SignalID)
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
+            });
+
+            modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
+            {
+                entity.ToTable("SPMWatchDogErrorEvents");
+
+                entity.Property(e => e.ID).HasColumnName("ID");
+
+                entity.Property(e => e.DetectorID).HasColumnName("DetectorID");
+
+                entity.Property(e => e.Direction).IsRequired();
+
+                entity.Property(e => e.Message).IsRequired();
+
+                entity.Property(e => e.SignalID)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
+
+                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<VersionAction>(entity =>
+            {
+                entity.Property(e => e.ID)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -1,4 +1,4 @@
-using ATSPM.Application.Models;
+using ATSPM.Data.Models
 using ATSPM.Domain.Services;
 using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
@@ -47,14 +47,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -64,7 +64,7 @@ namespace InfrastructureTests.RepositoryTests
 
             _repo.Add(signal);
 
-            var collection = _repo.GetList(i => i.SignalId == signal.SignalId);
+            var collection = _repo.GetList(i => i.SignalID == signal.SignalID);
 
             Assert.Collection(collection,
                 new Action<Signal>[]
@@ -85,14 +85,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -120,14 +120,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -137,13 +137,13 @@ namespace InfrastructureTests.RepositoryTests
 
             _repo.Add(signal);
 
-            var actual = _repo.GetList(i => i.SignalId == signal.SignalId).First();
+            var actual = _repo.GetList(i => i.SignalID == signal.SignalID).First();
 
-            Assert.Equal(expected: signal.SignalId, actual: actual.SignalId);
+            Assert.Equal(expected: signal.SignalID, actual: actual.SignalID);
 
             _repo.Remove(signal);
 
-            Assert.True(_repo.GetList(i => i.SignalId == signal.SignalId).Count() == 0);
+            Assert.True(_repo.GetList(i => i.SignalID == signal.SignalID).Count() == 0);
         }
 
         [Fact]
@@ -155,14 +155,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -198,14 +198,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -232,14 +232,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -251,7 +251,7 @@ namespace InfrastructureTests.RepositoryTests
 
             var result = _repo.Lookup(signal);
 
-            Assert.Equal(signal.SignalId, result.SignalId);
+            Assert.Equal(signal.SignalID, result.SignalID);
         }
 
         public void Dispose()

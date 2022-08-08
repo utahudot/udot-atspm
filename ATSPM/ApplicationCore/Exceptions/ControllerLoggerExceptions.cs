@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace ATSPM.Application.Exceptions
 {
     public class InvalidSignalControllerIpAddressException : ATSPMException
     {
-        public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalId} address {signal.Ipaddress} is either invalid or can't be reached")
+        public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalID} address {signal.IPAddress} is either invalid or can't be reached")
         {
             SignalController = signal;
         }

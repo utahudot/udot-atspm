@@ -4,6 +4,7 @@ using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
+using ATSPM.Infrasturcture.Extensions;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
@@ -50,57 +51,59 @@ namespace ATSPM.SignalControllerLogger
                     //});
                     s.AddLogging();
 
-                    s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext))));
-                    s.AddDbContext<AggregationContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(AggregationContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-                    s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-                    s.AddDbContext<SpeedContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(SpeedContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                    s.AddATSPMDbContext(h);
 
-            //background services
+                    //s.AddDbContext<DbContext, ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext))));
+                    //s.AddDbContext<DbContext, AggregationContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(AggregationContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                    //s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(EntityFrameworkCoreExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                    //s.AddDbContext<DbContext, SpeedContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(SpeedContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+                    //background services
             s.AddHostedService<TPLDataflowService>();
 
-                    //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    ////repositories
+                    //s.AddScoped<ISignalRepository, SignalEFRepository>();
+                    ////s.AddScoped<ISignalRepository, SignalFileRepository>();
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    ////s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
 
-                    //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
-                    //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+                    ////s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+                    ////s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
-                    //downloader clients
-                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    //s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+                    ////downloader clients
+                    //s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+                    //s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    ////s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
+                    //s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
-                    //downloaders
-                    s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+                    ////downloaders
+                    //s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
-                    //decoders
-                    s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-                    s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+                    ////decoders
+                    //s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    //s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
-                    //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
+                    ////https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+                    ////downloader configurations
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
 
-                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+                    //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
                 .UseConsoleLifetime()
                 .Build();
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
             Console.WriteLine($"done?");
 

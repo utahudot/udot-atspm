@@ -1,9 +1,7 @@
-﻿using ATSPM.Application.ValueObjects;
+﻿using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ATSPM.Application.Common
 {

@@ -1,12 +1,9 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Application.ValueObjects;
-using ATSPM.Infrasturcture.Data;
+using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,8 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Utah.Gov.Udot.PipelineManager;
@@ -53,7 +48,7 @@ namespace ATSPM.SignalControllerLogger
             using (var scope = _serviceProvider.CreateScope())
             {
                 //var db = scope.ServiceProvider.GetRequiredService<DbContext>();
-                //_signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
+                //_signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.SignalID).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
 
                 _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals();
             }
@@ -165,7 +160,7 @@ namespace ATSPM.SignalControllerLogger
         {
             List<ControllerLogArchive> result = new List<ControllerLogArchive>();
 
-            var archiveDate = input.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            var archiveDate = input.GroupBy(g => (g.Timestamp.Date, g.SignalID)).Select(s => new ControllerLogArchive() { SignalID = s.Key.SignalID, ArchiveDate = s.Key.Date, LogData = s.ToList() });
 
             foreach (ControllerLogArchive archive in archiveDate)
             {
@@ -208,9 +203,9 @@ namespace ATSPM.SignalControllerLogger
 
         //    if (input.Count > 0)
         //    {
-        //        _log.LogWarning($"Directory: {_options.Value.RootPath} - {input.FirstOrDefault().SignalId}");
+        //        _log.LogWarning($"Directory: {_options.Value.RootPath} - {input.FirstOrDefault().SignalID}");
 
-        //        dir = new DirectoryInfo(Path.Combine(_options.Value.RootPath, input.FirstOrDefault().SignalId));
+        //        dir = new DirectoryInfo(Path.Combine(_options.Value.RootPath, input.FirstOrDefault().SignalID));
 
         //        //_log.LogWarning($"Directory: {dir.FullName}");
 

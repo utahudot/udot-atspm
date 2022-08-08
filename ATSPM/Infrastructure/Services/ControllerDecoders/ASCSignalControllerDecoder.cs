@@ -1,24 +1,15 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
+﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Application.ValueObjects;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
+using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 {
@@ -52,10 +43,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalID, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            if (string.IsNullOrEmpty(signalId))
-                throw new ControllerLoggerDecoderException("SignalID can not be null", new ArgumentNullException(nameof(signalId)));
+            if (string.IsNullOrEmpty(SignalID))
+                throw new ControllerLoggerDecoderException("SignalID can not be null", new ArgumentNullException(nameof(SignalID)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
@@ -87,7 +78,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalId = signalId };
+                        var log = new ControllerEventLog() { SignalID = SignalID };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {

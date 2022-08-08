@@ -1,16 +1,15 @@
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace InfrastructureTests.RepositoryTests
 {
@@ -22,7 +21,7 @@ namespace InfrastructureTests.RepositoryTests
 
         private readonly ITestOutputHelper _output;
         private ILogger<SignalEFRepository> _nullLogger;
-        private MOEContext _db;
+        private ConfigContext _db;
         private IAsyncRepository<Signal> _repo;
 
         public IAsyncRepositoryTests(ITestOutputHelper output)
@@ -46,14 +45,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -63,7 +62,7 @@ namespace InfrastructureTests.RepositoryTests
 
             await _repo.AddAsync(signal);
 
-            var collection = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var collection = await _repo.GetListAsync(i => i.SignalID == signal.SignalID);
 
             Assert.Collection(collection,
                 new Action<Signal>[]
@@ -84,14 +83,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -119,14 +118,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -136,13 +135,13 @@ namespace InfrastructureTests.RepositoryTests
 
             await _repo.AddAsync(signal);
 
-            var actual = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var actual = await _repo.GetListAsync(i => i.SignalID == signal.SignalID);
 
-            Assert.Equal(expected: signal.SignalId, actual: actual.First().SignalId);
+            Assert.Equal(expected: signal.SignalID, actual: actual.First().SignalID);
 
             _repo.Remove(signal);
 
-            Assert.True(_repo.GetList(i => i.SignalId == signal.SignalId).Count() == 0);
+            Assert.True(_repo.GetList(i => i.SignalID == signal.SignalID).Count() == 0);
         }
 
         [Fact]
@@ -154,14 +153,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -197,14 +196,14 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    SignalID = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
                     SecondaryName = " ",
                     Ipaddress = " ",
                     RegionId = 1,
-                    ControllerTypeId = 1,
+                    ControllerTypeID = 1,
                     //Enabled = true,
                     VersionId = i,
                     VersionActionId = 10,
@@ -233,14 +232,14 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                SignalID = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
-                ControllerTypeId = 1,
+                ControllerTypeID = 1,
                 //Enabled = true,
                 VersionId = 3,
                 VersionActionId = 10,
@@ -252,7 +251,7 @@ namespace InfrastructureTests.RepositoryTests
 
             var result = await _repo.LookupAsync(signal);
 
-            Assert.Equal(signal.SignalId, result.SignalId);
+            Assert.Equal(signal.SignalID, result.SignalID);
         }
 
         public void Dispose()

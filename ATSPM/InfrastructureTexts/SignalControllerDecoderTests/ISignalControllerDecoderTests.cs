@@ -1,22 +1,11 @@
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
-using ATSPM.Application.Models;
-using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using SignalControllerLoggerTests.Attributes;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -259,7 +248,7 @@ namespace SignalControllerLoggerTests
             var condition = collection?.Count > 0;
 
             Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+            Assert.All(collection, l => Assert.Equal(expected, l.SignalID));
         }
 
         [Fact]
