@@ -10,7 +10,7 @@ namespace ATSPM.Domain.Extensions
     {
         public static T FromJson<T>(this string json) where T : new()
         {
-            return JsonSerializer.Deserialize<T>(json, null);
+            return JsonSerializer.Deserialize<T>(json);
         }
 
         public static string ToJson<T>(this T item) where T : new()
@@ -20,7 +20,7 @@ namespace ATSPM.Domain.Extensions
 
         public static T FromEncodedJson<T>(this byte[] bytes) where T : new()
         {
-            return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes), null);
+            return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(bytes));
         }
 
         public static byte[] ToEncodedJson<T>(this T item) where T : new()
