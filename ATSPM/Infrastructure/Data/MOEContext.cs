@@ -425,7 +425,7 @@ namespace ATSPM.Infrasturcture.Data
                     .HasColumnName("SignalID");
             });
 
-            modelBuilder.Entity<ControllerLogArchive>(entity =>
+            _ = modelBuilder.Entity<ControllerLogArchive>(entity =>
             {
                 entity.HasKey(e => new { e.SignalId, e.ArchiveDate }).HasName("PK_Controller_Log_Archive");
                 //entity.HasNoKey();
@@ -438,7 +438,7 @@ namespace ATSPM.Infrasturcture.Data
                 entity.Property(e => e.ArchiveDate)
                 .HasColumnType("date")
                 .Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
-                
+
 
                 entity.Property(e => e.SignalId)
                     .IsRequired()
@@ -468,8 +468,8 @@ namespace ATSPM.Infrasturcture.Data
                 entity.Property(e => e.LogData)
                     .HasConversion<byte[]>(
                     //v => JsonSerializer.Serialize(v, null).GZipCompressToByte(),
-                    v => JsonSerializer.Serialize(v.Select(c => new { c.EventCode, c.EventParam, c.Timestamp }), null).GZipCompressToByte(),
-                    v => JsonSerializer.Deserialize<List<ControllerEventLog>>(v.GZipDecompressToString(), null),
+                    v => JsonSerializer.Serialize(v.Select(c => new { c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
+                    v => JsonSerializer.Deserialize<List<ControllerEventLog>>(v.GZipDecompressToString(), new JsonSerializerOptions()),
 
                     new ValueComparer<IList<ControllerEventLog>>((c1, c2) => c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
