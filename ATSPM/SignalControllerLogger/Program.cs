@@ -8,6 +8,7 @@ using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using Data;
 using FluentFTP;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Diagnostics.Common;
@@ -64,7 +65,8 @@ namespace ATSPM.SignalControllerLogger
                     //    Version = "1.1",
                     //});
                     s.AddLogging();
-                    s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+                    //s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+                    s.AddDbContext<DbContext, ATSPMContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString("ATSPM"))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
                     //background services
                     s.AddHostedService<TPLDataflowService>();
