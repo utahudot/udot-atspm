@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Data.Models
+{
+    public partial class Jurisdiction
+    {
+        public Jurisdiction()
+        {
+            Signals = new HashSet<Signal>();
+        }
+
+        public int Id { get; set; }
+        public string? JurisdictionName { get; set; }
+        public string? Mpo { get; set; }
+        public string? CountyParish { get; set; }
+        public string? OtherPartners { get; set; }
+
+        public virtual ICollection<Signal> Signals { get; set; }
+    }
+}
