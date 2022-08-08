@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Data.Models
+{
+    public partial class MetricComment
+    {
+        public MetricComment()
+        {
+            MetricTypeMetrics = new HashSet<MetricType>();
+        }
+
+        public int CommentId { get; set; }
+        public string? SignalId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public string CommentText { get; set; } = null!;
+        public int VersionId { get; set; }
+
+        public virtual ICollection<MetricType> MetricTypeMetrics { get; set; }
+    }
+}
