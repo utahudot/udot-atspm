@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
-    [Migration("20220808222507_init")]
+    [Migration("20220808233609_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,7 +26,7 @@ namespace ATSPM.Infrasturcture.Migrations.EventLog
 
             modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -37,11 +37,7 @@ namespace ATSPM.Infrasturcture.Migrations.EventLog
                     b.Property<byte[]>("LogData")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("SignalID", "ArchiveDate")
-                        .HasName("PK_Controller_Log_Archive");
-
-                    b.HasIndex(new[] { "SignalID", "ArchiveDate" }, "IX_Controller_Log_Archive")
-                        .IsUnique();
+                    b.HasKey("SignalId", "ArchiveDate");
 
                     b.ToTable("ControllerLogArchives");
 

@@ -24,7 +24,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public int CheckVersionWithFirstDate(string SignalID)
+        public int CheckVersionWithFirstDate(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +39,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public bool Exists(string SignalID)
+        public bool Exists(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -54,7 +54,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalID(string SignalID)
+        public IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -69,7 +69,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public Signal GetLatestVersionOfSignalBySignalID(string SignalID)
+        public Signal GetLatestVersionOfSignalBySignalId(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -79,17 +79,17 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public string GetSignalDescription(string SignalID)
+        public string GetSignalDescription(string SignalId)
         {
             throw new NotImplementedException();
         }
 
-        public string GetSignalLocation(string SignalID)
+        public string GetSignalLocation(string SignalId)
         {
             throw new NotImplementedException();
         }
 
-        public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalID, DateTime startDate, DateTime endDate)
+        public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate)
         {
             throw new NotImplementedException();
         }
@@ -99,12 +99,12 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public Signal GetVersionOfSignalByDate(string SignalID, DateTime startDate)
+        public Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }
 
-        public Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalID, DateTime startDate)
+        public Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }

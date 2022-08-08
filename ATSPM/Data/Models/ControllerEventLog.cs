@@ -9,14 +9,14 @@ namespace ATSPM.Data.Models
 {
     public class ControllerEventLog
     {
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public DateTime Timestamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
 
         public override string ToString()
         {
-            return $"{SignalID}-{EventCode}-{EventParam}-{Timestamp}";
+            return $"{SignalId}-{EventCode}-{EventParam}-{Timestamp}";
         }
     }
 }

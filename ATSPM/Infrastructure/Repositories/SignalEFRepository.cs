@@ -28,7 +28,7 @@ namespace ATSPM.Infrasturcture.Repositories
         }
 
         [Obsolete("This method isn't currently being used")]
-        public int CheckVersionWithFirstDate(string SignalID)
+        public int CheckVersionWithFirstDate(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +45,7 @@ namespace ATSPM.Infrasturcture.Repositories
             //                            select r).FirstOrDefault();
 
             //TODO: use clone instead
-            //newVersion.SignalID = originalVersion.SignalID;
+            //newVersion.SignalId = originalVersion.SignalId;
             //newVersion.Start = DateTime.Today;
             //newVersion.Note = "Copy of " + originalVersion.Note;
             //newVersion.PrimaryName = originalVersion.PrimaryName;
@@ -74,9 +74,9 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public bool Exists(string SignalID)
+        public bool Exists(string SignalId)
         {
-            //return _db.DatabaseArchiveExcludedSignals.Any(s => s.SignalID == SignalID);
+            //return _db.DatabaseArchiveExcludedSignals.Any(s => s.SignalId == SignalId);
             throw new NotImplementedException();
         }
 
@@ -93,7 +93,7 @@ namespace ATSPM.Infrasturcture.Repositories
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalID(string SignalID)
+        public IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -111,7 +111,7 @@ namespace ATSPM.Infrasturcture.Repositories
                 .Include(i => i.ControllerType)
                 .AsNoTracking()
                 .AsEnumerable()
-                .GroupBy(r => r.SignalID)
+                .GroupBy(r => r.SignalId)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
@@ -124,7 +124,7 @@ namespace ATSPM.Infrasturcture.Repositories
             //            a => a.Detectors.Select(d => d.DetectionTypes.Select(dt => dt.MetricTypes))))
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionHardware)))
             //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .GroupBy(r => r.SignalID)
+            //    .GroupBy(r => r.SignalId)
             //    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
             //return activeSignals;
 
@@ -136,7 +136,7 @@ namespace ATSPM.Infrasturcture.Repositories
         //    throw new NotImplementedException();
         //}
 
-        public Signal GetLatestVersionOfSignalBySignalID(string SignalID)
+        public Signal GetLatestVersionOfSignalBySignalId(string SignalId)
         {
             throw new NotImplementedException();
         }
@@ -145,17 +145,17 @@ namespace ATSPM.Infrasturcture.Repositories
         public IReadOnlyList<Pin> GetPinInfo()
         {
             //var pins = new List<Pin>();
-            ////foreach (var signal in GetLatestVersionOfAllSignals().Where(s => s.Enabled //&& s.SignalID == "7063"
+            ////foreach (var signal in GetLatestVersionOfAllSignals().Where(s => s.Enabled //&& s.SignalId == "7063"
             ////).ToList())
             //List<Signal> signals = GetLatestVersionOfAllSignals().Where(s => s.Enabled).ToList();
             //foreach (var signal in signals)
             //{
-            //    var pin = new Pin(signal.SignalID, signal.Latitude,
+            //    var pin = new Pin(signal.SignalId, signal.Latitude,
             //        signal.Longitude,
             //        signal.PrimaryName + " " + signal.SecondaryName, signal.RegionId.ToString());
             //    pin.MetricTypes = signal.GetMetricTypesString();
             //    pins.Add(pin);
-            //    //Console.WriteLine(pin.SignalID);
+            //    //Console.WriteLine(pin.SignalId);
             //}
             //return pins;
 
@@ -163,15 +163,15 @@ namespace ATSPM.Infrasturcture.Repositories
         }
 
         [Obsolete("Just get whole object")]
-        public string GetSignalDescription(string SignalID)
+        public string GetSignalDescription(string SignalId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("This should not be in respository")]
-        public string GetSignalLocation(string SignalID)
+        public string GetSignalLocation(string SignalId)
         {
-            var signal = GetLatestVersionOfSignalBySignalID(SignalID);
+            var signal = GetLatestVersionOfSignalBySignalId(SignalId);
             var location = string.Empty;
             if (signal != null)
                 location = signal.PrimaryName + " @ " + signal.SecondaryName;
@@ -179,27 +179,27 @@ namespace ATSPM.Infrasturcture.Repositories
             return location;
         }
 
-        public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalID, DateTime startDate, DateTime endDate)
+        public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate)
         {
             //var signals = new List<Signal>();
             //var signalBeforeStart = _db.Signals
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
             //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalID == SignalID
+            //    .Where(signal => signal.SignalId == SignalId
             //                     && signal.Start <= startDate
             //                     && signal.VersionActionId != 3).OrderByDescending(s => s.Start)
             //    .Take(1)
             //    .FirstOrDefault();
             //if (signalBeforeStart != null)
             //    signals.Add(signalBeforeStart);
-            //if (_db.Signals.Any(signal => signal.SignalID == SignalID
+            //if (_db.Signals.Any(signal => signal.SignalId == SignalId
             //                              && signal.Start > startDate
             //                              && signal.Start < endDate
             //                              && signal.VersionActionId != 3))
             //    signals.AddRange(_db.Signals
             //        .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
             //        .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //        .Where(signal => signal.SignalID == SignalID
+            //        .Where(signal => signal.SignalId == SignalId
             //                         && signal.Start > startDate
             //                         && signal.Start < endDate
             //                         && signal.VersionActionId != 3).ToList());
@@ -225,12 +225,12 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public Signal GetVersionOfSignalByDate(string SignalID, DateTime startDate)
+        public Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate)
         {
             //var signals = _db.Signals
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
             //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalID == SignalID)
+            //    .Where(signal => signal.SignalId == SignalId)
             //    .Where(signal => signal.Start <= startDate)
             //    .Where(signal => signal.VersionActionId != 3)
             //    .ToList();
@@ -248,13 +248,13 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalID, DateTime startDate)
+        public Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate)
         {
             //var signals = _db.Signals
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
             //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionTypes)))
             //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalID == SignalID)
+            //    .Where(signal => signal.SignalId == SignalId)
             //    .Where(signal => signal.Start <= startDate)
             //    .Where(signal => signal.VersionActionId != 3)
             //    .ToList();
@@ -275,7 +275,7 @@ namespace ATSPM.Infrasturcture.Repositories
         public void SetAllVersionsOfASignalToDeleted(string id)
         {
             //var signals = from r in _db.Signals
-            //              where r.SignalID == SignalID
+            //              where r.SignalId == SignalId
             //              select r;
 
             //foreach (var s in signals)

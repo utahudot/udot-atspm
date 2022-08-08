@@ -16,7 +16,7 @@ namespace ATSPM.Application.Repositories
         void AddOrUpdate(Signal signal);
 
         [Obsolete("This method isn't currently being used")]
-        int CheckVersionWithFirstDate(string SignalID);
+        int CheckVersionWithFirstDate(string SignalId);
 
         [Obsolete("Use ICloneable")]
         Signal CopySignalToNewVersion(Signal originalVersion);
@@ -24,7 +24,7 @@ namespace ATSPM.Application.Repositories
         [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
         IReadOnlyList<Signal> EagerLoadAllSignals();
 
-        bool Exists(string SignalID);
+        bool Exists(string SignalId);
 
         [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
         IReadOnlyList<Signal> GetAllEnabledSignals();
@@ -33,38 +33,38 @@ namespace ATSPM.Application.Repositories
         IList<Signal> GetAllSignals();
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals?")]
-        IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalID(string SignalID);
+        IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId);
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals?")]
         IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int controllerTypeId);
 
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 
-        Signal GetLatestVersionOfSignalBySignalID(string SignalID);
+        Signal GetLatestVersionOfSignalBySignalId(string SignalId);
 
         [Obsolete("This should not be in respository")]
         IReadOnlyList<Pin> GetPinInfo();
 
         [Obsolete("Just get whole object")]
-        string GetSignalDescription(string SignalID);
+        string GetSignalDescription(string SignalId);
 
         [Obsolete("This should not be in respository")]
-        string GetSignalLocation(string SignalID);
+        string GetSignalLocation(string SignalId);
 
-        IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalID, DateTime startDate, DateTime endDate);
+        IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate);
 
         Signal GetSignalVersionByVersionId(int versionId);
 
-        Signal GetVersionOfSignalByDate(string SignalID, DateTime startDate);
+        Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate);
 
-        Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalID, DateTime startDate);
+        Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate);
 
         void SetAllVersionsOfASignalToDeleted(string id);
 
         void SetVersionToDeleted(int versionId);
 
         //IReadOnlyList<Signal> GetLatestVersionOfAllSignalsForFtp();
-        //SignalFTPInfo GetSignalFTPInfoByID(string SignalID);
+        //SignalFTPInfo GetSignalFTPInfoByID(string SignalId);
         //List<SignalFTPInfo> GetSignalFTPInfoForAllFTPSignals();
     }
 }

@@ -13,21 +13,15 @@ namespace ATSPM.Infrasturcture.Migrations.EventLog
                 name: "ControllerLogArchives",
                 columns: table => new
                 {
-                    SignalID = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    SignalId = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     ArchiveDate = table.Column<DateTime>(type: "date", nullable: false),
                     LogData = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Controller_Log_Archive", x => new { x.SignalID, x.ArchiveDate });
+                    table.PrimaryKey("PK_ControllerLogArchives", x => new { x.SignalId, x.ArchiveDate });
                 },
                 comment: "Compressed Log Data");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Controller_Log_Archive",
-                table: "ControllerLogArchives",
-                columns: new[] { "SignalID", "ArchiveDate" },
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

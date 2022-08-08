@@ -18,7 +18,7 @@ namespace InfrastructureTests.Attributes
                     IPAddress = "10.209.2.120",
                     Enabled = true,
                     PrimaryName = "Maxtime Test",
-                    SignalID = "0",
+                    SignalId = "0",
                     ControllerTypeID = 4,
                     ControllerType = new ControllerType() { ControllerTypeID = 4 }
                 }
@@ -31,7 +31,7 @@ namespace InfrastructureTests.Attributes
                     IPAddress = "10.209.2.108",
                     Enabled = true,
                     PrimaryName = "Cobalt Test",
-                    SignalID = "9731",
+                    SignalId = "9731",
                     ControllerTypeID = 2,
                     ControllerType = new ControllerType() { ControllerTypeID = 2 }
                 }

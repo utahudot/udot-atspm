@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class PhaseTerminationAggregation
     {
         public DateTime BinStartTime { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public int PhaseNumber { get; set; }
         public int GapOuts { get; set; }
         public int ForceOffs { get; set; }

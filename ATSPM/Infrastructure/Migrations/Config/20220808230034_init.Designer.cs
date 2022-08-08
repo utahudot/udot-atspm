@@ -4,6 +4,7 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20220808230034_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,11 +68,11 @@ namespace ATSPM.Infrasturcture.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
                     b.HasKey("ActionLogID");
 
@@ -316,9 +318,9 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Property<int>("ProtectedPhaseNumber")
                         .HasColumnType("int");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
                     b.Property<int>("VersionID")
                         .HasColumnType("int")
@@ -457,7 +459,7 @@ namespace ATSPM.Infrasturcture.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -832,10 +834,10 @@ namespace ATSPM.Infrasturcture.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
@@ -998,7 +1000,7 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Property<int>("Phase")
                         .HasColumnType("int");
 
-                    b.Property<int>("RouteSignalID")
+                    b.Property<int>("RouteSignalId")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -1006,7 +1008,7 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.HasIndex(new[] { "DirectionTypeID" }, "IX_DirectionTypeID")
                         .HasDatabaseName("IX_DirectionTypeID1");
 
-                    b.HasIndex(new[] { "RouteSignalID" }, "IX_RouteSignalID");
+                    b.HasIndex(new[] { "RouteSignalId" }, "IX_RouteSignalId");
 
                     b.ToTable("RoutePhaseDirections");
                 });
@@ -1025,7 +1027,7 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Property<int>("RouteID")
                         .HasColumnType("int");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
@@ -1108,11 +1110,11 @@ namespace ATSPM.Infrasturcture.Migrations
                         .HasColumnType("varchar(100)")
                         .HasDefaultValueSql("('')");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime");
@@ -1138,12 +1140,12 @@ namespace ATSPM.Infrasturcture.Migrations
 
             modelBuilder.Entity("ATSPM.Data.Models.SignalToAggregate", b =>
                 {
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
-                    b.HasKey("SignalID")
+                    b.HasKey("SignalId")
                         .HasName("PK_dbo.SignalToAggregates");
 
                     b.ToTable("SignalToAggregates");
@@ -1176,11 +1178,11 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Property<int>("Phase")
                         .HasColumnType("int");
 
-                    b.Property<string>("SignalID")
+                    b.Property<string>("SignalId")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalID");
+                        .HasColumnName("SignalId");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
@@ -1430,10 +1432,10 @@ namespace ATSPM.Infrasturcture.Migrations
 
                     b.HasOne("ATSPM.Data.Models.RouteSignal", "RouteSignal")
                         .WithMany("RoutePhaseDirections")
-                        .HasForeignKey("RouteSignalID")
+                        .HasForeignKey("RouteSignalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalID");
+                        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
 
                     b.Navigation("DirectionType");
 

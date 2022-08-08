@@ -13,7 +13,7 @@ namespace ATSPM.Data.Models
         }
 
         public int CommentID { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
         public int VersionID { get; set; }

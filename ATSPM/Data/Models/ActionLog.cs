@@ -17,7 +17,7 @@ namespace ATSPM.Data.Models
         public DateTime Date { get; set; }
         public int AgencyID { get; set; }
         public string Comment { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public string Name { get; set; }
 
         public virtual Agency Agency { get; set; }

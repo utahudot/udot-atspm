@@ -43,10 +43,10 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalID, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            if (string.IsNullOrEmpty(SignalID))
-                throw new ControllerLoggerDecoderException("SignalID can not be null", new ArgumentNullException(nameof(SignalID)));
+            if (string.IsNullOrEmpty(SignalId))
+                throw new ControllerLoggerDecoderException("SignalId can not be null", new ArgumentNullException(nameof(SignalId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
@@ -78,7 +78,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalID = SignalID };
+                        var log = new ControllerEventLog() { SignalId = SignalId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {

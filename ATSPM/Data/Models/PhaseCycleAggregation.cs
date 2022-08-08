@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class PhaseCycleAggregation
     {
         public DateTime BinStartTime { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public int ApproachID { get; set; }
         public int PhaseNumber { get; set; }
         public int RedTime { get; set; }

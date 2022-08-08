@@ -31,4 +31,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\EventLog\" />
+  </ItemGroup>
+
 </Project>

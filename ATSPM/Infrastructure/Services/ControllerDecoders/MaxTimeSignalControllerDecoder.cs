@@ -40,12 +40,12 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             return parameter.Exists && (parameter.Extension == ".xml" || parameter.Extension == ".XML");
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalID, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             //cancelToken.ThrowIfCancellationRequested();
 
-            if (string.IsNullOrEmpty(SignalID))
-                throw new ControllerLoggerDecoderException("SignalID can not be null", new ArgumentNullException(nameof(SignalID)));
+            if (string.IsNullOrEmpty(SignalId))
+                throw new ControllerLoggerDecoderException("SignalId can not be null", new ArgumentNullException(nameof(SignalId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
@@ -61,7 +61,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
             }
             catch (Exception e)
             {
-                throw new ControllerLoggerDecoderException($"Exception decoding {SignalID}", e);
+                throw new ControllerLoggerDecoderException($"Exception decoding {SignalId}", e);
             }
 
             foreach (var l in logs)
@@ -72,7 +72,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 {
                     log = new ControllerEventLog()
                     {
-                        SignalID = SignalID,
+                        SignalId = SignalId,
                         EventCode = Convert.ToInt32(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToInt32(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
@@ -80,7 +80,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                 }
                 catch (Exception e)
                 {
-                    throw new ControllerLoggerDecoderException($"Exception decoding {SignalID}", e);
+                    throw new ControllerLoggerDecoderException($"Exception decoding {SignalId}", e);
                 }
 
                 if (IsAcceptableDateRange(log))

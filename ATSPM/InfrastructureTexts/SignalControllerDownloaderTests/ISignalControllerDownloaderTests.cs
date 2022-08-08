@@ -126,7 +126,7 @@ namespace SignalControllerLoggerTests
                 IPAddress = "Invalid Address",
                 Enabled = true,
                 PrimaryName = "Controller",
-                SignalID = "999",
+                SignalId = "999",
                 ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType }
             };
 
@@ -148,7 +148,7 @@ namespace SignalControllerLoggerTests
             {
                 Enabled = true,
                 PrimaryName = "Controller",
-                SignalID = "999",
+                SignalId = "999",
                 ControllerType = new ControllerType() { ControllerTypeID = 0 }
             };
 
@@ -218,7 +218,7 @@ namespace SignalControllerLoggerTests
                 IPAddress = "127.0.0.1",
                 Enabled = true,
                 PrimaryName = "Controller",
-                SignalID = "999"
+                SignalId = "999"
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
@@ -227,7 +227,7 @@ namespace SignalControllerLoggerTests
                 PingControllerToVerify = false
             });
 
-            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalID);
+            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalId);
             var ftpDirectory = "\\dir";
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();
@@ -271,7 +271,7 @@ namespace SignalControllerLoggerTests
                 IPAddress = "127.0.0.1",
                 Enabled = true,
                 PrimaryName = "Controller",
-                SignalID = "999"
+                SignalId = "999"
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
@@ -280,7 +280,7 @@ namespace SignalControllerLoggerTests
                 PingControllerToVerify = false
             });
 
-            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalID);
+            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalId);
             var ftpDirectory = "\\dir";
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();

@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class PhaseLeftTurnGapAggregation
     {
         public DateTime BinStartTime { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachID { get; set; }
         public int GapCount1 { get; set; }

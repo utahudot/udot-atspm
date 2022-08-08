@@ -18,23 +18,18 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Compressed Log Data");
 
-            builder.HasKey(e => new { e.SignalID, e.ArchiveDate }).HasName("PK_Controller_Log_Archive");
+            builder.HasKey(e => new { e.SignalId, e.ArchiveDate }); //.HasName("PK_Controller_Log_Archive");
 
-            //entity.ToTable("Controller_Log_Archive");
-
-            builder.HasIndex(e => new { e.SignalID, e.ArchiveDate }, "IX_Controller_Log_Archive")
-                    .IsUnique();
+            //builder.HasIndex(e => new { e.SignalId, e.ArchiveDate },"IX_Controller_Log_Archive").IsUnique();
 
             builder.Property(e => e.ArchiveDate)
                 .HasColumnType("date")
                 .Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
-
-            builder.Property(e => e.SignalID)
+            builder.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10);
-            //.HasColumnName("SignalID");
-
+            //.HasColumnName("SignalId");
 
             //https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=fluent-api
 
@@ -43,7 +38,7 @@ namespace ATSPM.Data.Configuration
                     v => JsonSerializer.Serialize(v.Select(c => new { c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
                     v => JsonSerializer.Deserialize<List<ControllerEventLog>>(v.GZipDecompressToString(), new JsonSerializerOptions()),
 
-                    new ValueComparer<IList<ControllerEventLog>>((c1, c2) => c1.SequenceEqual(c2),
+                    new ValueComparer<ICollection<ControllerEventLog>>((c1, c2) => c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList()));
         }

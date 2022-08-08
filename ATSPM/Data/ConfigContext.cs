@@ -86,10 +86,10 @@ namespace ATSPM.Data
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+                    .HasColumnName("SignalId");
 
                 entity.HasOne(d => d.Agency)
                     .WithMany(p => p.ActionLogs)
@@ -191,7 +191,7 @@ namespace ATSPM.Data
 
                 entity.Property(e => e.Mph).HasColumnName("MPH");
 
-                entity.Property(e => e.SignalID).HasColumnName("SignalID");
+                entity.Property(e => e.SignalId).HasColumnName("SignalId");
 
                 entity.Property(e => e.VersionID).HasColumnName("VersionID");
 
@@ -278,7 +278,7 @@ namespace ATSPM.Data
 
             modelBuilder.Entity<DatabaseArchiveExcludedSignal>(entity =>
             {
-                entity.Property(e => e.SignalID).HasMaxLength(10);
+                entity.Property(e => e.SignalId).HasMaxLength(10);
             });
 
             modelBuilder.Entity<DetectionHardware>(entity =>
@@ -525,9 +525,9 @@ namespace ATSPM.Data
 
                 entity.Property(e => e.CommentText).IsRequired();
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+                    .HasColumnName("SignalId");
 
                 entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
@@ -617,7 +617,7 @@ namespace ATSPM.Data
             {
                 entity.HasIndex(e => e.DirectionTypeID, "IX_DirectionTypeID");
 
-                entity.HasIndex(e => e.RouteSignalID, "IX_RouteSignalID");
+                entity.HasIndex(e => e.RouteSignalId, "IX_RouteSignalId");
 
                 entity.HasOne(d => d.DirectionType)
                     .WithMany(p => p.RoutePhaseDirections)
@@ -626,15 +626,15 @@ namespace ATSPM.Data
 
                 entity.HasOne(d => d.RouteSignal)
                     .WithMany(p => p.RoutePhaseDirections)
-                    .HasForeignKey(d => d.RouteSignalID)
-                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalID");
+                    .HasForeignKey(d => d.RouteSignalId)
+                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
             });
 
             modelBuilder.Entity<RouteSignal>(entity =>
             {
                 entity.HasIndex(e => e.RouteID, "IX_RouteID");
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10);
 
@@ -698,10 +698,10 @@ namespace ATSPM.Data
                     .IsUnicode(false)
                     .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+                    .HasColumnName("SignalId");
 
                 entity.Property(e => e.Start).HasColumnType("datetime");
 
@@ -727,12 +727,12 @@ namespace ATSPM.Data
 
             modelBuilder.Entity<SignalToAggregate>(entity =>
             {
-                entity.HasKey(e => e.SignalID)
+                entity.HasKey(e => e.SignalId)
                     .HasName("PK_dbo.SignalToAggregates");
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+                    .HasColumnName("SignalId");
             });
 
             modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
@@ -747,10 +747,10 @@ namespace ATSPM.Data
 
                 entity.Property(e => e.Message).IsRequired();
 
-                entity.Property(e => e.SignalID)
+                entity.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+                    .HasColumnName("SignalId");
 
                 entity.Property(e => e.TimeStamp).HasColumnType("datetime");
             });

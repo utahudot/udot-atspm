@@ -61,8 +61,8 @@ Unicode: False" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIn
 <Node Id = "Signal.SecondaryName" Label="SecondaryName (string)" Name="SecondaryName" Category="Property Required" Type="string" MaxLength="(100)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 100
 Relational:DefaultValueSql: (&apos;&apos;)
 Unicode: False" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="False" ValueGenerated="ValueGenerated.OnAdd" />
-<Node Id = "Signal.SignalID" Label="SignalID (string)" Name="SignalID" Category="Property Optional" Type="string" MaxLength="(10)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 10
-Relational:ColumnName: SignalID" IsPrimaryKey="False" IsForeignKey="False" IsRequired="False" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
+<Node Id = "Signal.SignalId" Label="SignalId (string)" Name="SignalId" Category="Property Optional" Type="string" MaxLength="(10)" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="MaxLength: 10
+Relational:ColumnName: SignalId" IsPrimaryKey="False" IsForeignKey="False" IsRequired="False" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "Signal.Start" Label="Start (DateTime)" Name="Start" Category="Property Required" Type="DateTime" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Relational:ColumnType: datetime" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="False" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="None" />
 <Node Id = "Signal.VersionActionId" Label="VersionActionId (int)" Name="VersionActionId" Category="Property Required" Type="int" MaxLength="None" Field="" PropertyAccessMode="PropertyAccessMode.Default" BeforeSaveBehavior="PropertySaveBehavior.Save" AfterSaveBehavior="PropertySaveBehavior.Save" Annotations="Relational:DefaultValueSql: ((10))" IsPrimaryKey="False" IsForeignKey="False" IsRequired="True" IsIndexed="True" IsShadow="False" IsAlternateKey="False" IsConcurrencyToken="False" IsUnicode="True" ValueGenerated="ValueGenerated.OnAdd" />
   </Nodes>
@@ -117,7 +117,7 @@ Relational:ColumnName: SignalID" IsPrimaryKey="False" IsForeignKey="False" IsReq
 <Link Source = "Signal" Target="Signal.PrimaryName" Category="Contains" />
 <Link Source = "Signal" Target="Signal.RegionId" Category="Contains" />
 <Link Source = "Signal" Target="Signal.SecondaryName" Category="Contains" />
-<Link Source = "Signal" Target="Signal.SignalID" Category="Contains" />
+<Link Source = "Signal" Target="Signal.SignalId" Category="Contains" />
 <Link Source = "Signal" Target="Signal.Start" Category="Contains" />
 <Link Source = "Signal" Target="Signal.VersionActionId" Category="Contains" />
   </Links>

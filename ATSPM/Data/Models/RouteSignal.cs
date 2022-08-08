@@ -15,7 +15,7 @@ namespace ATSPM.Data.Models
         public int ID { get; set; }
         public int RouteID { get; set; }
         public int Order { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
 
         public virtual Route Route { get; set; }
         public virtual ICollection<RoutePhaseDirection> RoutePhaseDirections { get; set; }

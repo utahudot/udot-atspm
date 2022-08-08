@@ -53,13 +53,8 @@ namespace ATSPM.SignalControllerLogger
 
                     s.AddATSPMDbContext(h);
 
-                    //s.AddDbContext<DbContext, ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext))));
-                    //s.AddDbContext<DbContext, AggregationContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(AggregationContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-                    //s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(EntityFrameworkCoreExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-                    //s.AddDbContext<DbContext, SpeedContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(SpeedContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-
                     //background services
-            s.AddHostedService<TPLDataflowService>();
+                    s.AddHostedService<TPLDataflowService>();
 
                     ////repositories
                     //s.AddScoped<ISignalRepository, SignalEFRepository>();

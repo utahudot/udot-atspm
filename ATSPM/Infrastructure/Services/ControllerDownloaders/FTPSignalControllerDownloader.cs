@@ -51,13 +51,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     var profile = await client?.AutoConnectAsync(cancelToken);
 
-                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalID)), $"Connected to Controller: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
+                    _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), $"Connected to Controller: {parameter.ControllerType.Description} - {profile?.Host} - {profile?.DataConnection} - {profile?.SocketPollInterval} - {profile?.RetryAttempts} - {profile?.Timeout}");
                 }
                 catch (Exception e)
                 {
                     progress?.Report(new ControllerDownloadProgress(e));
 
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalID)), e, "FTP Connection Error {ip}", parameter.IPAddress);
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Connection Error {ip}", parameter.IPAddress);
                 }
 
                 if (client.IsConnected)
@@ -70,13 +70,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                         try
                         {
-                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.LocalPath, parameter.SignalID), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, ftpProgress, cancelToken);
+                            results = await client.DownloadDirectoryAsync(Path.Combine(_options.LocalPath, parameter.SignalId), parameter.ControllerType.Ftpdirectory, FtpFolderSyncMode.Update, FtpLocalExists.Overwrite, FtpVerify.None, rules, ftpProgress, cancelToken);
                         }
                         catch (Exception e)
                         {
                             progress?.Report(new ControllerDownloadProgress(e));
 
-                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalID)), e, "FTP Download Error {ip}", parameter.IPAddress);
+                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Download Error {ip}", parameter.IPAddress);
                         }
                     }
 
@@ -91,7 +91,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(file));
 
-                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalID)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+                                _log.LogInformation(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Success: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
 
                                 yield return file;
                             }
@@ -100,7 +100,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             {
                                 progress?.Report(new ControllerDownloadProgress(file: null));
 
-                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalID)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.SignalId)), r.Exception, "Failed: file:{file} downloaded:{Downloaded} failed:{Failed} skipped:{skipped} success:{success}", r.Name, r.IsDownload, r.IsFailed, r.IsSkipped, r.IsSuccess);
                             }
 
                             if (r.Exception != null)

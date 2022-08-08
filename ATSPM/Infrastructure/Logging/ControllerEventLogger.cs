@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.Logging
             {
                 ControllerEventLog logEvent = new ControllerEventLog()
                 {
-                    SignalID = parameters.Where(k => k.Key == "SignalID")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
+                    SignalId = parameters.Where(k => k.Key == "SignalId")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
                     Timestamp = DateTime.Now,
                     EventCode = eventId.Id,
                     EventParam = Convert.ToInt32(parameters.Where(k => k.Key == "EventParam")?.Select(v => v.Value)?.FirstOrDefault() ?? 0)

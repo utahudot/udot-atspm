@@ -7,6 +7,6 @@ namespace ATSPM.Data.Models
 {
     public partial class SignalToAggregate
     {
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
     }
 }

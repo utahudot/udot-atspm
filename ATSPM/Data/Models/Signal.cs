@@ -7,7 +7,7 @@ namespace ATSPM.Data.Models
 {
     public partial class Signal : ATSPMModelBase
     {
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public string PrimaryName { get; set; }
@@ -32,7 +32,7 @@ namespace ATSPM.Data.Models
 
         public override string ToString()
         {
-            return $"{SignalID}-{PrimaryName}";
+            return $"{SignalId}-{PrimaryName}";
         }
     }
 }

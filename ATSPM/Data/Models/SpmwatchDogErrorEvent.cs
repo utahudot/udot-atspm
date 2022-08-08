@@ -9,7 +9,7 @@ namespace ATSPM.Data.Models
     {
         public int ID { get; set; }
         public DateTime TimeStamp { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public string DetectorID { get; set; }
         public string Direction { get; set; }
         public int Phase { get; set; }

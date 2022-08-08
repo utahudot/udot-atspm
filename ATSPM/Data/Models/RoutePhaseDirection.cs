@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class RoutePhaseDirection
     {
         public int ID { get; set; }
-        public int RouteSignalID { get; set; }
+        public int RouteSignalId { get; set; }
         public int Phase { get; set; }
         public int DirectionTypeID { get; set; }
         public bool IsOverlap { get; set; }

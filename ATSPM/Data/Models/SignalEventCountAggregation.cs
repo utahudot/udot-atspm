@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class SignalEventCountAggregation
     {
         public DateTime BinStartTime { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public int EventCount { get; set; }
     }
 }

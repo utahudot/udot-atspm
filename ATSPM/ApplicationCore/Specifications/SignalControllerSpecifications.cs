@@ -9,15 +9,15 @@ namespace ATSPM.Application.Specifications
 {
     //public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     //{
-    //    public ControllerLogDateRangeSpecification(string SignalID, DateTime startTime, DateTime endTime) : base()
+    //    public ControllerLogDateRangeSpecification(string SignalId, DateTime startTime, DateTime endTime) : base()
     //    {
-    //        if (string.IsNullOrEmpty(SignalID))
+    //        if (string.IsNullOrEmpty(SignalId))
     //        {
     //            base.Criteria = c => c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
     //        }
     //        else
     //        {
-    //            base.Criteria = c => c.SignalID == SignalID && c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
+    //            base.Criteria = c => c.SignalId == SignalId && c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
     //        }
     //    }
     //}

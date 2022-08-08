@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     public partial class ApproachYellowRedActivationAggregation
     {
         public DateTime BinStartTime { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
         public int ApproachID { get; set; }
         public int PhaseNumber { get; set; }
         public bool IsProtectedPhase { get; set; }

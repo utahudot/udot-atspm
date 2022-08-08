@@ -8,6 +8,6 @@ namespace ATSPM.Data.Models
     public partial class DatabaseArchiveExcludedSignal
     {
         public int ID { get; set; }
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
     }
 }

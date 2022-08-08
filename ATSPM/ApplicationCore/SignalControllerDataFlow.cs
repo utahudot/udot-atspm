@@ -86,7 +86,7 @@ namespace ATSPM.Application
                 var endResult = new ActionBlock<ControllerLogArchive>(i =>
                 {
                     //if (i == null)
-                    Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalID} - {i.ArchiveDate} - {i.LogData.Count}");
+                    Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
 
                 }, stepOptions);
 
@@ -206,7 +206,7 @@ namespace ATSPM.Application
 
             try
             {
-                //var progress = new Progress<ControllerDownloadProgress>(p => _log.LogInformation(new EventId(Convert.ToInt32(s.SignalID)), "{progress}", p));
+                //var progress = new Progress<ControllerDownloadProgress>(p => _log.LogInformation(new EventId(Convert.ToInt32(s.SignalId)), "{progress}", p));
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
@@ -219,11 +219,11 @@ namespace ATSPM.Application
                     }
                 }
 
-                //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalID)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
+                //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
             }
             catch (ExecuteException e)
             {
-                //_log.LogError(new EventId(Convert.ToInt32(s.SignalID)), e, "{error}", e.Message);
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
             }
             catch (InvalidSignalControllerIpAddressException e)
             {
@@ -231,11 +231,11 @@ namespace ATSPM.Application
             }
             catch (ArgumentNullException e)
             {
-                //_log.LogError(new EventId(Convert.ToInt32(s.SignalID)), e, "{error}", e.Message);
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "{error}", e.Message);
             }
             catch (Exception e)
             {
-                //_log.LogError(new EventId(Convert.ToInt32(s.SignalID)), e, "Unexpected exception caught on step {step}", blockName);
+                //_log.LogError(new EventId(Convert.ToInt32(s.SignalId)), e, "Unexpected exception caught on step {step}", blockName);
             }
 
             return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x, y) => x.FullName == y.FullName));
@@ -293,7 +293,7 @@ namespace ATSPM.Application
         //TODO: Move into extension method
         protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
         {
-            return logs.GroupBy(g => (g.Timestamp.Date, g.SignalID)).Select(s => new ControllerLogArchive() { SignalID = s.Key.SignalID, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            return logs.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
