@@ -117,7 +117,11 @@
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -386,6 +390,9 @@
             "projectReferences": {
               "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
                 "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              },
+              "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj"
               },
               "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
                 "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"

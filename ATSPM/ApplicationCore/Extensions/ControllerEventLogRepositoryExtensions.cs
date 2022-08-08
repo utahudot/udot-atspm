@@ -1,6 +1,6 @@
-﻿using ATSPM.Application.Models;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.Specifications;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;

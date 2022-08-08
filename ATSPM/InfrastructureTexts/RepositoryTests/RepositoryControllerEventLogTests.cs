@@ -16,6 +16,7 @@ using ATSPM.Domain.Extensions;
 using ATSPM.Application.Specifications;
 using System.Threading.Tasks;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.ValueObjects;
 
 namespace InfrastructureTests
 {

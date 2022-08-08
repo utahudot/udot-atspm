@@ -1707,6 +1707,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "ApplicationCore": "1.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7"
         },
         "compile": {
@@ -5846,6 +5847,7 @@
   "projectFileDependencyGroups": {
     "net6.0": [
       "ApplicationCore >= 1.0.0",
+      "Data >= 1.0.0",
       "DomainCore >= 1.0.0",
       "Google.Cloud.Diagnostics.Common >= 5.0.0",
       "Infrastructure >= 1.0.0",
@@ -5893,6 +5895,9 @@
           "projectReferences": {
             "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
               "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+            },
+            "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj": {
+              "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj"
             },
             "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
               "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"

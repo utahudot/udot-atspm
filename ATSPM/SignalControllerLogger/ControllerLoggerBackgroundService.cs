@@ -3,6 +3,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Infrasturcture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

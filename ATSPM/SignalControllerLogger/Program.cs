@@ -1,32 +1,18 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
-using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
-using Data;
-using FluentFTP;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Renci.SshNet.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -55,8 +41,6 @@ namespace ATSPM.SignalControllerLogger
                     //}
                 })
 
-
-
                 .ConfigureServices((h, s) =>
                 {
                     //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
@@ -65,11 +49,14 @@ namespace ATSPM.SignalControllerLogger
                     //    Version = "1.1",
                     //});
                     s.AddLogging();
-                    //s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
-                    s.AddDbContext<DbContext, ATSPMContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString("ATSPM"))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
 
-                    //background services
-                    s.AddHostedService<TPLDataflowService>();
+                    s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext))));
+                    s.AddDbContext<AggregationContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(AggregationContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                    s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+                    s.AddDbContext<SpeedContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(SpeedContext))).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+            //background services
+            s.AddHostedService<TPLDataflowService>();
 
                     //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
