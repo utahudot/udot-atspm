@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using ATSPM.Data.Models;
+using ATSPM.Data.Configuration;
 
 namespace ATSPM.Data
 {
@@ -18,17 +19,11 @@ namespace ATSPM.Data
         {
         }
 
-        public virtual DbSet<SpeedEvent> Speed_Events { get; set; }
+        public virtual DbSet<SpeedEvent> SpeedEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SpeedEvent>(entity =>
-            {
-                entity.HasKey(e => new { e.DetectorID, e.Mph, e.Kph, e.Timestamp })
-                    .HasName("PK_dbo.Speed_Events");
-
-                entity.Property(e => e.DetectorID).HasMaxLength(50);
-            });
+            modelBuilder.ApplyConfiguration(new SpeedEventConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }

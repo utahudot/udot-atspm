@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\EventLog\" />
+    <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
-    partial class SpeedContextModelSnapshot : ModelSnapshot
+    [Migration("20220809001411_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +39,10 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
+                    b.HasKey("DetectorID", "Mph", "Kph", "Timestamp")
+                        .HasName("PK_dbo.Speed_Events");
 
-                    b.ToTable("SpeedEvents");
+                    b.ToTable("Speed_Events");
                 });
 #pragma warning restore 612, 618
         }

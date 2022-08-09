@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
-    [Migration("20220808222448_init")]
-    partial class init
+    [Migration("20220809002134_EFCore6Upgrade")]
+    partial class EFCore6Upgrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,10 +39,9 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("DetectorID", "Mph", "Kph", "Timestamp")
-                        .HasName("PK_dbo.Speed_Events");
+                    b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
 
-                    b.ToTable("Speed_Events");
+                    b.ToTable("SpeedEvents");
                 });
 #pragma warning restore 612, 618
         }

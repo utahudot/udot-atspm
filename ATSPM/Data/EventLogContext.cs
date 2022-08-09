@@ -18,8 +18,7 @@ namespace ATSPM.Data
         {
         }
 
-        public EventLogContext(DbContextOptions<EventLogContext> options)
-            : base(options)
+        public EventLogContext(DbContextOptions<EventLogContext> options) : base(options)
         {
         }
 
@@ -27,8 +26,6 @@ namespace ATSPM.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //new ControllerLogArchiveConfiguration().Configure(modelBuilder.Entity<ControllerLogArchive>());
-
             modelBuilder.ApplyConfiguration(new ControllerLogArchiveConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
