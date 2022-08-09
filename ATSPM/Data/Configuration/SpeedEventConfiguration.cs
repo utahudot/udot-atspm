@@ -8,6 +8,8 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<SpeedEvent> builder)
         {
+            builder.HasComment("Speed Event Data");
+
             builder.HasKey(e => new { e.DetectorID, e.Mph, e.Kph, e.Timestamp });
             //.HasName("PK_dbo.Speed_Events");
 

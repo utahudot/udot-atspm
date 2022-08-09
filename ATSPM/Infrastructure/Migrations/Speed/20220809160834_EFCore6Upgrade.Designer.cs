@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
-    [Migration("20220809002134_EFCore6Upgrade")]
+    [Migration("20220809160834_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,8 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                     b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
 
                     b.ToTable("SpeedEvents");
+
+                    b.HasComment("Speed Event Data");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,6 +16,10 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                 name: "Speed_Events",
                 newName: "SpeedEvents");
 
+            migrationBuilder.AlterTable(
+                name: "SpeedEvents",
+                comment: "Speed Event Data");
+
             migrationBuilder.AddPrimaryKey(
                 name: "PK_SpeedEvents",
                 table: "SpeedEvents",
@@ -31,6 +35,10 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
             migrationBuilder.RenameTable(
                 name: "SpeedEvents",
                 newName: "Speed_Events");
+
+            migrationBuilder.AlterTable(
+                name: "Speed_Events",
+                oldComment: "Speed Event Data");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_dbo.Speed_Events",

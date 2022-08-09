@@ -40,6 +40,8 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                     b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
 
                     b.ToTable("SpeedEvents");
+
+                    b.HasComment("Speed Event Data");
                 });
 #pragma warning restore 612, 618
         }
