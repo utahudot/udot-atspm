@@ -319,6 +319,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.4.4, )"
+            },
             "FluentFTP": {
               "target": "Package",
               "version": "[34.0.2, )"

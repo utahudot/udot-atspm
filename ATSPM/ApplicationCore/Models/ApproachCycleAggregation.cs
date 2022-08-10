@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Models
 {
-    public partial class ApproachCycleAggregation : Aggregation
+    public partial class ApproachCycleAggregation : ATSPMModelBase
     {
         public int Id { get; set; }
-        public override DateTime BinStartTime { get; set; }
+        //public override DateTime BinStartTime { get; set; }
         public int ApproachId { get; set; }
         public double RedTime { get; set; }
         public double YellowTime { get; set; }

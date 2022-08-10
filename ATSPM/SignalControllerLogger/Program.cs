@@ -70,6 +70,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddHostedService<TPLDataflowService>();
 
                     //repositories
+                    s.AddScoped<IActionLogRepository, ActionLogEFRepository>();
+                    s.AddScoped<IApplicationEventRepository, ApplicationEventEFRepository>();
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
                     //s.AddScoped<ISignalRepository, SignalFileRepository>();
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();

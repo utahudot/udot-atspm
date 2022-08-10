@@ -27,7 +27,7 @@ namespace ATSPM.Infrasturcture.Data
         }
 
         //public virtual DbSet<Application.Models.Action> Actions { get; set; }
-        //public virtual DbSet<ActionLog> ActionLogs { get; set; }
+        public virtual DbSet<ActionLog> ActionLogs { get; set; }
         //public virtual DbSet<ActionLogAction> ActionLogActions { get; set; }
         //public virtual DbSet<ActionLogMetricType> ActionLogMetricTypes { get; set; }
         //public virtual DbSet<Agency> Agencies { get; set; }
@@ -118,32 +118,32 @@ namespace ATSPM.Infrasturcture.Data
             //        .HasMaxLength(50);
             //});
 
-            //modelBuilder.Entity<ActionLog>(entity =>
-            //{
-            //    entity.HasIndex(e => e.AgencyId, "IX_AgencyID");
+            modelBuilder.Entity<ActionLog>(entity =>
+            {
+                entity.HasIndex(e => e.AgencyId, "IX_AgencyID");
 
-            //    entity.Property(e => e.ActionLogId).HasColumnName("ActionLogID");
+                entity.Property(e => e.ActionLogId).HasColumnName("ActionLogID");
 
-            //    entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
+                entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
 
-            //    entity.Property(e => e.Comment).HasMaxLength(255);
+                entity.Property(e => e.Comment).HasMaxLength(255);
 
-            //    entity.Property(e => e.Date).HasColumnType("datetime");
+                entity.Property(e => e.Date).HasColumnType("datetime");
 
-            //    entity.Property(e => e.Name)
-            //        .IsRequired()
-            //        .HasMaxLength(100);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
-            //    entity.Property(e => e.SignalId)
-            //        .IsRequired()
-            //        .HasMaxLength(10)
-            //        .HasColumnName("SignalID");
+                entity.Property(e => e.SignalId)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .HasColumnName("SignalID");
 
-            //    entity.HasOne(d => d.Agency)
-            //        .WithMany(p => p.ActionLogs)
-            //        .HasForeignKey(d => d.AgencyId)
-            //        .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
-            //});
+                entity.HasOne(d => d.Agency)
+                    .WithMany(p => p.ActionLogs)
+                    .HasForeignKey(d => d.AgencyId)
+                    .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
+            });
 
             //modelBuilder.Entity<ActionLogAction>(entity =>
             //{

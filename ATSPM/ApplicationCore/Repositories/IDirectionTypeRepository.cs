@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace ATSPM.Application.Repositories
 {
@@ -16,7 +15,7 @@ namespace ATSPM.Application.Repositories
         [Obsolete("Use Lookup instead")]
         DirectionType GetDirectionByID(int directionID);
 
-        IReadOnlyCollection<SelectListItem> GetSelectList();
+        //IReadOnlyCollection<SelectListItem> GetSelectList();
 
         IReadOnlyCollection<DirectionType> GetDirectionsByIDs(List<int> includedDirections);
         DirectionType GetByDescription(string directionDescription);

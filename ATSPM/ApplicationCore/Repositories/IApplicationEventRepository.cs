@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Application.Enums;
+using ATSPM.Application.Models;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace ATSPM.Application.Repositories
             string ApplicationName);
 
         IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDatesByApplicationBySeverity(DateTime StartDate,
-            DateTime EndDate, string ApplicationName, ApplicationEvent.SeverityLevels Severity);
+            DateTime EndDate, string ApplicationName, SeverityLevels Severity);
 
         IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDatesByClass(DateTime StartDate, DateTime EndDate,
             string ApplicationName, string ClassName);
@@ -33,7 +34,7 @@ namespace ATSPM.Application.Repositories
         void Remove(int id);
         [Obsolete("Use Add in the BaseClass")]
         void QuickAdd(string applicationName, string errorClass, string errorFunction,
-            ApplicationEvent.SeverityLevels severity, string description);
+            SeverityLevels severity, string description);
 
         IReadOnlyCollection<ApplicationEvent> GetEventsByDateDescriptions(DateTime startDate, DateTime endDate,
             List<string> descriptions);

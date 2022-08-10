@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class ApplicationSetting
+    public partial class ApplicationSetting : ATSPMModelBase
     {
         public int Id { get; set; }
         public int ApplicationId { get; set; }

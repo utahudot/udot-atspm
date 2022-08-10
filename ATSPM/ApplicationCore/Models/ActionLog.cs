@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class ActionLog
+    public partial class ActionLog : ATSPMModelBase
     {
         public ActionLog()
         {
