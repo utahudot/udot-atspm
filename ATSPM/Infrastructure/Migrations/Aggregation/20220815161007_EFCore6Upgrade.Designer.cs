@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    [Migration("20220808225923_init")]
-    partial class init
+    [Migration("20220815161007_EFCore6Upgrade")]
+    partial class EFCore6Upgrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,8 +57,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("Volume")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase")
-                        .HasName("PK_dbo.ApproachPcdAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachPcdAggregations");
                 });
@@ -87,8 +86,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("SummedSpeed")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "ApproachID")
-                        .HasName("PK_dbo.ApproachSpeedAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "ApproachID");
 
                     b.ToTable("ApproachSpeedAggregations");
                 });
@@ -129,8 +127,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("SplitFailures")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "ApproachID", "PhaseNumber", "IsProtectedPhase")
-                        .HasName("PK_dbo.ApproachSplitFailAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "ApproachID", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachSplitFailAggregations");
                 });
@@ -168,8 +165,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("YellowActivations")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase")
-                        .HasName("PK_dbo.ApproachYellowRedActivationAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachYellowRedActivationAggregations");
                 });
@@ -193,8 +189,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.HasKey("BinStartTime", "DetectorPrimaryID")
-                        .HasName("PK_dbo.DetectorEventCountAggregations");
+                    b.HasKey("BinStartTime", "DetectorPrimaryID");
 
                     b.ToTable("DetectorEventCountAggregations");
                 });
@@ -229,8 +224,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("YellowTime")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber")
-                        .HasName("PK_dbo.PhaseCycleAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseCycleAggregations");
                 });
@@ -295,8 +289,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<double>("SumGreenTime")
                         .HasColumnType("float");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber")
-                        .HasName("PK_dbo.PhaseLeftTurnGapAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseLeftTurnGapAggregations");
                 });
@@ -319,8 +312,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("SkippedCount")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber")
-                        .HasName("PK_dbo.PhaseSplitMonitorAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseSplitMonitorAggregations");
                 });
@@ -349,8 +341,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("Unknown")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber")
-                        .HasName("PK_dbo.PhaseTerminationAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseTerminationAggregations");
                 });
@@ -373,8 +364,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("PreemptServices")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PreemptNumber")
-                        .HasName("PK_dbo.PreemptionAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PreemptNumber");
 
                     b.ToTable("PreemptionAggregations");
                 });
@@ -400,8 +390,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("PriorityServiceExtendedGreen")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId", "PriorityNumber")
-                        .HasName("PK_dbo.PriorityAggregations");
+                    b.HasKey("BinStartTime", "SignalId", "PriorityNumber");
 
                     b.ToTable("PriorityAggregations");
                 });
@@ -418,8 +407,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("EventCount")
                         .HasColumnType("int");
 
-                    b.HasKey("BinStartTime", "SignalId")
-                        .HasName("PK_dbo.SignalEventCountAggregations");
+                    b.HasKey("BinStartTime", "SignalId");
 
                     b.ToTable("SignalEventCountAggregations");
                 });
@@ -439,8 +427,7 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<int>("PlanNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("SignalId", "Start", "End")
-                        .HasName("PK_dbo.SignalPlanAggregations");
+                    b.HasKey("SignalId", "Start", "End");
 
                     b.ToTable("SignalPlanAggregations");
                 });

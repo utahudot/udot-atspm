@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PhaseLeftTurnGapAggregation
+    public partial class PhaseLeftTurnGapAggregation : ATSPMModelBase
     {
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }

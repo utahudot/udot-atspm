@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApproachPcdAggregation
+    public partial class ApproachPcdAggregation : ATSPMModelBase
     {
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }

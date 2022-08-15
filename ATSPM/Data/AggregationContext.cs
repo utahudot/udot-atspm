@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using ATSPM.Data.Models;
+using ATSPM.Data.Configuration;
 
 namespace ATSPM.Data
 {
@@ -35,139 +36,31 @@ namespace ATSPM.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ApproachPcdAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase })
-                    .HasName("PK_dbo.ApproachPcdAggregations");
+            modelBuilder.ApplyConfiguration(new ApproachPcdAggregationConfiguration());
 
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            modelBuilder.ApplyConfiguration(new ApproachSpeedAggregationConfiguration());
 
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            modelBuilder.ApplyConfiguration(new ApproachSplitFailAggregationConfiguration());
 
-            modelBuilder.Entity<ApproachSpeedAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID })
-                    .HasName("PK_dbo.ApproachSpeedAggregations");
+            modelBuilder.ApplyConfiguration(new ApproachYellowRedActivationAggregationConfiguration());
 
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            modelBuilder.ApplyConfiguration(new DetectorEventCountAggregationConfiguration());
 
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            modelBuilder.ApplyConfiguration(new PhaseCycleAggregationConfiguration());
 
-            modelBuilder.Entity<ApproachSplitFailAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID, e.PhaseNumber, e.IsProtectedPhase })
-                    .HasName("PK_dbo.ApproachSplitFailAggregations");
+            modelBuilder.ApplyConfiguration(new PhaseLeftTurnGapAggregationConfiguration());
 
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            modelBuilder.ApplyConfiguration(new PhaseSplitMonitorAggregationConfiguration());
 
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            modelBuilder.ApplyConfiguration(new PhaseTerminationAggregationConfiguration());
 
-            modelBuilder.Entity<ApproachYellowRedActivationAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase })
-                    .HasName("PK_dbo.ApproachYellowRedActivationAggregations");
+            modelBuilder.ApplyConfiguration(new PreemptionAggregationConfiguration());
 
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            modelBuilder.ApplyConfiguration(new PriorityAggregationConfiguration());
 
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            modelBuilder.ApplyConfiguration(new SignalEventCountAggregationConfiguration());
 
-            modelBuilder.Entity<DetectorEventCountAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.DetectorPrimaryID })
-                    .HasName("PK_dbo.DetectorEventCountAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId)
-                    .IsRequired()
-                    .HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<PhaseCycleAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
-                    .HasName("PK_dbo.PhaseCycleAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<PhaseLeftTurnGapAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
-                    .HasName("PK_dbo.PhaseLeftTurnGapAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<PhaseSplitMonitorAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
-                    .HasName("PK_dbo.PhaseSplitMonitorAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(128);
-            });
-
-            modelBuilder.Entity<PhaseTerminationAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
-                    .HasName("PK_dbo.PhaseTerminationAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<PreemptionAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PreemptNumber })
-                    .HasName("PK_dbo.PreemptionAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<PriorityAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PriorityNumber })
-                    .HasName("PK_dbo.PriorityAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<SignalEventCountAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId })
-                    .HasName("PK_dbo.SignalEventCountAggregations");
-
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
-
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
-
-            modelBuilder.Entity<SignalPlanAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.SignalId, e.Start, e.End })
-                    .HasName("PK_dbo.SignalPlanAggregations");
-
-                entity.Property(e => e.SignalId).HasMaxLength(128);
-
-                entity.Property(e => e.Start).HasColumnType("datetime");
-
-                entity.Property(e => e.End).HasColumnType("datetime");
-            });
+            modelBuilder.ApplyConfiguration(new SignalPlanAggregationConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }
