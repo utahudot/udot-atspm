@@ -9,14 +9,14 @@ namespace ATSPM.Data.Models
     {
         public DetectionType()
         {
-            DetectionTypeDetectors = new HashSet<DetectionTypeDetector>();
-            DetectionTypeMetricTypes = new HashSet<DetectionTypeMetricType>();
+            Ids = new HashSet<Detector>();
+            MetricTypeMetrics = new HashSet<MetricType>();
         }
 
-        public int DetectionTypeID { get; set; }
+        public int DetectionTypeId { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
-        public virtual ICollection<DetectionTypeMetricType> DetectionTypeMetricTypes { get; set; }
+        public virtual ICollection<Detector> Ids { get; set; }
+        public virtual ICollection<MetricType> MetricTypeMetrics { get; set; }
     }
 }

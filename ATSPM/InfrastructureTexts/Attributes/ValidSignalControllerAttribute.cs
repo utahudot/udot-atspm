@@ -15,12 +15,12 @@ namespace InfrastructureTests.Attributes
             {
                 new Signal()
                 {
-                    IPAddress = "10.209.2.120",
+                    Ipaddress = "10.209.2.120",
                     Enabled = true,
                     PrimaryName = "Maxtime Test",
                     SignalId = "0",
-                    ControllerTypeID = 4,
-                    ControllerType = new ControllerType() { ControllerTypeID = 4 }
+                    ControllerTypeId = 4,
+                    ControllerType = new ControllerType() { ControllerTypeId = 4 }
                 }
             };
 
@@ -28,12 +28,12 @@ namespace InfrastructureTests.Attributes
             {
                 new Signal()
                 {
-                    IPAddress = "10.209.2.108",
+                    Ipaddress = "10.209.2.108",
                     Enabled = true,
                     PrimaryName = "Cobalt Test",
                     SignalId = "9731",
-                    ControllerTypeID = 2,
-                    ControllerType = new ControllerType() { ControllerTypeID = 2 }
+                    ControllerTypeId = 2,
+                    ControllerType = new ControllerType() { ControllerTypeId = 2 }
                 }
             };
         }

@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             ApplicationSettings = new HashSet<ApplicationSetting>();
         }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<ApplicationSetting> ApplicationSettings { get; set; }

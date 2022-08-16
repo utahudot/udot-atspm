@@ -50,8 +50,8 @@ namespace ATSPM.Infrasturcture.Repositories
             //newVersion.Note = "Copy of " + originalVersion.Note;
             //newVersion.PrimaryName = originalVersion.PrimaryName;
             //newVersion.SecondaryName = originalVersion.SecondaryName;
-            //newVersion.IPAddress = originalVersion.IPAddress;
-            //newVersion.ControllerTypeID = originalVersion.ControllerTypeID;
+            //newVersion.Ipaddress = originalVersion.Ipaddress;
+            //newVersion.ControllerTypeId = originalVersion.ControllerTypeId;
             //newVersion.RegionID = originalVersion.RegionID;
             //newVersion.Enabled = originalVersion.Enabled;
             //newVersion.Latitude = originalVersion.Latitude;
@@ -99,15 +99,15 @@ namespace ATSPM.Infrasturcture.Repositories
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int controllerTypeId)
+        public IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId)
         {
             throw new NotImplementedException();
         }
 
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
-            var result = table 
-                .Where(v => v.VersionActionID != 3)
+            var result = table
+                .Where(v => v.VersionActionId != 3)
                 .Include(i => i.ControllerType)
                 .AsNoTracking()
                 .AsEnumerable()

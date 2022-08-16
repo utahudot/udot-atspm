@@ -17,8 +17,8 @@ namespace ATSPM.Application.LogMessages
             {
                 { "SignalId", signal?.SignalId },
                 { "SignalName", signal?.PrimaryName },
-                { "SignalTypeID", signal?.ControllerType?.ControllerTypeID.ToString() },
-                { "IPAddress", signal?.IPAddress },
+                { "SignalTypeID", signal?.ControllerType?.ControllerTypeId.ToString() },
+                { "IPAddress", signal?.Ipaddress },
             });
         }
 

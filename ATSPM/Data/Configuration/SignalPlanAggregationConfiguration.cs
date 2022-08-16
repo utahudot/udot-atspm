@@ -11,8 +11,7 @@ namespace ATSPM.Data.Configuration
             builder.HasKey(e => new { e.SignalId, e.Start, e.End });
             //.HasName("PK_dbo.SignalPlanAggregations");
 
-            //TODO: Find out if 128 is the correct value
-            builder.Property(e => e.SignalId).HasMaxLength(128);
+            builder.Property(e => e.SignalId).HasMaxLength(10);
 
             builder.Property(e => e.Start).HasColumnType("datetime");
 

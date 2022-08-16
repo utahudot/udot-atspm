@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PhaseCycleAggregation : ATSPMModelBase
+    public partial class PhaseCycleAggregation
     {
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
-        public int ApproachID { get; set; }
+        public int ApproachId { get; set; }
         public int PhaseNumber { get; set; }
         public int RedTime { get; set; }
         public int YellowTime { get; set; }

@@ -43,3 +43,4 @@ C:\Projects\udot-atsmp\ATSPM\DataAPI\obj\Debug\net6.0\refint\DataAPI.dll
 C:\Projects\udot-atsmp\ATSPM\DataAPI\obj\Debug\net6.0\DataAPI.pdb
 C:\Projects\udot-atsmp\ATSPM\DataAPI\obj\Debug\net6.0\DataAPI.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\DataAPI\obj\Debug\net6.0\ref\DataAPI.dll
+C:\Projects\udot-atsmp\ATSPM\DataAPI\bin\Debug\net6.0\DataAPI.staticwebassets.runtime.json

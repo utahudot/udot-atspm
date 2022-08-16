@@ -7,8 +7,8 @@ namespace ATSPM.Data.Models
 {
     public partial class DetectorComment
     {
-        public int CommentID { get; set; }
-        public int ID { get; set; }
+        public int CommentId { get; set; }
+        public int Id { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
 

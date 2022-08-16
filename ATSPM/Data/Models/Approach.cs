@@ -12,15 +12,15 @@ namespace ATSPM.Data.Models
             Detectors = new HashSet<Detector>();
         }
 
-        public int ApproachID { get; set; }
+        public int ApproachId { get; set; }
         public string SignalId { get; set; }
-        public int DirectionTypeID { get; set; }
+        public int DirectionTypeId { get; set; }
         public string Description { get; set; }
         public int? Mph { get; set; }
         public int ProtectedPhaseNumber { get; set; }
         public bool IsProtectedPhaseOverlap { get; set; }
         public int? PermissivePhaseNumber { get; set; }
-        public int VersionID { get; set; }
+        public int VersionId { get; set; }
         public bool IsPermissivePhaseOverlap { get; set; }
         public int? PedestrianPhaseNumber { get; set; }
         public bool IsPedestrianPhaseOverlap { get; set; }

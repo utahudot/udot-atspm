@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             Signals = new HashSet<Signal>();
         }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; }

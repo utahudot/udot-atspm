@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Config
+namespace ATSPM.Infrasturcture.Migrations
 {
     [DbContext(typeof(ConfigContext))]
     partial class ConfigContextModelSnapshot : ModelSnapshot
@@ -22,35 +22,112 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ActionLogAction", b =>
+                {
+                    b.Property<int>("ActionLogActionLogId")
+                        .HasColumnType("int")
+                        .HasColumnName("ActionLog_ActionLogID");
+
+                    b.Property<int>("ActionActionId")
+                        .HasColumnType("int")
+                        .HasColumnName("Action_ActionID");
+
+                    b.HasKey("ActionLogActionLogId", "ActionActionId")
+                        .HasName("PK_dbo.ActionLogActions");
+
+                    b.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID");
+
+                    b.HasIndex(new[] { "ActionActionId" }, "IX_Action_ActionID");
+
+                    b.ToTable("ActionLogActions", (string)null);
+                });
+
+            modelBuilder.Entity("ActionLogMetricType", b =>
+                {
+                    b.Property<int>("ActionLogActionLogId")
+                        .HasColumnType("int")
+                        .HasColumnName("ActionLog_ActionLogID");
+
+                    b.Property<int>("MetricTypeMetricId")
+                        .HasColumnType("int")
+                        .HasColumnName("MetricType_MetricID");
+
+                    b.HasKey("ActionLogActionLogId", "MetricTypeMetricId")
+                        .HasName("PK_dbo.ActionLogMetricTypes");
+
+                    b.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID")
+                        .HasDatabaseName("IX_ActionLog_ActionLogID1");
+
+                    b.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
+
+                    b.ToTable("ActionLogMetricTypes", (string)null);
+                });
+
+            modelBuilder.Entity("AreaSignal", b =>
+                {
+                    b.Property<int>("AreasId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SignalVersionsVersionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AreasId", "SignalVersionsVersionId");
+
+                    b.HasIndex("SignalVersionsVersionId");
+
+                    b.ToTable("AreaSignal");
+                });
+
+            modelBuilder.Entity("AspNetUserRole", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("RoleId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("PK_dbo.AspNetUserRoles");
+
+                    b.HasIndex(new[] { "RoleId" }, "IX_RoleId");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId")
+                        .HasDatabaseName("IX_UserId2");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Action", b =>
                 {
-                    b.Property<int>("ActionID")
+                    b.Property<int>("ActionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ActionID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionId"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ActionID");
+                    b.HasKey("ActionId");
 
                     b.ToTable("Actions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ActionLog", b =>
                 {
-                    b.Property<int>("ActionLogID")
+                    b.Property<int>("ActionLogId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ActionLogID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionLogID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActionLogId"), 1L, 1);
 
-                    b.Property<int>("AgencyID")
+                    b.Property<int>("AgencyId")
                         .HasColumnType("int")
                         .HasColumnName("AgencyID");
 
@@ -70,101 +147,94 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
-                    b.HasKey("ActionLogID");
+                    b.HasKey("ActionLogId");
 
-                    b.HasIndex(new[] { "AgencyID" }, "IX_AgencyID");
+                    b.HasIndex(new[] { "AgencyId" }, "IX_AgencyID");
 
                     b.ToTable("ActionLogs");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ActionLogAction", b =>
-                {
-                    b.Property<int>("ActionLogActionLogID")
-                        .HasColumnType("int")
-                        .HasColumnName("ActionLog_ActionLogID");
-
-                    b.Property<int>("ActionActionID")
-                        .HasColumnType("int")
-                        .HasColumnName("Action_ActionID");
-
-                    b.HasKey("ActionLogActionLogID", "ActionActionID")
-                        .HasName("PK_dbo.ActionLogActions");
-
-                    b.HasIndex(new[] { "ActionLogActionLogID" }, "IX_ActionLog_ActionLogID");
-
-                    b.HasIndex(new[] { "ActionActionID" }, "IX_Action_ActionID");
-
-                    b.ToTable("ActionLogActions");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.ActionLogMetricType", b =>
-                {
-                    b.Property<int>("ActionLogActionLogID")
-                        .HasColumnType("int")
-                        .HasColumnName("ActionLog_ActionLogID");
-
-                    b.Property<int>("MetricTypeMetricID")
-                        .HasColumnType("int")
-                        .HasColumnName("MetricType_MetricID");
-
-                    b.HasKey("ActionLogActionLogID", "MetricTypeMetricID")
-                        .HasName("PK_dbo.ActionLogMetricTypes");
-
-                    b.HasIndex(new[] { "ActionLogActionLogID" }, "IX_ActionLog_ActionLogID")
-                        .HasDatabaseName("IX_ActionLog_ActionLogID1");
-
-                    b.HasIndex(new[] { "MetricTypeMetricID" }, "IX_MetricType_MetricID");
-
-                    b.ToTable("ActionLogMetricTypes");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.Agency", b =>
                 {
-                    b.Property<int>("AgencyID")
+                    b.Property<int>("AgencyId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("AgencyID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AgencyId"), 1L, 1);
 
                     b.Property<string>("Description")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("AgencyID");
+                    b.HasKey("AgencyId");
 
                     b.ToTable("Agencies");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Application", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ApplicationSetting", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.ApplicationEvent", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ApplicationID")
+                    b.Property<string>("ApplicationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Class")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Function")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SeverityLevel")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationEvent");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ApplicationSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ApplicationId")
                         .HasColumnType("int")
                         .HasColumnName("ApplicationID");
 
@@ -268,26 +338,26 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<bool?>("WeekdayOnly")
                         .HasColumnType("bit");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex(new[] { "ApplicationID" }, "IX_ApplicationID");
+                    b.HasIndex(new[] { "ApplicationId" }, "IX_ApplicationID");
 
                     b.ToTable("ApplicationSettings");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
                 {
-                    b.Property<int>("ApproachID")
+                    b.Property<int>("ApproachId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ApproachID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApproachID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApproachId"), 1L, 1);
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DirectionTypeID")
+                    b.Property<int>("DirectionTypeId")
                         .HasColumnType("int")
                         .HasColumnName("DirectionTypeID");
 
@@ -318,71 +388,172 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
                     b.Property<string>("SignalId")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
-                    b.Property<int>("VersionID")
+                    b.Property<int>("VersionId")
                         .HasColumnType("int")
                         .HasColumnName("VersionID");
 
-                    b.HasKey("ApproachID");
+                    b.HasKey("ApproachId");
 
-                    b.HasIndex(new[] { "DirectionTypeID" }, "IX_DirectionTypeID");
+                    b.HasIndex(new[] { "DirectionTypeId" }, "IX_DirectionTypeID");
 
-                    b.HasIndex(new[] { "VersionID" }, "IX_VersionID");
+                    b.HasIndex(new[] { "VersionId" }, "IX_VersionID");
 
                     b.ToTable("Approaches");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("AreaName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SignalVersionID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("SignalVersionID");
+                    b.HasKey("Id");
 
                     b.ToTable("Areas");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.AreaSignal", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetRole", b =>
                 {
-                    b.Property<int>("AreaID")
-                        .HasColumnType("int")
-                        .HasColumnName("Area_ID");
+                    b.Property<string>("Id")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
-                    b.Property<int>("SignalVersionID")
-                        .HasColumnType("int")
-                        .HasColumnName("Signal_VersionID");
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
-                    b.HasKey("AreaID", "SignalVersionID")
-                        .HasName("PK_dbo.AreaSignals");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.HasIndex(new[] { "AreaID" }, "IX_Area_ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex(new[] { "SignalVersionID" }, "IX_Signal_VersionID");
+                    b.HasIndex(new[] { "Name" }, "RoleNameIndex")
+                        .IsUnique();
 
-                    b.ToTable("AreaSignals");
+                    b.ToTable("AspNetRole");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LockoutEndDateUtc")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ReceiveAlerts")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "UserName" }, "UserNameIndex")
+                        .IsUnique();
+
+                    b.ToTable("AspNetUser");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUserClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId");
+
+                    b.ToTable("AspNetUserClaim");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUserLogin", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.HasKey("LoginProvider", "ProviderKey", "UserId")
+                        .HasName("PK_dbo.AspNetUserLogins");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_UserId")
+                        .HasDatabaseName("IX_UserId1");
+
+                    b.ToTable("AspNetUserLogin");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Comment", b =>
                 {
-                    b.Property<long>("CommentID")
+                    b.Property<long>("CommentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("CommentID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CommentID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CommentId"), 1L, 1);
 
                     b.Property<int>("ChartType")
                         .HasColumnType("int");
@@ -405,16 +576,16 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
-                    b.HasKey("CommentID");
+                    b.HasKey("CommentId");
 
                     b.ToTable("Comment", (string)null);
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
                 {
-                    b.Property<int>("ControllerTypeID")
+                    b.Property<int>("ControllerTypeId")
                         .HasColumnType("int")
-                        .HasColumnName("ControllerTypeID");
+                        .HasColumnName("ControllerTypeId");
 
                     b.Property<bool>("ActiveFtp")
                         .HasColumnType("bit")
@@ -444,31 +615,31 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
-                    b.HasKey("ControllerTypeID");
+                    b.HasKey("ControllerTypeId");
 
                     b.ToTable("ControllerTypes");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DatabaseArchiveExcludedSignal", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("DatabaseArchiveExcludedSignals");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectionHardware", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
@@ -476,14 +647,14 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("DetectionHardwares");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
                 {
-                    b.Property<int>("DetectionTypeID")
+                    b.Property<int>("DetectionTypeId")
                         .HasColumnType("int")
                         .HasColumnName("DetectionTypeID");
 
@@ -491,7 +662,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DetectionTypeID");
+                    b.HasKey("DetectionTypeId");
 
                     b.ToTable("DetectionTypes");
                 });
@@ -499,54 +670,36 @@ namespace ATSPM.Infrasturcture.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.DetectionTypeDetector", b =>
                 {
                     b.Property<int>("ID")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<int>("DetectionTypeID")
-                        .HasColumnType("int")
-                        .HasColumnName("DetectionTypeID");
+                        .HasColumnType("int");
 
-                    b.HasKey("ID", "DetectionTypeID")
-                        .HasName("PK_dbo.DetectionTypeDetector");
+                    b.Property<int?>("IdNavigationId")
+                        .HasColumnType("int");
 
-                    b.HasIndex(new[] { "DetectionTypeID" }, "IX_DetectionTypeID");
+                    b.HasKey("ID");
 
-                    b.HasIndex(new[] { "ID" }, "IX_ID");
+                    b.HasIndex("DetectionTypeID");
 
-                    b.ToTable("DetectionTypeDetector", (string)null);
-                });
+                    b.HasIndex("IdNavigationId");
 
-            modelBuilder.Entity("ATSPM.Data.Models.DetectionTypeMetricType", b =>
-                {
-                    b.Property<int>("DetectionTypeDetectionTypeID")
-                        .HasColumnType("int")
-                        .HasColumnName("DetectionType_DetectionTypeID");
-
-                    b.Property<int>("MetricTypeMetricID")
-                        .HasColumnType("int")
-                        .HasColumnName("MetricType_MetricID");
-
-                    b.HasKey("DetectionTypeDetectionTypeID", "MetricTypeMetricID")
-                        .HasName("PK_dbo.DetectionTypeMetricTypes");
-
-                    b.HasIndex(new[] { "DetectionTypeDetectionTypeID" }, "IX_DetectionType_DetectionTypeID");
-
-                    b.HasIndex(new[] { "MetricTypeMetricID" }, "IX_MetricType_MetricID")
-                        .HasDatabaseName("IX_MetricType_MetricID1");
-
-                    b.ToTable("DetectionTypeMetricTypes");
+                    b.ToTable("DetectionTypeDetectors");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ApproachID")
+                    b.Property<int>("ApproachId")
                         .HasColumnType("int")
                         .HasColumnName("ApproachID");
 
@@ -562,11 +715,11 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int>("DetChannel")
                         .HasColumnType("int");
 
-                    b.Property<int>("DetectionHardwareID")
+                    b.Property<int>("DetectionHardwareId")
                         .HasColumnType("int")
                         .HasColumnName("DetectionHardwareID");
 
-                    b.Property<string>("DetectorID")
+                    b.Property<string>("DetectorId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
@@ -578,7 +731,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int?>("LaneNumber")
                         .HasColumnType("int");
 
-                    b.Property<int?>("LaneTypeID")
+                    b.Property<int?>("LaneTypeId")
                         .HasColumnType("int")
                         .HasColumnName("LaneTypeID");
 
@@ -591,55 +744,54 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int?>("MovementDelay")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MovementTypeID")
+                    b.Property<int?>("MovementTypeId")
                         .HasColumnType("int")
                         .HasColumnName("MovementTypeID");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex(new[] { "ApproachID" }, "IX_ApproachID");
+                    b.HasIndex(new[] { "ApproachId" }, "IX_ApproachID");
 
-                    b.HasIndex(new[] { "DetectionHardwareID" }, "IX_DetectionHardwareID");
+                    b.HasIndex(new[] { "DetectionHardwareId" }, "IX_DetectionHardwareID");
 
-                    b.HasIndex(new[] { "LaneTypeID" }, "IX_LaneTypeID");
+                    b.HasIndex(new[] { "LaneTypeId" }, "IX_LaneTypeID");
 
-                    b.HasIndex(new[] { "MovementTypeID" }, "IX_MovementTypeID");
+                    b.HasIndex(new[] { "MovementTypeId" }, "IX_MovementTypeID");
 
                     b.ToTable("Detectors");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectorComment", b =>
                 {
-                    b.Property<int>("CommentID")
+                    b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("CommentID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"), 1L, 1);
 
                     b.Property<string>("CommentText")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
-                    b.HasKey("CommentID")
+                    b.HasKey("CommentId")
                         .HasName("PK_dbo.DetectorComments");
 
-                    b.HasIndex(new[] { "ID" }, "IX_ID")
-                        .HasDatabaseName("IX_ID1");
+                    b.HasIndex(new[] { "Id" }, "IX_ID");
 
                     b.ToTable("DetectorComments");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
                 {
-                    b.Property<int>("DirectionTypeID")
+                    b.Property<int>("DirectionTypeId")
                         .HasColumnType("int")
                         .HasColumnName("DirectionTypeID");
 
@@ -654,19 +806,19 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
-                    b.HasKey("DirectionTypeID");
+                    b.HasKey("DirectionTypeId");
 
                     b.ToTable("DirectionTypes");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ExternalLink", b =>
                 {
-                    b.Property<int>("ExternalLinkID")
+                    b.Property<int>("ExternalLinkId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ExternalLinkID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExternalLinkID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExternalLinkId"), 1L, 1);
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
@@ -679,19 +831,19 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ExternalLinkID");
+                    b.HasKey("ExternalLinkId");
 
                     b.ToTable("ExternalLinks");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Faq", b =>
                 {
-                    b.Property<int>("FaqID")
+                    b.Property<int>("Faqid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("FAQID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FaqID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Faqid"), 1L, 1);
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -704,18 +856,18 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int>("OrderNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("FaqID");
+                    b.HasKey("Faqid");
 
                     b.ToTable("FAQs", (string)null);
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("CountyParish")
                         .HasMaxLength(50)
@@ -734,14 +886,14 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Jurisdictions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.LaneType", b =>
                 {
-                    b.Property<int>("LaneTypeID")
+                    b.Property<int>("LaneTypeId")
                         .HasColumnType("int")
                         .HasColumnName("LaneTypeID");
 
@@ -755,7 +907,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.HasKey("LaneTypeID");
+                    b.HasKey("LaneTypeId");
 
                     b.ToTable("LaneTypes");
                 });
@@ -781,7 +933,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.Menu", b =>
                 {
-                    b.Property<int>("MenuID")
+                    b.Property<int>("MenuId")
                         .HasColumnType("int");
 
                     b.Property<string>("Action")
@@ -811,22 +963,22 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("ParentID")
+                    b.Property<int>("ParentId")
                         .HasColumnType("int");
 
-                    b.HasKey("MenuID");
+                    b.HasKey("MenuId");
 
                     b.ToTable("Menu", (string)null);
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MetricComment", b =>
                 {
-                    b.Property<int>("CommentID")
+                    b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("CommentID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"), 1L, 1);
 
                     b.Property<string>("CommentText")
                         .IsRequired()
@@ -835,59 +987,38 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("VersionID")
+                    b.Property<int>("VersionId")
                         .HasColumnType("int")
                         .HasColumnName("VersionID");
 
-                    b.HasKey("CommentID")
+                    b.HasKey("CommentId")
                         .HasName("PK_dbo.MetricComments");
 
-                    b.HasIndex(new[] { "VersionID" }, "IX_VersionID")
+                    b.HasIndex(new[] { "VersionId" }, "IX_VersionID")
                         .HasDatabaseName("IX_VersionID1");
 
                     b.ToTable("MetricComments");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.MetricCommentMetricType", b =>
-                {
-                    b.Property<int>("MetricCommentCommentID")
-                        .HasColumnType("int")
-                        .HasColumnName("MetricComment_CommentID");
-
-                    b.Property<int>("MetricTypeMetricID")
-                        .HasColumnType("int")
-                        .HasColumnName("MetricType_MetricID");
-
-                    b.HasKey("MetricCommentCommentID", "MetricTypeMetricID")
-                        .HasName("PK_dbo.MetricCommentMetricTypes");
-
-                    b.HasIndex(new[] { "MetricCommentCommentID" }, "IX_MetricComment_CommentID");
-
-                    b.HasIndex(new[] { "MetricTypeMetricID" }, "IX_MetricType_MetricID")
-                        .HasDatabaseName("IX_MetricType_MetricID2");
-
-                    b.ToTable("MetricCommentMetricTypes");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.MetricsFilterType", b =>
                 {
-                    b.Property<int>("FilterID")
+                    b.Property<int>("FilterId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("FilterID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FilterID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FilterId"), 1L, 1);
 
                     b.Property<string>("FilterName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("FilterID")
+                    b.HasKey("FilterId")
                         .HasName("PK_dbo.MetricsFilterTypes");
 
                     b.ToTable("MetricsFilterTypes");
@@ -895,7 +1026,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.MetricType", b =>
                 {
-                    b.Property<int>("MetricID")
+                    b.Property<int>("MetricId")
                         .HasColumnType("int")
                         .HasColumnName("MetricID");
 
@@ -916,7 +1047,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<bool>("ShowOnWebsite")
                         .HasColumnType("bit");
 
-                    b.HasKey("MetricID")
+                    b.HasKey("MetricId")
                         .HasName("PK_dbo.MetricTypes");
 
                     b.ToTable("MetricTypes");
@@ -924,7 +1055,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.MovementType", b =>
                 {
-                    b.Property<int>("MovementTypeID")
+                    b.Property<int>("MovementTypeId")
                         .HasColumnType("int")
                         .HasColumnName("MovementTypeID");
 
@@ -941,14 +1072,50 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
-                    b.HasKey("MovementTypeID");
+                    b.HasKey("MovementTypeId");
 
                     b.ToTable("MovementTypes");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.PhaseCycleAggregation", b =>
+                {
+                    b.Property<DateTime>("BinStartTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("SignalId")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<int>("PhaseNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ApproachId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GreenTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RedTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalGreenToGreenCycles")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalRedToRedCycles")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YellowTime")
+                        .HasColumnType("int");
+
+                    b.HasKey("BinStartTime", "SignalId", "PhaseNumber")
+                        .HasName("PK_dbo.PhaseCycleAggregations");
+
+                    b.ToTable("PhaseCycleAggregation");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
@@ -956,37 +1123,37 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Region", (string)null);
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Route", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("RouteName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Routes");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("DirectionTypeID")
+                    b.Property<int>("DirectionTypeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsOverlap")
@@ -1001,10 +1168,9 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<int>("RouteSignalId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex(new[] { "DirectionTypeID" }, "IX_DirectionTypeID")
-                        .HasDatabaseName("IX_DirectionTypeID1");
+                    b.HasIndex(new[] { "DirectionTypeId" }, "IX_DirectionTypeId");
 
                     b.HasIndex(new[] { "RouteSignalId" }, "IX_RouteSignalId");
 
@@ -1013,16 +1179,16 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<int>("RouteID")
+                    b.Property<int>("RouteId")
                         .HasColumnType("int");
 
                     b.Property<string>("SignalId")
@@ -1030,30 +1196,30 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex(new[] { "RouteID" }, "IX_RouteID");
+                    b.HasIndex(new[] { "RouteId" }, "IX_RouteId");
 
                     b.ToTable("RouteSignals");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
                 {
-                    b.Property<int>("VersionID")
+                    b.Property<int>("VersionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("VersionID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VersionID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VersionId"), 1L, 1);
 
-                    b.Property<int>("ControllerTypeID")
+                    b.Property<int>("ControllerTypeId")
                         .HasColumnType("int")
-                        .HasColumnName("ControllerTypeID");
+                        .HasColumnName("ControllerTypeId");
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("IPAddress")
+                    b.Property<string>("Ipaddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
@@ -1062,7 +1228,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasColumnName("IPAddress")
                         .HasDefaultValueSql("('')");
 
-                    b.Property<int>("JurisdictionID")
+                    b.Property<int>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValueSql("((1))");
@@ -1096,7 +1262,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .HasColumnType("varchar(100)")
                         .HasDefaultValueSql("('')");
 
-                    b.Property<int>("RegionID")
+                    b.Property<int>("RegionId")
                         .HasColumnType("int")
                         .HasColumnName("RegionID");
 
@@ -1112,26 +1278,26 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("VersionActionID")
+                    b.Property<int>("VersionActionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValueSql("((10))");
 
-                    b.HasKey("VersionID")
+                    b.HasKey("VersionId")
                         .HasName("PK_dbo.Signals");
 
-                    b.HasIndex(new[] { "ControllerTypeID" }, "IX_ControllerTypeID");
+                    b.HasIndex(new[] { "ControllerTypeId" }, "IX_ControllerTypeId");
 
-                    b.HasIndex(new[] { "JurisdictionID" }, "IX_JurisdictionID");
+                    b.HasIndex(new[] { "JurisdictionId" }, "IX_JurisdictionId");
 
-                    b.HasIndex(new[] { "RegionID" }, "IX_RegionID");
+                    b.HasIndex(new[] { "RegionId" }, "IX_RegionID");
 
-                    b.HasIndex(new[] { "VersionActionID" }, "IX_VersionActionID");
+                    b.HasIndex(new[] { "VersionActionId" }, "IX_VersionActionId");
 
                     b.ToTable("Signals");
                 });
@@ -1141,7 +1307,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
                     b.HasKey("SignalId")
                         .HasName("PK_dbo.SignalToAggregates");
@@ -1151,14 +1317,14 @@ namespace ATSPM.Infrasturcture.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.SpmwatchDogErrorEvent", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("DetectorID")
+                    b.Property<string>("DetectorId")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("DetectorID");
 
@@ -1180,35 +1346,324 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)")
-                        .HasColumnName("SignalId");
+                        .HasColumnName("SignalID");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("SPMWatchDogErrorEvents", (string)null);
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.StatusOfProcessedTable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FunctionOrProcedure")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PartitionMonth")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PartitionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PartitionYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PartitionedTableName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SqlstatementOrMessage")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("SQLStatementOrMessage");
+
+                    b.Property<DateTime?>("TimeEntered")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StatusOfProcessedTable");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.TablePartitionProcessed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("FileGroupName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IndexRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PartitionBeginMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartitionBeginYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartitionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhysicalFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SwapTableName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SwappedTableRemoved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("TimeIndexdropped")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("TimeSwappedTableDropped")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TablePartitionProcessed");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ToBeProcessededIndex", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ClusterText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IndexId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IndexName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextForIndex")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ToBeProcessededIndex");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.ToBeProcessededTable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CreateColumns4Table")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataBaseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InsertValues")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PartitionedTableName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreserveDataSelect")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreserveDataWhere")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("Verbose")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ToBeProcessededTable");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .HasColumnType("int")
                         .HasColumnName("ID");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("VersionActions");
+                });
+
+            modelBuilder.Entity("DetectionTypeDetector", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    b.Property<int>("DetectionTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("DetectionTypeID");
+
+                    b.HasKey("Id", "DetectionTypeId")
+                        .HasName("PK_dbo.DetectionTypeDetector");
+
+                    b.HasIndex(new[] { "DetectionTypeId" }, "IX_DetectionTypeID");
+
+                    b.HasIndex(new[] { "Id" }, "IX_ID")
+                        .HasDatabaseName("IX_ID1");
+
+                    b.ToTable("DetectionTypeDetector", (string)null);
+                });
+
+            modelBuilder.Entity("DetectionTypeMetricType", b =>
+                {
+                    b.Property<int>("DetectionTypeDetectionTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("DetectionType_DetectionTypeID");
+
+                    b.Property<int>("MetricTypeMetricId")
+                        .HasColumnType("int")
+                        .HasColumnName("MetricType_MetricID");
+
+                    b.HasKey("DetectionTypeDetectionTypeId", "MetricTypeMetricId")
+                        .HasName("PK_dbo.DetectionTypeMetricTypes");
+
+                    b.HasIndex(new[] { "DetectionTypeDetectionTypeId" }, "IX_DetectionType_DetectionTypeID");
+
+                    b.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID")
+                        .HasDatabaseName("IX_MetricType_MetricID1");
+
+                    b.ToTable("DetectionTypeMetricTypes", (string)null);
+                });
+
+            modelBuilder.Entity("MetricCommentMetricType", b =>
+                {
+                    b.Property<int>("MetricCommentCommentId")
+                        .HasColumnType("int")
+                        .HasColumnName("MetricComment_CommentID");
+
+                    b.Property<int>("MetricTypeMetricId")
+                        .HasColumnType("int")
+                        .HasColumnName("MetricType_MetricID");
+
+                    b.HasKey("MetricCommentCommentId", "MetricTypeMetricId")
+                        .HasName("PK_dbo.MetricCommentMetricTypes");
+
+                    b.HasIndex(new[] { "MetricCommentCommentId" }, "IX_MetricComment_CommentID");
+
+                    b.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID")
+                        .HasDatabaseName("IX_MetricType_MetricID2");
+
+                    b.ToTable("MetricCommentMetricTypes", (string)null);
+                });
+
+            modelBuilder.Entity("ActionLogAction", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Action", null)
+                        .WithMany()
+                        .HasForeignKey("ActionActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID");
+
+                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
+                        .WithMany()
+                        .HasForeignKey("ActionLogActionLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID");
+                });
+
+            modelBuilder.Entity("ActionLogMetricType", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
+                        .WithMany()
+                        .HasForeignKey("ActionLogActionLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID");
+
+                    b.HasOne("ATSPM.Data.Models.MetricType", null)
+                        .WithMany()
+                        .HasForeignKey("MetricTypeMetricId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID");
+                });
+
+            modelBuilder.Entity("AreaSignal", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", null)
+                        .WithMany()
+                        .HasForeignKey("AreasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Signal", null)
+                        .WithMany()
+                        .HasForeignKey("SignalVersionsVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AspNetUserRole", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.AspNetRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId");
+
+                    b.HasOne("ATSPM.Data.Models.AspNetUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ActionLog", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Agency", "Agency")
                         .WithMany("ActionLogs")
-                        .HasForeignKey("AgencyID")
+                        .HasForeignKey("AgencyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
@@ -1216,53 +1671,11 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("Agency");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ActionLogAction", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Action", "ActionAction")
-                        .WithMany("ActionLogActions")
-                        .HasForeignKey("ActionActionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID");
-
-                    b.HasOne("ATSPM.Data.Models.ActionLog", "ActionLogActionLog")
-                        .WithMany("ActionLogActions")
-                        .HasForeignKey("ActionLogActionLogID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID");
-
-                    b.Navigation("ActionAction");
-
-                    b.Navigation("ActionLogActionLog");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.ActionLogMetricType", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.ActionLog", "ActionLogActionLog")
-                        .WithMany("ActionLogMetricTypes")
-                        .HasForeignKey("ActionLogActionLogID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID");
-
-                    b.HasOne("ATSPM.Data.Models.MetricType", "MetricTypeMetric")
-                        .WithMany("ActionLogMetricTypes")
-                        .HasForeignKey("MetricTypeMetricID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID");
-
-                    b.Navigation("ActionLogActionLog");
-
-                    b.Navigation("MetricTypeMetric");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.ApplicationSetting", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Application", "Application")
                         .WithMany("ApplicationSettings")
-                        .HasForeignKey("ApplicationID")
+                        .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.ApplicationSettings_dbo.Applications_ApplicationID");
@@ -1274,7 +1687,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
                         .WithMany("Approaches")
-                        .HasForeignKey("DirectionTypeID")
+                        .HasForeignKey("DirectionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.Approaches_dbo.DirectionTypes_DirectionTypeID");
@@ -1282,99 +1695,71 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("DirectionType");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUserClaim", b =>
                 {
-                    b.HasOne("ATSPM.Data.Models.Signal", null)
-                        .WithMany("Area")
-                        .HasForeignKey("SignalVersionID");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.AreaSignal", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Area", "Area")
-                        .WithMany("AreaSignals")
-                        .HasForeignKey("AreaID")
+                    b.HasOne("ATSPM.Data.Models.AspNetUser", "User")
+                        .WithMany("AspNetUserClaims")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.AreaSignals_dbo.Areas_Area_ID");
+                        .HasConstraintName("FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId");
 
-                    b.HasOne("ATSPM.Data.Models.Signal", "SignalVersion")
-                        .WithMany()
-                        .HasForeignKey("SignalVersionID")
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUserLogin", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.AspNetUser", "User")
+                        .WithMany("AspNetUserLogins")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId");
 
-                    b.Navigation("Area");
-
-                    b.Navigation("SignalVersion");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectionTypeDetector", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.DetectionType", "DetectionType")
-                        .WithMany("DetectionTypeDetectors")
+                        .WithMany()
                         .HasForeignKey("DetectionTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID");
+                        .IsRequired();
 
                     b.HasOne("ATSPM.Data.Models.Detector", "IdNavigation")
-                        .WithMany("DetectionTypeDetectors")
-                        .HasForeignKey("ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID");
+                        .WithMany()
+                        .HasForeignKey("IdNavigationId");
 
                     b.Navigation("DetectionType");
 
                     b.Navigation("IdNavigation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.DetectionTypeMetricType", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.DetectionType", "DetectionTypeDetectionType")
-                        .WithMany("DetectionTypeMetricTypes")
-                        .HasForeignKey("DetectionTypeDetectionTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID");
-
-                    b.HasOne("ATSPM.Data.Models.MetricType", "MetricTypeMetric")
-                        .WithMany("DetectionTypeMetricTypes")
-                        .HasForeignKey("MetricTypeMetricID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID");
-
-                    b.Navigation("DetectionTypeDetectionType");
-
-                    b.Navigation("MetricTypeMetric");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Approach", "Approach")
                         .WithMany("Detectors")
-                        .HasForeignKey("ApproachID")
+                        .HasForeignKey("ApproachId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.Detectors_dbo.Approaches_ApproachID");
 
                     b.HasOne("ATSPM.Data.Models.DetectionHardware", "DetectionHardware")
                         .WithMany("Detectors")
-                        .HasForeignKey("DetectionHardwareID")
+                        .HasForeignKey("DetectionHardwareId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.Detectors_dbo.DetectionHardwares_DetectionHardwareID");
 
                     b.HasOne("ATSPM.Data.Models.LaneType", "LaneType")
                         .WithMany("Detectors")
-                        .HasForeignKey("LaneTypeID")
+                        .HasForeignKey("LaneTypeId")
                         .HasConstraintName("FK_dbo.Detectors_dbo.LaneTypes_LaneTypeID");
 
                     b.HasOne("ATSPM.Data.Models.MovementType", "MovementType")
                         .WithMany("Detectors")
-                        .HasForeignKey("MovementTypeID")
+                        .HasForeignKey("MovementTypeId")
                         .HasConstraintName("FK_dbo.Detectors_dbo.MovementTypes_MovementTypeID");
 
                     b.Navigation("Approach");
@@ -1390,7 +1775,7 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Detector", "IdNavigation")
                         .WithMany("DetectorComments")
-                        .HasForeignKey("ID")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
@@ -1398,35 +1783,14 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("IdNavigation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.MetricCommentMetricType", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.MetricComment", "MetricCommentComment")
-                        .WithMany("MetricCommentMetricTypes")
-                        .HasForeignKey("MetricCommentCommentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID");
-
-                    b.HasOne("ATSPM.Data.Models.MetricType", "MetricTypeMetric")
-                        .WithMany("MetricCommentMetricTypes")
-                        .HasForeignKey("MetricTypeMetricID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID");
-
-                    b.Navigation("MetricCommentComment");
-
-                    b.Navigation("MetricTypeMetric");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
                         .WithMany("RoutePhaseDirections")
-                        .HasForeignKey("DirectionTypeID")
+                        .HasForeignKey("DirectionTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeID");
+                        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeId");
 
                     b.HasOne("ATSPM.Data.Models.RouteSignal", "RouteSignal")
                         .WithMany("RoutePhaseDirections")
@@ -1444,10 +1808,10 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Route", "Route")
                         .WithMany("RouteSignals")
-                        .HasForeignKey("RouteID")
+                        .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteID");
+                        .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteId");
 
                     b.Navigation("Route");
                 });
@@ -1456,26 +1820,26 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.ControllerType", "ControllerType")
                         .WithMany("Signals")
-                        .HasForeignKey("ControllerTypeID")
+                        .HasForeignKey("ControllerTypeId")
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeID");
+                        .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeId");
 
                     b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Signals")
-                        .HasForeignKey("JurisdictionID")
+                        .HasForeignKey("JurisdictionId")
                         .IsRequired()
-                        .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionID");
+                        .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionId");
 
                     b.HasOne("ATSPM.Data.Models.Region", "Region")
                         .WithMany("Signals")
-                        .HasForeignKey("RegionID")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_dbo.Signals_dbo.Region_RegionID");
 
                     b.HasOne("ATSPM.Data.Models.VersionAction", "VersionAction")
                         .WithMany()
-                        .HasForeignKey("VersionActionID")
+                        .HasForeignKey("VersionActionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1488,16 +1852,55 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("VersionAction");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.Action", b =>
+            modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
-                    b.Navigation("ActionLogActions");
+                    b.HasOne("ATSPM.Data.Models.DetectionType", null)
+                        .WithMany()
+                        .HasForeignKey("DetectionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID");
+
+                    b.HasOne("ATSPM.Data.Models.Detector", null)
+                        .WithMany()
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ActionLog", b =>
+            modelBuilder.Entity("DetectionTypeMetricType", b =>
                 {
-                    b.Navigation("ActionLogActions");
+                    b.HasOne("ATSPM.Data.Models.DetectionType", null)
+                        .WithMany()
+                        .HasForeignKey("DetectionTypeDetectionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID");
 
-                    b.Navigation("ActionLogMetricTypes");
+                    b.HasOne("ATSPM.Data.Models.MetricType", null)
+                        .WithMany()
+                        .HasForeignKey("MetricTypeMetricId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID");
+                });
+
+            modelBuilder.Entity("MetricCommentMetricType", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.MetricComment", null)
+                        .WithMany()
+                        .HasForeignKey("MetricCommentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID");
+
+                    b.HasOne("ATSPM.Data.Models.MetricType", null)
+                        .WithMany()
+                        .HasForeignKey("MetricTypeMetricId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Agency", b =>
@@ -1515,9 +1918,11 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("Detectors");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.AspNetUser", b =>
                 {
-                    b.Navigation("AreaSignals");
+                    b.Navigation("AspNetUserClaims");
+
+                    b.Navigation("AspNetUserLogins");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
@@ -1530,17 +1935,8 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("Detectors");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
-                {
-                    b.Navigation("DetectionTypeDetectors");
-
-                    b.Navigation("DetectionTypeMetricTypes");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
                 {
-                    b.Navigation("DetectionTypeDetectors");
-
                     b.Navigation("DetectorComments");
                 });
 
@@ -1561,20 +1957,6 @@ namespace ATSPM.Infrasturcture.Migrations.Config
                     b.Navigation("Detectors");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.MetricComment", b =>
-                {
-                    b.Navigation("MetricCommentMetricTypes");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.MetricType", b =>
-                {
-                    b.Navigation("ActionLogMetricTypes");
-
-                    b.Navigation("DetectionTypeMetricTypes");
-
-                    b.Navigation("MetricCommentMetricTypes");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.MovementType", b =>
                 {
                     b.Navigation("Detectors");
@@ -1593,11 +1975,6 @@ namespace ATSPM.Infrasturcture.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
                 {
                     b.Navigation("RoutePhaseDirections");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
-                {
-                    b.Navigation("Area");
                 });
 #pragma warning restore 612, 618
         }

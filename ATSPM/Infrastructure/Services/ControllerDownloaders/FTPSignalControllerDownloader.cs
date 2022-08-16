@@ -33,7 +33,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            using FtpClient client = new FtpClient(parameter.IPAddress);
+            using FtpClient client = new FtpClient(parameter.Ipaddress);
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                 //TODO: replace this with options setting
@@ -57,7 +57,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     progress?.Report(new ControllerDownloadProgress(e));
 
-                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Connection Error {ip}", parameter.IPAddress);
+                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Connection Error {ip}", parameter.Ipaddress);
                 }
 
                 if (client.IsConnected)
@@ -76,7 +76,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                         {
                             progress?.Report(new ControllerDownloadProgress(e));
 
-                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Download Error {ip}", parameter.IPAddress);
+                            _log.LogDebug(new EventId(Convert.ToInt32(parameter.SignalId)), e, "FTP Download Error {ip}", parameter.Ipaddress);
                         }
                     }
 

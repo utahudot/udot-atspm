@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             ActionLogs = new HashSet<ActionLog>();
         }
 
-        public int AgencyID { get; set; }
+        public int AgencyId { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<ActionLog> ActionLogs { get; set; }

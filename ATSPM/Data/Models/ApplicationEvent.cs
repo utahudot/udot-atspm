@@ -5,9 +5,14 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class VersionAction
+    public partial class ApplicationEvent
     {
         public int Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string ApplicationName { get; set; }
         public string Description { get; set; }
+        public int SeverityLevel { get; set; }
+        public string Class { get; set; }
+        public string Function { get; set; }
     }
 }

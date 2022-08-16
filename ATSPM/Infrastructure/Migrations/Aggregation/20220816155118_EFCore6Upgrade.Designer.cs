@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    [Migration("20220815161007_EFCore6Upgrade")]
+    [Migration("20220816155118_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -300,8 +300,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                         .HasColumnType("datetime");
 
                     b.Property<string>("SignalId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -415,8 +415,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
             modelBuilder.Entity("ATSPM.Data.Models.SignalPlanAggregation", b =>
                 {
                     b.Property<string>("SignalId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime");

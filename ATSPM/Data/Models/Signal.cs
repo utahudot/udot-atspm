@@ -7,20 +7,25 @@ namespace ATSPM.Data.Models
 {
     public partial class Signal : ATSPMModelBase
     {
+        public Signal()
+        {
+            Areas = new HashSet<Area>();
+        }
+
         public string SignalId { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
         public string PrimaryName { get; set; }
         public string SecondaryName { get; set; }
-        public string IPAddress { get; set; }
-        public int RegionID { get; set; }
-        public int ControllerTypeID { get; set; }
+        public string Ipaddress { get; set; }
+        public int RegionId { get; set; }
+        public int ControllerTypeId { get; set; }
         public bool Enabled { get; set; }
-        public int VersionID { get; set; }
-        public int VersionActionID { get; set; }
+        public int VersionId { get; set; }
+        public int VersionActionId { get; set; }
         public string Note { get; set; }
         public DateTime Start { get; set; }
-        public int JurisdictionID { get; set; }
+        public int JurisdictionId { get; set; }
         public bool Pedsare1to1 { get; set; }
 
         public virtual ControllerType ControllerType { get; set; }
@@ -28,11 +33,6 @@ namespace ATSPM.Data.Models
         public virtual Region Region { get; set; }
         public virtual VersionAction VersionAction { get; set; }
 
-        public virtual ICollection<Area> Area { get; set; } = new HashSet<Area>();
-
-        public override string ToString()
-        {
-            return $"{SignalId}-{PrimaryName}";
-        }
+        public virtual ICollection<Area> Areas { get; set; }
     }
 }

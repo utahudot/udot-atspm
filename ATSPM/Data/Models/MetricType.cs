@@ -9,20 +9,20 @@ namespace ATSPM.Data.Models
     {
         public MetricType()
         {
-            ActionLogMetricTypes = new HashSet<ActionLogMetricType>();
-            DetectionTypeMetricTypes = new HashSet<DetectionTypeMetricType>();
-            MetricCommentMetricTypes = new HashSet<MetricCommentMetricType>();
+            ActionLogActionLogs = new HashSet<ActionLog>();
+            DetectionTypeDetectionTypes = new HashSet<DetectionType>();
+            MetricCommentComments = new HashSet<MetricComment>();
         }
 
-        public int MetricID { get; set; }
+        public int MetricId { get; set; }
         public string ChartName { get; set; }
         public string Abbreviation { get; set; }
         public bool ShowOnWebsite { get; set; }
         public bool ShowOnAggregationSite { get; set; }
         public int DisplayOrder { get; set; }
 
-        public virtual ICollection<ActionLogMetricType> ActionLogMetricTypes { get; set; }
-        public virtual ICollection<DetectionTypeMetricType> DetectionTypeMetricTypes { get; set; }
-        public virtual ICollection<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
+        public virtual ICollection<ActionLog> ActionLogActionLogs { get; set; }
+        public virtual ICollection<DetectionType> DetectionTypeDetectionTypes { get; set; }
+        public virtual ICollection<MetricComment> MetricCommentComments { get; set; }
     }
 }

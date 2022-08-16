@@ -60,6 +60,26 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                 name: "PK_dbo.ApproachPcdAggregations",
                 table: "ApproachPcdAggregations");
 
+            migrationBuilder.AlterColumn<string>(
+                name: "SignalId",
+                table: "SignalPlanAggregations",
+                type: "nvarchar(10)",
+                maxLength: 10,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "SignalId",
+                table: "PhaseSplitMonitorAggregations",
+                type: "nvarchar(10)",
+                maxLength: 10,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
             migrationBuilder.AddPrimaryKey(
                 name: "PK_SignalPlanAggregations",
                 table: "SignalPlanAggregations",
@@ -179,6 +199,26 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
             migrationBuilder.DropPrimaryKey(
                 name: "PK_ApproachPcdAggregations",
                 table: "ApproachPcdAggregations");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "SignalId",
+                table: "SignalPlanAggregations",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(10)",
+                oldMaxLength: 10);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "SignalId",
+                table: "PhaseSplitMonitorAggregations",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(10)",
+                oldMaxLength: 10);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_dbo.SignalPlanAggregations",

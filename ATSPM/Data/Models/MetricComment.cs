@@ -9,15 +9,15 @@ namespace ATSPM.Data.Models
     {
         public MetricComment()
         {
-            MetricCommentMetricTypes = new HashSet<MetricCommentMetricType>();
+            MetricTypeMetrics = new HashSet<MetricType>();
         }
 
-        public int CommentID { get; set; }
+        public int CommentId { get; set; }
         public string SignalId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
-        public int VersionID { get; set; }
+        public int VersionId { get; set; }
 
-        public virtual ICollection<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
+        public virtual ICollection<MetricType> MetricTypeMetrics { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             Detectors = new HashSet<Detector>();
         }
 
-        public int LaneTypeID { get; set; }
+        public int LaneTypeId { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
 

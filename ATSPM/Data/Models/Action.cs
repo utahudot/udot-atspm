@@ -9,12 +9,12 @@ namespace ATSPM.Data.Models
     {
         public Action()
         {
-            ActionLogActions = new HashSet<ActionLogAction>();
+            ActionLogActionLogs = new HashSet<ActionLog>();
         }
 
-        public int ActionID { get; set; }
+        public int ActionId { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<ActionLogAction> ActionLogActions { get; set; }
+        public virtual ICollection<ActionLog> ActionLogActionLogs { get; set; }
     }
 }

@@ -9,19 +9,20 @@ namespace ATSPM.Data.Models
     {
         public ActionLog()
         {
-            ActionLogActions = new HashSet<ActionLogAction>();
-            ActionLogMetricTypes = new HashSet<ActionLogMetricType>();
+            ActionActions = new HashSet<Action>();
+            MetricTypeMetrics = new HashSet<MetricType>();
         }
 
-        public int ActionLogID { get; set; }
+        public int ActionLogId { get; set; }
         public DateTime Date { get; set; }
-        public int AgencyID { get; set; }
+        public int AgencyId { get; set; }
         public string Comment { get; set; }
         public string SignalId { get; set; }
         public string Name { get; set; }
 
         public virtual Agency Agency { get; set; }
-        public virtual ICollection<ActionLogAction> ActionLogActions { get; set; }
-        public virtual ICollection<ActionLogMetricType> ActionLogMetricTypes { get; set; }
+
+        public virtual ICollection<Action> ActionActions { get; set; }
+        public virtual ICollection<MetricType> MetricTypeMetrics { get; set; }
     }
 }

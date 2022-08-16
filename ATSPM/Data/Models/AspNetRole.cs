@@ -5,16 +5,17 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DetectionHardware
+    public partial class AspNetRole
     {
-        public DetectionHardware()
+        public AspNetRole()
         {
-            Detectors = new HashSet<Detector>();
+            Users = new HashSet<AspNetUser>();
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
+        public string Discriminator { get; set; }
 
-        public virtual ICollection<Detector> Detectors { get; set; }
+        public virtual ICollection<AspNetUser> Users { get; set; }
     }
 }

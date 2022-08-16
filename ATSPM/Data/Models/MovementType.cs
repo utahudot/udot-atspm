@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             Detectors = new HashSet<Detector>();
         }
 
-        public int MovementTypeID { get; set; }
+        public int MovementTypeId { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
         public int DisplayOrder { get; set; }

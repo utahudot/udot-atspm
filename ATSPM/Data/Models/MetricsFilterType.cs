@@ -7,7 +7,7 @@ namespace ATSPM.Data.Models
 {
     public partial class MetricsFilterType
     {
-        public int FilterID { get; set; }
+        public int FilterId { get; set; }
         public string FilterName { get; set; }
     }
 }

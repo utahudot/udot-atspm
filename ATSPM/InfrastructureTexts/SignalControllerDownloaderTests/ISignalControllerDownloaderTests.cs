@@ -49,7 +49,7 @@ namespace SignalControllerLoggerTests
             var signal = new Signal()
             {
                 Enabled = true,
-                ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType }
+                ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType }
             };
 
             Mock.Get(mockClient).Setup(s => s.Dispose());
@@ -68,7 +68,7 @@ namespace SignalControllerLoggerTests
             var signal = new Signal()
             {
                 Enabled = false,
-                ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType }
+                ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType }
             };
 
             Mock.Get(mockClient).Setup(s => s.Dispose());
@@ -89,7 +89,7 @@ namespace SignalControllerLoggerTests
             var signal = new Signal()
             {
                 Enabled = true,
-                ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType + 1 }
+                ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType + 1 }
             };
 
             var condition = d.CanExecute(signal);
@@ -123,11 +123,11 @@ namespace SignalControllerLoggerTests
 
             var signal = new Signal()
             {
-                IPAddress = "Invalid Address",
+                Ipaddress = "Invalid Address",
                 Enabled = true,
                 PrimaryName = "Controller",
                 SignalId = "999",
-                ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType }
+                ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType }
             };
 
             await Assert.ThrowsAsync<InvalidSignalControllerIpAddressException>(async () =>
@@ -149,7 +149,7 @@ namespace SignalControllerLoggerTests
                 Enabled = true,
                 PrimaryName = "Controller",
                 SignalId = "999",
-                ControllerType = new ControllerType() { ControllerTypeID = 0 }
+                ControllerType = new ControllerType() { ControllerTypeId = 0 }
             };
 
             await Assert.ThrowsAsync<ExecuteException>(async () =>
@@ -164,14 +164,14 @@ namespace SignalControllerLoggerTests
         {
             var signal = new Signal()
             {
-                IPAddress = "127.0.0.1",
+                Ipaddress = "127.0.0.1",
                 Enabled = true
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default))
-                .ThrowsAsync(new ControllerConnectionException(It.Is<string>(s => s == signal.IPAddress), mockClient, null))
+                .ThrowsAsync(new ControllerConnectionException(It.Is<string>(s => s == signal.Ipaddress), mockClient, null))
                 .Verifiable();
 
             Mock.Get(mockClient).SetupGet(s => s.IsConnected).Returns(false).Verifiable();
@@ -181,7 +181,7 @@ namespace SignalControllerLoggerTests
 
             var d = (ISignalControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
-            signal.ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType };
+            signal.ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType };
 
             await foreach (var file in d.Execute(signal)) { }
 
@@ -215,7 +215,7 @@ namespace SignalControllerLoggerTests
         {
             var signal = new Signal()
             {
-                IPAddress = "127.0.0.1",
+                Ipaddress = "127.0.0.1",
                 Enabled = true,
                 PrimaryName = "Controller",
                 SignalId = "999"
@@ -246,7 +246,7 @@ namespace SignalControllerLoggerTests
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
             Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-            signal.ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType, Ftpdirectory = ftpDirectory };
+            signal.ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType, Ftpdirectory = ftpDirectory };
             var files = new List<FileInfo>();
 
             await foreach (var file in d.Execute(signal)) 
@@ -268,7 +268,7 @@ namespace SignalControllerLoggerTests
         {
             var signal = new Signal()
             {
-                IPAddress = "127.0.0.1",
+                Ipaddress = "127.0.0.1",
                 Enabled = true,
                 PrimaryName = "Controller",
                 SignalId = "999"
@@ -299,7 +299,7 @@ namespace SignalControllerLoggerTests
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
             Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-            signal.ControllerType = new ControllerType() { ControllerTypeID = d.ControllerType, Ftpdirectory = ftpDirectory };
+            signal.ControllerType = new ControllerType() { ControllerTypeId = d.ControllerType, Ftpdirectory = ftpDirectory };
 
             var progressList = new List<ControllerDownloadProgress>();
 

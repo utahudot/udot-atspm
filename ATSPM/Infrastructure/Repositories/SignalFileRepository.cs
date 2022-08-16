@@ -59,7 +59,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        public IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int controllerTypeId)
+        public IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId)
         {
             throw new NotImplementedException();
         }

@@ -7,9 +7,9 @@ namespace ATSPM.Data.Models
 {
     public partial class Menu
     {
-        public int MenuID { get; set; }
+        public int MenuId { get; set; }
         public string MenuName { get; set; }
-        public int ParentID { get; set; }
+        public int ParentId { get; set; }
         public string Application { get; set; }
         public int DisplayOrder { get; set; }
         public string Controller { get; set; }

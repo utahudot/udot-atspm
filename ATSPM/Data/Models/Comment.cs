@@ -7,7 +7,7 @@ namespace ATSPM.Data.Models
 {
     public partial class Comment
     {
-        public long CommentID { get; set; }
+        public long CommentId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string Entity { get; set; }
         public int ChartType { get; set; }

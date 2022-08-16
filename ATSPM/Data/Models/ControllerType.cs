@@ -12,7 +12,7 @@ namespace ATSPM.Data.Models
             Signals = new HashSet<Signal>();
         }
 
-        public int ControllerTypeID { get; set; }
+        public int ControllerTypeId { get; set; }
         public string Description { get; set; }
         public long Snmpport { get; set; }
         public string Ftpdirectory { get; set; }

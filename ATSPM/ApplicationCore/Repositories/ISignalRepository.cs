@@ -36,7 +36,7 @@ namespace ATSPM.Application.Repositories
         IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId);
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals?")]
-        IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int controllerTypeId);
+        IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId);
 
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 

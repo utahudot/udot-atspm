@@ -7,10 +7,10 @@ namespace ATSPM.Data.Models
 {
     public partial class SpmwatchDogErrorEvent
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public DateTime TimeStamp { get; set; }
         public string SignalId { get; set; }
-        public string DetectorID { get; set; }
+        public string DetectorId { get; set; }
         public string Direction { get; set; }
         public int Phase { get; set; }
         public int ErrorCode { get; set; }

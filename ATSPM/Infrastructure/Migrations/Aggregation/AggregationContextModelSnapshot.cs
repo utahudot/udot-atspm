@@ -298,8 +298,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                         .HasColumnType("datetime");
 
                     b.Property<string>("SignalId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -413,8 +413,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
             modelBuilder.Entity("ATSPM.Data.Models.SignalPlanAggregation", b =>
                 {
                     b.Property<string>("SignalId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime");

@@ -7,8 +7,8 @@ namespace ATSPM.Data.Models
 {
     public partial class ApplicationSetting
     {
-        public int ID { get; set; }
-        public int ApplicationID { get; set; }
+        public int Id { get; set; }
+        public int ApplicationId { get; set; }
         public int? ConsecutiveCount { get; set; }
         public int? MinPhaseTerminations { get; set; }
         public double? PercentThreshold { get; set; }

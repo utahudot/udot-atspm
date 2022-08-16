@@ -1,11 +1,71 @@
 {
   "Version": 1,
-  "Hash": "4f08RTMByWYBmQRt7khGG2U00lDbZdH+LwKk55m2wFI=",
+  "Hash": "xA98YBDldU933dcOa4+AfifTlXyF5yQy691urPTaol8=",
   "Source": "DataAPI",
   "BasePath": "_content/DataAPI",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "DataAPI\\wwwroot",
+      "Source": "DataAPI",
+      "ContentRoot": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\",
+      "BasePath": "_content/DataAPI",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "SourceId": "DataAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\",
+      "BasePath": "_content/DataAPI",
+      "RelativePath": "lib/bootstrap/dist/css/bootstrap.css.map",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
+    },
+    {
+      "Identity": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "SourceId": "DataAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\",
+      "BasePath": "_content/DataAPI",
+      "RelativePath": "lib/bootstrap/dist/css/bootstrap.min.css.map",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Identity": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "SourceId": "DataAPI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Projects\\udot-atsmp\\ATSPM\\DataAPI\\wwwroot\\",
+      "BasePath": "_content/DataAPI",
+      "RelativePath": "lib/jquery/dist/jquery.min.map",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\lib\\jquery\\dist\\jquery.min.map"
+    }
+  ]
 }

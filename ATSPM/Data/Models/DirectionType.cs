@@ -13,7 +13,7 @@ namespace ATSPM.Data.Models
             RoutePhaseDirections = new HashSet<RoutePhaseDirection>();
         }
 
-        public int DirectionTypeID { get; set; }
+        public int DirectionTypeId { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
         public int DisplayOrder { get; set; }

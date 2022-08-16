@@ -13,8 +13,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.BinStartTime).HasColumnType("datetime");
 
-            //TODO: Find out if 128 is the correct value
-            builder.Property(e => e.SignalId).HasMaxLength(128);
+            builder.Property(e => e.SignalId).HasMaxLength(10);
         }
     }
 }
