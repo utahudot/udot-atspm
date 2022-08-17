@@ -33,7 +33,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            using FtpClient client = new FtpClient(parameter.Ipaddress);
+            using FtpClient client = new FtpClient(parameter.Ipaddress.ToString());
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                 //TODO: replace this with options setting

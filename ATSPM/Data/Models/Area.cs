@@ -5,16 +5,11 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Area
+    public partial class Area : ATSPMModelBase
     {
-        public Area()
-        {
-            SignalVersions = new HashSet<Signal>();
-        }
-
         public int Id { get; set; }
-        public string AreaName { get; set; }
+        public string Name { get; set; }
 
-        public virtual ICollection<Signal> SignalVersions { get; set; }
+        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
     }
 }

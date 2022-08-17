@@ -2,6 +2,7 @@
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
+using ATSPM.Data.Enums;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
 using ATSPM.Infrasturcture.Extensions;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -101,6 +103,49 @@ namespace ATSPM.SignalControllerLogger
             //await host.RunAsync();
 
             Console.WriteLine($"done?");
+
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetService<ConfigContext>();
+
+                //var area = new Data.Models.Area() { Id = 1, Name = "just added!" };
+
+                //db.Areas.Add(area);
+
+                var area = db.Areas.SingleOrDefault(i => i.Id == 1);
+
+                var signal = new Data.Models.Signal()
+                {
+                    SignalId = "1001",
+                    PrimaryName = "something",
+                    Latitude = "l",
+                    Longitude = "L",
+                    SecondaryName = "test",
+                    Note = "Note",
+                    ControllerTypeId = 0,
+                    RegionId = 1,
+                    JurisdictionId = 1
+                };
+
+                db.Signals.Add(signal);
+
+                signal.Areas.Add(area);
+
+
+
+                db.SaveChanges();
+
+                var verify = db.Signals
+                    .Include(i => i.ControllerType)
+                    .Include(i => i.Jurisdiction)
+                    .Include(i => i.Region)
+                    .Include(i => i.VersionAction)
+                    .Include(i => i.Areas)
+                    .ToList();
+
+
+            }
 
             Console.ReadKey();
         }

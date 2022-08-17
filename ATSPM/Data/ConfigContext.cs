@@ -2,6 +2,9 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Net;
+using ATSPM.Data.Configuration;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -19,879 +22,899 @@ namespace ATSPM.Data
         {
         }
 
-        public virtual DbSet<Models.Action> Actions { get; set; }
-        public virtual DbSet<ActionLog> ActionLogs { get; set; }
+        //public virtual DbSet<Models.Action> Actions { get; set; }
+        //public virtual DbSet<ActionLog> ActionLogs { get; set; }
         //public virtual DbSet<ActionLogAction> ActionLogActions { get; set; }
         //public virtual DbSet<ActionLogMetricType> ActionLogMetricTypes { get; set; }
-        public virtual DbSet<Agency> Agencies { get; set; }
-        public virtual DbSet<Application> Applications { get; set; }
-        public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
-        public virtual DbSet<Approach> Approaches { get; set; }
+        //public virtual DbSet<Agency> Agencies { get; set; }
+        //public virtual DbSet<Application> Applications { get; set; }
+        //public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
+        //public virtual DbSet<Approach> Approaches { get; set; }
         public virtual DbSet<Area> Areas { get; set; }
         //public virtual DbSet<AreaSignal> AreaSignals { get; set; }
-        public virtual DbSet<Comment> Comments { get; set; }
+        //public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<ControllerType> ControllerTypes { get; set; }
-        public virtual DbSet<DatabaseArchiveExcludedSignal> DatabaseArchiveExcludedSignals { get; set; }
-        public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
-        public virtual DbSet<DetectionType> DetectionTypes { get; set; }
-        public virtual DbSet<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
+        //public virtual DbSet<DatabaseArchiveExcludedSignal> DatabaseArchiveExcludedSignals { get; set; }
+        //public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
+        //public virtual DbSet<DetectionType> DetectionTypes { get; set; }
+        //public virtual DbSet<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
         //public virtual DbSet<DetectionTypeMetricType> DetectionTypeMetricTypes { get; set; }
-        public virtual DbSet<Detector> Detectors { get; set; }
-        public virtual DbSet<DetectorComment> DetectorComments { get; set; }
-        public virtual DbSet<DirectionType> DirectionTypes { get; set; }
-        public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
-        public virtual DbSet<Faq> Faqs { get; set; }
+        //public virtual DbSet<Detector> Detectors { get; set; }
+        //public virtual DbSet<DetectorComment> DetectorComments { get; set; }
+        //public virtual DbSet<DirectionType> DirectionTypes { get; set; }
+        //public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
+        //public virtual DbSet<Faq> Faqs { get; set; }
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
-        public virtual DbSet<LaneType> LaneTypes { get; set; }
-        public virtual DbSet<MeasuresDefault> MeasuresDefaults { get; set; }
-        public virtual DbSet<Menu> Menus { get; set; }
-        public virtual DbSet<MetricComment> MetricComments { get; set; }
+        //public virtual DbSet<LaneType> LaneTypes { get; set; }
+        //public virtual DbSet<MeasuresDefault> MeasuresDefaults { get; set; }
+        //public virtual DbSet<Menu> Menus { get; set; }
+        //public virtual DbSet<MetricComment> MetricComments { get; set; }
         //public virtual DbSet<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
-        public virtual DbSet<MetricType> MetricTypes { get; set; }
-        public virtual DbSet<MetricsFilterType> MetricsFilterTypes { get; set; }
-        public virtual DbSet<MovementType> MovementTypes { get; set; }
+        //public virtual DbSet<MetricType> MetricTypes { get; set; }
+        //public virtual DbSet<MetricsFilterType> MetricsFilterTypes { get; set; }
+        //public virtual DbSet<MovementType> MovementTypes { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
-        public virtual DbSet<Route> Routes { get; set; }
-        public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
-        public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        //public virtual DbSet<Route> Routes { get; set; }
+        //public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
+        //public virtual DbSet<RouteSignal> RouteSignals { get; set; }
         public virtual DbSet<Signal> Signals { get; set; }
-        public virtual DbSet<SignalToAggregate> SignalToAggregates { get; set; }
-        public virtual DbSet<SpmwatchDogErrorEvent> SpmwatchDogErrorEvents { get; set; }
+        //public virtual DbSet<SignalToAggregate> SignalToAggregates { get; set; }
+        //public virtual DbSet<SpmwatchDogErrorEvent> SpmwatchDogErrorEvents { get; set; }
         public virtual DbSet<VersionAction> VersionActions { get; set; }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<string>().AreUnicode(false);
+            configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+            configurationBuilder.Properties<SignaVersionActions>().HaveConversion<int>();
+            configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Models.Action>(entity =>
-            {
-                entity.Property(e => e.ActionId).HasColumnName("ActionID");
+            //modelBuilder.Entity<Models.Action>(entity =>
+            //{
+            //    entity.Property(e => e.ActionId).HasColumnName("ActionID");
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
+            //    entity.Property(e => e.Description)
+            //        .IsRequired()
+            //        .HasMaxLength(50);
+            //});
 
-            modelBuilder.Entity<ActionLog>(entity =>
-            {
-                entity.HasIndex(e => e.AgencyId, "IX_AgencyID");
+            //modelBuilder.Entity<ActionLog>(entity =>
+            //{
+            //    entity.HasIndex(e => e.AgencyId, "IX_AgencyID");
 
-                entity.Property(e => e.ActionLogId).HasColumnName("ActionLogID");
+            //    entity.Property(e => e.ActionLogId).HasColumnName("ActionLogID");
 
-                entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
+            //    entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
 
-                entity.Property(e => e.Comment).HasMaxLength(255);
+            //    entity.Property(e => e.Comment).HasMaxLength(255);
 
-                entity.Property(e => e.Date).HasColumnType("datetime");
+            //    entity.Property(e => e.Date).HasColumnType("datetime");
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(100);
+            //    entity.Property(e => e.Name)
+            //        .IsRequired()
+            //        .HasMaxLength(100);
 
-                entity.Property(e => e.SignalId)
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
 
-                entity.HasOne(d => d.Agency)
-                    .WithMany(p => p.ActionLogs)
-                    .HasForeignKey(d => d.AgencyId)
-                    .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
+            //    entity.HasOne(d => d.Agency)
+            //        .WithMany(p => p.ActionLogs)
+            //        .HasForeignKey(d => d.AgencyId)
+            //        .HasConstraintName("FK_dbo.ActionLogs_dbo.Agencies_AgencyID");
 
-                entity.HasMany(d => d.ActionActions)
-                    .WithMany(p => p.ActionLogActionLogs)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "ActionLogAction",
-                        l => l.HasOne<Models.Action>().WithMany().HasForeignKey("ActionActionId").HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID"),
-                        r => r.HasOne<ActionLog>().WithMany().HasForeignKey("ActionLogActionLogId").HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID"),
-                        j =>
-                        {
-                            j.HasKey("ActionLogActionLogId", "ActionActionId").HasName("PK_dbo.ActionLogActions");
+            //    entity.HasMany(d => d.ActionActions)
+            //        .WithMany(p => p.ActionLogActionLogs)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "ActionLogAction",
+            //            l => l.HasOne<Models.Action>().WithMany().HasForeignKey("ActionActionId").HasConstraintName("FK_dbo.ActionLogActions_dbo.Actions_Action_ActionID"),
+            //            r => r.HasOne<ActionLog>().WithMany().HasForeignKey("ActionLogActionLogId").HasConstraintName("FK_dbo.ActionLogActions_dbo.ActionLogs_ActionLog_ActionLogID"),
+            //            j =>
+            //            {
+            //                j.HasKey("ActionLogActionLogId", "ActionActionId").HasName("PK_dbo.ActionLogActions");
 
-                            j.ToTable("ActionLogActions");
+            //                j.ToTable("ActionLogActions");
 
-                            j.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID");
+            //                j.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID");
 
-                            j.HasIndex(new[] { "ActionActionId" }, "IX_Action_ActionID");
+            //                j.HasIndex(new[] { "ActionActionId" }, "IX_Action_ActionID");
 
-                            j.IndexerProperty<int>("ActionLogActionLogId").HasColumnName("ActionLog_ActionLogID");
+            //                j.IndexerProperty<int>("ActionLogActionLogId").HasColumnName("ActionLog_ActionLogID");
 
-                            j.IndexerProperty<int>("ActionActionId").HasColumnName("Action_ActionID");
-                        });
+            //                j.IndexerProperty<int>("ActionActionId").HasColumnName("Action_ActionID");
+            //            });
 
-                entity.HasMany(d => d.MetricTypeMetrics)
-                    .WithMany(p => p.ActionLogActionLogs)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "ActionLogMetricType",
-                        l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<ActionLog>().WithMany().HasForeignKey("ActionLogActionLogId").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID"),
-                        j =>
-                        {
-                            j.HasKey("ActionLogActionLogId", "MetricTypeMetricId").HasName("PK_dbo.ActionLogMetricTypes");
+            //    entity.HasMany(d => d.MetricTypeMetrics)
+            //        .WithMany(p => p.ActionLogActionLogs)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "ActionLogMetricType",
+            //            l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
+            //            r => r.HasOne<ActionLog>().WithMany().HasForeignKey("ActionLogActionLogId").HasConstraintName("FK_dbo.ActionLogMetricTypes_dbo.ActionLogs_ActionLog_ActionLogID"),
+            //            j =>
+            //            {
+            //                j.HasKey("ActionLogActionLogId", "MetricTypeMetricId").HasName("PK_dbo.ActionLogMetricTypes");
 
-                            j.ToTable("ActionLogMetricTypes");
+            //                j.ToTable("ActionLogMetricTypes");
 
-                            j.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID");
+            //                j.HasIndex(new[] { "ActionLogActionLogId" }, "IX_ActionLog_ActionLogID");
 
-                            j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
+            //                j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
 
-                            j.IndexerProperty<int>("ActionLogActionLogId").HasColumnName("ActionLog_ActionLogID");
+            //                j.IndexerProperty<int>("ActionLogActionLogId").HasColumnName("ActionLog_ActionLogID");
 
-                            j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
-                        });
-            });
+            //                j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
+            //            });
+            //});
 
-            modelBuilder.Entity<Agency>(entity =>
-            {
-                entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
+            //modelBuilder.Entity<Agency>(entity =>
+            //{
+            //    entity.Property(e => e.AgencyId).HasColumnName("AgencyID");
 
-                entity.Property(e => e.Description).HasMaxLength(50);
-            });
+            //    entity.Property(e => e.Description).HasMaxLength(50);
+            //});
 
-            modelBuilder.Entity<Application>(entity =>
-            {
-                entity.Property(e => e.Id).HasColumnName("ID");
-            });
+            //modelBuilder.Entity<Application>(entity =>
+            //{
+            //    entity.Property(e => e.Id).HasColumnName("ID");
+            //});
 
-            modelBuilder.Entity<ApplicationEvent>(entity =>
-            {
-                entity.Property(e => e.Id).HasColumnName("ID");
+            //modelBuilder.Entity<ApplicationEvent>(entity =>
+            //{
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.ApplicationName).IsRequired();
+            //    entity.Property(e => e.ApplicationName).IsRequired();
 
-                entity.Property(e => e.Description).IsRequired();
+            //    entity.Property(e => e.Description).IsRequired();
 
-                entity.Property(e => e.Timestamp).HasColumnType("datetime");
-            });
+            //    entity.Property(e => e.Timestamp).HasColumnType("datetime");
+            //});
 
-            modelBuilder.Entity<ApplicationSetting>(entity =>
-            {
-                entity.HasIndex(e => e.ApplicationId, "IX_ApplicationID");
+            //modelBuilder.Entity<ApplicationSetting>(entity =>
+            //{
+            //    entity.HasIndex(e => e.ApplicationId, "IX_ApplicationID");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.ApplicationId).HasColumnName("ApplicationID");
+            //    entity.Property(e => e.ApplicationId).HasColumnName("ApplicationID");
 
-                entity.Property(e => e.Discriminator)
-                    .IsRequired()
-                    .HasMaxLength(128);
+            //    entity.Property(e => e.Discriminator)
+            //        .IsRequired()
+            //        .HasMaxLength(128);
 
-                entity.Property(e => e.PreviousDayPmpeakEnd).HasColumnName("PreviousDayPMPeakEnd");
+            //    entity.Property(e => e.PreviousDayPmpeakEnd).HasColumnName("PreviousDayPMPeakEnd");
 
-                entity.Property(e => e.PreviousDayPmpeakStart).HasColumnName("PreviousDayPMPeakStart");
+            //    entity.Property(e => e.PreviousDayPmpeakStart).HasColumnName("PreviousDayPMPeakStart");
 
-                entity.HasOne(d => d.Application)
-                    .WithMany(p => p.ApplicationSettings)
-                    .HasForeignKey(d => d.ApplicationId)
-                    .HasConstraintName("FK_dbo.ApplicationSettings_dbo.Applications_ApplicationID");
-            });
+            //    entity.HasOne(d => d.Application)
+            //        .WithMany(p => p.ApplicationSettings)
+            //        .HasForeignKey(d => d.ApplicationId)
+            //        .HasConstraintName("FK_dbo.ApplicationSettings_dbo.Applications_ApplicationID");
+            //});
 
-            modelBuilder.Entity<Approach>(entity =>
-            {
-                entity.HasIndex(e => e.DirectionTypeId, "IX_DirectionTypeID");
+            //modelBuilder.Entity<Approach>(entity =>
+            //{
+            //    entity.HasIndex(e => e.DirectionTypeId, "IX_DirectionTypeID");
 
-                entity.HasIndex(e => e.VersionId, "IX_VersionID");
+            //    entity.HasIndex(e => e.VersionId, "IX_VersionID");
 
-                entity.Property(e => e.ApproachId).HasColumnName("ApproachID");
+            //    entity.Property(e => e.ApproachId).HasColumnName("ApproachID");
 
-                entity.Property(e => e.DirectionTypeId).HasColumnName("DirectionTypeID");
+            //    entity.Property(e => e.DirectionTypeId).HasColumnName("DirectionTypeID");
 
-                entity.Property(e => e.Mph).HasColumnName("MPH");
+            //    entity.Property(e => e.Mph).HasColumnName("MPH");
 
-                entity.Property(e => e.SignalId).HasColumnName("SignalID");
+            //    entity.Property(e => e.SignalId).HasColumnName("SignalID");
 
-                entity.Property(e => e.VersionId).HasColumnName("VersionID");
+            //    entity.Property(e => e.VersionId).HasColumnName("VersionID");
 
-                entity.HasOne(d => d.DirectionType)
-                    .WithMany(p => p.Approaches)
-                    .HasForeignKey(d => d.DirectionTypeId)
-                    .HasConstraintName("FK_dbo.Approaches_dbo.DirectionTypes_DirectionTypeID");
-            });
+            //    entity.HasOne(d => d.DirectionType)
+            //        .WithMany(p => p.Approaches)
+            //        .HasForeignKey(d => d.DirectionTypeId)
+            //        .HasConstraintName("FK_dbo.Approaches_dbo.DirectionTypes_DirectionTypeID");
+            //});
 
-            modelBuilder.Entity<Area>(entity =>
-            {
-                entity.Property(e => e.AreaName).HasMaxLength(50);
+            modelBuilder.ApplyConfiguration(new AreaConfiguration());
 
-                //entity.HasMany(d => d.SignalVersions)
-                //    .WithMany(p => p.Areas)
-                //    .UsingEntity<Dictionary<string, object>>(
-                //        "AreaSignal",
-                //        l => l.HasOne<Signal>().WithMany().HasForeignKey("SignalVersionId").HasConstraintName("FK_dbo.AreaSignals_dbo.Signals_Signal_VersionID"),
-                //        r => r.HasOne<Area>().WithMany().HasForeignKey("AreaId").HasConstraintName("FK_dbo.AreaSignals_dbo.Areas_Area_Id"),
-                //        j =>
-                //        {
-                //            j.HasKey("AreaId", "SignalVersionId").HasName("PK_dbo.AreaSignals");
+            //modelBuilder.Entity<Area>(entity =>
+            //{
+            //    entity.Property(e => e.AreaName).HasMaxLength(50);
 
-                //            j.ToTable("AreaSignals");
+            //    entity.HasMany(d => d.SignalVersions)
+            //        .WithMany(p => p.Areas)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "AreaSignal",
+            //            l => l.HasOne<Signal>().WithMany().HasForeignKey("SignalVersionId").HasConstraintName("FK_dbo.AreaSignals_dbo.Signals_Signal_VersionID"),
+            //            r => r.HasOne<Area>().WithMany().HasForeignKey("AreaId").HasConstraintName("FK_dbo.AreaSignals_dbo.Areas_Area_Id"),
+            //            j =>
+            //            {
+            //                j.HasKey("AreaId", "SignalVersionId").HasName("PK_dbo.AreaSignals");
 
-                //            j.HasIndex(new[] { "AreaId" }, "IX_Area_Id");
+            //                j.ToTable("AreaSignals");
 
-                //            j.HasIndex(new[] { "SignalVersionId" }, "IX_Signal_VersionID");
+            //                j.HasIndex(new[] { "AreaId" }, "IX_Area_Id");
 
-                //            j.IndexerProperty<int>("AreaId").HasColumnName("Area_Id");
+            //                j.HasIndex(new[] { "SignalVersionId" }, "IX_Signal_VersionID");
 
-                //            j.IndexerProperty<int>("SignalVersionId").HasColumnName("Signal_VersionID");
-                //        });
-            });
+            //                j.IndexerProperty<int>("AreaId").HasColumnName("Area_Id");
 
-            modelBuilder.Entity<AspNetRole>(entity =>
-            {
-                entity.HasIndex(e => e.Name, "RoleNameIndex")
-                    .IsUnique();
+            //                j.IndexerProperty<int>("SignalVersionId").HasColumnName("Signal_VersionID");
+            //            });
+            //});
 
-                entity.Property(e => e.Id).HasMaxLength(128);
+            //modelBuilder.Entity<AspNetRole>(entity =>
+            //{
+            //    entity.HasIndex(e => e.Name, "RoleNameIndex")
+            //        .IsUnique();
 
-                entity.Property(e => e.Discriminator)
-                    .IsRequired()
-                    .HasMaxLength(128);
+            //    entity.Property(e => e.Id).HasMaxLength(128);
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(256);
-            });
+            //    entity.Property(e => e.Discriminator)
+            //        .IsRequired()
+            //        .HasMaxLength(128);
 
-            modelBuilder.Entity<AspNetUser>(entity =>
-            {
-                entity.HasIndex(e => e.UserName, "UserNameIndex")
-                    .IsUnique();
+            //    entity.Property(e => e.Name)
+            //        .IsRequired()
+            //        .HasMaxLength(256);
+            //});
 
-                entity.Property(e => e.Id).HasMaxLength(128);
+            //modelBuilder.Entity<AspNetUser>(entity =>
+            //{
+            //    entity.HasIndex(e => e.UserName, "UserNameIndex")
+            //        .IsUnique();
 
-                entity.Property(e => e.Email).HasMaxLength(256);
+            //    entity.Property(e => e.Id).HasMaxLength(128);
 
-                entity.Property(e => e.LockoutEndDateUtc).HasColumnType("datetime");
+            //    entity.Property(e => e.Email).HasMaxLength(256);
 
-                entity.Property(e => e.UserName)
-                    .IsRequired()
-                    .HasMaxLength(256);
+            //    entity.Property(e => e.LockoutEndDateUtc).HasColumnType("datetime");
 
-                entity.HasMany(d => d.Roles)
-                    .WithMany(p => p.Users)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "AspNetUserRole",
-                        l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId"),
-                        r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId"),
-                        j =>
-                        {
-                            j.HasKey("UserId", "RoleId").HasName("PK_dbo.AspNetUserRoles");
+            //    entity.Property(e => e.UserName)
+            //        .IsRequired()
+            //        .HasMaxLength(256);
 
-                            j.ToTable("AspNetUserRoles");
+            //    entity.HasMany(d => d.Roles)
+            //        .WithMany(p => p.Users)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "AspNetUserRole",
+            //            l => l.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId").HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetRoles_RoleId"),
+            //            r => r.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId").HasConstraintName("FK_dbo.AspNetUserRoles_dbo.AspNetUsers_UserId"),
+            //            j =>
+            //            {
+            //                j.HasKey("UserId", "RoleId").HasName("PK_dbo.AspNetUserRoles");
 
-                            j.HasIndex(new[] { "RoleId" }, "IX_RoleId");
+            //                j.ToTable("AspNetUserRoles");
 
-                            j.HasIndex(new[] { "UserId" }, "IX_UserId");
+            //                j.HasIndex(new[] { "RoleId" }, "IX_RoleId");
 
-                            j.IndexerProperty<string>("UserId").HasMaxLength(128);
+            //                j.HasIndex(new[] { "UserId" }, "IX_UserId");
 
-                            j.IndexerProperty<string>("RoleId").HasMaxLength(128);
-                        });
-            });
+            //                j.IndexerProperty<string>("UserId").HasMaxLength(128);
 
-            modelBuilder.Entity<AspNetUserClaim>(entity =>
-            {
-                entity.HasIndex(e => e.UserId, "IX_UserId");
+            //                j.IndexerProperty<string>("RoleId").HasMaxLength(128);
+            //            });
+            //});
 
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(128);
+            //modelBuilder.Entity<AspNetUserClaim>(entity =>
+            //{
+            //    entity.HasIndex(e => e.UserId, "IX_UserId");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AspNetUserClaims)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId");
-            });
+            //    entity.Property(e => e.UserId)
+            //        .IsRequired()
+            //        .HasMaxLength(128);
 
-            modelBuilder.Entity<AspNetUserLogin>(entity =>
-            {
-                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey, e.UserId })
-                    .HasName("PK_dbo.AspNetUserLogins");
+            //    entity.HasOne(d => d.User)
+            //        .WithMany(p => p.AspNetUserClaims)
+            //        .HasForeignKey(d => d.UserId)
+            //        .HasConstraintName("FK_dbo.AspNetUserClaims_dbo.AspNetUsers_UserId");
+            //});
 
-                entity.HasIndex(e => e.UserId, "IX_UserId");
+            //modelBuilder.Entity<AspNetUserLogin>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.LoginProvider, e.ProviderKey, e.UserId })
+            //        .HasName("PK_dbo.AspNetUserLogins");
 
-                entity.Property(e => e.LoginProvider).HasMaxLength(128);
+            //    entity.HasIndex(e => e.UserId, "IX_UserId");
 
-                entity.Property(e => e.ProviderKey).HasMaxLength(128);
+            //    entity.Property(e => e.LoginProvider).HasMaxLength(128);
 
-                entity.Property(e => e.UserId).HasMaxLength(128);
+            //    entity.Property(e => e.ProviderKey).HasMaxLength(128);
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.AspNetUserLogins)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId");
-            });
+            //    entity.Property(e => e.UserId).HasMaxLength(128);
 
-            modelBuilder.Entity<Comment>(entity =>
-            {
-                entity.ToTable("Comment");
+            //    entity.HasOne(d => d.User)
+            //        .WithMany(p => p.AspNetUserLogins)
+            //        .HasForeignKey(d => d.UserId)
+            //        .HasConstraintName("FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId");
+            //});
 
-                entity.Property(e => e.CommentId).HasColumnName("CommentID");
+            //modelBuilder.Entity<Comment>(entity =>
+            //{
+            //    entity.ToTable("Comment");
 
-                entity.Property(e => e.Comment1)
-                    .IsRequired()
-                    .IsUnicode(false)
-                    .HasColumnName("Comment");
+            //    entity.Property(e => e.CommentId).HasColumnName("CommentID");
 
-                entity.Property(e => e.Entity)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+            //    entity.Property(e => e.Comment1)
+            //        .IsRequired()
+            //        .IsUnicode(false)
+            //        .HasColumnName("Comment");
 
-                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
-            });
+            //    entity.Property(e => e.Entity)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .IsUnicode(false);
 
-            modelBuilder.Entity<ControllerType>(entity =>
-            {
-                entity.Property(e => e.ControllerTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ControllerTypeId");
+            //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            //});
 
-                entity.Property(e => e.ActiveFtp).HasColumnName("ActiveFTP");
+            modelBuilder.ApplyConfiguration(new ControllerTypeConfiguration());
 
-                entity.Property(e => e.Description)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+            //modelBuilder.Entity<ControllerType>(entity =>
+            //{
+            //    entity.Property(e => e.ControllerTypeId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("ControllerTypeId");
 
-                entity.Property(e => e.Ftpdirectory)
-                    .IsUnicode(false)
-                    .HasColumnName("FTPDirectory");
+            //    entity.Property(e => e.ActiveFtp).HasColumnName("ActiveFTP");
 
-                entity.Property(e => e.Password)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+            //    entity.Property(e => e.Description)
+            //        .HasMaxLength(50)
+            //        .IsUnicode(false);
 
-                entity.Property(e => e.Snmpport).HasColumnName("SNMPPort");
+            //    entity.Property(e => e.Ftpdirectory)
+            //        .IsUnicode(false)
+            //        .HasColumnName("FTPDirectory");
 
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-            });
+            //    entity.Property(e => e.Password)
+            //        .HasMaxLength(50)
+            //        .IsUnicode(false);
 
-            modelBuilder.Entity<DatabaseArchiveExcludedSignal>(entity =>
-            {
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            //    entity.Property(e => e.Snmpport).HasColumnName("SNMPPort");
 
-            modelBuilder.Entity<DetectionHardware>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ID");
+            //    entity.Property(e => e.UserName)
+            //        .HasMaxLength(50)
+            //        .IsUnicode(false);
+            //});
 
-                entity.Property(e => e.Name).IsRequired();
-            });
+            //modelBuilder.Entity<DatabaseArchiveExcludedSignal>(entity =>
+            //{
+            //    entity.Property(e => e.SignalId).HasMaxLength(10);
+            //});
 
-            modelBuilder.Entity<DetectionType>(entity =>
-            {
-                entity.Property(e => e.DetectionTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("DetectionTypeID");
+            //modelBuilder.Entity<DetectionHardware>(entity =>
+            //{
+            //    entity.Property(e => e.Id)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("ID");
 
-                entity.Property(e => e.Description).IsRequired();
+            //    entity.Property(e => e.Name).IsRequired();
+            //});
 
-                entity.HasMany(d => d.MetricTypeMetrics)
-                    .WithMany(p => p.DetectionTypeDetectionTypes)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "DetectionTypeMetricType",
-                        l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<DetectionType>().WithMany().HasForeignKey("DetectionTypeDetectionTypeId").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID"),
-                        j =>
-                        {
-                            j.HasKey("DetectionTypeDetectionTypeId", "MetricTypeMetricId").HasName("PK_dbo.DetectionTypeMetricTypes");
+            //modelBuilder.Entity<DetectionType>(entity =>
+            //{
+            //    entity.Property(e => e.DetectionTypeId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("DetectionTypeID");
 
-                            j.ToTable("DetectionTypeMetricTypes");
+            //    entity.Property(e => e.Description).IsRequired();
 
-                            j.HasIndex(new[] { "DetectionTypeDetectionTypeId" }, "IX_DetectionType_DetectionTypeID");
+            //    entity.HasMany(d => d.MetricTypeMetrics)
+            //        .WithMany(p => p.DetectionTypeDetectionTypes)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "DetectionTypeMetricType",
+            //            l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
+            //            r => r.HasOne<DetectionType>().WithMany().HasForeignKey("DetectionTypeDetectionTypeId").HasConstraintName("FK_dbo.DetectionTypeMetricTypes_dbo.DetectionTypes_DetectionType_DetectionTypeID"),
+            //            j =>
+            //            {
+            //                j.HasKey("DetectionTypeDetectionTypeId", "MetricTypeMetricId").HasName("PK_dbo.DetectionTypeMetricTypes");
 
-                            j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
+            //                j.ToTable("DetectionTypeMetricTypes");
 
-                            j.IndexerProperty<int>("DetectionTypeDetectionTypeId").HasColumnName("DetectionType_DetectionTypeID");
+            //                j.HasIndex(new[] { "DetectionTypeDetectionTypeId" }, "IX_DetectionType_DetectionTypeID");
 
-                            j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
-                        });
-            });
+            //                j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
 
-            modelBuilder.Entity<Detector>(entity =>
-            {
-                entity.HasIndex(e => e.ApproachId, "IX_ApproachID");
+            //                j.IndexerProperty<int>("DetectionTypeDetectionTypeId").HasColumnName("DetectionType_DetectionTypeID");
 
-                entity.HasIndex(e => e.DetectionHardwareId, "IX_DetectionHardwareID");
+            //                j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
+            //            });
+            //});
 
-                entity.HasIndex(e => e.LaneTypeId, "IX_LaneTypeID");
+            //modelBuilder.Entity<Detector>(entity =>
+            //{
+            //    entity.HasIndex(e => e.ApproachId, "IX_ApproachID");
 
-                entity.HasIndex(e => e.MovementTypeId, "IX_MovementTypeID");
+            //    entity.HasIndex(e => e.DetectionHardwareId, "IX_DetectionHardwareID");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+            //    entity.HasIndex(e => e.LaneTypeId, "IX_LaneTypeID");
 
-                entity.Property(e => e.ApproachId).HasColumnName("ApproachID");
+            //    entity.HasIndex(e => e.MovementTypeId, "IX_MovementTypeID");
 
-                entity.Property(e => e.DateAdded).HasColumnType("datetime");
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.DateDisabled).HasColumnType("datetime");
+            //    entity.Property(e => e.ApproachId).HasColumnName("ApproachID");
 
-                entity.Property(e => e.DetectionHardwareId).HasColumnName("DetectionHardwareID");
+            //    entity.Property(e => e.DateAdded).HasColumnType("datetime");
 
-                entity.Property(e => e.DetectorId)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnName("DetectorID");
+            //    entity.Property(e => e.DateDisabled).HasColumnType("datetime");
 
-                entity.Property(e => e.LaneTypeId).HasColumnName("LaneTypeID");
+            //    entity.Property(e => e.DetectionHardwareId).HasColumnName("DetectionHardwareID");
 
-                entity.Property(e => e.MovementTypeId).HasColumnName("MovementTypeID");
+            //    entity.Property(e => e.DetectorId)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .HasColumnName("DetectorID");
 
-                entity.HasOne(d => d.Approach)
-                    .WithMany(p => p.Detectors)
-                    .HasForeignKey(d => d.ApproachId)
-                    .HasConstraintName("FK_dbo.Detectors_dbo.Approaches_ApproachID");
+            //    entity.Property(e => e.LaneTypeId).HasColumnName("LaneTypeID");
 
-                entity.HasOne(d => d.DetectionHardware)
-                    .WithMany(p => p.Detectors)
-                    .HasForeignKey(d => d.DetectionHardwareId)
-                    .HasConstraintName("FK_dbo.Detectors_dbo.DetectionHardwares_DetectionHardwareID");
+            //    entity.Property(e => e.MovementTypeId).HasColumnName("MovementTypeID");
 
-                entity.HasOne(d => d.LaneType)
-                    .WithMany(p => p.Detectors)
-                    .HasForeignKey(d => d.LaneTypeId)
-                    .HasConstraintName("FK_dbo.Detectors_dbo.LaneTypes_LaneTypeID");
+            //    entity.HasOne(d => d.Approach)
+            //        .WithMany(p => p.Detectors)
+            //        .HasForeignKey(d => d.ApproachId)
+            //        .HasConstraintName("FK_dbo.Detectors_dbo.Approaches_ApproachID");
 
-                entity.HasOne(d => d.MovementType)
-                    .WithMany(p => p.Detectors)
-                    .HasForeignKey(d => d.MovementTypeId)
-                    .HasConstraintName("FK_dbo.Detectors_dbo.MovementTypes_MovementTypeID");
+            //    entity.HasOne(d => d.DetectionHardware)
+            //        .WithMany(p => p.Detectors)
+            //        .HasForeignKey(d => d.DetectionHardwareId)
+            //        .HasConstraintName("FK_dbo.Detectors_dbo.DetectionHardwares_DetectionHardwareID");
 
-                entity.HasMany(d => d.DetectionTypes)
-                    .WithMany(p => p.Ids)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "DetectionTypeDetector",
-                        l => l.HasOne<DetectionType>().WithMany().HasForeignKey("DetectionTypeId").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID"),
-                        r => r.HasOne<Detector>().WithMany().HasForeignKey("Id").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID"),
-                        j =>
-                        {
-                            j.HasKey("Id", "DetectionTypeId").HasName("PK_dbo.DetectionTypeDetector");
+            //    entity.HasOne(d => d.LaneType)
+            //        .WithMany(p => p.Detectors)
+            //        .HasForeignKey(d => d.LaneTypeId)
+            //        .HasConstraintName("FK_dbo.Detectors_dbo.LaneTypes_LaneTypeID");
 
-                            j.ToTable("DetectionTypeDetector");
+            //    entity.HasOne(d => d.MovementType)
+            //        .WithMany(p => p.Detectors)
+            //        .HasForeignKey(d => d.MovementTypeId)
+            //        .HasConstraintName("FK_dbo.Detectors_dbo.MovementTypes_MovementTypeID");
 
-                            j.HasIndex(new[] { "DetectionTypeId" }, "IX_DetectionTypeID");
+            //    entity.HasMany(d => d.DetectionTypes)
+            //        .WithMany(p => p.Ids)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "DetectionTypeDetector",
+            //            l => l.HasOne<DetectionType>().WithMany().HasForeignKey("DetectionTypeId").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.DetectionTypes_DetectionTypeID"),
+            //            r => r.HasOne<Detector>().WithMany().HasForeignKey("Id").HasConstraintName("FK_dbo.DetectionTypeDetector_dbo.Detectors_ID"),
+            //            j =>
+            //            {
+            //                j.HasKey("Id", "DetectionTypeId").HasName("PK_dbo.DetectionTypeDetector");
 
-                            j.HasIndex(new[] { "Id" }, "IX_ID");
+            //                j.ToTable("DetectionTypeDetector");
 
-                            j.IndexerProperty<int>("Id").HasColumnName("ID");
+            //                j.HasIndex(new[] { "DetectionTypeId" }, "IX_DetectionTypeID");
 
-                            j.IndexerProperty<int>("DetectionTypeId").HasColumnName("DetectionTypeID");
-                        });
-            });
+            //                j.HasIndex(new[] { "Id" }, "IX_ID");
 
-            modelBuilder.Entity<DetectorComment>(entity =>
-            {
-                entity.HasKey(e => e.CommentId)
-                    .HasName("PK_dbo.DetectorComments");
+            //                j.IndexerProperty<int>("Id").HasColumnName("ID");
 
-                entity.HasIndex(e => e.Id, "IX_ID");
+            //                j.IndexerProperty<int>("DetectionTypeId").HasColumnName("DetectionTypeID");
+            //            });
+            //});
 
-                entity.Property(e => e.CommentId).HasColumnName("CommentID");
+            //modelBuilder.Entity<DetectorComment>(entity =>
+            //{
+            //    entity.HasKey(e => e.CommentId)
+            //        .HasName("PK_dbo.DetectorComments");
 
-                entity.Property(e => e.CommentText).IsRequired();
+            //    entity.HasIndex(e => e.Id, "IX_ID");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+            //    entity.Property(e => e.CommentId).HasColumnName("CommentID");
 
-                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            //    entity.Property(e => e.CommentText).IsRequired();
 
-                entity.HasOne(d => d.IdNavigation)
-                    .WithMany(p => p.DetectorComments)
-                    .HasForeignKey(d => d.Id)
-                    .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
-            });
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-            modelBuilder.Entity<DirectionType>(entity =>
-            {
-                entity.Property(e => e.DirectionTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("DirectionTypeID");
+            //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
-                entity.Property(e => e.Abbreviation).HasMaxLength(5);
+            //    entity.HasOne(d => d.IdNavigation)
+            //        .WithMany(p => p.DetectorComments)
+            //        .HasForeignKey(d => d.Id)
+            //        .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
+            //});
 
-                entity.Property(e => e.Description).HasMaxLength(30);
-            });
+            //modelBuilder.Entity<DirectionType>(entity =>
+            //{
+            //    entity.Property(e => e.DirectionTypeId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("DirectionTypeID");
 
-            modelBuilder.Entity<ExternalLink>(entity =>
-            {
-                entity.Property(e => e.ExternalLinkId).HasColumnName("ExternalLinkID");
+            //    entity.Property(e => e.Abbreviation).HasMaxLength(5);
 
-                entity.Property(e => e.Name).IsRequired();
+            //    entity.Property(e => e.Description).HasMaxLength(30);
+            //});
 
-                entity.Property(e => e.Url).IsRequired();
-            });
+            //modelBuilder.Entity<ExternalLink>(entity =>
+            //{
+            //    entity.Property(e => e.ExternalLinkId).HasColumnName("ExternalLinkID");
 
-            modelBuilder.Entity<Faq>(entity =>
-            {
-                entity.ToTable("FAQs");
+            //    entity.Property(e => e.Name).IsRequired();
 
-                entity.Property(e => e.Faqid).HasColumnName("FAQID");
+            //    entity.Property(e => e.Url).IsRequired();
+            //});
 
-                entity.Property(e => e.Body).IsRequired();
+            //modelBuilder.Entity<Faq>(entity =>
+            //{
+            //    entity.ToTable("FAQs");
 
-                entity.Property(e => e.Header).IsRequired();
-            });
+            //    entity.Property(e => e.Faqid).HasColumnName("FAQID");
 
-            modelBuilder.Entity<Jurisdiction>(entity =>
-            {
-                entity.Property(e => e.CountyParish).HasMaxLength(50);
+            //    entity.Property(e => e.Body).IsRequired();
 
-                entity.Property(e => e.JurisdictionName).HasMaxLength(50);
+            //    entity.Property(e => e.Header).IsRequired();
+            //});
 
-                entity.Property(e => e.Mpo)
-                    .HasMaxLength(50)
-                    .HasColumnName("MPO");
+            modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
 
-                entity.Property(e => e.OtherPartners).HasMaxLength(50);
-            });
+            //modelBuilder.Entity<Jurisdiction>(entity =>
+            //{
+            //    entity.Property(e => e.CountyParish).HasMaxLength(50);
 
-            modelBuilder.Entity<LaneType>(entity =>
-            {
-                entity.Property(e => e.LaneTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("LaneTypeID");
+            //    entity.Property(e => e.JurisdictionName).HasMaxLength(50);
 
-                entity.Property(e => e.Abbreviation)
-                    .IsRequired()
-                    .HasMaxLength(5);
+            //    entity.Property(e => e.Mpo)
+            //        .HasMaxLength(50)
+            //        .HasColumnName("MPO");
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(30);
-            });
+            //    entity.Property(e => e.OtherPartners).HasMaxLength(50);
+            //});
 
-            modelBuilder.Entity<MeasuresDefault>(entity =>
-            {
-                entity.HasKey(e => new { e.Measure, e.OptionName })
-                    .HasName("PK_dbo.MeasuresDefaults");
+            //modelBuilder.Entity<LaneType>(entity =>
+            //{
+            //    entity.Property(e => e.LaneTypeId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("LaneTypeID");
 
-                entity.Property(e => e.Measure).HasMaxLength(128);
+            //    entity.Property(e => e.Abbreviation)
+            //        .IsRequired()
+            //        .HasMaxLength(5);
 
-                entity.Property(e => e.OptionName).HasMaxLength(128);
-            });
+            //    entity.Property(e => e.Description)
+            //        .IsRequired()
+            //        .HasMaxLength(30);
+            //});
 
-            modelBuilder.Entity<Menu>(entity =>
-            {
-                entity.ToTable("Menu");
+            //modelBuilder.Entity<MeasuresDefault>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.Measure, e.OptionName })
+            //        .HasName("PK_dbo.MeasuresDefaults");
 
-                entity.Property(e => e.MenuId).ValueGeneratedNever();
+            //    entity.Property(e => e.Measure).HasMaxLength(128);
 
-                entity.Property(e => e.Action)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasDefaultValueSql("('')");
+            //    entity.Property(e => e.OptionName).HasMaxLength(128);
+            //});
 
-                entity.Property(e => e.Application)
-                    .IsRequired()
-                    .HasMaxLength(50);
+            //modelBuilder.Entity<Menu>(entity =>
+            //{
+            //    entity.ToTable("Menu");
 
-                entity.Property(e => e.Controller)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasDefaultValueSql("('')");
+            //    entity.Property(e => e.MenuId).ValueGeneratedNever();
 
-                entity.Property(e => e.MenuName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
+            //    entity.Property(e => e.Action)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .HasDefaultValueSql("('')");
 
-            modelBuilder.Entity<MetricComment>(entity =>
-            {
-                entity.HasKey(e => e.CommentId)
-                    .HasName("PK_dbo.MetricComments");
+            //    entity.Property(e => e.Application)
+            //        .IsRequired()
+            //        .HasMaxLength(50);
 
-                entity.HasIndex(e => e.VersionId, "IX_VersionID");
+            //    entity.Property(e => e.Controller)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.CommentId).HasColumnName("CommentID");
+            //    entity.Property(e => e.MenuName)
+            //        .IsRequired()
+            //        .HasMaxLength(50);
+            //});
 
-                entity.Property(e => e.CommentText).IsRequired();
+            //modelBuilder.Entity<MetricComment>(entity =>
+            //{
+            //    entity.HasKey(e => e.CommentId)
+            //        .HasName("PK_dbo.MetricComments");
 
-                entity.Property(e => e.SignalId)
-                    .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+            //    entity.HasIndex(e => e.VersionId, "IX_VersionID");
 
-                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            //    entity.Property(e => e.CommentId).HasColumnName("CommentID");
 
-                entity.Property(e => e.VersionId).HasColumnName("VersionID");
+            //    entity.Property(e => e.CommentText).IsRequired();
 
-                entity.HasMany(d => d.MetricTypeMetrics)
-                    .WithMany(p => p.MetricCommentComments)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "MetricCommentMetricType",
-                        l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
-                        r => r.HasOne<MetricComment>().WithMany().HasForeignKey("MetricCommentCommentId").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID"),
-                        j =>
-                        {
-                            j.HasKey("MetricCommentCommentId", "MetricTypeMetricId").HasName("PK_dbo.MetricCommentMetricTypes");
+            //    entity.Property(e => e.SignalId)
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
 
-                            j.ToTable("MetricCommentMetricTypes");
+            //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
 
-                            j.HasIndex(new[] { "MetricCommentCommentId" }, "IX_MetricComment_CommentID");
+            //    entity.Property(e => e.VersionId).HasColumnName("VersionID");
 
-                            j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
+            //    entity.HasMany(d => d.MetricTypeMetrics)
+            //        .WithMany(p => p.MetricCommentComments)
+            //        .UsingEntity<Dictionary<string, object>>(
+            //            "MetricCommentMetricType",
+            //            l => l.HasOne<MetricType>().WithMany().HasForeignKey("MetricTypeMetricId").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricTypes_MetricType_MetricID"),
+            //            r => r.HasOne<MetricComment>().WithMany().HasForeignKey("MetricCommentCommentId").HasConstraintName("FK_dbo.MetricCommentMetricTypes_dbo.MetricComments_MetricComment_CommentID"),
+            //            j =>
+            //            {
+            //                j.HasKey("MetricCommentCommentId", "MetricTypeMetricId").HasName("PK_dbo.MetricCommentMetricTypes");
 
-                            j.IndexerProperty<int>("MetricCommentCommentId").HasColumnName("MetricComment_CommentID");
+            //                j.ToTable("MetricCommentMetricTypes");
 
-                            j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
-                        });
-            });
+            //                j.HasIndex(new[] { "MetricCommentCommentId" }, "IX_MetricComment_CommentID");
 
-            modelBuilder.Entity<MetricType>(entity =>
-            {
-                entity.HasKey(e => e.MetricId)
-                    .HasName("PK_dbo.MetricTypes");
+            //                j.HasIndex(new[] { "MetricTypeMetricId" }, "IX_MetricType_MetricID");
 
-                entity.Property(e => e.MetricId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("MetricID");
+            //                j.IndexerProperty<int>("MetricCommentCommentId").HasColumnName("MetricComment_CommentID");
 
-                entity.Property(e => e.Abbreviation).IsRequired();
+            //                j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
+            //            });
+            //});
 
-                entity.Property(e => e.ChartName).IsRequired();
-            });
+            //modelBuilder.Entity<MetricType>(entity =>
+            //{
+            //    entity.HasKey(e => e.MetricId)
+            //        .HasName("PK_dbo.MetricTypes");
 
-            modelBuilder.Entity<MetricsFilterType>(entity =>
-            {
-                entity.HasKey(e => e.FilterId)
-                    .HasName("PK_dbo.MetricsFilterTypes");
+            //    entity.Property(e => e.MetricId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("MetricID");
 
-                entity.Property(e => e.FilterId).HasColumnName("FilterID");
+            //    entity.Property(e => e.Abbreviation).IsRequired();
 
-                entity.Property(e => e.FilterName).IsRequired();
-            });
+            //    entity.Property(e => e.ChartName).IsRequired();
+            //});
 
-            modelBuilder.Entity<MovementType>(entity =>
-            {
-                entity.Property(e => e.MovementTypeId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("MovementTypeID");
+            //modelBuilder.Entity<MetricsFilterType>(entity =>
+            //{
+            //    entity.HasKey(e => e.FilterId)
+            //        .HasName("PK_dbo.MetricsFilterTypes");
 
-                entity.Property(e => e.Abbreviation)
-                    .IsRequired()
-                    .HasMaxLength(5);
+            //    entity.Property(e => e.FilterId).HasColumnName("FilterID");
 
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(30);
-            });
+            //    entity.Property(e => e.FilterName).IsRequired();
+            //});
 
-            modelBuilder.Entity<PhaseCycleAggregation>(entity =>
-            {
-                entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
-                    .HasName("PK_dbo.PhaseCycleAggregations");
+            //modelBuilder.Entity<MovementType>(entity =>
+            //{
+            //    entity.Property(e => e.MovementTypeId)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("MovementTypeID");
 
-                entity.Property(e => e.BinStartTime).HasColumnType("datetime");
+            //    entity.Property(e => e.Abbreviation)
+            //        .IsRequired()
+            //        .HasMaxLength(5);
 
-                entity.Property(e => e.SignalId).HasMaxLength(10);
-            });
+            //    entity.Property(e => e.Description)
+            //        .IsRequired()
+            //        .HasMaxLength(30);
+            //});
 
-            modelBuilder.Entity<Region>(entity =>
-            {
-                entity.ToTable("Region");
+            //modelBuilder.Entity<PhaseCycleAggregation>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber })
+            //        .HasName("PK_dbo.PhaseCycleAggregations");
 
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ID");
+            //    entity.Property(e => e.BinStartTime).HasColumnType("datetime");
 
-                entity.Property(e => e.Description).HasMaxLength(50);
-            });
+            //    entity.Property(e => e.SignalId).HasMaxLength(10);
+            //});
 
-            modelBuilder.Entity<Route>(entity =>
-            {
-                entity.Property(e => e.RouteName).IsRequired();
-            });
+            modelBuilder.ApplyConfiguration(new RegionConfiguration());
 
-            modelBuilder.Entity<RoutePhaseDirection>(entity =>
-            {
-                entity.HasIndex(e => e.DirectionTypeId, "IX_DirectionTypeId");
+            //modelBuilder.Entity<Region>(entity =>
+            //{
+            //    entity.ToTable("Region");
 
-                entity.HasIndex(e => e.RouteSignalId, "IX_RouteSignalId");
+            //    entity.Property(e => e.Id)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("ID");
 
-                entity.HasOne(d => d.DirectionType)
-                    .WithMany(p => p.RoutePhaseDirections)
-                    .HasForeignKey(d => d.DirectionTypeId)
-                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeId");
+            //    entity.Property(e => e.Description).HasMaxLength(50);
+            //});
 
-                entity.HasOne(d => d.RouteSignal)
-                    .WithMany(p => p.RoutePhaseDirections)
-                    .HasForeignKey(d => d.RouteSignalId)
-                    .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
-            });
+            //modelBuilder.Entity<Route>(entity =>
+            //{
+            //    entity.Property(e => e.RouteName).IsRequired();
+            //});
 
-            modelBuilder.Entity<RouteSignal>(entity =>
-            {
-                entity.HasIndex(e => e.RouteId, "IX_RouteId");
+            //modelBuilder.Entity<RoutePhaseDirection>(entity =>
+            //{
+            //    entity.HasIndex(e => e.DirectionTypeId, "IX_DirectionTypeId");
 
-                entity.Property(e => e.SignalId)
-                    .IsRequired()
-                    .HasMaxLength(10);
+            //    entity.HasIndex(e => e.RouteSignalId, "IX_RouteSignalId");
 
-                entity.HasOne(d => d.Route)
-                    .WithMany(p => p.RouteSignals)
-                    .HasForeignKey(d => d.RouteId)
-                    .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteId");
-            });
+            //    entity.HasOne(d => d.DirectionType)
+            //        .WithMany(p => p.RoutePhaseDirections)
+            //        .HasForeignKey(d => d.DirectionTypeId)
+            //        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.DirectionTypes_DirectionTypeId");
 
-            modelBuilder.Entity<Signal>(entity =>
-            {
-                entity.HasKey(e => e.VersionId)
-                    .HasName("PK_dbo.Signals");
+            //    entity.HasOne(d => d.RouteSignal)
+            //        .WithMany(p => p.RoutePhaseDirections)
+            //        .HasForeignKey(d => d.RouteSignalId)
+            //        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
+            //});
 
-                entity.HasIndex(e => e.ControllerTypeId, "IX_ControllerTypeId");
+            //modelBuilder.Entity<RouteSignal>(entity =>
+            //{
+            //    entity.HasIndex(e => e.RouteId, "IX_RouteId");
 
-                entity.HasIndex(e => e.JurisdictionId, "IX_JurisdictionId");
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10);
 
-                entity.HasIndex(e => e.RegionId, "IX_RegionID");
+            //    entity.HasOne(d => d.Route)
+            //        .WithMany(p => p.RouteSignals)
+            //        .HasForeignKey(d => d.RouteId)
+            //        .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteId");
+            //});
 
-                entity.HasIndex(e => e.VersionActionId, "IX_VersionActionId");
+            modelBuilder.ApplyConfiguration(new SignalConfiguration());
 
-                entity.Property(e => e.VersionId).HasColumnName("VersionID");
+            //modelBuilder.Entity<Signal>(entity =>
+            //{
+            //    entity.HasKey(e => e.VersionId)
+            //        .HasName("PK_dbo.Signals");
 
-                entity.Property(e => e.ControllerTypeId).HasColumnName("ControllerTypeId");
+            //    entity.HasIndex(e => e.ControllerTypeId, "IX_ControllerTypeId");
 
-                entity.Property(e => e.Ipaddress)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("IPAddress")
-                    .HasDefaultValueSql("('')");
+            //    entity.HasIndex(e => e.JurisdictionId, "IX_JurisdictionId");
 
-                entity.Property(e => e.JurisdictionId).HasDefaultValueSql("((1))");
+            //    entity.HasIndex(e => e.RegionId, "IX_RegionID");
 
-                entity.Property(e => e.Latitude)
-                    .IsRequired()
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
+            //    entity.HasIndex(e => e.VersionActionId, "IX_VersionActionId");
 
-                entity.Property(e => e.Longitude)
-                    .IsRequired()
-                    .HasMaxLength(30)
-                    .IsUnicode(false);
+            //    entity.Property(e => e.VersionId).HasColumnName("VersionID");
 
-                entity.Property(e => e.Note)
-                    .IsRequired()
-                    .HasDefaultValueSql("('Initial')");
+            //    entity.Property(e => e.ControllerTypeId).HasColumnName("ControllerTypeId");
 
-                entity.Property(e => e.PrimaryName)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasDefaultValueSql("('')");
+            //    entity.Property(e => e.Ipaddress)
+            //        .IsRequired()
+            //        .HasMaxLength(50)
+            //        .IsUnicode(false)
+            //        .HasColumnName("IPAddress")
+            //        .HasDefaultValueSql("('')");
 
-                entity.Property(e => e.RegionId).HasColumnName("RegionID");
+            //    entity.Property(e => e.JurisdictionId).HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.SecondaryName)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasDefaultValueSql("('')");
+            //    entity.Property(e => e.Latitude)
+            //        .IsRequired()
+            //        .HasMaxLength(30)
+            //        .IsUnicode(false);
 
-                entity.Property(e => e.SignalId)
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+            //    entity.Property(e => e.Longitude)
+            //        .IsRequired()
+            //        .HasMaxLength(30)
+            //        .IsUnicode(false);
 
-                entity.Property(e => e.Start).HasColumnType("datetime");
+            //    entity.Property(e => e.Note)
+            //        .IsRequired()
+            //        .HasDefaultValueSql("('Initial')");
 
-                entity.Property(e => e.VersionActionId).HasDefaultValueSql("((10))");
+            //    entity.Property(e => e.PrimaryName)
+            //        .IsRequired()
+            //        .HasMaxLength(100)
+            //        .IsUnicode(false)
+            //        .HasDefaultValueSql("('')");
 
-                entity.HasOne(d => d.ControllerType)
-                    .WithMany(p => p.Signals)
-                    .HasForeignKey(d => d.ControllerTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeId");
+            //    entity.Property(e => e.RegionId).HasColumnName("RegionID");
 
-                entity.HasOne(d => d.Jurisdiction)
-                    .WithMany(p => p.Signals)
-                    .HasForeignKey(d => d.JurisdictionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionId");
+            //    entity.Property(e => e.SecondaryName)
+            //        .IsRequired()
+            //        .HasMaxLength(100)
+            //        .IsUnicode(false)
+            //        .HasDefaultValueSql("('')");
 
-                entity.HasOne(d => d.Region)
-                    .WithMany(p => p.Signals)
-                    .HasForeignKey(d => d.RegionId)
-                    .HasConstraintName("FK_dbo.Signals_dbo.Region_RegionID");
-            });
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
 
-            modelBuilder.Entity<SignalToAggregate>(entity =>
-            {
-                entity.HasKey(e => e.SignalId)
-                    .HasName("PK_dbo.SignalToAggregates");
+            //    entity.Property(e => e.Start).HasColumnType("datetime");
 
-                entity.Property(e => e.SignalId)
-                    .HasMaxLength(10)
-                    .HasColumnName("SignalID");
-            });
+            //    entity.Property(e => e.VersionActionId).HasDefaultValueSql("((10))");
 
-            modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
-            {
-                entity.ToTable("SPMWatchDogErrorEvents");
+            //    entity.HasOne(d => d.ControllerType)
+            //        .WithMany(p => p.Signals)
+            //        .HasForeignKey(d => d.ControllerTypeId)
+            //        .OnDelete(DeleteBehavior.ClientSetNull)
+            //        .HasConstraintName("FK_dbo.Signals_dbo.ControllerTypes_ControllerTypeId");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+            //    entity.HasOne(d => d.Jurisdiction)
+            //        .WithMany(p => p.Signals)
+            //        .HasForeignKey(d => d.JurisdictionId)
+            //        .OnDelete(DeleteBehavior.ClientSetNull)
+            //        .HasConstraintName("FK_dbo.Signals_dbo.Jurisdictions_JurisdictionId");
 
-                entity.Property(e => e.DetectorId).HasColumnName("DetectorID");
+            //    entity.HasOne(d => d.Region)
+            //        .WithMany(p => p.Signals)
+            //        .HasForeignKey(d => d.RegionId)
+            //        .HasConstraintName("FK_dbo.Signals_dbo.Region_RegionID");
+            //});
 
-                entity.Property(e => e.Direction).IsRequired();
+            //modelBuilder.Entity<SignalToAggregate>(entity =>
+            //{
+            //    entity.HasKey(e => e.SignalId)
+            //        .HasName("PK_dbo.SignalToAggregates");
 
-                entity.Property(e => e.Message).IsRequired();
+            //    entity.Property(e => e.SignalId)
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
+            //});
 
-                entity.Property(e => e.SignalId)
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnName("SignalID");
+            //modelBuilder.Entity<SpmwatchDogErrorEvent>(entity =>
+            //{
+            //    entity.ToTable("SPMWatchDogErrorEvents");
 
-                entity.Property(e => e.TimeStamp).HasColumnType("datetime");
-            });
+            //    entity.Property(e => e.Id).HasColumnName("ID");
 
-            modelBuilder.Entity<StatusOfProcessedTable>(entity =>
-            {
-                entity.Property(e => e.SqlstatementOrMessage).HasColumnName("SQLStatementOrMessage");
+            //    entity.Property(e => e.DetectorId).HasColumnName("DetectorID");
 
-                entity.Property(e => e.TimeEntered).HasColumnType("datetime");
-            });
+            //    entity.Property(e => e.Direction).IsRequired();
 
-            modelBuilder.Entity<TablePartitionProcessed>(entity =>
-            {
-                entity.Property(e => e.FileGroupName).IsRequired();
+            //    entity.Property(e => e.Message).IsRequired();
 
-                entity.Property(e => e.SwapTableName).IsRequired();
+            //    entity.Property(e => e.SignalId)
+            //        .IsRequired()
+            //        .HasMaxLength(10)
+            //        .HasColumnName("SignalID");
 
-                entity.Property(e => e.TimeIndexdropped).HasColumnType("datetime");
+            //    entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+            //});
 
-                entity.Property(e => e.TimeSwappedTableDropped).HasColumnType("datetime");
-            });
+            //modelBuilder.Entity<StatusOfProcessedTable>(entity =>
+            //{
+            //    entity.Property(e => e.SqlstatementOrMessage).HasColumnName("SQLStatementOrMessage");
 
-            modelBuilder.Entity<ToBeProcessededIndex>(entity =>
-            {
-                entity.Property(e => e.ClusterText).IsRequired();
+            //    entity.Property(e => e.TimeEntered).HasColumnType("datetime");
+            //});
 
-                entity.Property(e => e.IndexName).IsRequired();
+            //modelBuilder.Entity<TablePartitionProcessed>(entity =>
+            //{
+            //    entity.Property(e => e.FileGroupName).IsRequired();
 
-                entity.Property(e => e.TextForIndex).IsRequired();
-            });
+            //    entity.Property(e => e.SwapTableName).IsRequired();
 
-            modelBuilder.Entity<ToBeProcessededTable>(entity =>
-            {
-                entity.Property(e => e.CreateColumns4Table).IsRequired();
+            //    entity.Property(e => e.TimeIndexdropped).HasColumnType("datetime");
 
-                entity.Property(e => e.DataBaseName).IsRequired();
+            //    entity.Property(e => e.TimeSwappedTableDropped).HasColumnType("datetime");
+            //});
 
-                entity.Property(e => e.InsertValues).IsRequired();
+            //modelBuilder.Entity<ToBeProcessededIndex>(entity =>
+            //{
+            //    entity.Property(e => e.ClusterText).IsRequired();
 
-                entity.Property(e => e.PartitionedTableName).IsRequired();
+            //    entity.Property(e => e.IndexName).IsRequired();
 
-                entity.Property(e => e.PreserveDataSelect).IsRequired();
+            //    entity.Property(e => e.TextForIndex).IsRequired();
+            //});
 
-                entity.Property(e => e.PreserveDataWhere).IsRequired();
+            //modelBuilder.Entity<ToBeProcessededTable>(entity =>
+            //{
+            //    entity.Property(e => e.CreateColumns4Table).IsRequired();
 
-                entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
-            });
+            //    entity.Property(e => e.DataBaseName).IsRequired();
 
-            modelBuilder.Entity<VersionAction>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ID");
-            });
+            //    entity.Property(e => e.InsertValues).IsRequired();
+
+            //    entity.Property(e => e.PartitionedTableName).IsRequired();
+
+            //    entity.Property(e => e.PreserveDataSelect).IsRequired();
+
+            //    entity.Property(e => e.PreserveDataWhere).IsRequired();
+
+            //    entity.Property(e => e.UpdatedTime).HasColumnType("datetime");
+            //});
+
+            modelBuilder.ApplyConfiguration(new VersionActionConfiguration());
+
+            //modelBuilder.Entity<VersionAction>(entity =>
+            //{
+            //    entity.Property(e => e.Id)
+            //        .ValueGeneratedNever()
+            //        .HasColumnName("ID");
+            //});
 
             OnModelCreatingPartial(modelBuilder);
         }

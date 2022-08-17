@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.ValueObjects;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,7 @@ namespace ATSPM.Infrasturcture.Repositories
         {
             var newVersion = (Signal)originalVersion.Clone();
 
-            newVersion.VersionAction = _db.Set<VersionAction>().Find(4);
+            newVersion.VersionAction = _db.Set<VersionAction>().Find(SignaVersionActions.NewVersion);
 
             //newVersion.VersionAction = (from r in _db.VersionActions
             //                            where r.ID == 4
@@ -107,7 +108,7 @@ namespace ATSPM.Infrasturcture.Repositories
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
             var result = table
-                .Where(v => v.VersionActionId != 3)
+                .Where(v => v.VersionActionId != SignaVersionActions.Delete)
                 .Include(i => i.ControllerType)
                 .AsNoTracking()
                 .AsEnumerable()

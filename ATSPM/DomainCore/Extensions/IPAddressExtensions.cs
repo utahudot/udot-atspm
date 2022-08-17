@@ -39,5 +39,31 @@ namespace ATSPM.Domain.Extensions
 
             return false;
         }
+
+        public static bool IsValidIPAddress(this IPAddress ipaddress, bool ping = false, int timeout = 4000)
+        {
+
+
+            if (ping)
+            {
+                Ping pingSender = new Ping();
+                byte[] buffer = new byte[32];
+
+                try
+                {
+                    PingReply reply = pingSender.Send(ipaddress, timeout, buffer, new PingOptions(128, true));
+                    if (reply != null && reply.Status == IPStatus.Success)
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return ipaddress != null;
+        }
     }
 }

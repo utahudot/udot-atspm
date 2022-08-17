@@ -34,6 +34,13 @@ namespace ATSPM.Data
         public virtual DbSet<SignalEventCountAggregation> SignalEventCountAggregations { get; set; }
         public virtual DbSet<SignalPlanAggregation> SignalPlanAggregations { get; set; }
 
+        //TODO: need to remove date overrides from Configurations and redo EFCore6Upgrade migration
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<string>().AreUnicode(false);
+            configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ApproachPcdAggregationConfiguration());

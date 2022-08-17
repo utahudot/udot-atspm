@@ -58,7 +58,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerType?.ControllerTypeId == ControllerType && value.Enabled;
+            return value?.ControllerType?.Id == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -88,7 +88,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     try
                     {
-                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress);
+                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress.ToString());
 
                         logMessages.ConnectingToHostMessage(parameter.SignalId, parameter.Ipaddress);
 
