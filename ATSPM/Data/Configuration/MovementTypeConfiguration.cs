@@ -1,0 +1,35 @@
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+
+namespace ATSPM.Data.Configuration
+{
+    public class MovementTypeConfiguration : IEntityTypeConfiguration<MovementType>
+    {
+        public void Configure(EntityTypeBuilder<MovementType> builder)
+        {
+            builder.Property(e => e.Id)
+                .ValueGeneratedNever();
+                //.HasColumnName("MovementTypeID");
+
+            builder.Property(e => e.Abbreviation)
+                .IsRequired()
+                .HasMaxLength(5);
+
+            builder.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(30);
+
+            builder.HasData(typeof(LaneTypes).GetFields().Where(t => t.FieldType == typeof(MovementTypes)).Select(s => new MovementType()
+            {
+                Id = (MovementTypes)s.GetValue(s),
+                Description = s.GetCustomAttribute<DisplayAttribute>().Name,
+                Abbreviation = s.GetValue(s).ToString(),
+                DisplayOrder = s.GetCustomAttribute<DisplayAttribute>().Order
+            }));
+        }
+    }
+}

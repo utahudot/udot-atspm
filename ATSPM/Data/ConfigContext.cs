@@ -27,36 +27,36 @@ namespace ATSPM.Data
         //public virtual DbSet<ActionLogAction> ActionLogActions { get; set; }
         //public virtual DbSet<ActionLogMetricType> ActionLogMetricTypes { get; set; }
         //public virtual DbSet<Agency> Agencies { get; set; }
-        //public virtual DbSet<Application> Applications { get; set; }
-        //public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
-        //public virtual DbSet<Approach> Approaches { get; set; }
+        public virtual DbSet<Application> Applications { get; set; }
+        public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
+        public virtual DbSet<Approach> Approaches { get; set; }
         public virtual DbSet<Area> Areas { get; set; }
         //public virtual DbSet<AreaSignal> AreaSignals { get; set; }
         //public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<ControllerType> ControllerTypes { get; set; }
         //public virtual DbSet<DatabaseArchiveExcludedSignal> DatabaseArchiveExcludedSignals { get; set; }
-        //public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
-        //public virtual DbSet<DetectionType> DetectionTypes { get; set; }
+        public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
+        public virtual DbSet<DetectionType> DetectionTypes { get; set; }
         //public virtual DbSet<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
         //public virtual DbSet<DetectionTypeMetricType> DetectionTypeMetricTypes { get; set; }
-        //public virtual DbSet<Detector> Detectors { get; set; }
-        //public virtual DbSet<DetectorComment> DetectorComments { get; set; }
-        //public virtual DbSet<DirectionType> DirectionTypes { get; set; }
+        public virtual DbSet<Detector> Detectors { get; set; }
+        public virtual DbSet<DetectorComment> DetectorComments { get; set; }
+        public virtual DbSet<DirectionType> DirectionTypes { get; set; }
         //public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
         //public virtual DbSet<Faq> Faqs { get; set; }
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
-        //public virtual DbSet<LaneType> LaneTypes { get; set; }
+        public virtual DbSet<LaneType> LaneTypes { get; set; }
         //public virtual DbSet<MeasuresDefault> MeasuresDefaults { get; set; }
         //public virtual DbSet<Menu> Menus { get; set; }
         //public virtual DbSet<MetricComment> MetricComments { get; set; }
         //public virtual DbSet<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
         //public virtual DbSet<MetricType> MetricTypes { get; set; }
         //public virtual DbSet<MetricsFilterType> MetricsFilterTypes { get; set; }
-        //public virtual DbSet<MovementType> MovementTypes { get; set; }
+        public virtual DbSet<MovementType> MovementTypes { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
-        //public virtual DbSet<Route> Routes { get; set; }
-        //public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
-        //public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        public virtual DbSet<Route> Routes { get; set; }
+        public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
+        public virtual DbSet<RouteSignal> RouteSignals { get; set; }
         public virtual DbSet<Signal> Signals { get; set; }
         //public virtual DbSet<SignalToAggregate> SignalToAggregates { get; set; }
         //public virtual DbSet<SpmwatchDogErrorEvent> SpmwatchDogErrorEvents { get; set; }
@@ -66,8 +66,13 @@ namespace ATSPM.Data
         {
             configurationBuilder.Properties<string>().AreUnicode(false);
             configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
-            configurationBuilder.Properties<SignaVersionActions>().HaveConversion<int>();
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
+            configurationBuilder.Properties<SignaVersionActions>().HaveConversion<int>();
+            configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<DetectionTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<ApplicationTypes>().HaveConversion<int>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -157,6 +162,8 @@ namespace ATSPM.Data
             //    entity.Property(e => e.Description).HasMaxLength(50);
             //});
 
+            modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
+
             //modelBuilder.Entity<Application>(entity =>
             //{
             //    entity.Property(e => e.Id).HasColumnName("ID");
@@ -172,6 +179,8 @@ namespace ATSPM.Data
 
             //    entity.Property(e => e.Timestamp).HasColumnType("datetime");
             //});
+
+            modelBuilder.ApplyConfiguration(new ApplicationSettingConfiguration());
 
             //modelBuilder.Entity<ApplicationSetting>(entity =>
             //{
@@ -194,6 +203,8 @@ namespace ATSPM.Data
             //        .HasForeignKey(d => d.ApplicationId)
             //        .HasConstraintName("FK_dbo.ApplicationSettings_dbo.Applications_ApplicationID");
             //});
+
+            modelBuilder.ApplyConfiguration(new ApproachConfiguration());
 
             //modelBuilder.Entity<Approach>(entity =>
             //{
@@ -384,6 +395,8 @@ namespace ATSPM.Data
             //    entity.Property(e => e.SignalId).HasMaxLength(10);
             //});
 
+            modelBuilder.ApplyConfiguration(new DetectionHardwareConfiguration());
+
             //modelBuilder.Entity<DetectionHardware>(entity =>
             //{
             //    entity.Property(e => e.Id)
@@ -392,6 +405,8 @@ namespace ATSPM.Data
 
             //    entity.Property(e => e.Name).IsRequired();
             //});
+
+            modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
 
             //modelBuilder.Entity<DetectionType>(entity =>
             //{
@@ -422,6 +437,8 @@ namespace ATSPM.Data
             //                j.IndexerProperty<int>("MetricTypeMetricId").HasColumnName("MetricType_MetricID");
             //            });
             //});
+
+            modelBuilder.ApplyConfiguration(new DetectorConfiguration());
 
             //modelBuilder.Entity<Detector>(entity =>
             //{
@@ -494,6 +511,8 @@ namespace ATSPM.Data
             //            });
             //});
 
+            modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());
+
             //modelBuilder.Entity<DetectorComment>(entity =>
             //{
             //    entity.HasKey(e => e.CommentId)
@@ -514,6 +533,8 @@ namespace ATSPM.Data
             //        .HasForeignKey(d => d.Id)
             //        .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
             //});
+
+            modelBuilder.ApplyConfiguration(new DirectionTypeConfiguration());
 
             //modelBuilder.Entity<DirectionType>(entity =>
             //{
@@ -560,6 +581,8 @@ namespace ATSPM.Data
 
             //    entity.Property(e => e.OtherPartners).HasMaxLength(50);
             //});
+
+            modelBuilder.ApplyConfiguration(new LaneTypeConfiguration());
 
             //modelBuilder.Entity<LaneType>(entity =>
             //{
@@ -676,6 +699,8 @@ namespace ATSPM.Data
             //    entity.Property(e => e.FilterName).IsRequired();
             //});
 
+            modelBuilder.ApplyConfiguration(new MovementTypeConfiguration());
+
             //modelBuilder.Entity<MovementType>(entity =>
             //{
             //    entity.Property(e => e.MovementTypeId)
@@ -714,10 +739,14 @@ namespace ATSPM.Data
             //    entity.Property(e => e.Description).HasMaxLength(50);
             //});
 
+            modelBuilder.ApplyConfiguration(new RouteConfiguration());
+
             //modelBuilder.Entity<Route>(entity =>
             //{
             //    entity.Property(e => e.RouteName).IsRequired();
             //});
+
+            modelBuilder.ApplyConfiguration(new RoutePhaseDirectionConfiguration());
 
             //modelBuilder.Entity<RoutePhaseDirection>(entity =>
             //{
@@ -735,6 +764,8 @@ namespace ATSPM.Data
             //        .HasForeignKey(d => d.RouteSignalId)
             //        .HasConstraintName("FK_dbo.RoutePhaseDirections_dbo.RouteSignals_RouteSignalId");
             //});
+
+            modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
 
             //modelBuilder.Entity<RouteSignal>(entity =>
             //{

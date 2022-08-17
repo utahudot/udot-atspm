@@ -3,6 +3,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
 using ATSPM.Infrasturcture.Extensions;
@@ -14,7 +15,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -105,47 +108,48 @@ namespace ATSPM.SignalControllerLogger
             Console.WriteLine($"done?");
 
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetService<ConfigContext>();
 
-                //var area = new Data.Models.Area() { Id = 1, Name = "just added!" };
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<ConfigContext>();
 
-                //db.Areas.Add(area);
+            //    //var area = new Data.Models.Area() { Id = 1, Name = "just added!" };
 
-                var area = db.Areas.SingleOrDefault(i => i.Id == 1);
+            //    //db.Areas.Add(area);
 
-                var signal = new Data.Models.Signal()
-                {
-                    SignalId = "1001",
-                    PrimaryName = "something",
-                    Latitude = "l",
-                    Longitude = "L",
-                    SecondaryName = "test",
-                    Note = "Note",
-                    ControllerTypeId = 0,
-                    RegionId = 1,
-                    JurisdictionId = 1
-                };
+            //    var area = db.Areas.SingleOrDefault(i => i.Id == 1);
 
-                db.Signals.Add(signal);
+            //    var signal = new Data.Models.Signal()
+            //    {
+            //        SignalId = "1001",
+            //        PrimaryName = "something",
+            //        Latitude = "l",
+            //        Longitude = "L",
+            //        SecondaryName = "test",
+            //        Note = "Note",
+            //        ControllerTypeId = 0,
+            //        RegionId = 1,
+            //        JurisdictionId = 1
+            //    };
 
-                signal.Areas.Add(area);
+            //    db.Signals.Add(signal);
 
-
-
-                db.SaveChanges();
-
-                var verify = db.Signals
-                    .Include(i => i.ControllerType)
-                    .Include(i => i.Jurisdiction)
-                    .Include(i => i.Region)
-                    .Include(i => i.VersionAction)
-                    .Include(i => i.Areas)
-                    .ToList();
+            //    signal.Areas.Add(area);
 
 
-            }
+
+            //    db.SaveChanges();
+
+            //    var verify = db.Signals
+            //        .Include(i => i.ControllerType)
+            //        .Include(i => i.Jurisdiction)
+            //        .Include(i => i.Region)
+            //        .Include(i => i.VersionAction)
+            //        .Include(i => i.Areas)
+            //        .ToList();
+
+
+            //}
 
             Console.ReadKey();
         }

@@ -37,6 +37,58 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.ToTable("AreaSignal");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
+                {
+                    b.Property<int>("ApproachId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApproachId"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("DirectionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPedestrianPhaseOverlap")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPermissivePhaseOverlap")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProtectedPhaseOverlap")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Mph")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PedestrianDetectors")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int?>("PedestrianPhaseNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PermissivePhaseNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProtectedPhaseNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SignalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApproachId");
+
+                    b.HasIndex("DirectionTypeId");
+
+                    b.HasIndex("SignalId");
+
+                    b.ToTable("Approaches");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
                 {
                     b.Property<int>("Id")
@@ -109,6 +161,221 @@ namespace ATSPM.Infrasturcture.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.DetectionHardware", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DetectionHardwares");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Abbreviation")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DetectionTypes");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ApproachId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("DateDisabled")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("DecisionPoint")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DetChannel")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DetectionHardwareId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DetectorId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int?>("DistanceFromStopBar")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LaneNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LaneTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LatencyCorrection")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("MinSpeedFilter")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MovementDelay")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovementTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApproachId");
+
+                    b.HasIndex("DetectionHardwareId");
+
+                    b.HasIndex("LaneTypeId");
+
+                    b.HasIndex("MovementTypeId");
+
+                    b.ToTable("Detectors");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DetectorComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CommentText")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("DetectorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DetectorId");
+
+                    b.ToTable("DetectorComments");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Abbreviation")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DirectionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Abbreviation = "NA",
+                            Description = "Unknown",
+                            DisplayOrder = 0
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Abbreviation = "NB",
+                            Description = "Northbound",
+                            DisplayOrder = 3
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Abbreviation = "SB",
+                            Description = "Southbound",
+                            DisplayOrder = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Abbreviation = "EB",
+                            Description = "Eastbound",
+                            DisplayOrder = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Abbreviation = "WB",
+                            Description = "Westbound",
+                            DisplayOrder = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Abbreviation = "NE",
+                            Description = "Northeast",
+                            DisplayOrder = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Abbreviation = "NW",
+                            Description = "Northwest",
+                            DisplayOrder = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Abbreviation = "SE",
+                            Description = "Southeast",
+                            DisplayOrder = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Abbreviation = "SW",
+                            Description = "Southwest",
+                            DisplayOrder = 8
+                        });
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
                 {
                     b.Property<int>("Id")
@@ -151,6 +418,103 @@ namespace ATSPM.Infrasturcture.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.LaneType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LaneTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Abbreviation = "NA",
+                            Description = "Unknown"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Abbreviation = "V",
+                            Description = "Vehicle"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Abbreviation = "Bike",
+                            Description = "Bike"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Abbreviation = "Ped",
+                            Description = "Pedestrian"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Abbreviation = "E",
+                            Description = "Exit"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Abbreviation = "LRT",
+                            Description = "Light Rail Transit"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Abbreviation = "Bus",
+                            Description = "Bus"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Abbreviation = "HDV",
+                            Description = "High Occupancy Vehicle"
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.MovementType", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Abbreviation")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MovementTypes");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
                     b.Property<int>("Id")
@@ -171,6 +535,84 @@ namespace ATSPM.Infrasturcture.Migrations
                             Id = 1,
                             Description = "Unknown"
                         });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Route", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Routes");
+
+                    b.HasComment("Signal Routes");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("DirectionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsOverlap")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPrimaryApproach")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Phase")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RouteSignalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DirectionTypeId");
+
+                    b.HasIndex("RouteSignalId");
+
+                    b.ToTable("RoutePhaseDirections");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RouteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SignalId")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("RouteSignals");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
@@ -310,6 +752,21 @@ namespace ATSPM.Infrasturcture.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DetectionTypeDetector", b =>
+                {
+                    b.Property<int>("DetectionTypesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DetectorsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DetectionTypesId", "DetectorsId");
+
+                    b.HasIndex("DetectorsId");
+
+                    b.ToTable("DetectionTypeDetector");
+                });
+
             modelBuilder.Entity("AreaSignal", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Area", null)
@@ -323,6 +780,101 @@ namespace ATSPM.Infrasturcture.Migrations
                         .HasForeignKey("SignalsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
+                        .WithMany("Approaches")
+                        .HasForeignKey("DirectionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Signal", "Signal")
+                        .WithMany("Approaches")
+                        .HasForeignKey("SignalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DirectionType");
+
+                    b.Navigation("Signal");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Approach", "Approach")
+                        .WithMany("Detectors")
+                        .HasForeignKey("ApproachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.DetectionHardware", "DetectionHardware")
+                        .WithMany("Detectors")
+                        .HasForeignKey("DetectionHardwareId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.LaneType", "LaneType")
+                        .WithMany("Detectors")
+                        .HasForeignKey("LaneTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.MovementType", "MovementType")
+                        .WithMany("Detectors")
+                        .HasForeignKey("MovementTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Approach");
+
+                    b.Navigation("DetectionHardware");
+
+                    b.Navigation("LaneType");
+
+                    b.Navigation("MovementType");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DetectorComment", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Detector", "Detector")
+                        .WithMany("DetectorComments")
+                        .HasForeignKey("DetectorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Detector");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
+                        .WithMany("RoutePhaseDirections")
+                        .HasForeignKey("DirectionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.RouteSignal", "RouteSignal")
+                        .WithMany("RoutePhaseDirections")
+                        .HasForeignKey("RouteSignalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DirectionType");
+
+                    b.Navigation("RouteSignal");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Route", "Route")
+                        .WithMany("RouteSignals")
+                        .HasForeignKey("RouteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Route");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
@@ -346,7 +898,7 @@ namespace ATSPM.Infrasturcture.Migrations
                         .IsRequired();
 
                     b.HasOne("ATSPM.Data.Models.VersionAction", "VersionAction")
-                        .WithMany()
+                        .WithMany("Signals")
                         .HasForeignKey("VersionActionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -360,9 +912,46 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Navigation("VersionAction");
                 });
 
+            modelBuilder.Entity("DetectionTypeDetector", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.DetectionType", null)
+                        .WithMany()
+                        .HasForeignKey("DetectionTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Detector", null)
+                        .WithMany()
+                        .HasForeignKey("DetectorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
+                {
+                    b.Navigation("Detectors");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
                 {
                     b.Navigation("Signals");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DetectionHardware", b =>
+                {
+                    b.Navigation("Detectors");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
+                {
+                    b.Navigation("DetectorComments");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
+                {
+                    b.Navigation("Approaches");
+
+                    b.Navigation("RoutePhaseDirections");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
@@ -370,7 +959,37 @@ namespace ATSPM.Infrasturcture.Migrations
                     b.Navigation("Signals");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.LaneType", b =>
+                {
+                    b.Navigation("Detectors");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.MovementType", b =>
+                {
+                    b.Navigation("Detectors");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
+                {
+                    b.Navigation("Signals");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Route", b =>
+                {
+                    b.Navigation("RouteSignals");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
+                {
+                    b.Navigation("RoutePhaseDirections");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
+                {
+                    b.Navigation("Approaches");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>
                 {
                     b.Navigation("Signals");
                 });
