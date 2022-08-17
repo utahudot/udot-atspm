@@ -18,27 +18,27 @@ namespace ATSPM.Infrasturcture.Repositories
 
         }
 
+        public int GetApproachPcdCountAggregationByApproachIdAndDateRange(int versionId, DateTime start, DateTime end)
+        {
+            var pcd = 0;
+            if (_db.Set<ApproachPcdAggregation>().Any(r => r.ApproachId == versionId
+                                                     && r.BinStartTime >= start && r.BinStartTime <= end))
+                pcd = _db.Set<ApproachPcdAggregation>().Where(r => r.ApproachId == versionId
+                                                             && r.BinStartTime >= start &&
+                                                             r.BinStartTime <= end)
+                    .Sum(r => r.ArrivalsOnGreen);
+            return pcd;
+        }
+
+        public IReadOnlyCollection<ApproachPcdAggregation> GetApproachPcdsAggregationByApproachIdAndDateRange(int approachId, DateTime startDate, DateTime endDate, bool getProtectedPhase)
+        {
+            return _db.Set<ApproachPcdAggregation>().Where(r => r.ApproachId == approachId
+                                                          && r.BinStartTime >= startDate &&
+                                                          r.BinStartTime <= endDate
+                                                          && r.IsProtectedPhase == getProtectedPhase).ToList();
+        }
+
         ApproachPcdAggregation IApproachPcdAggregationRepository.Add(ApproachPcdAggregation priorityAggregation)
-        {
-            throw new NotImplementedException();
-        }
-
-        int IApproachPcdAggregationRepository.GetApproachPcdCountAggregationByApproachIdAndDateRange(int versionId, DateTime start, DateTime end)
-        {
-            throw new NotImplementedException();
-        }
-
-        IReadOnlyCollection<ApproachPcdAggregation> IApproachPcdAggregationRepository.GetApproachPcdsAggregationByApproachIdAndDateRange(int approachId, DateTime startDate, DateTime endDate, bool getProtectedPhase)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IApproachPcdAggregationRepository.Remove(ApproachPcdAggregation priorityAggregation)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IApproachPcdAggregationRepository.Update(ApproachPcdAggregation priorityAggregation)
         {
             throw new NotImplementedException();
         }

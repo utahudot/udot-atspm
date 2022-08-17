@@ -19,17 +19,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Menu> GetAll(string Application)
         {
-            throw new NotImplementedException();
+            return _db.Set<Menu>().ToList();
         }
 
         public Menu GetMenuItembyID(int id)
         {
-            throw new NotImplementedException();
+            return _db.Set<Menu>().Find(id);
         }
 
         public IReadOnlyCollection<Menu> GetTopLevelMenuItems(string Application)
         {
-            throw new NotImplementedException();
+            return _db.Set<Menu>().Where(m => m.Application == Application && m.ParentId == 0).OrderBy(x => x.DisplayOrder).ToList();
         }
 
         public void Remove(int id)

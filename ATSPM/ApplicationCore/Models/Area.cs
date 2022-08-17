@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Models
 {
-    public class Area
+    public class Area : ATSPMModelBase
     {
         public int Id { get; set; }
         public string AreaName { get; set; }

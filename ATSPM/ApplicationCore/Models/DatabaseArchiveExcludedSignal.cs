@@ -5,9 +5,10 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class DatabaseArchiveExcludedSignal
+    public partial class DatabaseArchiveExcludedSignal : ATSPMModelBase
     {
         public int Id { get; set; }
         public string SignalId { get; set; }
+        public string SignalDescription { get; set; }
     }
 }

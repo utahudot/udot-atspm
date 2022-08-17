@@ -9,17 +9,17 @@ namespace ATSPM.Application.Repositories
 {
     public interface ISPMWatchDogErrorEventRepository : IAsyncRepository<SpmwatchDogErrorEvent>
     {
-        IReadOnlyCollection<SPMWatchDogErrorEvent> GetAllSPMWatchDogErrorEvents();
-        IReadOnlyCollection<SPMWatchDogErrorEvent> GetSPMWatchDogErrorEventsBetweenDates(DateTime StartDate, DateTime EndDate);
-        SPMWatchDogErrorEvent GetSPMWatchDogErrorEventByID(int SPMWatchDogErrorEventID);
+        IReadOnlyCollection<SpmwatchDogErrorEvent> GetAllSPMWatchDogErrorEvents();
+        IReadOnlyCollection<SpmwatchDogErrorEvent> GetSPMWatchDogErrorEventsBetweenDates(DateTime StartDate, DateTime EndDate);
+        SpmwatchDogErrorEvent GetSPMWatchDogErrorEventByID(int SPMWatchDogErrorEventID);
         [Obsolete("Use Update in the BaseClass")]
-        void Update(SPMWatchDogErrorEvent SPMWatchDogErrorEvent);
+        void Update(SpmwatchDogErrorEvent SPMWatchDogErrorEvent);
         [Obsolete("Use Add in the BaseClass")]
-        void AddListAndSaveToDatabase(List<SPMWatchDogErrorEvent> SPMWatchDogErrorEvents);
+        void AddListAndSaveToDatabase(List<SpmwatchDogErrorEvent> SPMWatchDogErrorEvents);
         [Obsolete("Use Add in the BaseClass")]
-        void Add(SPMWatchDogErrorEvent SPMWatchDogErrorEvent);
+        void Add(SpmwatchDogErrorEvent SPMWatchDogErrorEvent);
         [Obsolete("Use Remove in the BaseClass")]
-        void Remove(SPMWatchDogErrorEvent SPMWatchDogErrorEvent);
+        void Remove(SpmwatchDogErrorEvent SPMWatchDogErrorEvent);
         [Obsolete("Use Remove in the BaseClass")]
         void Remove(int id);
     }

@@ -13,14 +13,14 @@ namespace ATSPM.Infrasturcture.Repositories
     public class ApproachSpeedAggregationEFRepository : ATSPMRepositoryEFBase<ApproachSpeedAggregation>, IApproachSpeedAggregationRepository
     {
 
-        public ApproachSpeedAggregationEFRepository(DbContext db, ILogger<ApproachEFRepository> log) : base(db, log)
+        public ApproachSpeedAggregationEFRepository(DbContext db, ILogger<ApproachSpeedAggregationEFRepository> log) : base(db, log)
         {
 
         }
 
         public IReadOnlyCollection<ApproachSpeedAggregation> GetSpeedsByApproachIDandDateRange(int approachId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApproachSpeedAggregation>().Where(asa => asa.ApproachId == approachId && asa.BinStartTime >= start && asa.BinStartTime <= end).ToList();
         }
 
         public void Remove(int id)

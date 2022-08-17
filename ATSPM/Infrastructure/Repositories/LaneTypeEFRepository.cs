@@ -19,12 +19,12 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<LaneType> GetAllLaneTypes()
         {
-            throw new NotImplementedException();
+            return _db.Set<LaneType>().ToList();
         }
 
         public LaneType GetLaneTypeByLaneTypeID(int laneTypeID)
         {
-            throw new NotImplementedException();
+            return _db.Set<LaneType>().Find(laneTypeID);
         }
     }
 }

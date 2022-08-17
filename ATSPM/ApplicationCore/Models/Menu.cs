@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Menu
+    public partial class Menu : ATSPMModelBase
     {
         public int MenuId { get; set; }
         public string MenuName { get; set; }

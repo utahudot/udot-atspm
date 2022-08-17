@@ -19,12 +19,29 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<DetectorEventCountAggregation> GetDetectorEventCountAggregationByDetectorIdAndDateRange(int detectorId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            if (_db.Set<DetectorEventCountAggregation>().Any(r => r.DetectorPrimaryId == detectorId
+                                                             && r.BinStartTime >= start && r.BinStartTime <= end))
+            {
+                return _db.Set<DetectorEventCountAggregation>().Where(r => r.DetectorPrimaryId == detectorId
+                                                                  && r.BinStartTime >= start &&
+                                                                  r.BinStartTime <= end).ToList();
+            }
+            return new List<DetectorEventCountAggregation>();
         }
 
         public int GetDetectorEventCountSumAggregationByDetectorIdAndDateRange(int detectorId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            var count = 0;
+            
+            if (_db.Set<DetectorEventCountAggregation>().Any(r => r.DetectorPrimaryId == detectorId
+                                                            && r.BinStartTime >= start && r.BinStartTime <= end))
+            {
+                count = _db.Set<DetectorEventCountAggregation>().Where(r => r.DetectorPrimaryId == detectorId
+                                                                      && r.BinStartTime >= start && r.BinStartTime <= end)
+                    .Sum(r => r.EventCount);
+            }
+
+            return count;
         }
     }
 }

@@ -24,17 +24,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Jurisdiction> GetAllJurisdictions()
         {
-            throw new NotImplementedException();
+            return _db.Set<Jurisdiction>().OrderBy(j => j.JurisdictionName).ToList();
         }
 
         public Jurisdiction GetJurisdictionByID(int jurisdictionId)
         {
-            throw new NotImplementedException();
+            return _db.Set<Jurisdiction>().Find(jurisdictionId);
         }
 
         public Jurisdiction GetJurisdictionByName(string jurisdictionName)
         {
-            throw new NotImplementedException();
+            return _db.Set<Jurisdiction>().Where(j => j.JurisdictionName == jurisdictionName).FirstOrDefault();
         }
     }
 }

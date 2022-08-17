@@ -19,37 +19,38 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<MetricType> GetAllMetrics()
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().ToList();
         }
 
         public IReadOnlyCollection<MetricType> GetAllToAggregateMetrics()
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Where(m => m.ShowOnAggregationSite).ToList();
         }
 
         public IReadOnlyCollection<MetricType> GetAllToDisplayMetrics()
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Where(m => m.ShowOnWebsite).ToList();
         }
 
         public IReadOnlyCollection<MetricType> GetBasicMetrics()
         {
-            throw new NotImplementedException();
+            var dt = _db.Set<DetectionType>().Where(d => d.DetectionTypeId == 1).FirstOrDefault();
+            return dt.MetricTypes.ToList();
         }
 
         public MetricType GetMetricsByID(int metricID)
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Find(metricID);
         }
 
         public IReadOnlyCollection<MetricType> GetMetricsByIDs(List<int> metricIDs)
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Where(m => metricIDs.Contains(m.MetricId)).ToList();
         }
 
         public IReadOnlyCollection<MetricType> GetMetricTypesByMetricComment(MetricComment metricComment)
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Where(m => metricComment.MetricTypeIDs.Contains(m.MetricId)).ToList();
         }
     }
 }

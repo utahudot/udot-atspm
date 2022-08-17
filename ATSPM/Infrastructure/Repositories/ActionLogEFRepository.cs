@@ -21,7 +21,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<ActionLog> GetAllByDate(DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<ActionLog>().Where(al => al.Date >= startDate && al.Date <= endDate).ToList();
         }
     }
 }

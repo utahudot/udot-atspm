@@ -39,7 +39,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public DatabaseArchiveExcludedSignal GetExcludedSignalBySignalId(string signalId)
         {
-            throw new NotImplementedException();
+            return _db.Set<DatabaseArchiveExcludedSignal>().Where(das => das.SignalId == signalId).FirstOrDefault();
         }
     }
 }

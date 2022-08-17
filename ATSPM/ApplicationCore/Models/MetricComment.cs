@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class MetricComment
+    public partial class MetricComment :  Comment
     {
         public MetricComment()
         {
@@ -17,6 +17,7 @@ namespace ATSPM.Application.Models
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
         public int VersionId { get; set; }
+        public List<int> MetricTypeIDs { get; set; }
 
         public virtual ICollection<MetricCommentMetricType> MetricCommentMetricTypes { get; set; }
     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class LaneType
+    public partial class LaneType : ATSPMModelBase
     {
         public LaneType()
         {

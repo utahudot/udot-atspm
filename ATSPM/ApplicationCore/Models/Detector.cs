@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Detector
+    public partial class Detector : ATSPMModelBase
     {
         public Detector()
         {
@@ -33,7 +33,7 @@ namespace ATSPM.Application.Models
         public virtual DetectionHardware DetectionHardware { get; set; }
         public virtual LaneType LaneType { get; set; }
         public virtual MovementType MovementType { get; set; }
-        public virtual ICollection<DetectionTypeDetector> DetectionTypeDetectors { get; set; }
+        public virtual ICollection<DetectionType> DetectionTypes { get; set; }
         public virtual ICollection<DetectorComment> DetectorComments { get; set; }
     }
 }

@@ -17,37 +17,43 @@ namespace ATSPM.Infrasturcture.Repositories
 
         }
 
-        DatabaseArchiveSettings IApplicationSettingsRepository.GetDatabaseArchiveSettings()
+        public DatabaseArchiveSettings GetDatabaseArchiveSettings()
+        {
+            return _db.Set<DatabaseArchiveSettings>().FirstOrDefault();
+        }
+
+        public GeneralSettings GetGeneralSettings()
+        {
+            return _db.Set<GeneralSettings>().FirstOrDefault();
+        }
+
+        public int GetRawDataLimit()
+        {
+            GeneralSettings gs = GetGeneralSettings();
+            int limit = 0;
+            if (gs.RawDataCountLimit != null)
+            {
+                limit = (int)gs.RawDataCountLimit;
+            }
+            return limit;
+        }
+
+        public WatchDogApplicationSettings GetWatchDogSettings()
+        {
+            return _db.Set<GeneralSettings>().FirstOrDefault();
+        }
+
+        public void Save(WatchDogApplicationSettings watchDogApplicationSettings)
         {
             throw new NotImplementedException();
         }
 
-        GeneralSettings IApplicationSettingsRepository.GetGeneralSettings()
-        {
-            throw new NotImplementedException();
-        }
-        [Obsolete("This method isn't currently being used")]
-        int IApplicationSettingsRepository.GetRawDataLimit()
+        public void Save(GeneralSettings generalSettings)
         {
             throw new NotImplementedException();
         }
 
-        WatchDogApplicationSettings IApplicationSettingsRepository.GetWatchDogSettings()
-        {
-            throw new NotImplementedException();
-        }
-        [Obsolete("should be in base class")]
-        void IApplicationSettingsRepository.Save(WatchDogApplicationSettings watchDogApplicationSettings)
-        {
-            throw new NotImplementedException();
-        }
-        [Obsolete("should be in base class")]
-        void IApplicationSettingsRepository.Save(GeneralSettings generalSettings)
-        {
-            throw new NotImplementedException();
-        }
-        [Obsolete("should be in base class")]
-        void IApplicationSettingsRepository.Save(DatabaseArchiveSettings databaseArchiveSettings)
+        public void Save(DatabaseArchiveSettings databaseArchiveSettings)
         {
             throw new NotImplementedException();
         }

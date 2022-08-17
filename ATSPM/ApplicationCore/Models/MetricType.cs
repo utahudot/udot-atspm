@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class MetricType
+    public partial class MetricType : ATSPMModelBase
     {
         public MetricType()
         {

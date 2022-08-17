@@ -25,17 +25,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Area> GetAllAreas()
         {
-            throw new NotImplementedException();
+            return _db.Set<Area>().OrderBy(a => a.AreaName).ToList();
         }
 
         public Area GetAreaByID(int areaId)
         {
-            throw new NotImplementedException();
+            return _db.Set<Area>().Where(a => a.Id == areaId).FirstOrDefault();
         }
 
         public Area GetAreaByName(string AreaName)
         {
-            throw new NotImplementedException();
+            return _db.Set<Area>().Where(a => a.AreaName == AreaName).FirstOrDefault();
         }
 
         public IReadOnlyCollection<Area> GetListOfAreasForSignal(string signalId)

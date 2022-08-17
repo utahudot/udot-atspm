@@ -19,22 +19,22 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<DirectionType> GetAllDirections()
         {
-            throw new NotImplementedException();
+            return _db.Set<DirectionType>().OrderBy(d => d.DisplayOrder).ToList();
         }
 
         public DirectionType GetByDescription(string directionDescription)
         {
-            throw new NotImplementedException();
+            return _db.Set<DirectionType>().Where(d => d.Description == directionDescription).FirstOrDefault();
         }
 
         public DirectionType GetDirectionByID(int directionID)
         {
-            throw new NotImplementedException();
+            return _db.Set<DirectionType>().Where(d => d.DirectionTypeId == directionID).FirstOrDefault();
         }
 
         public IReadOnlyCollection<DirectionType> GetDirectionsByIDs(List<int> includedDirections)
         {
-            throw new NotImplementedException();
+            return _db.Set<DirectionType>().Where(d => includedDirections.Contains(d.DirectionTypeId)).ToList();
         }
 
     }

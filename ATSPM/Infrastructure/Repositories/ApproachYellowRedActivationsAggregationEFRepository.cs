@@ -13,19 +13,31 @@ namespace ATSPM.Infrasturcture.Repositories
     public class ApproachYellowRedActivationsAggregationEFRepository : ATSPMRepositoryEFBase<ApproachYellowRedActivationAggregation>, IApproachYellowRedActivationsAggregationRepository
     {
 
-        public ApproachYellowRedActivationsAggregationEFRepository(DbContext db, ILogger<ApproachEFRepository> log) : base(db, log)
+        public ApproachYellowRedActivationsAggregationEFRepository(DbContext db, ILogger<ApproachYellowRedActivationsAggregationEFRepository> log) : base(db, log)
         {
 
         }
 
         public int GetApproachYellowRedActivationsCountAggregationByApproachIdAndDateRange(int versionId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            var yellowRedActivations = 0;
+            if (_db.Set<ApproachYellowRedActivationAggregation>().Any(r => r.ApproachId == versionId
+                                                                     && r.BinStartTime >= start &&
+                                                                     r.BinStartTime <= end))
+                yellowRedActivations = _db.Set<ApproachYellowRedActivationAggregation>().Where(r => r.ApproachId == versionId
+                                                                                              && r.BinStartTime >=
+                                                                                              start &&
+                                                                                              r.BinStartTime <= end)
+                    .Sum(r => r.TotalRedLightViolations);
+            return yellowRedActivations;
         }
 
         public IReadOnlyCollection<ApproachYellowRedActivationAggregation> GetApproachYellowRedActivationssAggregationByApproachIdAndDateRange(int approachId, DateTime startDate, DateTime endDate, bool getProtectedPhase)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApproachYellowRedActivationAggregation>().Where(r => r.ApproachId == approachId
+                                                                          && r.BinStartTime >= startDate &&
+                                                                          r.BinStartTime <= endDate
+                                                                          && r.IsProtectedPhase == getProtectedPhase).ToList();
         }
     }
 }

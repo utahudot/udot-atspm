@@ -19,7 +19,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<MetricsFilterType> GetAllFilters()
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricsFilterType>().ToList();
         }
     }
 }

@@ -10,24 +10,19 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
-    public class FAQEFRepository : ATSPMRepositoryEFBase<Faq>, IFAQRepository
+    public class MovementTypeEFRepository : ATSPMRepositoryEFBase<MovementType>, IMovementTypeRepository
     {
-        public FAQEFRepository(DbContext db, ILogger<FAQEFRepository> log) : base(db, log)
+        public MovementTypeEFRepository(DbContext db, ILogger<MovementTypeEFRepository> log) : base(db, log)
         {
 
         }
 
-        public List<Faq> GetAll()
+        public IReadOnlyCollection<MovementType> GetAllMovementTypes()
         {
-            return _db.Set<Faq>().OrderBy(f => f.OrderNumber).ToList();
+            throw new NotImplementedException();
         }
 
-        public Faq GetbyID(int id)
-        {
-            return _db.Set<Faq>().Find(id);
-        }
-
-        public void Remove(int id)
+        public MovementType GetMovementTypeByMovementTypeID(int movementTypeID)
         {
             throw new NotImplementedException();
         }

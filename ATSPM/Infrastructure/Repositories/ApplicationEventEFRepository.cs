@@ -20,37 +20,37 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<ApplicationEvent> GetAllApplicationEvents()
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().ToList();
         }
 
         public ApplicationEvent GetApplicationEventByID(int applicationEventID)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Id == applicationEventID).FirstOrDefault();
         }
 
         public IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDates(DateTime StartDate, DateTime EndDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Timestamp > StartDate && ae.Timestamp <= EndDate).ToList();
         }
 
         public IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDatesByApplication(DateTime StartDate, DateTime EndDate, string ApplicationName)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Timestamp > StartDate && ae.Timestamp <= EndDate && ae.ApplicationName == ApplicationName).ToList();
         }
 
         public IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDatesByApplicationBySeverity(DateTime StartDate, DateTime EndDate, string ApplicationName, SeverityLevels Severity)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Timestamp > StartDate && ae.Timestamp <= EndDate && ae.ApplicationName == ApplicationName && ae.SeverityLevel == Severity).ToList();
         }
 
         public IReadOnlyCollection<ApplicationEvent> GetApplicationEventsBetweenDatesByClass(DateTime StartDate, DateTime EndDate, string ApplicationName, string ClassName)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Timestamp > StartDate && ae.Timestamp <= EndDate && ae.ApplicationName == ApplicationName && ae.Class == ClassName).ToList();
         }
 
         public IReadOnlyCollection<ApplicationEvent> GetEventsByDateDescriptions(DateTime startDate, DateTime endDate, List<string> descriptions)
         {
-            throw new NotImplementedException();
+            return _db.Set<ApplicationEvent>().Where(ae => ae.Timestamp > startDate && ae.Timestamp <= endDate && descriptions.Contains(ae.Description)).ToList();
         }
 
         public void QuickAdd(string applicationName, string errorClass, string errorFunction, SeverityLevels severity, string description)
@@ -60,7 +60,12 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public void Remove(int id)
         {
-            throw new NotImplementedException();
+            var g = _db.Set<ApplicationEvent>().Find(id);
+            if (g != null)
+            {
+                _db.Set<ApplicationEvent>().Remove(g);
+                _db.SaveChanges();
+            }
         }
     }
 }

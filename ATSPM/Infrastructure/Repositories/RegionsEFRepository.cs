@@ -10,17 +10,16 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
-    public class ControllerTypeEFRepository : ATSPMRepositoryEFBase<ControllerType>, IControllerTypeRepository
+    public class RegionsEFRepository : ATSPMRepositoryEFBase<Region>, IRegionsRepository
     {
-
-        public ControllerTypeEFRepository(DbContext db, ILogger<ControllerTypeEFRepository> log) : base(db, log)
+        public RegionsEFRepository(DbContext db, ILogger<RegionsEFRepository> log) : base(db, log)
         {
 
         }
 
-        public IReadOnlyCollection<ControllerType> GetControllerTypes()
+        public IReadOnlyCollection<Region> GetAllRegions()
         {
-            return _db.Set<ControllerType>().ToList();
+            throw new NotImplementedException();
         }
     }
 }

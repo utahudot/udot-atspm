@@ -24,22 +24,34 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<MetricComment> GetAllMetricComments()
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricComment>().ToList();
         }
 
         public MetricComment GetLatestCommentForReport(string signalID, int metricID)
         {
-            throw new NotImplementedException();
+            var comments = _db.Set<MetricComment>().Where(mc => mc.SignalId == signalID).OrderByDescending(x => x.TimeStamp).ToList();
+
+            var commentsForMetricType = new List<MetricComment>();
+            if (comments != null)
+                foreach (var mc in comments)
+                    foreach (var mt in mc.MetricCommentMetricTypes)
+                        if (mt.MetricTypeMetricId == metricID)
+                        {
+                            commentsForMetricType.Add(mc);
+                            break;
+                        }
+
+            return commentsForMetricType.FirstOrDefault();
         }
 
         public MetricComment GetMetricCommentByMetricCommentID(int metricCommentID)
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricComment>().Where(mc => mc.CommentId == metricCommentID).FirstOrDefault();
         }
 
         public IReadOnlyCollection<MetricType> GetMetricTypesByMetricComment(MetricComment metricComment)
         {
-            throw new NotImplementedException();
+            return _db.Set<MetricType>().Where(mc => metricComment.MetricTypeIDs.Contains(mc.MetricId)).ToList();
         }
     }
 }

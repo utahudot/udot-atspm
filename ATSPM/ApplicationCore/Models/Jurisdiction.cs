@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Jurisdiction
+    public partial class Jurisdiction : ATSPMModelBase
     {
         public int Id { get; set; }
         public string JurisdictionName { get; set; }

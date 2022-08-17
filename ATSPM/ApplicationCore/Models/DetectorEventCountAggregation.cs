@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class DetectorEventCountAggregation
+    public partial class DetectorEventCountAggregation : ATSPMModelBase
     {
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }

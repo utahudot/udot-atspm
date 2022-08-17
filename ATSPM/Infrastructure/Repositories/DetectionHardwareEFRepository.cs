@@ -19,17 +19,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<DetectionHardware> GetAllDetectionHardwares()
         {
-            throw new NotImplementedException();
+            return _db.Set<DetectionHardware>().ToList();
         }
 
         public IReadOnlyCollection<DetectionHardware> GetAllDetectionHardwaresNoBasic()
         {
-            throw new NotImplementedException();
+            return _db.Set<DetectionHardware>().Where(dh => dh.Name != "Basic").ToList();
         }
 
         public DetectionHardware GetDetectionHardwareByID(int ID)
         {
-            throw new NotImplementedException();
+            return _db.Set<DetectionHardware>().Where(dh => dh.Id == ID).FirstOrDefault();
         }
     }
 }

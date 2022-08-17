@@ -10,17 +10,16 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrasturcture.Repositories
 {
-    public class ControllerTypeEFRepository : ATSPMRepositoryEFBase<ControllerType>, IControllerTypeRepository
+    public class SPMMenuEFRepository : ATSPMRepositoryEFBase<Menu>, ISPMMenuRepository
     {
-
-        public ControllerTypeEFRepository(DbContext db, ILogger<ControllerTypeEFRepository> log) : base(db, log)
+        public SPMMenuEFRepository(DbContext db, ILogger<SPMMenuEFRepository> log) : base(db, log)
         {
 
         }
 
-        public IReadOnlyCollection<ControllerType> GetControllerTypes()
+        public IReadOnlyCollection<Menu> GetMenuItems()
         {
-            return _db.Set<ControllerType>().ToList();
+            throw new NotImplementedException();
         }
     }
 }
