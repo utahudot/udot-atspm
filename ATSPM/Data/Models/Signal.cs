@@ -14,7 +14,8 @@ namespace ATSPM.Data.Models
         IRelatedJurisdiction, 
         IRelatedRegion, 
         IRelatedVersionAction,
-        IRelatedApproaches
+        IRelatedApproaches,
+        IRelatedMetricComments
 
     {
         public int Id { get; set; }
@@ -42,5 +43,6 @@ namespace ATSPM.Data.Models
 
         public virtual ICollection<Approach> Approaches { get; set; } = new HashSet<Approach>();
         public virtual ICollection<Area> Areas { get; set; } = new HashSet<Area>();
+        public virtual ICollection<MetricComment> MetricComments { get; set; } = new HashSet<MetricComment>();
     }
 }

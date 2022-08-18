@@ -15,7 +15,6 @@ namespace ATSPM.Data.Models
         public int DisplayOrder { get; set; }
 
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();
-        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
         public virtual ICollection<MetricType> MetricTypeMetrics { get; set; } = new HashSet<MetricType>();
     }
 }

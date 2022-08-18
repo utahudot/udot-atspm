@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Menu
+    public partial class Menu : ATSPMModelBase
     {
-        public int MenuId { get; set; }
+        public int Id { get; set; }
         public string MenuName { get; set; }
         public int ParentId { get; set; }
         public string Application { get; set; }

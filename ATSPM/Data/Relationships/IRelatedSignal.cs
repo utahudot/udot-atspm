@@ -131,4 +131,35 @@ namespace ATSPM.Data.Relationships
         ApplicationTypes ApplicationId { get; set; }
         Application Application { get; set; }
     }
+
+    internal interface IRelatedDetectionType
+    {
+        ICollection<DetectionType> DetectionTypeDetectionTypes { get; set; }
+    }
+
+    internal interface IRelatedMetricTypes
+    {
+        ICollection<MetricType> MetricTypes { get; set; }
+    }
+
+    internal interface IRelatedMetricComments
+    {
+        ICollection<MetricComment> MetricComments { get; set; }
+    }
+
+    internal interface IRelatedActionLogs
+    {
+        ICollection<ActionLog> ActionLogs { get; set; }
+    }
+
+    internal interface IRelatedAgency
+    {
+        int AgencyId { get; set; }
+        Agency Agency { get; set; }
+    }
+
+    internal interface IRelatedActions
+    {
+        ICollection<Models.Action> Actions { get; set; }
+    }
 }

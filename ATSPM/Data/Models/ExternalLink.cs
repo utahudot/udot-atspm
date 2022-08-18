@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ExternalLink
+    public partial class ExternalLink : ATSPMModelBase
     {
-        public int ExternalLinkId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
         public int DisplayOrder { get; set; }
