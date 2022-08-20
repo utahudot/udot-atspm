@@ -3130,7 +3130,7 @@
         "dependencies": {
           "ApplicationCore": "1.0.0",
           "Microsoft.AspNet.Mvc": "5.2.9",
-          "xunit": "2.4.1"
+          "xunit": "2.4.2"
         },
         "compile": {
           "bin/placeholder/ATSPM.Application.IRepositories.dll": {}
@@ -9436,6 +9436,15 @@
       "code": "NU1605",
       "level": "Error",
       "message": "Detected package downgrade: xunit from 2.4.2 to 2.4.1. Reference the package directly from the project to select a different version. \r\n ATSPM.Application.Reports -> ATSPM.Infrastructure.Repositories.EntityFramework -> xunit (>= 2.4.2) \r\n ATSPM.Application.Reports -> xunit (>= 2.4.1)",
+      "libraryId": "xunit",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Detected package downgrade: xunit from 2.4.2 to 2.4.1. Reference the package directly from the project to select a different version. \r\n ATSPM.Application.Reports -> ATSPM.Application.IRepositories -> xunit (>= 2.4.2) \r\n ATSPM.Application.Reports -> xunit (>= 2.4.1)",
       "libraryId": "xunit",
       "targetGraphs": [
         "net6.0"

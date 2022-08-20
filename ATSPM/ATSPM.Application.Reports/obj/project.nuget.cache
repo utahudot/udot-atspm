@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "FUzEZOd3iqNigFs2tvGF/5p0Y51XV04kCDZnZ9Cmfn1lBlru6LIWCimu947LJDy2SUQgfXEods1aoE1SaudV7g==",
+  "dgSpecHash": "x3NkoXd68FvaTfZwmW8yVVev0noTxFDEbAw3oDeBsCQSUJMV1UVkJdSOJNx4BBiESBq2Sgf8t5QeQgTL19KGVw==",
   "success": false,
   "projectFilePath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ATSPM.Application.Reports\\ATSPM.Application.Reports.csproj",
   "expectedPackageFiles": [
@@ -241,6 +241,15 @@
       "code": "NU1605",
       "level": "Error",
       "message": "Detected package downgrade: xunit from 2.4.2 to 2.4.1. Reference the package directly from the project to select a different version. \r\n ATSPM.Application.Reports -> ATSPM.Infrastructure.Repositories.EntityFramework -> xunit (>= 2.4.2) \r\n ATSPM.Application.Reports -> xunit (>= 2.4.1)",
+      "libraryId": "xunit",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    },
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Detected package downgrade: xunit from 2.4.2 to 2.4.1. Reference the package directly from the project to select a different version. \r\n ATSPM.Application.Reports -> ATSPM.Application.IRepositories -> xunit (>= 2.4.2) \r\n ATSPM.Application.Reports -> xunit (>= 2.4.1)",
       "libraryId": "xunit",
       "targetGraphs": [
         "net6.0"
