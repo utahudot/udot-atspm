@@ -1,0 +1,14 @@
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.csproj.AssemblyReference.cache
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.AssemblyInfoInputs.cache
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.AssemblyInfo.cs
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.csproj.CoreCompileInputs.cache
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ATSPM.IRepositories.deps.json
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ATSPM.IRepositories.dll
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ref\ATSPM.IRepositories.dll
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ATSPM.IRepositories.pdb
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ATSPM.Models.dll
+C:\Projects\ATSPM\ATSPM.IRepositories\bin\Debug\net5.0\ATSPM.Models.pdb
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.dll
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ref\ATSPM.IRepositories.dll
+C:\Projects\ATSPM\ATSPM.IRepositories\obj\Debug\net5.0\ATSPM.IRepositories.pdb

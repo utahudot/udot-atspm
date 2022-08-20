@@ -25,5 +25,6 @@ namespace ATSPM.Application.Models
 
         public virtual DirectionType DirectionType { get; set; }
         public virtual ICollection<Detector> Detectors { get; set; }
+        public Signal Signal { get; set; }
     }
 }

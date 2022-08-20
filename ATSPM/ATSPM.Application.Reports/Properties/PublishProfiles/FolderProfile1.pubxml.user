@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>\\10.10.10.23\c$\inetpub\wwwroot\ATSPM.Application.Reports</_PublishTargetUrl>
+    <History>True|2022-01-31T05:14:38.7092859Z;True|2022-01-18T20:53:32.6660574-07:00;False|2022-01-18T20:52:46.1191018-07:00;False|2022-01-18T20:52:12.2500163-07:00;True|2022-01-17T19:32:32.1814270-07:00;False|2022-01-17T17:18:44.4838915-07:00;True|2021-12-11T16:04:46.3716671-07:00;True|2021-11-29T20:40:43.7340598-07:00;False|2021-11-29T20:36:47.3035210-07:00;False|2021-11-29T20:35:43.0619133-07:00;True|2021-11-29T19:57:34.8160006-07:00;</History>
+  </PropertyGroup>
+</Project>

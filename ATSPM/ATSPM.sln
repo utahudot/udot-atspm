@@ -27,11 +27,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCoreTests", "App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{367B779D-CD6D-4143-9C12-9F68D6B397D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportAPI", "ReportAPI\ReportAPI.csproj", "{071DB6E1-C774-4243-B47A-966C78BAC112}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportAPI", "ReportAPI\ReportAPI.csproj", "{071DB6E1-C774-4243-B47A-966C78BAC112}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAPI", "DataAPI\DataAPI.csproj", "{C33CDAF3-F7CA-4E17-AAC3-6D40D496C001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAPI", "DataAPI\DataAPI.csproj", "{C33CDAF3-F7CA-4E17-AAC3-6D40D496C001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{B1F40B63-65FB-49F7-BCDC-47480428DFDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{B1F40B63-65FB-49F7-BCDC-47480428DFDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.Business", "ATSPM.Application.Business\ATSPM.Application.Business.csproj", "{893BC02A-4EC0-4327-A53D-EF5B813730B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.Reports", "ATSPM.Application.Reports\ATSPM.Application.Reports.csproj", "{13B4F8D5-24EE-4761-90BF-BF29BA699321}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.ReportsTests", "ATSPM.Application.ReportsTests\ATSPM.Application.ReportsTests.csproj", "{14361C64-00C3-4EEB-AA27-E1825871ED8D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.IRepositories", "ATSPM.IRepositories\ATSPM.Application.IRepositories.csproj", "{83231497-0BD0-442C-97C5-26BFE1F7A6B1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Infrastructure.Repositories.EntityFramework", "ATSPM.Repositories.EntityFramework\ATSPM.Infrastructure.Repositories.EntityFramework.csproj", "{0613B42F-2C5A-4090-90CF-8340FFCBB8EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +93,26 @@ Global
 		{B1F40B63-65FB-49F7-BCDC-47480428DFDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1F40B63-65FB-49F7-BCDC-47480428DFDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1F40B63-65FB-49F7-BCDC-47480428DFDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{893BC02A-4EC0-4327-A53D-EF5B813730B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{893BC02A-4EC0-4327-A53D-EF5B813730B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{893BC02A-4EC0-4327-A53D-EF5B813730B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{893BC02A-4EC0-4327-A53D-EF5B813730B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13B4F8D5-24EE-4761-90BF-BF29BA699321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13B4F8D5-24EE-4761-90BF-BF29BA699321}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13B4F8D5-24EE-4761-90BF-BF29BA699321}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13B4F8D5-24EE-4761-90BF-BF29BA699321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14361C64-00C3-4EEB-AA27-E1825871ED8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14361C64-00C3-4EEB-AA27-E1825871ED8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14361C64-00C3-4EEB-AA27-E1825871ED8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14361C64-00C3-4EEB-AA27-E1825871ED8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83231497-0BD0-442C-97C5-26BFE1F7A6B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83231497-0BD0-442C-97C5-26BFE1F7A6B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83231497-0BD0-442C-97C5-26BFE1F7A6B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83231497-0BD0-442C-97C5-26BFE1F7A6B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0613B42F-2C5A-4090-90CF-8340FFCBB8EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0613B42F-2C5A-4090-90CF-8340FFCBB8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0613B42F-2C5A-4090-90CF-8340FFCBB8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0613B42F-2C5A-4090-90CF-8340FFCBB8EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

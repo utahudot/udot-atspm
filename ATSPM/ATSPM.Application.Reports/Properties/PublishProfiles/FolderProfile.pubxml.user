@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\inetpub\wwwroot\SPMReports</_PublishTargetUrl>
+    <History>True|2022-01-20T03:48:10.2764802Z;True|2022-01-19T20:36:44.3266904-07:00;True|2021-11-21T09:30:46.6501969-07:00;False|2021-11-21T09:29:51.9084300-07:00;True|2021-11-20T07:15:52.7590469-07:00;True|2021-11-19T22:00:53.5177770-07:00;True|2021-11-19T21:50:07.4843998-07:00;False|2021-11-19T21:41:41.5748566-07:00;</History>
+  </PropertyGroup>
+</Project>
