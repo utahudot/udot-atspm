@@ -13,18 +13,13 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Compressed Event Log Data");
 
-            builder.HasKey(e => new { e.SignalId, e.ArchiveDate }); //.HasName("PK_Controller_Log_Archive");
+            builder.HasKey(e => new { e.SignalId, e.ArchiveDate });
 
-            //builder.HasIndex(e => new { e.SignalId, e.ArchiveDate },"IX_Controller_Log_Archive").IsUnique();
-
-            builder.Property(e => e.ArchiveDate)
-                .HasColumnType("date")
-                .Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
+            builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
             builder.Property(e => e.SignalId)
                     .IsRequired()
                     .HasMaxLength(10);
-            //.HasColumnName("SignalId");
 
             //https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=fluent-api
 

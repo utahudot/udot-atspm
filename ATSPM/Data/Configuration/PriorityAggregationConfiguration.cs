@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<PriorityAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PriorityNumber });
-            //.HasName("PK_dbo.PriorityAggregations");
+            builder.HasComment("Priority Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PriorityNumber });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

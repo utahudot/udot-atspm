@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20220816173859_init.cs" />
     <Compile Remove="Migrations\ConfigContextModelSnapshot.cs" />
   </ItemGroup>
 

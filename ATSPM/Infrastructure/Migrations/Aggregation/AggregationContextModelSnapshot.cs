@@ -29,7 +29,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -58,6 +59,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachPcdAggregations");
+
+                    b.HasComment("Approach Pcd Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ApproachSpeedAggregation", b =>
@@ -67,7 +70,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("ApproachID")
                         .HasColumnType("int");
@@ -87,6 +91,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "ApproachID");
 
                     b.ToTable("ApproachSpeedAggregations");
+
+                    b.HasComment("Approach Speed Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ApproachSplitFailAggregation", b =>
@@ -96,7 +102,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("ApproachID")
                         .HasColumnType("int");
@@ -128,6 +135,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "ApproachID", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachSplitFailAggregations");
+
+                    b.HasComment("Approach Split Fail Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ApproachYellowRedActivationAggregation", b =>
@@ -137,7 +146,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -166,6 +176,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber", "IsProtectedPhase");
 
                     b.ToTable("ApproachYellowRedActivationAggregations");
+
+                    b.HasComment("Approach Yellow Red Activation Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectorEventCountAggregation", b =>
@@ -185,11 +197,14 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.Property<string>("SignalId")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.HasKey("BinStartTime", "DetectorPrimaryID");
 
                     b.ToTable("DetectorEventCountAggregations");
+
+                    b.HasComment("Detector Event Count Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PhaseCycleAggregation", b =>
@@ -199,12 +214,13 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("ApproachID")
+                    b.Property<int>("ApproachId")
                         .HasColumnType("int");
 
                     b.Property<int>("GreenTime")
@@ -225,6 +241,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseCycleAggregations");
+
+                    b.HasComment("Phase Cycle Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PhaseLeftTurnGapAggregation", b =>
@@ -234,7 +252,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -290,6 +309,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseLeftTurnGapAggregations");
+
+                    b.HasComment("Phase Left Turn Gap Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PhaseSplitMonitorAggregation", b =>
@@ -299,7 +320,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -313,6 +335,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseSplitMonitorAggregations");
+
+                    b.HasComment("Phase Split Monitor Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PhaseTerminationAggregation", b =>
@@ -322,7 +346,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PhaseNumber")
                         .HasColumnType("int");
@@ -342,6 +367,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PhaseNumber");
 
                     b.ToTable("PhaseTerminationAggregations");
+
+                    b.HasComment("Phase Termination Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PreemptionAggregation", b =>
@@ -351,7 +378,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PreemptNumber")
                         .HasColumnType("int");
@@ -365,6 +393,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PreemptNumber");
 
                     b.ToTable("PreemptionAggregations");
+
+                    b.HasComment("Preemption Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.PriorityAggregation", b =>
@@ -374,7 +404,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("PriorityNumber")
                         .HasColumnType("int");
@@ -391,6 +422,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId", "PriorityNumber");
 
                     b.ToTable("PriorityAggregations");
+
+                    b.HasComment("Priority Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.SignalEventCountAggregation", b =>
@@ -400,7 +433,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
 
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("EventCount")
                         .HasColumnType("int");
@@ -408,13 +442,16 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("BinStartTime", "SignalId");
 
                     b.ToTable("SignalEventCountAggregations");
+
+                    b.HasComment("Signal Event Count Aggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.SignalPlanAggregation", b =>
                 {
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime");
@@ -428,6 +465,8 @@ namespace ATSPM.Infrasturcture.Migrations.Aggregation
                     b.HasKey("SignalId", "Start", "End");
 
                     b.ToTable("SignalPlanAggregations");
+
+                    b.HasComment("Signal Plan Aggregation");
                 });
 #pragma warning restore 612, 618
         }

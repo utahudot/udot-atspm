@@ -8,23 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<DetectorComment> builder)
         {
-            //builder.HasKey(e => e.CommentId)
-            //    .HasName("PK_dbo.DetectorComments");
+            builder.HasComment("Detector Comments");
 
-            //builder.HasIndex(e => e.Id, "IX_ID");
-
-            //builder.Property(e => e.CommentId).HasColumnName("CommentID");
-
-            //builder.Property(e => e.CommentText).IsRequired();
-
-            //builder.Property(e => e.Id).HasColumnName("ID");
-
-            //builder.Property(e => e.TimeStamp).HasColumnType("datetime");
-
-            //builder.HasOne(d => d.IdNavigation)
-            //    .WithMany(p => p.DetectorComments)
-            //    .HasForeignKey(d => d.Id)
-            //    .HasConstraintName("FK_dbo.DetectorComments_dbo.Detectors_ID");
+            builder.HasIndex(e => e.Id);
         }
     }
 }

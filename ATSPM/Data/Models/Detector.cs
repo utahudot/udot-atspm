@@ -29,7 +29,7 @@ namespace ATSPM.Data.Models
         public int? DecisionPoint { get; set; }
         public int? MovementDelay { get; set; }
         public int ApproachId { get; set; }
-        public int DetectionHardwareId { get; set; }
+        public DetectionHardwareTypes DetectionHardwareId { get; set; }
         public double LatencyCorrection { get; set; }
 
         public virtual Approach Approach { get; set; }

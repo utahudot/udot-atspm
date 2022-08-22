@@ -9,8 +9,6 @@ namespace ATSPM.Data.Configuration
         public void Configure(EntityTypeBuilder<Route> builder)
         {
             builder.HasComment("Signal Routes");
-            
-            //builder.Property(e => e.RouteName).IsRequired();
         }
     }
 }

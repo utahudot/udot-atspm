@@ -8,14 +8,11 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<SignalPlanAggregation> builder)
         {
+            builder.HasComment("Signal Plan Aggregation");
+
             builder.HasKey(e => new { e.SignalId, e.Start, e.End });
-            //.HasName("PK_dbo.SignalPlanAggregations");
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
-
-            builder.Property(e => e.Start).HasColumnType("datetime");
-
-            builder.Property(e => e.End).HasColumnType("datetime");
         }
     }
 }

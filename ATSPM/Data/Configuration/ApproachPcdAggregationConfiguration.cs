@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApproachPcdAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase });
-                    //.HasName("PK_dbo.ApproachPcdAggregations");
+            builder.HasComment("Approach Pcd Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

@@ -11,9 +11,10 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<LaneType> builder)
         {
+            builder.HasComment("Lane Types");
+            
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
-                //.HasColumnName("LaneTypeID");
 
             builder.Property(e => e.Abbreviation)
                 .IsRequired()

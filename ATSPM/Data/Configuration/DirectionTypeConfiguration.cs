@@ -11,9 +11,10 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<DirectionType> builder)
         {
+            builder.HasComment("Direction Types");
+            
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
-                //.HasColumnName("DirectionTypeID");
 
             builder.Property(e => e.Abbreviation).HasMaxLength(5);
 

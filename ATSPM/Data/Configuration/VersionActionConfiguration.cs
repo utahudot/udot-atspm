@@ -11,7 +11,6 @@ namespace ATSPM.Data.Configuration
         {
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
-            //.HasColumnName("ID");
 
             builder.HasData(Enum.GetValues<SignaVersionActions>().Select(s => new VersionAction() { Id = s, Description = s.ToString() }));
         }

@@ -107,7 +107,7 @@ namespace ATSPM.Data.Relationships
 
     internal interface IRelatedDetectionHardware
     {
-        int DetectionHardwareId { get; set; }
+        DetectionHardwareTypes DetectionHardwareId { get; set; }
         DetectionHardware DetectionHardware { get; set; }
     }
 
@@ -154,7 +154,7 @@ namespace ATSPM.Data.Relationships
 
     internal interface IRelatedAgency
     {
-        int AgencyId { get; set; }
+        AgencyTypes AgencyId { get; set; }
         Agency Agency { get; set; }
     }
 

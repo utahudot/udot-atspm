@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<PhaseCycleAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
-            //.HasName("PK_dbo.PhaseCycleAggregations");
+            builder.HasComment("Phase Cycle Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

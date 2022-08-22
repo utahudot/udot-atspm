@@ -11,7 +11,7 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Application> builder)
         {
-            //builder.Property(e => e.Id).HasColumnName("ID");
+            builder.HasComment("Application Types");
 
             builder.HasData(typeof(ApplicationTypes).GetFields().Where(t => t.FieldType == typeof(ApplicationTypes)).Select(s => new Application()
             {

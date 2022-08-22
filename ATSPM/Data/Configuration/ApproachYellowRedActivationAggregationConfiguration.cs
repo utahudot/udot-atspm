@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApproachYellowRedActivationAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase });
-            //.HasName("PK_dbo.ApproachYellowRedActivationAggregations");
+            builder.HasComment("Approach Yellow Red Activation Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber, e.IsProtectedPhase });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

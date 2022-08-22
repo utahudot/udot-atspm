@@ -11,9 +11,15 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Agency> builder)
         {
-            //builder.Property(e => e.AgencyId).HasColumnName("AgencyID");
+            builder.HasComment("Agency Type for Action Logs");
 
             builder.Property(e => e.Description).HasMaxLength(50);
+
+            builder.HasData(typeof(AgencyTypes).GetFields().Where(t => t.FieldType == typeof(AgencyTypes)).Select(s => new Models.Agency()
+            {
+                Id = (AgencyTypes)s.GetValue(s),
+                Description = s.GetCustomAttribute<DisplayAttribute>().Name
+            }));
         }
     }
 }

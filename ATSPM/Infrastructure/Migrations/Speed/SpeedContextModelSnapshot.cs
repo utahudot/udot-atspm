@@ -26,7 +26,8 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                 {
                     b.Property<string>("DetectorID")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Mph")
                         .HasColumnType("int");
@@ -35,7 +36,7 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
 

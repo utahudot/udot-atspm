@@ -8,13 +8,13 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Region> builder)
         {
-            //builder.ToTable("Region");
+            builder.HasComment("Regions");
 
             builder.Property(e => e.Id).ValueGeneratedNever();
 
             builder.Property(e => e.Description).HasMaxLength(50);
 
-            builder.HasData(new Region() { Id = 1, Description = "Unknown"});
+            builder.HasData(new Region() { Id = 0, Description = "Unknown"});
         }
     }
 }

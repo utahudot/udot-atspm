@@ -15,9 +15,9 @@ namespace ATSPM.Data.Enums
         ATSPM = 1,
         [Display(Name = "SPMWatchDog", Order = 2)]
         SPMWatchDog = 2,
-        [Display(Name = "DatabaseArchive", Order = 3)]
+        [Display(Name = "Database Archive", Order = 3)]
         DatabaseArchive = 3,
-        [Display(Name = "GeneralSetting", Order = 4)]
+        [Display(Name = "General Setting", Order = 4)]
         GeneralSetting = 4,
     }
 }

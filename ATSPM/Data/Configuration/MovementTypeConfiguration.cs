@@ -11,9 +11,10 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<MovementType> builder)
         {
+            builder.HasComment("Movement Types");
+
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
-                //.HasColumnName("MovementTypeID");
 
             builder.Property(e => e.Abbreviation)
                 .IsRequired()
@@ -23,7 +24,7 @@ namespace ATSPM.Data.Configuration
                 .IsRequired()
                 .HasMaxLength(30);
 
-            builder.HasData(typeof(LaneTypes).GetFields().Where(t => t.FieldType == typeof(MovementTypes)).Select(s => new MovementType()
+            builder.HasData(typeof(MovementTypes).GetFields().Where(t => t.FieldType == typeof(MovementTypes)).Select(s => new MovementType()
             {
                 Id = (MovementTypes)s.GetValue(s),
                 Description = s.GetCustomAttribute<DisplayAttribute>().Name,

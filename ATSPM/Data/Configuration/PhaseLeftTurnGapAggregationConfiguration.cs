@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<PhaseLeftTurnGapAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
-            //.HasName("PK_dbo.PhaseLeftTurnGapAggregations");
+            builder.HasComment("Phase Left Turn Gap Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

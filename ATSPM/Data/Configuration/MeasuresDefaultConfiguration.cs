@@ -11,8 +11,7 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<MeasuresDefault> builder)
         {
-            //builder.HasKey(e => new { e.Measure, e.OptionName })
-            //    .HasName("PK_dbo.MeasuresDefaults");
+            builder.HasComment("Measure Defaults");
 
             builder.HasIndex(i => i.Measure).IsUnique();
 

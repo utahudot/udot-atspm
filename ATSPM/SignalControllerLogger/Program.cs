@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -46,7 +47,6 @@ namespace ATSPM.SignalControllerLogger
                     //    });
                     //}
                 })
-
                 .ConfigureServices((h, s) =>
                 {
                     //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
@@ -111,44 +111,47 @@ namespace ATSPM.SignalControllerLogger
 
             //using (var scope = host.Services.CreateScope())
             //{
-            //    var db = scope.ServiceProvider.GetService<ConfigContext>();
-
-            //    //var area = new Data.Models.Area() { Id = 1, Name = "just added!" };
-
-            //    //db.Areas.Add(area);
-
-            //    var area = db.Areas.SingleOrDefault(i => i.Id == 1);
-
-            //    var signal = new Data.Models.Signal()
-            //    {
-            //        SignalId = "1001",
-            //        PrimaryName = "something",
-            //        Latitude = "l",
-            //        Longitude = "L",
-            //        SecondaryName = "test",
-            //        Note = "Note",
-            //        ControllerTypeId = 0,
-            //        RegionId = 1,
-            //        JurisdictionId = 1
-            //    };
-
-            //    db.Signals.Add(signal);
-
-            //    signal.Areas.Add(area);
+            //    var db = scope.ServiceProvider.GetService<SpeedContext>();
 
 
+            //    //foreach (var e in db.Model.GetEntityTypes())
+            //    //{
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
 
-            //    db.SaveChanges();
+            //    //var model = db.Model.GetRelationalModel();
 
-            //    var verify = db.Signals
-            //        .Include(i => i.ControllerType)
-            //        .Include(i => i.Jurisdiction)
-            //        .Include(i => i.Region)
-            //        .Include(i => i.VersionAction)
-            //        .Include(i => i.Areas)
-            //        .ToList();
+            //    //foreach (var t in model.Tables)
+            //    //{
+            //    //    Console.WriteLine($"{t.Name} - {t.PrimaryKey}");
+
+            //    //    foreach (var p in t.Columns)
+            //    //    {
+            //    //        Console.WriteLine($"{p.Name} - {p.StoreType} - {p.IsNullable} -  {p.DefaultValue} - {p.MaxLength}");
+            //    //    }
+
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
+
+            //}
+
+            //Console.WriteLine($"Count: {AppDomain.CurrentDomain.GetAssemblies().Length}");
+
+            //var test = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(w => w.FullName.Contains("ATSPM.Data"));
+
+            //Console.WriteLine($"{test.FullName}");
+
+            //foreach (var t in test.GetExportedTypes().Where(w => w.Namespace == "ATSPM.Data.Models" && !typeof(ATSPMModelBase).IsAssignableFrom(w)))
+            //{
 
 
+            //    Console.WriteLine($"{t.Name}");
+            //}
+
+
+            //foreach (var t in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    Console.WriteLine($"{t.FullName}");
             //}
 
             Console.ReadKey();

@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApproachSplitFailAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID, e.PhaseNumber, e.IsProtectedPhase });
-            //.HasName("PK_dbo.ApproachSplitFailAggregations");
+            builder.HasComment("Approach Split Fail Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID, e.PhaseNumber, e.IsProtectedPhase });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

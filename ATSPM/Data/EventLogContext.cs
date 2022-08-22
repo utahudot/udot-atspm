@@ -24,6 +24,12 @@ namespace ATSPM.Data
 
         public virtual DbSet<ControllerLogArchive> ControllerLogArchives { get; set; }
 
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<string>().AreUnicode(false);
+            configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ControllerLogArchiveConfiguration());

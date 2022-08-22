@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<DetectorEventCountAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.DetectorPrimaryID });
-            //.HasName("PK_dbo.DetectorEventCountAggregations");
+            builder.HasComment("Detector Event Count Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.DetectorPrimaryID });
 
             builder.Property(e => e.SignalId)
                 .IsRequired()

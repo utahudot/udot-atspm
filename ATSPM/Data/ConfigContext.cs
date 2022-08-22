@@ -55,6 +55,9 @@ namespace ATSPM.Data
             configurationBuilder.Properties<string>().AreUnicode(false);
             configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
+            configurationBuilder.Properties<ActionTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<AgencyTypes>().HaveConversion<int>();
+            configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
             configurationBuilder.Properties<SignaVersionActions>().HaveConversion<int>();
             configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
@@ -82,8 +85,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new LaneTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new MeasuresDefaultConfiguration());
-            modelBuilder.ApplyConfiguration(new MetricCommentConfiguration());
+            //modelBuilder.ApplyConfiguration(new MeasuresDefaultConfiguration());
+            modelBuilder.ApplyConfiguration(new MenuConfiguration());
             modelBuilder.ApplyConfiguration(new MetricCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MetricTypeConfiguration());
             modelBuilder.ApplyConfiguration(new MovementTypeConfiguration());

@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<SignalEventCountAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId });
-            //.HasName("PK_dbo.SignalEventCountAggregations");
+            builder.HasComment("Signal Event Count Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

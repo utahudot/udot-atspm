@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<PhaseSplitMonitorAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
-            //.HasName("PK_dbo.PhaseSplitMonitorAggregations");
+            builder.HasComment("Phase Split Monitor Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

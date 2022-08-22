@@ -8,10 +8,9 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ApproachSpeedAggregation> builder)
         {
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID });
-            //.HasName("PK_dbo.ApproachSpeedAggregations");
+            builder.HasComment("Approach Speed Aggregation");
 
-            builder.Property(e => e.BinStartTime).HasColumnType("datetime");
+            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID });
 
             builder.Property(e => e.SignalId).HasMaxLength(10);
         }

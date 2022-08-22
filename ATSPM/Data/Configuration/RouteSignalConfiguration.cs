@@ -8,18 +8,13 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<RouteSignal> builder)
         {
-            builder.HasIndex(e => e.RouteId);
+            builder.HasComment("Route Signals");
 
-            //builder.HasIndex(e => e.RouteId, "IX_RouteId");
+            builder.HasIndex(e => e.RouteId);
 
             builder.Property(e => e.SignalId)
                 .IsRequired()
                 .HasMaxLength(10);
-
-            //builder.HasOne(d => d.Route)
-            //    .WithMany(p => p.RouteSignals)
-            //    .HasForeignKey(d => d.RouteId)
-            //    .HasConstraintName("FK_dbo.RouteSignals_dbo.Routes_RouteId");
         }
     }
 }
