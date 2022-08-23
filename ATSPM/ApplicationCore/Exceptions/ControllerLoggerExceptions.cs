@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using System;
 using System.Collections.Generic;

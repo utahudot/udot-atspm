@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
+using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
@@ -17,15 +15,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Google.Cloud.Diagnostics.Common;
-using ATSPM.Application.LogMessages;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
-{   
+{
     public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
     {
         public event EventHandler CanExecuteChanged;
@@ -63,7 +58,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerType?.ControllerTypeId == ControllerType && value.Enabled;
+            return value?.ControllerType?.Id == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -75,7 +70,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
+        /// <exception cref="InvalidSignalControllerIPAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
@@ -93,7 +88,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                 {
                     try
                     {
-                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress);
+                        var credentials = new NetworkCredential(parameter.ControllerType?.UserName, parameter.ControllerType?.Password, parameter.Ipaddress.ToString());
 
                         logMessages.ConnectingToHostMessage(parameter.SignalId, parameter.Ipaddress);
 
