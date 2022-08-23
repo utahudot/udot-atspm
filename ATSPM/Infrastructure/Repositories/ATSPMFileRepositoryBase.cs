@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;

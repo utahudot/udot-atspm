@@ -1,4 +1,4 @@
-using ATSPM.Application.Models;
+using ATSPM.Data.Models
 using ATSPM.Domain.Services;
 using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;

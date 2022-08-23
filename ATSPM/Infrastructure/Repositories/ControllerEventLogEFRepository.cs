@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Common;
@@ -21,10 +21,10 @@ namespace ATSPM.Infrasturcture.Repositories
 
         #region IControllerEventLogRepository
 
-        public IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
+        public IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string SignalId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
+                .FromSpecification(new ControllerLogDateRangeSpecification(SignalId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(s => s.LogData)

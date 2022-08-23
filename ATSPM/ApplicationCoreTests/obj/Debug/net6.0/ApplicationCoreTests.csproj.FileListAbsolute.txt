@@ -1,10 +1,10 @@
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\CoverletSourceRootsMapping
-C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\testhost.exe
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\testhost.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\testhost.exe
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.TestPlatform.PlatformAbstractions.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\xunit.runner.utility.netcoreapp10.dll
-C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.TestPlatform.PlatformAbstractions.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\ApplicationCoreTests.deps.json
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\ApplicationCoreTests.runtimeconfig.json
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\ApplicationCoreTests.dll
@@ -29,6 +29,11 @@ C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Grpc.Net.Clie
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Grpc.Net.Common.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.VisualStudio.CodeCoverage.Shim.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Extensions.Caching.Memory.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Extensions.Configuration.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Binder.dll
@@ -139,3 +144,5 @@ C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\obj\Debug\net6.0\refint\Applic
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\obj\Debug\net6.0\ApplicationCoreTests.pdb
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\obj\Debug\net6.0\ApplicationCoreTests.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\obj\Debug\net6.0\ref\ApplicationCoreTests.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\ATSPM.Data.dll
+C:\Projects\udot-atsmp\ATSPM\ApplicationCoreTests\bin\Debug\net6.0\ATSPM.Data.pdb

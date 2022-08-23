@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Enums;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;

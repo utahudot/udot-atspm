@@ -106,7 +106,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Web\\Web.csproj",
-      "projectName": "Web",
+      "projectName": "ATSPM.Web",
       "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Web\\Web.csproj",
       "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
       "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Web\\obj\\",

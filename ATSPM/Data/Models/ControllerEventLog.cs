@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Data.Models
+#nullable disable
+
+namespace ATSPM.Data.Models
 {
-    public partial class ControllerEventLog
+    public class ControllerEventLog
     {
-        public string SignalId { get; set; } = null!;
+        public string SignalId { get; set; }
         public DateTime Timestamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SignalId}-{EventCode}-{EventParam}-{Timestamp}";
+        }
     }
 }

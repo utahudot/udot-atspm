@@ -1,8 +1,9 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;

@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
+    <Compile Remove="RepositoryTests\IRepositoryTests.cs" />
+    <Compile Remove="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />
+    <None Include="RepositoryTests\IRepositoryTests.cs" />
+    <None Include="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
