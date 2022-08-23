@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>ATSPM.SignalControllerLogger</RootNamespace>
-    <UserSecretsId>4b3726cc-bb0e-46bc-bf4b-0564cdf0f955</UserSecretsId>
+    <UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\DomainCore\DomainCore.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
@@ -62,6 +63,14 @@
 
 	<ItemGroup>
 		<None Update="appsettings.Development.json">
+			<DependentUpon>appsettings.json</DependentUpon>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.Staging.json">
+			<DependentUpon>appsettings.json</DependentUpon>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	<None Update="appsettings.Production.json">
 			<DependentUpon>appsettings.json</DependentUpon>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

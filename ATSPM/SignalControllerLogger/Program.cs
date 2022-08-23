@@ -1,32 +1,25 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
-using ATSPM.Infrasturcture.Data;
+using ATSPM.Infrasturcture.Extensions;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
-using Data;
-using FluentFTP;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -54,9 +47,6 @@ namespace ATSPM.SignalControllerLogger
                     //    });
                     //}
                 })
-
-
-
                 .ConfigureServices((h, s) =>
                 {
                     //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
@@ -65,57 +55,104 @@ namespace ATSPM.SignalControllerLogger
                     //    Version = "1.1",
                     //});
                     s.AddLogging();
-                    //s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
-                    s.AddDbContext<DbContext, ATSPMContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString("ATSPM"))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+
+                    s.AddATSPMDbContext(h);
 
                     //background services
                     s.AddHostedService<TPLDataflowService>();
 
-                    //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    ////repositories
+                    //s.AddScoped<ISignalRepository, SignalEFRepository>();
+                    ////s.AddScoped<ISignalRepository, SignalFileRepository>();
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    ////s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
 
-                    //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
-                    //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+                    ////s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+                    ////s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
-                    //downloader clients
-                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    //s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+                    ////downloader clients
+                    //s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+                    //s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    ////s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
+                    //s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
-                    //downloaders
-                    s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+                    ////downloaders
+                    //s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
-                    //decoders
-                    s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-                    s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+                    ////decoders
+                    //s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    //s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
-                    //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
+                    ////https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+                    ////downloader configurations
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
 
-                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+                    //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
                 .UseConsoleLifetime()
                 .Build();
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
             Console.WriteLine($"done?");
+
+
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<SpeedContext>();
+
+
+            //    //foreach (var e in db.Model.GetEntityTypes())
+            //    //{
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
+
+            //    //var model = db.Model.GetRelationalModel();
+
+            //    //foreach (var t in model.Tables)
+            //    //{
+            //    //    Console.WriteLine($"{t.Name} - {t.PrimaryKey}");
+
+            //    //    foreach (var p in t.Columns)
+            //    //    {
+            //    //        Console.WriteLine($"{p.Name} - {p.StoreType} - {p.IsNullable} -  {p.DefaultValue} - {p.MaxLength}");
+            //    //    }
+
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
+
+            //}
+
+            //Console.WriteLine($"Count: {AppDomain.CurrentDomain.GetAssemblies().Length}");
+
+            //var test = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(w => w.FullName.Contains("ATSPM.Data"));
+
+            //Console.WriteLine($"{test.FullName}");
+
+            //foreach (var t in test.GetExportedTypes().Where(w => w.Namespace == "ATSPM.Data.Models" && !typeof(ATSPMModelBase).IsAssignableFrom(w)))
+            //{
+
+
+            //    Console.WriteLine($"{t.Name}");
+            //}
+
+
+            //foreach (var t in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    Console.WriteLine($"{t.FullName}");
+            //}
 
             Console.ReadKey();
         }

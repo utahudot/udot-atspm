@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

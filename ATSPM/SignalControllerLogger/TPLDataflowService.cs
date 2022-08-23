@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

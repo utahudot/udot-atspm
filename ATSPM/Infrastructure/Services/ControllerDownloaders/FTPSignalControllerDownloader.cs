@@ -1,13 +1,8 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
+using ATSPM.Data.Models;
 using FluentFTP;
 using FluentFTP.Rules;
 using Microsoft.Extensions.Logging;
@@ -15,14 +10,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Utah.Gov.Udot.PipelineManager;
 
 namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 {
@@ -43,7 +33,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            using FtpClient client = new FtpClient(parameter.Ipaddress);
+            using FtpClient client = new FtpClient(parameter.Ipaddress.ToString());
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                 //TODO: replace this with options setting

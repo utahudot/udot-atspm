@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
@@ -9,15 +9,15 @@ namespace ATSPM.Application.Specifications
 {
     //public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     //{
-    //    public ControllerLogDateRangeSpecification(string signalId, DateTime startTime, DateTime endTime) : base()
+    //    public ControllerLogDateRangeSpecification(string SignalId, DateTime startTime, DateTime endTime) : base()
     //    {
-    //        if (string.IsNullOrEmpty(signalId))
+    //        if (string.IsNullOrEmpty(SignalId))
     //        {
     //            base.Criteria = c => c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
     //        }
     //        else
     //        {
-    //            base.Criteria = c => c.SignalId == signalId && c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
+    //            base.Criteria = c => c.SignalId == SignalId && c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
     //        }
     //    }
     //}

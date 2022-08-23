@@ -6,23 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentFTP" Version="39.0.1" />
+    <Compile Remove="Migrations\ConfigContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentFTP" Version="39.1.0" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Parquet.Net" Version="3.9.1" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
@@ -38,6 +33,11 @@
     <Reference Include="PipelineManagerLibrary">
       <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\EventLog\" />
+    <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 
 </Project>
