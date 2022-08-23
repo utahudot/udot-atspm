@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Speed Event Data");
 
-            builder.HasKey(e => new { e.DetectorID, e.Mph, e.Kph, e.Timestamp });
+            builder.HasKey(e => new { e.DetectorId, e.Mph, e.Kph, e.Timestamp });
 
-            builder.Property(e => e.DetectorID).HasMaxLength(50);
+            builder.Property(e => e.DetectorId).HasMaxLength(50);
         }
     }
 }

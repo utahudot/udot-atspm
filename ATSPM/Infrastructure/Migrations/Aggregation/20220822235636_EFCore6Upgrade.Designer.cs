@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    [Migration("20220822210149_EFCore6Upgrade")]
+    [Migration("20220822235636_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

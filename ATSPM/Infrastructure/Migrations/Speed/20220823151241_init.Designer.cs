@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrasturcture.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
-    [Migration("20220822210429_EFCore6Upgrade")]
-    partial class EFCore6Upgrade
+    [Migration("20220823151241_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,25 +26,27 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
 
             modelBuilder.Entity("ATSPM.Data.Models.SpeedEvent", b =>
                 {
-                    b.Property<string>("DetectorID")
+                    b.Property<string>("DetectorId")
                         .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("DetectorID");
 
                     b.Property<int>("Mph")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("MPH");
 
                     b.Property<int>("Kph")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("KPH");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("timestamp");
 
-                    b.HasKey("DetectorID", "Mph", "Kph", "Timestamp");
+                    b.HasKey("DetectorId", "Mph", "Kph", "Timestamp")
+                        .HasName("PK_dbo.Speed_Events");
 
-                    b.ToTable("SpeedEvents");
-
-                    b.HasComment("Speed Event Data");
+                    b.ToTable("Speed_Events", (string)null);
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -17,20 +16,32 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                 name: "Speed_Events",
                 newName: "SpeedEvents");
 
+            migrationBuilder.RenameColumn(
+                name: "timestamp",
+                table: "SpeedEvents",
+                newName: "Timestamp");
+
+            migrationBuilder.RenameColumn(
+                name: "KPH",
+                table: "SpeedEvents",
+                newName: "Kph");
+
+            migrationBuilder.RenameColumn(
+                name: "MPH",
+                table: "SpeedEvents",
+                newName: "Mph");
+
+            migrationBuilder.RenameColumn(
+                name: "DetectorID",
+                table: "SpeedEvents",
+                newName: "DetectorId");
+
             migrationBuilder.AlterTable(
                 name: "SpeedEvents",
                 comment: "Speed Event Data");
 
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "Timestamp",
-                table: "SpeedEvents",
-                type: "datetime",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2");
-
             migrationBuilder.AlterColumn<string>(
-                name: "DetectorID",
+                name: "DetectorId",
                 table: "SpeedEvents",
                 type: "varchar(50)",
                 unicode: false,
@@ -43,7 +54,7 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
             migrationBuilder.AddPrimaryKey(
                 name: "PK_SpeedEvents",
                 table: "SpeedEvents",
-                columns: new[] { "DetectorID", "Mph", "Kph", "Timestamp" });
+                columns: new[] { "DetectorId", "Mph", "Kph", "Timestamp" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -56,17 +67,29 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
                 name: "SpeedEvents",
                 newName: "Speed_Events");
 
+            migrationBuilder.RenameColumn(
+                name: "Timestamp",
+                table: "Speed_Events",
+                newName: "timestamp");
+
+            migrationBuilder.RenameColumn(
+                name: "Kph",
+                table: "Speed_Events",
+                newName: "KPH");
+
+            migrationBuilder.RenameColumn(
+                name: "Mph",
+                table: "Speed_Events",
+                newName: "MPH");
+
+            migrationBuilder.RenameColumn(
+                name: "DetectorId",
+                table: "Speed_Events",
+                newName: "DetectorID");
+
             migrationBuilder.AlterTable(
                 name: "Speed_Events",
                 oldComment: "Speed Event Data");
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "Timestamp",
-                table: "Speed_Events",
-                type: "datetime2",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime");
 
             migrationBuilder.AlterColumn<string>(
                 name: "DetectorID",
@@ -82,7 +105,7 @@ namespace ATSPM.Infrasturcture.Migrations.Speed
             migrationBuilder.AddPrimaryKey(
                 name: "PK_dbo.Speed_Events",
                 table: "Speed_Events",
-                columns: new[] { "DetectorID", "Mph", "Kph", "Timestamp" });
+                columns: new[] { "DetectorID", "MPH", "KPH", "timestamp" });
         }
     }
 }
