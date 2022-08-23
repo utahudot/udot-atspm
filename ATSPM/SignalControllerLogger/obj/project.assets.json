@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "FluentFTP/39.0.1": {
+      "FluentFTP/39.1.0": {
         "type": "package",
         "compile": {
           "lib/net6.0/FluentFTP.dll": {}
@@ -1690,6 +1690,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "ATSPM.Data": "1.0.0",
           "DomainCore": "1.0.0",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Logging": "6.0.0",
@@ -1703,17 +1704,19 @@
           "bin/placeholder/ApplicationCore.dll": {}
         }
       },
-      "Data/1.0.0": {
+      "ATSPM.Data/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7"
+          "DomainCore": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "6.0.7",
+          "Microsoft.EntityFrameworkCore.Relational": "6.0.7"
         },
         "compile": {
-          "bin/placeholder/Data.dll": {}
+          "bin/placeholder/ATSPM.Data.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Data.dll": {}
+          "bin/placeholder/ATSPM.Data.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -1733,14 +1736,13 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
+          "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
-          "Data": "1.0.0",
           "DomainCore": "1.0.0",
-          "FluentFTP": "39.0.1",
+          "FluentFTP": "39.1.0",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
-          "Microsoft.EntityFrameworkCore": "6.0.7",
-          "Microsoft.EntityFrameworkCore.Abstractions": "6.0.7",
           "Microsoft.EntityFrameworkCore.SqlServer": "6.0.7",
+          "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.1",
           "Parquet.Net": "3.9.1",
           "SSH.NET": "2020.0.2"
@@ -1755,15 +1757,15 @@
     }
   },
   "libraries": {
-    "FluentFTP/39.0.1": {
-      "sha512": "kRIgScGDMDYR1rz9MogHD/Rk6N7rj8PSwsjklhVPhcQ06G3CVs6vMNDQbCEiY8/JULIrY0faPq6qOPfyuNgQzg==",
+    "FluentFTP/39.1.0": {
+      "sha512": "rkIBFx6grM9jO0FKo6RHvdtjPYTSoTfoI8BdJ3Pj3fYO54wcHCvLHq7md46gcQxCni6g5HgCx6pktoreimJXnw==",
       "type": "package",
-      "path": "fluentftp/39.0.1",
+      "path": "fluentftp/39.1.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.TXT",
-        "fluentftp.39.0.1.nupkg.sha512",
+        "fluentftp.39.1.0.nupkg.sha512",
         "fluentftp.nuspec",
         "lib/net20/FluentFTP.dll",
         "lib/net20/FluentFTP.xml",
@@ -5827,7 +5829,7 @@
       "path": "../ApplicationCore/ApplicationCore.csproj",
       "msbuildProject": "../ApplicationCore/ApplicationCore.csproj"
     },
-    "Data/1.0.0": {
+    "ATSPM.Data/1.0.0": {
       "type": "project",
       "path": "../Data/Data.csproj",
       "msbuildProject": "../Data/Data.csproj"
@@ -5845,6 +5847,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "ATSPM.Data >= 1.0.0",
       "ApplicationCore >= 1.0.0",
       "DomainCore >= 1.0.0",
       "Google.Cloud.Diagnostics.Common >= 5.0.0",
@@ -5893,6 +5896,9 @@
           "projectReferences": {
             "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
               "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+            },
+            "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj": {
+              "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj"
             },
             "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
               "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"

@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Extensions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
@@ -17,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -146,7 +143,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }

@@ -1,16 +1,15 @@
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using ATSPM.Infrasturcture.Data;
 using ATSPM.Infrasturcture.Repositories;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace InfrastructureTests.RepositoryTests
 {
@@ -22,7 +21,7 @@ namespace InfrastructureTests.RepositoryTests
 
         private readonly ITestOutputHelper _output;
         private ILogger<SignalEFRepository> _nullLogger;
-        private MOEContext _db;
+        private ConfigContext _db;
         private IAsyncRepository<Signal> _repo;
 
         public IAsyncRepositoryTests(ITestOutputHelper output)

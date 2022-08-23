@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Models;
-using ATSPM.Infrasturcture.Data;
+﻿using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -34,15 +33,15 @@ namespace Microsoft.Extensions.Logging
 
             if (state is IReadOnlyList<KeyValuePair<string, object>> parameters)
             {
-                ApplicationEvent applicationEvent = new ApplicationEvent()
-                {
-                    Timestamp = DateTime.Now,
-                    ApplicationName = _applicationName,
-                    Description = formatter(state, exception),
-                    SeverityLevel = (int)logLevel,
-                    Class = parameters.Where(k => k.Key == "Class").Select(v => v.Value).FirstOrDefault().ToString(),
-                    Function = parameters.Where(k => k.Key == "Function").Select(v => v.Value).FirstOrDefault().ToString()
-                };
+                //ApplicationEvent applicationEvent = new ApplicationEvent()
+                //{
+                //    Timestamp = DateTime.Now,
+                //    ApplicationName = _applicationName,
+                //    Description = formatter(state, exception),
+                //    SeverityLevel = (int)logLevel,
+                //    Class = parameters.Where(k => k.Key == "Class").Select(v => v.Value).FirstOrDefault().ToString(),
+                //    Function = parameters.Where(k => k.Key == "Function").Select(v => v.Value).FirstOrDefault().ToString()
+                //};
 
                 //TODO: took this out for testing
                 //using (MOEContext db = new MOEContext())

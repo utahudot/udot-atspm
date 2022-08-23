@@ -6,7 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Moq;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
