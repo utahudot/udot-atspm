@@ -1,0 +1,7 @@
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.csproj.AssemblyReference.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.AssemblyInfoInputs.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.AssemblyInfo.cs
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.csproj.CoreCompileInputs.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.MvcApplicationPartsAssemblyInfo.cs
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.Reports\obj\Debug\net6.0\ATSPM.Application.Reports.MvcApplicationPartsAssemblyInfo.cache

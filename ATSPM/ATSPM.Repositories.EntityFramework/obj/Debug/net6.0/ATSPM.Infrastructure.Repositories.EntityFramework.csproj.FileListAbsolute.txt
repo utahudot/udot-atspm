@@ -1,8 +1,3 @@
-C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.csproj.AssemblyReference.cache
-C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.GeneratedMSBuildEditorConfig.editorconfig
-C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.AssemblyInfoInputs.cache
-C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.AssemblyInfo.cs
-C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.csproj.CoreCompileInputs.cache
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.deps.json
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.runtimeconfig.json
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.dll
@@ -14,6 +9,11 @@ C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\ATSPM.Application.IRepositories.pdb
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\DomainCore.pdb
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\bin\Debug\net6.0\DomainCore.xml
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.csproj.AssemblyReference.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.AssemblyInfoInputs.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.AssemblyInfo.cs
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.csproj.CoreCompileInputs.cache
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.csproj.CopyComplete
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\ATSPM.Infrastructure.Repositories.EntityFramework.dll
 C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net6.0\refint\ATSPM.Infrastructure.Repositories.EntityFramework.dll

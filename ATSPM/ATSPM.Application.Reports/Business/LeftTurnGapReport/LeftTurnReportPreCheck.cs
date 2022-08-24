@@ -276,7 +276,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         public static void LoadAverages(Dictionary<TimeSpan, double> averages, TimeSpan peakHour, List<PhaseTerminationAggregation> aggregations)
         {
             if (aggregations.Count > 0)
-                averages.Add(peakHour, aggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.Unknown));
+                averages.Add(peakHour, aggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.UnknownTerminationTypes));
             else
                 averages.Add(peakHour, 0);
         }

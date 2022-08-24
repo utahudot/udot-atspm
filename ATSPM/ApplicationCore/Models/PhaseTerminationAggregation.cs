@@ -13,6 +13,6 @@ namespace ATSPM.Application.Models
         public int GapOuts { get; set; }
         public int ForceOffs { get; set; }
         public int MaxOuts { get; set; }
-        public int Unknown { get; set; }
+        public int UnknownTerminationTypes { get; set; }
     }
 }

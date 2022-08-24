@@ -1,0 +1,6 @@
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\bin\Debug\net6.0\CoverletSourceRootsMapping
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\obj\Debug\net6.0\ATSPM.Application.ReportsTests.csproj.AssemblyReference.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\obj\Debug\net6.0\ATSPM.Application.ReportsTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\obj\Debug\net6.0\ATSPM.Application.ReportsTests.AssemblyInfoInputs.cache
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\obj\Debug\net6.0\ATSPM.Application.ReportsTests.AssemblyInfo.cs
+C:\Projects\UDOT-ATSPM\ATSPM\ATSPM.Application.ReportsTests\obj\Debug\net6.0\ATSPM.Application.ReportsTests.csproj.CoreCompileInputs.cache

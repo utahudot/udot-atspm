@@ -1,21 +1,76 @@
-﻿using MOE.Common.Models;
+﻿using ATSPM.Application.Models;
+using ATSPM.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MOE.Common.Business.LeftTurnGapReport
+namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public static class LeftTurnReportPreCheck
     {
-        public static Dictionary<TimeSpan, double> GetAMPMPeakPedCyclesPercentages(string signalId, int directionTypeId, DateTime startDate, DateTime endDate, TimeSpan amStartTime,
-           TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime)
+        private static ISignalsRepository _signalsRepository;
+        private static IApproachRepository _approachRepository;
+        private static IApproachCycleAggregationRepository _approachCycleAggregationRepository;
+        private static IPhasePedAggregationRepository _phasePedAggregationRepository;
+        private static IPhaseTerminationAggregationRepository _phaseTerminationAggregationRepository;
+        private static IDetectorRepository _detectorRepository;
+        private static IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
+
+        public static Dictionary<TimeSpan, double> GetAMPMPeakPedCyclesPercentages(
+            string signalId,
+            int directionTypeId,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            ISignalsRepository signalsRepository,
+            IApproachRepository approachRepository,
+            IApproachCycleAggregationRepository approachCycleAggregationRepository,
+            IPhasePedAggregationRepository phasePedAggregationRepository,
+            IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository,
+            IDetectorRepository detectorRepository,
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
         {
-            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(signalId, directionTypeId, startDate, endDate, amStartTime, amEndTime, pmStartTime, pmEndTime);
-            Approach approach = GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
+            _signalsRepository = signalsRepository;
+            _approachRepository = approachRepository;
+            _approachCycleAggregationRepository = approachCycleAggregationRepository;
+            _phasePedAggregationRepository = phasePedAggregationRepository;
+            _phaseTerminationAggregationRepository = phaseTerminationAggregationRepository;
+            _detectorRepository = detectorRepository;
+            _detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+
+            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
+                signalId,
+                directionTypeId,
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime);
+            Approach approach = GetLTPhaseNumberPhaseTypeByDirection(
+                signalId,
+                directionTypeId);
             int opposingPhase = GetOpposingPhase(approach);
-            Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(signalId, opposingPhase, startDate, endDate, peaks);
-            Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(signalId, opposingPhase, startDate, endDate, peaks);
-            return GetPercentageOfPedCycles(averageCyles, averagePedCycles);
+            Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(
+                signalId,
+                opposingPhase,
+                startDate,
+                endDate,
+                peaks,
+                approachCycleAggregationRepository);
+            Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(
+                signalId,
+                opposingPhase,
+                startDate,
+                endDate,
+                peaks,
+                phasePedAggregationRepository);
+            return GetPercentageOfPedCycles(
+                averageCyles,
+                averagePedCycles);
         }
 
         private static Dictionary<TimeSpan, double> GetPercentageOfPedCycles(Dictionary<TimeSpan, double> averageCyles, Dictionary<TimeSpan, double> averagePedCycles)
@@ -37,43 +92,57 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return percentages;
         }
 
-        private static Dictionary<TimeSpan, double> GetAveragePedCycles(string signalId, int phase, DateTime startDate, DateTime endDate, Dictionary<TimeSpan, int> peaks)
+        private static Dictionary<TimeSpan, double> GetAveragePedCycles(string signalId, int phase, DateTime startDate, DateTime endDate, Dictionary<TimeSpan, int> peaks, IPhasePedAggregationRepository repository)
         {
-            var repository = Models.Repositories.PhasePedAggregationRepositoryFactory.Create();
             Dictionary<TimeSpan, double> averagePedCycles = new Dictionary<TimeSpan, double>();
             List<PhasePedAggregation> amAggregations = new List<PhasePedAggregation>();
             var amPeak = peaks.Min(p => p.Key);
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(repository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                amAggregations.AddRange(repository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phase,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averagePedCycles.Add(amPeak, amAggregations.Average(a => a.PedCycles));
             var pmPeak = peaks.Max(p => p.Key);
             List<PhasePedAggregation> pmAggregations = new List<PhasePedAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                pmAggregations.AddRange(repository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
+                pmAggregations.AddRange(repository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phase,
+                    tempDate.Date.Add(pmPeak),
+                    tempDate.Date.Add(pmPeak).AddHours(1)));
             }
             averagePedCycles.Add(amPeak, pmAggregations.Average(a => a.PedCycles));
             return averagePedCycles;
         }
 
-        private static Dictionary<TimeSpan, double> GetAverageCycles(string signalId, int phase, DateTime startDate, DateTime endDate, Dictionary<TimeSpan, int> peaks)
+        private static Dictionary<TimeSpan, double> GetAverageCycles(string signalId, int phase, DateTime startDate, DateTime endDate, Dictionary<TimeSpan, int> peaks, IApproachCycleAggregationRepository repository)
         {
-            var repository = Models.Repositories.ApproachCycleAggregationRepositoryFactory.Create();
             Dictionary<TimeSpan, double> averageCycles = new Dictionary<TimeSpan, double>();
             List<PhaseCycleAggregation> amAggregations = new List<PhaseCycleAggregation>();
             var amPeak = peaks.Min(p => p.Key);
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(repository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                amAggregations.AddRange(repository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(
+                    signalId,
+                    phase,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averageCycles.Add(amPeak, amAggregations.Average(a => a.TotalRedToRedCycles));
             var pmPeak = peaks.Max(p => p.Key);
             List<PhaseCycleAggregation> pmAggregations = new List<PhaseCycleAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                pmAggregations.AddRange(repository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
+                pmAggregations.AddRange(repository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(
+                    signalId,
+                    phase,
+                    tempDate.Date.Add(pmPeak),
+                    tempDate.Date.Add(pmPeak).AddHours(1)));
             }
             averageCycles.Add(amPeak, pmAggregations.Average(a => a.TotalRedToRedCycles));
             return averageCycles;
@@ -113,24 +182,52 @@ namespace MOE.Common.Business.LeftTurnGapReport
 
         }
 
-        public static Dictionary<TimeSpan, double> GetAMPMPeakGapOut(string signalId, int directionTypeId, DateTime startDate, DateTime endDate, TimeSpan amStartTime,
-            TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime)
+        public static Dictionary<TimeSpan, double> GetAMPMPeakGapOut(
+            string signalId,
+            int directionTypeId,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime)
         {
-            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(signalId, directionTypeId, startDate, endDate, amStartTime, amEndTime, pmStartTime, pmEndTime);
+            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
+                signalId,
+                directionTypeId,
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime);
             int phaseNumber = GetLTPhaseNumberByDirection(signalId, directionTypeId);
-            Dictionary <TimeSpan, double> averageTerminations = GetAverageTerminationsForPhase(signalId, phaseNumber, startDate, endDate, peaks);
-            Dictionary <TimeSpan, double> averageGapOuts = GetAverageGapOutsForPhase(signalId, phaseNumber, startDate, endDate, amStartTime, peaks);
+            Dictionary<TimeSpan, double> averageTerminations = GetAverageTerminationsForPhase(
+                signalId,
+                phaseNumber,
+                startDate,
+                endDate,
+                peaks);
+            Dictionary<TimeSpan, double> averageGapOuts = GetAverageGapOutsForPhase(
+                signalId,
+                phaseNumber,
+                startDate,
+                endDate,
+                amStartTime,
+                peaks);
             return GetPercentageOfGapOuts(averageTerminations, averageGapOuts);
-            
+
         }
 
-        private static Dictionary<TimeSpan, double> GetPercentageOfGapOuts(Dictionary<TimeSpan, double> averageTerminations, Dictionary<TimeSpan, double> averageGapOuts)
+        private static Dictionary<TimeSpan, double> GetPercentageOfGapOuts(
+            Dictionary<TimeSpan, double> averageTerminations,
+            Dictionary<TimeSpan, double> averageGapOuts)
         {
-            if(averageGapOuts.Values.Contains(0))
+            if (averageGapOuts.Values.Contains(0))
             {
                 throw new ArithmeticException("Average Gap Out cannot be zero");
             }
-            if(!averageGapOuts.Keys.Contains(averageGapOuts.Keys.Min()) ||
+            if (!averageGapOuts.Keys.Contains(averageGapOuts.Keys.Min()) ||
                 !averageGapOuts.Keys.Contains(averageGapOuts.Keys.Max()))
             {
                 throw new IndexOutOfRangeException("Peak hours do not align for AM/PM peak");
@@ -143,45 +240,70 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return percentages;
         }
 
-        private static Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(string signalId, int phaseNumber, DateTime startDate, DateTime endDate, TimeSpan amStartTime, Dictionary<TimeSpan, int> peaks)
+        private static Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(
+            string signalId,
+            int phaseNumber,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            Dictionary<TimeSpan, int> peaks)
         {
-            var repository = MOE.Common.Models.Repositories.PhaseTerminationAggregationRepositoryFactory.Create();
             Dictionary<TimeSpan, double> averages = new Dictionary<TimeSpan, double>();
             var amPeak = peaks.Min(p => p.Key);
             List<PhaseTerminationAggregation> amAggregations = new List<PhaseTerminationAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(repository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                amAggregations.AddRange(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phaseNumber,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averages.Add(amPeak, amAggregations.Average(a => a.GapOuts));
             var pmPeak = peaks.Max(p => p.Key);
             List<PhaseTerminationAggregation> pmAggregations = new List<PhaseTerminationAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                pmAggregations.AddRange(repository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                pmAggregations.AddRange(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phaseNumber,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averages.Add(amPeak, pmAggregations.Average(a => a.GapOuts));
 
             return averages;
         }
-    
 
-        private static Dictionary<TimeSpan, double> GetAverageTerminationsForPhase(string signalId, int phaseNumber, DateTime startDate, DateTime endDate, Dictionary<TimeSpan, int> peaks)
+
+        private static Dictionary<TimeSpan, double> GetAverageTerminationsForPhase(
+            string signalId,
+            int phaseNumber,
+            DateTime startDate,
+            DateTime endDate,
+            Dictionary<TimeSpan, int> peaks)
         {
-            var repository = MOE.Common.Models.Repositories.PhaseTerminationAggregationRepositoryFactory.Create();
             Dictionary<TimeSpan, double> averages = new Dictionary<TimeSpan, double>();
             var amPeak = peaks.Min(p => p.Key);
             List<PhaseTerminationAggregation> amAggregations = new List<PhaseTerminationAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(repository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));               
+                amAggregations.AddRange(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phaseNumber,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averages.Add(amPeak, amAggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.UnknownTerminationTypes));
 
             List<PhaseTerminationAggregation> pmAggregations = new List<PhaseTerminationAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                pmAggregations.AddRange(repository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                pmAggregations.AddRange(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(
+                    signalId,
+                    phaseNumber,
+                    tempDate.Date.Add(amPeak),
+                    tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averages.Add(amPeak, pmAggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.UnknownTerminationTypes));
 
@@ -190,43 +312,53 @@ namespace MOE.Common.Business.LeftTurnGapReport
 
         private static int GetLTPhaseNumberByDirection(string signalId, int directionTypeId)
         {
-            var approachRepository = Models.Repositories.ApproachRepositoryFactory.Create();
             var detectors = GetLeftTurnDetectors(signalId, directionTypeId);
-            if(!detectors.Any())
+            if (!detectors.Any())
             {
                 throw new NotSupportedException("Detectors not found");
             }
-            var approach = approachRepository.GetApproachByApproachID(detectors.First().ApproachID);
+            var approach = _approachRepository.GetApproachByApproachID(detectors.First().ApproachId);
             return approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
         }
 
         public static Approach GetLTPhaseNumberPhaseTypeByDirection(string signalId, int directionTypeId)
         {
-            var approachRepository = Models.Repositories.ApproachRepositoryFactory.Create();
             var detectors = GetLeftTurnDetectors(signalId, directionTypeId);
             if (!detectors.Any())
             {
                 throw new NotSupportedException("Detectors not found");
             }
-            return approachRepository.GetApproachByApproachID(detectors.First().ApproachID);
-           
+            return _approachRepository.GetApproachByApproachID(detectors.First().ApproachId);
+
         }
 
-        public static Dictionary<TimeSpan, int> GetAMPMPeakFlowRate(string signalId, int directionTypeId, DateTime startDate, DateTime endDate, TimeSpan amStartTime,
-            TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime)
+        public static Dictionary<TimeSpan, int> GetAMPMPeakFlowRate(
+            string signalId,
+            int directionTypeId,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime)
         {
-            var test =Models.Repositories.SignalsRepositoryFactory.Create();
-            if (!Models.Repositories.SignalsRepositoryFactory.Create().Exists(signalId))
+            if (!_signalsRepository.Exists(signalId))
             {
                 throw new ArgumentException("Signal Not Found");
             }
-            List<Models.Detector> detectors = GetLeftTurnDetectors(signalId, directionTypeId);
+            List<Detector> detectors = GetLeftTurnDetectors(signalId, directionTypeId);
             if (!detectors.Any())
             {
                 throw new NotSupportedException("No Detectors found");
             }
-            List<Models.DetectorEventCountAggregation> volumeAggregations = GetDetectorVolumebyDetector(detectors, startDate, endDate, amStartTime,
-                amEndTime, pmStartTime, pmEndTime);
+            List<DetectorEventCountAggregation> volumeAggregations = GetDetectorVolumebyDetector(
+                detectors,
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime);
             if (!volumeAggregations.Any())
             {
                 throw new NotSupportedException("No Detector Activation Aggregations found");
@@ -240,7 +372,11 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return GetAmPmPeaks(amStartTime, amEndTime, pmStartTime, pmEndTime, hourlyFlowRates);
         }
 
-        public static Dictionary<TimeSpan, int> GetAmPmPeaks(TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime,
+        public static Dictionary<TimeSpan, int> GetAmPmPeaks(
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
             Dictionary<TimeSpan, int> hourlyFlowRates)
         {
             var amPeak = hourlyFlowRates.Where(h => h.Key >= amStartTime && h.Key < amEndTime)
@@ -257,7 +393,9 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return returnPeaks;
         }
 
-        public static Dictionary<TimeSpan, int> GetHourlyFlowRates(List<TimeSpan> distinctTimeSpans, Dictionary<TimeSpan, int> averageByBin)
+        public static Dictionary<TimeSpan, int> GetHourlyFlowRates(
+            List<TimeSpan> distinctTimeSpans,
+            Dictionary<TimeSpan, int> averageByBin)
         {
             var hourlyFlowRates = new Dictionary<TimeSpan, int>();
             foreach (var timeSpan in distinctTimeSpans)
@@ -269,7 +407,9 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return hourlyFlowRates;
         }
 
-        public static Dictionary<TimeSpan, int> GetAveragesForBins(List<DetectorEventCountAggregation> volumeAggregations, List<TimeSpan> distinctTimeSpans)
+        public static Dictionary<TimeSpan, int> GetAveragesForBins(
+            List<DetectorEventCountAggregation> volumeAggregations,
+            List<TimeSpan> distinctTimeSpans)
         {
             Dictionary<TimeSpan, int> averageByBin = new Dictionary<TimeSpan, int>();
 
@@ -286,28 +426,41 @@ namespace MOE.Common.Business.LeftTurnGapReport
             return averageByBin;
         }
 
-        public static List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<Models.Detector> detectors, DateTime startDate,
-            DateTime endDate, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime)
+        public static List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(
+            List<Detector> detectors,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime)
         {
-            var detectorAggregationRepository = Models.Repositories.DetectorEventCountAggregationRepositoryFactory.Create();
             var detectorAggregations = new List<DetectorEventCountAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
                 foreach (var detector in detectors)
                 {
-                    detectorAggregations.AddRange(detectorAggregationRepository
-                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.ID, tempDate.Add(amStartTime), tempDate.Add(amEndTime)));
-                    detectorAggregations.AddRange(detectorAggregationRepository
-                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.ID, tempDate.Add(pmStartTime), tempDate.Add(pmEndTime)));
+                    detectorAggregations.AddRange(_detectorEventCountAggregationRepository
+                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(
+                        detector.Id,
+                        tempDate.Add(amStartTime),
+                        tempDate.Add(amEndTime)));
+                    detectorAggregations.AddRange(_detectorEventCountAggregationRepository
+                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(
+                        detector.Id,
+                        tempDate.Add(pmStartTime),
+                        tempDate.Add(pmEndTime)));
                 }
             }
             return detectorAggregations;
         }
 
-        public static List<Models.Detector> GetLeftTurnDetectors(string signalId, int directionTypeId)
+        public static List<Detector> GetLeftTurnDetectors(string signalId, int directionTypeId)
         {
-            var detectorRepository = Models.Repositories.DetectorRepositoryFactory.Create();
-            return detectorRepository.GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(signalId, directionTypeId, new List<int>() { 3, 5 });
+            return _detectorRepository.GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(
+                signalId,
+                directionTypeId,
+                new List<int>() { 3, 5 });
         }
     }
 }
