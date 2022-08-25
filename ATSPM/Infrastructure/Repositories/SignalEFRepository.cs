@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.ValueObjects;
+using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace ATSPM.Infrasturcture.Repositories
 {
     public class SignalEFRepository : ATSPMRepositoryEFBase<Signal>, ISignalRepository
     {
-        public SignalEFRepository(DbContext db, ILogger<SignalEFRepository> log) : base(db, log) { }
+        public SignalEFRepository(ConfigContext db, ILogger<SignalEFRepository> log) : base(db, log) { }
 
         #region ISignalRepository
 

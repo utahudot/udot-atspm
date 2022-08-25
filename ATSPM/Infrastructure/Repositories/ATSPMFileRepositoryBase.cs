@@ -174,5 +174,20 @@ namespace ATSPM.Infrasturcture.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public Task<T> LookupAsync(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> GetList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Lookup(object key)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

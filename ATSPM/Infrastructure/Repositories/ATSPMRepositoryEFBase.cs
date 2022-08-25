@@ -59,6 +59,11 @@ namespace ATSPM.Infrasturcture.Repositories
             return table.Where(criteria.Criteria).ToList();
         }
 
+        public IQueryable<T> GetList()
+        {
+            return table;
+        }
+
         public async Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>> criteria)
         {
             return await table.Where(criteria).ToListAsync();
@@ -74,9 +79,19 @@ namespace ATSPM.Infrasturcture.Repositories
             return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
         }
 
+        public T Lookup(object key)
+        {
+            return table.Find(key);
+        }
+
         public async Task<T> LookupAsync(T item)
         {
             return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+        }
+
+        public async Task<T> LookupAsync(object key)
+        {
+            return await table.FindAsync(key);
         }
 
         public void Remove(T item)
@@ -103,18 +118,67 @@ namespace ATSPM.Infrasturcture.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        //TODO: Check item for changes attach/unattach
         public void Update(T item)
         {
             table.Update(item);
             _db.SaveChanges();
+
+            switch (_db.Entry(item).State)
+            {
+                case EntityState.Detached:
+                    {
+                        var old = Lookup(item);
+
+                        if (old != null)
+                        {
+                            _db.Entry(old).CurrentValues.SetValues(item);
+                        }
+                        else
+                        {
+                            table.Update(item);
+                        }
+
+                        _db.SaveChanges();
+
+                        break;
+                    }
+                case EntityState.Modified:
+                    {
+                        _db.SaveChanges();
+
+                        break;
+                    }
+            }
         }
 
-        //TODO: Check item for changes attach/unattach
         public async Task UpdateAsync(T item)
         {
-            table.Update(item);
-            await _db.SaveChangesAsync().ConfigureAwait(false);
+            switch (_db.Entry(item).State)
+            {
+                case EntityState.Detached:
+                    {
+                        var old = await LookupAsync(item);
+                        
+                        if (old != null)
+                        {
+                            _db.Entry(old).CurrentValues.SetValues(item);
+                        }
+                        else
+                        {
+                            table.Update(item);
+                        }
+
+                        await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                        break;
+                    }
+                case EntityState.Modified:
+                    {
+                        await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                        break;
+                    }
+            }
         }
 
         //TODO: Check item for changes attach/unattach

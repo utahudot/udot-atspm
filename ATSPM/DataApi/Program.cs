@@ -1,5 +1,7 @@
+using ATSPM.Application.Repositories;
 using ATSPM.DataApi.EntityDataModel;
 using ATSPM.Infrasturcture.Extensions;
+using ATSPM.Infrasturcture.Repositories;
 using Microsoft.AspNetCore.OData;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +18,8 @@ builder.Services.AddControllers(options =>
 .Expand()
 .OrderBy()
 .Filter()
-.SkipToken());
+.SkipToken()
+.SetMaxTop(500));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +28,8 @@ builder.Services.AddSwaggerGen();
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddATSPMDbContext(h);
+
+    s.AddScoped<ISignalRepository, SignalEFRepository>();
 });
 
 
@@ -42,15 +47,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
+//app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllers();
+//});
 
-//app.MapControllers();
+app.MapControllers();
 
 app.Run();
