@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace ATSPM.DataApi.Controllers
 {
-    public class ATSPMDataControllerBase<T> : ODataController where T : ATSPMModelBaseTest
+    public class ATSPMDataControllerBase<T, TKey> : ODataController where T : ATSPMModelBaseTest
     {
         private readonly ConfigContext _configContext;
         private readonly IAsyncRepository<T> _repository;
@@ -21,6 +21,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // GET /Entity
+        [HttpGet()]
         [EnableQuery]
         public ActionResult<IQueryable<T>> Get()
         {
@@ -28,7 +29,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // GET /Entity(1)
-        public virtual async Task<ActionResult<Signal?>> Get(int key)
+        public virtual async Task<ActionResult<T?>> Get(TKey key)
         {
             var i = await _repository.LookupAsync(key);
 
@@ -55,7 +56,7 @@ namespace ATSPM.DataApi.Controllers
 
 
         // PUT /Entity(1)
-        public virtual async Task<IActionResult> Put(int key, [FromBody] T item)
+        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +78,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // PATCH /Entity(1)
-        public virtual async Task<IActionResult> Patch(int key, [FromBody] Delta<T> item)
+        public virtual async Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             if (!ModelState.IsValid)
             {
@@ -99,7 +100,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // DELETE /Entity(1)
-        public virtual async Task<IActionResult> Delete(int key)
+        public virtual async Task<IActionResult> Delete(TKey key)
         {
             var i = await _repository.LookupAsync(key);
 

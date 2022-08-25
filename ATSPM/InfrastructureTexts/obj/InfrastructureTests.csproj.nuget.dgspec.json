@@ -413,6 +413,10 @@
               "target": "Package",
               "version": "[6.0.1, )"
             },
+            "OData.Swagger": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
             "Parquet.Net": {
               "target": "Package",
               "version": "[3.9.1, )"

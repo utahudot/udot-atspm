@@ -143,11 +143,11 @@
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
-              "version": "[1.15.1, )"
+              "version": "[1.17.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.2.3, )"
+              "version": "[6.4.0, )"
             }
           },
           "imports": [
@@ -395,6 +395,10 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[6.0.1, )"
+            },
+            "OData.Swagger": {
+              "target": "Package",
+              "version": "[1.0.0, )"
             },
             "Parquet.Net": {
               "target": "Package",

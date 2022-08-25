@@ -1,8 +1,11 @@
 using ATSPM.Application.Repositories;
+using ATSPM.DataApi.Controllers;
 using ATSPM.DataApi.EntityDataModel;
 using ATSPM.Infrasturcture.Extensions;
 using ATSPM.Infrasturcture.Repositories;
 using Microsoft.AspNetCore.OData;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
-}).AddXmlDataContractSerializerFormatters()
+})
+.AddXmlDataContractSerializerFormatters()
 .AddOData(opt => opt.AddRouteComponents("data", new DataEdm().GetEntityDataModel())
 .Select()
 .Count()
@@ -23,6 +27,7 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 builder.Host.ConfigureServices((h, s) =>
@@ -31,10 +36,6 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddScoped<ISignalRepository, SignalEFRepository>();
 });
-
-
-
-
 
 var app = builder.Build();
 
@@ -47,15 +48,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseRouting();
+app.UseRouting();
 
 app.UseAuthorization();
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
-app.MapControllers();
+//app.MapControllers();
 
 app.Run();

@@ -96,3 +96,6 @@ C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.OData.Core.dll
 C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.OData.Edm.dll
 C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.OData.ModelBuilder.dll
 C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.Spatial.dll
+C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.DotNet.PlatformAbstractions.dll
+C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+C:\Projects\udot-atsmp\ATSPM\DataApi\bin\Debug\net6.0\OData.Swagger.dll

@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageReference Include="OData.Swagger" Version="1.0.0" />
     <PackageReference Include="Parquet.Net" Version="3.9.1" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
   </ItemGroup>

@@ -1,15 +1,13 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace ATSPM.DataApi.Controllers
 {
-    public class SignalsController : ATSPMDataControllerBase<Signal>
+    //[ApiController]
+    //[Route("[controller]")]
+    public class SignalsController : ATSPMDataControllerBase<Signal, int>
     {
         private readonly ConfigContext _configContext;
         private readonly ISignalRepository _repository;
@@ -19,5 +17,11 @@ namespace ATSPM.DataApi.Controllers
             _configContext = configContext;
             _repository = repository;
         }
+
+        //[HttpGet("GetTime()")]
+        //public IActionResult GetTime()
+        //{
+        //    return Ok("Now server time is: " + DateTime.Now.ToString());
+        //}
     }
 }

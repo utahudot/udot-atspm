@@ -40,6 +40,11 @@ namespace ATSPM.DataApi.EntityDataModel
             signal.Property(p => p.SignalId).MaxLength = 10;
             signal.Property(p => p.SignalId).IsRequired();
             signal.ComplexProperty(p => p.Ipaddress);
+            signal.Namespace = "SignalNamespace.Stuff";
+
+            var func = builder.Function("GetTime");
+            func.Returns<string>();
+            func.Namespace = "AtspmData.Test";
 
             //builder.EntitySet<Data.Models.Action>("Actions");
             //builder.EntitySet<ActionLog>("ActionLogs");
@@ -48,7 +53,7 @@ namespace ATSPM.DataApi.EntityDataModel
             //builder.EntitySet<ApplicationSetting>("ApplicationSettings");
             //builder.EntitySet<Approach>("Approaches");
             //builder.EntitySet<Area>("Areas");
-            builder.EntitySet<ControllerType>("ControllerTypes");
+            //builder.EntitySet<ControllerType>("ControllerTypes");
             //builder.EntitySet<DetectionHardware>("DetectionHardwares");
             //builder.EntitySet<DetectionType>("DetectionTypes");
             //builder.EntitySet<Detector>("Detectors");
