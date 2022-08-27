@@ -6,6 +6,7 @@
 *.ko
 *.obj
 *.elf
+*.cache
 
 # Linker output
 *.ilk
@@ -50,11 +51,26 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/bin
+/obj
+/Debug
 /ATSPMf/.vs/ATSPMf/v16
 /.vs
 /ATSPM/.vs
+/ATSPM/ApplicationCoreTests/obj
+/ATSPM/ApplicationCoreTests/bin
 /ATSPM/ApplicationCore/obj
-/ATSPM/ApplicationCore/bin
+/ATSPM/ApplicationCore/bin/
+/ATSPM/ATSPM.Application.Business/obj
+/ATSPM/ATSPM.Application.Business/bin
+/ATSPM/ATSPM.Application.IRepositories/bin
+/ATSPM/ATSPM.Application.IRepositories/obj
+/ATSPM/ATSPM.Application.Reports/bin
+/ATSPM/ATSPM.Application.Reports/obj
+/ATSPM/ATSPM.Application.ReportsTests/bin
+/ATSPM/ATSPM.Application.ReportsTests/obj
+/ATSPM/ATSPM.Infrastructure.Repositories.EntityFramework/bin
+/ATSPM/ATSPM.Infrastructure.Repositories.EntityFramework/obj
 /ATSPM/DomainCore/obj
 /ATSPM/DomainCore/bin
 /ATSPM/DomainCoreTests/obj
@@ -66,3 +82,14 @@ dkms.conf
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
 /ATSPM/Data/obj
+/ATSPM/Web/obj/Container
+/ATSPM/ReportAPI/obj/Container
+/ATSPM/DataAPI/obj/Container
+/ATSPM/ATSPM.Application.Business/bin/Debug/net6.0
+/ATSPM/Web/obj
+/ATSPM/Web/bin/Debug/net6.0
+/ATSPM/ReportAPI/bin/Debug/net6.0
+/ATSPM/DataAPI/bin/Debug/net6.0
+/ATSPM/DataAPI/obj
+/ATSPM/ReportAPI/obj/Debug/net6.0
+/ATSPM/ReportAPI/obj
