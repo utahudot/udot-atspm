@@ -10,8 +10,13 @@
   <ItemGroup>
     <Compile Remove="ControllerFTPService.cs" />
     <Compile Remove="ControllerFTPServiceTest.cs" />
+    <Compile Remove="ControllerLoggerBackgroundService.cs" />
     <Compile Remove="FileETLHostedService.cs" />
     <Compile Remove="PipelineBackgroundServiceTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ControllerLoggerBackgroundService.cs" />
   </ItemGroup>
 
   <ItemGroup>

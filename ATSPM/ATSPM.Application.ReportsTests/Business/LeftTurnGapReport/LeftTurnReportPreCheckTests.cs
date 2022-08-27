@@ -175,9 +175,9 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
         {
             var aggregations = new List<PhaseTerminationAggregation>
             {
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=1, Unknown=2}},
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=2, Unknown=2}},
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=2, MaxOuts=2, Unknown=2}}
+                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=1, UnknownTerminationTypes=2}},
+                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=2, UnknownTerminationTypes=2}},
+                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=2, MaxOuts=2, UnknownTerminationTypes=2}}
             };
             var dictionary = new Dictionary<TimeSpan, double>();
             LeftTurnReportPreCheck.LoadAverages(dictionary, new TimeSpan(8, 0, 0), aggregations);

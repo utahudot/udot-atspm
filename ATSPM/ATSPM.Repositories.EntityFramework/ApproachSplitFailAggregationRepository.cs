@@ -65,5 +65,10 @@ namespace ATSPM.Infrastructure.Repositories.EntityFramework
         {
             throw new NotImplementedException();
         }
+
+        List<ApproachSplitFailAggregation> IApproachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(int approachId, DateTime startDate, DateTime endDate, bool getProtectedPhase)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
