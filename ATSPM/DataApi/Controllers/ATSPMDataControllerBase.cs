@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace ATSPM.DataApi.Controllers
 {
-    public class ATSPMDataControllerBase<T, TKey> : ODataController where T : ATSPMModelBaseTest
+    //[ApiController]
+    //[Route("/data/[controller]")]
+    public class ATSPMDataControllerBase<T, TKey> : ODataController where T : ATSPMModelBase
     {
         private readonly ConfigContext _configContext;
         private readonly IAsyncRepository<T> _repository;
@@ -21,7 +23,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // GET /Entity
-        [HttpGet()]
+        //[HttpGet()]
         [EnableQuery]
         public ActionResult<IQueryable<T>> Get()
         {
@@ -29,6 +31,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // GET /Entity(1)
+        //[HttpGet("{key}")]
         public virtual async Task<ActionResult<T?>> Get(TKey key)
         {
             var i = await _repository.LookupAsync(key);
@@ -42,6 +45,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // POST /Entity 
+        //[HttpPost("{key}")]
         public virtual async Task<IActionResult> Post([FromBody]T item)
         {
             if (!ModelState.IsValid)
@@ -56,28 +60,29 @@ namespace ATSPM.DataApi.Controllers
 
 
         // PUT /Entity(1)
-        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var i = await _repository.LookupAsync(key);
+        //    var i = await _repository.LookupAsync(key);
 
-            if (i == null)
-            {
-                return NotFound();
-            }
+        //    if (i == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            item.Id = i.Id;
+        //    item.Id = i.Id;
 
-            await _repository.UpdateAsync(item);
+        //    await _repository.UpdateAsync(item);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // PATCH /Entity(1)
+        //[HttpPatch("{key}")]
         public virtual async Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             if (!ModelState.IsValid)
@@ -100,6 +105,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         // DELETE /Entity(1)
+        //[HttpDelete("{key}")]
         public virtual async Task<IActionResult> Delete(TKey key)
         {
             var i = await _repository.LookupAsync(key);

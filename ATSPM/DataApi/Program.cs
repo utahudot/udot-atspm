@@ -16,6 +16,8 @@ builder.Services.AddControllers(options =>
     options.ReturnHttpNotAcceptable = true;
 })
 .AddXmlDataContractSerializerFormatters()
+
+//https://github.com/microsoft/OpenAPI.NET.OData
 .AddOData(opt => opt.AddRouteComponents("data", new DataEdm().GetEntityDataModel())
 .Select()
 .Count()
@@ -34,6 +36,8 @@ builder.Host.ConfigureServices((h, s) =>
 {
     s.AddATSPMDbContext(h);
 
+    s.AddScoped<IApproachRepository, ApproachEFRepository>();
+    s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
     s.AddScoped<ISignalRepository, SignalEFRepository>();
 });
 

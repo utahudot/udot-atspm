@@ -9,7 +9,7 @@ using System.Net;
 namespace ATSPM.Data.Models
 {
     public partial class Signal :
-        ATSPMModelBaseTest, 
+        ATSPMModelBase, 
         IRelatedControllerType, 
         IRelatedJurisdiction, 
         IRelatedRegion, 
@@ -18,7 +18,7 @@ namespace ATSPM.Data.Models
         IRelatedMetricComments
 
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public string SignalId { get; set; }
 
         //TODO: Change long/lat to double
