@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class RouteSignal
+    public partial class RouteSignal : ATSPMModelBase
     {
         public RouteSignal()
         {

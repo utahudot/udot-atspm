@@ -12,7 +12,7 @@ namespace ATSPM.Infrasturcture.Repositories
 {
     public class RouteSignalsEFRepository : ATSPMRepositoryEFBase<RouteSignal>, IRouteSignalsRepository
     {
-        public RouteSignalsEFRepository(DbContext db, ILogger<RouteSignalsEFRepository> log)
+        public RouteSignalsEFRepository(DbContext db, ILogger<RouteSignalsEFRepository> log) : base(db, log)
         {
 
         }
@@ -29,12 +29,28 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<RouteSignal> GetAllRoutesDetails()
         {
-            throw new NotImplementedException();
+            return _db.Set<RouteSignal>().ToList();
         }
 
         public IReadOnlyCollection<RouteSignal> GetByRouteID(int routeID)
         {
-            throw new NotImplementedException();
+            var routes = _db.Set<RouteSignal>().Where(r => r.RouteId == routeID).ToList();
+
+            //if (routes.Count > 0)
+            //    return routes;
+            //{
+            //    var repository =
+            //        ApplicationEventRepositoryFactory.Create();
+            //    var error = new ApplicationEvent();
+            //    error.ApplicationName = "MOE.Common";
+            //    error.Class = "Models.Repository.ApproachRouteDetailsRepository";
+            //    error.Function = "GetByRouteID";
+            //    error.Description = "No Route for ID.  Attempted ID# = " + routeID;
+            //    error.SeverityLevel = ApplicationEvent.SeverityLevels.High;
+            //    error.Timestamp = DateTime.Now;
+            //    repository.Add(error);
+            //    throw new Exception("There is no ApproachRouteDetail for this ID");
+            //}
         }
 
         public RouteSignal GetByRouteSignalId(int id)
@@ -44,12 +60,30 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public void MoveRouteSignalDown(int routeId, int routeSignalId)
         {
-            throw new NotImplementedException();
+            var route = _db.Set<Route>().Find(routeId);
+            var signal = route.RouteSignals.FirstOrDefault(r => r.Id == routeSignalId);
+            var order = signal.Order;
+            var swapSignal = route.RouteSignals.FirstOrDefault(r => r.Order == order + 1);
+            if (swapSignal != null)
+            {
+                signal.Order++;
+                swapSignal.Order--;
+                _db.SaveChanges();
+            }
         }
 
         public void MoveRouteSignalUp(int routeId, int routeSignalId)
         {
-            throw new NotImplementedException();
+            var route = _db.Set<Route>().Find(routeId);
+            var signal = route.RouteSignals.FirstOrDefault(r => r.Id == routeSignalId);
+            var order = signal.Order;
+            var swapSignal = route.RouteSignals.FirstOrDefault(r => r.Order == order - 1);
+            if (swapSignal != null)
+            {
+                signal.Order--;
+                swapSignal.Order++;
+                _db.SaveChanges();
+            }
         }
 
         public void UpdateByRouteAndApproachID(int routeID, string signalId, int newOrderNumber)

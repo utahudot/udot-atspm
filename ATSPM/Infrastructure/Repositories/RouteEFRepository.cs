@@ -24,7 +24,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Route> GetAllRoutes()
         {
-            throw new NotImplementedException();
+            return _db.Set<Route>().ToList();
         }
 
         public Route GetRouteByID(int routeID)
@@ -39,7 +39,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public Route GetRouteByName(string routeName)
         {
-            throw new NotImplementedException();
+            return _db.Set<Route>().Where(r => r.RouteName == routeName).FirstOrDefault();
         }
     }
 }

@@ -19,12 +19,23 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<SignalEventCountAggregation> GetSignalEventCountAggregationBySignalIdAndDateRange(string signalId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<SignalEventCountAggregation>().Where(r => r.SignalId == signalId
+                                                             && r.BinStartTime >= start &&
+                                                             r.BinStartTime <= end).ToList();
         }
 
         public int GetSignalEventCountSumAggregationBySignalIdAndDateRange(string signalId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            var cycles = 0;
+            if (_db.Set<SignalEventCountAggregation>().Any(r => r.SignalId == signalId
+                                                          && r.BinStartTime >= start && r.BinStartTime <= end))
+            {
+                cycles = _db.Set<SignalEventCountAggregation>().Where(r => r.SignalId == signalId
+                                                                     && r.BinStartTime >= start &&
+                                                                     r.BinStartTime <= end)
+                    .Sum(r => r.EventCount);
+            }
+            return cycles;
         }
     }
 }

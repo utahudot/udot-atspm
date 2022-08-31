@@ -19,12 +19,13 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<PriorityAggregation> GetPriorityAggregationByVersionIdAndDateRange(int versionId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<PriorityAggregation>().Where(p => p.BinStartTime >= start && p.BinStartTime < end).ToList();
         }
 
         public IReadOnlyCollection<PriorityAggregation> GetPriorityBySignalIdAndDateRange(string signalId, DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<PriorityAggregation>()
+                .Where(p => p.SignalId == signalId && p.BinStartTime >= start && p.BinStartTime < end).ToList();
         }
 
         PriorityAggregation IPriorityAggregationDatasRepository.Add(PriorityAggregation priorityAggregation)

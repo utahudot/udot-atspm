@@ -24,12 +24,24 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<RoutePhaseDirection> GetAll()
         {
-            throw new NotImplementedException();
+            return _db.Set<RoutePhaseDirection>().ToList();
         }
 
         public RoutePhaseDirection GetByID(int routeID)
         {
-            throw new NotImplementedException();
+            return _db.Set<RoutePhaseDirection>().Where(r => r.Id == routeID).FirstOrDefault();
+        }
+
+        private void CheckForExistingApproach(RoutePhaseDirection newRoutePhaseDirection)
+        {
+            var routePhaseDirection = _db.Set<RoutePhaseDirection>().Where(r =>
+                r.RouteSignalId == newRoutePhaseDirection.RouteSignalId &&
+                r.IsPrimaryApproach == newRoutePhaseDirection.IsPrimaryApproach).FirstOrDefault();
+            if (routePhaseDirection != null)
+            {
+                _db.Set<RoutePhaseDirection>().Remove(routePhaseDirection);
+                _db.SaveChanges();
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Region> GetAllRegions()
         {
-            throw new NotImplementedException();
+            return _db.Set<Region>().ToList();
         }
     }
 }

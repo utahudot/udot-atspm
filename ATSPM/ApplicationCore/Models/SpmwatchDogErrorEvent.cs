@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class SpmwatchDogErrorEvent
+    public partial class SpmwatchDogErrorEvent : ATSPMModelBase
     {
         public int Id { get; set; }
         public DateTime TimeStamp { get; set; }

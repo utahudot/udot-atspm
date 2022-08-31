@@ -19,7 +19,7 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<Menu> GetMenuItems()
         {
-            throw new NotImplementedException();
+            return _db.Set<Menu>().ToList();
         }
     }
 }

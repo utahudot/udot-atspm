@@ -19,27 +19,43 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public void AddListAndSaveToDatabase(List<SpmwatchDogErrorEvent> SPMWatchDogErrorEvents)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _db.Set<SpmwatchDogErrorEvent>().AddRange(SPMWatchDogErrorEvents);
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                //var er =
+                //    ApplicationEventRepositoryFactory.Create();
+                //er.QuickAdd("MOE.Common", "SPMWatchDogErrrorEventRepository", "AddListAndSaveToDatabase",
+                //    ApplicationEvent.SeverityLevels.Medium, ex.Message);
+            }
         }
 
         public IReadOnlyCollection<SpmwatchDogErrorEvent> GetAllSPMWatchDogErrorEvents()
         {
-            throw new NotImplementedException();
+            return _db.Set<SpmwatchDogErrorEvent>().ToList();
         }
 
         public SpmwatchDogErrorEvent GetSPMWatchDogErrorEventByID(int SPMWatchDogErrorEventID)
         {
-            throw new NotImplementedException();
+            return _db.Set<SpmwatchDogErrorEvent>().Where(w => w.Id == SPMWatchDogErrorEventID).FirstOrDefault();
         }
 
         public IReadOnlyCollection<SpmwatchDogErrorEvent> GetSPMWatchDogErrorEventsBetweenDates(DateTime StartDate, DateTime EndDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<SpmwatchDogErrorEvent>().Where(w => w.TimeStamp >= StartDate && w.TimeStamp < EndDate).ToList();
         }
 
         public void Remove(int id)
         {
-            throw new NotImplementedException();
+            var g = GetSPMWatchDogErrorEventByID(id);
+            if (g != null)
+            {
+                _db.Set<SpmwatchDogErrorEvent>().Remove(g);
+                _db.SaveChanges();
+            }
         }
     }
 }

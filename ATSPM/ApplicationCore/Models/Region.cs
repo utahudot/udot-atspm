@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class Region
+    public partial class Region : ATSPMModelBase
     {
         public Region()
         {

@@ -19,12 +19,12 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<MovementType> GetAllMovementTypes()
         {
-            throw new NotImplementedException();
+            return _db.Set<MovementType>().OrderBy(m => m.DisplayOrder).ToList();
         }
 
         public MovementType GetMovementTypeByMovementTypeID(int movementTypeID)
         {
-            throw new NotImplementedException();
+            return _db.Set<MovementType>().Find(movementTypeID);
         }
     }
 }

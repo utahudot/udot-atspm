@@ -19,22 +19,51 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<PhaseLeftTurnGapAggregation> GetAggregationByApproachIdAndDateRange(int approachID, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            if (_db.Set<PhaseLeftTurnGapAggregation>().Any(r => r.ApproachId == approachID
+                                                      && r.BinStartTime >= startDate && r.BinStartTime <= endDate))
+                return _db.Set<PhaseLeftTurnGapAggregation>().Where(r => r.ApproachId == approachID
+                                                                 && r.BinStartTime >= startDate &&
+                                                                 r.BinStartTime <= endDate)
+                    .ToList();
+            else
+                return new List<PhaseLeftTurnGapAggregation>();
         }
 
         public IReadOnlyCollection<int> GetAvailablePhaseNumbers(Signal signal, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<PhaseLeftTurnGapAggregation>().Where(p =>
+                    p.SignalId == signal.SignalId && p.BinStartTime >= startDate &&
+                    p.BinStartTime < endDate)
+                .Select(p => p.PhaseNumber).Distinct().ToList();
         }
 
         public IReadOnlyCollection<PhaseLeftTurnGapAggregation> GetPhaseLeftTurnGapAggregationBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<PhaseLeftTurnGapAggregation>().Where(p =>
+                p.SignalId == signalId && p.PhaseNumber == phaseNumber && p.BinStartTime >= startDate &&
+                p.BinStartTime < endDate).ToList();
         }
 
         public int GetSummedGapsBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate, int gapCountColumn)
         {
-            throw new NotImplementedException();
+            var query = _db.Set<PhaseLeftTurnGapAggregation>().Where(p =>
+                p.SignalId == signalId && p.PhaseNumber == phaseNumber && p.BinStartTime >= startDate &&
+                p.BinStartTime < endDate);
+            switch (gapCountColumn)
+            {
+                case 1: return query.Sum(p => p.GapCount1);
+                case 2: return query.Sum(p => p.GapCount2);
+                case 3: return query.Sum(p => p.GapCount3);
+                case 4: return query.Sum(p => p.GapCount4);
+                case 5: return query.Sum(p => p.GapCount5);
+                case 6: return query.Sum(p => p.GapCount6);
+                case 7: return query.Sum(p => p.GapCount7);
+                case 8: return query.Sum(p => p.GapCount8);
+                case 9: return query.Sum(p => p.GapCount9);
+                case 10: return query.Sum(p => p.GapCount10);
+                case 11: return query.Sum(p => p.GapCount11);
+                default: throw new Exception("Gap Column not found");
+            }
         }
 
         PhaseLeftTurnGapAggregation IPhaseLeftTurnGapAggregationRepository.Add(PhaseLeftTurnGapAggregation phaseLeftTurnGapAggregation)

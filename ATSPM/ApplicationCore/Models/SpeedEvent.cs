@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class SpeedEvent
-    {
+    public partial class SpeedEvent : ATSPMModelBase
+    { 
         public string DetectorId { get; set; }
         public int Mph { get; set; }
         public int Kph { get; set; }

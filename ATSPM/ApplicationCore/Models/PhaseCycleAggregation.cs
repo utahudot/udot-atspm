@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Models
 {
-    public partial class PhaseCycleAggregation
-    {
+    public partial class PhaseCycleAggregation : ATSPMModelBase
+    { 
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int ApproachId { get; set; }

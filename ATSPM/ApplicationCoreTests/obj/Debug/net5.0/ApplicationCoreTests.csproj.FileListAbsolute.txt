@@ -1,0 +1,10 @@
+C:\Users\sschollmeyer\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.csproj.AssemblyReference.cache
+C:\Users\sschollmeyer\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sschollmeyer\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.AssemblyInfoInputs.cache
+C:\Users\sschollmeyer\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.AssemblyInfo.cs
+C:\Users\sschollmeyer\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.csproj.CoreCompileInputs.cache
+C:\Users\sschollmeyer\Desktop\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.csproj.AssemblyReference.cache
+C:\Users\sschollmeyer\Desktop\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sschollmeyer\Desktop\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.AssemblyInfoInputs.cache
+C:\Users\sschollmeyer\Desktop\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.AssemblyInfo.cs
+C:\Users\sschollmeyer\Desktop\udot-atspm\ATSPM\ApplicationCoreTests\obj\Debug\net5.0\ApplicationCoreTests.csproj.CoreCompileInputs.cache

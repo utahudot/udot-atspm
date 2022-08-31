@@ -19,12 +19,17 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<int> GetAvailablePhaseNumbers(Signal signal, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<PhaseTerminationAggregation>().Where(p =>
+                    p.SignalId == signal.SignalId && p.BinStartTime >= startDate &&
+                    p.BinStartTime < endDate)
+                .Select(p => p.PhaseNumber).Distinct().ToList();
         }
 
         public IReadOnlyCollection<PhaseTerminationAggregation> GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<PhaseTerminationAggregation>().Where(p =>
+                p.SignalId == signalId && p.PhaseNumber == phaseNumber && p.BinStartTime >= startDate &&
+                p.BinStartTime < endDate).ToList();
         }
 
         PhaseTerminationAggregation IPhaseTerminationAggregationRepository.Add(PhaseTerminationAggregation priorityAggregation)

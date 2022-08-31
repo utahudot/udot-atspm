@@ -19,22 +19,25 @@ namespace ATSPM.Infrasturcture.Repositories
 
         public IReadOnlyCollection<PreemptionAggregation> GetPreemptAggregationByVersionIdAndDateRange(DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<PreemptionAggregation>().Where(r => r.BinStartTime >= start && r.BinStartTime < end).ToList();
         }
 
         public int GetPreemptAggregationTotalByVersionIdAndDateRange(DateTime start, DateTime end)
         {
-            throw new NotImplementedException();
+            return _db.Set<PreemptionAggregation>().Where(r => r.BinStartTime >= start && r.BinStartTime < end).Select(r => r.PreemptServices).Sum();
         }
 
         public int GetPreemptAggregationTotalByVersionIdPreemptNumberAndDateRange(DateTime start, DateTime end, int preemptNumber)
         {
-            throw new NotImplementedException();
+            return _db.Set<PreemptionAggregation>()
+                .Where(r => r.PreemptNumber == preemptNumber && r.BinStartTime >= start && r.BinStartTime < end)
+                .Select(r => r.PreemptServices)
+                .Sum();
         }
 
         public IReadOnlyCollection<PreemptionAggregation> GetPreemptionsBySignalIdAndDateRange(string signalId, DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException();
+            return _db.Set<PreemptionAggregation>().Where(r => r.SignalId == signalId && r.BinStartTime >= startDate && r.BinStartTime < endDate).ToList();
         }
 
         PreemptionAggregation IPreemptAggregationDatasRepository.Add(PreemptionAggregation preemptionAggregation)
