@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -46,9 +47,11 @@ namespace ATSPM.SignalControllerLogger
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled).Take(50).ToList();
+                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).Take(3).ToList();
+                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetList().Include(i => i.ControllerType).Where(w => w.Enabled && w.ControllerTypeId == 1).ToList();
                 //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "1091").ToList();
                 //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && testSignals.Contains(w.SignalId)).ToList();
+                Console.WriteLine($"Signal Count: {_signalList.Count}");
             }
 
             using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))

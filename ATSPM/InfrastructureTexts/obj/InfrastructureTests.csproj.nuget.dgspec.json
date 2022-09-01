@@ -137,19 +137,23 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "EFCore.BulkExtensions": {
+              "target": "Package",
+              "version": "[6.5.6, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[6.0.8, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[6.0.8, )"
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[6.0.8, )"
             }
           },
           "imports": [
@@ -389,7 +393,7 @@
           "dependencies": {
             "FluentFTP": {
               "target": "Package",
-              "version": "[39.1.0, )"
+              "version": "[39.4.0, )"
             },
             "Google.Cloud.Diagnostics.Common": {
               "target": "Package",
@@ -403,7 +407,7 @@
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[6.0.7, )"
+              "version": "[6.0.8, )"
             },
             "Microsoft.Extensions.Hosting.Abstractions": {
               "target": "Package",

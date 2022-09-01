@@ -111,8 +111,8 @@ namespace ATSPM.Infrasturcture.Repositories
             var result = table
                 .Where(v => v.VersionActionId != SignaVersionActions.Delete)
                 .Include(i => i.ControllerType)
-                .AsNoTracking()
-                .AsEnumerable()
+                //.AsNoTracking()
+                //.AsEnumerable()
                 .GroupBy(r => r.SignalId)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();

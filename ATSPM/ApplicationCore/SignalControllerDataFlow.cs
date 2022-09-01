@@ -17,6 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
+using ATSPM.Data;
+using EFCore.BulkExtensions;
 
 namespace ATSPM.Application
 {
@@ -26,6 +28,8 @@ namespace ATSPM.Application
 
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
+
+        private ITargetBlock<FileInfo> _deleteFiles;
 
         //private BufferBlock<Signal> _signalSender;
         //private IPropagatorBlock<Signal, DirectoryInfo> _downloader;
@@ -52,7 +56,7 @@ namespace ATSPM.Application
             {
                 var sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
-                //Console.WriteLine($"Starting: {sw.Elapsed}======================================================================");
+                Console.WriteLine($"Starting: {sw.Elapsed}======================================================================");
 
 
                 var stepOptions = new ExecutionDataflowBlockOptions()
@@ -71,37 +75,50 @@ namespace ATSPM.Application
                 var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadLogs(t, cancelToken), "DownloadFilesStep", stepOptions);
                 var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
                 var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, cancelToken), "DecodeEventLogsStep", stepOptions);
+
+                //TODO: CHANGE THIS BACK TO 50,000!!!
+#warning "change back to 50000"
                 var logArchiveBatch = new BatchBlock<ControllerEventLog>(50000, new GroupingDataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Archive Batch" });
-                var logsToArchive = CreateTransformManyStep<ControllerEventLog[], ControllerLogArchive>(t => ArchiveLogs(t), "ArchiveLogsStep", stepOptions);
-                var saveToRepo = CreateTransformManyStep<ControllerLogArchive, ControllerLogArchive>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
+                //var logsToArchive = CreateTransformManyStep<ControllerEventLog[], ControllerLogArchive>(t => ArchiveLogs(t), "ArchiveLogsStep", stepOptions);
+                //var saveToRepo = CreateTransformManyStep<ControllerLogArchive, ControllerLogArchive>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
+
+
+                var saveToRepoTemp = CreateTransformManyStep<ControllerEventLog[], ControllerEventLog>(t => SaveToRepoTemp(t, cancelToken), "SaveToRepo", stepOptions);
+
+
+
 
                 //step linking
                 signalSender.LinkTo(downloader, new DataflowLinkOptions() { PropagateCompletion = true });
                 downloader.LinkTo(getFiles, new DataflowLinkOptions() { PropagateCompletion = true });
                 getFiles.LinkTo(fileToLogs, new DataflowLinkOptions() { PropagateCompletion = true });
                 fileToLogs.LinkTo(logArchiveBatch, new DataflowLinkOptions() { PropagateCompletion = true });
-                logArchiveBatch.LinkTo(logsToArchive, new DataflowLinkOptions() { PropagateCompletion = true });
-                logsToArchive.LinkTo(saveToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
 
-                var endResult = new ActionBlock<ControllerLogArchive>(i =>
+
+                var endResult = new ActionBlock<ControllerEventLog>(i =>
                 {
                     //if (i == null)
-                    Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
+                    //Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
+
+                    //Console.WriteLine($"-----------------------------------------Saved Logs!: {i}");
 
                 }, stepOptions);
 
-                saveToRepo.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+                logArchiveBatch.LinkTo(saveToRepoTemp, new DataflowLinkOptions() { PropagateCompletion = true });
+                saveToRepoTemp.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
+                //logsToArchive.LinkTo(saveToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
+                //saveToRepo.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
-
-
+                _deleteFiles = CreateActionStep<FileInfo>(a => DeleteFile(a, cancelToken), "DeleteFilesStep", stepOptions);
 
 
 
@@ -110,9 +127,11 @@ namespace ATSPM.Application
                 steps.Add(getFiles);
                 steps.Add(fileToLogs);
                 steps.Add(logArchiveBatch);
-                steps.Add(logsToArchive);
-                steps.Add(saveToRepo);
+                //steps.Add(logsToArchive);
+                //steps.Add(saveToRepo);
+                steps.Add(saveToRepoTemp);
                 steps.Add(endResult);
+
 
                 try
                 {
@@ -123,7 +142,7 @@ namespace ATSPM.Application
 
                     signalSender.Complete();
 
-                    await Task.WhenAll(steps.Select(s => s.Completion));
+                    await Task.WhenAll(steps.Select(s => s.Completion)).ContinueWith(t => _deleteFiles.Complete());
 
                     return steps.All(t => t.Completion.IsCompletedSuccessfully);
                 }
@@ -133,6 +152,7 @@ namespace ATSPM.Application
                 }
                 finally
                 {
+                    Console.WriteLine($"Completed: {sw.Elapsed}======================================================================");
                     sw.Stop();
                 }
 
@@ -178,6 +198,30 @@ namespace ATSPM.Application
 
         #endregion
 
+        private ITargetBlock<T> CreateActionStep<T>(Action<T> process, string processName, ExecutionDataflowBlockOptions options = default)
+        {
+            options.NameFormat = processName;
+            options.SingleProducerConstrained = false;
+
+            var block = new ActionBlock<T>(process, options);
+
+            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+
+            return block;
+        }
+
+        private ITargetBlock<T> CreateActionStep<T>(Func<T, Task> process, string processName, ExecutionDataflowBlockOptions options = default)
+        {
+            options.NameFormat = processName;
+            options.SingleProducerConstrained = false;
+
+            var block = new ActionBlock<T>(process, options);
+
+            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+
+            return block;
+        }
+
         private IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, Task<IEnumerable<T2>>> process, string processName, ExecutionDataflowBlockOptions options = default)
         {
             options.NameFormat = processName;
@@ -219,6 +263,8 @@ namespace ATSPM.Application
                     }
                 }
 
+                //Console.WriteLine($"downloaded files: {signal.SignalId} - {signal.Ipaddress} - {fileList.Count}");
+
                 //_log.LogDebug(new EventId(Convert.ToInt32(s.SignalId)), "Completing step {step} on {signal}, downloaded {fileCount} files", blockName, s, fileList.Count);
             }
             catch (ExecuteException e)
@@ -254,6 +300,8 @@ namespace ATSPM.Application
                 _log.LogError(e, e.Message);
             }
 
+            //Console.WriteLine($"files in directory: {files.Count}");
+
             return files;
         }
 
@@ -269,6 +317,8 @@ namespace ATSPM.Application
                     var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
                     logList = await decoder.ExecuteAsync(file, cancellationToken);
                 }
+
+                await _deleteFiles.SendAsync(file);
             }
             catch (ExecuteException e)
             {
@@ -287,13 +337,17 @@ namespace ATSPM.Application
                 //Console.WriteLine($"Exception--------------------------------------------{blockName} catch: {e}");
             }
 
+            //Console.WriteLine($"Log Count: {logList.Count}");
+
             return logList;
         }
 
         //TODO: Move into extension method
         protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
         {
-            return logs.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+
+            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
@@ -329,6 +383,68 @@ namespace ATSPM.Application
             }
 
             return result;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        protected async virtual Task<IEnumerable<ControllerEventLog>> SaveToRepoTemp(ControllerEventLog[] logs, CancellationToken cancellationToken = default)
+        {
+            //List<ControllerEventLog> result = logs.ToList();
+
+            //Console.WriteLine($"incoming count--------------------------------------------{logs.Length}");
+
+            HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+
+            //Console.WriteLine($"outgoing count--------------------------------------------{result.Count}");
+
+            try
+            {
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetService<EventLogContext>();
+
+
+                    //await db.ControllerEventLogs.AddRangeAsync(result);
+                    //var count = await db.SaveChangesAsync();
+
+                    await db.BulkInsertAsync(result.ToList());
+
+                    Console.WriteLine($"-------------------Write to database: incoming-{logs.Length} outgoing-{result.Count}");
+
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: {e}");
+            }
+
+            return result;
+        }
+
+
+        protected virtual void DeleteFile(FileInfo file, CancellationToken cancellationToken = default)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                //Console.WriteLine($"Deleting: {file.FullName}");
+
+                file.Delete();
+            }
         }
     }
 }

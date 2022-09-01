@@ -58,7 +58,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerType?.Id == ControllerType && value.Enabled;
+            return value?.ControllerTypeId == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -111,13 +111,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory);
 
                             remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                         }
                         catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory, e);
                         }
                         catch (ControllerConnectionException e)
                         {

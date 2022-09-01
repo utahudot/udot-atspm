@@ -47,14 +47,14 @@ namespace ATSPM.Application.LogMessages
 
         #region ListDirectoryMessages
 
-        [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory from {SignalId} at {ip}")]
-        public partial void GettingDirectoryListMessage(string SignalId, IPAddress ip);
+        [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory {directory} from {SignalId} at {ip}")]
+        public partial void GettingDirectoryListMessage(string SignalId, IPAddress ip, string directory);
 
         [LoggerMessage(EventId = 1011, EventName = "Directory Listing", Level = LogLevel.Debug, Message = "{total} files found on {SignalId} at {ip}")]
         public partial void DirectoryListingMessage(int total, string SignalId, IPAddress ip);
 
-        [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory from {SignalId} at {ip}")]
-        public partial void DirectoryListingException(string SignalId, IPAddress ip, Exception ex = null);
+        [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory {directory} from {SignalId} at {ip}")]
+        public partial void DirectoryListingException(string SignalId, IPAddress ip, string directory, Exception ex = null);
 
         #endregion
 

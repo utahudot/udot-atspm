@@ -15,7 +15,7 @@ namespace ATSPM.Data.Configuration
 
             builder.HasKey(e => new { e.SignalId, e.ArchiveDate });
 
-            builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
+            //builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
             builder.Property(e => e.SignalId)
                     .IsRequired()
