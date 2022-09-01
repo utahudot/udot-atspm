@@ -29,8 +29,6 @@ namespace ATSPM.Application
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
 
-        private ITargetBlock<FileInfo> _deleteFiles;
-
         //private BufferBlock<Signal> _signalSender;
         //private IPropagatorBlock<Signal, DirectoryInfo> _downloader;
         //private IPropagatorBlock<DirectoryInfo, FileInfo> _getFiles;
@@ -118,10 +116,6 @@ namespace ATSPM.Application
 
 
 
-                _deleteFiles = CreateActionStep<FileInfo>(a => DeleteFile(a, cancelToken), "DeleteFilesStep", stepOptions);
-
-
-
                 steps.Add(signalSender);
                 steps.Add(downloader);
                 steps.Add(getFiles);
@@ -142,7 +136,7 @@ namespace ATSPM.Application
 
                     signalSender.Complete();
 
-                    await Task.WhenAll(steps.Select(s => s.Completion)).ContinueWith(t => _deleteFiles.Complete());
+                    await Task.WhenAll(steps.Select(s => s.Completion));
 
                     return steps.All(t => t.Completion.IsCompletedSuccessfully);
                 }
@@ -317,8 +311,6 @@ namespace ATSPM.Application
                     var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
                     logList = await decoder.ExecuteAsync(file, cancellationToken);
                 }
-
-                await _deleteFiles.SendAsync(file);
             }
             catch (ExecuteException e)
             {
@@ -411,6 +403,8 @@ namespace ATSPM.Application
 
             //Console.WriteLine($"outgoing count--------------------------------------------{result.Count}");
 
+
+
             try
             {
                 using (var scope = _serviceProvider.CreateScope())
@@ -421,7 +415,15 @@ namespace ATSPM.Application
                     //await db.ControllerEventLogs.AddRangeAsync(result);
                     //var count = await db.SaveChangesAsync();
 
-                    await db.BulkInsertAsync(result.ToList());
+                    await db.BulkInsertOrUpdateAsync(result.ToList(), 
+                        new BulkConfig() 
+                        { 
+                            SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
+                            OmitClauseExistsExcept = true
+                        },
+                        null,
+                        null,
+                        cancellationToken);
 
                     Console.WriteLine($"-------------------Write to database: incoming-{logs.Length} outgoing-{result.Count}");
 
@@ -434,17 +436,6 @@ namespace ATSPM.Application
             }
 
             return result;
-        }
-
-
-        protected virtual void DeleteFile(FileInfo file, CancellationToken cancellationToken = default)
-        {
-            if (!cancellationToken.IsCancellationRequested)
-            {
-                //Console.WriteLine($"Deleting: {file.FullName}");
-
-                file.Delete();
-            }
         }
     }
 }

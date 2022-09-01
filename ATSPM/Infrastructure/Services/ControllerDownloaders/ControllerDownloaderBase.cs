@@ -155,7 +155,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             }
 
                             // TODO: delete file here
-                            //if (_options.DeleteAfterDownload)
+                            //if (_options.DeleteFile)
                             //{
                             //    try
                             //    {
