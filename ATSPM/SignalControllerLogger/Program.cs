@@ -1,6 +1,8 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
+﻿using ATSPM.Application;
+using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
@@ -11,6 +13,7 @@ using ATSPM.Infrasturcture.Extensions;
 using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using ATSPM.Infrasturcture.Services.SignalControllerLoggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,7 +68,7 @@ namespace ATSPM.SignalControllerLogger
                     ////repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
                     ////s.AddScoped<ISignalRepository, SignalFileRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
                     ////s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
 
@@ -76,7 +79,6 @@ namespace ATSPM.SignalControllerLogger
                     ////downloader clients
                     s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
                     s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    //s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     ////downloaders
@@ -90,7 +92,13 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+                    //SignalControllerDataFlow
+                    //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+                    s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+
+                    //controller logger configuration
+                    s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+
                     //downloader configurations
                     s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
                     s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
@@ -102,7 +110,7 @@ namespace ATSPM.SignalControllerLogger
                     s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
                     s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
 
-                    //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
                 .UseConsoleLifetime()

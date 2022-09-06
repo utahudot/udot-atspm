@@ -12,62 +12,33 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ATSPM.Application.Services;
 
 namespace ATSPM.SignalControllerLogger
 {
-
-
     public class TPLDataflowService : BackgroundService
     {
         private readonly ILogger _log;
-        private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerLoggerConfiguration> _options;
+        private IServiceProvider _serviceProvider;
 
-        //private IReadOnlyList<Signal> _signalList;
-
-        public TPLDataflowService(ILogger<TPLDataflowService> log, IServiceProvider serviceProvider, IOptions<SignalControllerLoggerConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
-
-
-
-
-
+        public TPLDataflowService(ILogger<TPLDataflowService> log,IServiceProvider serviceProvider) =>
+            (_log, _serviceProvider) = (log, serviceProvider);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //stoppingToken.Register(() => Console.WriteLine($"-------------------------------------------------------------------------------------------stoppingToken"));
-
-
             //while(!stoppingToken.IsCancellationRequested)
             //{
-            //var testSignals = new List<string>() { "9704", "9705", "9721", "9741", "9709" };
 
-            IReadOnlyList<Signal> _signalList;
-            //List<ControllerLogArchive> finalList;
+            List<Signal> signals;
 
-            using (var scope = _serviceProvider.CreateScope())
+            using (var scope = _serviceProvider.CreateAsyncScope())
             {
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).Take(3).ToList();
-                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetList().Include(i => i.ControllerType).Where(w => w.Enabled && w.ControllerTypeId == 1).ToList();
-                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.SignalId == "1091").ToList();
-                //_signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals().Where(w => w.Enabled && testSignals.Contains(w.SignalId)).ToList();
-                Console.WriteLine($"Signal Count: {_signalList.Count}");
+                var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
+                var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
+
+                signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).Take(3).ToList();
+                await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
             }
-
-            using (var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider))
-            {
-                await process.ExecuteAsync(_signalList).ContinueWith(t => Console.WriteLine($"-----------------------it's done!!! {t.Status} --- {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64}"));
-            }
-
-
-            //var process = new SignalControllerDataFlow(_serviceProvider.GetService<ILogger<SignalControllerDataFlow>>(), _serviceProvider);
-            //await process.ExecuteAsync(_signalList);
-
-            //Console.WriteLine($"PRE: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
-
-            //GC.Collect();
-
-            //Console.WriteLine($"POST: {System.Diagnostics.Process.GetCurrentProcess().WorkingSet64} - {System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64} - {GC.GetTotalMemory(false)}");
 
             //await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             //}

@@ -1,14 +1,18 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
-using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Application.ValueObjects;
+using ATSPM.Data;
+using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
+using EFCore.BulkExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,36 +21,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
-using ATSPM.Data;
-using EFCore.BulkExtensions;
 
-namespace ATSPM.Application
+namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
 {
-    public class SignalControllerDataFlow : ServiceObjectBase, IExecuteAsyncWithProgress<IList<Signal>, bool, int>
+    public class LegacySignalControllerLogger : SignalControllerLoggerBase
     {
         public event EventHandler CanExecuteChanged;
 
         private readonly ILogger _log;
+        private readonly IOptions<SignalControllerLoggerConfiguration> _options;
         private readonly IServiceProvider _serviceProvider;
 
-        //private BufferBlock<Signal> _signalSender;
-        //private IPropagatorBlock<Signal, DirectoryInfo> _downloader;
-        //private IPropagatorBlock<DirectoryInfo, FileInfo> _getFiles;
-        //private IPropagatorBlock<FileInfo, ControllerEventLog> _fileToLogs;
-        //private BatchBlock<ControllerEventLog> _logArchiveBatch;
-        //private IPropagatorBlock<ControllerEventLog[], ControllerLogArchive> _logsToArchive;
-
-        public SignalControllerDataFlow(ILogger<SignalControllerDataFlow> log, IServiceProvider serviceProvider)
+        public LegacySignalControllerLogger(ILogger<LegacySignalControllerLogger> log, IOptions<SignalControllerLoggerConfiguration> options, IServiceProvider serviceProvider) : base(log)
         {
             _log = log;
+            _options = options;
             _serviceProvider = serviceProvider;
         }
 
-
-
         #region IExecuteWithProgress
 
-        public async Task<bool> ExecuteAsync(IList<Signal> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<bool> ExecuteAsync(IList<Signal> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             _log.LogDebug("ExecuteAsync {signalCount}", parameter?.Count);
 
@@ -55,7 +50,6 @@ namespace ATSPM.Application
                 var sw = new System.Diagnostics.Stopwatch();
                 sw.Start();
                 Console.WriteLine($"Starting: {sw.Elapsed}======================================================================");
-
 
                 var stepOptions = new ExecutionDataflowBlockOptions()
                 {
@@ -67,65 +61,33 @@ namespace ATSPM.Application
                     EnsureOrdered = false
                 };
 
-                var steps = new List<IDataflowBlock>();
-
+                //create steps
                 var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
                 var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadLogs(t, cancelToken), "DownloadFilesStep", stepOptions);
                 var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
                 var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, cancelToken), "DecodeEventLogsStep", stepOptions);
-
-                //TODO: CHANGE THIS BACK TO 50,000!!!
-#warning "change back to 50000"
-                var logArchiveBatch = new BatchBlock<ControllerEventLog>(50000, new GroupingDataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Archive Batch" });
-                //var logsToArchive = CreateTransformManyStep<ControllerEventLog[], ControllerLogArchive>(t => ArchiveLogs(t), "ArchiveLogsStep", stepOptions);
-                //var saveToRepo = CreateTransformManyStep<ControllerLogArchive, ControllerLogArchive>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
-
-
-                var saveToRepoTemp = CreateTransformManyStep<ControllerEventLog[], ControllerEventLog>(t => SaveToRepoTemp(t, cancelToken), "SaveToRepo", stepOptions);
-
-
-
+                var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Archive Batch" });
+                var saveToRepoTemp = CreateTransformManyStep<ControllerEventLog[], ControllerEventLog>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
+                var endResult = CreateActionStep<ControllerEventLog>(t => Console.WriteLine($"Saved Logs!: {t}"), "EndResultStep", stepOptions);
 
                 //step linking
                 signalSender.LinkTo(downloader, new DataflowLinkOptions() { PropagateCompletion = true });
                 downloader.LinkTo(getFiles, new DataflowLinkOptions() { PropagateCompletion = true });
                 getFiles.LinkTo(fileToLogs, new DataflowLinkOptions() { PropagateCompletion = true });
                 fileToLogs.LinkTo(logArchiveBatch, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-                var endResult = new ActionBlock<ControllerEventLog>(i =>
-                {
-                    //if (i == null)
-                    //Console.WriteLine($"-----------------------------------------Wrote to repo {i.SignalId} - {i.ArchiveDate} - {i.LogData.Count}");
-
-                    //Console.WriteLine($"-----------------------------------------Saved Logs!: {i}");
-
-                }, stepOptions);
-
-
                 logArchiveBatch.LinkTo(saveToRepoTemp, new DataflowLinkOptions() { PropagateCompletion = true });
                 saveToRepoTemp.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-
-
-                //logsToArchive.LinkTo(saveToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-
-                //saveToRepo.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
+                //group taks
+                var steps = new List<IDataflowBlock>();
 
                 steps.Add(signalSender);
                 steps.Add(downloader);
                 steps.Add(getFiles);
                 steps.Add(fileToLogs);
                 steps.Add(logArchiveBatch);
-                //steps.Add(logsToArchive);
-                //steps.Add(saveToRepo);
                 steps.Add(saveToRepoTemp);
                 steps.Add(endResult);
-
 
                 try
                 {
@@ -158,85 +120,7 @@ namespace ATSPM.Application
             }
         }
 
-        public virtual bool CanExecute(IList<Signal> parameter)
-        {
-            return parameter?.Count > 0;
-        }
-
-        public async Task<bool> ExecuteAsync(IList<Signal> parameter, CancellationToken cancelToken = default)
-        {
-            if (parameter is IList<Signal> p)
-                return await ExecuteAsync(p, default, cancelToken);
-            else
-                return false;
-        }
-
-        public async Task ExecuteAsync(object parameter)
-        {
-            if (parameter is IList<Signal> p)
-                await ExecuteAsync(p, default, default);
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is IList<Signal> p)
-                return CanExecute(p);
-            return false;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is IList<Signal> p)
-                Task.Run(() => ExecuteAsync(p, default, default));
-        }
-
         #endregion
-
-        private ITargetBlock<T> CreateActionStep<T>(Action<T> process, string processName, ExecutionDataflowBlockOptions options = default)
-        {
-            options.NameFormat = processName;
-            options.SingleProducerConstrained = false;
-
-            var block = new ActionBlock<T>(process, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        private ITargetBlock<T> CreateActionStep<T>(Func<T, Task> process, string processName, ExecutionDataflowBlockOptions options = default)
-        {
-            options.NameFormat = processName;
-            options.SingleProducerConstrained = false;
-
-            var block = new ActionBlock<T>(process, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        private IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, Task<IEnumerable<T2>>> process, string processName, ExecutionDataflowBlockOptions options = default)
-        {
-            options.NameFormat = processName;
-
-            var block = new TransformManyBlock<T1, T2>(process, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
-
-        private IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, IEnumerable<T2>> process, string processName, ExecutionDataflowBlockOptions options = default)
-        {
-            options.NameFormat = processName;
-
-            var block = new TransformManyBlock<T1, T2>(process, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
-
-            return block;
-        }
 
         protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Signal signal, CancellationToken cancellationToken = default)
         {
@@ -334,76 +218,9 @@ namespace ATSPM.Application
             return logList;
         }
 
-        //TODO: Move into extension method
-        protected virtual IEnumerable<ControllerLogArchive> ArchiveLogs(ControllerEventLog[] logs)
+        protected async virtual Task<IEnumerable<ControllerEventLog>> SaveToRepo(ControllerEventLog[] logs, CancellationToken cancellationToken = default)
         {
-            HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
-
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalId)).Select(s => new ControllerLogArchive() { SignalId = s.Key.SignalId, ArchiveDate = s.Key.Date, LogData = s.ToList() });
-        }
-
-        protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
-        {
-            List<ControllerLogArchive> result = new List<ControllerLogArchive>();
-
-            try
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    IControllerEventLogRepository EventLogArchive = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
-                    var searchLog = await EventLogArchive.LookupAsync(archive);
-
-                    if (searchLog != null)
-                    {
-                        var eventLogs = new HashSet<ControllerEventLog>(Enumerable.Union(searchLog.LogData, archive.LogData), new ControllerEventLogEqualityComparer());
-                        searchLog.LogData = eventLogs.ToList();
-
-                        await EventLogArchive.UpdateAsync(searchLog);
-
-                        result.Add(searchLog);
-                    }
-                    else
-                    {
-                        await EventLogArchive.AddAsync(archive);
-                        result.Add(archive);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Exception: {e}");
-            }
-
-            return result;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        protected async virtual Task<IEnumerable<ControllerEventLog>> SaveToRepoTemp(ControllerEventLog[] logs, CancellationToken cancellationToken = default)
-        {
-            //List<ControllerEventLog> result = logs.ToList();
-
-            //Console.WriteLine($"incoming count--------------------------------------------{logs.Length}");
-
             HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
-
-            //Console.WriteLine($"outgoing count--------------------------------------------{result.Count}");
-
-
 
             try
             {
@@ -415,9 +232,9 @@ namespace ATSPM.Application
                     //await db.ControllerEventLogs.AddRangeAsync(result);
                     //var count = await db.SaveChangesAsync();
 
-                    await db.BulkInsertOrUpdateAsync(result.ToList(), 
-                        new BulkConfig() 
-                        { 
+                    await db.BulkInsertOrUpdateAsync(result.ToList(),
+                        new BulkConfig()
+                        {
                             SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
                             OmitClauseExistsExcept = true
                         },
