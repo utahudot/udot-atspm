@@ -65,4 +65,11 @@ dkms.conf
 /ATSPM/InfrastructureTexts/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
+/ATSPM/DataApi/obj
+/ATSPM/DataApi/bin
+/ATSPM/ReportAPI/obj
+/ATSPM/ReportAPI/bin
+/ATSPM/Web/obj
+/ATSPM/Web/bin
 /ATSPM/Data/obj
+/ATSPM/Data/bin
