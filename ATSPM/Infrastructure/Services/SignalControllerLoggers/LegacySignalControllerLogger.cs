@@ -1,12 +1,9 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
 using ATSPM.Data.Models;
-using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using EFCore.BulkExtensions;
@@ -20,7 +17,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using System.Windows.Input;
 
 namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
 {
@@ -55,7 +51,8 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
                 {
                     CancellationToken = cancelToken,
                     //NameFormat = blockName,
-                    MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    //MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism,
                     //BoundedCapacity = capcity,
                     SingleProducerConstrained = true,
                     EnsureOrdered = false
@@ -68,7 +65,7 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
                 var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, cancelToken), "DecodeEventLogsStep", stepOptions);
                 var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Archive Batch" });
                 var saveToRepoTemp = CreateTransformManyStep<ControllerEventLog[], ControllerEventLog>(t => SaveToRepo(t, cancelToken), "SaveToRepo", stepOptions);
-                var endResult = CreateActionStep<ControllerEventLog>(t => Console.WriteLine($"Saved Logs!: {t}"), "EndResultStep", stepOptions);
+                var endResult = CreateActionStep<ControllerEventLog>(t => { }, "EndResultStep", stepOptions);
 
                 //step linking
                 signalSender.LinkTo(downloader, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -242,7 +239,7 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
                         null,
                         cancellationToken);
 
-                    Console.WriteLine($"-------------------Write to database: incoming-{logs.Length} outgoing-{result.Count}");
+                    //Console.WriteLine($"-------------------Write to database: incoming-{logs.Length} outgoing-{result.Count}");
 
 
                 }

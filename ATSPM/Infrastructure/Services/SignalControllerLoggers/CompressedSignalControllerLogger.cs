@@ -2,14 +2,10 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Data;
 using ATSPM.Data.Models;
-using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
-using EFCore.BulkExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,7 +16,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using System.Windows.Input;
 
 namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
 {
@@ -55,7 +50,8 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
                 {
                     CancellationToken = cancelToken,
                     //NameFormat = blockName,
-                    MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    //MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism,
                     //BoundedCapacity = capcity,
                     SingleProducerConstrained = true,
                     EnsureOrdered = false

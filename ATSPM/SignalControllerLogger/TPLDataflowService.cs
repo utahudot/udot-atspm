@@ -26,21 +26,29 @@ namespace ATSPM.SignalControllerLogger
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //while(!stoppingToken.IsCancellationRequested)
+            //while (!stoppingToken.IsCancellationRequested)
             //{
 
             List<Signal> signals;
 
-            using (var scope = _serviceProvider.CreateAsyncScope())
+            try
             {
-                var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
-                var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
+                using (var scope = _serviceProvider.CreateAsyncScope())
+                {
+                    var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
+                    var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
-                signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).Take(3).ToList();
-                await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
+                    signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).ToList();
+                    await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
+                }
+            }
+            catch (Exception e)
+            {
+
+                _log.LogError("Exception: {e}", e);
             }
 
-            //await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            //    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
             //}
         }
     }

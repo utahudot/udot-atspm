@@ -444,6 +444,10 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.15.1, )"
+            },
             "System.Threading.Tasks.Dataflow": {
               "target": "Package",
               "version": "[6.0.0, )"

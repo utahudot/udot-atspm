@@ -1,12 +1,7 @@
-﻿using ATSPM.Application;
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
+﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Data;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Infrasturcture.Converters;
 using ATSPM.Infrasturcture.Extensions;
@@ -14,14 +9,12 @@ using ATSPM.Infrasturcture.Repositories;
 using ATSPM.Infrasturcture.Services.ControllerDecoders;
 using ATSPM.Infrasturcture.Services.ControllerDownloaders;
 using ATSPM.Infrasturcture.Services.SignalControllerLoggers;
-using Microsoft.EntityFrameworkCore;
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -46,8 +39,8 @@ namespace ATSPM.SignalControllerLogger
                     //        ProjectId = "1022556126938",
                     //        //ProjectId = "869261868126",
                     //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
-                    //        //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
+                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                    //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
                     //    });
                     //}
                 })
@@ -58,6 +51,7 @@ namespace ATSPM.SignalControllerLogger
                     //    ServiceName = "ErrorReporting",
                     //    Version = "1.1",
                     //});
+
                     s.AddLogging();
 
                     s.AddATSPMDbContext(h);
@@ -65,12 +59,11 @@ namespace ATSPM.SignalControllerLogger
                     //background services
                     s.AddHostedService<TPLDataflowService>();
 
-                    ////repositories
+                    //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    ////s.AddScoped<ISignalRepository, SignalFileRepository>();
+                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    ////s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
-
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
@@ -81,14 +74,14 @@ namespace ATSPM.SignalControllerLogger
                     s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
-                    ////downloaders
+                    //downloaders
                     s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
                     s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
                     s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
                     s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
                     s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
-                    ////decoders
+                    //decoders
                     s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
@@ -118,21 +111,9 @@ namespace ATSPM.SignalControllerLogger
 
             await host.RunAsync();
 
-            Console.WriteLine($"done?");
+            Console.Read();
 
-            //is (7519, 2022 - 08 - 31 16: 23:01.4000000, 81, 68).
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetService<EventLogContext>();
-
-            //    foreach (var log in db.ControllerEventLogs)
-            //    {
-            //        Console.WriteLine($"Log: {log.SignalId} - {log.Timestamp} - {log.EventCode} - {log.EventParam}");
-            //    }
-            //}
-
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }
