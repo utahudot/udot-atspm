@@ -19,7 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
     {
@@ -96,7 +96,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     }
                     catch (ControllerConnectionException e)
                     {
-                        logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHostException(parameter.SignalId, parameter.Ipaddress, e);
                     }
                     catch (OperationCanceledException e)
                     {

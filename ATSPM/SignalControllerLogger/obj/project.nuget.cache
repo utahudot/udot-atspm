@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+9wIW8yMTx31oyk4G5l5OJt08At479cZzODTa7q5dQ3bfe/O57WFcZNyATv3UqjKvN5NJrYHtRHygDtRDmUgfA==",
+  "dgSpecHash": "knTL3dQyUL6CfW4C7RSBzw9PBxsRulW92KhX3p6OmunKpKoOo+3ixmczpLsVgbQ/mEdcxJg1mOpwF4BM4vuK2g==",
   "success": true,
   "projectFilePath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
   "expectedPackageFiles": [
@@ -16,8 +16,10 @@
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.apis.auth\\1.56.0\\google.apis.auth.1.56.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.apis.core\\1.56.0\\google.apis.core.1.56.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.diagnostics.common\\5.0.0\\google.cloud.diagnostics.common.5.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.iam.v1\\3.0.0\\google.cloud.iam.v1.3.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.logging.type\\4.0.0\\google.cloud.logging.type.4.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.logging.v2\\4.0.0\\google.cloud.logging.v2.4.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.pubsub.v1\\3.2.0\\google.cloud.pubsub.v1.3.2.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.cloud.trace.v1\\3.0.0\\google.cloud.trace.v1.3.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.longrunning\\3.0.0\\google.longrunning.3.0.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\google.protobuf\\3.21.0\\google.protobuf.3.21.0.nupkg.sha512",

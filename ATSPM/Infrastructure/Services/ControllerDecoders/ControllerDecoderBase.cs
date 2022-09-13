@@ -19,7 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public abstract class ControllerDecoderBase : ServiceObjectBase, ISignalControllerDecoder
     {

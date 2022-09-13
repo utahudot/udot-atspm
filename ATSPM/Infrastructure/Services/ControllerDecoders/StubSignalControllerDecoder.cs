@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class StubSignalControllerDecoder : ControllerDecoderBase
     {

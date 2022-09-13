@@ -169,6 +169,18 @@
           "lib/netstandard2.1/Google.Cloud.Diagnostics.Common.dll": {}
         }
       },
+      "Google.Cloud.Iam.V1/3.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Api.Gax.Grpc": "[4.0.0, 5.0.0)"
+        },
+        "compile": {
+          "lib/netstandard2.1/Google.Cloud.Iam.V1.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Google.Cloud.Iam.V1.dll": {}
+        }
+      },
       "Google.Cloud.Logging.Type/4.0.0": {
         "type": "package",
         "dependencies": {
@@ -193,6 +205,19 @@
         },
         "runtime": {
           "lib/netstandard2.1/Google.Cloud.Logging.V2.dll": {}
+        }
+      },
+      "Google.Cloud.PubSub.V1/3.2.0": {
+        "type": "package",
+        "dependencies": {
+          "Google.Api.Gax.Grpc": "[4.0.0, 5.0.0)",
+          "Google.Cloud.Iam.V1": "[3.0.0, 4.0.0)"
+        },
+        "compile": {
+          "lib/netstandard2.1/Google.Cloud.PubSub.V1.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/Google.Cloud.PubSub.V1.dll": {}
         }
       },
       "Google.Cloud.Trace.V1/3.0.0": {
@@ -2229,20 +2254,7 @@
           "bin/placeholder/ATSPM.Data.dll": {}
         }
       },
-      "DomainCore/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
-        },
-        "compile": {
-          "bin/placeholder/DomainCore.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/DomainCore.dll": {}
-        }
-      },
-      "Infrastructure/1.0.0": {
+      "ATSPM.Infrastructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
@@ -2259,10 +2271,23 @@
           "SSH.NET": "2020.0.2"
         },
         "compile": {
-          "bin/placeholder/Infrastructure.dll": {}
+          "bin/placeholder/ATSPM.Infrastructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infrastructure.dll": {}
+          "bin/placeholder/ATSPM.Infrastructure.dll": {}
+        }
+      },
+      "DomainCore/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
+        },
+        "compile": {
+          "bin/placeholder/DomainCore.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DomainCore.dll": {}
         }
       }
     }
@@ -2508,6 +2533,25 @@
         "lib/netstandard2.1/Google.Cloud.Diagnostics.Common.xml"
       ]
     },
+    "Google.Cloud.Iam.V1/3.0.0": {
+      "sha512": "uZI2PbIj6njiW7dAdlbyGtAFO3oRPXa1o90w9p+aWcuOGTZPJkEShGATcGVXIXtdnQ+pXLfnXhreiRgkgkyx4Q==",
+      "type": "package",
+      "path": "google.cloud.iam.v1/3.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "NuGetIcon.png",
+        "google.cloud.iam.v1.3.0.0.nupkg.sha512",
+        "google.cloud.iam.v1.nuspec",
+        "lib/net462/Google.Cloud.Iam.V1.dll",
+        "lib/net462/Google.Cloud.Iam.V1.pdb",
+        "lib/net462/Google.Cloud.Iam.V1.xml",
+        "lib/netstandard2.1/Google.Cloud.Iam.V1.dll",
+        "lib/netstandard2.1/Google.Cloud.Iam.V1.pdb",
+        "lib/netstandard2.1/Google.Cloud.Iam.V1.xml"
+      ]
+    },
     "Google.Cloud.Logging.Type/4.0.0": {
       "sha512": "RbbvypTZlJHytDkYZXZZ3lDsWWlxyNXgkhWfeSBuUqT7DmXl0CAJEWT52AdF8cDhkboA6gjsgwX+bNpwz0OsoQ==",
       "type": "package",
@@ -2544,6 +2588,25 @@
         "lib/netstandard2.1/Google.Cloud.Logging.V2.dll",
         "lib/netstandard2.1/Google.Cloud.Logging.V2.pdb",
         "lib/netstandard2.1/Google.Cloud.Logging.V2.xml"
+      ]
+    },
+    "Google.Cloud.PubSub.V1/3.2.0": {
+      "sha512": "1q+5W+LX+DLuqN7cB8FJNRS0rFLr/C6uNCOW2j2RVh7uNQz0iAxR+RmpIa3SiGBXI1Q706Rq3b/Bz1jB1btk7Q==",
+      "type": "package",
+      "path": "google.cloud.pubsub.v1/3.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "NuGetIcon.png",
+        "google.cloud.pubsub.v1.3.2.0.nupkg.sha512",
+        "google.cloud.pubsub.v1.nuspec",
+        "lib/net462/Google.Cloud.PubSub.V1.dll",
+        "lib/net462/Google.Cloud.PubSub.V1.pdb",
+        "lib/net462/Google.Cloud.PubSub.V1.xml",
+        "lib/netstandard2.1/Google.Cloud.PubSub.V1.dll",
+        "lib/netstandard2.1/Google.Cloud.PubSub.V1.pdb",
+        "lib/netstandard2.1/Google.Cloud.PubSub.V1.xml"
       ]
     },
     "Google.Cloud.Trace.V1/3.0.0": {
@@ -7014,24 +7077,25 @@
       "path": "../Data/Data.csproj",
       "msbuildProject": "../Data/Data.csproj"
     },
+    "ATSPM.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../Infrastructure/Infrastructure.csproj",
+      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
+    },
     "DomainCore/1.0.0": {
       "type": "project",
       "path": "../DomainCore/DomainCore.csproj",
       "msbuildProject": "../DomainCore/DomainCore.csproj"
-    },
-    "Infrastructure/1.0.0": {
-      "type": "project",
-      "path": "../Infrastructure/Infrastructure.csproj",
-      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
       "ATSPM.Data >= 1.0.0",
+      "ATSPM.Infrastructure >= 1.0.0",
       "ApplicationCore >= 1.0.0",
       "DomainCore >= 1.0.0",
       "Google.Cloud.Diagnostics.Common >= 5.0.0",
-      "Infrastructure >= 1.0.0",
+      "Google.Cloud.PubSub.V1 >= 3.2.0",
       "Microsoft.CodeAnalysis.NetAnalyzers >= 6.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 6.0.7",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.7",
@@ -7103,6 +7167,10 @@
           "Google.Cloud.Diagnostics.Common": {
             "target": "Package",
             "version": "[5.0.0, )"
+          },
+          "Google.Cloud.PubSub.V1": {
+            "target": "Package",
+            "version": "[3.2.0, )"
           },
           "Microsoft.CodeAnalysis.NetAnalyzers": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

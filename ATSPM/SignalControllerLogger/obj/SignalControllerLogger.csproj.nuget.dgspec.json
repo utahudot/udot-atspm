@@ -249,7 +249,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "projectName": "Infrastructure",
+        "projectName": "ATSPM.Infrastructure",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\obj\\",
@@ -409,6 +409,10 @@
             "Google.Cloud.Diagnostics.Common": {
               "target": "Package",
               "version": "[5.0.0, )"
+            },
+            "Google.Cloud.PubSub.V1": {
+              "target": "Package",
+              "version": "[3.2.0, )"
             },
             "Microsoft.CodeAnalysis.NetAnalyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

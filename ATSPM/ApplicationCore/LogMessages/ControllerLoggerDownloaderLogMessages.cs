@@ -32,7 +32,7 @@ namespace ATSPM.Application.LogMessages
         public partial void ConnectedToHostMessage(string SignalId, IPAddress ip);
 
         [LoggerMessage(EventId = 1002, EventName = "Host Connection Exception", Level = LogLevel.Warning, Message = "Exception connecting to {SignalId} at {ip}")]
-        public partial void ConnectingToHosException(string SignalId, IPAddress ip, Exception ex = null);
+        public partial void ConnectingToHostException(string SignalId, IPAddress ip, Exception ex = null);
 
         [LoggerMessage(EventId = 1003, EventName = "Not Connected to Host", Level = LogLevel.Warning, Message = "Not connected to {SignalId} at {ip}")]
         public partial void NotConnectedToHostException(string SignalId, IPAddress ip, Exception ex = null);

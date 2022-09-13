@@ -1,7 +1,9 @@
+name: dockercompose13354701655569801389
 services:
   signalcontrollerlogger:
     build:
       context: C:\Projects\udot-atsmp\ATSPM
       dockerfile: SignalControllerLogger/Dockerfile
     image: signalcontrollerlogger
-version: '3.4'
+    network_mode: host
+    tty: true

@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class SignalEFRepository : ATSPMRepositoryEFBase<Signal>, ISignalRepository
     {

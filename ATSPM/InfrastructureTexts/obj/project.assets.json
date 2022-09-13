@@ -3275,20 +3275,7 @@
           "bin/placeholder/ATSPM.Data.dll": {}
         }
       },
-      "DomainCore/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
-        },
-        "compile": {
-          "bin/placeholder/DomainCore.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/DomainCore.dll": {}
-        }
-      },
-      "Infrastructure/1.0.0": {
+      "ATSPM.Infrastructure/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
@@ -3305,10 +3292,23 @@
           "SSH.NET": "2020.0.2"
         },
         "compile": {
-          "bin/placeholder/Infrastructure.dll": {}
+          "bin/placeholder/ATSPM.Infrastructure.dll": {}
         },
         "runtime": {
-          "bin/placeholder/Infrastructure.dll": {}
+          "bin/placeholder/ATSPM.Infrastructure.dll": {}
+        }
+      },
+      "DomainCore/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.1"
+        },
+        "compile": {
+          "bin/placeholder/DomainCore.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DomainCore.dll": {}
         }
       }
     }
@@ -10139,20 +10139,20 @@
       "path": "../Data/Data.csproj",
       "msbuildProject": "../Data/Data.csproj"
     },
+    "ATSPM.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../Infrastructure/Infrastructure.csproj",
+      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
+    },
     "DomainCore/1.0.0": {
       "type": "project",
       "path": "../DomainCore/DomainCore.csproj",
       "msbuildProject": "../DomainCore/DomainCore.csproj"
-    },
-    "Infrastructure/1.0.0": {
-      "type": "project",
-      "path": "../Infrastructure/Infrastructure.csproj",
-      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "Infrastructure >= 1.0.0",
+      "ATSPM.Infrastructure >= 1.0.0",
       "Microsoft.EntityFrameworkCore.Sqlite >= 6.0.7",
       "Microsoft.Extensions.Logging.Abstractions >= 6.0.1",
       "Microsoft.NET.Test.Sdk >= 17.2.0",

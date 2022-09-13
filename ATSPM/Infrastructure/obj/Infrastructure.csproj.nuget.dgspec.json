@@ -249,7 +249,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "projectName": "Infrastructure",
+        "projectName": "ATSPM.Infrastructure",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\obj\\",

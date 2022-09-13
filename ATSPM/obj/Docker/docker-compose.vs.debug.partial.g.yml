@@ -9,17 +9,16 @@ services:
       labels:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "SignalControllerLogger"
-    environment:
-      - NUGET_FALLBACK_PACKAGES=/root/.nuget/fallbackpackages
+    #environment:
+      #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_signalcontrollerlogger$
     volumes:
       - C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger:/app
       - C:\Users\christianbaker\vsdbg\vs2017u5:/remote_debugger:rw
-      - C:\Users\christianbaker\.nuget\packages\:/root/.nuget/packages:ro
-      - C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages:/root/.nuget/fallbackpackages:ro
+#$nuget_volume_mapping_signalcontrollerlogger$
     entrypoint: tail -f /dev/null
     labels:
       com.microsoft.visualstudio.debuggee.program: "dotnet"
-      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  \"/app/bin/Debug/net6.0/SignalControllerLogger.dll\""
+      #com.microsoft.visualstudio.debuggee.arguments: " $debuggee_arguments_probing_paths_signalcontrollerlogger$ \"/app/bin/Debug/net6.0/SignalControllerLogger.dll\""
       com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
       com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
     tty: true

@@ -40,7 +40,7 @@ namespace ATSPM.Domain.BaseClasses
         public ServiceObjectBase()
         {
             //intialize object
-            BeginInit();
+            //BeginInit();
         }
 
         /// <summary>

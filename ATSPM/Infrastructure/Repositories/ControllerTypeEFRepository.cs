@@ -14,7 +14,7 @@ using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
 using ATSPM.Data;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class ControllerTypeEFRepository : ATSPMRepositoryEFBase<ControllerType>, IControllerTypeRepository
     {

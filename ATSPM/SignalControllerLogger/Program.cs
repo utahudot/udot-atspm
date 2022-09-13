@@ -3,18 +3,22 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Common;
-using ATSPM.Infrasturcture.Converters;
-using ATSPM.Infrasturcture.Extensions;
-using ATSPM.Infrasturcture.Repositories;
-using ATSPM.Infrasturcture.Services.ControllerDecoders;
-using ATSPM.Infrasturcture.Services.ControllerDownloaders;
-using ATSPM.Infrasturcture.Services.SignalControllerLoggers;
+using ATSPM.Infrastructure.Converters;
+using ATSPM.Infrastructure.Extensions;
+using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.SignalControllerLoggers;
+using Google.Api.Gax;
 using Google.Cloud.Diagnostics.Common;
+using Google.Cloud.PubSub.V1;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -32,6 +36,7 @@ namespace ATSPM.SignalControllerLogger
                     //TODO: add a GoogleLogger section
                     //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
                     //TODO: remove this to an extension method
+                    //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
                     //    l.AddGoogle(new LoggingServiceOptions
@@ -57,7 +62,7 @@ namespace ATSPM.SignalControllerLogger
                     s.AddATSPMDbContext(h);
 
                     //background services
-                    s.AddHostedService<TPLDataflowService>();
+                    s.AddHostedService<LoggerBackgroundService>();
 
                     //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -111,9 +116,11 @@ namespace ATSPM.SignalControllerLogger
 
             await host.RunAsync();
 
-            Console.Read();
+            //Console.Read();
 
             //Console.ReadKey();
         }
     }
+
+    
 }

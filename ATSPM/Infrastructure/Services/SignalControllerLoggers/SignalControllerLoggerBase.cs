@@ -1,48 +1,94 @@
-﻿using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Exceptions;
+using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
-using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
-using EFCore.BulkExtensions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
+namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 {
     public abstract class SignalControllerLoggerBase : ServiceObjectBase, ISignalControllerLoggerService
     {
         public event EventHandler CanExecuteChanged;
 
-        private readonly ILogger _log;
+        protected SignalControllerLoggerLogMessages logMessages;
+        protected CancellationToken token;
 
         //TODO: pass in logger class instead
         public SignalControllerLoggerBase(ILogger log)
         {
-            _log = log;
+            logMessages = new SignalControllerLoggerLogMessages(log);
         }
+
+        public List<IDataflowBlock> Steps { get; set; } = new();
 
         #region IExecuteWithProgress
 
-        public abstract Task<bool> ExecuteAsync(IList<Signal> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default);
+        public virtual async Task<bool> ExecuteAsync(IList<Signal> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        {
+            token = cancelToken;
+
+            if (!IsInitialized)
+                BeginInit();
+            
+            if (CanExecute(parameter))
+            {
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
+                logMessages.LoggerStartedMessage(DateTime.Now, parameter.Count);
+
+                var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
+                
+                foreach (ITargetBlock<Signal> step in Steps.Where(f => f is ITargetBlock<Signal>))
+                {
+                    signalSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
+                }
+
+                Steps.Add(signalSender);
+
+                try
+                {
+                    foreach (var signal in parameter)
+                    {
+                        await signalSender.SendAsync(signal);
+                    }
+
+                    signalSender.Complete();
+
+                    await Task.WhenAll(Steps.Select(s => s.Completion));
+
+                    return Steps.All(t => t.Completion.IsCompletedSuccessfully);
+                }
+                catch (Exception e)
+                {
+                    logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Signal Controller Logger Service", e));
+                }
+                finally
+                {
+                    logMessages.LoggerCompletedMessage(DateTime.Now, sw.Elapsed);
+                    sw.Stop();
+                }
+
+                return false;
+            }
+            else
+            {
+                throw new ExecuteException();
+            }
+        }
 
         public virtual bool CanExecute(IList<Signal> parameter)
         {
-            return parameter?.Count > 0;
+            return this.IsInitialized && parameter?.Count > 0;
         }
 
         public async Task<bool> ExecuteAsync(IList<Signal> parameter, CancellationToken cancelToken = default)
@@ -79,9 +125,21 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
             options.NameFormat = processName;
             options.SingleProducerConstrained = false;
 
-            var block = new ActionBlock<T>(process, options);
+            var block = new ActionBlock<T>(p =>
+            {
+                try
+                {
+                    process?.Invoke(p);
+                }
+                catch (Exception e)
+                {
+                    logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T>(this, processName, p, null, e));
+                }
+            },options);
 
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+            block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
+
+            Steps.Add(block);
 
             return block;
         }
@@ -91,20 +149,21 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
             options.NameFormat = processName;
             options.SingleProducerConstrained = false;
 
-            var block = new ActionBlock<T>(process, options);
+            var block = new ActionBlock<T>(async p =>
+            {
+                try
+                {
+                    await process?.Invoke(p);
+                }
+                catch (Exception e)
+                {
+                    logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T>(this, processName, p, null, e));
+                }
+            },options);
 
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+            block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
 
-            return block;
-        }
-
-        protected IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, Task<IEnumerable<T2>>> process, string processName, ExecutionDataflowBlockOptions options = default)
-        {
-            options.NameFormat = processName;
-
-            var block = new TransformManyBlock<T1, T2>(process, options);
-
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+            Steps.Add(block);
 
             return block;
         }
@@ -113,9 +172,50 @@ namespace ATSPM.Infrasturcture.Services.SignalControllerLoggers
         {
             options.NameFormat = processName;
 
-            var block = new TransformManyBlock<T1, T2>(process, options);
+            var block = new TransformManyBlock<T1, T2>(p =>
+            {
+                try
+                {
+                    return process?.Invoke(p);
+                }
+                catch (Exception e)
+                {
+                    logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T1>(this, processName, p, null, e));
+                }
 
-            block.Completion.ContinueWith(t => _log.LogInformation(t.Exception, "{block} has completed: {status}", block.ToString(), t.Status), options.CancellationToken);
+                return null;
+
+            }, options);
+
+            block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
+
+            Steps.Add(block);
+
+            return block;
+        }
+
+        protected IPropagatorBlock<T1, T2> CreateTransformManyStep<T1, T2>(Func<T1, Task<IEnumerable<T2>>> process, string processName, ExecutionDataflowBlockOptions options = default)
+        {
+            options.NameFormat = processName;
+
+            var block = new TransformManyBlock<T1, T2>(async p =>
+            {
+                try
+                {
+                    return await process?.Invoke(p);
+                }
+                catch (Exception e)
+                {
+                    logMessages.StepExecutionException(processName, new ControllerLoggerStepExecutionException<T1>(this, processName, p, null, e));
+                }
+
+                return null;
+
+            }, options);
+
+            block.Completion.ContinueWith(t => logMessages.StepCompletedMessage(block.ToString(), t.Status), options.CancellationToken);
+
+            Steps.Add(block);
 
             return block;
         }
