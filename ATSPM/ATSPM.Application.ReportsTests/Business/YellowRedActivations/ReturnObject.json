@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Yellow Red Activations",
+  "description": "Yellow Red Activations chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "titleMessage": { "type": "string" },
+    "totalViolations": { "type": "integer" },
+    "severeViolations": { "type": "integer" },
+    "YellowLightOccurences": { "type": "integer" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "totalViolations": { "type": "integer" },
+          "severeViolations": { "type": "integer" },
+          "percentViolations": { "type": "number" },
+          "percentSevereViolations": { "type": "number" },
+          "averageTimeViolations": { "type": "number" }
+        }
+      }
+    },
+    "redEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "yellowEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "redClearanceEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "detectorEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "integer"
+        }
+      }
+    }
+  }
+}

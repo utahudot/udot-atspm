@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Left Turn Gap Analysis",
+  "description": "Left Turn Gap Analysis chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "detectionTypeDescription": { "type": "string" },
+    "numberGaps": { "type": "integer" },
+    "percentOfGreenTime": { "type": "number" },
+    "gap1": { "type": "number" },
+    "gap1Count": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "gaps": "integer"
+        }
+      }
+    },
+    "gap2": { "type": "number" },
+    "gap2Count": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "gaps": "integer"
+        }
+      }
+    },
+    "gap3": { "type": "number" },
+    "gap3Count": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "gaps": "integer"
+        }
+      }
+    },
+    "gap4": { "type": "number" },
+    "gap4Count": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "gaps": "integer"
+        }
+      }
+    },
+    "percentTurnableSeries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    }
+  }
+}

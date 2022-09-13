@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Approach Volume",
+  "description": "Approach Volume Chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "titleMessage": { "type": "string" },
+    "detectorMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "averageSpeed": { "type": "integer" },
+          "standardDeviation": { "type": "integer" },
+          "eightyFifthPercentile": { "type": "integer" },
+          "fifteenthPercentile": { "type": "integer" }
+        }
+      }
+    },
+    "primaryDirectionName": { "type": "string" },
+    "primaryDirectionVolumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "integer"
+        }
+      }
+    },
+    "opposingDirectionName": { "type": "string" },
+    "opposingDirectionVolumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "integer"
+        }
+      }
+    },
+    "combinedDirectionVolumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "integer"
+        }
+      }
+    },
+    "primaryDFactors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "dFactor": "number"
+        }
+      }
+    },
+    "opposingDFactors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "dFactor": "number"
+        }
+      }
+    }
+  }
+}

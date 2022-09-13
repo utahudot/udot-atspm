@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Split Monitor",
+  "description": "Split Monitor chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+        }
+      }
+    },
+    "splits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "endTime": "string",
+          "phaseNumber": "integer"
+        }
+      }
+    },
+    "gapOuts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "maxOuts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "forceOffs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "peds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    }
+  }
+}
+  
+

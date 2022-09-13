@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Split Fail",
+  "description": "Split Fail chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "fails": { "type": "string" },
+          "percentFails": { "type": "string" }
+        }
+      }
+    },
+    "failLines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "number": "integer"
+        }
+      }
+    },
+    "gapOutGreenOccupancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    },
+    "gapOutRedOccupancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "double"
+        }
+      }
+    },
+    "forceOffGreenOccupancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "forceOffRedOccupancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    },
+    "averageGor": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "average": "number"
+        }
+      }
+    },
+    "averageRor": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "average": "number"
+        }
+      }
+    },a
+    "percentFails": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    }
+  }
+    }
+  
+

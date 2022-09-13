@@ -93,3 +93,11 @@ dkms.conf
 /ATSPM/DataAPI/obj
 /ATSPM/ReportAPI/obj/Debug/net6.0
 /ATSPM/ReportAPI/obj
+/ATSPM/MOE.Common/bin
+/ATSPM/MOE.Common/obj
+/ATSPM/MOE.Common/ClassDiagram1.cd
+/ATSPM/MOE.Common/ClassDiagram2.cd
+/ATSPM/MOE.Common/ClassDiagram3.cd
+/ATSPM/MOE.Common.backup/bin
+/ATSPM/AnalysisReport.sarif
+/ATSPM/upgrade-assistant.clef

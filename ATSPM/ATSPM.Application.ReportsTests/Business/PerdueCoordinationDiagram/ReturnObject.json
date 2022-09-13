@@ -1,0 +1,101 @@
+{
+  "ChartName": "Perdue Coordination Diagram",
+  "SignalLocation": "100 East 200 South",
+  "PhaseDescription": "Phase 8",
+  "TitleMessage": "\n Advanced detector located detectorsForMetric.FirstOrDefault().DistanceFromStopBar ft. upstream of stop bar",
+  "TotalOnGreenEvents": 27,
+  "TotalDetectorHits": 500,
+  "ChartStatistics": [
+    { "Statistic1": "10" },
+    { "Statistic2": "20" },
+    { "Statistic3": "30" }
+  ],
+  "Plans": [
+    {
+      "PlanNumber": "205",
+      "StartTime": "1/1/2022 12:00:00 000 AM",
+      "EndTime": "1/1/2022 1:00:00 000 AM",
+      "PercentArrivalOnGreen": 53.0,
+      "PercentGreenTime": 50.0,
+      "Platoonatio": 23.0
+    },
+    {
+      "PlanNumber": "206",
+      "StartTime": "1/1/2022 1:00:00 000 AM",
+      "EndTime": "1/1/2022 2:00:00 000 AM",
+      "PercentArrivalOnGreen": 53.0,
+      "PercentGreenTime": 50.0,
+      "Platoonatio": 23.0
+    }
+  ],
+  "VolumePerHour": [
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "Volume": 100
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "Volume": 200
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "Volume": 300
+    }
+  ],
+  "GreenEvents": [
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    }
+  ],
+  "YellowEvents": [
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    }
+  ],
+  "RedEvents": [
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    }
+  ],
+  "DetectorActivations": [
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    },
+    {
+      "TimeStamp": "1/1/2022 12:00:00 000",
+      "SecondsSinceRed": 1.2
+    }
+  ]
+}

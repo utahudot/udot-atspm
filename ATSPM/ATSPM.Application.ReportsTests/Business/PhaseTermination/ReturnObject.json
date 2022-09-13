@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Phase Termination",
+  "description": "Phase Termination chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" }
+        }
+      }
+    },
+    "gapOuts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "phaseNumber": "integer"
+        }
+      }
+    },
+    "maxOuts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "phaseNumber": "integer"
+        }
+      }
+    },
+    "forceOffs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "phaseNumber": "integer"
+        }
+      },
+    "pedWalkBegins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "phaseNumber": "number"
+        }
+      },
+    "unknownTerminations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "phaseNumber": "integer"
+        }
+      }
+  }
+}

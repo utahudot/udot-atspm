@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Pedestrian Delay",
+  "description": "Ped Delay chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "pedRecallMessage": { "type": "string" },
+          "cyclesWithPedRequests": { "type": "integer" },
+          "uniquePedDetections": { "type": "integer" },
+          "averageDelaySeconds": { "type": "number" },
+          "averageCycleLengthSeconds": { "type": "number" }
+        }
+      }
+    },
+    "cycleLengths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "pedestrianDelay": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "startOfWalk": {
+      "type": "array",
+      "items": {
+        "type": "string"        
+      }
+    },
+    "percentDelayByCycleLength": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    }
+  }
+}

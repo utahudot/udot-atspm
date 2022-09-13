@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Arrival On Red",
+  "description": "Arrival On Red chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "titleMessage": { "type": "string" },
+    "statisticsMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "percentArrivalOnRed": { "type": "number" },
+          "percentRedTime": { "type": "number" }
+        }
+      }
+    },
+    "percentArrivalsOnRed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "number"
+        }
+      }
+    },
+    "totalVehicles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "number"
+        }
+      }
+    },
+    "arrivalsOnRed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "number"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Timing and Actuation",
+  "description": "Timing and Actuation chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "eventTypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": "string",
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "startTime": { "type": "string" },
+                "seconds": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+  
+

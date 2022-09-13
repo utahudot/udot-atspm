@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Approach Speed",
+  "description": "A chart showing vehicle speed in mph per approach",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseDescription": { "type": "string" },
+    "titleMessage": { "type": "string" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "averageSpeed": { "type": "integer" },
+          "standardDeviation": { "type": "integer" },
+          "eightyFifthPercentile": { "type": "integer" },
+          "fifteenthPercentile": { "type": "integer" }
+        }
+      }
+    },
+    "averageSpeeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "averageMph": "number"
+        }
+      }
+    },
+    "eightyFifthSpeeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "eightFifthMph": "number"
+        }
+      }
+    },
+    "fifteenthSpeeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "fifteenthMph": "number"
+        }
+      }
+    },
+    "postedSpeed": { "type": "number" }
+  }
+}

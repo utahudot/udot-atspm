@@ -73,5 +73,16 @@ namespace ATSPM.Application.Extensions
             var directions = signal.Approaches.Select(a => a.DirectionType).Distinct().ToList();
             return directions;
         }
+
+        public static List<Detector> GetDetectorsForSignalThatSupportAMetric(this Signal signal,int MetricTypeID)
+        {
+            var gdr =
+                DetectorRepositoryFactory.Create();
+            var detectors = new List<Detector>();
+            foreach (var d in GetDetectorsForSignal())
+                if (gdr.CheckReportAvialbility(d.DetectorID, MetricTypeID))
+                    detectors.Add(d);
+            return detectors;
+        }
     }
 }
