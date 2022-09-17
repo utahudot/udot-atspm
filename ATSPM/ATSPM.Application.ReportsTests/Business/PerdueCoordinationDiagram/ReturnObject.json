@@ -1,101 +1,83 @@
 {
-  "ChartName": "Perdue Coordination Diagram",
-  "SignalLocation": "100 East 200 South",
-  "PhaseDescription": "Phase 8",
-  "TitleMessage": "\n Advanced detector located detectorsForMetric.FirstOrDefault().DistanceFromStopBar ft. upstream of stop bar",
-  "TotalOnGreenEvents": 27,
-  "TotalDetectorHits": 500,
-  "ChartStatistics": [
-    { "Statistic1": "10" },
-    { "Statistic2": "20" },
-    { "Statistic3": "30" }
-  ],
-  "Plans": [
-    {
-      "PlanNumber": "205",
-      "StartTime": "1/1/2022 12:00:00 000 AM",
-      "EndTime": "1/1/2022 1:00:00 000 AM",
-      "PercentArrivalOnGreen": 53.0,
-      "PercentGreenTime": 50.0,
-      "Platoonatio": 23.0
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Perdue Coordination Diagram",
+  "description": "Perdue Coordination Diagram chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "signalId": { "type": "string" },
+    "signalLocation": { "type": "string" },
+    "phaseNumber": { "type": "integer" },
+    "phaseDescription": { "type": "string" },
+    "start": { "type": "string" },
+    "end": { "type": "string" },
+    "titleMessage": { "type": "string" },
+    "totalOnGreenEvents": { "type": "integer" },
+    "totalDetectorHits": { "type": "integer" },
+    "percentArrivalOnGreen": { "type": "number" },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "percentArrivalOnGreen": { "type": "number" },
+          "percentGreenTime": { "type": "number" },
+          "platoonatio": { "type": "number" }
+        }
+      }
     },
-    {
-      "PlanNumber": "206",
-      "StartTime": "1/1/2022 1:00:00 000 AM",
-      "EndTime": "1/1/2022 2:00:00 000 AM",
-      "PercentArrivalOnGreen": 53.0,
-      "PercentGreenTime": 50.0,
-      "Platoonatio": 23.0
+    "volumePerHour": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "volume": "number"
+        }
+      }
+    },
+    "greenEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "yellowEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "redEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "seconds": "number"
+        }
+      }
+    },
+    "detectorActivations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": "string",
+          "seconds": "number"
+        }
+      }
     }
-  ],
-  "VolumePerHour": [
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "Volume": 100
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "Volume": 200
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "Volume": 300
-    }
-  ],
-  "GreenEvents": [
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    }
-  ],
-  "YellowEvents": [
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    }
-  ],
-  "RedEvents": [
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    }
-  ],
-  "DetectorActivations": [
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    },
-    {
-      "TimeStamp": "1/1/2022 12:00:00 000",
-      "SecondsSinceRed": 1.2
-    }
-  ]
-}
+  }

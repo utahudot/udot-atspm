@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Gap Vs Demand",
+  "description": "Gap Vs Demand  chart",
+  "type": "object",
+  "properties": {
+    "chartName": { "type": "string" },
+    "cyclesWithPeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": "string",
+          "percent": "number"
+        }
+      }
+    }
+  }

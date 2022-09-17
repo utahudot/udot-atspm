@@ -11,9 +11,11 @@
     "phaseNumber": { "type": "integer" },
     "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
-    "end": { "type": "string" },
+    "end": {"type": "string"},
     "titleMessage": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
+    "totalArrivalOnRed": { "type": "integer" },
+    "totalDetectorHits": { "type": "integer" },
+    "percentArrivalOnRed": { "type": "number" },
     "plans": {
       "type": "array",
       "items": {
@@ -22,8 +24,9 @@
           "planNumber": { "type": "string" },
           "startTime": { "type": "string" },
           "endTime": { "type": "string" },
-          "percentArrivalOnRed": { "type": "number" },
-          "percentRedTime": { "type": "number" }
+          "percentArrivalOnGreen": { "type": "number" },
+          "percentGreenTime": { "type": "number" },
+          "platoonatio": { "type": "number" }
         }
       }
     },
@@ -33,7 +36,7 @@
         "type": "object",
         "properties": {
           "startTime": "string",
-          "volume": "number"
+          "percent": "number"
         }
       }
     },
@@ -43,7 +46,7 @@
         "type": "object",
         "properties": {
           "startTime": "string",
-          "volume": "number"
+          "vehicles": "number"
         }
       }
     },
@@ -53,9 +56,8 @@
         "type": "object",
         "properties": {
           "startTime": "string",
-          "volume": "number"
+          "arrivals": "number"
         }
       }
     }
   }
-}
