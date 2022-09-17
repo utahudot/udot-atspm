@@ -8,9 +8,11 @@
     "chartName": { "type": "string" },
     "signalId": { "type": "string" },
     "signalLocation": { "type": "string" },
+    "phaseNumber": { "type": "integer" },
+    "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
+    "totalSplitFails": { "type": "integer" },
     "plans": {
       "type": "array",
       "items": {

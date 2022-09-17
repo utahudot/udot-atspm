@@ -12,7 +12,13 @@
     "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
+    "pedPresses": { "type": "integer" },
+    "cyclesWithPedRequests": { "type": "number" },
+    "timeBuffered": { "type": "integer" },
+    "uniquePedestrianDetections": { "type": "integer" },
+    "minDelay": { "type": "number" },
+    "maxDelay": { "type": "number" },
+    "averageDelay": { "type": "string" },
     "plans": {
       "type": "array",
       "items": {

@@ -10,8 +10,9 @@
     "signalLocation": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "detectorDesctiption": { "type": "string" },
-    "statistics": { "type": "string" },
+    "direction": { "type": "string" },
+    "movementType": { "type": "string" },
+    "laneType": { "type": "string" },
     "plans": {
       "type": "array",
       "items": {

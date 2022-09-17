@@ -10,7 +10,6 @@
     "signalLocation": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "preemptMessage": { "type": "string" },
     "plans": {
       "type": "array",
       "items": {

@@ -8,9 +8,10 @@
     "chartName": { "type": "string" },
     "signalId": { "type": "string" },
     "signalLocation": { "type": "string" },
+    "phaseNumber": { "type": "integer" },
+    "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
     "plans": {
       "type": "array",
       "items": {

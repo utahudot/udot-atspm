@@ -12,8 +12,9 @@
     "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "titleMessage": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
+    "totalDetectorHits": { "type": "number" },
+    "totalArrivalOnRed": { "type": "number" },
+    "percentArrivalOnRed": { "type": "number" },
     "plans": {
       "type": "array",
       "items": {

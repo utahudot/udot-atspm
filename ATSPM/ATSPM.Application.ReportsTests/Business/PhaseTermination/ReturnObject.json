@@ -12,7 +12,7 @@
     "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": { "type": "string" },
-    "statisticsMessage": { "type": "string" },
+    "consecutiveCount": { "type": "integer" },
     "plans": {
       "type": "array",
       "items": {
