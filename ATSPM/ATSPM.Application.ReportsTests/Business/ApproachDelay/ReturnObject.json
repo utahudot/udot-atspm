@@ -12,7 +12,6 @@
     "phaseDescription": { "type": "string" },
     "start": { "type": "string" },
     "end": {"type": "string"},
-    "titleMessage": { "type": "string" },
     "totalArrivalOnRed": { "type": "integer" },
     "totalDetectorHits": { "type": "integer" },
     "percentArrivalOnRed": { "type": "number" },
@@ -21,12 +20,12 @@
       "items": {
         "type": "object",
         "properties": {
-          "planNumber": { "type": "string" },
-          "startTime": { "type": "string" },
-          "endTime": { "type": "string" },
           "percentArrivalOnGreen": { "type": "number" },
           "percentGreenTime": { "type": "number" },
-          "platoonatio": { "type": "number" }
+          "platoonatio": { "type": "number" },
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" }
         }
       }
     },

@@ -74,15 +74,15 @@ namespace ATSPM.Application.Extensions
             return directions;
         }
 
-        public static List<Detector> GetDetectorsForSignalThatSupportAMetric(this Signal signal,int MetricTypeID)
-        {
-            var gdr =
-                DetectorRepositoryFactory.Create();
-            var detectors = new List<Detector>();
-            foreach (var d in GetDetectorsForSignal())
-                if (gdr.CheckReportAvialbility(d.DetectorID, MetricTypeID))
-                    detectors.Add(d);
-            return detectors;
-        }
+        //public static List<Detector> GetDetectorsForSignalThatSupportAMetric(this Signal signal,int MetricTypeID)
+        //{
+        //    var gdr =
+        //        DetectorRepositoryFactory.Create();
+        //    var detectors = new List<Detector>();
+        //    foreach (var d in GetDetectorsForSignal())
+        //        if (gdr.CheckReportAvialbility(d.DetectorID, MetricTypeID))
+        //            detectors.Add(d);
+        //    return detectors;
+        //}
     }
 }

@@ -14,18 +14,19 @@
     "end": { "type": "string" },
     "detectionType": { "type": "string" },
     "distanceFromStopBar": { "type": "integer" },
+    "postedSpeed": { "type": "number" },
     "plans": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "planNumber": { "type": "string" },
-          "startTime": { "type": "string" },
-          "endTime": { "type": "string" },
           "averageSpeed": { "type": "integer" },
           "standardDeviation": { "type": "integer" },
           "eightyFifthPercentile": { "type": "integer" },
-          "fifteenthPercentile": { "type": "integer" }
+          "fifteenthPercentile": { "type": "integer" },
+          "planNumber": { "type": "string" },
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" }
         }
       }
     },
@@ -58,7 +59,6 @@
           "fifteenthMph": "number"
         }
       }
-    },
-    "postedSpeed": { "type": "number" }
+    }
   }
 }
