@@ -11,8 +11,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     },
@@ -21,9 +21,10 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     }
   }
+}

@@ -29,8 +29,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "volume": "integer"
+          "startTime": { "type": "string" },
+          "volume": { "type": "integer" }
         }
       }
     },
@@ -39,8 +39,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "volume": "integer"
+          "startTime": { "type": "string" },
+          "volume": { "type": "integer" }
         }
       }
     },
@@ -49,8 +49,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "volume": "number"
+          "startTime": { "type": "string" },
+          "volume": { "type": "number" }
         }
       }
     },
@@ -59,8 +59,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "volume": "integer"
+          "startTime": { "type": "string" },
+          "volume": { "type": "integer" }
         }
       }
     }

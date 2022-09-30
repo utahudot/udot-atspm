@@ -31,8 +31,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "number": "integer"
+          "startTime": { "type": "string" },
+          "number": { "type": "integer" }
         }
       }
     },
@@ -41,8 +41,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     },
@@ -51,8 +51,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "double"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     },
@@ -61,8 +61,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -71,8 +71,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     },
@@ -81,8 +81,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "average": "number"
+          "startTime": { "type": "string" },
+          "average": { "type": "number" }
         }
       }
     },
@@ -91,23 +91,22 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "average": "number"
+          "startTime": { "type": "string" },
+          "average": { "type": "number" }
         }
       }
     },
-    "a": null,
     "percentFails": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     }
   }
-    }
+}
   
 

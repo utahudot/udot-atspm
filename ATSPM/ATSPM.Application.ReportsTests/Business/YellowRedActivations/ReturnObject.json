@@ -38,8 +38,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -48,8 +48,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -58,8 +58,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -68,8 +68,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "integer"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "integer" }
         }
       }
     }

@@ -40,8 +40,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -50,8 +50,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -66,8 +66,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "percent": "number"
+          "startTime": { "type": "string" },
+          "percent": { "type": "number" }
         }
       }
     }

@@ -1,8 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/product.schema.json",
-  "title": "Approach Speed",
-  "description": "A chart showing vehicle speed in mph per approach",
   "type": "object",
   "properties": {
     "chartName": { "type": "string" },
@@ -35,8 +31,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "averageMph": "number"
+          "startTime": { "type": "string" },
+          "averageMph": { "type": "number" }
         }
       }
     },
@@ -45,8 +41,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "eightFifthMph": "number"
+          "startTime": { "type": "string" },
+          "eightFifthMph": { "type": "number" }
         }
       }
     },
@@ -55,8 +51,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "fifteenthMph": "number"
+          "startTime": { "type": "string" },
+          "fifteenthMph": { "type": "number" }
         }
       }
     }

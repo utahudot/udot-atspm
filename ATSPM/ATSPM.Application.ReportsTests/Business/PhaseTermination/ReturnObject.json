@@ -29,8 +29,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "phaseNumber": "integer"
+          "startTime": { "type": "string" },
+          "phaseNumber": { "type": "integer" }
         }
       }
     },
@@ -39,8 +39,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "phaseNumber": "integer"
+          "startTime": { "type": "string" },
+          "phaseNumber": { "type": "integer" }
         }
       }
     },
@@ -49,27 +49,30 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "phaseNumber": "integer"
+          "startTime": { "type": "string" },
+          "phaseNumber": { "type": "integer" }
         }
       },
-      "pedWalkBegins": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "startTime": "string",
-            "phaseNumber": "number"
-          }
-        },
-        "unknownTerminations": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "startTime": "string",
-              "phaseNumber": "integer"
-            }
-          }
+    },
+    "pedWalkBegins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": { "type": "string" },
+          "phaseNumber": { "type": "number" }
         }
       }
+    },
+    "unknownTerminations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": { "type": "string" },
+          "phaseNumber": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

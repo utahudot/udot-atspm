@@ -26,8 +26,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "eventParam": "integer"
+          "startTime": { "type": "string" },
+          "eventParam": { "type": "integer" }
         }
       }
     }

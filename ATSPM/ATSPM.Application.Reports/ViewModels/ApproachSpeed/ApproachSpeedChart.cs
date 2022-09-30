@@ -1,56 +1,24 @@
-﻿using System;
+
+using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.ApproachDelay
+namespace ATSPM.Application.Reports.ViewModels.ApproachSpeed
 {
     public class ApproachSpeedChart
     {
-        public ApproachSpeedChart(
-            string chartName,
-            string signalId,
-            string signalLocation,
-            int phaseNumber,
-            string phaseDescription,
-            DateTime start,
-            DateTime end,
-            int totalArrivalOnRed,
-            int totalDetectorHits,
-            double percentArrivalOnRed,
-            List<ApproachDelayPlan> plans,
-            List<PercentArrivalsOnReDataPoint> percentArrivalsRed,
-            List<TotalVehiclesDataPoint> totalVehicles,
-            List<ArrivalsOnRedDataPoint> arrivalsOnRed)
-        {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
-            PhaseNumber = phaseNumber;
-            PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
-            TotalArrivalOnRed = totalArrivalOnRed;
-            TotalDetectorHits = totalDetectorHits;
-            PercentArrivalOnRed = percentArrivalOnRed;
-            Plans = plans;
-            PercentArrivalsRed = percentArrivalsRed;
-            TotalVehicles = totalVehicles;
-            ArrivalsOnRed = arrivalsOnRed;
-        }
-
-        public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
-        public int PhaseNumber { get; internal set; }
-        public string PhaseDescription { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
-        public string DetectionType { get; internal set; }
-        public string DistanceFromStopBar { get; set; }
+        public string ChartName { get; set; }
+        public string SignalId { get; set; }
+        public string SignalLocation { get; set; }
+        public int PhaseNumber { get; set; }
+        public string PhaseDescription { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public string DetectionType { get; set; }
+        public int DistanceFromStopBar { get; set; }
         public double PostedSpeed { get; set; }
-        public List<ApproachSpeedPlan> Plans { get; internal set; }
-        public List<AvergeSpeedsDataPoint> AverageSpeeds { get; internal set; }
-        public List<EightyFifthSpeedsDataPoint> EightyFifthSpeeds { get; internal set; }
-        public List<FifteenthSpeedsDataPoint> FifteenthSpeeds { get; set; }
+        public ICollection<Plans> Plans { get; set; }
+        public ICollection<AverageSpeeds> AverageSpeeds { get; set; }
+        public ICollection<EightyFifthSpeeds> EightyFifthSpeeds { get; set; }
+        public ICollection<FifteenthSpeeds> FifteenthSpeeds { get; set; }
     }
-
 }

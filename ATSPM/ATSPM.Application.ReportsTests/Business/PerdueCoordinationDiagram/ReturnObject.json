@@ -34,8 +34,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "volume": "number"
+          "startTime": { "type": "string" },
+          "volume": { "type": "number" }
         }
       }
     },
@@ -44,8 +44,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -54,8 +54,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -64,8 +64,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -74,9 +74,10 @@
       "items": {
         "type": "object",
         "properties": {
-          "timestamp": "string",
-          "seconds": "number"
+          "timestamp": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     }
   }
+}

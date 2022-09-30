@@ -28,9 +28,9 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "endTime": "string",
-          "phaseNumber": "integer"
+          "startTime": { "type": "string" },
+          "endTime": { "type": "string" },
+          "phaseNumber": { "type": "integer" }
         }
       }
     },
@@ -39,8 +39,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -49,8 +49,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -59,8 +59,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -69,8 +69,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     },
@@ -79,8 +79,8 @@
       "items": {
         "type": "object",
         "properties": {
-          "startTime": "string",
-          "seconds": "number"
+          "startTime": { "type": "string" },
+          "seconds": { "type": "number" }
         }
       }
     }
