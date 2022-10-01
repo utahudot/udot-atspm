@@ -2,6 +2,12 @@
 
 public class Unknown
 {
-    public string StartTime { get; set; }
-    public double Seconds { get; set; }
+    public Unknown(string startTime, double seconds)
+    {
+        StartTime = startTime;
+        Seconds = seconds;
+    }
+
+    public string StartTime { get; internal set; }
+    public double Seconds { get; internal set; }
 }

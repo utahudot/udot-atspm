@@ -21,10 +21,10 @@ namespace ATSPM.Application.Reports.ViewModels.YellowRedActivations
             AverageTimeViolations = averageTimeViolations;
         }
 
-        public int TotalViolations { get; set; }
-        public int SevereViolations { get; set; }
-        public double PercentViolations { get; set; }
-        public double PercentSevereViolations { get; set; }
-        public double AverageTimeViolations { get; set; }
+        public int TotalViolations { get; internal set; }
+        public int SevereViolations { get; internal set; }
+        public double PercentViolations { get; internal set; }
+        public double PercentSevereViolations { get; internal set; }
+        public double AverageTimeViolations { get; internal set; }
     }
 }

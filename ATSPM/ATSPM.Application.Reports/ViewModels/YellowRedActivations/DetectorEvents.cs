@@ -2,7 +2,13 @@
 {
     public class DetectorEvents
     {
-        public string StartTime { get; set; }
-        public int Seconds { get; set; }
+        public DetectorEvents(string startTime, int seconds)
+        {
+            StartTime = startTime;
+            Seconds = seconds;
+        }
+
+        public string StartTime { get; internal set; }
+        public int Seconds { get; internal set; }
     }
 }

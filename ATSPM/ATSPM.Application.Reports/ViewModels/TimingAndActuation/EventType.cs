@@ -1,8 +1,16 @@
-﻿namespace ATSPM.Application.Reports.ViewModels.TimingAndActuation;
+﻿using System.Collections.Generic;
+
+namespace ATSPM.Application.Reports.ViewModels.TimingAndActuation;
 
 public class EventType
 {
-    public string Description { get; set; }
+    public EventType(string description, ICollection<Event> events)
+    {
+        Description = description;
+        Events = events;
+    }
 
-    public System.Collections.Generic.ICollection<Event> Events { get; set; }
+    public string Description { get; internal set; }
+
+    public System.Collections.Generic.ICollection<Event> Events { get; internal set; }
 }

@@ -9,18 +9,18 @@ namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
 /// </summary>
 public class SplitMonitorChart
 {
-    public string ChartName { get; set; }
-    public string SignalId { get; set; }
-    public string SignalLocation { get; set; }
-    public int PhaseNumber { get; set; }
-    public string PhaseDescription { get; set; }
-    public DateTime Start { get; set; }
-    public DateTime End { get; set; }
-    public ICollection<Plan> Plans { get; set; }
-    public ICollection<Split> Splits { get; set; }
-    public ICollection<GapOut> GapOuts { get; set; }
-    public ICollection<MaxOut> MaxOuts { get; set; }
-    public ICollection<ForceOff> ForceOffs { get; set; }
-    public ICollection<Unknown> Unknowns { get; set; }
-    public ICollection<Peds> Peds { get; set; }
+    public string ChartName { get; internal set; }
+    public string SignalId { get; internal set; }
+    public string SignalLocation { get; internal set; }
+    public int PhaseNumber { get; internal set; }
+    public string PhaseDescription { get; internal set; }
+    public DateTime Start { get; internal set; }
+    public DateTime End { get; internal set; }
+    public ICollection<Plan> Plans { get; internal set; }
+    public ICollection<Split> Splits { get; internal set; }
+    public ICollection<GapOut> GapOuts { get; internal set; }
+    public ICollection<MaxOut> MaxOuts { get; internal set; }
+    public ICollection<ForceOff> ForceOffs { get; internal set; }
+    public ICollection<Unknown> Unknowns { get; internal set; }
+    public ICollection<Peds> Peds { get; internal set; }
 }

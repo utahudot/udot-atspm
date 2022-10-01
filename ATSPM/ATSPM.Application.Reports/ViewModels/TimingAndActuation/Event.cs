@@ -4,6 +4,12 @@ namespace ATSPM.Application.Reports.ViewModels.TimingAndActuation;
 
 public class Event
 {
-    public DateTime StartTime { get; set; }
-    public double Seconds { get; set; }
+    public Event(DateTime startTime, double seconds)
+    {
+        StartTime = startTime;
+        Seconds = seconds;
+    }
+
+    public DateTime StartTime { get; internal set; }
+    public double Seconds { get; internal set; }
 }

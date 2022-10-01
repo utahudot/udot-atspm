@@ -4,7 +4,13 @@ namespace ATSPM.Application.Reports.ViewModels.WaitTime
 {
     public class ForceOff
     {
-        public DateTime StartTime { get; set; }
-        public double WaitTime { get; set; }
+        public ForceOff(DateTime startTime, double waitTime)
+        {
+            StartTime = startTime;
+            WaitTime = waitTime;
+        }
+
+        public DateTime StartTime { get; internal set; }
+        public double WaitTime { get; internal set; }
     }
 }

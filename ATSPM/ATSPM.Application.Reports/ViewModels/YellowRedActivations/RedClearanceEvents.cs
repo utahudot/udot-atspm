@@ -2,7 +2,13 @@
 {
     public class RedClearanceEvents
     {
-        public string StartTime { get; set; }
-        public double Seconds { get; set; }
+        public RedClearanceEvents(string startTime, double seconds)
+        {
+            StartTime = startTime;
+            Seconds = seconds;
+        }
+
+        public string StartTime { get; internal set; }
+        public double Seconds { get; internal set; }
     }
 }

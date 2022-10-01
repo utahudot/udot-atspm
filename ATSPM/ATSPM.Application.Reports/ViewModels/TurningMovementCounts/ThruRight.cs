@@ -4,7 +4,13 @@ namespace ATSPM.Application.Reports.ViewModels.TurningMovementCounts
 {
     public class ThruRight
     {
-        public DateTime StartTime { get; set; }
-        public double Volume { get; set; }
+        public ThruRight(DateTime startTime, double volume)
+        {
+            StartTime = startTime;
+            Volume = volume;
+        }
+
+        public DateTime StartTime { get; internal set; }
+        public double Volume { get; internal set; }
     }
 }
