@@ -11,5 +11,5 @@ public class RedEvent
     }
 
     public DateTime StartTime { get; internal set; }
-    public double Seconds { get; internal set; }    
+    public double Seconds { get; internal set; }
 }

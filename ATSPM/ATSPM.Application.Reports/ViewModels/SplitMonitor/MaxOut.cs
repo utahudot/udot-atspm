@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
 
-public class MaxOut
+public class SplitMonitorMaxOut
 {
-    public MaxOut(DateTime startTime, double seconds)
+    public SplitMonitorMaxOut(DateTime startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

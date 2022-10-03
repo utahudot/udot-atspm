@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -34,7 +33,7 @@ namespace ATSPM.Application.Reports.Controllers
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
-,           IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository
+, IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository
             )
         {
             _logger = logger;
@@ -50,9 +49,9 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("/DataCheck")]
-        public DataCheckResult Get([FromBody]DataCheckParameters parameters)
-            //(string signalId, int approachId, DateTime startDate, DateTime endDate, int volumePerHourThreshold, 
-            //double gapOutThreshold, double pedestrianThreshold, int[] daysOfWeek)
+        public DataCheckResult Get([FromBody] DataCheckParameters parameters)
+        //(string signalId, int approachId, DateTime startDate, DateTime endDate, int volumePerHourThreshold, 
+        //double gapOutThreshold, double pedestrianThreshold, int[] daysOfWeek)
         {
             var amStartTime = new TimeSpan(6, 0, 0);
             var amEndTime = new TimeSpan(9, 0, 0);
@@ -71,8 +70,8 @@ namespace ATSPM.Application.Reports.Controllers
             var detectors = new List<Models.Detector>();
             //if(approach.Detectors.Any(d => d.DetectionIDs.Contains(4)))
             var movementTypes = new List<int>() { 3 };
-            foreach (var detector in approach.Detectors.Where(d => 
-            d.MovementTypeId.HasValue 
+            foreach (var detector in approach.Detectors.Where(d =>
+            d.MovementTypeId.HasValue
             && movementTypes.Contains(d.MovementTypeId.Value)).ToList())
             {
                 if (!_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(detector.Id, parameters.StartDate.Add(amStartTime), parameters.StartDate.Add(amEndTime)) &&
@@ -87,7 +86,7 @@ namespace ATSPM.Application.Reports.Controllers
             {
                 CheckTablesForData(approach.SignalId, approach.ProtectedPhaseNumber, parameters, amStartTime, amEndTime, pmStartTime, pmEndTime, dataCheck, opposingPhase);
             }
-            else if(approach.PermissivePhaseNumber.HasValue)
+            else if (approach.PermissivePhaseNumber.HasValue)
             {
                 CheckTablesForData(approach.SignalId, approach.PermissivePhaseNumber.Value, parameters, amStartTime, amEndTime, pmStartTime, pmEndTime, dataCheck, opposingPhase);
             }
@@ -110,11 +109,11 @@ namespace ATSPM.Application.Reports.Controllers
             var pedestrianPercentage = leftTurnReportPreCheck.GetAMPMPeakPedCyclesPercentages(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, amStartTime,
             amEndTime, pmStartTime, pmEndTime, parameters.DaysOfWeek);
             dataCheck.PedCycleOk = pedestrianPercentage.First().Value <= parameters.PedestrianThreshold && pedestrianPercentage.Last().Value <= parameters.PedestrianThreshold;
-            
+
             return dataCheck;
         }
 
-        private void CheckTablesForData(string signalId, int phaseNumber, DataCheckParameters parameters, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime, 
+        private void CheckTablesForData(string signalId, int phaseNumber, DataCheckParameters parameters, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime,
             TimeSpan pmEndTime, DataCheckResult dataCheck, int opposingPhase)
         {
             if (!_approachCycleAggregationRepository.Exists(signalId, phaseNumber, parameters.StartDate.Add(amStartTime), parameters.StartDate.Add(amEndTime)) &&
@@ -177,7 +176,7 @@ namespace ATSPM.Application.Reports.Controllers
             return result;
         }
 
-            [HttpPost("/GapDuration")]
+        [HttpPost("/GapDuration")]
         public GapDurationResult GetGapDurationAnalysis(ReportParameters parameters)
         {
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
@@ -203,7 +202,7 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("/PedActuation")]
-        public PedActuationResult GetPedActuationAnalysis(ReportParameters parameters )
+        public PedActuationResult GetPedActuationAnalysis(ReportParameters parameters)
         {
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);

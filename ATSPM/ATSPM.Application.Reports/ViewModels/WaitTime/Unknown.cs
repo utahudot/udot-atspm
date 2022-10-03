@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.WaitTime
 {
-    public class Unknown
+    public class WaitTimeUnknown
     {
-        public Unknown(DateTime startTime, double waitTime)
+        public WaitTimeUnknown(DateTime startTime, double waitTime)
         {
             StartTime = startTime;
             WaitTime = waitTime;

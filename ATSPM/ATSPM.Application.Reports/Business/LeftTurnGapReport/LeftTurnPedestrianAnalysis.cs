@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -11,7 +9,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
     {
         private readonly ISignalsRepository _signalRepository;
         private readonly IApproachRepository _approachRepository;
-        private readonly IPhasePedAggregationRepository _phasePedAggregationRepository; 
+        private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
 
         public LeftTurnPedestrianAnalysis(ISignalsRepository signalRepository, IApproachRepository approachRepository, IPhasePedAggregationRepository phasePedAggregationRepository, IApproachCycleAggregationRepository approachCycleAggregationRepository)
@@ -40,7 +38,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
             foreach (var avg in cycleAverage.CycleAverageList)
             {
-                if(avg.Value !=0)
+                if (avg.Value != 0)
                 {
                     var pedAvg = pedCycleAverage.PedCycleAverageList.FirstOrDefault(p => p.Key == avg.Key);
                     cycleList.Add(avg.Key, pedAvg.Value / avg.Value);
@@ -85,7 +83,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                 }
             }
             double averagePedCycles = 0;
-            if(cycleAggregations.Any())
+            if (cycleAggregations.Any())
             {
                 averagePedCycles = hourlyPedCycles.Average(a => a);
             }

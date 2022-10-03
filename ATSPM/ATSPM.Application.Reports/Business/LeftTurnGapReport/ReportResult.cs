@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
+﻿namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
     public class ReportResult
     {

@@ -19,10 +19,10 @@ namespace ATSPM.Application.Reports.ViewModels.WaitTime
                              DateTime end,
                              string detectionTypes,
                              ICollection<YellowRedActivationsPlan> plans,
-                             ICollection<GapOut> gapOuts,
-                             ICollection<MaxOut> maxOuts,
-                             ICollection<ForceOff> forceOffs,
-                             ICollection<Unknown> unknowns,
+                             ICollection<WaitTimeGapOut> gapOuts,
+                             ICollection<WaitTimeMaxOut> maxOuts,
+                             ICollection<WaitTimeForceOff> forceOffs,
+                             ICollection<WaitTimeUnknown> unknowns,
                              ICollection<Average> average)
         {
             ChartName = chartName;
@@ -50,10 +50,10 @@ namespace ATSPM.Application.Reports.ViewModels.WaitTime
         public DateTime End { get; internal set; }
         public string DetectionTypes { get; internal set; }
         public System.Collections.Generic.ICollection<YellowRedActivationsPlan> Plans { get; internal set; }
-        public System.Collections.Generic.ICollection<GapOut> GapOuts { get; internal set; }
-        public System.Collections.Generic.ICollection<MaxOut> MaxOuts { get; internal set; }
-        public System.Collections.Generic.ICollection<ForceOff> ForceOffs { get; internal set; }
-        public System.Collections.Generic.ICollection<Unknown> Unknowns { get; internal set; }
+        public System.Collections.Generic.ICollection<WaitTimeGapOut> GapOuts { get; internal set; }
+        public System.Collections.Generic.ICollection<WaitTimeMaxOut> MaxOuts { get; internal set; }
+        public System.Collections.Generic.ICollection<WaitTimeForceOff> ForceOffs { get; internal set; }
+        public System.Collections.Generic.ICollection<WaitTimeUnknown> Unknowns { get; internal set; }
         public System.Collections.Generic.ICollection<Average> Average { get; internal set; }
     }
 }

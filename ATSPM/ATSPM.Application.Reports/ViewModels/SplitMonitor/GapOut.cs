@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
 
-public class GapOut
+public class SplitMonitorGapOut
 {
-    public GapOut(DateTime startTime, double seconds)
+    public SplitMonitorGapOut(DateTime startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

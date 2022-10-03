@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -16,6 +13,6 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         public int EndHour { get; set; }
         public int EndMinute { get; set; }
         public int[] DaysOfWeek { get; set; }
-            
+
     }
 }

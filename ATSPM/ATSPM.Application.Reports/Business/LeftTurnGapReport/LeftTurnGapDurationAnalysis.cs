@@ -3,8 +3,6 @@ using ATSPM.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -19,7 +17,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             IApproachRepository approachRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository, 
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             ISignalsRepository signalsRepository)
         {
             _approachRepository = approachRepository;
@@ -67,12 +65,12 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                         if (gapColumn == 12)
                         {
                             count = leftTurnGaps.Sum(l => l.GapCount6 + l.GapCount7 + l.GapCount8 + l.GapCount9);
-                            sum = leftTurnGaps.Sum(l => (l.SumGapDuration1/4.1));
+                            sum = leftTurnGaps.Sum(l => (l.SumGapDuration1 / 4.1));
                         }
                         else
                         {
                             count = leftTurnGaps.Sum(l => l.GapCount7 + l.GapCount8 + l.GapCount9);
-                            sum = leftTurnGaps.Sum(l => (l.SumGapDuration2/5.3));
+                            sum = leftTurnGaps.Sum(l => (l.SumGapDuration2 / 5.3));
                         }
 
                         acceptableGaps.Add(tempStart, sum);
@@ -82,7 +80,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return acceptableGaps;
         }
 
-        private double GetGapDemand( int approachId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap)
+        private double GetGapDemand(int approachId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap)
         {
             var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(approachId, _approachRepository);
             int totalActivations = 0;
@@ -110,16 +108,16 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return gapTotal;
         }
 
-        
 
-        public int GetNumberOfOpposingLanes(Signal signal,  int opposingPhase)
+
+        public int GetNumberOfOpposingLanes(Signal signal, int opposingPhase)
         {
             List<int> thruMovements = new List<int>() { 1, 4, 5 };
             return signal
                 .Approaches
                 .SelectMany(a => a.Detectors)
                 .Where(d => d.DetectionTypeDetectors.First().DetectionTypeId == 4 && thruMovements.Contains(d.MovementTypeId.Value))
-                .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);            
+                .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 
         public string GetOpposingPhaseDirection(Signal signal, int opposingPhase)

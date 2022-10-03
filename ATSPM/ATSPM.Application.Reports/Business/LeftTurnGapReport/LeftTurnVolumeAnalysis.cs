@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -131,24 +129,24 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                 case ApproachType.PermissiveProtected:
                     if (leftTurnVolumeValue.OpposingLanes == 1)
                     {
-                        leftTurnVolumeValue.CalculatedVolumeBoundary =  leftTurnVolume * Math.Pow(opposingVolume, .500);
+                        leftTurnVolumeValue.CalculatedVolumeBoundary = leftTurnVolume * Math.Pow(opposingVolume, .500);
                         leftTurnVolumeValue.DecisionBoundariesReview = 4638 < leftTurnVolumeValue.CalculatedVolumeBoundary;
                     }
                     else if (leftTurnVolumeValue.OpposingLanes > 1)
                     {
-                        leftTurnVolumeValue.CalculatedVolumeBoundary =  2 * leftTurnVolume * Math.Pow(opposingVolume, .404);
+                        leftTurnVolumeValue.CalculatedVolumeBoundary = 2 * leftTurnVolume * Math.Pow(opposingVolume, .404);
                         leftTurnVolumeValue.DecisionBoundariesReview = 3782 < leftTurnVolumeValue.CalculatedVolumeBoundary;
                     }
                     break;
                 case ApproachType.Protected:
                     if (leftTurnVolumeValue.OpposingLanes == 1)
                     {
-                        leftTurnVolumeValue.CalculatedVolumeBoundary =  leftTurnVolume * Math.Pow(opposingVolume, .425);
+                        leftTurnVolumeValue.CalculatedVolumeBoundary = leftTurnVolume * Math.Pow(opposingVolume, .425);
                         leftTurnVolumeValue.DecisionBoundariesReview = 3693 < leftTurnVolumeValue.CalculatedVolumeBoundary;
                     }
                     else if (leftTurnVolumeValue.OpposingLanes > 1)
                     {
-                        leftTurnVolumeValue.CalculatedVolumeBoundary =  2 * leftTurnVolume * Math.Pow(opposingVolume, .404);
+                        leftTurnVolumeValue.CalculatedVolumeBoundary = 2 * leftTurnVolume * Math.Pow(opposingVolume, .404);
                         leftTurnVolumeValue.DecisionBoundariesReview = 3782 < leftTurnVolumeValue.CalculatedVolumeBoundary;
                     }
                     break;

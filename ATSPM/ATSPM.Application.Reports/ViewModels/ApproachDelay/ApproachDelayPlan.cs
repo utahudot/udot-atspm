@@ -10,7 +10,7 @@ namespace ATSPM.Application.Reports.ViewModels.ApproachDelay
             double platoonRatio,
             DateTime start,
             DateTime end,
-            string planNumber) :base(planNumber, start, end)
+            string planNumber) : base(planNumber, start, end)
         {
             PercentArrivalOnGreen = percentArrivalOnGreen;
             PercentGreenTime = percentGreenTime;

@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
 
-public class ForceOff
+public class SplitMonitorForceOff
 {
-    public ForceOff(DateTime startTime, double seconds)
+    public SplitMonitorForceOff(DateTime startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

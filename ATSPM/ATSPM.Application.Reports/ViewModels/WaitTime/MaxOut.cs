@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.WaitTime
 {
-    public class MaxOut
+    public class WaitTimeMaxOut
     {
-        public MaxOut(DateTime startTime, double waitTime)
+        public WaitTimeMaxOut(DateTime startTime, double waitTime)
         {
             StartTime = startTime;
             WaitTime = waitTime;

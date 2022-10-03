@@ -1,4 +1,3 @@
-using ATSPM.Application.Reports.ViewModels;
 using System;
 using System.Collections.Generic;
 
@@ -18,9 +17,9 @@ public class SplitMonitorChart
     public DateTime End { get; internal set; }
     public ICollection<Plan> Plans { get; internal set; }
     public ICollection<Split> Splits { get; internal set; }
-    public ICollection<GapOut> GapOuts { get; internal set; }
-    public ICollection<MaxOut> MaxOuts { get; internal set; }
-    public ICollection<ForceOff> ForceOffs { get; internal set; }
-    public ICollection<Unknown> Unknowns { get; internal set; }
+    public ICollection<SplitMonitorGapOut> GapOuts { get; internal set; }
+    public ICollection<SplitMonitorMaxOut> MaxOuts { get; internal set; }
+    public ICollection<SplitMonitorForceOff> ForceOffs { get; internal set; }
+    public ICollection<SplitMonitorUnknown> Unknowns { get; internal set; }
     public ICollection<Peds> Peds { get; internal set; }
 }

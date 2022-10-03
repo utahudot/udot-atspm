@@ -2,7 +2,7 @@
 
 namespace ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
 
-public class PerdueCoordinationPlan: Plan
+public class PerdueCoordinationPlan : Plan
 {
     public PerdueCoordinationPlan(
         string planNumber,

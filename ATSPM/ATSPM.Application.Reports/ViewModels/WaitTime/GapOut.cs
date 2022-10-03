@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.WaitTime
 {
-    public class GapOut
+    public class WaitTimeGapOut
     {
-        public GapOut(DateTime startTime, double waitTime)
+        public WaitTimeGapOut(DateTime startTime, double waitTime)
         {
             StartTime = startTime;
             WaitTime = waitTime;

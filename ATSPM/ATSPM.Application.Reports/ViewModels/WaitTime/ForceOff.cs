@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.WaitTime
 {
-    public class ForceOff
+    public class WaitTimeForceOff
     {
-        public ForceOff(DateTime startTime, double waitTime)
+        public WaitTimeForceOff(DateTime startTime, double waitTime)
         {
             StartTime = startTime;
             WaitTime = waitTime;

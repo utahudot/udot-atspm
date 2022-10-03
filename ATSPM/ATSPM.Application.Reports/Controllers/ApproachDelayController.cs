@@ -1,24 +1,20 @@
-﻿using ATSPM.Application.Reports.ViewModels;
-using ATSPM.Application.Reports.ViewModels.ApproachDelay;
-using Microsoft.AspNetCore.Http;
+﻿using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 namespace ATSPM.Application.Reports.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class ApproachDelayController : ControllerBase
     {
-        [HttpGet("/Test")]
+        [HttpGet("test")]
         public ApproachDelayChart Test()
         {
             var rnd = new Random();
             var plans = new List<ApproachDelayPlan>();
-            for(int i = 0; i < 24; i++)
+            for (int i = 0; i < 24; i++)
             {
                 plans.Add(new ApproachDelayPlan(
                     rnd.NextDouble(),
@@ -69,6 +65,6 @@ namespace ATSPM.Application.Reports.Controllers
             );
             return approachDelayViewModel;
         }
-       
+
     }
 }
