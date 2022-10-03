@@ -18,7 +18,7 @@ namespace ATSPM.Infrastructure.Repositories
 {
     public class ControllerEventLogEFRepository : ATSPMRepositoryEFBase<ControllerLogArchive>, IControllerEventLogRepository
     {
-        public ControllerEventLogEFRepository(ConfigContext db, ILogger<ControllerEventLogEFRepository> log) : base(db, log) { }
+        public ControllerEventLogEFRepository(EventLogContext db, ILogger<ControllerEventLogEFRepository> log) : base(db, log) { }
 
         #region IControllerEventLogRepository
 

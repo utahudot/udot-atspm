@@ -9,17 +9,8 @@ using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
-using Google.Api.Gax;
-using Google.Cloud.Diagnostics.Common;
-using Google.Cloud.PubSub.V1;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -115,6 +106,8 @@ namespace ATSPM.SignalControllerLogger
                 .Build();
 
             await host.RunAsync();
+
+
 
             //Console.Read();
 

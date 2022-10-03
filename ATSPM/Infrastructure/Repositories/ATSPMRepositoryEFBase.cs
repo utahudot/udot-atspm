@@ -89,6 +89,7 @@ namespace ATSPM.Infrastructure.Repositories
             return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
         }
 
+        //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public async Task<T> LookupAsync(object key)
         {
             return await table.FindAsync(key);
