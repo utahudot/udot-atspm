@@ -8,7 +8,7 @@ namespace ATSPM.Application.Reports.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PerdueCoordinationDiagramControrller : ControllerBase
+    public class PerdueCoordinationDiagramController : ControllerBase
     {
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
