@@ -8,6 +8,23 @@ namespace ATSPM.Application.Reports.ViewModels.PreemptServiceRequest
     /// </summary>
     public class PreemptServiceRequestChart
     {
+        public PreemptServiceRequestChart(string chartName,
+            string signalId,
+            string signalLocation,
+            DateTime start,
+            DateTime end,
+            ICollection<Plan> plans,
+            ICollection<PreemptRequest> preemptRequests)
+        {
+            ChartName = chartName;
+            SignalId = signalId;
+            SignalLocation = signalLocation;
+            Start = start;
+            End = end;
+            Plans = plans;
+            PreemptRequests = preemptRequests;
+        }
+
         public string ChartName { get; internal set; }
         public string SignalId { get; internal set; }
         public string SignalLocation { get; internal set; }
