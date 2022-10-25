@@ -1926,11 +1926,28 @@
           }
         }
       },
+      ".Data/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "DomainCore": "1.0.0",
+          "EFCore.BulkExtensions": "6.5.6",
+          "Microsoft.EntityFrameworkCore": "6.0.8",
+          "Microsoft.EntityFrameworkCore.Relational": "6.0.8",
+          "Newtonsoft.Json": "13.0.1"
+        },
+        "compile": {
+          "bin/placeholder/.Data.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/.Data.dll": {}
+        }
+      },
       "ApplicationCore/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "ATSPM.Data": "1.0.0",
+          ".Data": "1.0.0",
           "DomainCore": "1.0.0",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Logging": "6.0.0",
@@ -1942,23 +1959,6 @@
         },
         "runtime": {
           "bin/placeholder/ApplicationCore.dll": {}
-        }
-      },
-      "ATSPM.Data/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "DomainCore": "1.0.0",
-          "EFCore.BulkExtensions": "6.5.6",
-          "Microsoft.EntityFrameworkCore": "6.0.8",
-          "Microsoft.EntityFrameworkCore.Relational": "6.0.8",
-          "Newtonsoft.Json": "13.0.1"
-        },
-        "compile": {
-          "bin/placeholder/ATSPM.Data.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/ATSPM.Data.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -6289,15 +6289,15 @@
         "version.txt"
       ]
     },
+    ".Data/1.0.0": {
+      "type": "project",
+      "path": "../Data/Data.csproj",
+      "msbuildProject": "../Data/Data.csproj"
+    },
     "ApplicationCore/1.0.0": {
       "type": "project",
       "path": "../ApplicationCore/ApplicationCore.csproj",
       "msbuildProject": "../ApplicationCore/ApplicationCore.csproj"
-    },
-    "ATSPM.Data/1.0.0": {
-      "type": "project",
-      "path": "../Data/Data.csproj",
-      "msbuildProject": "../Data/Data.csproj"
     },
     "DomainCore/1.0.0": {
       "type": "project",
@@ -6307,7 +6307,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "ATSPM.Data >= 1.0.0",
+      ".Data >= 1.0.0",
       "ApplicationCore >= 1.0.0",
       "DomainCore >= 1.0.0",
       "FluentFTP >= 39.4.0",
@@ -6329,7 +6329,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-      "projectName": "ATSPM.Infrastructure",
+      "projectName": ".Infrastructure",
       "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
       "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
       "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\obj\\",

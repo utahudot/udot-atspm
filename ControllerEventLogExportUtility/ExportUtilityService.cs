@@ -67,9 +67,9 @@ namespace ControllerEventLogExportUtility
 
                         await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
 
-                        var test = logs.LogData.Select(x => $"{archive.SignalId},{x.Timestamp:s},{x.EventCode},{x.EventParam}");
+                        var csv = logs.LogData.Select(x => $"{archive.SignalId},{x.Timestamp:s},{x.EventCode},{x.EventParam}");
 
-                        await File.AppendAllLinesAsync(path, test);
+                        await File.AppendAllLinesAsync(path, csv);
 
                         Console.WriteLine($"Completed {archive.SignalId} {logs.LogData.Count}");
                     }

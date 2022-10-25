@@ -97,7 +97,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj",
-        "projectName": "ATSPM.Data",
+        "projectName": ".Data",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\obj\\",
@@ -253,7 +253,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "projectName": "ATSPM.Infrastructure",
+        "projectName": ".Infrastructure",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Infrastructure\\obj\\",
