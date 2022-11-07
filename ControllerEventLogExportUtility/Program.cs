@@ -23,94 +23,15 @@ using System.CommandLine.Hosting;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using Microsoft.Extensions.Options;
+using System;
 
 
-
-var extractionDateOption = new Option<IEnumerable<DateTime>>("--date", () => new List<DateTime>() { DateTime.Now }, "Date to extract event logs for in dd/mm/yyyy format")
-{
-    IsRequired = true,
-    AllowMultipleArgumentsPerToken = true
-};
-extractionDateOption.AddAlias("-d");
-extractionDateOption.AddValidator(r =>
-{
-    if (r.GetValueForOption(extractionDateOption).Any(a => a > DateTime.Now))
-        r.ErrorMessage = "Date must not be greater than current date";
-});
-
-var extractionIncludeOption = new Option<IEnumerable<string>>("--include", "List of signal controller numbers to include")
-{
-    AllowMultipleArgumentsPerToken = true
-};
-extractionIncludeOption.AddAlias("-i");
-
-var extractionExcludeOption = new Option<IEnumerable<string>>("--exclude", "List of signal controller numbers to exclude")
-{
-    AllowMultipleArgumentsPerToken = true
-};
-extractionExcludeOption.AddAlias("-e");
-
-extractionIncludeOption.AddValidator(r =>
-{
-    if (r.GetValueForOption(extractionExcludeOption)?.Count() > 0)
-        r.ErrorMessage = "Can't use include option when also using exclude option";
-});
-extractionExcludeOption.AddValidator(r =>
-{
-    if (r.GetValueForOption(extractionIncludeOption)?.Count() > 0)
-        r.ErrorMessage = "Can't use exclude option when also using include option";
-});
-
-var extractionTypeOption = new Option<IEnumerable<int>>("--type", "List of controller types to extract")
-{
-    AllowMultipleArgumentsPerToken = true
-};
-extractionTypeOption.AddAlias("-t");
-
-var extractionPathOption = new Option<DirectoryInfo>("--path", () => new DirectoryInfo(Path.Combine("C:", "temp", "exports")), "Path to extraction directory");
-extractionPathOption.AddAlias("-p");
-
-var extractCmd = new Command("extract", "Extract compressed controller event logs");
-extractCmd.AddOption(extractionDateOption);
-extractCmd.AddOption(extractionIncludeOption);
-extractCmd.AddOption(extractionExcludeOption);
-extractCmd.AddOption(extractionTypeOption);
-extractCmd.AddOption(extractionPathOption);
-
-extractCmd.SetHandler((d, i, e, t, p) =>
-{
-    foreach (var s in d)
-    {
-        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-    }
-
-    foreach (var s in i)
-    {
-        Console.WriteLine($"Extracting event logs for signal {s}");
-    }
-
-    foreach (var s in e)
-    {
-        Console.WriteLine($"Excluding event logs for signal {s}");
-    }
-
-    foreach (var s in t)
-    {
-        Console.WriteLine($"Extracting event logs for signal type {t}");
-    }
-
-    Console.WriteLine($"Extraction path {p}");
-
-}, extractionDateOption, extractionIncludeOption, extractionExcludeOption, extractionTypeOption, extractionPathOption);
-
-
+var extractCmd = new ExtractConsoleCommand();
 var rootCmd = new RootCommand();
 rootCmd.AddCommand(extractCmd);
 
 
-
-
-rootCmd.Invoke(args);
+//rootCmd.Invoke(args);
 
 
 
@@ -119,81 +40,71 @@ rootCmd.Invoke(args);
 
 //var host = Host.CreateDefaultBuilder()
 
-//var parser = new CommandLineBuilder(rootCommand);
-//parser.UseDefaults();
-
-////parser.AddMiddleware((c, n) =>
-////{
-////    var group = c.ParseResult.CommandResult.Command.Name;
-
-////    Console.WriteLine($"group name: {group}");
-
-////    foreach (var child in c.ParseResult.CommandResult.Children)
-////    {
-
-////    }
-
-////    return n(c);
-////});
+var cmdBuilder = new CommandLineBuilder(rootCmd);
+cmdBuilder.UseDefaults();
 
 
-//var hello = parser.UseHost(a => new HostBuilder(), h =>
-//{
-//    //var h = Host.CreateDefaultBuilder()
-//    h.ConfigureAppConfiguration((h, c) =>
-//    {
-//        //c.AddUserSecrets("af468330-96e6-4297-a188-86f216ee07b4");
-//        //c.AddCommandLine(args);
-//        //c.AddCommandLineDirectives(result, "name");
-//    })
-//    .ConfigureLogging((h, l) =>
-//    {
-//        //l.SetMinimumLevel(LogLevel.None);
 
-//        //TODO: add a GoogleLogger section
-//        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
-//        //TODO: remove this to an extension method
-//        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
-//        //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
-//        //{
-//        //    l.AddGoogle(new LoggingServiceOptions
-//        //    {
-//        //        ProjectId = "1022556126938",
-//        //        //ProjectId = "869261868126",
-//        //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-//        //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-//        //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
-//        //    });
-//        //}
-//    })
-//    .ConfigureServices((h, s) =>
-//    {
-//        //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
-//        //    ProjectId = "1022556126938",
-//        //    ServiceName = "ErrorReporting",
-//        //    Version = "1.1",
-//        //});
+cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(), h =>
+{
+    //var h = Host.CreateDefaultBuilder()
+    h.ConfigureAppConfiguration((h, c) =>
+    {
+        //c.AddUserSecrets("af468330-96e6-4297-a188-86f216ee07b4");
+        //c.AddCommandLine(args);
+        //c.AddCommandLineDirectives(result, "name");
+    })
+    .ConfigureLogging((h, l) =>
+    {
+        //l.SetMinimumLevel(LogLevel.None);
 
-//        //s.AddLogging();
-//        s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+        //TODO: add a GoogleLogger section
+        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
+        //TODO: remove this to an extension method
+        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
+        //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
+        //{
+        //    l.AddGoogle(new LoggingServiceOptions
+        //    {
+        //        ProjectId = "1022556126938",
+        //        //ProjectId = "869261868126",
+        //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
+        //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+        //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+        //    });
+        //}
+    })
+    .ConfigureServices((h, s) =>
+    {
+        //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
+        //    ProjectId = "1022556126938",
+        //    ServiceName = "ErrorReporting",
+        //    Version = "1.1",
+        //});
 
-//        //s.AddATSPMDbContext(h);
+        //s.AddLogging();
+        s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
 
-//        //background services
-//        //s.AddHostedService<ExportUtilityService>();
-//        s.AddHostedService<TestWorker>();
+        //s.AddATSPMDbContext(h);
 
-//        //repositories
-//        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+        //background services
+        //s.AddHostedService<ExportUtilityService>();
+        s.AddHostedService<TestWorker>();
+
+        //repositories
+        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
 
-//        //s.Configure<TestConfig>(a => a.Test = h.Configuration.GetValue<int>("sub1:Test"));
-//        s.Configure<TestConfig>(h.Configuration.GetSection("sub1"));
-//    });
+        //s.Configure<TestConfig>(a => a.Test = h.Configuration.GetValue<int>("sub1:Test"));
+        //s.Configure<ExtractConsoleConfiguration>(h.Configuration.GetSection("extract"));
+    });
 
-//    //.UseConsoleLifetime();
+    //.UseConsoleLifetime();
 
-//}).Build();
+});
+    
+var parser = cmdBuilder.Build();
+await parser.InvokeAsync(args);
 
 ////var result = parser.Build().Parse(args);
 
@@ -216,24 +127,108 @@ rootCmd.Invoke(args);
 
 public class TestWorker : BackgroundService
 {
-    private IOptions<TestConfig> _options;
-    public TestWorker(IOptions<TestConfig> options)
-    {
-        _options = options;
-    }
+    private readonly ILogger _log;
+    private IServiceProvider _serviceProvider;
+    private IOptions<ExtractConsoleConfiguration> _options;
+    public TestWorker(ILogger<TestWorker> log, IServiceProvider serviceProvider, IOptions<ExtractConsoleConfiguration> options) =>
+            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine($"Test Worker: {_options.Value.Test}");
+        Console.WriteLine($"Extraction path {_options.Value.Path}");
 
-        return Task.CompletedTask;
+        try
+        {
+            using (var scope = _serviceProvider.CreateAsyncScope())
+            {
+                var eventRepository = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
+
+                foreach (var s in _options.Value.Dates)
+                {
+                    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+                }
+
+                var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
+
+                //if (_options.Value.Included != null)
+                //{
+                //    foreach (var s in _options.Value.Included)
+                //    {
+                //        Console.WriteLine($"Extracting event logs for signal {s}");
+                //    }
+
+                //    archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
+                //}
+
+                //if (_options.Value.Excluded != null)
+                //{
+                //    foreach (var s in _options.Value.Excluded)
+                //    {
+                //        Console.WriteLine($"Excluding event logs for signal {s}");
+                //    }
+
+                //    archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
+                //}
+
+                int skip = 0;
+                int take = 20;
+
+                int count = archiveQuery.Count();
+                Console.WriteLine($"archiveQuery Count: {count}");
+
+                int newCount = 0;
+
+                while (skip < count)
+                {
+                    foreach (var a in await archiveQuery.Skip(skip).Take(take).ToListAsync())
+                    {
+                        Console.WriteLine($"Returned Archive: {a}");
+
+                        newCount++;
+                    }
+
+                    skip = skip + take;
+                }
+
+                Console.WriteLine($"newCount: {newCount}");
+
+
+                //if (_options.Value.ControllerTypes != null)
+                //{
+                //    archiveQuery = archiveQuery.Where(i => _options.Value.ControllerTypes.Any(d => i == d));
+                //}
+
+                //Console.WriteLine($"Archive count {count}");
+
+                //var config = scope.ServiceProvider.GetService<IConfiguration>();
+
+                //foreach (var c in config.AsEnumerable())
+                //{
+                //    Console.WriteLine($"config {c.Key} : {c.Value}"); 
+                //}
+
+            }
+        }
+        catch (Exception e)
+        {
+
+            _log.LogError("Exception: {e}", e);
+        }
+
+
+        //_serviceProvider?.GetService<IHostApplicationLifetime>()?.StopApplication();
+        //return Task.CompletedTask;
     }
 }
 
 
-public class TestConfig
+public class ExtractConsoleConfiguration
 {
-    public int Test { get; set; }
+    public IEnumerable<DateTime> Dates { get; set; }
+    public IEnumerable<string> Included { get; set; }
+    public IEnumerable<string> Excluded { get; set; }
+    public IEnumerable<int> ControllerTypes { get; set; }
+    public DirectoryInfo Path { get; set; }
 }
 
 public static class Testing
@@ -255,7 +250,7 @@ public static class Testing
                     config.AddCommandLineDirectives(invocation.ParseResult, ConfigurationDirectiveName);
 
 
-                    config.AddCommandLineConfig(invocation);
+                    //config.AddCommandLineConfig(invocation);
 
                 });
                 hostBuilder.ConfigureServices(services =>
@@ -265,6 +260,12 @@ public static class Testing
                     services.AddSingleton(invocation.Console);
                     services.AddTransient(_ => invocation.InvocationResult);
                     services.AddTransient(_ => invocation.ParseResult);
+
+                    if (invocation.ParseResult.CommandResult.Command is ExtractConsoleCommand cmd)
+                    {
+                        //var config = cmd.ParseOptions(invocation);
+                        services.PostConfigure<ExtractConsoleConfiguration>(c => cmd.ParseOptions(c, invocation));
+                    }
                 });
                 hostBuilder.UseInvocationLifetime(invocation);
                 configureHost?.Invoke(hostBuilder);
@@ -273,10 +274,10 @@ public static class Testing
 
                 invocation.BindingContext.AddService(typeof(IHost), _ => host);
 
+                //await host.RunAsync();
+
                 await host.StartAsync();
-
-                await next(invocation);
-
+                //await next(invocation);
                 await host.StopAsync();
             });
 
@@ -306,24 +307,24 @@ public static class DirectiveConfigurationExtensions
         }).ToList());
     }
 
-    public static IConfigurationBuilder AddCommandLineConfig(this IConfigurationBuilder config, InvocationContext context)
-    {
-        var group = context.ParseResult.CommandResult.Command.Name;
+    //public static IConfigurationBuilder AddCommandLineConfig(this IConfigurationBuilder config, InvocationContext context)
+    //{
+    //    var group = context.ParseResult.CommandResult.Command.Name;
 
-        //Console.WriteLine($"group name: {group}");
+    //    Console.WriteLine($"group name: {group}");
 
-        var dict = new Dictionary<string, string?>();
+    //    var dict = new Dictionary<string, string?>();
 
-        foreach (var child in context.ParseResult.CommandResult.Children)
-        {
-            if (child is OptionResult r)
-            {
-                //Console.WriteLine($"result: {r.Option.Name}:{r.GetValueOrDefault()}");
+    //    foreach (var child in context.ParseResult.CommandResult.Children)
+    //    {
+    //        if (child is OptionResult r)
+    //        {
+    //            Console.WriteLine($"result: {r.Option.Name}:{r.GetValueOrDefault()}");
 
-                dict.Add($"{group}:{r.Option.Name}", r.GetValueOrDefault()?.ToString());
-            }
-        }
+    //            dict.Add($"{group}:{r.Option.Name}", r.GetValueOrDefault()?.ToString());
+    //        }
+    //    }
 
-        return config.AddInMemoryCollection(dict.AsEnumerable());
-    }
+    //    return config.AddInMemoryCollection(dict.AsEnumerable());
+    //}
 }

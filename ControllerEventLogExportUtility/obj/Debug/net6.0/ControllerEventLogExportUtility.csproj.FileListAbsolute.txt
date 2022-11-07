@@ -166,7 +166,7 @@ C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\tr\Syste
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\zh-Hans\System.CommandLine.resources.dll
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\zh-Hant\System.CommandLine.resources.dll
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
-C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\.Data.dll
-C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\.Infrastructure.dll
-C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\.Infrastructure.pdb
-C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\.Data.pdb
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Data.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Infrastructure.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Infrastructure.pdb
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Data.pdb

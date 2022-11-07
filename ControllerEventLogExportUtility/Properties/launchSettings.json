@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ControllerEventLogExportUtility": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "extract -d 01/01/2020 -e 1001 1004"
     }
   }
 }

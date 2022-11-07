@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ATSPM.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace ControllerEventLogExportUtility
 {
@@ -18,9 +19,10 @@ namespace ControllerEventLogExportUtility
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
+        private IOptions<ExtractConsoleConfiguration> _options;
 
-        public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider) =>
-            (_log, _serviceProvider) = (log, serviceProvider);
+        public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider, IOptions<ExtractConsoleConfiguration> options) =>
+            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

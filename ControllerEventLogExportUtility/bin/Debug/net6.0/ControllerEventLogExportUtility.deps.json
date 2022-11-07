@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v6.0": {
       "ControllerEventLogExportUtility/1.0.0": {
         "dependencies": {
-          ".Infrastructure": "1.0.0",
+          "ATSPM.Infrastructure": "1.0.0",
           "Microsoft.Extensions.Hosting": "7.0.0-rc.2.22472.3",
           "System.CommandLine": "2.0.0-beta4.22272.1",
           "System.CommandLine.Hosting": "0.4.0-alpha.22272.1"
@@ -1804,7 +1804,20 @@
           }
         }
       },
-      ".Data/1.0.0": {
+      "ApplicationCore/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0",
+          "DomainCore": "1.0.0",
+          "Google.Cloud.Diagnostics.Common": "5.0.0",
+          "Microsoft.Extensions.Logging": "7.0.0-rc.2.22472.3",
+          "Microsoft.Extensions.Logging.Abstractions": "7.0.0-rc.2.22472.3",
+          "Microsoft.Extensions.Logging.Console": "7.0.0-rc.2.22472.3"
+        },
+        "runtime": {
+          "ApplicationCore.dll": {}
+        }
+      },
+      "ATSPM.Data/1.0.0": {
         "dependencies": {
           "DomainCore": "1.0.0",
           "EFCore.BulkExtensions": "6.5.6",
@@ -1813,12 +1826,12 @@
           "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
-          ".Data.dll": {}
+          "ATSPM.Data.dll": {}
         }
       },
-      ".Infrastructure/1.0.0": {
+      "ATSPM.Infrastructure/1.0.0": {
         "dependencies": {
-          ".Data": "1.0.0",
+          "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
           "DomainCore": "1.0.0",
           "FluentFTP": "39.4.0",
@@ -1831,20 +1844,7 @@
           "SSH.NET": "2020.0.2"
         },
         "runtime": {
-          ".Infrastructure.dll": {}
-        }
-      },
-      "ApplicationCore/1.0.0": {
-        "dependencies": {
-          ".Data": "1.0.0",
-          "DomainCore": "1.0.0",
-          "Google.Cloud.Diagnostics.Common": "5.0.0",
-          "Microsoft.Extensions.Logging": "7.0.0-rc.2.22472.3",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0-rc.2.22472.3",
-          "Microsoft.Extensions.Logging.Console": "7.0.0-rc.2.22472.3"
-        },
-        "runtime": {
-          "ApplicationCore.dll": {}
+          "ATSPM.Infrastructure.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -2941,17 +2941,17 @@
       "path": "system.windows.extensions/4.7.0",
       "hashPath": "system.windows.extensions.4.7.0.nupkg.sha512"
     },
-    ".Data/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    ".Infrastructure/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "ApplicationCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
