@@ -1,33 +1,24 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Application.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace ControllerEventLogExportUtility
 {
-    internal class ExportUtilityService : BackgroundService
+    internal class ExportUtilityService : IHostedService
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
         private IOptions<ExtractConsoleConfiguration> _options;
-
         public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider, IOptions<ExtractConsoleConfiguration> options) =>
-            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+                (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            Console.WriteLine($"Extraction path {_options.Value.Path}");
 
             try
             {
@@ -35,63 +26,65 @@ namespace ControllerEventLogExportUtility
                 {
                     var eventRepository = scope.ServiceProvider.GetService<IControllerEventLogRepository>();
 
-                    int skip = 0;
-                    int take = 20;
-                    //bool loop = true;
+                    foreach (var s in _options.Value.Dates)
+                    {
+                        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+                    }
+
+                    var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
+
+                    if (_options.Value.Included != null)
+                    {
+                        foreach (var s in _options.Value.Included)
+                        {
+                            Console.WriteLine($"Extracting event logs for signal {s}");
+                        }
+
+                        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
+                    }
+
+                    if (_options.Value.Excluded != null)
+                    {
+                        foreach (var s in _options.Value.Excluded)
+                        {
+                            Console.WriteLine($"Excluding event logs for signal {s}");
+                        }
+
+                        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
+                    }
+
+                    //int archiveCount = archiveQuery.Count();
+                    int processedCount = 0;
+
+                    //Console.WriteLine($"Starting to process {archiveCount} archives");
 
 
-                    //while (skip < 100)
+                    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalId = s.SignalId, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
+
+                    //while (skip < count && !cancellationToken.IsCancellationRequested)
                     //{
-                        var archives = eventRepository.GetList().Where(i => i.ArchiveDate == DateTime.Parse("1/1/2020")).Select(s => new ControllerLogArchive() {SignalId = s.SignalId, ArchiveDate = s.ArchiveDate }).ToList();
-
-                    Console.WriteLine($"archives time: {sw.Elapsed}");
-
-                    //var logs = eventRepository.GetList().Where(i => i.ArchiveDate == DateTime.Parse("1/1/2020")).Take(100).ToList();
-                    //var logs = eventRepository.GetList().Where(i => i.ArchiveDate == DateTime.Parse("1/1/2020")).Skip(skip).Take(take).ToList();
-                    //var logs = await eventRepository.GetListAsync(g => g.SignalId == "1001");
-
-                    //if (logs.Count == 0)
-                    //    loop = false;
-
-                    
 
                     foreach (var archive in archives)
                     {
-                        Console.Write($"Writing... {archive.SignalId} {archives.IndexOf(archive)} of {archives.Count}");
+                        if (cancellationToken.IsCancellationRequested) break;
 
-                        var logs = await eventRepository.LookupAsync(archive);
+                        Console.Write($"Writing... {archive.SignalId} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
-                        DirectoryInfo dir = new DirectoryInfo("C:\\temp\\exports\\1-1-2020");
+                        var log = await eventRepository.LookupAsync(archive);
 
-                        dir.Create();
+                        var file = await WriteLog(log);
 
-                        var path = Path.Combine(dir.FullName, $"{archive.SignalId}.csv");
+                        //Console.CursorLeft = 0;
+                        do { Console.Write("\b \b"); } while (Console.CursorLeft > 0);
+                        Console.WriteLine($"Completed {file.FullName} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
-                        await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
-
-                        var csv = logs.LogData.Select(x => $"{archive.SignalId},{x.Timestamp:s},{x.EventCode},{x.EventParam}");
-
-                        await File.AppendAllLinesAsync(path, csv);
-
-                        Console.WriteLine($"Completed {archive.SignalId} {logs.LogData.Count}");
+                        processedCount++;
                     }
 
-
-                    //foreach (var log in logs)
-                    //{
-                    //    Console.WriteLine($"log: {log}");
-                    //}
-
-                    //
-
-                    //
-
-                    //Console.WriteLine($"complete?: {logs.Count}");
-                    //Console.WriteLine($"complete?: skip {skip} take {take}");
-
                     //skip = skip + take;
-                    //skip = 100;
                     //}
+
+                    Console.WriteLine($"processedCount: {processedCount}");
                 }
             }
             catch (Exception e)
@@ -99,13 +92,43 @@ namespace ControllerEventLogExportUtility
 
                 _log.LogError("Exception: {e}", e);
             }
-            finally
-            {
-                Console.WriteLine($"total time: {sw.Elapsed}");
-                sw.Stop();
-            }
+
 
             //_serviceProvider?.GetService<IHostApplicationLifetime>()?.StopApplication();
+            //return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"Operation Cancelled...");
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<FileInfo> WriteLog(ControllerLogArchive archive)
+        {
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo(Path.Combine(_options.Value.Path.FullName, archive.ArchiveDate.ToString("MM-dd-yyyy")));
+
+                dir.Create();
+
+                var path = Path.Combine(dir.FullName, $"{archive.SignalId}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
+
+                await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
+
+                var csv = archive.LogData.Select(x => $"{archive.SignalId},{x.Timestamp:s},{x.EventCode},{x.EventParam}");
+
+                await File.AppendAllLinesAsync(path, csv);
+
+                return new FileInfo(path);
+            }
+            catch (Exception e)
+            {
+                _log.LogError("WriteLog Exception: {e}", e);
+                return await Task.FromException<FileInfo>(e);
+            }
         }
     }
 }

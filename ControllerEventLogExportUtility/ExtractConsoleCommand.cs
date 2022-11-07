@@ -46,31 +46,33 @@ namespace ControllerEventLogExportUtility
             this.AddOption(ExtractionTypeOption);
             this.AddOption(ExtractionPathOption);
 
-            //this.SetHandler((d, i, e, t, p) =>
-            //{
-            //    foreach (var s in d)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-            //    }
+            this.SetHandler((d, i, e, t, p) =>
+            {
+                Console.WriteLine($"{this} is executing");
 
-            //    foreach (var s in i)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for signal {s}");
-            //    }
+                //foreach (var s in d)
+                //{
+                //    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+                //}
 
-            //    foreach (var s in e)
-            //    {
-            //        Console.WriteLine($"Excluding event logs for signal {s}");
-            //    }
+                //foreach (var s in i)
+                //{
+                //    Console.WriteLine($"Extracting event logs for signal {s}");
+                //}
 
-            //    foreach (var s in t)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for signal type {s}");
-            //    }
+                //foreach (var s in e)
+                //{
+                //    Console.WriteLine($"Excluding event logs for signal {s}");
+                //}
 
-            //    Console.WriteLine($"Extraction path {p}");
+                //foreach (var s in t)
+                //{
+                //    Console.WriteLine($"Extracting event logs for signal type {s}");
+                //}
 
-            //}, ExtractionDateOption, ExtractionIncludeOption, ExtractionExcludeOption, ExtractionTypeOption, ExtractionPathOption);
+                //Console.WriteLine($"Extraction path {p}");
+
+            }, ExtractionDateOption, ExtractionIncludeOption, ExtractionExcludeOption, ExtractionTypeOption, ExtractionPathOption);
         }
 
         public Option<IEnumerable<DateTime>> ExtractionDateOption = new("--date", "Date to extract event logs for in dd/mm/yyyy format")
