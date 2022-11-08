@@ -4,3 +4,4 @@ C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.AssemblyInfoInputs
 C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.AssemblyInfo.cs
 C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.csproj.CoreCompileInputs.cache
 C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\ATSPM.DataApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\ATSPM.DataApi.MvcApplicationPartsAssemblyInfo.cs

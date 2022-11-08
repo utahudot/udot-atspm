@@ -36,43 +36,43 @@ namespace ControllerEventLogExportUtility
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
-            ExtractionTypeOption.AddAlias("-t");
+            //ExtractionTypeOption.AddAlias("-t");
 
             ExtractionPathOption.AddAlias("-p");
 
             this.AddOption(ExtractionDateOption);
             this.AddOption(ExtractionIncludeOption);
             this.AddOption(ExtractionExcludeOption);
-            this.AddOption(ExtractionTypeOption);
+            //this.AddOption(ExtractionTypeOption);
             this.AddOption(ExtractionPathOption);
 
-            this.SetHandler((d, i, e, t, p) =>
-            {
-                Console.WriteLine($"{this} is executing");
+            //this.SetHandler((d, i, e, p) =>
+            //{
+            //    Console.WriteLine($"{this} is executing");
 
-                //foreach (var s in d)
-                //{
-                //    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-                //}
+            //    //foreach (var s in d)
+            //    //{
+            //    //    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+            //    //}
 
-                //foreach (var s in i)
-                //{
-                //    Console.WriteLine($"Extracting event logs for signal {s}");
-                //}
+            //    //foreach (var s in i)
+            //    //{
+            //    //    Console.WriteLine($"Extracting event logs for signal {s}");
+            //    //}
 
-                //foreach (var s in e)
-                //{
-                //    Console.WriteLine($"Excluding event logs for signal {s}");
-                //}
+            //    //foreach (var s in e)
+            //    //{
+            //    //    Console.WriteLine($"Excluding event logs for signal {s}");
+            //    //}
 
-                //foreach (var s in t)
-                //{
-                //    Console.WriteLine($"Extracting event logs for signal type {s}");
-                //}
+            //    //foreach (var s in t)
+            //    //{
+            //    //    Console.WriteLine($"Extracting event logs for signal type {s}");
+            //    //}
 
-                //Console.WriteLine($"Extraction path {p}");
+            //    //Console.WriteLine($"Extraction path {p}");
 
-            }, ExtractionDateOption, ExtractionIncludeOption, ExtractionExcludeOption, ExtractionTypeOption, ExtractionPathOption);
+            //}, ExtractionDateOption, ExtractionIncludeOption, ExtractionExcludeOption, ExtractionPathOption);
         }
 
         public Option<IEnumerable<DateTime>> ExtractionDateOption = new("--date", "Date to extract event logs for in dd/mm/yyyy format")
@@ -93,19 +93,16 @@ namespace ControllerEventLogExportUtility
         };
 
 
-        public Option<IEnumerable<int>> ExtractionTypeOption = new("--type", "List of controller types to extract")
-        {
-            AllowMultipleArgumentsPerToken = true
-        };
+        //public Option<IEnumerable<int>> ExtractionTypeOption = new("--type", "List of controller types to extract")
+        //{
+        //    AllowMultipleArgumentsPerToken = true
+        //};
 
         public Option<DirectoryInfo> ExtractionPathOption = new("--path", () => new DirectoryInfo(Path.Combine("C:", "temp", "exports")), "Path to extraction directory");
 
+        //TODO: Make an interface and have a method that passes in IServiceCollection so this is reusable by other commands
         public ExtractConsoleConfiguration ParseOptions(ExtractConsoleConfiguration config, InvocationContext invocation)
         {
-            //var config = new ExtractConsoleConfiguration();
-
-            Console.WriteLine($"config2: {config.GetHashCode()}");
-
             if (invocation.ParseResult.CommandResult.Command == this)
             {
                 if (invocation.ParseResult.HasOption(ExtractionDateOption))
@@ -117,8 +114,8 @@ namespace ControllerEventLogExportUtility
                 if (invocation.ParseResult.HasOption(ExtractionExcludeOption))
                     config.Excluded = invocation.ParseResult.GetValueForOption(ExtractionExcludeOption) ?? new List<string>();
 
-                if (invocation.ParseResult.HasOption(ExtractionTypeOption))
-                    config.ControllerTypes = invocation.ParseResult.GetValueForOption(ExtractionTypeOption) ?? new List<int>();
+                //if (invocation.ParseResult.HasOption(ExtractionTypeOption))
+                //    config.ControllerTypes = invocation.ParseResult.GetValueForOption(ExtractionTypeOption) ?? new List<int>();
 
                 if (invocation.ParseResult.HasOption(ExtractionPathOption))
                     config.Path = invocation.ParseResult.GetValueForOption(ExtractionPathOption) ?? new DirectoryInfo(string.Empty);

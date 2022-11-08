@@ -1,10 +1,13 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetTopologySuite.Mathematics;
 
 namespace ControllerEventLogExportUtility
 {
@@ -18,7 +21,9 @@ namespace ControllerEventLogExportUtility
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine($"Extraction path {_options.Value.Path}");
+            //_serviceProvider.PrintHostInformation();
+
+            _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
 
             try
             {
@@ -28,7 +33,7 @@ namespace ControllerEventLogExportUtility
 
                     foreach (var s in _options.Value.Dates)
                     {
-                        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+                        _log.LogInformation("Extracting Event Logs for Date(s): {date}", s.ToString("dd/MM/yyyy"));
                     }
 
                     var archiveQuery = eventRepository.GetList().Where(i => _options.Value.Dates.Any(d => i.ArchiveDate == d));
@@ -37,7 +42,7 @@ namespace ControllerEventLogExportUtility
                     {
                         foreach (var s in _options.Value.Included)
                         {
-                            Console.WriteLine($"Extracting event logs for signal {s}");
+                            _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
@@ -47,22 +52,17 @@ namespace ControllerEventLogExportUtility
                     {
                         foreach (var s in _options.Value.Excluded)
                         {
-                            Console.WriteLine($"Excluding event logs for signal {s}");
+                            _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
                     }
 
-                    //int archiveCount = archiveQuery.Count();
                     int processedCount = 0;
-
-                    //Console.WriteLine($"Starting to process {archiveCount} archives");
-
 
                     var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalId = s.SignalId, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
 
-                    //while (skip < count && !cancellationToken.IsCancellationRequested)
-                    //{
+                    _log.LogInformation("Number of Event Log Archives to Process: {count}", archives.Count);
 
                     foreach (var archive in archives)
                     {
@@ -74,17 +74,13 @@ namespace ControllerEventLogExportUtility
 
                         var file = await WriteLog(log);
 
-                        //Console.CursorLeft = 0;
                         do { Console.Write("\b \b"); } while (Console.CursorLeft > 0);
                         Console.WriteLine($"Completed {file.FullName} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
                         processedCount++;
                     }
 
-                    //skip = skip + take;
-                    //}
-
-                    Console.WriteLine($"processedCount: {processedCount}");
+                    _log.LogInformation("Log Archives Processed: {count}", processedCount);
                 }
             }
             catch (Exception e)
@@ -92,16 +88,12 @@ namespace ControllerEventLogExportUtility
 
                 _log.LogError("Exception: {e}", e);
             }
-
-
-            //_serviceProvider?.GetService<IHostApplicationLifetime>()?.StopApplication();
-            //return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
             Console.WriteLine();
-            Console.WriteLine($"Operation Cancelled...");
+            Console.WriteLine($"Operation Completed or Cancelled...");
 
             return Task.CompletedTask;
         }

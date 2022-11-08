@@ -170,3 +170,11 @@ C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Da
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Infrastructure.dll
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Infrastructure.pdb
 C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\ATSPM.Data.pdb
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\Azure.Core.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\Azure.Identity.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\Microsoft.SqlServer.Server.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\bin\Debug\net6.0\System.Memory.Data.dll
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\obj\Debug\net6.0\ControllerEventLogExportUtility.Properties.Resources.resources
+C:\Projects\udot-atsmp\ControllerEventLogExportUtility\obj\Debug\net6.0\ControllerEventLogExportUtility.csproj.GenerateResource.cache

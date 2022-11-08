@@ -22,14 +22,7 @@ cmdBuilder.UseDefaults();
 
 cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(), h =>
 {
-    //var h = Host.CreateDefaultBuilder()
-    h.ConfigureAppConfiguration((h, c) =>
-    {
-        //c.AddUserSecrets("af468330-96e6-4297-a188-86f216ee07b4");
-        //c.AddCommandLine(args);
-        //c.AddCommandLineDirectives(result, "name");
-    })
-    .ConfigureServices((h, s) =>
+    h.ConfigureServices((h, s) =>
     {
         //databases
         s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
@@ -44,11 +37,8 @@ cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(), h =>
 
 });
 
-var parser = cmdBuilder.Build();
-await parser.InvokeAsync(args);
-
-
-
+var cmdParser = cmdBuilder.Build();
+await cmdParser.InvokeAsync(args);
 
 public static class Testing
 {
@@ -68,9 +58,6 @@ public static class Testing
                 {
                     config.AddCommandLineDirectives(invocation.ParseResult, ConfigurationDirectiveName);
 
-
-                    //config.AddCommandLineConfig(invocation);
-
                 });
                 hostBuilder.ConfigureServices(services =>
                 {
@@ -82,7 +69,6 @@ public static class Testing
 
                     if (invocation.ParseResult.CommandResult.Command is ExtractConsoleCommand cmd)
                     {
-                        //var config = cmd.ParseOptions(invocation);
                         services.PostConfigure<ExtractConsoleConfiguration>(c => cmd.ParseOptions(c, invocation));
                     }
                 });
@@ -92,8 +78,6 @@ public static class Testing
                 using var host = hostBuilder.Build();
 
                 invocation.BindingContext.AddService(typeof(IHost), _ => host);
-
-                //await host.RunAsync();
 
                 await host.StartAsync();
                 await next(invocation);

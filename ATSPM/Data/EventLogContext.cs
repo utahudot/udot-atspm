@@ -22,7 +22,7 @@ namespace ATSPM.Data
         {
         }
 
-        public virtual DbSet<ControllerEventLog> ControllerEventLogs { get; set; }
+        //public virtual DbSet<ControllerEventLog> ControllerEventLogs { get; set; }
         public virtual DbSet<ControllerLogArchive> ControllerLogArchives { get; set; }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -35,21 +35,21 @@ namespace ATSPM.Data
         {
             modelBuilder.ApplyConfiguration(new ControllerLogArchiveConfiguration());
 
-            modelBuilder.Entity<ControllerEventLog>(builder =>
-            {
-                builder.ToTable("Controller_Event_Log");
+            //modelBuilder.Entity<ControllerEventLog>(builder =>
+            //{
+            //    builder.ToTable("Controller_Event_Log");
                 
-                builder.HasComment("Old Log Data Table");
+            //    builder.HasComment("Old Log Data Table");
 
-                builder.HasKey(e => new { e.SignalId, e.Timestamp, e.EventCode, e.EventParam });
+            //    builder.HasKey(e => new { e.SignalId, e.Timestamp, e.EventCode, e.EventParam });
 
-                //builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
+            //    //builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
-                builder.Property(e => e.SignalId)
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnName("SignalID");
-            });
+            //    builder.Property(e => e.SignalId)
+            //            .IsRequired()
+            //            .HasMaxLength(10)
+            //            .HasColumnName("SignalID");
+            //});
 
             OnModelCreatingPartial(modelBuilder);
         }

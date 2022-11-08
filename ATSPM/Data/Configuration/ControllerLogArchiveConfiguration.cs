@@ -12,6 +12,8 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<ControllerLogArchive> builder)
         {
+            //builder.ToTable("Controller_Log_Archive");
+            
             builder.HasComment("Compressed Event Log Data");
 
             builder.HasKey(e => new { e.SignalId, e.ArchiveDate });
