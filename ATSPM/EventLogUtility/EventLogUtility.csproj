@@ -9,7 +9,7 @@
 		<Nullable>enable</Nullable>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerfileContext>..\ATSPM</DockerfileContext>
-		<AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName>EventLogUtility</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>

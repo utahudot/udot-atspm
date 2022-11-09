@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
 WORKDIR /app
+#ENV GOOGLE_APPLICATION_CREDENTIALS=/keys/FILE_NAME.json
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
@@ -16,9 +17,9 @@ WORKDIR "/src/EventLogUtility"
 RUN dotnet build "EventLogUtility.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "EventLogUtility.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "EventLogUtility.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ATSPM.EventLogUtility.dll"]
+ENTRYPOINT ["dotnet", "EventLogUtility.dll"]

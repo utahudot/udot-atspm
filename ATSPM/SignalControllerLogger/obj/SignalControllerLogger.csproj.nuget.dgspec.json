@@ -353,7 +353,7 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
-        "projectName": "ATSPM.SignalControllerLogger",
+        "projectName": "SignalControllerLogger",
         "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\obj\\",
