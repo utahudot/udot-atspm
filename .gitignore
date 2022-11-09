@@ -61,8 +61,8 @@ dkms.conf
 /ATSPM/DomainCoreTests/bin
 /ATSPM/Infrastructure/obj
 /ATSPM/Infrastructure/bin
-/ATSPM/InfrastructureTexts/obj
-/ATSPM/InfrastructureTexts/bin
+/ATSPM/InfrastructureTests/obj
+/ATSPM/InfrastructureTests/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
 /ATSPM/DataApi/obj
@@ -73,3 +73,5 @@ dkms.conf
 /ATSPM/Web/bin
 /ATSPM/Data/obj
 /ATSPM/Data/bin
+/ATSPM/EventLogUtility/obj
+/ATSPM/EventLogUtility/bin

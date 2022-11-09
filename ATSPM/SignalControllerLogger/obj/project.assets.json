@@ -10959,7 +10959,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
-      "projectName": "SignalControllerLogger",
+      "projectName": "ATSPM.SignalControllerLogger",
       "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\SignalControllerLogger.csproj",
       "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
       "outputPath": "C:\\Projects\\udot-atsmp\\ATSPM\\SignalControllerLogger\\obj\\",
@@ -11075,7 +11075,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   },

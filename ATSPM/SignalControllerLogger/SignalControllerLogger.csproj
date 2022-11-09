@@ -3,9 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>ATSPM.SignalControllerLogger</RootNamespace>
+    <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -55,13 +56,6 @@
     <Reference Include="PipelineManagerLibrary">
       <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="ControllerFTPService.cs" />
-    <Resource Include="ControllerFTPServiceTest.cs" />
-    <Resource Include="FileETLHostedService.cs" />
-    <Resource Include="PipelineBackgroundServiceTest.cs" />
   </ItemGroup>
 
 	<ItemGroup>
