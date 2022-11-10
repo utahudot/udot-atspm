@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Configuration
 {
-    public class EventLogExtractConfiguration
+    public class EventLogLoggingConfiguration
     {
-        public string FileFormat { get; set; }
         public IEnumerable<DateTime> Dates { get; set; }
         public IEnumerable<string> Included { get; set; }
         public IEnumerable<string> Excluded { get; set; }
+        public IEnumerable<int> ControllerTypes { get; set; }
         public DirectoryInfo Path { get; set; }
     }
 }

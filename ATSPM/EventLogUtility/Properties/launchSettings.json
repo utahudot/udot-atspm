@@ -2,9 +2,10 @@
   "profiles": {
     "ControllerEventLogExportUtility": {
       "commandName": "Project",
-      "commandLineArgs": "extract -d 01/01/2020 01/02/2020 -i 1001 1004",
+      "commandLineArgs": "extract -d 01/01/2020 01/02/2020 -i 1001 1004 -p \\\\srwtcmvweb2\\UDOT\\EventLogUtility\\Exports",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Production",
+        "ConnectionStrings:EventLogContext": "Data Source=168.178.127.77;Initial Catalog=MOE;User ID=spm;Password=UdotNewMoeDb!9;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
       }
     },
     "Docker": {

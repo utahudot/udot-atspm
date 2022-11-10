@@ -107,8 +107,6 @@ namespace ATSPM.SignalControllerLogger
 
             await host.RunAsync();
 
-
-
             //Console.Read();
 
             //Console.ReadKey();
