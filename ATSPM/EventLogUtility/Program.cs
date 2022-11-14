@@ -1,17 +1,24 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Data;
+using ATSPM.Domain.Common;
 using ATSPM.EventLogUtility;
-using ATSPM.EventLogUtility.CommandBinders;
 using ATSPM.EventLogUtility.Commands;
+using ATSPM.Infrastructure.Converters;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Renci.SshNet;
+using Renci.SshNet.Security.Cryptography;
 using System;
 using System.CommandLine;
 using System.CommandLine.Builder;
@@ -19,105 +26,123 @@ using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine.Parsing;
+using System.Runtime.CompilerServices;
 
-
-//var handler = CommandHandler.Create((InvocationContext invocation) =>
-//{
-//    Console.WriteLine($"Command: {invocation.ParseResult.CommandResult.Command.Name} - {invocation.ParseResult.CommandResult.Command.Description}");
-
-//    foreach (var c in invocation.ParseResult.CommandResult.Children)
-//    {
-//        var s = c.Symbol;
-//        Console.WriteLine($"symbol: {s.Name} - {s.Description} - {c.Tokens}");   
-//    }
-//});
 
 var rootCmd = new EventLogCommands();
-
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
 
+cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
+{
+    var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
 
-
-//cmdBuilder.AddMiddleware(async (i, n) =>
-//{
-//    i.BindingContext.AddService(typeof(IInject), s => new Inject());
-//    await n(i);
-//});
-
-
-//cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(), h =>
-//{
-//    h.ConfigureServices((h, s) =>
-//    {
-//        //databases
-//        s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
-
-//        //repositories
-//        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-
-//        s.AddSingleton(binder);
-//        s.AddOptions<EventLogExtractConfiguration>().BindCommandLine();
-
-        
-
-//        //Hosted services
-//        //s.AddHostedService<ExportUtilityService>();
-//    })
-//    .UseConsoleLifetime();
-
-//});
+    switch (cmd)
+    {
+        case LogConsoleCommand:
+            {
+                h.BuildSignalLoggerHost((LogConsoleCommand)cmd);
+                break;
+            }
+        case ExtractConsoleCommand:
+            {
+                h.BuildExtractLogHost((ExtractConsoleCommand)cmd);
+                break;
+            }
+    }
+});
 
 var cmdParser = cmdBuilder.Build();
 await cmdParser.InvokeAsync("log -d 10/10/2020 -i 1001 1002");
 
-//var cmdParser = cmdBuilder.Build();
-//await cmdParser.InvokeAsync(args);
-
-
-
-
-public static class Testing
+public static class CommandHostBuilder
 {
-    private const string ConfigurationDirectiveName = "config";
+    public static void BuildSignalLoggerHost(this IHostBuilder hostBuilder, LogConsoleCommand cmd)
+    {
+        hostBuilder.ConfigureServices((h, s) =>
+        {
+            s.AddLogging();
 
-    public static CommandLineBuilder UseHost(this CommandLineBuilder builder,
-            Func<string[], IHostBuilder> hostBuilderFactory,
-            Action<IHostBuilder> configureHost = null) =>
-            builder.AddMiddleware(async (invocation, next) =>
+            s.AddATSPMDbContext(h);
+
+            //repositories
+            s.AddScoped<ISignalRepository, SignalEFRepository>();
+            //s.AddScoped<ISignalRepository, SignalFileRepository>();
+            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+            //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+
+            //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+            //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+            s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+
+            ////downloader clients
+            s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+            s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+            s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+
+            //downloaders
+            s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+            s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+            s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+            s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+            s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+
+            //decoders
+            s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+            s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+
+            //SignalControllerDataFlow
+            //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+            s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+
+            //controller logger configuration
+            s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+
+            //downloader configurations
+            s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
+            s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
+            s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeSignalControllerDownloader)}"));
+            s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
+            s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltSignalControllerDownloader)}"));
+
+            //decoder configurations
+            s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
+            s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
+
+            s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+
+            //command options
+            if (cmd is ICommandOption<EventLogLoggingConfiguration> cmdOpt)
             {
-                var argsRemaining = invocation.ParseResult.UnparsedTokens.ToArray();
-                var hostBuilder = hostBuilderFactory?.Invoke(argsRemaining)
-                    ?? new HostBuilder();
-                hostBuilder.Properties[typeof(InvocationContext)] = invocation;
+                s.AddSingleton(cmdOpt.GetOptionsBinder());
+                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+            }
 
-                hostBuilder.ConfigureHostConfiguration(config =>
-                {
-                    config.AddCommandLineDirectives(invocation.ParseResult, ConfigurationDirectiveName);
+            //hosted services
+            //s.AddHostedService<LoggerBackgroundService>();
+        });
+    }
 
-                });
-                hostBuilder.ConfigureServices(services =>
-                {
-                    services.AddSingleton(invocation);
-                    services.AddSingleton(invocation.BindingContext);
-                    services.AddSingleton(invocation.Console);
-                    services.AddTransient(_ => invocation.InvocationResult);
-                    services.AddTransient(_ => invocation.ParseResult);
+    public static void BuildExtractLogHost(this IHostBuilder hostBuilder, ExtractConsoleCommand cmd)
+    {
+        hostBuilder.ConfigureServices((h, s) =>
+        {
+            //databases
+            s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
 
-                    //if (invocation.ParseResult.CommandResult.Command is ExtractConsoleCommand cmd)
-                    //{
-                    //    services.PostConfigure<EventLogExtractConfiguration>(c => cmd.ParseOptions(c, invocation));
-                    //}
-                });
-                hostBuilder.UseInvocationLifetime(invocation);
-                configureHost?.Invoke(hostBuilder);
+            //repositories
+            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
-                using var host = hostBuilder.Build();
+            //command options
+            if (cmd is ICommandOption<EventLogExtractConfiguration> cmdOpt)
+            {
+                s.AddSingleton(cmdOpt.GetOptionsBinder());
+                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+            }
 
-                invocation.BindingContext.AddService(typeof(IHost), _ => host);
-
-                await host.StartAsync();
-                await next(invocation);
-                await host.StopAsync();
-            });
+            //hosted services
+            //s.AddHostedService<ExportUtilityService>();
+        });
+    }
 }
+

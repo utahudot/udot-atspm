@@ -11,14 +11,14 @@ using System.CommandLine.Parsing;
 using ATSPM.Application.Configuration;
 using System.CommandLine.Binding;
 using Microsoft.Extensions.DependencyInjection;
-using ATSPM.EventLogUtility.CommandBinders;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using System.Reflection.Metadata;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public class LogConsoleCommand : Command
+    public class LogConsoleCommand : Command, ICommandOption<EventLogLoggingConfiguration>
     {
         public LogConsoleCommand() : base("log", "Logs data from signal controllers")
         {
@@ -38,28 +38,28 @@ namespace ATSPM.EventLogUtility.Commands
             AddOption(ExcludeOption);
             AddOption(PathCommandOption);
 
-            this.SetHandler((d, i, e, p) =>
-            {
-                Console.WriteLine($"{this.Name} is executing");
+            //this.SetHandler((d, i, e, p) =>
+            //{
+            //    Console.WriteLine($"{this.Name} is executing");
 
-                foreach (var s in d)
-                {
-                    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-                }
+            //    foreach (var s in d)
+            //    {
+            //        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+            //    }
 
-                foreach (var s in i)
-                {
-                    Console.WriteLine($"Extracting event logs for signal {s}");
-                }
+            //    foreach (var s in i)
+            //    {
+            //        Console.WriteLine($"Extracting event logs for signal {s}");
+            //    }
 
-                foreach (var s in e)
-                {
-                    Console.WriteLine($"Excluding event logs for signal {s}");
-                }
+            //    foreach (var s in e)
+            //    {
+            //        Console.WriteLine($"Excluding event logs for signal {s}");
+            //    }
 
-                Console.WriteLine($"Extraction path {p}");
+            //    Console.WriteLine($"Extraction path {p}");
 
-            }, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
+            //}, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
         public DateCommandOption DateOption { get; set; } = new();
@@ -70,26 +70,16 @@ namespace ATSPM.EventLogUtility.Commands
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
-        //TODO: Make an interface and have a method that passes in IServiceCollection so this is reusable by other commands
-        public EventLogLoggingConfiguration ParseOptions(EventLogLoggingConfiguration config, InvocationContext invocation)
+        public ModelBinder<EventLogLoggingConfiguration> GetOptionsBinder()
         {
-            if (invocation.ParseResult.CommandResult.Command == this)
-            {
-                if (invocation.ParseResult.HasOption(DateOption))
-                    config.Dates = invocation.ParseResult.GetValueForOption(DateOption) ?? new List<DateTime>();
+            var binder = new ModelBinder<EventLogLoggingConfiguration>();
 
-                if (invocation.ParseResult.HasOption(IncludeOption))
-                    config.Included = invocation.ParseResult.GetValueForOption(IncludeOption) ?? new List<string>();
+            binder.BindMemberFromValue(b => b.Dates, DateOption);
+            binder.BindMemberFromValue(b => b.Included, IncludeOption);
+            binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
+            binder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
-                if (invocation.ParseResult.HasOption(ExcludeOption))
-                    config.Excluded = invocation.ParseResult.GetValueForOption(ExcludeOption) ?? new List<string>();
-
-                if (invocation.ParseResult.HasOption(PathCommandOption))
-                    config.Path = invocation.ParseResult.GetValueForOption(PathCommandOption) ?? new DirectoryInfo(string.Empty);
-            }
-
-            return config;
+            return binder;
         }
-
     }
 }

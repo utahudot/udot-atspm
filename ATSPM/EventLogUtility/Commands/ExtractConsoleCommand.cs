@@ -11,14 +11,13 @@ using System.CommandLine.Parsing;
 using ATSPM.Application.Configuration;
 using System.CommandLine.Binding;
 using Microsoft.Extensions.DependencyInjection;
-using ATSPM.EventLogUtility.CommandBinders;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public class ExtractConsoleCommand : Command
+    public class ExtractConsoleCommand : Command, ICommandOption<EventLogExtractConfiguration>
     {
         public ExtractConsoleCommand() : base("extract", "Extract compressed controller event logs")
         {
@@ -41,30 +40,30 @@ namespace ATSPM.EventLogUtility.Commands
             AddOption(ExcludeOption);
             AddOption(PathCommandOption);
 
-            this.SetHandler((f, d, i, e, p) =>
-            {
-                Console.WriteLine($"{this.Name} is executing");
+            //this.SetHandler((f, d, i, e, p) =>
+            //{
+            //    Console.WriteLine($"{this.Name} is executing");
 
-                Console.WriteLine($"file type {f}");
+            //    Console.WriteLine($"file type {f}");
 
-                foreach (var s in d)
-                {
-                    Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-                }
+            //    foreach (var s in d)
+            //    {
+            //        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
+            //    }
 
-                foreach (var s in i)
-                {
-                    Console.WriteLine($"Extracting event logs for signal {s}");
-                }
+            //    foreach (var s in i)
+            //    {
+            //        Console.WriteLine($"Extracting event logs for signal {s}");
+            //    }
 
-                foreach (var s in e)
-                {
-                    Console.WriteLine($"Excluding event logs for signal {s}");
-                }
+            //    foreach (var s in e)
+            //    {
+            //        Console.WriteLine($"Excluding event logs for signal {s}");
+            //    }
 
-                Console.WriteLine($"Extraction path {p}");
+            //    Console.WriteLine($"Extraction path {p}");
 
-            }, FileCommandOption, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
+            //}, FileCommandOption, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
         public Option<string> FileCommandOption { get; set; } = new("--format", () => ".csv", "File type format to export to");
@@ -77,29 +76,17 @@ namespace ATSPM.EventLogUtility.Commands
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
-        //TODO: Make an interface and have a method that passes in IServiceCollection so this is reusable by other commands
-        public EventLogExtractConfiguration ParseOptions(EventLogExtractConfiguration config, InvocationContext invocation)
+        public ModelBinder<EventLogExtractConfiguration> GetOptionsBinder()
         {
-            if (invocation.ParseResult.CommandResult.Command == this)
-            {
-                if (invocation.ParseResult.HasOption(FileCommandOption))
-                    config.FileFormat = invocation.ParseResult.GetValueForOption(FileCommandOption) ?? ".csv";
+            var binder = new ModelBinder<EventLogExtractConfiguration>();
 
-                if (invocation.ParseResult.HasOption(DateOption))
-                    config.Dates = invocation.ParseResult.GetValueForOption(DateOption) ?? new List<DateTime>();
+            binder.BindMemberFromValue(b => b.FileFormat, FileCommandOption);
+            binder.BindMemberFromValue(b => b.Dates, DateOption);
+            binder.BindMemberFromValue(b => b.Included, IncludeOption);
+            binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
+            binder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
-                if (invocation.ParseResult.HasOption(IncludeOption))
-                    config.Included = invocation.ParseResult.GetValueForOption(IncludeOption) ?? new List<string>();
-
-                if (invocation.ParseResult.HasOption(ExcludeOption))
-                    config.Excluded = invocation.ParseResult.GetValueForOption(ExcludeOption) ?? new List<string>();
-
-                if (invocation.ParseResult.HasOption(PathCommandOption))
-                    config.Path = invocation.ParseResult.GetValueForOption(PathCommandOption) ?? new DirectoryInfo(string.Empty);
-            }
-
-            return config;
+            return binder;
         }
-
     }
 }
