@@ -75,3 +75,4 @@ dkms.conf
 /ATSPM/Data/bin
 /ATSPM/EventLogUtility/obj
 /ATSPM/EventLogUtility/bin
+/ATSPM/obj/Docker
