@@ -1,21 +1,27 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ATSPM.EventLogUtility
+namespace ATSPM.Infrastructure.Services.HostedServices
 {
-    internal class ExportUtilityService : IHostedService
+    public class ExportUtilityService : IHostedService
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
         private IOptions<EventLogExtractConfiguration> _options;
+
         public ExportUtilityService(ILogger<ExportUtilityService> log, IServiceProvider serviceProvider, IOptions<EventLogExtractConfiguration> options) =>
                 (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
@@ -23,10 +29,11 @@ namespace ATSPM.EventLogUtility
         {
             //_serviceProvider.PrintHostInformation();
 
-            _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
-
             try
             {
+                _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
+                _log.LogInformation("Extraction File Formate: {format}", _options.Value.FileFormat);
+
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     var eventRepository = scope.ServiceProvider.GetService<IControllerEventLogRepository>();

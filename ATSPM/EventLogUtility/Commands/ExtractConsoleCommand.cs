@@ -33,7 +33,7 @@ namespace ATSPM.EventLogUtility.Commands
                 if (r.GetValueForOption(IncludeOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
-
+            
             AddOption(FileCommandOption);
             AddOption(DateOption);
             AddOption(IncludeOption);

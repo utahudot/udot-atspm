@@ -9,7 +9,7 @@ namespace ATSPM.Application.Configuration
 {
     public class EventLogLoggingConfiguration
     {
-        public IEnumerable<DateTime> Dates { get; set; }
+        //public IEnumerable<DateTime> Dates { get; set; }
         public IEnumerable<string> Included { get; set; }
         public IEnumerable<string> Excluded { get; set; }
         public IEnumerable<int> ControllerTypes { get; set; }

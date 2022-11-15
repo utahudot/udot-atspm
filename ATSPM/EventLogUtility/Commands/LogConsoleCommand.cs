@@ -33,19 +33,17 @@ namespace ATSPM.EventLogUtility.Commands
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
-            AddOption(DateOption);
+            AddArgument(PingControllerArg);
+            AddArgument(DeleteLocalFileArg);
+
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
+            AddOption(TypeOption);
             AddOption(PathCommandOption);
 
             //this.SetHandler((d, i, e, p) =>
             //{
             //    Console.WriteLine($"{this.Name} is executing");
-
-            //    foreach (var s in d)
-            //    {
-            //        Console.WriteLine($"Extracting event logs for {s:dd/MM/yyyy}");
-            //    }
 
             //    foreach (var s in i)
             //    {
@@ -62,11 +60,15 @@ namespace ATSPM.EventLogUtility.Commands
             //}, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
-        public DateCommandOption DateOption { get; set; } = new();
+        public Argument<bool> PingControllerArg { get; set; } = new Argument<bool>("ping", "Ping to verify signal controller is online");
+
+        public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", "Delete local file");
 
         public SignalIncludeCommandOption IncludeOption { get; set; } = new();
 
         public SignalExcludeCommandOption ExcludeOption { get; set; } = new();
+
+        public SignalTypeCommandOption TypeOption { get; set; } = new();
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
@@ -74,9 +76,9 @@ namespace ATSPM.EventLogUtility.Commands
         {
             var binder = new ModelBinder<EventLogLoggingConfiguration>();
 
-            binder.BindMemberFromValue(b => b.Dates, DateOption);
             binder.BindMemberFromValue(b => b.Included, IncludeOption);
             binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
+            binder.BindMemberFromValue(b => b.ControllerTypes, TypeOption);
             binder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
             return binder;
