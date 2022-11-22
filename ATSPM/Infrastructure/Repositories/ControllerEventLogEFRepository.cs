@@ -12,12 +12,13 @@ using System.Linq;
 using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
+using ATSPM.Data;
 
 namespace ATSPM.Infrastructure.Repositories
 {
     public class ControllerEventLogEFRepository : ATSPMRepositoryEFBase<ControllerLogArchive>, IControllerEventLogRepository
     {
-        public ControllerEventLogEFRepository(DbContext db, ILogger<ControllerEventLogEFRepository> log) : base(db, log) { }
+        public ControllerEventLogEFRepository(EventLogContext db, ILogger<ControllerEventLogEFRepository> log) : base(db, log) { }
 
         #region IControllerEventLogRepository
 

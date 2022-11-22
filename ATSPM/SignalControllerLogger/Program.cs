@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Configuration;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;

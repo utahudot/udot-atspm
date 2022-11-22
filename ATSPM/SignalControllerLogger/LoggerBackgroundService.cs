@@ -1,4 +1,4 @@
-﻿using ATSPM.Application;
+using ATSPM.Application;
 using ATSPM.Application.Configuration;
 using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;

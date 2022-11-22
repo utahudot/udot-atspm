@@ -2,6 +2,7 @@
 using ATSPM.Application.Services.SignalControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
@@ -13,7 +14,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         public override int ControllerType => 4;
 
-        public override string[] FileFilters { get; set; } = new string[] { ".xml" };
+        public override string[] FileFilters { get; set; } = new string[] { $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}" };
 
         #endregion
     }
