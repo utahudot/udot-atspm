@@ -53,16 +53,11 @@ dkms.conf
 /ATSPMf/.vs/ATSPMf/v16
 /.vs
 /ATSPM/.vs
-/ATSPM/ApplicationCore/obj
-/ATSPM/ApplicationCore/bin
-/ATSPM/DomainCore/obj
-/ATSPM/DomainCore/bin
-/ATSPM/DomainCoreTests/obj
-/ATSPM/DomainCoreTests/bin
-/ATSPM/Infrastructure/obj
-/ATSPM/Infrastructure/bin
-/ATSPM/InfrastructureTexts/obj
-/ATSPM/InfrastructureTexts/bin
-/ATSPM/SignalControllerLogger/obj
-/ATSPM/SignalControllerLogger/bin
-/ATSPM/Data/obj
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+[Bb]in/
+[Oo]bj/
