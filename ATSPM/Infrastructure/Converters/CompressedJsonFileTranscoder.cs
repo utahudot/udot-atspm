@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ATSPM.Infrasturcture.Converters
+namespace ATSPM.Infrastructure.Converters
 {
     public class CompressedJsonFileTranscoder : IFileTranscoder
     {
