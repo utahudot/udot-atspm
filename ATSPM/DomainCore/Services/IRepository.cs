@@ -1,6 +1,7 @@
 ﻿using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -8,9 +9,13 @@ namespace ATSPM.Domain.Services
 {
     public interface IRepository<T>
     {
+        IQueryable<T> GetList();
+
         IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria);
 
         IReadOnlyList<T> GetList(ISpecification<T> criteria);
+
+        T Lookup(object key);
 
         T Lookup(T item);
 
@@ -32,6 +37,8 @@ namespace ATSPM.Domain.Services
         Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>> criteria);
 
         Task<IReadOnlyList<T>> GetListAsync(ISpecification<T> criteria);
+
+        Task<T> LookupAsync(object key);
 
         Task<T> LookupAsync(T item);
 

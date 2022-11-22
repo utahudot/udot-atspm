@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Speed
+namespace ATSPM.Infrastructure.Migrations.Speed
 {
     public partial class EFCore6Upgrade : Migration
     {

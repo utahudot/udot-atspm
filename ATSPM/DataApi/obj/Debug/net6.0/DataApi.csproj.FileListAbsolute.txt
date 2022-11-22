@@ -1,0 +1,7 @@
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.csproj.AssemblyReference.cache
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.AssemblyInfoInputs.cache
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.AssemblyInfo.cs
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\DataApi.csproj.CoreCompileInputs.cache
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\ATSPM.DataApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Projects\udot-atsmp\ATSPM\DataApi\obj\Debug\net6.0\ATSPM.DataApi.MvcApplicationPartsAssemblyInfo.cs

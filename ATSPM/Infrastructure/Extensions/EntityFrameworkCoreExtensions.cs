@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ATSPM.Infrasturcture.Extensions
+namespace ATSPM.Infrastructure.Extensions
 {
     public static class EntityFrameworkCoreExtensions
     {

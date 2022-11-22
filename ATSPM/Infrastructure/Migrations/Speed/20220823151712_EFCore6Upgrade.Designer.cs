@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Speed
+namespace ATSPM.Infrastructure.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
     [Migration("20220823151712_EFCore6Upgrade")]

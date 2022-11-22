@@ -1,8 +1,8 @@
 ﻿using ATSPM.Data.Models
 using ATSPM.Application.Repositories;
 using ATSPM.Domain.Services;
-using ATSPM.Infrasturcture.Data;
-using ATSPM.Infrasturcture.Repositories;
+using ATSPM.Infrastructure.Data;
+using ATSPM.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using System;
