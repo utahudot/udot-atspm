@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Aggregation
+namespace ATSPM.Infrastructure.Migrations.Aggregation
 {
     public partial class init : Migration
     {

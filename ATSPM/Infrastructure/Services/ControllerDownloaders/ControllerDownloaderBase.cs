@@ -19,7 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
     {
@@ -58,7 +58,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerType?.Id == ControllerType && value.Enabled;
+            return value?.ControllerTypeId == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -96,7 +96,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     }
                     catch (ControllerConnectionException e)
                     {
-                        logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHostException(parameter.SignalId, parameter.Ipaddress, e);
                     }
                     catch (OperationCanceledException e)
                     {
@@ -111,13 +111,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory);
 
                             remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                         }
                         catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
+                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory, e);
                         }
                         catch (ControllerConnectionException e)
                         {
@@ -155,7 +155,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                             }
 
                             // TODO: delete file here
-                            //if (_options.DeleteAfterDownload)
+                            //if (_options.DeleteFile)
                             //{
                             //    try
                             //    {

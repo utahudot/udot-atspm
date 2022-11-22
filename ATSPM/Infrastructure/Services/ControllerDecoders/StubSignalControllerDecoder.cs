@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class StubSignalControllerDecoder : ControllerDecoderBase
     {
-        public StubSignalControllerDecoder(ILogger<StubSignalControllerDecoder> log, IOptions<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public StubSignalControllerDecoder(ILogger<StubSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 

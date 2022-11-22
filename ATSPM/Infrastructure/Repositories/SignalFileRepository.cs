@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class SignalFileRepository : ATSPMFileRepositoryBase<Signal>, ISignalRepository
     {

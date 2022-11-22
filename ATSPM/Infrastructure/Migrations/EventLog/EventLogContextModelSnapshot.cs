@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.EventLog
+namespace ATSPM.Infrastructure.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
     partial class EventLogContextModelSnapshot : ModelSnapshot
@@ -22,15 +22,39 @@ namespace ATSPM.Infrasturcture.Migrations.EventLog
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ATSPM.Data.Models.ControllerEventLog", b =>
+                {
+                    b.Property<string>("SignalId")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("SignalID");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("EventCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventParam")
+                        .HasColumnType("int");
+
+                    b.HasKey("SignalId", "Timestamp", "EventCode", "EventParam");
+
+                    b.ToTable("Controller_Event_Log", (string)null);
+
+                    b.HasComment("Old Log Data Table");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
                     b.Property<string>("SignalId")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("date")
-                        .HasAnnotation("KeyNameFormat", "dd-MM-yyyy");
+                        .HasColumnType("datetime");
 
                     b.Property<byte[]>("LogData")
                         .HasColumnType("varbinary(max)");
@@ -39,7 +63,7 @@ namespace ATSPM.Infrasturcture.Migrations.EventLog
 
                     b.ToTable("ControllerLogArchives");
 
-                    b.HasComment("Compressed Log Data");
+                    b.HasComment("Compressed Event Log Data");
                 });
 #pragma warning restore 612, 618
         }

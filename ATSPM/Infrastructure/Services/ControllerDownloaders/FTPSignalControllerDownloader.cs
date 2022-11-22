@@ -14,7 +14,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class FTPSignalControllerDownloader : ControllerDownloaderBase
     {

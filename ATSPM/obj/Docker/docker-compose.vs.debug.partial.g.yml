@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  signalcontrollerlogger:
+    image: signalcontrollerlogger:dev
+    container_name: SignalControllerLogger
+    build:
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "SignalControllerLogger"
+    environment:
+      - NUGET_FALLBACK_PACKAGES=
+    volumes:
+      - C:\Projects\udot-atsmp\ATSPM\SignalControllerLogger:/app
+      - C:\Projects\udot-atsmp\ATSPM:/src
+      - C:\Users\christianbaker\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\christianbaker\.nuget\packages\:/root/.nuget/packages:ro
+    entrypoint: tail -f /dev/null
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: " --additionalProbingPath /root/.nuget/packages  \"\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
+    tty: true

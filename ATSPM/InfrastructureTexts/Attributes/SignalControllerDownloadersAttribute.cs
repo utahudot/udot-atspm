@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Moq;

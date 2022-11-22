@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "EventLogUtility": {
+      "commandName": "Project",
+      "commandLineArgs": "extract -d 01/01/2020 01/02/2020 -i 1001 1004 -p \\\\srwtcmvweb2\\UDOT\\EventLogUtility\\Exports",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
