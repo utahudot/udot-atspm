@@ -13,9 +13,7 @@ namespace ATSPM.Application.Configuration
         
         public int ReadTimeout { get; set; }
         
-        public bool DeleteAfterDownload { get; set; }
-        
-        public DateTime EarliestAcceptableDate { get; set; }
+        public bool DeleteFile { get; set; }
         
         public bool PingControllerToVerify { get; set; }
     }

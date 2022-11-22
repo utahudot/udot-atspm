@@ -1,6 +1,6 @@
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
-using ATSPM.Infrasturcture.Repositories;
+using ATSPM.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
