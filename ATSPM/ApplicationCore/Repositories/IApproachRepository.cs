@@ -17,13 +17,13 @@ namespace ATSPM.Application.Repositories
         [Obsolete("Use Add instead")]
         void AddOrUpdate(Approach approach);
 
-        [Obsolete("This Method is not used")]
+        [Obsolete("Use Add in the BaseClass")]
         Approach FindAppoachByVersionIdPhaseOverlapAndDirection(int versionId, int phaseNumber, bool isOverlap,int directionTypeId);
 
-        [Obsolete("Use Remove instead")]
+        [Obsolete("Use Remove in the BaseClass")]
         void Remove(Approach approach);
 
-        [Obsolete("Use Remove instead")]
+        [Obsolete("Use Remove in the BaseClass")]
         void Remove(int approachID);
 
         [Obsolete("Use GetList instead")]
