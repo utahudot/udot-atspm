@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace SignalControllerLoggerTests
+namespace InfrastructureTests.SignalControllerDownloaderTests
 {
     public class ISignalControllerDownloaderTests : IDisposable
     {
@@ -31,7 +31,7 @@ namespace SignalControllerLoggerTests
         public ISignalControllerDownloaderTests(ITestOutputHelper output)
         {
             _output = output;
-            
+
             _loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder
             .SetMinimumLevel(LogLevel.Trace)
             .AddProvider(new GenericLoggerProvider<StringWriter>(_consoleOut))
@@ -240,7 +240,7 @@ namespace SignalControllerLoggerTests
 
             Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
 
-            Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn<string>(returnValue), default))
+            Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
                 .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
@@ -249,7 +249,7 @@ namespace SignalControllerLoggerTests
             signal.ControllerType = new ControllerType() { Id = d.ControllerType, Ftpdirectory = ftpDirectory };
             var files = new List<FileInfo>();
 
-            await foreach (var file in d.Execute(signal)) 
+            await foreach (var file in d.Execute(signal))
             {
                 files.Add(file);
             }
@@ -269,7 +269,7 @@ namespace SignalControllerLoggerTests
             var signal = new Signal()
             {
                 Ipaddress = new IPAddress(new byte[] { 127, 0, 0, 1 }),
-            Enabled = true,
+                Enabled = true,
                 PrimaryName = "Controller",
                 SignalId = "999"
             };
@@ -293,7 +293,7 @@ namespace SignalControllerLoggerTests
 
             Mock.Get(mockClient).Setup(s => s.ListDirectoryAsync(It.Is<string>(i => i == ftpDirectory), default, It.Is<string[]>(i => i == d.FileFilters))).ReturnsAsync(returnValue).Verifiable();
 
-            Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn<string>(returnValue), default))
+            Mock.Get(mockClient).Setup(v => v.DownloadFileAsync(It.Is<string>(i => i.StartsWith(verifyPath)), It.IsIn(returnValue), default))
                 .ReturnsAsync((string localPath, string remotePath, CancellationToken token) => new FileInfo(localPath)).Verifiable();
 
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
@@ -318,7 +318,7 @@ namespace SignalControllerLoggerTests
 
             Mock.Verify();
 
-            var condition = (progressList.Where(p => p.IsSuccessful).Count() == files.Count);
+            var condition = progressList.Where(p => p.IsSuccessful).Count() == files.Count;
 
             Assert.True(condition);
 

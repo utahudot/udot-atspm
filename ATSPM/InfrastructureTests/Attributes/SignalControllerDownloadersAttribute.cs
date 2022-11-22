@@ -17,7 +17,7 @@ using Castle.Core.Logging;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Logging;
 
-namespace SignalControllerLoggerTests.Attributes
+namespace InfrastructureTests.Attributes
 {
     public class SignalControllerDownloadersAttribute : DataAttribute
     {

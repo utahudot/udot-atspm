@@ -11,7 +11,7 @@ namespace ATSPM.Infrastructure.Extensions
     {
         public static string CreateKeyValueName(this DbContext db, ATSPMModelBase item)
         {
-            return item.GetType().Name + "_" + string.Join("_", db.Model.FindEntityType(item.GetType()).FindPrimaryKey().Properties.Select(p => String.Format(p.FindAnnotation("KeyNameFormat") != null ? "{0:" + p.FindAnnotation("KeyNameFormat")?.Value.ToString() + "}" : "{0}", p.PropertyInfo.GetValue(item, null))));
+            return item.GetType().Name + "_" + string.Join("_", db.Model.FindEntityType(item.GetType()).FindPrimaryKey().Properties.Select(p => string.Format(p.FindAnnotation("KeyNameFormat") != null ? "{0:" + p.FindAnnotation("KeyNameFormat")?.Value.ToString() + "}" : "{0}", p.PropertyInfo.GetValue(item, null))));
         }
     }
 }

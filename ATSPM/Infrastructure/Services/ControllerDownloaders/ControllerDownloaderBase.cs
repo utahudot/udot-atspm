@@ -31,7 +31,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         protected ILogger _log;
         //protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
         protected readonly SignalControllerDownloaderConfiguration _options;
-        
+
 
         #endregion
 
@@ -39,11 +39,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         {
             _client = client;
             _log = log;
-            _options = options?.Get(this.GetType().Name) ?? options?.Value;
+            _options = options?.Get(GetType().Name) ?? options?.Value;
         }
 
         #region Properties
-        
+
         public abstract int ControllerType { get; }
 
         public abstract string[] FileFilters { get; set; }
@@ -51,14 +51,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         #endregion
 
         #region Methods
-
         //public override void Initialize()
         //{
         //}
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerTypeId == ControllerType && value.Enabled;
+            return value?.ControllerType?.Id == ControllerType && value.Enabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
@@ -80,7 +79,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
                     throw new InvalidSignalControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
@@ -96,7 +95,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                     }
                     catch (ControllerConnectionException e)
                     {
-                        logMessages.ConnectingToHostException(parameter.SignalId, parameter.Ipaddress, e);
+                        logMessages.ConnectingToHosException(parameter.SignalId, parameter.Ipaddress, e);
                     }
                     catch (OperationCanceledException e)
                     {
@@ -111,13 +110,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalId, parameter.Ipaddress);
 
                             remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
                         }
                         catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory, e);
+                            logMessages.DirectoryListingException(parameter.SignalId, parameter.Ipaddress, e);
                         }
                         catch (ControllerConnectionException e)
                         {
@@ -155,7 +154,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             }
 
                             // TODO: delete file here
-                            //if (_options.DeleteFile)
+                            //if (_options.DeleteAfterDownload)
                             //{
                             //    try
                             //    {

@@ -30,14 +30,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                     throw new ArgumentNullException("Network Credentials can't be null");
 
                 Client ??= new FtpClient(credentials.Domain, credentials);
-                Client.DataConnectionConnectTimeout = connectionTimeout;
-                Client.DataConnectionReadTimeout = operationTImeout;
+
                 Client.ConnectTimeout = connectionTimeout;
                 Client.ReadTimeout = operationTImeout;
                 Client.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-                var result = await Client.AutoConnectAsync(token);
-                //await Client.ConnectAsync(token);
+                //await Client.AutoConnectAsync(token);
+                await Client.ConnectAsync(token);
             }
             catch (Exception e)
             {
@@ -92,7 +91,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 fileInfo.Directory.Create();
 
                 await Client.DownloadFileAsync(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
-                    
+
                 return fileInfo;
             }
             catch (Exception e)

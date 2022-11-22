@@ -22,7 +22,7 @@ namespace InfrastructureTests
 {
     public class RepositoryControllerEventLogTests
     {
-        private readonly DbConnection _connection;
+        private readonly DbConnection _connection = new SqliteConnection("Datasource=:memory:");
 
         //const string connectionString = "Data Source=InMemorySample;Mode=Memory;Cache=Shared";
 
@@ -36,8 +36,7 @@ namespace InfrastructureTests
             _output = output;
             _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ControllerEventLogEFRepository>();
 
-            _connection = new SqliteConnection("Datasource=:memory:");
-            _connection.Open();
+            //_connection.Open();
             _db = new MOEContext(new DbContextOptionsBuilder<MOEContext>().EnableSensitiveDataLogging().UseSqlite(_connection).Options);
 
             _repo = new ControllerEventLogEFRepository(_db, _nullLogger);

@@ -15,7 +15,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class ASCSignalControllerDecoder : ControllerDecoderBase
     {
-        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IOptions<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -100,8 +100,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                                 log.Timestamp = startTime.AddSeconds(tenths);
                             }
                         }
-
-                        yield return log;
+                        if (IsAcceptableDateRange(log))
+                        {
+                            yield return log;
+                        }
                     }
                 }
             }

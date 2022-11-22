@@ -28,16 +28,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         #region Fields
 
         private readonly ILogger _log;
-        //protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
-        protected readonly SignalControllerDecoderConfiguration _options;
+        protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options)
-        {
-            _log = log;
-            _options = options?.Get(this.GetType().Name) ?? options?.Value;
-        }
+        public ControllerDecoderBase(ILogger log, IOptions<SignalControllerDecoderConfiguration> options) => (_log, _options) = (log, options);
 
         #region Properties
 
@@ -49,9 +44,9 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         //{
         //}
 
-        private bool IsAcceptableDateRange(ControllerEventLog log)
+        protected bool IsAcceptableDateRange(ControllerEventLog log)
         {
-            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.Value.EarliestAcceptableDate;
         }
 
         public abstract bool CanExecute(FileInfo parameter);
@@ -88,16 +83,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
                     await foreach (var log in DecodeAsync(parameter.Directory.Name, memoryStream, cancelToken))
                     {
-                        if (IsAcceptableDateRange(log))
-                        {
-                            decodedLogs.Add(log);
+                        decodedLogs.Add(log);
 
-                            progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
-                        }                     
+                        progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
                     }
-
-                    if (_options.DeleteFile)
-                        parameter.Delete();
                 }
                 catch (ControllerLoggerDecoderException e)
                 {

@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RepositoryTests\IActionRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\RepositoryControllerEventLogTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="RepositoryTests\IActionRepositoryTests.cs" />
     <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />
     <None Include="RepositoryTests\IRepositoryTests.cs" />
     <None Include="RepositoryTests\RepositoryControllerEventLogTests.cs" />

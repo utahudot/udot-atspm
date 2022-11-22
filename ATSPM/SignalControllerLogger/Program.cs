@@ -1,19 +1,27 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
-using ATSPM.Infrastructure.Converters;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.Services.SignalControllerLoggers;
+using ATSPM.Infrasturcture.Converters;
+using ATSPM.Infrasturcture.Repositories;
+using ATSPM.Infrasturcture.Services.ControllerDecoders;
+using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
-namespace ATSPM.SignalControllerLogger
+namespace SignalControllerLogger
 {
     class Program
     {
@@ -27,7 +35,6 @@ namespace ATSPM.SignalControllerLogger
                     //TODO: add a GoogleLogger section
                     //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
                     //TODO: remove this to an extension method
-                    //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
                     //    l.AddGoogle(new LoggingServiceOptions
@@ -35,8 +42,8 @@ namespace ATSPM.SignalControllerLogger
                     //        ProjectId = "1022556126938",
                     //        //ProjectId = "869261868126",
                     //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                    //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
+                    //        //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
                     //    });
                     //}
                 })
@@ -47,73 +54,107 @@ namespace ATSPM.SignalControllerLogger
                     //    ServiceName = "ErrorReporting",
                     //    Version = "1.1",
                     //});
-
                     s.AddLogging();
 
                     s.AddATSPMDbContext(h);
 
                     //background services
-                    s.AddHostedService<LoggerBackgroundService>();
+                    s.AddHostedService<TPLDataflowService>();
 
-                    //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    ////repositories
+                    //s.AddScoped<ISignalRepository, SignalEFRepository>();
+                    ////s.AddScoped<ISignalRepository, SignalFileRepository>();
+                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                    ////s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
-                    //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
-                    //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+
+                    ////s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+                    ////s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
                     ////downloader clients
-                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+                    //s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+                    //s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+                    ////s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
+                    //s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
-                    //downloaders
-                    s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+                    ////downloaders
+                    //s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+                    //s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
-                    //decoders
-                    s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-                    s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+                    ////decoders
+                    //s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+                    //s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    //SignalControllerDataFlow
-                    //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-                    s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+                    ////https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+                    ////downloader configurations
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
 
-                    //controller logger configuration
-                    s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
-
-                    //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltSignalControllerDownloader)}"));
-
-                    //decoder configurations
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
-
-                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+                    //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
                 .UseConsoleLifetime()
                 .Build();
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
-            //Console.Read();
+            Console.WriteLine($"done?");
 
-            //Console.ReadKey();
 
-            //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
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<SpeedContext>();
+
+
+            //    //foreach (var e in db.Model.GetEntityTypes())
+            //    //{
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
+
+            //    //var model = db.Model.GetRelationalModel();
+
+            //    //foreach (var t in model.Tables)
+            //    //{
+            //    //    Console.WriteLine($"{t.Name} - {t.PrimaryKey}");
+
+            //    //    foreach (var p in t.Columns)
+            //    //    {
+            //    //        Console.WriteLine($"{p.Name} - {p.StoreType} - {p.IsNullable} -  {p.DefaultValue} - {p.MaxLength}");
+            //    //    }
+
+            //    //    Console.WriteLine($"------------------------------------------------------------------------------------------------------------");
+            //    //}
+
+            //}
+
+            //Console.WriteLine($"Count: {AppDomain.CurrentDomain.GetAssemblies().Length}");
+
+            //var test = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(w => w.FullName.Contains("ATSPM.Data"));
+
+            //Console.WriteLine($"{test.FullName}");
+
+            //foreach (var t in test.GetExportedTypes().Where(w => w.Namespace == "ATSPM.Data.Models" && !typeof(ATSPMModelBase).IsAssignableFrom(w)))
+            //{
+
+
+            //    Console.WriteLine($"{t.Name}");
+            //}
+
+
+            //foreach (var t in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    Console.WriteLine($"{t.FullName}");
+            //}
+
+            Console.ReadKey();
         }
     }
-
-    
 }

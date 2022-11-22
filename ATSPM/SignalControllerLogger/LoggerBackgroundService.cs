@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ATSPM.Application.Services;
 
-namespace ATSPM.SignalControllerLogger
+namespace SignalControllerLogger
 {
     public class LoggerBackgroundService : BackgroundService
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
 
-        public LoggerBackgroundService(ILogger<LoggerBackgroundService> log,IServiceProvider serviceProvider) =>
+        public LoggerBackgroundService(ILogger<LoggerBackgroundService> log, IServiceProvider serviceProvider) =>
             (_log, _serviceProvider) = (log, serviceProvider);
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
