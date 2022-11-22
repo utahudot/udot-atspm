@@ -346,12 +346,6 @@
             "projectReferences": {
               "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
                 "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
-              },
-              "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\Data\\Data.csproj"
-              },
-              "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Projects\\udot-atsmp\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
