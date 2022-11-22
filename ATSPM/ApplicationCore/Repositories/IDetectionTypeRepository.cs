@@ -1,11 +1,12 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
-    public interface IDetectionTypeRepository
+    public interface IDetectionTypeRepository //: IAsyncRepository<DetectionType>
     {
         List<DetectionType> GetAllDetectionTypes();
 

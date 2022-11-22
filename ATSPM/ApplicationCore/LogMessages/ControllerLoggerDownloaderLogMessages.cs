@@ -32,7 +32,7 @@ namespace ATSPM.Application.LogMessages
         public partial void ConnectedToHostMessage(string SignalId, IPAddress ip);
 
         [LoggerMessage(EventId = 1002, EventName = "Host Connection Exception", Level = LogLevel.Warning, Message = "Exception connecting to {SignalId} at {ip}")]
-        public partial void ConnectingToHosException(string SignalId, IPAddress ip, Exception ex = null);
+        public partial void ConnectingToHostException(string SignalId, IPAddress ip, Exception ex = null);
 
         [LoggerMessage(EventId = 1003, EventName = "Not Connected to Host", Level = LogLevel.Warning, Message = "Not connected to {SignalId} at {ip}")]
         public partial void NotConnectedToHostException(string SignalId, IPAddress ip, Exception ex = null);
@@ -47,14 +47,14 @@ namespace ATSPM.Application.LogMessages
 
         #region ListDirectoryMessages
 
-        [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory from {SignalId} at {ip}")]
-        public partial void GettingDirectoryListMessage(string SignalId, IPAddress ip);
+        [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory {directory} from {SignalId} at {ip}")]
+        public partial void GettingDirectoryListMessage(string SignalId, IPAddress ip, string directory);
 
         [LoggerMessage(EventId = 1011, EventName = "Directory Listing", Level = LogLevel.Debug, Message = "{total} files found on {SignalId} at {ip}")]
         public partial void DirectoryListingMessage(int total, string SignalId, IPAddress ip);
 
-        [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory from {SignalId} at {ip}")]
-        public partial void DirectoryListingException(string SignalId, IPAddress ip, Exception ex = null);
+        [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory {directory} from {SignalId} at {ip}")]
+        public partial void DirectoryListingException(string SignalId, IPAddress ip, string directory, Exception ex = null);
 
         #endregion
 

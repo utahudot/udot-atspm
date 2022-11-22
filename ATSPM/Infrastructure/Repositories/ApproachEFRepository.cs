@@ -11,19 +11,21 @@ using System.Text;
 using System.Linq;
 using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
+using ATSPM.Data;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class ApproachEFRepository : ATSPMRepositoryEFBase<Approach>, IApproachRepository
     {
-        public ApproachEFRepository(DbContext db, ILogger<ApproachEFRepository> log) : base(db, log) { }
+        public ApproachEFRepository(ConfigContext db, ILogger<ApproachEFRepository> log) : base(db, log) { }
 
-        [Obsolete("Use Add in the BaseClass")]
+        [Obsolete("Use Add instead")]
         public void AddOrUpdate(Approach approach)
         {
             throw new NotImplementedException();
         }
 
+        [Obsolete("This Method is not used")]
         public Approach FindAppoachByVersionIdPhaseOverlapAndDirection(int versionId, int phaseNumber, bool isOverlap, int directionTypeId)
         {
             throw new NotImplementedException();
@@ -47,7 +49,7 @@ namespace ATSPM.Infrasturcture.Repositories
             throw new NotImplementedException();
         }
 
-        [Obsolete("Use Remove in the BaseClass")]
+        [Obsolete("Use Remove instead")]
         public void Remove(int approachID)
         {
             throw new NotImplementedException();

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.EventLog
+namespace ATSPM.Infrastructure.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
     [Migration("20220808233609_init")]

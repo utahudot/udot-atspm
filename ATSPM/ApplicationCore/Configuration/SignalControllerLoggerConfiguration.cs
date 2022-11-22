@@ -6,10 +6,7 @@ namespace ATSPM.Application.Configuration
 {
     public class SignalControllerLoggerConfiguration
     {
-        public string RootPath { get; set; }
-        public int PollTime { get; set; }
-        public int TimeOffset { get; set; }
-        public bool DeleteFile { get; set; }
-        public int MaxThreadsMain { get; set; }
+        public int SaveToDatabaseBatchSize { get; set; }
+        public int MaxDegreeOfParallelism { get; set; }
     }
 }

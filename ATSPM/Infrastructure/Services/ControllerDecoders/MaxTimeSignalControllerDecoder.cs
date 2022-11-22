@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class MaxTimeSignalControllerDecoder : ControllerDecoderBase
     {
-        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IOptions<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -83,10 +83,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
                     throw new ControllerLoggerDecoderException($"Exception decoding {SignalId}", e);
                 }
 
-                if (IsAcceptableDateRange(log))
-                {
-                    yield return log;
-                }
+                yield return log;
             }
         }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+#nullable enable
 namespace ATSPM.Application.Exceptions
 {
     public abstract class ATSPMException : UdotExceptionBase
