@@ -3,7 +3,7 @@ using ATSPM.Application.Services.SignalControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class CobaltSignalControllerDownloader : ControllerDownloaderBase
     {

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Speed
+namespace ATSPM.Infrastructure.Migrations.Speed
 {
     [DbContext(typeof(SpeedContext))]
     partial class SpeedContextModelSnapshot : ModelSnapshot

@@ -10,7 +10,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class FluentFTPDownloaderClient : ServiceObjectBase, IFTPDownloaderClient
     {
@@ -30,13 +30,14 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
                     throw new ArgumentNullException("Network Credentials can't be null");
 
                 Client ??= new FtpClient(credentials.Domain, credentials);
-
+                Client.DataConnectionConnectTimeout = connectionTimeout;
+                Client.DataConnectionReadTimeout = operationTImeout;
                 Client.ConnectTimeout = connectionTimeout;
                 Client.ReadTimeout = operationTImeout;
                 Client.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-                //await Client.AutoConnectAsync(token);
-                await Client.ConnectAsync(token);
+                var result = await Client.AutoConnectAsync(token);
+                //await Client.ConnectAsync(token);
             }
             catch (Exception e)
             {

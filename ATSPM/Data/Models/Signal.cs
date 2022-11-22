@@ -8,7 +8,7 @@ using System.Net;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Signal : 
+    public partial class Signal :
         ATSPMModelBase, 
         IRelatedControllerType, 
         IRelatedJurisdiction, 

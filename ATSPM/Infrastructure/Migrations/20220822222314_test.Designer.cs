@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations
+namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
     [Migration("20220822222314_test")]

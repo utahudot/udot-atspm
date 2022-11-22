@@ -69,7 +69,7 @@ namespace ATSPM.Data.Configuration
                     Id = 4,
                     Description = "MaxTime",
                     Snmpport = 161,
-                    Ftpdirectory = "none",
+                    Ftpdirectory = "v1/asclog/xml/full",
                     ActiveFtp = false,
                     UserName = "none",
                     Password = "none"

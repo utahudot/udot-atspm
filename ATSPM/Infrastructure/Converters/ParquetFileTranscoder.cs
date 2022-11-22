@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ATSPM.Infrasturcture.Converters
+namespace ATSPM.Infrastructure.Converters
 {
     public class ParquetFileTranscoder : IFileTranscoder
     {
