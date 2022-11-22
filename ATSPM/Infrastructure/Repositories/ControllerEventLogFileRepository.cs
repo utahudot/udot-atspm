@@ -23,7 +23,7 @@ namespace ATSPM.Infrastructure.Repositories
 
             return Path.Combine(folder.FullName);
         }
-        
+
         protected override string GenerateFileName(ControllerLogArchive item)
         {
             return $"{item.GetType().Name}_{item.SignalId}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
@@ -35,7 +35,7 @@ namespace ATSPM.Infrastructure.Repositories
             {
                 return base.GenerateFilePath(item);
             }
-            
+
             var folder = new DirectoryInfo(Path.Combine(GenerateFolderStructure(item.ArchiveDate)));
 
             if (!folder.Exists)

@@ -1,119 +1,86 @@
-﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
-using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Domain.Common;
-using ATSPM.Infrastructure.Converters;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.Services.SignalControllerLoggers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
+<Project Sdk="Microsoft.NET.Sdk">
 
-namespace ATSPM.SignalControllerLogger
-{
-    class Program
-    {
-        static async Task Main(string[] args)
-        {
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureLogging((h, l) =>
-                {
-                    //l.SetMinimumLevel(LogLevel.None);
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>SignalControllerLogger</RootNamespace>
+    <UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyName>SignalControllerLogger</AssemblyName>
+  </PropertyGroup>
 
-                    //TODO: add a GoogleLogger section
-                    //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
-                    //TODO: remove this to an extension method
-                    //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
-                    //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
-                    //{
-                    //    l.AddGoogle(new LoggingServiceOptions
-                    //    {
-                    //        ProjectId = "1022556126938",
-                    //        //ProjectId = "869261868126",
-                    //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                    //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
-                    //    });
-                    //}
-                })
-                .ConfigureServices((h, s) =>
-                {
-                    //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
-                    //    ProjectId = "1022556126938",
-                    //    ServiceName = "ErrorReporting",
-                    //    Version = "1.1",
-                    //});
+  <ItemGroup>
+    <Compile Remove="ControllerFTPService.cs" />
+    <Compile Remove="ControllerFTPServiceTest.cs" />
+    <Compile Remove="ControllerLoggerBackgroundService.cs" />
+    <Compile Remove="FileETLHostedService.cs" />
+    <Compile Remove="PipelineBackgroundServiceTest.cs" />
+  </ItemGroup>
 
-                    s.AddLogging();
+  <ItemGroup>
+    <None Include="ControllerLoggerBackgroundService.cs" />
+  </ItemGroup>
 
-                    s.AddATSPMDbContext(h);
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+  </ItemGroup>
 
-                    //background services
-                    s.AddHostedService<LoggerBackgroundService>();
+  <ItemGroup>
+    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\DomainCore\DomainCore.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
 
-                    //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+  <ItemGroup>
+    <Reference Include="PipelineManagerLibrary">
+      <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
-                    //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
-                    //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+	<ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
-                    ////downloader clients
-                    s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-                    s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+	<ItemGroup>
+		<None Update="appsettings.Development.json">
+			<DependentUpon>appsettings.json</DependentUpon>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.Staging.json">
+			<DependentUpon>appsettings.json</DependentUpon>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	<None Update="appsettings.Production.json">
+			<DependentUpon>appsettings.json</DependentUpon>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Properties\launchSettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
 
-                    //downloaders
-                    s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-                    s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
-
-                    //decoders
-                    s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-                    s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
-
-                    //SignalControllerDataFlow
-                    //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-                    s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
-
-                    //controller logger configuration
-                    s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
-
-                    //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltSignalControllerDownloader)}"));
-
-                    //decoder configurations
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
-
-                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
-                })
-
-                .UseConsoleLifetime()
-                .Build();
-
-            await host.RunAsync();
-
-            //Console.Read();
-
-            //Console.ReadKey();
-
-            //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
-        }
-    }
-
-    
-}
+</Project>
