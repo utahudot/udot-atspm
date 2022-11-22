@@ -55,6 +55,8 @@ dkms.conf
 /ATSPM/.vs
 /ATSPM/ApplicationCore/obj
 /ATSPM/ApplicationCore/bin
+/ATSPM/ApplicationCoreTests/obj
+/ATSPM/ApplicationCoreTests/bin
 /ATSPM/DomainCore/obj
 /ATSPM/DomainCore/bin
 /ATSPM/DomainCoreTests/obj
