@@ -24,3 +24,8 @@ C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\refint\Web.dll
 C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\Web.pdb
 C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\Web.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\ref\Web.dll
+C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\staticwebassets\msbuild.Web.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\staticwebassets\msbuild.build.Web.props
+C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.Web.props
+C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.Web.props
+C:\Projects\udot-atsmp\ATSPM\Web\obj\Debug\net6.0\staticwebassets.pack.json

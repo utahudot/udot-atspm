@@ -1,6 +1,6 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Domain.Exceptions;
-using ATSPM.Infrasturcture.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -14,7 +14,7 @@ namespace SignalControllerLoggerTests
 {
     public class ISignalControllerDecoderTests : IDisposable
     {
-        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\TestData";
+        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTests\\TestData";
 
         private readonly ITestOutputHelper _output;
         //private ISignalControllerDecoder _decoder;

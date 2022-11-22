@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Infrasturcture.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using FluentFTP;
 using Moq;
 using System;

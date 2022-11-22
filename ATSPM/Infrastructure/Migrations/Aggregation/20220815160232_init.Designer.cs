@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Aggregation
+namespace ATSPM.Infrastructure.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
     [Migration("20220815160232_init")]

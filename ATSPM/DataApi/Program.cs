@@ -1,8 +1,8 @@
 using ATSPM.Application.Repositories;
 using ATSPM.DataApi.Controllers;
 using ATSPM.DataApi.EntityDataModel;
-using ATSPM.Infrasturcture.Extensions;
-using ATSPM.Infrasturcture.Repositories;
+using ATSPM.Infrastructure.Extensions;
+using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;

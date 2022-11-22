@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace ATSPM.Infrasturcture.Migrations.Aggregation
+namespace ATSPM.Infrastructure.Migrations.Aggregation
 {
     public partial class EFCore6Upgrade : Migration
     {

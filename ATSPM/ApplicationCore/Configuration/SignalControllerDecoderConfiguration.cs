@@ -9,5 +9,7 @@ namespace ATSPM.Application.Configuration
     public class SignalControllerDecoderConfiguration
     {
         public DateTime EarliestAcceptableDate { get; set; }
+
+        public bool DeleteFile { get; set; }
     }
 }

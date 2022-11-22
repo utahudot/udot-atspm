@@ -19,7 +19,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : ATSPMModelBase, new()
     {

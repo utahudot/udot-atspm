@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class SignalEFRepository : ATSPMRepositoryEFBase<Signal>, ISignalRepository
     {
@@ -111,8 +111,8 @@ namespace ATSPM.Infrasturcture.Repositories
             var result = table
                 .Where(v => v.VersionActionId != SignaVersionActions.Delete)
                 .Include(i => i.ControllerType)
-                .AsNoTracking()
-                .AsEnumerable()
+                //.AsNoTracking()
+                //.AsEnumerable()
                 .GroupBy(r => r.SignalId)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();

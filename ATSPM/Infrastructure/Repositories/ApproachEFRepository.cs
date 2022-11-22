@@ -13,7 +13,7 @@ using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
 using ATSPM.Data;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class ApproachEFRepository : ATSPMRepositoryEFBase<Approach>, IApproachRepository
     {

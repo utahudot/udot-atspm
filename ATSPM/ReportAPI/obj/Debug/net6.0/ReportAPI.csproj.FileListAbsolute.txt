@@ -43,3 +43,8 @@ C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\refint\ReportAPI.dll
 C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\ReportAPI.pdb
 C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\ReportAPI.genruntimeconfig.cache
 C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\ref\ReportAPI.dll
+C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\staticwebassets\msbuild.ReportAPI.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\staticwebassets\msbuild.build.ReportAPI.props
+C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.ReportAPI.props
+C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.ReportAPI.props
+C:\Projects\udot-atsmp\ATSPM\ReportAPI\obj\Debug\net6.0\staticwebassets.pack.json

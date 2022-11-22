@@ -3,7 +3,10 @@ using ATSPM.Application.Services.SignalControllerProtocols;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ATSPM.Application.Services;
+using System.Threading.Tasks.Dataflow;
 
+#nullable enable
 namespace ATSPM.Application.Exceptions
 {
     public class InvalidSignalControllerIpAddressException : ATSPMException
@@ -22,6 +25,39 @@ namespace ATSPM.Application.Exceptions
 
         public ControllerLoggerException(string? message, Exception? innerException) : base(message, innerException) { }
     }
+
+    #region SignalControllerLoggerExceptions
+
+    public class ControllerLoggerExecutionException : ControllerLoggerException
+    {
+        public ControllerLoggerExecutionException(ISignalControllerLoggerService signalControllerLoggerService, string? message, Exception? innerException) 
+            : base(message ?? $"Exception running Signal Controller Logger Service", 
+                  innerException)
+        {
+            SignalControllerLoggerService = signalControllerLoggerService;
+        }
+
+        public ISignalControllerLoggerService SignalControllerLoggerService { get; private set; }
+    }
+
+    public class ControllerLoggerStepExecutionException<T> : ControllerLoggerExecutionException
+    {
+        public ControllerLoggerStepExecutionException(ISignalControllerLoggerService signalControllerLoggerService,
+            string step, 
+            T item,
+            string? message, Exception? innerException) : base(signalControllerLoggerService,
+                message ?? $"Exception running Signal Controller Logger Service Step {step} on item {item}", 
+                innerException)
+        {
+            Step = step;
+            Item = item;
+        }
+
+        public string Step { get; private set; }
+        public T Item { get; private set; }
+    }
+
+    #endregion
 
     #region ControllerLoggerDownloaderExceptions
 
