@@ -1,6 +1,0 @@
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\bin\Debug\net6.0\CoverletSourceRootsMapping
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\net6.0\InfrastructureTests.csproj.AssemblyReference.cache
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\net6.0\InfrastructureTests.GeneratedMSBuildEditorConfig.editorconfig
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\net6.0\InfrastructureTests.AssemblyInfoInputs.cache
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\net6.0\InfrastructureTests.AssemblyInfo.cs
-C:\Projects\udot-atsmp\ATSPM\InfrastructureTexts\obj\Debug\net6.0\InfrastructureTests.csproj.CoreCompileInputs.cache
