@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Business\ApproachDelay\DelayChart.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -16,8 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ATSPM.IRepositories\ATSPM.Application.IRepositories.csproj" />
-    <ProjectReference Include="..\ATSPM.Repositories.EntityFramework\ATSPM.Infrastructure.Repositories.EntityFramework.csproj" />
+    <None Include="Business\ApproachDelay\DelayChart.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
   </ItemGroup>
 
 </Project>
