@@ -1,5 +1,0 @@
-C:\Projects\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net5.0\ATSPM.Repositories.EntityFramework.csproj.AssemblyReference.cache
-C:\Projects\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net5.0\ATSPM.Repositories.EntityFramework.GeneratedMSBuildEditorConfig.editorconfig
-C:\Projects\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net5.0\ATSPM.Repositories.EntityFramework.AssemblyInfoInputs.cache
-C:\Projects\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net5.0\ATSPM.Repositories.EntityFramework.AssemblyInfo.cs
-C:\Projects\ATSPM\ATSPM.Repositories.EntityFramework\obj\Debug\net5.0\ATSPM.Repositories.EntityFramework.csproj.CoreCompileInputs.cache
