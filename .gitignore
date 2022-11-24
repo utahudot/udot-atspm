@@ -63,6 +63,10 @@ dkms.conf
 /ATSPM/ApplicationCore/bin/
 /ATSPM/ATSPM.Application.Business/obj
 /ATSPM/ATSPM.Application.Business/bin
+/ATSPM/ATSPM.IRepositories/obj
+/ATSPM/ATSPM.IRepositories/bin
+/ATSPM/ATSPM.Repositories.EntityFramework/obj
+/ATSPM/ATSPM.Repositories.EntityFramework/bin
 /ATSPM/ATSPM.Application.IRepositories/bin
 /ATSPM/ATSPM.Application.IRepositories/obj
 /ATSPM/ATSPM.Application.Reports/bin
@@ -75,6 +79,8 @@ dkms.conf
 /ATSPM/DomainCore/bin
 /ATSPM/DomainCoreTests/obj
 /ATSPM/DomainCoreTests/bin
+/ATSPM/EventLogUtility/obj
+/ATSPM/EventLogUtility/bin
 /ATSPM/Infrastructure/obj
 /ATSPM/Infrastructure/bin
 /ATSPM/InfrastructureTexts/obj
@@ -101,3 +107,4 @@ dkms.conf
 /ATSPM/MOE.Common.backup/bin
 /ATSPM/AnalysisReport.sarif
 /ATSPM/upgrade-assistant.clef
+/ATSPM/obj/Docker
