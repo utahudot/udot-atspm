@@ -1,32 +1,17 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Common;
-using ATSPM.Infrasturcture.Converters;
-using ATSPM.Infrasturcture.Data;
-using ATSPM.Infrasturcture.Repositories;
-using ATSPM.Infrasturcture.Services.ControllerDecoders;
-using ATSPM.Infrasturcture.Services.ControllerDownloaders;
-using Data;
-using FluentFTP;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Diagnostics.Common;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using ATSPM.Infrastructure.Converters;
+using ATSPM.Infrastructure.Extensions;
+using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Renci.SshNet.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -42,6 +27,7 @@ namespace ATSPM.SignalControllerLogger
                     //TODO: add a GoogleLogger section
                     //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
                     //TODO: remove this to an extension method
+                    //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
                     //    l.AddGoogle(new LoggingServiceOptions
@@ -49,14 +35,11 @@ namespace ATSPM.SignalControllerLogger
                     //        ProjectId = "1022556126938",
                     //        //ProjectId = "869261868126",
                     //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString()
-                    //        //Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
+                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                    //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
                     //    });
                     //}
                 })
-
-
-
                 .ConfigureServices((h, s) =>
                 {
                     //s.AddGoogleErrorReporting(new ErrorReportingServiceOptions() {
@@ -64,12 +47,13 @@ namespace ATSPM.SignalControllerLogger
                     //    ServiceName = "ErrorReporting",
                     //    Version = "1.1",
                     //});
+
                     s.AddLogging();
-                    //s.AddDbContext<DbContext, MOEContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(h.HostingEnvironment.EnvironmentName))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
-                    s.AddDbContext<DbContext, ATSPMContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString("ATSPM"))); //b => b.UseLazyLoadingProxies().UseChangeTrackingProxies()
+
+                    s.AddATSPMDbContext(h);
 
                     //background services
-                    s.AddHostedService<TPLDataflowService>();
+                    s.AddHostedService<LoggerBackgroundService>();
 
                     //repositories
                     s.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -77,15 +61,13 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
                     //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
-
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
                     s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
-                    //downloader clients
+                    ////downloader clients
                     s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
                     s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-                    //s.AddTransient<IFTPDownloaderClient, FTPDownloaderStubClient>();
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
@@ -99,13 +81,23 @@ namespace ATSPM.SignalControllerLogger
                     s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
                     s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+                    //SignalControllerDataFlow
+                    //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+                    s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+
+                    //controller logger configuration
+                    s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+
                     //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection(nameof(ASC3SignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(CobaltSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection(nameof(MaxTimeSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection(nameof(EOSSignalControllerDownloader)));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection(nameof(NewCobaltSignalControllerDownloader)));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeSignalControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltSignalControllerDownloader)}"));
+
+                    //decoder configurations
+                    s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
+                    s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
 
                     s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
@@ -115,9 +107,13 @@ namespace ATSPM.SignalControllerLogger
 
             await host.RunAsync();
 
-            Console.WriteLine($"done?");
+            //Console.Read();
 
-            Console.ReadKey();
+            //Console.ReadKey();
+
+            //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
         }
     }
+
+    
 }

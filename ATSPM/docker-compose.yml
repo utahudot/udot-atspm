@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  signalcontrollerlogger:
+    image: ${DOCKER_REGISTRY-}signalcontrollerlogger
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: SignalControllerLogger/Dockerfile
+    tty: true
+
+ 

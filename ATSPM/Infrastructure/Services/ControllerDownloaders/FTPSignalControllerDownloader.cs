@@ -1,8 +1,8 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data.Models;
 using FluentFTP;
 using FluentFTP.Rules;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class FTPSignalControllerDownloader : ControllerDownloaderBase
     {
@@ -33,7 +33,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
         protected async IAsyncEnumerable<FileInfo> ExecutionTask(Signal parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            using FtpClient client = new FtpClient(parameter.Ipaddress);
+            using FtpClient client = new FtpClient(parameter.Ipaddress.ToString());
             {
                 client.Credentials = new NetworkCredential(parameter.ControllerType.UserName, parameter.ControllerType.Password);
                 //TODO: replace this with options setting

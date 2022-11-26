@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -8,8 +8,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.Logging
 {
@@ -79,7 +77,7 @@ namespace Microsoft.Extensions.Logging
             {
                 ControllerEventLog logEvent = new ControllerEventLog()
                 {
-                    SignalId = parameters.Where(k => k.Key == "SignalID")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
+                    SignalId = parameters.Where(k => k.Key == "SignalId")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
                     Timestamp = DateTime.Now,
                     EventCode = eventId.Id,
                     EventParam = Convert.ToInt32(parameters.Where(k => k.Key == "EventParam")?.Select(v => v.Value)?.FirstOrDefault() ?? 0)

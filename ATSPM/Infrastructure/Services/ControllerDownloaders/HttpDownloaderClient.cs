@@ -1,29 +1,17 @@
-﻿using ATSPM.Application.Common;
-using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Models;
+﻿using ATSPM.Application.Exceptions;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Extensions;
-using FluentFTP;
-using Microsoft.Extensions.Logging;
-using Renci.SshNet;
-using Renci.SshNet.Common;
-using Renci.SshNet.Sftp;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class HttpDownloaderClient : ServiceObjectBase, IHTTPDownloaderClient
     {
@@ -129,12 +117,13 @@ namespace ATSPM.Infrasturcture.Services.ControllerDownloaders
 
             try
             {
-                var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory)
-                {
-                    //Query = $"since={DateTime.Now:MM-dd-yyyy} 00:00:00.0"
-                    Query = filters.ToString()
-                };
+                var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory);
 
+                foreach (var filter in filters)
+                {
+                    builder.Query = builder.Query + filter;
+                }
+                
                 _getPath = builder.Uri;
 
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });

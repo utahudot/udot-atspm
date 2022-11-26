@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Common;
 using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
-using ATSPM.Application.Extensions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Models;
 using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
@@ -17,12 +15,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.Infrasturcture.Services.ControllerDecoders
+namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public abstract class ControllerDecoderBase : ServiceObjectBase, ISignalControllerDecoder
     {
@@ -31,11 +28,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         #region Fields
 
         private readonly ILogger _log;
-        protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
+        //protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
+        protected readonly SignalControllerDecoderConfiguration _options;
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptions<SignalControllerDecoderConfiguration> options) => (_log, _options) = (log, options);
+        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options)
+        {
+            _log = log;
+            _options = options?.Get(this.GetType().Name) ?? options?.Value;
+        }
 
         #region Properties
 
@@ -47,9 +49,9 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         //{
         //}
 
-        protected bool IsAcceptableDateRange(ControllerEventLog log)
+        private bool IsAcceptableDateRange(ControllerEventLog log)
         {
-            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.Value.EarliestAcceptableDate;
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         public abstract bool CanExecute(FileInfo parameter);
@@ -86,10 +88,16 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
 
                     await foreach (var log in DecodeAsync(parameter.Directory.Name, memoryStream, cancelToken))
                     {
-                        decodedLogs.Add(log);
+                        if (IsAcceptableDateRange(log))
+                        {
+                            decodedLogs.Add(log);
 
-                        progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
+                            progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
+                        }                     
                     }
+
+                    if (_options.DeleteFile)
+                        parameter.Delete();
                 }
                 catch (ControllerLoggerDecoderException e)
                 {
@@ -146,7 +154,7 @@ namespace ATSPM.Infrasturcture.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }

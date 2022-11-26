@@ -1,22 +1,17 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.ValueObjects;
+using ATSPM.Application.Specifications;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using ATSPM.Application.Specifications;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
 using System.IO;
-using Microsoft.Extensions.Options;
-using ATSPM.Application.Configuration;
+using System.Linq;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public class ControllerEventLogFileRepository : ATSPMFileRepositoryBase<ControllerLogArchive>, IControllerEventLogRepository
     {
@@ -67,12 +62,12 @@ namespace ATSPM.Infrasturcture.Repositories
 
         #region IControllerEventLogRepository
 
-        public IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
+        public IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string SignalId, DateTime startTime, DateTime endTime)
         {
             var range = Enumerable.Range(0, 1 + endTime.Subtract(startTime).Days).Select(o => startTime.AddDays(o)).ToList();
 
             var result = GetFromDirectoriesByDateRange(range)
-                .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
+                .FromSpecification(new ControllerLogDateRangeSpecification(SignalId, startTime, endTime))
                 //.AsNoTracking() only needed for EF
                 .AsEnumerable()
                 .SelectMany(s => s.LogData)

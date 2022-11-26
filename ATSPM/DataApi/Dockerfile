@@ -7,16 +7,20 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["DataAPI/DataAPI.csproj", "DataAPI/"]
-RUN dotnet restore "DataAPI/DataAPI.csproj"
+COPY ["DataApi/DataApi.csproj", "DataApi/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
+COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
+RUN dotnet restore "DataApi/DataApi.csproj"
 COPY . .
-WORKDIR "/src/DataAPI"
-RUN dotnet build "DataAPI.csproj" -c Release -o /app/build
+WORKDIR "/src/DataApi"
+RUN dotnet build "DataApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "DataAPI.csproj" -c Release -o /app/publish
+RUN dotnet publish "DataApi.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DataAPI.dll"]
+ENTRYPOINT ["dotnet", "ATSPM.DataApi.dll"]

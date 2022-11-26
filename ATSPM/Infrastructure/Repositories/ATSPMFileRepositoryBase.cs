@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
@@ -19,7 +19,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrasturcture.Repositories
+namespace ATSPM.Infrastructure.Repositories
 {
     public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : ATSPMModelBase, new()
     {
@@ -171,6 +171,21 @@ namespace ATSPM.Infrasturcture.Repositories
         }
 
         public void UpdateRange(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<T> LookupAsync(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<T> GetList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Lookup(object key)
         {
             throw new NotImplementedException();
         }

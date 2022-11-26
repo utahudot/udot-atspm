@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Logging;
 using System;

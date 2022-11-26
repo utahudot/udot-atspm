@@ -29,9 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportAPI", "ReportAPI\ReportAPI.csproj", "{071DB6E1-C774-4243-B47A-966C78BAC112}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAPI", "DataAPI\DataAPI.csproj", "{C33CDAF3-F7CA-4E17-AAC3-6D40D496C001}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{B1F40B63-65FB-49F7-BCDC-47480428DFDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataApi", "DataApi\DataApi.csproj", "{B918C3B5-2C8B-47F2-818D-C1C69C09C2E5}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0670B829-17B7-49F8-B8D0-6EA6CE136ECB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventLogUtility", "EventLogUtility\EventLogUtility.csproj", "{6E671235-AEAE-4D2C-AC41-35F5B8878A42}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.Business", "ATSPM.Application.Business\ATSPM.Application.Business.csproj", "{893BC02A-4EC0-4327-A53D-EF5B813730B1}"
 EndProject
@@ -259,6 +263,18 @@ Global
 		{87951632-A7BE-4E04-B62C-C4FC2FC0CD5A}.Release|x64.Build.0 = Release|x64
 		{87951632-A7BE-4E04-B62C-C4FC2FC0CD5A}.Release|x86.ActiveCfg = Release|x86
 		{87951632-A7BE-4E04-B62C-C4FC2FC0CD5A}.Release|x86.Build.0 = Release|x86
+		{B918C3B5-2C8B-47F2-818D-C1C69C09C2E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B918C3B5-2C8B-47F2-818D-C1C69C09C2E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B918C3B5-2C8B-47F2-818D-C1C69C09C2E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B918C3B5-2C8B-47F2-818D-C1C69C09C2E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0670B829-17B7-49F8-B8D0-6EA6CE136ECB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0670B829-17B7-49F8-B8D0-6EA6CE136ECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0670B829-17B7-49F8-B8D0-6EA6CE136ECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0670B829-17B7-49F8-B8D0-6EA6CE136ECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E671235-AEAE-4D2C-AC41-35F5B8878A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E671235-AEAE-4D2C-AC41-35F5B8878A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E671235-AEAE-4D2C-AC41-35F5B8878A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E671235-AEAE-4D2C-AC41-35F5B8878A42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

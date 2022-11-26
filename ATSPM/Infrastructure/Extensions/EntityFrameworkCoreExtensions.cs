@@ -1,11 +1,11 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ATSPM.Infrasturcture.Extensions
+namespace ATSPM.Infrastructure.Extensions
 {
     public static class EntityFrameworkCoreExtensions
     {

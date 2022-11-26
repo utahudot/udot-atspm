@@ -1,22 +1,11 @@
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Enums;
-using ATSPM.Application.Models;
-using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.Exceptions;
-using ATSPM.Domain.Extensions;
-using ATSPM.Infrasturcture.Services.ControllerDecoders;
-using Microsoft.Extensions.DependencyInjection;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using SignalControllerLoggerTests.Attributes;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +14,7 @@ namespace SignalControllerLoggerTests
 {
     public class ISignalControllerDecoderTests : IDisposable
     {
-        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTexts\\TestData";
+        private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTests\\TestData";
 
         private readonly ITestOutputHelper _output;
         //private ISignalControllerDecoder _decoder;

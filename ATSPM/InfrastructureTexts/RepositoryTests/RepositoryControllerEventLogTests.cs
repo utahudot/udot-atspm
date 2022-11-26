@@ -1,8 +1,8 @@
-﻿using ATSPM.Application.Models;
+﻿using ATSPM.Data.Models
 using ATSPM.Application.Repositories;
 using ATSPM.Domain.Services;
-using ATSPM.Infrasturcture.Data;
-using ATSPM.Infrasturcture.Repositories;
+using ATSPM.Infrastructure.Data;
+using ATSPM.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,6 +16,7 @@ using ATSPM.Domain.Extensions;
 using ATSPM.Application.Specifications;
 using System.Threading.Tasks;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.ValueObjects;
 
 namespace InfrastructureTests
 {
@@ -56,13 +57,13 @@ namespace InfrastructureTests
         {
             await SeedData();
 
-            var signalId = "1001";
+            var SignalId = "1001";
             var startTime = DateTime.Today;
             var endTime = DateTime.Today.AddDays(1);
 
 
             var expected = codes.OrderBy(o => o).ToList();
-            var actual = _repo.GetAllAggregationCodes(signalId, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
+            var actual = _repo.GetAllAggregationCodes(SignalId, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
 
             _output.WriteLine($"expected: {expected.Count}");
             _output.WriteLine($"actual: {actual.Count}");

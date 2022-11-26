@@ -1,13 +1,10 @@
 ﻿using ATSPM.Application.Common;
-using ATSPM.Application.Enums;
-using ATSPM.Application.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
@@ -20,6 +17,6 @@ namespace ATSPM.Application.Services.SignalControllerProtocols
         Stream Decompress(Stream stream);
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        IAsyncEnumerable<ControllerEventLog> DecodeAsync(string signalId, Stream stream, CancellationToken cancelToken = default);
+        IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default);
     }
 }
