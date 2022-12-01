@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\ConfigContextModelSnapshot.cs" />
+    <Compile Remove="Repositories\SignalFileRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +39,10 @@
   <ItemGroup>
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Speed\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Repositories\SignalFileRepository.cs" />
   </ItemGroup>
 
 </Project>

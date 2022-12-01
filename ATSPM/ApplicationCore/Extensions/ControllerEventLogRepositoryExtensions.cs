@@ -251,16 +251,12 @@ namespace ATSPM.Application.Extensions
         public static bool CheckForRecords(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime)
         {
             throw new NotImplementedException();
-
-            //return _db.ControllerEventLogs.Any(r => r.SignalId == SignalId
-            //                                             && r.Timestamp >= startTime
-            //                                             && r.Timestamp < endTime);
         }
 
         [Obsolete("This method isn't currently being used")]
         public static int GetEventCountByEventCodesParamDateTimeRange(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, int startHour, int startMinute, int endHour, int endMinute, IEnumerable<int> eventCodes, int param)
         {
-            return repo.GetEventsByEventCodesParamDateTimeRange(SignalId, startTime, endTime, startHour, startMinute, endHour, endMinute, eventCodes, param).Count;
+            throw new NotImplementedException();
         }
 
         [Obsolete("This method isn't currently being used")]
@@ -272,13 +268,7 @@ namespace ATSPM.Application.Extensions
         [Obsolete("This method isn't currently being used")]
         public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamDateTimeRange(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, int startHour, int startMinute, int endHour, int endMinute, IEnumerable<int> eventCodes, int param)
         {
-            var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
-                .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, param))
-                .FromSpecification(new ControllerLogDateTimeRangeSpecification(startHour, startMinute, endHour, endMinute))
-                .OrderBy(o => o.EventParam)
-                .ToList();
-
-            return result;
+            throw new NotImplementedException();
         }
 
         [Obsolete("Use GetSignalEventsCountBetweenDates instead", true)]

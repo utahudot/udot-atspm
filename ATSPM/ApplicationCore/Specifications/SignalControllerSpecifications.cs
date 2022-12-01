@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,19 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
+    public class ActiveSignalSpecification : BaseSpecification<Signal>
+    {
+        public ActiveSignalSpecification() : base(s => s.VersionActionId != SignaVersionActions.Delete) 
+        {
+            ApplyOrderByDescending(o => o.Start);
+        }
+    }
+
+    public class SignalIdSpecification : BaseSpecification<Signal>
+    {
+        public SignalIdSpecification(string signalId) : base(s => s.SignalId == signalId) { }
+    }
+
     //public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     //{
     //    public ControllerLogDateRangeSpecification(string SignalId, DateTime startTime, DateTime endTime) : base()

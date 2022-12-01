@@ -47,7 +47,7 @@ cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync("log true true");
+await cmdParser.InvokeAsync();
 
 public static class CommandHostBuilder
 {
@@ -55,7 +55,7 @@ public static class CommandHostBuilder
     {
         hostBuilder.ConfigureServices((h, s) =>
         {
-            //s.AddLogging();
+            s.AddLogging();
 
             s.AddATSPMDbContext(h);
 

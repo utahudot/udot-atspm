@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,7 +12,7 @@ namespace ATSPM.Infrastructure.Repositories
 {
     public class ActionEFRepository : ATSPMRepositoryEFBase<Data.Models.Action>, IActionRepository
     {
-        public ActionEFRepository(DbContext db, ILogger<ATSPMRepositoryEFBase<Data.Models.Action>> log) : base(db, log)
+        public ActionEFRepository(ConfigContext db, ILogger<ATSPMRepositoryEFBase<Data.Models.Action>> log) : base(db, log)
         {
         }
     }

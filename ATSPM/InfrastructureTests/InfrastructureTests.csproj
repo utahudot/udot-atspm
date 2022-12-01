@@ -7,20 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="RepositoryTests\IActionRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\RepositoryControllerEventLogTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="RepositoryTests\IActionRepositoryTests.cs" />
     <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />
     <None Include="RepositoryTests\IRepositoryTests.cs" />
     <None Include="RepositoryTests\RepositoryControllerEventLogTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.Xunit2" Version="4.17.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />

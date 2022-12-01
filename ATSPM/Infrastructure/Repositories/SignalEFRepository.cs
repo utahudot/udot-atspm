@@ -1,13 +1,16 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Specifications;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -17,287 +20,95 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region ISignalRepository
 
-        [Obsolete("This method isn't currently being used")]
-        public void AddList(List<Signal> signals)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use the add in respository base class")]
-        public void AddOrUpdate(Signal signal)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("This method isn't currently being used")]
-        public int CheckVersionWithFirstDate(string SignalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use ICloneable")]
-        public Signal CopySignalToNewVersion(Signal originalVersion)
-        {
-            var newVersion = (Signal)originalVersion.Clone();
-
-            newVersion.VersionAction = _db.Set<VersionAction>().Find(SignaVersionActions.NewVersion);
-
-            //newVersion.VersionAction = (from r in _db.VersionActions
-            //                            where r.ID == 4
-            //                            select r).FirstOrDefault();
-
-            //TODO: use clone instead
-            //newVersion.SignalId = originalVersion.SignalId;
-            //newVersion.Start = DateTime.Today;
-            //newVersion.Note = "Copy of " + originalVersion.Note;
-            //newVersion.PrimaryName = originalVersion.PrimaryName;
-            //newVersion.SecondaryName = originalVersion.SecondaryName;
-            //newVersion.Ipaddress = originalVersion.Ipaddress;
-            //newVersion.ControllerTypeId = originalVersion.ControllerTypeId;
-            //newVersion.RegionID = originalVersion.RegionID;
-            //newVersion.Enabled = originalVersion.Enabled;
-            //newVersion.Latitude = originalVersion.Latitude;
-            //newVersion.Longitude = originalVersion.Longitude;
-
-
-            this.Add(newVersion);
-
-            //_db.Signals.Add(newVersion);
-            //_db.SaveChanges();
-
-            //CopyApproaches(originalVersion, newVersion);
-
-            return newVersion;
-        }
-
-        [Obsolete("Redundant to GetAllSignals")]
-        public IReadOnlyList<Signal> EagerLoadAllSignals()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Exists(string SignalId)
-        {
-            //return _db.DatabaseArchiveExcludedSignals.Any(s => s.SignalId == SignalId);
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        public IReadOnlyList<Signal> GetAllEnabledSignals()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        public IList<Signal> GetAllSignals()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId)
-        {
-            throw new NotImplementedException();
-        }
-
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
-            var result = table
-                .Where(v => v.VersionActionId != SignaVersionActions.Delete)
-                .Include(i => i.ControllerType)
-                //.AsNoTracking()
-                //.AsEnumerable()
-                .GroupBy(r => r.SignalId)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+            throw new NotImplementedException();
+        }
+
+        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string SignalId)
+        {
+            var result = GetDefaultQuery()
+                .FromSpecification(new SignalIdSpecification(SignalId))
+                //.Where(signal => signal.SignalId == SignalId)
+                .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
 
             return result;
-
-            //var activeSignals = _db.Set<Signal>().Where(r => r.VersionActionId != 3)
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionTypes)))
-            //    .Include(signal =>
-            //        signal.Approaches.Select(
-            //            a => a.Detectors.Select(d => d.DetectionTypes.Select(dt => dt.MetricTypes))))
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionHardware)))
-            //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .GroupBy(r => r.SignalId)
-            //    .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
-            //return activeSignals;
-
-            //throw new NotImplementedException();
         }
 
-        //public IReadOnlyList<Signal> GetLatestVersionOfAllSignalsForFtp()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public Signal GetLatestVersionOfSignalBySignalId(string SignalId)
+        public Signal GetLatestVersionOfSignal(string SignalId)
         {
-            throw new NotImplementedException();
+            var result = GetDefaultQuery()
+                .FromSpecification(new SignalIdSpecification(SignalId))
+                //.Where(signal => signal.SignalId == SignalId)
+                .FromSpecification(new ActiveSignalSpecification())
+                .FirstOrDefault();
+
+            return result;
         }
 
-        [Obsolete("This should not be in respository")]
-        public IReadOnlyList<Pin> GetPinInfo()
+        public Signal GetLatestVersionOfSignal(string SignalId, DateTime startDate)
         {
-            //var pins = new List<Pin>();
-            ////foreach (var signal in GetLatestVersionOfAllSignals().Where(s => s.Enabled //&& s.SignalId == "7063"
-            ////).ToList())
-            //List<Signal> signals = GetLatestVersionOfAllSignals().Where(s => s.Enabled).ToList();
-            //foreach (var signal in signals)
-            //{
-            //    var pin = new Pin(signal.SignalId, signal.Latitude,
-            //        signal.Longitude,
-            //        signal.PrimaryName + " " + signal.SecondaryName, signal.RegionId.ToString());
-            //    pin.MetricTypes = signal.GetMetricTypesString();
-            //    pins.Add(pin);
-            //    //Console.WriteLine(pin.SignalId);
-            //}
-            //return pins;
+            var result = GetDefaultQuery()
+                .FromSpecification(new SignalIdSpecification(SignalId))
+                //Where(signal => signal.SignalId == SignalId)
+                .Where(signal => signal.Start <= startDate)
+                .FromSpecification(new ActiveSignalSpecification())
+                .FirstOrDefault();
 
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Just get whole object")]
-        public string GetSignalDescription(string SignalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("This should not be in respository")]
-        public string GetSignalLocation(string SignalId)
-        {
-            var signal = GetLatestVersionOfSignalBySignalId(SignalId);
-            var location = string.Empty;
-            if (signal != null)
-                location = signal.PrimaryName + " @ " + signal.SecondaryName;
-
-            return location;
+            return result;
         }
 
         public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate)
         {
-            //var signals = new List<Signal>();
-            //var signalBeforeStart = _db.Signals
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
-            //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalId == SignalId
-            //                     && signal.Start <= startDate
-            //                     && signal.VersionActionId != 3).OrderByDescending(s => s.Start)
-            //    .Take(1)
-            //    .FirstOrDefault();
-            //if (signalBeforeStart != null)
-            //    signals.Add(signalBeforeStart);
-            //if (_db.Signals.Any(signal => signal.SignalId == SignalId
-            //                              && signal.Start > startDate
-            //                              && signal.Start < endDate
-            //                              && signal.VersionActionId != 3))
-            //    signals.AddRange(_db.Signals
-            //        .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
-            //        .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //        .Where(signal => signal.SignalId == SignalId
-            //                         && signal.Start > startDate
-            //                         && signal.Start < endDate
-            //                         && signal.VersionActionId != 3).ToList());
-            //return signals;
+            var result = GetDefaultQuery()
+                .FromSpecification(new SignalIdSpecification(SignalId))
+                //.Where(signal => signal.SignalId == SignalId)
+                .Where(signal => signal.Start > startDate && signal.Start < endDate)
+                .FromSpecification(new ActiveSignalSpecification())
+                .ToList();
 
-            throw new NotImplementedException();
+            return result;
         }
 
-        public Signal GetSignalVersionByVersionId(int versionId)
+        public async Task SetSignalToDeleted(int id)
         {
-            //var version = _db.Signals
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionTypes)))
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionHardware)))
-            //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .FirstOrDefault(signal => signal.VersionID == versionId);
-            //if (version != null)
-            //{
-            //    AddSignalAndDetectorLists(version);
-            //}
-            //return version;
+            Signal signal = await LookupAsync(id);
 
-            throw new NotImplementedException();
+            await DeleteSignal(signal);
         }
 
-        public Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate)
+        public async Task SetSignalToDeleted(string signalId)
         {
-            //var signals = _db.Signals
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
-            //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalId == SignalId)
-            //    .Where(signal => signal.Start <= startDate)
-            //    .Where(signal => signal.VersionActionId != 3)
-            //    .ToList();
+            Signal signal = GetList().FirstOrDefault(f => f.SignalId == signalId);
 
-            //if (signals.Count > 1)
-            //{
-            //    var orderedSignals = signals.OrderByDescending(signal => signal.Start);
-            //    return orderedSignals.First();
-            //}
-            //else
-            //{
-            //    return signals.FirstOrDefault();
-            //}
-
-            throw new NotImplementedException();
-        }
-
-        public Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate)
-        {
-            //var signals = _db.Signals
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.MovementType)))
-            //    .Include(signal => signal.Approaches.Select(a => a.Detectors.Select(d => d.DetectionTypes)))
-            //    .Include(signal => signal.Approaches.Select(a => a.DirectionType))
-            //    .Where(signal => signal.SignalId == SignalId)
-            //    .Where(signal => signal.Start <= startDate)
-            //    .Where(signal => signal.VersionActionId != 3)
-            //    .ToList();
-
-            //if (signals.Count > 1)
-            //{
-            //    var orderedSignals = signals.OrderByDescending(signal => signal.Start);
-            //    return orderedSignals.First();
-            //}
-            //else
-            //{
-            //    return signals.FirstOrDefault();
-            //}
-
-            throw new NotImplementedException();
-        }
-
-        public void SetAllVersionsOfASignalToDeleted(string id)
-        {
-            //var signals = from r in _db.Signals
-            //              where r.SignalId == SignalId
-            //              select r;
-
-            //foreach (var s in signals)
-            //    s.VersionActionId = 3;
-
-            //_db.SaveChanges();
-
-            throw new NotImplementedException();
-        }
-
-        public void SetVersionToDeleted(int versionId)
-        {
-            //var signal = (from r in _db.Signals where r.VersionID == versionId select r).FirstOrDefault();
-            //if (signal != null)
-            //    signal.VersionActionId = 3;
-            //_db.SaveChanges();
-
-            throw new NotImplementedException();
+            await DeleteSignal(signal);
         }
 
         #endregion
+
+        private IQueryable<Signal> GetDefaultQuery()
+        {
+            var result = GetList()
+                .Include(i => i.ControllerType)
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Region)
+                .Include(i => i.VersionAction)
+
+                .Include(s => s.Approaches)
+                .ThenInclude(d => d.Detectors)
+                .Include(s => s.Areas);
+
+            return result;
+        }
+
+        private async Task DeleteSignal(Signal signal)
+        {
+            if (signal != null)
+            {
+                signal.VersionActionId = SignaVersionActions.Delete;
+                await _db.SaveChangesAsync();
+            }
+        }
     }
 }
