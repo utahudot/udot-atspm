@@ -20,17 +20,34 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region ISignalRepository
 
-        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
-        {
-            throw new NotImplementedException();
-        }
-
         public IReadOnlyList<Signal> GetAllVersionsOfSignal(string SignalId)
         {
             var result = GetDefaultQuery()
                 .FromSpecification(new SignalIdSpecification(SignalId))
-                //.Where(signal => signal.SignalId == SignalId)
                 .FromSpecification(new ActiveSignalSpecification())
+                .ToList();
+
+            return result;
+        }
+
+        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
+        {
+            var result = GetDefaultQuery()
+                .FromSpecification(new ActiveSignalSpecification())
+                .GroupBy(r => r.SignalId)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
+
+            return result;
+        }
+
+        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId)
+        {
+            var result = GetDefaultQuery()
+                .Where(w => w.ControllerTypeId == controllerTypeId)
+                .FromSpecification(new ActiveSignalSpecification())
+                .GroupBy(r => r.SignalId)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
             return result;
@@ -40,7 +57,6 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var result = GetDefaultQuery()
                 .FromSpecification(new SignalIdSpecification(SignalId))
-                //.Where(signal => signal.SignalId == SignalId)
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
 
@@ -51,7 +67,6 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var result = GetDefaultQuery()
                 .FromSpecification(new SignalIdSpecification(SignalId))
-                //Where(signal => signal.SignalId == SignalId)
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
@@ -63,7 +78,6 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var result = GetDefaultQuery()
                 .FromSpecification(new SignalIdSpecification(SignalId))
-                //.Where(signal => signal.SignalId == SignalId)
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();

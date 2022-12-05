@@ -7,6 +7,7 @@ using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ATSPM.Application.Extensions
@@ -18,7 +19,6 @@ namespace ATSPM.Application.Extensions
             var newVersion = (Signal)originalVersion.Clone();
 
             newVersion.VersionActionId = SignaVersionActions.NewVersion;
-            newVersion.VersionAction = null;
             newVersion.Start = DateTime.Today;
             newVersion.Note = $"Copy of {originalVersion.Note}";
 

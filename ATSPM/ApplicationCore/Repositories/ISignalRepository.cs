@@ -18,6 +18,8 @@ namespace ATSPM.Application.Repositories
 
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 
+        IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
+
         IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate);
 
         Task SetSignalToDeleted(int id);
