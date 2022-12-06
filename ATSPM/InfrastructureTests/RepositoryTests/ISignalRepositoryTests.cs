@@ -16,57 +16,26 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class ISignalRepositoryTests : IClassFixture<EFContextFixture<ConfigContext>>
+    public class ISignalRepositoryTests : RepositoryTestBase<Signal, ISignalRepository, ConfigContext>
     {
         private const int SignalCount = 4;
         private const int ControllerTypeId = 1;
-        
-        private EFContextFixture<ConfigContext> _db;
-        private readonly ITestOutputHelper _output;
-        private ISignalRepository _repo;
 
         private List<Signal> _signalList = new List<Signal>();
 
-        public ISignalRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output)
-        {
-            _db = dbFixture;
-            _output = output;
-            
-            _repo = new SignalEFRepository(_db.Context, new Microsoft.Extensions.Logging.Abstractions.NullLogger<SignalEFRepository>());
+        public ISignalRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output) : base(dbFixture, output) { }
 
-            SeedTestData();
-        }
-
-        private async void SeedTestData()
+        protected override async void SeedTestData()
         {
             if (_repo.GetList().Count() < 1)
             {
-                var fixture = new Fixture();
-
-                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-                fixture.Customize<Signal>(c => c
-                    .Without(w => w.Id)
-                    .With(w => w.RegionId, 0)
-                    .Without(w => w.Region)
-                    .With(w => w.JurisdictionId, 0)
-                    .Without(w => w.Jurisdiction)
-                    .Without(w => w.ControllerTypeId)
-                    .Without(w => w.ControllerType)
-                    .Without(w => w.VersionAction)
-                    .Without(w => w.Approaches)
-                    .Without(w => w.Areas)
-                    .Without(w => w.MetricComments)
-                );
-
                 for (int x = 1; x <= SignalCount; x++)
                 {
                     string signalId = x.ToString();
 
                     for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
                     {
-                        var s = fixture.Create<Signal>();
+                        var s = ModelFixture.Create<Signal>();
                         s.SignalId = signalId;
                         s.VersionActionId = (SignaVersionActions)i;
                         s.PrimaryName = s.VersionActionId.ToString();

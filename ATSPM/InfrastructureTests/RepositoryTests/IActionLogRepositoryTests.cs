@@ -16,43 +16,19 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class IActionLogRepositoryTests : IClassFixture<EFContextFixture<ConfigContext>>
+    public class IActionLogRepositoryTests : RepositoryTestBase<ActionLog, IActionLogRepository, ConfigContext>
     {
-        private EFContextFixture<ConfigContext> _db;
-        private readonly ITestOutputHelper _output;
-        private IActionLogRepository _repo;
-
         private List<ActionLog> _list = new List<ActionLog>();
 
-        public IActionLogRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output)
-        {
-            _db = dbFixture;
-            _output = output;
-            
-            _repo = new ActionLogEFRepository(_db.Context, new Microsoft.Extensions.Logging.Abstractions.NullLogger<ActionLogEFRepository>());
+        public IActionLogRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output) : base(dbFixture, output) { }
 
-            SeedTestData();
-        }
-
-        private async void SeedTestData()
+        protected override async void SeedTestData()
         {
             if (_repo.GetList().Count() < 1)
             {
-                var fixture = new Fixture();
-
-                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-                fixture.Customize<ActionLog>(c => c
-                    .Without(w => w.Id)
-                    .Without(w => w.Agency)
-                    .Without(w => w.Actions)
-                    .Without(w => w.MetricTypes)
-                );
-
                 for (int x = 1; x <= Enum.GetValues(typeof(AgencyTypes)).Length - 1; x++)
                 {
-                    var f = fixture.Create<ActionLog>();
+                    var f = ModelFixture.Create<ActionLog>();
                     f.Date = DateTime.Today.AddDays((x - (x * 2)) - 1);
                     f.AgencyId = (AgencyTypes)x;
 
@@ -75,7 +51,7 @@ namespace InfrastructureTests.RepositoryTests
         #region IActionLogRepositoryExtensions
 
         [Fact]
-        public async void IActionLogRepositoryGetAllByDate()
+        public void IActionLogRepositoryGetAllByDate()
         {
             var start = DateTime.Today.AddDays(-4);
             var end = DateTime.Today;
