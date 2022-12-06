@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Action Log Repository
+    /// </summary>
     public interface IActionLogRepository : IAsyncRepository<ActionLog>
     {
-        IReadOnlyList<ActionLog> GetAllByDate(DateTime startDate, DateTime endDate);
+        #region ExtensionMethods
+
+        //IReadOnlyList<ActionLog> GetAllByDate(DateTime startDate, DateTime endDate);
+
+        #endregion
     }
 }

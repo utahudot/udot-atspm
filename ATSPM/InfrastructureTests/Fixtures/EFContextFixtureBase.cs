@@ -24,20 +24,13 @@ namespace InfrastructureTests.Fixtures
             _connection = new SqliteConnection("Datasource=:memory:");
             _connection.Open();
 
-            //_db = Activator.CreateInstance<T1>(new DbContextOptionsBuilder<T1>().EnableSensitiveDataLogging().UseSqlite(_connection).Options)
-
             var options = new DbContextOptionsBuilder<T>().EnableSensitiveDataLogging().UseSqlite(_connection).Options;
 
             Context = (T)Activator.CreateInstance(typeof(T), options);
 
             Context.Database.EnsureDeleted();
             Context.Database.EnsureCreated();
-
-            
-
         }
-
-        public int Order { get; set; }
 
         public T Context { get; private set; }
 
