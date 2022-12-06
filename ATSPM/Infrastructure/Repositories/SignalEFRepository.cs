@@ -20,10 +20,10 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region ISignalRepository
 
-        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string SignalId)
+        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId)
         {
             var result = GetDefaultQuery()
-                .FromSpecification(new SignalIdSpecification(SignalId))
+                .FromSpecification(new SignalIdSpecification(signalId))
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
 
@@ -53,20 +53,20 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public Signal GetLatestVersionOfSignal(string SignalId)
+        public Signal GetLatestVersionOfSignal(string signalId)
         {
             var result = GetDefaultQuery()
-                .FromSpecification(new SignalIdSpecification(SignalId))
+                .FromSpecification(new SignalIdSpecification(signalId))
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
 
             return result;
         }
 
-        public Signal GetLatestVersionOfSignal(string SignalId, DateTime startDate)
+        public Signal GetLatestVersionOfSignal(string signalId, DateTime startDate)
         {
             var result = GetDefaultQuery()
-                .FromSpecification(new SignalIdSpecification(SignalId))
+                .FromSpecification(new SignalIdSpecification(signalId))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
@@ -74,29 +74,15 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate)
+        public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate)
         {
             var result = GetDefaultQuery()
-                .FromSpecification(new SignalIdSpecification(SignalId))
+                .FromSpecification(new SignalIdSpecification(signalId))
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
 
             return result;
-        }
-
-        public async Task SetSignalToDeleted(int id)
-        {
-            Signal signal = await LookupAsync(id);
-
-            await DeleteSignal(signal);
-        }
-
-        public async Task SetSignalToDeleted(string signalId)
-        {
-            Signal signal = GetList().FirstOrDefault(f => f.SignalId == signalId);
-
-            await DeleteSignal(signal);
         }
 
         #endregion
@@ -114,15 +100,6 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(s => s.Areas);
 
             return result;
-        }
-
-        private async Task DeleteSignal(Signal signal)
-        {
-            if (signal != null)
-            {
-                signal.VersionActionId = SignaVersionActions.Delete;
-                await _db.SaveChangesAsync();
-            }
         }
     }
 }

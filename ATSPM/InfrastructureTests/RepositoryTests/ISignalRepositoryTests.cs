@@ -3,47 +3,26 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
-using AutoFixture.Xunit2;
-using Castle.Core.Internal;
-using Google.Api;
-using Google.Apis.Util;
-using InfrastructureTests.Attributes;
 using InfrastructureTests.Fixtures;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using RTools_NTS.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class ISignalRepositoryTests : IClassFixture<EFContextFixture<ConfigContext>>, IDisposable
+    public class ISignalRepositoryTests : IClassFixture<EFContextFixture<ConfigContext>>
     {
         private const int SignalCount = 4;
         private const int ControllerTypeId = 1;
         
         private EFContextFixture<ConfigContext> _db;
-
         private readonly ITestOutputHelper _output;
-        private ILogger<SignalEFRepository> _log;
-        //private ConfigContext _db;
         private ISignalRepository _repo;
 
         private List<Signal> _signalList = new List<Signal>();
@@ -53,54 +32,217 @@ namespace InfrastructureTests.RepositoryTests
             _db = dbFixture;
             _output = output;
             
-            _log = new Microsoft.Extensions.Logging.Abstractions.NullLogger<SignalEFRepository>();
-            _repo = new SignalEFRepository(_db.Context, _log);
+            _repo = new SignalEFRepository(_db.Context, new Microsoft.Extensions.Logging.Abstractions.NullLogger<SignalEFRepository>());
 
             SeedTestData();
         }
 
         private async void SeedTestData()
         {
-            var fixture = new Fixture();
-
-            fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-            fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            fixture.Customize<Signal>(c => c
-                .Without(w => w.Id)
-                .With(w => w.RegionId, 0)
-                .Without(w => w.Region)
-                .With(w => w.JurisdictionId, 0)
-                .Without(w => w.Jurisdiction)
-                .Without(w => w.ControllerTypeId)
-                .Without(w => w.ControllerType)
-                .Without(w => w.VersionAction)
-                .Without(w => w.Approaches)
-                .Without(w => w.Areas)
-                .Without(w => w.MetricComments)
-            );
-
-            for (int x = 1; x <= SignalCount; x++)
+            if (_repo.GetList().Count() < 1)
             {
-                string signalId = x.ToString();
+                var fixture = new Fixture();
 
-                for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
+                fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
+                fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+                fixture.Customize<Signal>(c => c
+                    .Without(w => w.Id)
+                    .With(w => w.RegionId, 0)
+                    .Without(w => w.Region)
+                    .With(w => w.JurisdictionId, 0)
+                    .Without(w => w.Jurisdiction)
+                    .Without(w => w.ControllerTypeId)
+                    .Without(w => w.ControllerType)
+                    .Without(w => w.VersionAction)
+                    .Without(w => w.Approaches)
+                    .Without(w => w.Areas)
+                    .Without(w => w.MetricComments)
+                );
+
+                for (int x = 1; x <= SignalCount; x++)
                 {
-                    var s = fixture.Create<Signal>();
-                    s.SignalId = signalId;
-                    s.VersionActionId = (SignaVersionActions)i;
-                    s.PrimaryName = s.VersionActionId.ToString();
-                    s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
-                    s.ControllerTypeId = (i % 2 == 0) ? 1 : 2;
-                    s.Start = DateTime.Today.AddDays((i - (i * 2)) - 1);
-                    await _repo.AddAsync(s);
+                    string signalId = x.ToString();
 
-                    _output.WriteLine($"initial: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start} - {s.ControllerTypeId}");
+                    for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
+                    {
+                        var s = fixture.Create<Signal>();
+                        s.SignalId = signalId;
+                        s.VersionActionId = (SignaVersionActions)i;
+                        s.PrimaryName = s.VersionActionId.ToString();
+                        s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
+                        s.ControllerTypeId = (i % 2 == 0) ? 1 : 2;
+                        s.Start = DateTime.Today.AddDays((i - (i * 2)) - 1);
+                        await _repo.AddAsync(s);
+                    }
                 }
             }
 
             _signalList = _repo.GetList().ToList();
+
+            foreach (var s in _signalList)
+            {
+                _output.WriteLine($"Seed Data: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start} - {s.ControllerTypeId}");
+            }
         }
+
+        #region ISignalRepository
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        [InlineData("3")]
+        [InlineData("4")]
+        public void ISignalRepositoryGetAllVersionsOfSignal(string signalId)
+        {
+            var result = _repo.GetAllVersionsOfSignal(signalId);
+
+            foreach (var s in result)
+            {
+                _output.WriteLine($"result: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
+            }
+
+            //should not return deleted signals
+            Assert.True(!result.Select(s => s.VersionActionId).Contains(SignaVersionActions.Delete));
+
+            //all values should be signalId
+            Assert.True(result.All(a => a.SignalId == signalId));
+
+            //values should be sorted by start date
+            Assert.Equal(result.Select(s => s.Start).OrderByDescending(o => o), result.Select(s => s.Start));
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        [InlineData("3")]
+        [InlineData("4")]
+        public void ISignalRepositoryGetLatestVersionOfSignal(string signalId)
+        {
+            var result = _repo.GetLatestVersionOfSignal(signalId);
+
+            _output.WriteLine($"result: {result.Id} - {result.SignalId} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
+
+            //should not return deleted signals
+            Assert.True(result.VersionActionId != SignaVersionActions.Delete);
+
+            //all values should be signalId
+            Assert.True(result.SignalId == signalId);
+
+            //value should be newest date
+            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalId == signalId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        [InlineData("3")]
+        [InlineData("4")]
+        public void ISignalRepositoryGetLatestVersionOfSignalWithDate(string signalId)
+        {
+            var start = DateTime.Today.AddDays(-2);
+            
+            var result = _repo.GetLatestVersionOfSignal(signalId, start);
+
+            _output.WriteLine($"result: {result.Id} - {result.SignalId} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
+
+            //should not return deleted signals
+            Assert.True(result.VersionActionId != SignaVersionActions.Delete);
+
+            //all values should be signalId
+            Assert.True(result.SignalId == signalId);
+
+            //should all be <= start date
+            Assert.True(result.Start <= start);
+
+            //value should be newest date
+            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalId == signalId && w.Start <= start).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+        }
+
+        [Fact]
+        public void ISignalRepositoryGetLatestVersionOfAllSignals()
+        {
+            var result = _repo.GetLatestVersionOfAllSignals();
+
+            foreach (var r in result)
+            {
+                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
+            }
+
+            //should not return deleted signals
+            Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
+
+            //result list should equal signalCount
+            Assert.True(result.Count == SignalCount);
+
+            //value should be newest date
+            Assert.Collection(result,
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+        }
+
+        [Fact]
+        public void ISignalRepositoryGetLatestVersionOfAllSignalsByControllerTypeId()
+        {
+            var result = _repo.GetLatestVersionOfAllSignals(ControllerTypeId);
+
+            foreach (var r in result)
+            {
+                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start} - {r.ControllerTypeId}");
+            }
+
+            //controller type should all equal controllerTypeId
+            Assert.True(result.All(a => a.ControllerTypeId == ControllerTypeId));
+
+            //should not return deleted signals
+            Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
+
+            //result list should equal signalCount
+            Assert.True(result.Count == SignalCount);
+
+            //value should be newest date
+            Assert.Collection(result,
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("2")]
+        [InlineData("3")]
+        [InlineData("4")]
+        public void ISignalRepositoryGetSignalsBetweenDates(string signalId)
+        {
+            var start = DateTime.Today.AddDays(-2);
+            var end = DateTime.Today;
+
+            var result = _repo.GetSignalsBetweenDates(signalId, start, end);
+
+            foreach (var r in result)
+            {
+                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
+            }
+
+            //should not return deleted signals
+            Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
+
+            //should all be signalId
+            Assert.True(result.All(a => a.SignalId == signalId));
+
+            //should all be between start and end dates
+            Assert.True(result.All(a => a.Start > start && a.Start < end));
+
+            //compare to initial collection
+            Assert.Equal(_signalList.Where(w => w.SignalId == signalId && w.VersionActionId != SignaVersionActions.Delete && w.Start > start && w.Start < end), result);
+        }
+
+        #endregion
+
+        #region ISignalRepositoryExtensions
 
         //[Theory, AutoDataOmitRecursion]
         //[Trait("Key", "Value")]
@@ -149,256 +291,22 @@ namespace InfrastructureTests.RepositoryTests
             Assert.True(actual.Start > signal.Start);
         }
 
-        [Theory]
-        [InlineData("1")]
-        [InlineData("2")]
-        [InlineData("3")]
-        [InlineData("4")]
-        public void ISignalRepositoryGetAllVersionsOfSignal(string signalId)
-        {
-            //string signalId = "1001";
-            
-            //var fixture = new Fixture();
-
-            //fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-            //fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            //fixture.Customize<Signal>(c =>
-            //    c.With(w => w.SignalId, signalId)
-            //    .With(w => w.ControllerTypeId, 1)
-            //    .Without(w => w.ControllerType)
-            //    //.Without(w => w.Jurisdiction)
-            //    //.Without(w => w.Region)
-            //    .Without(w => w.VersionAction)
-            //    .Without(w => w.Approaches)
-            //    .Without(w => w.Areas)
-            //    .Without(w => w.MetricComments)
-            //);
-
-            //var signalList = new List<Signal>();
-
-            //for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i ++)
-            //{
-            //    var s = fixture.Create<Signal>();
-            //    s.VersionActionId = (SignaVersionActions)i;
-            //    s.PrimaryName = s.VersionActionId.ToString();
-            //    s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
-            //    signalList.Add(s);
-
-            //    _output.WriteLine($"initial: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
-            //}
-
-            //await _repo.AddRangeAsync(signalList);
-
-            var result = _repo.GetAllVersionsOfSignal(signalId);
-
-            foreach (var s in result)
-            {
-                _output.WriteLine($"result: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
-            }
-
-            //should not return deleted signals
-            Assert.True(!result.Select(s => s.VersionActionId).Contains(SignaVersionActions.Delete));
-            
-            //all values should be signalId
-            Assert.True(result.All(a => a.SignalId == signalId));
-            
-            //values should be sorted by start date
-            Assert.Equal(result.Select(s => s.Start).OrderByDescending(o => o), result.Select(s => s.Start));
-        }
-
-        [Theory]
-        [InlineData("1")]
-        [InlineData("2")]
-        [InlineData("3")]
-        [InlineData("4")]
-        public void ISignalRepositoryGetLatestVersionOfSignal(string signalId)
-        {
-            //string signalId = "1002";
-
-            //var fixture = new Fixture();
-
-            //fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-            //fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            //fixture.Customize<Signal>(c =>
-            //    c.With(w => w.SignalId, signalId)
-            //    .With(w => w.ControllerTypeId, 1)
-            //    .Without(w => w.ControllerType)
-            //    //.Without(w => w.Jurisdiction)
-            //    //.Without(w => w.Region)
-            //    .Without(w => w.VersionAction)
-            //    .Without(w => w.Approaches)
-            //    .Without(w => w.Areas)
-            //    .Without(w => w.MetricComments)
-            //);
-
-            //var signalList = new List<Signal>();
-
-            //for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
-            //{
-            //    var s = fixture.Create<Signal>();
-            //    s.VersionActionId = (SignaVersionActions)i;
-            //    s.PrimaryName = s.VersionActionId.ToString();
-            //    s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
-            //    signalList.Add(s);
-
-            //    _output.WriteLine($"initial: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
-            //}
-
-            //await _repo.AddRangeAsync(signalList);
-
-            var result = _repo.GetLatestVersionOfSignal(signalId);
-
-            _output.WriteLine($"result: {result.Id} - {result.SignalId} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
-
-            //should not return deleted signals
-            Assert.True(result.VersionActionId != SignaVersionActions.Delete);
-
-            //all values should be signalId
-            Assert.True(result.SignalId == signalId);
-
-            //value should be newest date
-            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalId == signalId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
-        }
-
         [Fact]
-        public void ISignalRepositoryGetLatestVersionOfAllSignals()
+        public async void ISignalRepositorySetSignalToDeleted()
         {
-            //var signalCount = 4;
+            var expected = _repo.GetList().FirstOrDefault(s => s.VersionActionId != SignaVersionActions.Delete);
 
-            //var fixture = new Fixture();
+            _output.WriteLine($"Original: {expected.VersionActionId}");
 
-            //fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-            //fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            await _repo.SetSignalToDeleted(expected.Id);
 
-            //fixture.Customize<Signal>(c => c
-            //    //c.With(w => w.SignalId, signalId)
-            //    .With(w => w.ControllerTypeId, 1)
-            //    .Without(w => w.ControllerType)
-            //    //.Without(w => w.Jurisdiction)
-            //    //.Without(w => w.Region)
-            //    .Without(w => w.VersionAction)
-            //    .Without(w => w.Approaches)
-            //    .Without(w => w.Areas)
-            //    .Without(w => w.MetricComments)
-            //);
+            var actual = await _repo.LookupAsync(expected.Id);
 
-            //var signalList = new List<Signal>();
+            _output.WriteLine($"Modified: {actual.VersionActionId}");
 
-            //for (int x = 1; x <= signalCount; x++) 
-            //{
-            //    string signalId = x.ToString();
-
-            //    for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
-            //    {
-            //        var s = fixture.Create<Signal>();
-            //        s.SignalId = signalId;
-            //        s.VersionActionId = (SignaVersionActions)i;
-            //        s.PrimaryName = s.VersionActionId.ToString();
-            //        s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
-            //        signalList.Add(s);
-
-            //        _output.WriteLine($"initial: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
-            //    }
-            //}
-
-            //await _repo.AddRangeAsync(signalList);
-
-            var result = _repo.GetLatestVersionOfAllSignals();
-
-            foreach (var r in result)
-            {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
-            }
-
-            //should not return deleted signals
-            Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
-
-            //result list should equal signalCount
-            Assert.True(result.Count == SignalCount);
-
-            //value should be newest date
-            Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+            Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void ISignalRepositoryGetLatestVersionOfAllSignalsByControllerTypeId()
-        {
-            //var signalCount = 4;
-            //var controllerTypeId = 1;
-
-            //var fixture = new Fixture();
-
-            //fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => fixture.Behaviors.Remove(b));
-            //fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-
-            //fixture.Customize<Signal>(c => c
-            //    //c.With(w => w.SignalId, signalId)
-            //    //.With(w => w.ControllerTypeId, 1)
-            //    .Without(w => w.ControllerType)
-            //    //.Without(w => w.Jurisdiction)
-            //    //.Without(w => w.Region)
-            //    .Without(w => w.VersionAction)
-            //    .Without(w => w.Approaches)
-            //    .Without(w => w.Areas)
-            //    .Without(w => w.MetricComments)
-            //);
-
-            //var signalList = new List<Signal>();
-
-            //for (int x = 1; x <= signalCount; x++)
-            //{
-            //    string signalId = x.ToString();
-
-            //    for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
-            //    {
-            //        var s = fixture.Create<Signal>();
-            //        s.SignalId = signalId;
-            //        s.VersionActionId = (SignaVersionActions)i;
-            //        s.PrimaryName = s.VersionActionId.ToString();
-            //        s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
-            //        s.ControllerTypeId = (i % 2 == 0) ? 1 : 2;
-            //        signalList.Add(s);
-
-            //        _output.WriteLine($"initial: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start} - {s.ControllerTypeId}");
-            //    }
-            //}
-
-            //await _repo.AddRangeAsync(signalList);
-
-            var result = _repo.GetLatestVersionOfAllSignals(ControllerTypeId);
-
-            foreach (var r in result)
-            {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start} - {r.ControllerTypeId}");
-            }
-
-            //controller type should all equal controllerTypeId
-            Assert.True(result.All(a => a.ControllerTypeId == ControllerTypeId));
-
-            //should not return deleted signals
-            Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
-
-            //result list should equal signalCount
-            Assert.True(result.Count == SignalCount);
-
-            //value should be newest date
-            Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
-        }
-
-        public void Dispose()
-        {
-            //_output.WriteLine($"Disposing database: {_db.GetHashCode()}");
-            //_db.Dispose();
-        }
+        #endregion
     }
 }

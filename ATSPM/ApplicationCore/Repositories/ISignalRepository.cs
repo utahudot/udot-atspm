@@ -8,27 +8,65 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Signal Controller Repository
+    /// </summary>
     public interface ISignalRepository : IAsyncRepository<Signal>
     {
-        IReadOnlyList<Signal> GetAllVersionsOfSignal(string SignalId);
+        /// <summary>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
+        IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId);
 
-        Signal GetLatestVersionOfSignal(string SignalId);
-
-        Signal GetLatestVersionOfSignal(string SignalId, DateTime startDate);
-
+        /// <summary>
+        /// Get latest version of all <see cref="Signal"/> and related entities
+        /// </summary>
+        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 
+        /// <summary>
+        /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="ControllerType"/>
+        /// </summary>
+        /// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
+        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
 
-        IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate);
 
-        Task SetSignalToDeleted(int id);
+        /// <summary>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <returns>Lastest <see cref="Signal"/> version</returns>
+        Signal GetLatestVersionOfSignal(string signalId);
 
-        Task SetSignalToDeleted(string signalId);
+        /// <summary>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// and begin at or before <paramref name="startDate"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="startDate">Starting date of Signal controllers</param>
+        /// <returns>Lastest <see cref="Signal"/> version</returns>
+        Signal GetLatestVersionOfSignal(string signalId, DateTime startDate);
+
+        /// <summary>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="startDate">Date controllers are older than</param>
+        /// <param name="endDate">Date controllers are newer than</param>
+        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
+        IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate);
 
         #region ExtensionMethods
 
         //Signal CopySignalToNewVersion(Signal originalVersion);
+
+        //void SetSignalToDeleted(int id);
+
+        //void SetSignalToDeleted(string signalId);
 
         #endregion
 

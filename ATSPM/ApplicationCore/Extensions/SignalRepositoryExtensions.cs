@@ -34,6 +34,17 @@ namespace ATSPM.Application.Extensions
             return newVersion;
         }
 
+        public static async Task SetSignalToDeleted(this ISignalRepository repo, int id)
+        {
+            Signal signal = await repo.LookupAsync(id);
+
+            if (signal != null)
+            {
+                signal.VersionActionId = SignaVersionActions.Delete;
+                await repo.UpdateAsync(signal);
+            }
+        }
+
         #region Obsolete
 
         [Obsolete("This method isn't currently being used")]
@@ -49,7 +60,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("This method isn't currently being used")]
-        public static int CheckVersionWithFirstDate(this ISignalRepository repo, string SignalId)
+        public static int CheckVersionWithFirstDate(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
@@ -61,7 +72,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Not Required anymore")]
-        public static bool Exists(this ISignalRepository repo, string SignalId)
+        public static bool Exists(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
@@ -79,25 +90,25 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public static IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(this ISignalRepository repo, string SignalId)
+        public static IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public static IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(this ISignalRepository repo, int ControllerTypeId)
+        public static IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(this ISignalRepository repo, int controllerTypeId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("This method isn't currently being used")]
-        public static string GetSignalDescription(this ISignalRepository repo, string SignalId)
+        public static string GetSignalDescription(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetLatestVersionOfSignalBySignalId(this ISignalRepository repo, string SignalId)
+        public static Signal GetLatestVersionOfSignalBySignalId(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
@@ -109,7 +120,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static string GetSignalLocation(this ISignalRepository repo, string SignalId)
+        public static string GetSignalLocation(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
@@ -121,13 +132,13 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetVersionOfSignalByDate(this ISignalRepository repo, string SignalId, DateTime startDate)
+        public static Signal GetVersionOfSignalByDate(this ISignalRepository repo, string signalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetVersionOfSignalByDateWithDetectionTypes(this ISignalRepository repo, string SignalId, DateTime startDate)
+        public static Signal GetVersionOfSignalByDateWithDetectionTypes(this ISignalRepository repo, string signalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }
