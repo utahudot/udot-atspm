@@ -18,7 +18,7 @@ namespace InfrastructureTests.RepositoryTests
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
     public class ISignalRepositoryTests : RepositoryTestBase<Signal, ISignalRepository, ConfigContext>
     {
-        private const int SignalCount = 4;
+        private const int ItemCount = 4;
         private const int ControllerTypeId = 1;
 
         private List<Signal> _signalList = new List<Signal>();
@@ -29,7 +29,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             if (_repo.GetList().Count() < 1)
             {
-                for (int x = 1; x <= SignalCount; x++)
+                for (int x = 1; x <= ItemCount; x++)
                 {
                     string signalId = x.ToString();
 
@@ -142,7 +142,7 @@ namespace InfrastructureTests.RepositoryTests
             Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
 
             //result list should equal signalCount
-            Assert.True(result.Count == SignalCount);
+            Assert.True(result.Count == ItemCount);
 
             //value should be newest date
             Assert.Collection(result,
@@ -169,7 +169,7 @@ namespace InfrastructureTests.RepositoryTests
             Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
 
             //result list should equal signalCount
-            Assert.True(result.Count == SignalCount);
+            Assert.True(result.Count == ItemCount);
 
             //value should be newest date
             Assert.Collection(result,

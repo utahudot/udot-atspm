@@ -69,6 +69,11 @@ namespace InfrastructureTests.RepositoryTests
             .Without(w => w.Detectors)
             );
 
+            this.Customize<Area>(c => c
+            .Without(w => w.Id)
+            .Without(w => w.Signals)
+            );
+
             this.Customize<Signal>(c => c
                     .Without(w => w.Id)
                     .With(w => w.RegionId, 0)
