@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.RepositoryTests
 {
-    public abstract class RepositoryTestBase<T1, T2, T3> : IClassFixture<EFContextFixture<ConfigContext>> 
+    public abstract class RepositoryTestBase<T1, T2, T3> : IClassFixture<EFContextFixture<T3>> 
         where T1 : ATSPMModelBase, new()
         where T3 : DbContext, new()
     {
@@ -73,6 +73,9 @@ namespace InfrastructureTests.RepositoryTests
             .Without(w => w.Id)
             .Without(w => w.Signals)
             );
+
+            //this.Customize<ControllerLogArchive>(c => c
+            //);
 
             this.Customize<Signal>(c => c
                     .Without(w => w.Id)
