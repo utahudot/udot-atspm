@@ -61,6 +61,14 @@ namespace InfrastructureTests.RepositoryTests
                 .Without(w => w.MetricTypes)
             );
 
+            this.Customize<Approach>(c => c
+            .Without(w => w.Id)
+            .Without(w => w.SignalId)
+            .Without(w => w.DirectionType)
+            .Without(w => w.Signal)
+            .Without(w => w.Detectors)
+            );
+
             this.Customize<Signal>(c => c
                     .Without(w => w.Id)
                     .With(w => w.RegionId, 0)

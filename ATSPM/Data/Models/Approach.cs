@@ -9,7 +9,7 @@ namespace ATSPM.Data.Models
 {
     public partial class Approach : ATSPMModelBase, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
     {
-        public int ApproachId { get; set; }
+        public int Id { get; set; }
         //public string SignalId { get; set; }
         public int SignalId { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
