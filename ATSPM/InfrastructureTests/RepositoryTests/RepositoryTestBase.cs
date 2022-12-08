@@ -130,6 +130,23 @@ namespace InfrastructureTests.RepositoryTests
             .Without(w => w.Signals)
             );
 
+            this.Customize<DetectorComment>(c => c
+            .Without(w => w.Id)
+            .Without(w => w.DetectorId)
+            .Without(w => w.Detector)
+            );
+
+            this.Customize<Detector>(c => c
+            .Without(w => w.Id)
+            .Without(w => w.ApproachId)
+            .Without(w => w.Approach)
+            .Without(w => w.DetectionHardware)
+            .Without(w => w.LaneType)
+            .Without(w => w.MovementType)
+            .Without(w => w.DetectorComments)
+            .Without(w => w.DetectionTypes)
+            );
+
             this.Customize<Signal>(c => c
                     .Without(w => w.Id)
                     .With(w => w.RegionId, 0)

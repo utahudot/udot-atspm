@@ -92,3 +92,4 @@ C:\Projects\udot-atsmp\ATSPM\bin\Debug\DomainCore.xml
 C:\Projects\udot-atsmp\ATSPM\obj\Debug\docker-compose.dcproj.AssemblyReference.cache
 C:\Projects\udot-atsmp\ATSPM\obj\Debug\docker-compose.dcproj.CoreCompileInputs.cache
 C:\Projects\udot-atsmp\ATSPM\obj\Debug\docker-compose.dcproj.CopyComplete
+C:\Projects\udot-atsmp\ATSPM\bin\Debug\ApplicationCore.xml
