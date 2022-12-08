@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Frequently Asked Quesions Repository
+    /// </summary>
     public interface IFaqRepository : IAsyncRepository<Faq>
     {
     }
