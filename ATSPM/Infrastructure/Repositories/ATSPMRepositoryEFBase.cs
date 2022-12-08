@@ -51,27 +51,27 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<T> GetList(Expression<Func<T, bool>> criteria)
         {
-            return table.Where(criteria).ToList();
+            return GetList().Where(criteria).ToList();
         }
 
         public IReadOnlyList<T> GetList(ISpecification<T> criteria)
         {
-            return table.Where(criteria.Criteria).ToList();
+            return GetList().Where(criteria.Criteria).ToList();
         }
 
-        public IQueryable<T> GetList()
+        public virtual IQueryable<T> GetList()
         {
             return table;
         }
 
         public async Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>> criteria)
         {
-            return await table.Where(criteria).ToListAsync();
+            return await GetList().Where(criteria).ToListAsync();
         }
 
         public async Task<IReadOnlyList<T>> GetListAsync(ISpecification<T> criteria)
         {
-            return await table.Where(criteria.Criteria.Compile()).AsQueryable().ToListAsync().ConfigureAwait(false);
+            return await GetList().Where(criteria.Criteria.Compile()).AsQueryable().ToListAsync().ConfigureAwait(false);
         }
 
         public T Lookup(T item)
@@ -79,6 +79,7 @@ namespace ATSPM.Infrastructure.Repositories
             return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
         }
 
+        //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public T Lookup(object key)
         {
             return table.Find(key);

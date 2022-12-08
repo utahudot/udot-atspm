@@ -19,6 +19,18 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public ApproachEFRepository(ConfigContext db, ILogger<ApproachEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<Approach> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.DirectionType)
+                .Include(i => i.Signal)
+                .Include(i => i.Detectors);
+        }
+
+        #endregion
+
         #region IApproachRepository
 
         #endregion

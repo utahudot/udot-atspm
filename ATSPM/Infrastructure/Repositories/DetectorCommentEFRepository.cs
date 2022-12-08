@@ -19,6 +19,16 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public DetectorCommentEFRepository(ConfigContext db, ILogger<DetectorCommentEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<DetectorComment> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Detector);
+        }
+
+        #endregion
+
         #region IDetectorCommentRepository
 
         #endregion

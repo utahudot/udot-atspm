@@ -37,9 +37,5 @@ namespace ATSPM.Application.Repositories
         //void Remove(DetectorComment detectorComment);
 
         #endregion
-
-
-
-
     }
 }

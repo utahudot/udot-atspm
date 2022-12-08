@@ -18,6 +18,22 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public SignalEFRepository(ConfigContext db, ILogger<SignalEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<Signal> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.ControllerType)
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Region)
+                .Include(i => i.VersionAction)
+                .Include(i => i.Approaches)
+                .Include(i => i.Areas);
+                //.Include(i => i.MetricComments);
+        }
+
+        #endregion
+
         #region ISignalRepository
 
         public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId)

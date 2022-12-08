@@ -19,6 +19,16 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public AreaEFRepository(ConfigContext db, ILogger<AreaEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<Area> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Signals);
+        }
+
+        #endregion
+
         #region IAreaRepository
 
         #endregion

@@ -20,6 +20,16 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public ControllerTypeEFRepository(ConfigContext db, ILogger<ControllerTypeEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<ControllerType> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Signals);
+        }
+
+        #endregion
+
         #region IControllerEventLogRepository
 
         #endregion

@@ -18,6 +18,18 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public ActionLogEFRepository(ConfigContext db, ILogger<ActionLogEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
+        public override IQueryable<ActionLog> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Agency)
+                .Include(i => i.Actions)
+                .Include(i => i.MetricTypes);
+        }
+
+        #endregion
+
         #region IActionLogRepository
 
         #endregion
