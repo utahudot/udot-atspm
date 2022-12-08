@@ -39,12 +39,60 @@ namespace InfrastructureTests.RepositoryTests
 
             _repo = (T2)Activator.CreateInstance(T, _db.Context, null);
 
+            //_db.Context.Database.ExecuteSqlRaw($"DElETE FROM {_db.Context.Model.FindEntityType(typeof(T1)).GetTableName()}");
+
             SeedTestData();
         }
 
         public CustomFixture ModelFixture { get; private set; } = new CustomFixture();
 
         protected abstract void SeedTestData();
+
+        //[Fact]
+        //public void IAsyncRepositoryAdd()
+        //{
+        //    var expected = ModelFixture.Create<T1>();
+        //    T1 actual = null;
+            
+        //    if (_repo is IAsyncRepository<T1> repo)
+        //    {
+        //        repo.Add(expected);
+
+        //        actual = repo.Lookup(expected);
+
+        //        Assert.Equal(expected, actual);
+        //    }
+        //    else
+        //    {
+        //        Assert.False(true);
+        //    }
+        //}
+
+        //[Fact]
+        //public void IAsyncRepositoryRemove()
+        //{
+        //    var expected = ModelFixture.Create<T1>();
+        //    T1 actual = null;
+
+        //    if (_repo is IAsyncRepository<T1> repo)
+        //    {
+        //        repo.Add(expected);
+
+        //        actual = repo.Lookup(expected);
+
+        //        Assert.Equal(expected, actual);
+
+        //        repo.Remove(actual);
+
+        //        actual = repo.Lookup(expected);
+
+        //        Assert.NotEqual(expected, actual);
+        //    }
+        //    else
+        //    {
+        //        Assert.False(true);
+        //    }
+        //}
     }
 
     public class CustomFixture : Fixture
@@ -76,6 +124,11 @@ namespace InfrastructureTests.RepositoryTests
 
             //this.Customize<ControllerLogArchive>(c => c
             //);
+
+            this.Customize<ControllerType>(c => c
+            .Without(w => w.Id)
+            .Without(w => w.Signals)
+            );
 
             this.Customize<Signal>(c => c
                     .Without(w => w.Id)

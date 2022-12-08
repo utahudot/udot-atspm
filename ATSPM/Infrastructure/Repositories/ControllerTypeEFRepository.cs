@@ -22,16 +22,6 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IControllerEventLogRepository
 
-        #region Obsolete
-
-        [Obsolete("This Method is obsolete, use 'GetList'")]
-        public List<ControllerType> GetControllerTypes()
-        {
-            throw new NotImplementedException("This Method is obsolete, use 'GetList'");
-        }
-
-        #endregion
-
         #endregion
     }
 }
