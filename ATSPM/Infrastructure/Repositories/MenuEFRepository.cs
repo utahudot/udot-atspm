@@ -15,20 +15,11 @@ using ATSPM.Data;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public class JurisdictionEFRepository : ATSPMRepositoryEFBase<Jurisdiction>, IJurisdictionRepository
+    public class MenuEFRepository : ATSPMRepositoryEFBase<Menu>, IMenuRepository
     {
-        public JurisdictionEFRepository(ConfigContext db, ILogger<JurisdictionEFRepository> log) : base(db, log) { }
+        public MenuEFRepository(ConfigContext db, ILogger<MenuEFRepository> log) : base(db, log) { }
 
-        #region Overrides
-
-        public override IQueryable<Jurisdiction> GetList()
-        {
-            return base.GetList().OrderBy(o => o.Name);
-        }
-
-        #endregion
-
-        #region IJurisdictionRepository
+        #region IMenuRepository
 
         #endregion
     }
