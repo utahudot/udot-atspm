@@ -13,7 +13,7 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Metric Comments");
 
-            builder.HasIndex(e => e.SignalId);
+            //builder.HasIndex(e => e.SignalId);
         }
     }
 }
