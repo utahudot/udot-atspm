@@ -10,19 +10,23 @@ namespace ATSPM.Application.Repositories
 {
     public interface IMovementTypeRepository : IAsyncRepository<MovementType>
     {
-        [Obsolete("Use GetList instead")]
-        IReadOnlyList<MovementType> GetAllMovementTypes();
-        
-        [Obsolete("Use Lookup instead")]
-        MovementType GetMovementTypeByMovementTypeID(int movementTypeID);
-        
-        [Obsolete("Use Update in the BaseClass")]
-        void Update(MovementType movementType);
-        
-        [Obsolete("Use Add in the BaseClass")]
-        void Add(MovementType movementType);
-        
-        [Obsolete("Use Remove in the BaseClass")]
-        void Remove(MovementType movementType);
+        #region Obsolete
+
+        //[Obsolete("Use GetList instead")]
+        //IReadOnlyList<MovementType> GetAllMovementTypes();
+
+        //[Obsolete("Use Lookup instead")]
+        //MovementType GetMovementTypeByMovementTypeID(int movementTypeID);
+
+        //[Obsolete("Use Update in the BaseClass")]
+        //void Update(MovementType movementType);
+
+        //[Obsolete("Use Add in the BaseClass")]
+        //void Add(MovementType movementType);
+
+        //[Obsolete("Use Remove in the BaseClass")]
+        //void Remove(MovementType movementType);
+
+        #endregion
     }
 }
