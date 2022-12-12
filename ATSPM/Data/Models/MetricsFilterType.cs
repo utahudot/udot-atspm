@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MetricsFilterType
+    public partial class MetricsFilterType : ATSPMModelBase
     {
-        public int FilterId { get; set; }
+        public int Id { get; set; }
         public string FilterName { get; set; }
     }
 }

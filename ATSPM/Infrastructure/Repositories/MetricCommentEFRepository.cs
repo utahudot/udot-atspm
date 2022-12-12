@@ -19,13 +19,13 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public MetricCommentEFRepository(ConfigContext db, ILogger<MetricCommentEFRepository> log) : base(db, log) { }
 
+        #region Overrides
+
         public override IQueryable<MetricComment> GetList()
         {
             return base.GetList()
                 .Include(i => i.MetricTypes);
         }
-
-        #region Overrides
 
         #endregion
 
