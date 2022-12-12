@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Movement Type Repository
+    /// </summary>
     public interface IMovementTypeRepository : IAsyncRepository<MovementType>
     {
         #region Obsolete

@@ -8,9 +8,16 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Region Repository
+    /// </summary>
     public interface IRegionsRepository : IAsyncRepository<Region>
     {
-        [Obsolete("Use GetList instead")]
-        IReadOnlyList<Region> GetAllRegions();
+        #region Obsolete
+
+        //[Obsolete("Use GetList instead")]
+        //IReadOnlyList<Region> GetAllRegions();
+
+        #endregion
     }
 }
