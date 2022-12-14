@@ -25,7 +25,7 @@ namespace ATSPM.Infrastructure.Converters
         {
             List<T> items = new List<T>();
             items.Add(item);
-            
+
             using (MemoryStream stream = new MemoryStream())
             {
                 ParquetConvert.Serialize(items, stream);
