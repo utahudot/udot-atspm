@@ -6,15 +6,12 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MetricComment : ATSPMModelBase, IRelatedSignal, IRelatedMetricTypes
+    public partial class MetricComment : ATSPMModelBase, IRelatedMetricTypes
     {
         public int Id { get; set; }
-        //public string SignalId { get; set; }
+        public string SignalId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
-        public int SignalId { get; set; }
-
-        public Signal Signal { get; set; }
 
         public virtual ICollection<MetricType> MetricTypes { get; set; } = new HashSet<MetricType>();
     }
