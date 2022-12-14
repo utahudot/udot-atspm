@@ -65,8 +65,6 @@ dkms.conf
 /ATSPM/Infrastructure/bin
 /ATSPM/InfrastructureTests/obj
 /ATSPM/InfrastructureTests/bin
-/ATSPM/InfrastructureTexts/obj
-/ATSPM/InfrastructureTexts/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
 /ATSPM/DataApi/obj
