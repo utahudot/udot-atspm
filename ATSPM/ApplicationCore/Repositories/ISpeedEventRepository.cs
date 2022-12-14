@@ -8,11 +8,22 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Speed Event Repository
+    /// </summary>
     public interface ISpeedEventRepository : IAsyncRepository<SpeedEvent>
     {
-        IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(DateTime startDate, DateTime endDate, Detector detector,
-        int minSpeedFilter);
+        #region ExtensionMethods
 
-        IReadOnlyList<SpeedEvent> GetSpeedEventsBySignal(DateTime startDate, DateTime endDate, Approach approach);
+        //IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5);
+
+        #endregion
+
+        #region Obsolete
+
+        //[Obsolete("This method isn't currently being used")]
+        //IReadOnlyList<Speed_Events> GetSpeedEventsBySignal(DateTime startDate, DateTime endDate, Approach approach);
+
+        #endregion
     }
 }
