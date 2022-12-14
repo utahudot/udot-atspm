@@ -10,16 +10,11 @@ namespace ATSPM.Application.Specifications
 {
     public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     {
-        public ControllerLogDateRangeSpecification(string SignalId, DateTime startTime, DateTime endTime) : base()
+        public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
         {
-            if (string.IsNullOrEmpty(SignalId))
-            {
-                base.Criteria = c => c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
-            }
-            else
-            {
-                base.Criteria = c => c.SignalId == SignalId && c.ArchiveDate >= startTime && c.ArchiveDate <= endTime;
-            }
+            base.Criteria = c => c.SignalId == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+
+            ApplyOrderBy(o => o.ArchiveDate);
         }
     }
 
@@ -63,6 +58,20 @@ namespace ATSPM.Application.Specifications
 
     public class ControllerLogDateTimeRangeSpecification : BaseSpecification<ControllerEventLog>
     {
+        public ControllerLogDateTimeRangeSpecification(DateTime startDate, DateTime endDate) : base()
+        {
+            base.Criteria = c => c.Timestamp >= startDate && c.Timestamp <= endDate;
+
+            ApplyOrderBy(o => o.Timestamp);
+        }
+
+        public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        {
+            base.Criteria = c => c.SignalId == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+
+            ApplyOrderBy(o => o.Timestamp);
+        }
+
         public ControllerLogDateTimeRangeSpecification(int startHour, int startMinute, int endHour, int endMinute) : base()
         {
             base.Criteria = l => l.Timestamp.Hour > startHour && l.Timestamp.Hour < endHour

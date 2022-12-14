@@ -366,6 +366,16 @@
             <param name="specification"></param>
             <returns>Returns the query created from the ISpecification<typeparamref name="T"/></returns>
         </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.FromSpecification``1(System.Collections.Generic.IEnumerable{``0},ATSPM.Domain.Specifications.ISpecification{``0})">
+            <summary>
+            Creates a query based on an <c>string</c> ISpecification&lt;<typeparamref name="T"/>&gt;
+            <see href="ControllerLogArchive"/>
+            </summary>
+            <typeparam name="T">POCO that the query pertains to</typeparam>
+            <param name="list">Input list</param>
+            <param name="specification"></param>
+            <returns>Returns the query created from the ISpecification<typeparamref name="T"/></returns>
+        </member>
         <member name="M:ATSPM.Domain.Extensions.QueryExtensions.IfCondition``1(System.Linq.IQueryable{``0},System.Func{System.Boolean},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}},System.Linq.Expressions.Expression{System.Func{System.Linq.IQueryable{``0},System.Linq.IQueryable{``0}}})">
             <summary>
             Use to create an if statement on an linline linq query

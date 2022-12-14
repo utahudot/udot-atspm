@@ -20,17 +20,17 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public ControllerTypeEFRepository(ConfigContext db, ILogger<ControllerTypeEFRepository> log) : base(db, log) { }
 
-        #region IControllerEventLogRepository
+        #region Overrides
 
-        #region Obsolete
-
-        [Obsolete("This Method is obsolete, use 'GetList'")]
-        public List<ControllerType> GetControllerTypes()
+        public override IQueryable<ControllerType> GetList()
         {
-            throw new NotImplementedException("This Method is obsolete, use 'GetList'");
+            return base.GetList()
+                .Include(i => i.Signals);
         }
 
         #endregion
+
+        #region IControllerEventLogRepository
 
         #endregion
     }
