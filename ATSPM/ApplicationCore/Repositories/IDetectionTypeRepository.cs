@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -6,13 +6,14 @@ using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
-    public interface IDetectionTypeRepository //: IAsyncRepository<DetectionType>
+    public interface IDetectionTypeRepository : IAsyncRepository<DetectionType>
     {
-        List<DetectionType> GetAllDetectionTypes();
+        IReadOnlyList<DetectionType> GetAllDetectionTypesNoBasic();
 
-        List<DetectionType> GetAllDetectionTypesNoBasic();
+        [Obsolete("Use GetList instead")]
+        IReadOnlyList<DetectionType> GetAllDetectionTypes();
 
-        //List<Models.Repositories.DetectionTypeRepository.DetectetorWithMetricAbbreviation> GetAllDetectionTypesWithSupportedMetricAbbreviations();
+        [Obsolete("Use Lookup in the BaseClass")]
         DetectionType GetDetectionTypeByDetectionTypeID(int detectionTypeID);
 
         [Obsolete("Exists in base class")]

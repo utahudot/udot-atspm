@@ -9,7 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Extensions.Logging
+namespace ATSPM.Infrastructure.Logging
 {
     public class ColorConsoleLoggerConfiguration
     {

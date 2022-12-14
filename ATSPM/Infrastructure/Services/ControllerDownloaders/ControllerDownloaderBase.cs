@@ -31,7 +31,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         protected ILogger _log;
         //protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
         protected readonly SignalControllerDownloaderConfiguration _options;
-        
+
 
         #endregion
 
@@ -39,11 +39,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         {
             _client = client;
             _log = log;
-            _options = options?.Get(this.GetType().Name) ?? options?.Value;
+            _options = options?.Get(GetType().Name) ?? options?.Value;
         }
 
         #region Properties
-        
+
         public abstract int ControllerType { get; }
 
         public abstract string[] FileFilters { get; set; }
@@ -51,7 +51,6 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         #endregion
 
         #region Methods
-
         //public override void Initialize()
         //{
         //}
@@ -80,7 +79,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify)) 
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
                     throw new InvalidSignalControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);

@@ -8,13 +8,21 @@ using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Signal Controller Event Log Repository
+    /// </summary>
     public interface IControllerEventLogRepository : IAsyncRepository<ControllerLogArchive>
     {
-        IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string SignalId, DateTime startTime, DateTime endTime);
+        /// <summary>
+        /// Get all controller event logs by <c>SignalId</c> and date range
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="startTime">Start time</param>
+        /// <param name="endTime">End time</param>
+        /// <returns></returns>
+        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime);
 
         #region ExtensionMethods
-
-        //int GetSignalEventsCountBetweenDates(string SignalId, DateTime startTime, DateTime endTime);
 
         //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param);
 
@@ -51,6 +59,9 @@ namespace ATSPM.Application.Repositories
         #endregion
 
         #region Obsolete
+
+        //[Obsolete("Use GetSignalEventsBetweenDates(signalId, startTime, endTime).Count()", true)]
+        //int GetSignalEventsCountBetweenDates(string SignalId, DateTime startTime, DateTime endTime);
 
         //[Obsolete("This method isn't currently being used")]
         //bool CheckForRecords(string SignalId, DateTime startTime, DateTime endTime);

@@ -5,9 +5,10 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
+    [Obsolete("This has been replaced with MetricFilterTypes enum")]
     public partial class MetricsFilterType
     {
-        public int FilterId { get; set; }
+        public int Id { get; set; }
         public string FilterName { get; set; }
     }
 }

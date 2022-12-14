@@ -92,7 +92,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 fileInfo.Directory.Create();
 
                 await Client.DownloadFileAsync(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
-                    
+
                 return fileInfo;
             }
             catch (Exception e)

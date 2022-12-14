@@ -28,7 +28,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.LogData)
                     .HasConversion<byte[]>(
-                    v => JsonSerializer.Serialize(v.Select(c => new { c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
+                    v => JsonSerializer.Serialize(v.Select(c => new { c.SignalId, c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
                     v => JsonSerializer.Deserialize<List<ControllerEventLog>>(v.GZipDecompressToString(), new JsonSerializerOptions()),
 
                     new ValueComparer<ICollection<ControllerEventLog>>((c1, c2) => c1.SequenceEqual(c2),
