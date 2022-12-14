@@ -8,12 +8,15 @@ using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Signal Controller Type Repository
+    /// </summary>
     public interface IControllerTypeRepository : IAsyncRepository<ControllerType>
     {
         #region Obsolete
 
-        [Obsolete("This Method is obsolete, use 'GetList'")]
-        List<ControllerType> GetControllerTypes();
+        //[Obsolete("This Method is obsolete, use 'GetList'", true)]
+        //List<ControllerType> GetControllerTypes();
 
         #endregion
     }

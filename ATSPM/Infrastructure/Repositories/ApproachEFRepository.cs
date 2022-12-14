@@ -19,40 +19,20 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public ApproachEFRepository(ConfigContext db, ILogger<ApproachEFRepository> log) : base(db, log) { }
 
-        [Obsolete("Use Add instead")]
-        public void AddOrUpdate(Approach approach)
+        #region Overrides
+
+        public override IQueryable<Approach> GetList()
         {
-            throw new NotImplementedException();
+            return base.GetList()
+                .Include(i => i.DirectionType)
+                .Include(i => i.Signal)
+                .Include(i => i.Detectors);
         }
 
-        [Obsolete("This Method is not used")]
-        public Approach FindAppoachByVersionIdPhaseOverlapAndDirection(int versionId, int phaseNumber, bool isOverlap, int directionTypeId)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        [Obsolete("Use GetList instead")]
-        public IReadOnlyList<Approach> GetAllApproaches()
-        {
-            throw new NotImplementedException();
-        }
+        #region IApproachRepository
 
-        [Obsolete("Use Lookup instead")]
-        public Approach GetApproachByApproachID(int approachID)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use GetList instead")]
-        public IReadOnlyList<Approach> GetApproachesByIds(List<int> excludedApproachIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Use Remove instead")]
-        public void Remove(int approachID)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
