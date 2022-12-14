@@ -5,6 +5,10 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Linq.Expressions;
+using ATSPM.Domain.Specifications;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -12,38 +16,18 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public DetectionTypeEFRepository(DbContext db, ILogger<DetectionTypeEFRepository> log) : base(db, log) { }
 
-        public List<DetectionType> GetAllDetectionTypes()
+        public IReadOnlyList<DetectionType> GetAllDetectionTypes()
         {
             throw new NotImplementedException();
         }
 
-        public List<DetectionType> GetAllDetectionTypesNoBasic()
+        public IReadOnlyList<DetectionType> GetAllDetectionTypesNoBasic()
         {
             throw new NotImplementedException();
         }
 
         public DetectionType GetDetectionTypeByDetectionTypeID(int detectionTypeID)
         {
-            throw new NotImplementedException();
-        }
-
-        [Obsolete("Exists in base class")]
-        public void Update(DetectionType detectionType)
-        {
-            //var g = (from r in _db.DetectionTypes
-            //         where r.DetectionTypeID == detectionType.DetectionTypeID
-            //         select r).FirstOrDefault();
-            //if (g != null)
-            //{
-            //    _db.Entry(g).CurrentValues.SetValues(detectionType);
-            //    _db.SaveChanges();
-            //}
-            //else
-            //{
-            //    _db.DetectionTypes.Add(detectionType);
-            //    _db.SaveChanges();
-            //}
-
             throw new NotImplementedException();
         }
     }
