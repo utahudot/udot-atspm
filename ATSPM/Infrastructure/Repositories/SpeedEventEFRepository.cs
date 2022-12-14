@@ -16,7 +16,7 @@ namespace ATSPM.Infrastructure.Repositories
 {
     public class SpeedEventEFRepository : ATSPMRepositoryEFBase<SpeedEvent>, ISpeedEventRepository
     {
-        public SpeedEventEFRepository(ConfigContext db, ILogger<SpeedEventEFRepository> log) : base(db, log) { }
+        public SpeedEventEFRepository(SpeedContext db, ILogger<SpeedEventEFRepository> log) : base(db, log) { }
 
         #region ISpeedEventRepository
 
