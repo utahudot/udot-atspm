@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Configuration;
+using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
@@ -11,6 +11,7 @@ using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SignalControllerLogger;
 using System.Threading.Tasks;
 
 namespace ATSPM.SignalControllerLogger
@@ -115,5 +116,5 @@ namespace ATSPM.SignalControllerLogger
         }
     }
 
-    
+
 }

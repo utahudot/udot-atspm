@@ -4,64 +4,129 @@ using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
+    /// <summary>
+    /// Signal Controller Repository
+    /// </summary>
     public interface ISignalRepository : IAsyncRepository<Signal>
     {
-        [Obsolete("This method isn't currently being used")]
-        void AddList(List<Signal> signals);
+        /// <summary>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
+        IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId);
 
-        [Obsolete("Use the add in respository base class")]
-        void AddOrUpdate(Signal signal);
-
-        [Obsolete("This method isn't currently being used")]
-        int CheckVersionWithFirstDate(string SignalId);
-
-        [Obsolete("Use ICloneable")]
-        Signal CopySignalToNewVersion(Signal originalVersion);
-
-        [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        IReadOnlyList<Signal> EagerLoadAllSignals();
-
-        bool Exists(string SignalId);
-
-        [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        IReadOnlyList<Signal> GetAllEnabledSignals();
-
-        [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        IList<Signal> GetAllSignals();
-
-        [Obsolete("Use overload of GetLatestVersionOfAllSignals?")]
-        IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId);
-
-        [Obsolete("Use overload of GetLatestVersionOfAllSignals?")]
-        IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId);
-
+        /// <summary>
+        /// Get latest version of all <see cref="Signal"/> and related entities
+        /// </summary>
+        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 
-        Signal GetLatestVersionOfSignalBySignalId(string SignalId);
+        /// <summary>
+        /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="ControllerType"/>
+        /// </summary>
+        /// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
+        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
+        IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
 
-        [Obsolete("This should not be in respository")]
-        IReadOnlyList<Pin> GetPinInfo();
 
-        [Obsolete("Just get whole object")]
-        string GetSignalDescription(string SignalId);
+        /// <summary>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <returns>Lastest <see cref="Signal"/> version</returns>
+        Signal GetLatestVersionOfSignal(string signalId);
 
-        [Obsolete("This should not be in respository")]
-        string GetSignalLocation(string SignalId);
+        /// <summary>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// and begin at or before <paramref name="startDate"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="startDate">Starting date of Signal controllers</param>
+        /// <returns>Lastest <see cref="Signal"/> version</returns>
+        Signal GetLatestVersionOfSignal(string signalId, DateTime startDate);
 
-        IReadOnlyList<Signal> GetSignalsBetweenDates(string SignalId, DateTime startDate, DateTime endDate);
+        /// <summary>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
+        /// </summary>
+        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="startDate">Date controllers are older than</param>
+        /// <param name="endDate">Date controllers are newer than</param>
+        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
+        IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate);
 
-        Signal GetSignalVersionByVersionId(int versionId);
+        #region ExtensionMethods
 
-        Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate);
+        //Signal CopySignalToNewVersion(Signal originalVersion);
 
-        Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate);
+        //void SetSignalToDeleted(int id);
 
-        void SetAllVersionsOfASignalToDeleted(string id);
+        //void SetSignalToDeleted(string signalId);
 
-        void SetVersionToDeleted(int versionId);
+        #endregion
+
+        #region Obsolete
+
+        //[Obsolete("This method isn't currently being used")]
+        //void AddList(List<Signal> signals);
+
+        //[Obsolete("Use the add in respository base class")]
+        //void AddOrUpdate(Signal signal);
+
+        //[Obsolete("This method isn't currently being used")]
+        //int CheckVersionWithFirstDate(string SignalId);
+
+        //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
+        //IReadOnlyList<Signal> EagerLoadAllSignals();
+
+        //[Obsolete("Not Required anymore")]
+        //bool Exists(string SignalId);
+
+        //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
+        //IReadOnlyList<Signal> GetAllEnabledSignals();
+
+        //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
+        //IList<Signal> GetAllSignals();
+
+        //[Obsolete("Use GetAllVersionsOfSignal")]
+        //IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId);
+
+        //[Obsolete("This method isn't currently being used")]
+        //IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId);
+
+        //[Obsolete("Just get whole object")]
+        //string GetSignalDescription(string SignalId);
+
+        //[Obsolete("Use GetLatestVersionOfSignal")]
+        //Signal GetLatestVersionOfSignalBySignalId(string SignalId);
+
+        //[Obsolete("This should not be in respository")]
+        //IReadOnlyList<Pin> GetPinInfo();
+
+        //[Obsolete("Use GetLatestVersionOfSignal")]
+        //string GetSignalLocation(string SignalId);
+
+        //[Obsolete("Use Lookup instead")]
+        //Signal GetSignalVersionByVersionId(int versionId);
+
+        //[Obsolete("Use GetLatestVersionOfSignal")]
+        //Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate);
+
+        //[Obsolete("Use GetLatestVersionOfSignal")]
+        //Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate);
+
+        //[Obsolete("Use SetSignalToDeleted")]
+        //void SetAllVersionsOfASignalToDeleted(string id);
+
+        //[Obsolete("Use SetSignalToDeleted")]
+        //void SetVersionToDeleted(int versionId);
+
+        #endregion
 
         //IReadOnlyList<Signal> GetLatestVersionOfAllSignalsForFtp();
         //SignalFTPInfo GetSignalFTPInfoByID(string SignalId);

@@ -3977,9 +3977,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
-          "DomainCore": "1.0.0",
           "FluentFTP": "39.0.1",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0",

@@ -23,7 +23,7 @@ namespace ATSPM.Infrastructure.Repositories
 
             return Path.Combine(folder.FullName);
         }
-        
+
         protected override string GenerateFileName(ControllerLogArchive item)
         {
             return $"{item.GetType().Name}_{item.SignalId}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
@@ -35,7 +35,7 @@ namespace ATSPM.Infrastructure.Repositories
             {
                 return base.GenerateFilePath(item);
             }
-            
+
             var folder = new DirectoryInfo(Path.Combine(GenerateFolderStructure(item.ArchiveDate)));
 
             if (!folder.Exists)
@@ -62,18 +62,19 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IControllerEventLogRepository
 
-        public IQueryable<ControllerEventLog> GetSignalEventsBetweenDates(string SignalId, DateTime startTime, DateTime endTime)
+        public IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
         {
             var range = Enumerable.Range(0, 1 + endTime.Subtract(startTime).Days).Select(o => startTime.AddDays(o)).ToList();
 
             var result = GetFromDirectoriesByDateRange(range)
-                .FromSpecification(new ControllerLogDateRangeSpecification(SignalId, startTime, endTime))
+                .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
                 //.AsNoTracking() only needed for EF
                 .AsEnumerable()
                 .SelectMany(s => s.LogData)
+                .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime))
                 .AsQueryable();
 
-            return result;
+            return result.ToList();
         }
 
         #endregion
