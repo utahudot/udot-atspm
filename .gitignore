@@ -92,7 +92,7 @@ dkms.conf
 /ATSPM/Web/obj/Container
 /ATSPM/ReportAPI/obj/Container
 /ATSPM/DataAPI/obj/Container
-/ATSPM/ATSPM.Application.Business/bin/Debug/net6.0
+/ATSPM/ATSPM.Application.Business
 /ATSPM/Web/obj
 /ATSPM/Web/bin/Debug/net6.0
 /ATSPM/ReportAPI/bin/Debug/net6.0

@@ -10,7 +10,7 @@ namespace ATSPM.Data.Relationships
 {
     internal interface IRelatedSignal
     {
-        int SignalId { get; set; }
+        String SignalId { get; set; }
         Signal Signal { get; set; }
     }
 

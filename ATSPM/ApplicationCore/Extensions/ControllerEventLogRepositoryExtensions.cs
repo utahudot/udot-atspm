@@ -15,7 +15,13 @@ namespace ATSPM.Application.Extensions
             return repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime).Count();
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param)
+        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventCodes,
+            int param)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, param))
@@ -25,7 +31,14 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double latencyCorrection)
+        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventCodes,
+            int param,
+            double latencyCorrection)
         {
             var result = repo.GetEventsByEventCodesParam(SignalId, startTime, endTime, eventCodes, param);
 
@@ -37,7 +50,15 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double offset, double latencyCorrection)
+        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventCodes,
+            int param,
+            double offset,
+            double latencyCorrection)
         {
             var result = repo.GetEventsByEventCodesParam(SignalId, startTime, endTime, eventCodes, param);
 
@@ -50,7 +71,13 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetRecordsByParameterAndEvent(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<int> eventCodes)
+        public static IReadOnlyList<ControllerEventLog> GetRecordsByParameterAndEvent(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventParameters,
+            IEnumerable<int> eventCodes)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, eventParameters))
@@ -60,12 +87,22 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static int GetRecordCountByParameterAndEvent(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<int> eventCodes)
+        public static int GetRecordCountByParameterAndEvent(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventParameters,
+            IEnumerable<int> eventCodes)
         {
             return repo.GetRecordsByParameterAndEvent(SignalId, startTime, endTime, eventParameters, eventCodes).Count;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetAllAggregationCodes(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime)
+        public static IReadOnlyList<ControllerEventLog> GetAllAggregationCodes(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime)
         {
             var codes = new List<int> { 150, 114, 113, 112, 105, 102, 1 };
 
@@ -76,7 +113,12 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static int GetApproachEventsCountBetweenDates(this IControllerEventLogRepository repo, int approachId, DateTime startTime, DateTime endTime, int phaseNumber)
+        public static int GetApproachEventsCountBetweenDates(
+            this IControllerEventLogRepository repo,
+            int approachId,
+            DateTime startTime,
+            DateTime endTime,
+            int phaseNumber)
         {
             //var approachCodes = new List<int> { 1, 8, 10 };
 
@@ -89,7 +131,12 @@ namespace ATSPM.Application.Extensions
             throw new NotImplementedException();
         }
 
-        public static int GetDetectorActivationCount(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, int detectorChannel)
+        public static int GetDetectorActivationCount(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            int detectorChannel)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(82, detectorChannel))
@@ -98,7 +145,11 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static ControllerEventLog GetFirstEventBeforeDate(this IControllerEventLogRepository repo, string SignalId, int eventCode, DateTime date)
+        public static ControllerEventLog GetFirstEventBeforeDate(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            int eventCode,
+            DateTime date)
         {
             throw new NotImplementedException();
 
@@ -141,7 +192,12 @@ namespace ATSPM.Application.Extensions
             //return lastEvent;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, int eventCode)
+        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            int eventCode)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCode))
@@ -151,7 +207,12 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCodes(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes)
+        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCodes(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventCodes)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes))
@@ -161,7 +222,11 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetSplitEvents(this IControllerEventLogRepository repo, string SignalId, DateTime startTime, DateTime endTime)
+        public static IReadOnlyList<ControllerEventLog> GetSplitEvents(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime startTime,
+            DateTime endTime)
         {
             var result = repo.GetSignalEventsBetweenDates(SignalId, startTime, endTime)
                 .Where(i => i.EventCode > 130 && i.EventCode < 150)
@@ -171,7 +236,12 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static double GetTmcVolume(this IControllerEventLogRepository repo, DateTime startDate, DateTime endDate, string SignalId, int phase)
+        public static double GetTmcVolume(
+            this IControllerEventLogRepository repo,
+            DateTime startDate,
+            DateTime endDate,
+            string SignalId,
+            int phase)
         {
             throw new NotImplementedException();
 
@@ -200,7 +270,13 @@ namespace ATSPM.Application.Extensions
             //return count;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetTopEventsAfterDateByEventCodesParam(this IControllerEventLogRepository repo, string SignalId, DateTime timestamp, IEnumerable<int> eventCodes, int param, int top)
+        public static IReadOnlyList<ControllerEventLog> GetTopEventsAfterDateByEventCodesParam(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            DateTime timestamp,
+            IEnumerable<int> eventCodes,
+            int param,
+            int top)
         {
             throw new NotImplementedException();
 
@@ -216,7 +292,12 @@ namespace ATSPM.Application.Extensions
             //    .Take(top).ToList();
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetTopNumberOfSignalEventsBetweenDates(this IControllerEventLogRepository repo, string SignalId, int numberOfRecords, DateTime startTime, DateTime endTime)
+        public static IReadOnlyList<ControllerEventLog> GetTopNumberOfSignalEventsBetweenDates(
+            this IControllerEventLogRepository repo,
+            string SignalId,
+            int numberOfRecords,
+            DateTime startTime,
+            DateTime endTime)
         {
             throw new NotImplementedException();
 

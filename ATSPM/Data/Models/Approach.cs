@@ -11,7 +11,7 @@ namespace ATSPM.Data.Models
     {
         public int ApproachId { get; set; }
         //public string SignalId { get; set; }
-        public int SignalId { get; set; }
+        public String SignalId { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
         public string Description { get; set; }
         public int? Mph { get; set; }
@@ -28,5 +28,6 @@ namespace ATSPM.Data.Models
         public virtual Signal Signal { get; set; }
 
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();
+
     }
 }
