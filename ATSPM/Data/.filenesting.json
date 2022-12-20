@@ -9,6 +9,9 @@
         "add": {
           "ApproachNotMapped.cs": [
             "Approach.cs"
+          ],
+          "DetectorNotMapped.cs": [
+            "Detector.cs"
           ]
         }
       },

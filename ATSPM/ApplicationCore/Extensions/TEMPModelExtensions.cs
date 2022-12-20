@@ -48,4 +48,20 @@ namespace ATSPM.Application.Extensions
             return model.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId));
         }
     }
+
+    public static class DetectorExtensions
+    {
+        public static double GetOffset(this Detector detector)
+        {
+            detector.DecisionPoint ??= 0;
+
+            if (detector.Approach.Mph.HasValue && detector.Approach.Mph > 0)
+            {
+                //TODO: see if this is duplicated anywhere else
+                return Convert.ToDouble((detector.DistanceFromStopBar / (detector.Approach.Mph * 1.467) - detector.DecisionPoint) * 1000);
+            }
+
+            return 0;
+        }
+    }
 }
