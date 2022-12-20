@@ -12,6 +12,9 @@
           ],
           "DetectorNotMapped.cs": [
             "Detector.cs"
+          ],
+          "SignalNotMapped.cs": [
+            "Signal.cs"
           ]
         }
       },
