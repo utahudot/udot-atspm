@@ -124,175 +124,87 @@ namespace ATSPM.Data.Models
             throw new NotImplementedException();
         }
 
-        #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        [Obsolete("Use extension method GetAvailableMetrics, Union with BasicMetrics in service", true)]
         public List<MetricType> GetAvailableMetrics()
         {
-            var repository =
-                MetricTypeRepositoryFactory.Create();
-
-            var availableMetrics = repository.GetBasicMetrics();
-            foreach (var d in GetDetectorsForSignal())
-                foreach (var dt in d.DetectionTypes)
-                    if (dt.DetectionTypeID != 1)
-                        foreach (var m in dt.MetricTypes)
-                            availableMetrics.Add(m);
-            return availableMetrics.Distinct().ToList();
+            throw new NotImplementedException();
         }
 
+        [Obsolete("Areas are pulled in with Signal")]
         public List<Area> GetAreas()
         {
-            var repository =
-                AreaRepositoryFactory.Create();
-
-            var areas = repository.GetListOfAreasForSignal(SignalID);
-            return areas.ToList();
+            throw new NotImplementedException();
         }
 
+        [Obsolete("This method is not currently being used")]
         private List<MetricType> GetBasicMetrics()
         {
-            var repository =
-                MetricTypeRepositoryFactory.Create();
-            return repository.GetBasicMetrics();
+            throw new NotImplementedException();
         }
 
+        [Obsolete("This method is not currently being used and should be overriden or use IEqualityComparer")]
         public bool Equals(Signal signalToCompare)
         {
-            return CompareSignalProperties(signalToCompare);
+            throw new NotImplementedException();
         }
 
-        private bool CompareSignalProperties(Signal signalToCompare)
-        {
-            if (signalToCompare != null
-                && SignalID == signalToCompare.SignalID
-                && PrimaryName == signalToCompare.PrimaryName
-                && SecondaryName == signalToCompare.SecondaryName
-                && IPAddress == signalToCompare.IPAddress
-                && Latitude == signalToCompare.Latitude
-                && Longitude == signalToCompare.Longitude
-                && RegionID == signalToCompare.RegionID
-                && ControllerTypeID == signalToCompare.ControllerTypeID
-                && Enabled == signalToCompare.Enabled
-                && Pedsare1to1 == signalToCompare.Pedsare1to1
-                && Approaches.Count() == signalToCompare.Approaches.Count()
-            )
-                return true;
-            return false;
-        }
+        //[Obsolete("This method is not currently being used")]
+        //private bool CompareSignalProperties(Signal signalToCompare)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
+        [Obsolete("This should be a combination of ICloneable and private methods in the few places this is used", true)]
         public static Signal CopyVersion(Signal origVersion)
         {
-            var signalRepository = Repositories.SignalsRepositoryFactory.Create();
-            var newVersion = new Signal();
-            CopyCommonSignalSettings(origVersion, newVersion);
-            newVersion.SignalID = origVersion.SignalID;
-            newVersion.IPAddress = newVersion.IPAddress;
-            newVersion.Start = DateTime.Now;
-            newVersion.Note = "Copy of " + origVersion.Note;
-            newVersion.Comments = new List<MetricComment>();
-            newVersion.VersionList = signalRepository.GetAllVersionsOfSignalBySignalID(newVersion.SignalID);
-            return newVersion;
+            throw new NotImplementedException();
         }
 
-        private static void CopyCommonSignalSettings(Signal origSignal, Signal newSignal)
-        {
-            newSignal.IPAddress = "10.10.10.10";
-            newSignal.PrimaryName = origSignal.PrimaryName;
-            newSignal.SecondaryName = origSignal.SecondaryName;
-            newSignal.Longitude = origSignal.Longitude;
-            newSignal.Latitude = origSignal.Latitude;
-            newSignal.RegionID = origSignal.RegionID;
-            newSignal.ControllerTypeID = origSignal.ControllerTypeID;
-            newSignal.Enabled = origSignal.Enabled;
-            newSignal.Pedsare1to1 = origSignal.Pedsare1to1;
-            newSignal.Approaches = new List<Approach>();
-            newSignal.JurisdictionId = origSignal.JurisdictionId;
+        //[Obsolete("This should be a combination of ICloneable and private methods in the few places this is used", true)]
+        //private static void CopyCommonSignalSettings(Signal origSignal, Signal newSignal)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-            if (origSignal.Approaches != null)
-                foreach (var a in origSignal.Approaches)
-                {
-                    var aForNewSignal =
-                        Approach.CopyApproachForSignal(a); //this does the db.Save inside.
-                    newSignal.Approaches.Add(aForNewSignal);
-                }
-        }
-
+        [Obsolete("This should be a combination of ICloneable and private methods in the few places this is used", true)]
         public static Signal CopySignal(Signal origSignal, string newSignalID)
         {
-            var newSignal = new Signal();
-
-            CopyCommonSignalSettings(origSignal, newSignal);
-
-            newSignal.SignalID = newSignalID;
-
-            return newSignal;
+            throw new NotImplementedException();
         }
 
+        [Obsolete("Use extension method GetApproaches", true)]
         public List<Approach> GetApproachesForSignalThatSupportMetric(int metricTypeID)
         {
-            var approachesForMeticType = new List<Approach>();
-            foreach (var a in Approaches)
-                foreach (var d in a.Detectors)
-                    if (d.DetectorSupportsThisMetric(metricTypeID))
-                    {
-                        approachesForMeticType.Add(a);
-                        break;
-                    }
-            //return approachesForMeticType;
-            return approachesForMeticType.OrderBy(a => a.PermissivePhaseNumber).ThenBy(a => a.ProtectedPhaseNumber).ThenBy(a => a.DirectionType.Description)
-                .ToList();
+            throw new NotImplementedException();
         }
 
+        [Obsolete("Use extension method GetAvailableDirections", true)]
         public List<DirectionType> GetAvailableDirections()
         {
-            var directions = Approaches.Select(a => a.DirectionType).Distinct().ToList();
-            return directions;
+            throw new NotImplementedException();
         }
 
+        [Obsolete("This method is not currently being used")]
         internal List<Approach> GetApproachesForAggregation()
         {
-            List<Approach> approachesToReturn = new List<Approach>();
-            if (Approaches != null)
-            {
-                var approaches = Approaches.Where(a => a.IsPedestrianPhaseOverlap == false && a.IsPermissivePhaseOverlap == false && a.IsProtectedPhaseOverlap == false);
-                foreach (var approach in approaches)
-                {
-                    if ((!approachesToReturn.Select(a => a.ProtectedPhaseNumber).Contains(approach.ProtectedPhaseNumber) && approach.ProtectedPhaseNumber != 0)
-                        || (approach.PermissivePhaseNumber != null && !approachesToReturn.Select(a => a.PermissivePhaseNumber).Contains(approach.PermissivePhaseNumber)))
-                    {
-                        approachesToReturn.Add(approach);
-                    }
-                }
-            }
-            return approachesToReturn;
+            throw new NotImplementedException();
+
+            //List<Approach> approachesToReturn = new List<Approach>();
+            //if (Approaches != null)
+            //{
+            //    var approaches = Approaches.Where(a => a.IsPedestrianPhaseOverlap == false && a.IsPermissivePhaseOverlap == false && a.IsProtectedPhaseOverlap == false);
+            //    foreach (var approach in approaches)
+            //    {
+            //        if ((!approachesToReturn.Select(a => a.ProtectedPhaseNumber).Contains(approach.ProtectedPhaseNumber) && approach.ProtectedPhaseNumber != 0)
+            //            || (approach.PermissivePhaseNumber != null && !approachesToReturn.Select(a => a.PermissivePhaseNumber).Contains(approach.PermissivePhaseNumber)))
+            //        {
+            //            approachesToReturn.Add(approach);
+            //        }
+            //    }
+            //}
+            //return approachesToReturn;
         }
+
+        #endregion
     }
 }

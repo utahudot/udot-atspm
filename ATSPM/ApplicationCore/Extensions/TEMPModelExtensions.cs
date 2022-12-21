@@ -78,6 +78,20 @@ namespace ATSPM.Application.Extensions
 
     public static class IRelatedApproachesExtensions
     {
+        public static IReadOnlyList<Approach> GetApproaches(this IRelatedApproaches item, int metricTypeID)
+        {
+            return item.Approaches.Where(a => a.Detectors.Any(d => d.SupportsMetricType(metricTypeID)))
+                .OrderBy(o => o.PermissivePhaseNumber)
+                .ThenBy(o => o.ProtectedPhaseNumber)
+                .ThenBy(o => o.DirectionTypeId.ToString())
+                .ToList();
+        }
+
+        public static IReadOnlyList<DirectionTypes> GetAvailableDirections(this IRelatedApproaches item)
+        {
+            return item.Approaches.Select(s => s.DirectionTypeId).Distinct().ToList();
+        }
+
         public static Detector GetDetector(this IRelatedApproaches item, int channel)
         {
             return item.GetDetectors().FirstOrDefault(f => f.DetChannel == channel);
@@ -101,6 +115,11 @@ namespace ATSPM.Application.Extensions
         public static IReadOnlyList<Detector> GetDetectors(this IRelatedApproaches item, int metricTypeId, int phase)
         {
             return item.Approaches.Where(w => w.ProtectedPhaseNumber == phase || w.PermissivePhaseNumber == phase).SelectMany(s => s.Detectors).Where(d => d.CheckReportAvialbility(metricTypeId)).ToList();
+        }
+
+        public static IReadOnlyList<MetricType> GetAvailableMetrics(this IRelatedApproaches item)
+        {
+            return item.GetDetectors().SelectMany(s => s.DetectionTypes).Where(d => d.Id != DetectionTypes.B).SelectMany(m => m.MetricTypeMetrics).ToList();
         }
 
         public static IReadOnlyList<int> GetPhases(this IRelatedApproaches item)
