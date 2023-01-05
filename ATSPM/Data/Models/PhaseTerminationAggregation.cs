@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PhaseTerminationAggregation : ATSPMModelBase
+    public partial class PhaseTerminationAggregation : ATSPMAggregationBase
     {
-        public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int PhaseNumber { get; set; }
         public int GapOuts { get; set; }
