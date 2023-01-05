@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations;
 namespace ATSPM.Data.Enums
 {
     /// <summary>
-    /// This method is for creating a more readable ENUM for Event Codes 
-    /// <seealso cref="Enumeration types" href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/enum" />
+    /// Traffic Signal Hi Resolution Data Logger Enumerations
+    /// <seealso cref="Reference" href="https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1002&context=jtrpdata"/>
     /// </summary>
-    public enum LoggerCoder
+    public enum DataLoggerEnum
     {
         [Display(Name = "Phase On")]
         PhaseOn = 0,

@@ -1,0 +1,25 @@
+{
+  "help": "https://go.microsoft.com/fwlink/?linkid=866610",
+  "dependentFileProviders": {
+    "add": {
+      "addedExtension": {},
+      "pathSegment": {},
+      "extensionToExtension": {},
+      "fileToFile": {
+        "add": {
+          "ApproachNotMapped.cs": [
+            "Approach.cs"
+          ],
+          "DetectorNotMapped.cs": [
+            "Detector.cs"
+          ],
+          "SignalNotMapped.cs": [
+            "Signal.cs"
+          ]
+        }
+      },
+      "fileSuffixToExtension": {},
+      "allExtensions": {}
+    }
+  }
+}
