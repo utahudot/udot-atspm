@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class SignalEventCountAggregation : ATSPMModelBase
+    public partial class SignalEventCountAggregation : ATSPMAggregationBase
     {
-        public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int EventCount { get; set; }
     }
