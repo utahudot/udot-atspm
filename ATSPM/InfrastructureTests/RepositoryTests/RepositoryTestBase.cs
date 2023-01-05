@@ -17,6 +17,12 @@ using Xunit.Abstractions;
 
 namespace InfrastructureTests.RepositoryTests
 {
+    /// <summary>
+    /// https://learn.microsoft.com/en-us/ef/core/testing/testing-without-the-database#repository-pattern
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="T3"></typeparam>
     public abstract class RepositoryTestBase<T1, T2, T3> : IClassFixture<EFContextFixture<T3>> 
         where T1 : ATSPMModelBase, new()
         where T3 : DbContext, new()

@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApproachSplitFailAggregation : ATSPMModelBase
+    public partial class ApproachSplitFailAggregation : ATSPMAggregationBase
     {
-        public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int ApproachID { get; set; }
         public int PhaseNumber { get; set; }

@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApproachSpeedAggregation : ATSPMModelBase
+    public partial class ApproachSpeedAggregation : ATSPMAggregationBase
     {
-        public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int ApproachID { get; set; }
         public int SummedSpeed { get; set; }
