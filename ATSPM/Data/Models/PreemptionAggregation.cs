@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PreemptionAggregation : ATSPMModelBase
+    public partial class PreemptionAggregation : ATSPMAggregationBase
     {
-        public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
         public int PreemptNumber { get; set; }
         public int PreemptRequests { get; set; }

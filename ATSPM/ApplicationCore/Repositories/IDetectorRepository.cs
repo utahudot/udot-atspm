@@ -14,14 +14,6 @@ namespace ATSPM.Application.Repositories
     /// </summary>
     public interface IDetectorRepository : IAsyncRepository<Detector>
     {
-        /// <summary>
-        /// Checks to see if <see cref="Detector"/>.<see cref="DetectionType"/> metrics contains <paramref name="metricId"/>
-        /// </summary>
-        /// <param name="detector"><see cref="Detector"/> whos <see cref="DetectionType"/> collection to check</param>
-        /// <param name="metricId"><see cref="MetricType"/> id to match within <see cref="DetectionType"/> collection</param>
-        /// <returns></returns>
-        bool CheckReportAvialbility(Detector detector, int metricId);
-
         //TODO: this needs to be moved out of this repo
         //TODO: Figure out why SignalId isn't being used in the implmentation
         /// <summary>
