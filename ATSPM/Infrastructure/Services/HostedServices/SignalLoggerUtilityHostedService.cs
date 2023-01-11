@@ -27,9 +27,11 @@ namespace ATSPM.Infrastructure.Services.HostedServices
         {
             //_serviceProvider.PrintHostInformation();
 
+            cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
+
             try
             {
-                _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
+                _log.LogInformation("Log Path: {path}", _options.Value.Path);
 
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
@@ -68,8 +70,6 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                         signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
                     }
 
-                    int processedCount = 0;
-
                     var signals = signalQuery.ToList();
 
                     _log.LogInformation("Number of Signals to Process: {count}", signals.Count);
@@ -86,6 +86,8 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
+
             Console.WriteLine();
             Console.WriteLine($"Operation Completed or Cancelled...");
 

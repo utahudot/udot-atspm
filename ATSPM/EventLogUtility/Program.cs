@@ -11,7 +11,9 @@ using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Infrastructure.Services.HostedServices;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
+using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +49,7 @@ cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync();
+await cmdParser.InvokeAsync("log -t 4 -i 1014");
 
 public static class CommandHostBuilder
 {
@@ -58,6 +60,13 @@ public static class CommandHostBuilder
             s.AddLogging();
 
             s.AddATSPMDbContext(h);
+
+
+
+            //TODO: temporary, remove
+            s.AddDbContext<LegacyEventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(LegacyEventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+
+
 
             //repositories
             s.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -86,8 +95,8 @@ public static class CommandHostBuilder
             s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
             //SignalControllerDataFlow
-            s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-            //s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+            //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+            s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
 
             //controller logger configuration
             s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
@@ -119,8 +128,8 @@ public static class CommandHostBuilder
             }
 
             //hosted services
-            //s.AddHostedService<SignalLoggerUtilityHostedService>();
-            s.AddHostedService<TestSignalLoggerHostedService>();
+            s.AddHostedService<SignalLoggerUtilityHostedService>();
+            //s.AddHostedService<TestSignalLoggerHostedService>();
 
             //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
         });
