@@ -14,6 +14,7 @@ using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.HostedServices;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Google.Api;
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,12 +25,37 @@ using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
+using System.Reflection;
 
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
 cmdBuilder.UseDefaults();
 
-cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
+cmdBuilder.UseHost(a =>
+{
+    return Host.CreateDefaultBuilder(a)
+    .UseConsoleLifetime()
+    .ConfigureLogging((h, l) =>
+    {
+        //TODO: add a GoogleLogger section
+        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
+        //TODO: remove this to an extension method
+        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
+        if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
+        {
+            Console.WriteLine("hello");
+            l.AddGoogle(new LoggingServiceOptions
+            {
+                ProjectId = "1022556126938",
+                //ProjectId = "869261868126",
+                ServiceName = AppDomain.CurrentDomain.FriendlyName,
+                Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+            });
+        }
+    });
+}, 
+h =>
 {
     var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
 
@@ -49,7 +75,7 @@ cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync("log -t 4 -i 1014");
+await cmdParser.InvokeAsync("log -t 4 -i 1014 1015 1016 1023");
 
 public static class CommandHostBuilder
 {
@@ -60,13 +86,6 @@ public static class CommandHostBuilder
             s.AddLogging();
 
             s.AddATSPMDbContext(h);
-
-
-
-            //TODO: temporary, remove
-            s.AddDbContext<LegacyEventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(LegacyEventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
-
-
 
             //repositories
             s.AddScoped<ISignalRepository, SignalEFRepository>();
