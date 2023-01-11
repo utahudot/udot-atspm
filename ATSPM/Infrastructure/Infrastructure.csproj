@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Speed\" />
   </ItemGroup>
