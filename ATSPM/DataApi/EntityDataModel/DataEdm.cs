@@ -24,7 +24,7 @@ namespace ATSPM.DataApi.EntityDataModel
             ip.Ignore(i => i.ScopeId);
 
             var approach = builder.EntityType<Approach>();
-            approach.HasKey(k => k.ApproachId);
+            //approach.HasKey(k => k.ApproachId);
 
             var controllerType = builder.EntityType<ControllerType>();
             controllerType.HasKey(k => k.Id);

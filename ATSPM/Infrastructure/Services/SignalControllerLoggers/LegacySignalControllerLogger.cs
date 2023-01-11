@@ -106,7 +106,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var db = scope.ServiceProvider.GetService<EventLogContext>();
+                var db = scope.ServiceProvider.GetService<LegacyEventLogContext>();
 
                 //await db.ControllerEventLogs.AddRangeAsync(result);
                 //var count = await db.SaveChangesAsync();

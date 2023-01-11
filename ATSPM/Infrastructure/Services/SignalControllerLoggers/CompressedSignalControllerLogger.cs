@@ -49,7 +49,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = token, NameFormat = "Archive Batch" });
             var logsToArchive = CreateTransformManyStep<ControllerEventLog[], ControllerLogArchive>(t => ArchiveLogs(t), "ArchiveLogsStep", stepOptions);
             var saveToRepo = CreateTransformManyStep<ControllerLogArchive, ControllerLogArchive>(t => SaveToRepo(t, token), "SaveToRepo", stepOptions);
-            var endResult = CreateActionStep<ControllerLogArchive>(t => Console.WriteLine($"Saved Logs!: {t}"), "EndResultStep", stepOptions);
+            var endResult = CreateActionStep<ControllerLogArchive>(t => { }, "EndResultStep", stepOptions);
 
             //step linking
             downloader.LinkTo(getFiles, new DataflowLinkOptions() { PropagateCompletion = true });
