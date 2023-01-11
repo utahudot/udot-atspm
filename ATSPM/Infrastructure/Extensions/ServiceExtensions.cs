@@ -18,6 +18,8 @@ namespace ATSPM.Infrastructure.Extensions
 
             services.AddDbContext<SpeedContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
 
+            services.AddDbContext<LegacyEventLogContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(LegacyEventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+
             return services;
         }
     }
