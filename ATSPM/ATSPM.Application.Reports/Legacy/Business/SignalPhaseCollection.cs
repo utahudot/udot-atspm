@@ -38,8 +38,8 @@ namespace Legacy.Common.Business
         public SignalPhaseCollection(MetricOptions options, bool showVolume, int binSize)
         {
             var repository = SignalsRepositoryFactory.Create();
-            var signal = repository.GetVersionOfSignalByDate(options.SignalID, options.StartDate);
-            var approaches = signal.GetApproachesForSignalThatSupportMetric(options.MetricTypeID);
+            var signal = repository.GetVersionOfSignalByDate(options.SignalId, options.StartDate);
+            var approaches = signal.GetApproachesForSignalThatSupportMetric(options.MetricTypeId);
             if (signal.Approaches != null && approaches.Count > 0)
             {
                 //Parallel.ForEach(approaches, approach =>
@@ -47,7 +47,7 @@ namespace Legacy.Common.Business
                 {
                     if (approach.ProtectedPhaseNumber != 0)
                     {
-                        var protectedSignalPhase = new SignalPhase(options.StartDate, options.EndDate, approach, showVolume, binSize, options.MetricTypeID, false);
+                        var protectedSignalPhase = new SignalPhase(options.StartDate, options.EndDate, approach, showVolume, binSize, options.MetricTypeId, false);
                         SignalPhaseList.Add(protectedSignalPhase);
                     }
                 }//);
@@ -56,6 +56,6 @@ namespace Legacy.Common.Business
             }
         }
 
-        public List<SignalPhase> SignalPhaseList { get; } = new List<SignalPhase>();
+        public List<SignalPhaseService> SignalPhaseList { get; } = new List<SignalPhaseService>();
     }
 }

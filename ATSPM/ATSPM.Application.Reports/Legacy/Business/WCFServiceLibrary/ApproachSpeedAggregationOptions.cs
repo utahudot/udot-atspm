@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public ApproachSpeedAggregationOptions()
         {
-            MetricTypeID = 25;
+            MetricTypeId = 25;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "AverageSpeed" });
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = "SpeedVolume" });

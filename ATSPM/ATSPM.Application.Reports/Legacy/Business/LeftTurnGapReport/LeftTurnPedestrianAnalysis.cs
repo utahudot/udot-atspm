@@ -10,9 +10,9 @@ namespace Legacy.Common.Business.LeftTurnGapReport
     {
         public static double GetPedestrianPercentage(string signalId, int directionTypeId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime)
         {
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(signalId, directionTypeId);
-            var approach = LeftTurnReportPreCheck.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            var detectors = LeftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionTypeId);
+            var approach = LeftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
+            int opposingPhase = LeftTurnReportPreCheckService.GetOpposingPhase(approach);
             double cycleAverage =  GetCycleAverage(signalId, start, end, startTime, endTime, opposingPhase);
             double pedCycleAverage = GetPedCycleAverage(signalId, start, end, startTime, endTime, opposingPhase);
             if(cycleAverage == 0)

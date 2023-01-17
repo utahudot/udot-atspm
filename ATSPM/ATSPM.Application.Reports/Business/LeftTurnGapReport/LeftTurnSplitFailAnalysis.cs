@@ -1,4 +1,5 @@
-﻿using ATSPM.IRepositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
             var approach = _approachRepository.GetApproachByApproachID(approachId);
             var phaseNumber = approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
-            List<Models.ApproachSplitFailAggregation> splitFailsAggregates = GetSplitFailAggregates(approachId, phaseNumber, start, end, startTime, endTime, daysOfWeek);
+            List<ATSPM.Data.Models.ApproachSplitFailAggregation> splitFailsAggregates = GetSplitFailAggregates(approachId, phaseNumber, start, end, startTime, endTime, daysOfWeek);
             Dictionary<DateTime, double> percentCyclesWithSplitFail = GetPercentCyclesWithSplitFails(start, end, startTime, endTime, daysOfWeek, splitFailsAggregates);
             int cycles = splitFailsAggregates.Sum(s => s.Cycles);
             int splitFails = splitFailsAggregates.Sum(s => s.SplitFailures);
@@ -43,7 +44,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         }
 
-        private List<Models.ApproachSplitFailAggregation> GetSplitFailAggregates(int approachId,
+        private List<ATSPM.Data.Models.ApproachSplitFailAggregation> GetSplitFailAggregates(int approachId,
                                                                                  int phaseNumber,
                                                                                  DateTime start,
                                                                                  DateTime end,
@@ -52,13 +53,13 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                                                                                  int[] daysOfWeek)
         {
             var approach = _approachRepository.GetApproachByApproachID(approachId);
-            List<Models.ApproachSplitFailAggregation> splitFailsAggregates = new List<Models.ApproachSplitFailAggregation>();
+            List<ATSPM.Data.Models.ApproachSplitFailAggregation> splitFailsAggregates = new List<ATSPM.Data.Models.ApproachSplitFailAggregation>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {
                 if (daysOfWeek.Contains((int)start.DayOfWeek))
                 {
                     splitFailsAggregates.AddRange(_approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationBySignalIdPhaseDateRange(
-                        approach.SignalId, approach.ApproachId, phaseNumber, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime)));
+                        approach.SignalId, approach.Id, phaseNumber, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime)));
                 }
             }
 
@@ -70,7 +71,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                                                                                    TimeSpan startTime,
                                                                                    TimeSpan endTime,
                                                                                    int[] daysOfWeek,
-                                                                                   List<Models.ApproachSplitFailAggregation> splitFailsAggregates)
+                                                                                   List<ATSPM.Data.Models.ApproachSplitFailAggregation> splitFailsAggregates)
         {
             Dictionary<DateTime, double> percentCyclesWithSplitFail = new Dictionary<DateTime, double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))

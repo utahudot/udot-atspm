@@ -4,7 +4,13 @@ namespace ATSPM.Application.Reports.ViewModels.PreemptService
 {
     public class PreemptServiceEvent
     {
-        public DateTime StartTime { get; internal set; }
-        public int EventParam { get; internal set; }
+        public PreemptServiceEvent(DateTime startTime, int eventParam)
+        {
+            StartTime = startTime;
+            EventParam = eventParam;
+        }
+
+        public DateTime StartTime { get; set; }
+        public int EventParam { get; set; }
     }
 }

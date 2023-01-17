@@ -18,9 +18,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             int percentileSplit, bool showPlanStripes, bool showPedActivity,
             bool showAverageSplit, bool showPercentMaxOutForceOff, bool showPercentGapOuts, bool showPercentSkip)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             YAxisMax = yAxisMax;
-            MetricTypeID = metricTypeID;
+            MetricTypeId = metricTypeID;
             StartDate = startDate;
             EndDate = endDate;
             SelectedPercentileSplit = percentileSplit;
@@ -86,13 +86,13 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public override List<string> CreateMetric()
         {
             base.CreateMetric();
-            var analysisPhaseCollection = new AnalysisPhaseCollection(SignalID, StartDate, EndDate);
+            var analysisPhaseCollection = new AnalysisPhaseCollection(SignalId, StartDate, EndDate);
             //If there are phases in the collection add the charts
             if (analysisPhaseCollection.Items.Count > 0)
             {
                 foreach (var plan in analysisPhaseCollection.Plans)
                 {
-                    plan.SetProgrammedSplits(SignalID);
+                    plan.SetProgrammedSplits(SignalId);
                     plan.SetHighCycleCount(analysisPhaseCollection);
                 }
 
@@ -507,8 +507,8 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         private void SetChartTitle(Chart chart, int phase)
         {
-            chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeID));
-            chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(SignalID, StartDate, EndDate));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeId));
+            chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(SignalId, StartDate, EndDate));
             chart.Titles.Add(ChartTitleFactory.GetPhase(phase));
         }
 

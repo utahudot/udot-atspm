@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Legacy.Common.Models;
-using Legacy.Common.Models.Repositories;
-
 namespace Legacy.Common.Business
 {
     public class PlanSpeed : Plan
@@ -28,7 +24,7 @@ namespace Legacy.Common.Business
             var rawSpeeds = new List<int>();
             var cyclesForPlan = cycles.Where(c => c.StartTime >= StartTime && c.StartTime < EndTime);
             foreach (var cycle in cyclesForPlan)
-                rawSpeeds.AddRange(cycle.SpeedEvents.Select(s => s.MPH));
+                rawSpeeds.AddRange(cycle.SpeedEvents.Select(s => s.Mph));
 
             //find stddev of average
             if (rawSpeeds.Count > 0)
@@ -70,10 +66,7 @@ namespace Legacy.Common.Business
             }
             catch (Exception e)
             {
-                var errorLog = ApplicationEventRepositoryFactory.Create();
-                errorLog.QuickAdd(Assembly.GetExecutingAssembly().GetName().ToString(),
-                    GetType().ToString(), e.TargetSite.ToString(), ApplicationEvent.SeverityLevels.High, e.Message);
-                throw new Exception("Error creating Percentile");
+               throw new Exception("Error creating Percentile");
             }
             return percentileValue;
         }

@@ -20,10 +20,10 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public SplitFailOptions(string signalID, DateTime startDate, DateTime endDate,
             int metricTypeID, int firstSecondsOfRed, bool showFailLines, bool showAvgLines, bool showPercentFailLine)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             StartDate = startDate;
             EndDate = endDate;
-            MetricTypeID = metricTypeID;
+            MetricTypeId = metricTypeID;
             FirstSecondsOfRed = firstSecondsOfRed;
             ShowFailLines = showFailLines;
             ShowAvgLines = showAvgLines;
@@ -32,7 +32,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public SplitFailOptions()
         {
-            MetricTypeID = 12;
+            MetricTypeId = 12;
             SetDefaults();
         }
 
@@ -59,8 +59,8 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             //EndDate = EndDate.AddSeconds(59);
             var returnString = new List<string>();
             var sr = SignalsRepositoryFactory.Create();
-            var signal = sr.GetVersionOfSignalByDate(SignalID, StartDate);
-            var metricApproaches = signal.GetApproachesForSignalThatSupportMetric(MetricTypeID);
+            var signal = sr.GetVersionOfSignalByDate(SignalId, StartDate);
+            var metricApproaches = signal.GetApproachesForSignalThatSupportMetric(MetricTypeId);
             if (metricApproaches.Count > 0)
             {
                 List<SplitFailPhase> splitFailPhases = new List<SplitFailPhase>();

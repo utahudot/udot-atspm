@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
 
 namespace Legacy.Common.Business
 {
@@ -12,12 +12,12 @@ namespace Legacy.Common.Business
         {
         }
 
-        public List<Speed_Events> SpeedEvents { get; set; }
+        public List<SpeedEvent> SpeedEvents { get; set; }
 
-        public void FindSpeedEventsForCycle(List<Speed_Events> speeds)
+        public void FindSpeedEventsForCycle(List<SpeedEvent> speeds)
         {
             SpeedEvents = speeds.Where(s =>
-                s.timestamp >= GreenEvent.AddSeconds(15) && s.timestamp < YellowEvent && s.MPH >= 5).ToList();
+                s.Timestamp >= GreenEvent.AddSeconds(15) && s.Timestamp < YellowEvent && s.Mph >= 5).ToList();
         }
     }
 }

@@ -155,9 +155,9 @@ namespace Legacy.Common.Business.SplitFail
 
         private void SetChartTitle(Dictionary<string, string> statistics)
         {
-            Chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeID));
+            Chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeId));
             Chart.Titles.Add(
-                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalID, Options.StartDate, Options.EndDate));
+                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalId, Options.StartDate, Options.EndDate));
             Chart.Titles.Add(ChartTitleFactory.GetPhaseAndPhaseDescriptions(SplitFailPhase.Approach, SplitFailPhase.GetPermissivePhase));
             Chart.Titles.Add(ChartTitleFactory.GetStatistics(statistics));
         }

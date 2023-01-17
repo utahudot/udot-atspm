@@ -30,7 +30,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public const string SUM_GREEN_TIME = "SumGreenTime";
         public PhaseLeftTurnGapAggregationOptions()
         {
-            MetricTypeID = 20;
+            MetricTypeId = 20;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType { Id = 0, DataName = GAP_COUNT_1 });
             AggregatedDataTypes.Add(new AggregatedDataType { Id = 1, DataName = GAP_COUNT_2 });

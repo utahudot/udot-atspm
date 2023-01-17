@@ -48,7 +48,7 @@ namespace Legacy.Common.Business
             row.EventCode = 131;
             try
             {
-                row.EventParam = ControllerEventLogs.GetPreviousPlan(Approach.SignalID, startDate);
+                row.EventParam = GetPreviousPlan(Approach.SignalID, startDate);
 
                 ds.Events.Insert(0, row);
             }
@@ -86,6 +86,21 @@ namespace Legacy.Common.Business
         public void AddItem(RLMPlan item)
         {
             PlanList.Add(item);
+        }
+
+        public static int GetPreviousPlan(string signalID, DateTime startDate)
+        {
+            var db = new SPM();
+            var endDate = startDate.AddHours(-12);
+            var planRecord = from r in db.Controller_Event_Log
+                             where r.SignalID == signalID &&
+                                   r.Timestamp >= endDate &&
+                                   r.Timestamp <= startDate &&
+                                   r.EventCode == 131
+                             select r;
+            if (planRecord.Count() > 0)
+                return planRecord.OrderByDescending(s => s.Timestamp).FirstOrDefault().EventParam;
+            return 0;
         }
     }
 }

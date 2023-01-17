@@ -1,23 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
-using Legacy.Common.Models.Repositories;
 
 namespace Legacy.Common.Business
 {
     public class AnalysisPhase
     {
-        public List<Controller_Event_Log> ConsecutiveForceOff = new List<Controller_Event_Log>();
-        public List<Controller_Event_Log> ConsecutiveGapOuts = new List<Controller_Event_Log>();
-        public List<Controller_Event_Log> ConsecutiveMaxOut = new List<Controller_Event_Log>();
+        public List<ControllerEventLog> ConsecutiveForceOff = new List<ControllerEventLog>();
+        public List<ControllerEventLog> ConsecutiveGapOuts = new List<ControllerEventLog>();
+        public List<ControllerEventLog> ConsecutiveMaxOut = new List<ControllerEventLog>();
         public AnalysisPhaseCycleCollection Cycles;
 
-        public List<Controller_Event_Log> PedestrianEvents = new List<Controller_Event_Log>();
+        public List<ControllerEventLog> PedestrianEvents = new List<ControllerEventLog>();
 
 
-        public List<Controller_Event_Log> TerminationEvents = new List<Controller_Event_Log>();
+        public List<ControllerEventLog> TerminationEvents = new List<ControllerEventLog>();
 
-        public List<Controller_Event_Log> UnknownTermination = new List<Controller_Event_Log>();
+        public List<ControllerEventLog> UnknownTermination = new List<ControllerEventLog>();
+        private readonly ISignalRepository _signalRepository;
 
         /// <summary>
         ///     Constructor used for Phase Termination Chart
@@ -25,9 +26,14 @@ namespace Legacy.Common.Business
         /// <param name="phaseNumber"></param>
         /// <param name="terminationeventstable"></param>
         /// <param name="consecutiveCount"></param>
-        public AnalysisPhase(int phasenumber, List<Controller_Event_Log> terminationeventstable, int consecutiveCount)
+        public AnalysisPhase(
+            int phasenumber,
+            IReadOnlyList<ControllerEventLog> terminationeventstable,
+            int consecutiveCount,
+            ISignalRepository signalRepository)
         {
             PhaseNumber = phasenumber;
+            _signalRepository = signalRepository;
             TerminationEvents = FindTerminationEvents(terminationeventstable, PhaseNumber);
             PedestrianEvents = FindPedEvents(terminationeventstable, PhaseNumber);
             ConsecutiveGapOuts = FindConsecutiveEvents(TerminationEvents, 4, consecutiveCount);
@@ -46,11 +52,12 @@ namespace Legacy.Common.Business
         /// <param name="phasenumber"></param>
         /// <param name="signalID"></param>
         /// <param name="CycleEventsTable"></param>
-        public AnalysisPhase(int phasenumber, string signalID, List<Controller_Event_Log> CycleEventsTable)
+        public AnalysisPhase(
+            int phasenumber,
+            string signalID,
+            List<ControllerEventLog> CycleEventsTable)
         {
-            var repository =
-                SignalsRepositoryFactory.Create();
-            var signal = repository.GetLatestVersionOfSignalBySignalID(signalID);
+            var signal = _signalRepository.GetLatestVersionOfSignal(signalID);
             PhaseNumber = phasenumber;
             SignalID = signalID;
             IsOverlap = false;
@@ -74,7 +81,7 @@ namespace Legacy.Common.Business
         public string Direction { get; set; }
         public bool IsOverlap { get; set; }
 
-        public List<Controller_Event_Log> FindTerminationEvents(List<Controller_Event_Log> terminationeventstable,
+        public List<ControllerEventLog> FindTerminationEvents(IReadOnlyList<ControllerEventLog> terminationeventstable,
             int phasenumber)
         {
             var events = (from row in terminationeventstable
@@ -85,7 +92,7 @@ namespace Legacy.Common.Business
                 select row).ToList();
 
             var sortedEvents = events.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
-            var duplicateList = new List<Controller_Event_Log>();
+            var duplicateList = new List<ControllerEventLog>();
             for (int i = 0; i < sortedEvents.Count - 1; i++)
             {
                 var event1 = sortedEvents[i];
@@ -106,7 +113,7 @@ namespace Legacy.Common.Business
             return sortedEvents;
         }
 
-        public List<Controller_Event_Log> FindPedEvents(List<Controller_Event_Log> terminationeventstable,
+        public List<ControllerEventLog> FindPedEvents(IReadOnlyList<ControllerEventLog> terminationeventstable,
             int phasenumber)
         {
             var events = (from row in terminationeventstable
@@ -117,7 +124,7 @@ namespace Legacy.Common.Business
             return events;
         }
 
-        public List<Controller_Event_Log> FindPhaseEvents(List<Controller_Event_Log> PhaseEventsTable, int PhaseNumber)
+        public List<ControllerEventLog> FindPhaseEvents(List<ControllerEventLog> PhaseEventsTable, int PhaseNumber)
         {
             var events = (from row in PhaseEventsTable
                 where row.EventParam == PhaseNumber
@@ -127,10 +134,10 @@ namespace Legacy.Common.Business
             return events;
         }
 
-        private List<Controller_Event_Log> FindConsecutiveEvents(List<Controller_Event_Log> terminationEvents,
+        private List<ControllerEventLog> FindConsecutiveEvents(List<ControllerEventLog> terminationEvents,
             int eventtype, int consecutiveCount)
         {
-            var ConsecutiveEvents = new List<Controller_Event_Log>();
+            var ConsecutiveEvents = new List<ControllerEventLog>();
             var runningConsecCount = 0;
             // Order the events by datestamp
             var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.Timestamp);
@@ -148,13 +155,13 @@ namespace Legacy.Common.Business
             return ConsecutiveEvents;
         }
 
-        private List<Controller_Event_Log> FindUnknownTerminationEvents(List<Controller_Event_Log> terminationEvents)
+        private List<ControllerEventLog> FindUnknownTerminationEvents(List<ControllerEventLog> terminationEvents)
         {
             return terminationEvents.Where(t => t.EventCode == 7).ToList();
         }
 
 
-        private double FindPercentageConsecutiveEvents(List<Controller_Event_Log> terminationEvents, int eventtype,
+        private double FindPercentageConsecutiveEvents(List<ControllerEventLog> terminationEvents, int eventtype,
             int consecutiveCount)
         {
             double percentile = 0;

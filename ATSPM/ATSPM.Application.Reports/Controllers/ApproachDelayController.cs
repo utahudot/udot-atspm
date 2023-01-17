@@ -15,18 +15,18 @@ namespace ATSPM.Application.Reports.Controllers
     public class ApproachDelayController : ControllerBase
     {
         [HttpGet("test")]
-        public ApproachDelayChart Test()
+        public ApproachDelayResult Test()
         {
             Fixture fixture = new();
-            ApproachDelayChart viewModel = fixture.Create<ApproachDelayChart>();
+            ApproachDelayResult viewModel = fixture.Create<ApproachDelayResult>();
             return viewModel;
         }
 
-        [HttpPost("chart")]
-        public ApproachDelayChart Chart( )
-        {
-          return ApproachService.GetApproachDelayChart()
-        }
+        //[HttpPost("chart")]
+        //public ApproachDelayChart Chart( )
+        //{
+        //  return ApproachService.GetApproachDelayChart()
+        //}
 
     }
 }

@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public ApproachYellowRedActivationsAggregationOptions()
         {
-            MetricTypeID = 20;
+            MetricTypeId = 20;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "SevereRedLightViolations" });
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = "TotalRedLightViolations" });

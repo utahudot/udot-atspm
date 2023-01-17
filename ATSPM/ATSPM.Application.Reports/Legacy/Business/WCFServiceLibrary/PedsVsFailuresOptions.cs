@@ -22,12 +22,12 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             Dictionary<DateTime, double> percentCyclesWithPeds, 
             Dictionary<DateTime, double> percentCyclesWithSplitFails)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             StartDate = startDate;
             EndDate = endDate;
             YAxisMax = yAxisMax;
             YAxisMin = yAxisMin;
-            MetricTypeID = metricTypeID;
+            MetricTypeId = metricTypeID;
             PercentPedsList = percentCyclesWithPeds;
             PercentFailuresList = percentCyclesWithSplitFails;
         }
@@ -54,9 +54,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             YAxisMax = 100;
             YAxisMin = 0;
-            MetricTypeID = 31;
+            MetricTypeId = 31;
             var metricTypeRepository = MetricTypeRepositoryFactory.Create();
-            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeID);
+            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeId);
             var settingsRepository = Models.Repositories.ApplicationSettingsRepositoryFactory.Create();
             var settings = settingsRepository.GetGeneralSettings();
             MetricFileLocation = settings.ImagePath;

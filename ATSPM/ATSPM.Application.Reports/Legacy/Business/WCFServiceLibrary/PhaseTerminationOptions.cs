@@ -19,12 +19,12 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             int consecutiveCount,
             bool showPlanStripes)
         {
-            SignalID = signalId;
+            SignalId = signalId;
             YAxisMax = yAxisMax;
             YAxisMin = 0;
             Y2AxisMax = 0;
             Y2AxisMin = 0;
-            MetricTypeID = 1;
+            MetricTypeId = 1;
             //ConsecutiveCount = consecutiveCount;
             ShowPedActivity = showPedActivity;
             ShowPlanStripes = showPlanStripes;
@@ -33,7 +33,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public PhaseTerminationOptions()
         {
             ConsecutiveCountList = new List<int>() { 1, 2, 3, 4, 5};
-            MetricTypeID = 1;
+            MetricTypeId = 1;
             ShowArrivalsOnGreen = true;
             SetDefaults();
         }
@@ -123,16 +123,16 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
             CreateLegend();
             var analysisPhaseCollection =
-                new AnalysisPhaseCollection(SignalID, StartDate,
+                new AnalysisPhaseCollection(SignalId, StartDate,
                     EndDate, SelectedConsecutiveCount);
 
             //If there are phases in the collection add the charts
             if (analysisPhaseCollection.Items.Count > 0)
             {
-                chart = GetNewTermEventChart(StartDate, EndDate, SignalID, location,
+                chart = GetNewTermEventChart(StartDate, EndDate, SignalId, location,
                     SelectedConsecutiveCount, analysisPhaseCollection.MaxPhaseInUse, ShowPedActivity);
 
-                AddTermEventDataToChart(chart, StartDate, EndDate, analysisPhaseCollection, SignalID,
+                AddTermEventDataToChart(chart, StartDate, EndDate, analysisPhaseCollection, SignalId,
                     ShowPedActivity, ShowPlanStripes);
             }
 
@@ -268,8 +268,8 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         private void SetChartTitle(Chart chart)
         {
-            chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeID));
-            chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(SignalID, StartDate, EndDate));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeId));
+            chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(SignalId, StartDate, EndDate));
             chart.Titles.Add(ChartTitleFactory.GetTitle(
                 "Currently showing Force-Offs, Max-Outs and Gap-Outs with a consecutive occurrence of " +
                 SelectedConsecutiveCount + " or more. \n  Pedestrian events are never filtered"));

@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public ApproachPcdAggregationOptions()
         {
-            MetricTypeID = 20;
+            MetricTypeId = 20;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = PcdAggregationByApproach.ARRIVALS_ON_GREEN});
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = PcdAggregationByApproach.ARRIVALS_ON_RED});

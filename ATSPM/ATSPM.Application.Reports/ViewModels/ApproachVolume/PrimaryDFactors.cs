@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.ViewModels.ApproachVolume;
 
-public class PrimaryDFactors
+public class DFactors
 {
-    public PrimaryDFactors(DateTime startTime, double dFactor)
+    public DFactors(DateTime startTime, double dFactor)
     {
         StartTime = startTime;
         DFactor = dFactor;

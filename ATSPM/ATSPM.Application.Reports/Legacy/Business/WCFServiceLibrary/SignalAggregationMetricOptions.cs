@@ -229,7 +229,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         protected void SetMetricType()
         {
             var metricTypeRepository = MetricTypeRepositoryFactory.Create();
-            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeID);
+            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeId);
         }
 
         protected void SaveChartImage(Chart chart)

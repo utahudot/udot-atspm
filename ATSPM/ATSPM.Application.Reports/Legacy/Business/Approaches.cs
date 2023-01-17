@@ -1,12 +1,8 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Linq;
-using Legacy.Common.Models;
 
 
 namespace Legacy.Common.Business

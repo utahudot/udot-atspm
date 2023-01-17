@@ -124,9 +124,9 @@ namespace Legacy.Common.Business
         private void SetChartTitle(Chart chart, RLMSignalPhase signalPhase)
         {
             //Set the chart title
-            chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeID));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeId));
             chart.Titles.Add(
-                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalID, Options.StartDate, Options.EndDate));
+                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalId, Options.StartDate, Options.EndDate));
             chart.Titles.Add(ChartTitleFactory.GetPhaseAndPhaseDescriptions(signalPhase.Approach, signalPhase.GetPermissivePhase));
             var statistics = new Dictionary<string, string>();
             statistics.Add("Total Violations", signalPhase.Violations + " (" + signalPhase.PercentViolations + "%)");

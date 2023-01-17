@@ -37,15 +37,15 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             base.CreateMetric();
             var signalsRepository = SignalsRepositoryFactory.Create();
-            var signal = signalsRepository.GetVersionOfSignalByDate(SignalID, StartDate);
-            var analysisPhaseCollection = new AnalysisPhaseCollection(SignalID, StartDate, EndDate);
+            var signal = signalsRepository.GetVersionOfSignalByDate(SignalId, StartDate);
+            var analysisPhaseCollection = new AnalysisPhaseCollection(SignalId, StartDate, EndDate);
             foreach (var plan in analysisPhaseCollection.Plans)
             {
-                plan.SetProgrammedSplits(SignalID);
+                plan.SetProgrammedSplits(SignalId);
                 plan.SetHighCycleCount(analysisPhaseCollection);
             }
 
-            var eventLogs = new ControllerEventLogs(SignalID, StartDate, EndDate,
+            var eventLogs = new ControllerEventLogService(SignalId, StartDate, EndDate,
                 new List<int>
                     { PHASE_BEGIN_GREEN, PHASE_END_RED_CLEARANCE, PHASE_CALL_REGISTERED, PHASE_CALL_DROPPED });
             foreach (var approach in signal.Approaches.OrderBy(x => x.ProtectedPhaseNumber))
@@ -58,7 +58,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             return ReturnList;
         }
 
-        public void CreateChart(Approach approach, ControllerEventLogs eventLogs, Signal signal,
+        public void CreateChart(Approach approach, ControllerEventLogService eventLogs, Signal signal,
             AnalysisPhase phaseInfo, List<PlanSplitMonitor> plans)
         {
             var phaseEvents = eventLogs.Events.Where(x => x.EventParam == approach.ProtectedPhaseNumber);

@@ -10,10 +10,10 @@ namespace ATSPM.Application.Reports.Controllers
     public class ApproachSpeedController : ControllerBase
     {
         [HttpGet("test")]
-        public ApproachSpeedChart Test()
+        public ApproachSpeedResult Test()
         {
             Fixture fixture = new();
-            ApproachSpeedChart viewModel = fixture.Create<ApproachSpeedChart>();
+            ApproachSpeedResult viewModel = fixture.Create<ApproachSpeedResult>();
             return viewModel;
         }
 

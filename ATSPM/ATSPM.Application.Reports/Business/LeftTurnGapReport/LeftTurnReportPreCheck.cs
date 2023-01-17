@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Models;
-using ATSPM.IRepositories;
+﻿using ATSPM.Data.Models;
+using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ATSPM.Application.Extensions;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -13,12 +13,12 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         private readonly IApproachRepository _approachRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
         private readonly IPhaseTerminationAggregationRepository _phaseTerminationAggregationRepository;
-        private readonly ISignalsRepository _signalRepository;
+        private readonly ISignalRepository _signalRepository;
         private readonly IDetectorRepository _detectorRepository;
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
 
         public LeftTurnReportPreCheck(IPhasePedAggregationRepository phasePedAggregationRepository, IApproachRepository approachRepository, IApproachCycleAggregationRepository approachCycleAggregationRepository,
-            ISignalsRepository signalRepository, IDetectorRepository detectorRepository, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository, IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository)
+            ISignalRepository signalRepository, IDetectorRepository detectorRepository, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository, IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository)
         {
             _phasePedAggregationRepository = phasePedAggregationRepository;
             _approachRepository = approachRepository;
@@ -34,7 +34,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         {
             Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(signalId, approachId, startDate, endDate,
                 amStartTime, amEndTime, pmStartTime, pmEndTime, daysOfWeek, _signalRepository, _approachRepository, _detectorEventCountAggregationRepository);
-            Approach approach = _approachRepository.GetApproachByApproachID(approachId);
+            ATSPM.Data.Models.Approach approach = _approachRepository.GetApproachByApproachID(approachId);
             int opposingPhase = GetOpposingPhase(approach);
             Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(signalId, opposingPhase, startDate, endDate, peaks);
             Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(signalId, opposingPhase, startDate, endDate, peaks);
@@ -120,7 +120,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return averageCycles;
         }
 
-        public static int GetOpposingPhase(Approach approach)
+        public static int GetOpposingPhase(ATSPM.Data.Models.Approach approach)
         {
             //If permissive only 2 = 6, 4 = 8, 6 = 2 and 8 = 4
             if (approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue)
@@ -277,7 +277,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         public static void LoadAverages(Dictionary<TimeSpan, double> averages, TimeSpan peakHour, List<PhaseTerminationAggregation> aggregations)
         {
             if (aggregations.Count > 0)
-                averages.Add(peakHour, aggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.UnknownTerminationTypes));
+                averages.Add(peakHour, aggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.Unknown));
             else
                 averages.Add(peakHour, 0);
         }
@@ -300,14 +300,14 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         //}
 
         public static Dictionary<TimeSpan, int> GetAMPMPeakFlowRate(string signalId, int approachId, DateTime startDate, DateTime endDate, TimeSpan amStartTime,
-            TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime, int[] daysOfWeek, ISignalsRepository signalsRepository,
+            TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime, int[] daysOfWeek, ISignalRepository signalsRepository,
             IApproachRepository approachRepository, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
         {
             if (!signalsRepository.Exists(signalId))
             {
                 throw new ArgumentException("Signal Not Found");
             }
-            List<Models.Detector> detectors = GetAllLaneByLaneDetectorsForSignal(signalId, startDate, signalsRepository);
+            List<ATSPM.Data.Models.Detector> detectors = GetAllLaneByLaneDetectorsForSignal(signalId, startDate, signalsRepository);
             if (!detectors.Any())
             {
                 throw new NotSupportedException("No Detectors found");
@@ -338,7 +338,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                                                                               TimeSpan pmStartTime,
                                                                               TimeSpan pmEndTime,
                                                                               int[] daysOfWeek,
-                                                                              ISignalsRepository signalsRepository,
+                                                                              ISignalRepository signalsRepository,
                                                                               IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
                                                                               List<TimeSpan> distinctTimeSpans,
                                                                               Dictionary<TimeSpan, int> allDetectorsFlowRate,
@@ -438,7 +438,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return averageByBin;
         }
 
-        public static List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<Models.Detector> detectors, DateTime startDate,
+        public static List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<ATSPM.Data.Models.Detector> detectors, DateTime startDate,
             DateTime endDate, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime,
             int[] daysOfWeek, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
         {
@@ -457,7 +457,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return detectorAggregations;
         }
 
-        public static List<Models.Detector> GetLeftTurnDetectors(int approachId, IApproachRepository approachRepository)
+        public static List<ATSPM.Data.Models.Detector> GetLeftTurnDetectors(int approachId, IApproachRepository approachRepository)
         {
             var movementTypes = new List<int>() { 3 };
             //only return detector types of type 4
@@ -466,7 +466,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             && movementTypes.Contains(d.MovementTypeId.Value)).ToList();
         }
 
-        public static List<Models.Detector> GetAllLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalsRepository signalsRepository)
+        public static List<ATSPM.Data.Models.Detector> GetAllLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalRepository signalsRepository)
         {
             var detectors = signalsRepository.GetVersionOfSignalByDate(signalId, date)
                 .GetDetectorsForSignal();
@@ -489,11 +489,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return detectorsList;
         }
 
-        public static List<Models.Detector> GetLeftTurnLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalsRepository signalsRepository)
+        public static List<ATSPM.Data.Models.Detector> GetLeftTurnLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalRepository signalsRepository)
         {
             var detectors = signalsRepository.GetVersionOfSignalByDate(signalId, date)
                 .GetDetectorsForSignal();
-            List<Detector> detectorsList = new List<Detector>();
+            List<ATSPM.Data.Models.Detector> detectorsList = new List<ATSPM.Data.Models.Detector>();
             foreach (var detector in detectors)
             {
                 var detectionTypeIdList = detector.DetectionTypeDetectors.Select(d => d.DetectionTypeId).ToList();

@@ -10,9 +10,9 @@ namespace Legacy.Common.Business.LeftTurnGapReport
     {
         public static double GetSplitFailPercent(string signalId, int directionTypeId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime)
         {
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(signalId, directionTypeId);
-            var approach = LeftTurnReportPreCheck.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
-            var phase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            var detectors = LeftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionTypeId);
+            var approach = LeftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
+            var phase = LeftTurnReportPreCheckService.GetOpposingPhase(approach);
             var repository = Models.Repositories.ApproachSplitFailAggregationRepositoryFactory.Create();
             List<Models.ApproachSplitFailAggregation> splitFailsAggregates = new List<Models.ApproachSplitFailAggregation>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))

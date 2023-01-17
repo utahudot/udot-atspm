@@ -12,10 +12,10 @@ namespace ATSPM.Application.Reports.Controllers
     {
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public ArrivalOnRedChart Test()
+        public ArrivalOnRedResult Test()
         {
             Fixture fixture = new();
-            ArrivalOnRedChart viewModel = fixture.Create<ArrivalOnRedChart>();
+            ArrivalOnRedResult viewModel = fixture.Create<ArrivalOnRedResult>();
             return viewModel;
         }
 

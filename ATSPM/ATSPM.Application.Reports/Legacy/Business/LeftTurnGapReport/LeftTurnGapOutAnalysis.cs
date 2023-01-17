@@ -9,8 +9,8 @@ namespace Legacy.Common.Business.LeftTurnGapReport
     {
         public static double GetPercentOfGapDuration(string signalId, int directionTypeId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime)
         {
-            var approach = LeftTurnReportPreCheck.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            var approach = LeftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
+            int opposingPhase = LeftTurnReportPreCheckService.GetOpposingPhase(approach);
             int numberOfOposingLanes = GetNumberOfOpposingLanes(signalId, opposingPhase);
             double criticalGap = GetCriticalGap(numberOfOposingLanes);
 
@@ -25,7 +25,7 @@ namespace Legacy.Common.Business.LeftTurnGapReport
         private static double GetGapDemand(string signalId, int directionTypeId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap)
         {
             var repository = Models.Repositories.DetectorEventCountAggregationRepositoryFactory.Create();
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(signalId, directionTypeId);
+            var detectors = LeftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionTypeId);
             int totalActivations = 0;
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {

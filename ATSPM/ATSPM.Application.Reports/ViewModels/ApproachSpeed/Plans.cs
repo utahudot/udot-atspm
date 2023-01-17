@@ -3,8 +3,25 @@ using System;
 
 namespace ATSPM.Application.Reports.ViewModels.ApproachSpeed
 {
-    public class Plans
+    public class SpeedPlan
     {
+        public SpeedPlan(
+            DateTime startTime,
+            DateTime endTime,
+            string planNumber,
+            int averageSpeed,
+            int standardDeviation,
+            int eightyFifthPercentile,
+            int fifteenthPercentile)
+        {
+            AverageSpeed = averageSpeed;
+            StandardDeviation = standardDeviation;
+            EightyFifthPercentile = eightyFifthPercentile;
+            FifteenthPercentile = fifteenthPercentile;
+            PlanNumber = planNumber;
+            StartTime = startTime;
+            EndTime = endTime;
+        }
 
         public int AverageSpeed { get; set; }
         public int StandardDeviation { get; set; }

@@ -18,11 +18,11 @@ namespace ATSPM.Application.Reports.Approach
 
 
 
-        internal static ApproachDelayChart GetApproachDelayChart()
-        {
-            var signalPhase =GetSignalPhase()
-            throw new NotImplementedException();
-        }
+        //internal static ApproachDelayChart GetApproachDelayChart()
+        //{
+        //    var signalPhase =GetSignalPhase()
+        //    throw new NotImplementedException();
+        //}
     }
 
 

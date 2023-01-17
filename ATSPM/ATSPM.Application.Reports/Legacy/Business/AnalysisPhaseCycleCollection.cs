@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
+using ATSPM.Data.Models;
 
 namespace Legacy.Common.Business
 {
@@ -16,7 +16,7 @@ namespace Legacy.Common.Business
         /// <param name="signalid"></param>
         /// <param name="CycleEventsTable"></param>
         public AnalysisPhaseCycleCollection(int phasenumber, string signalId,
-            List<Controller_Event_Log> CycleEventsTable, List<Controller_Event_Log> PedEvents)
+            List<ControllerEventLog> CycleEventsTable, List<ControllerEventLog> PedEvents)
         {
             AnalysisPhaseCycle Cycle = null;
             SignalID = signalId;
@@ -60,7 +60,7 @@ namespace Legacy.Common.Business
         public int PhaseNumber { get; set; }
 
 
-        public void SetPedTimesForCycle(List<Controller_Event_Log> PedEventsForCycle, AnalysisPhaseCycle Cycle)
+        public void SetPedTimesForCycle(List<ControllerEventLog> PedEventsForCycle, AnalysisPhaseCycle Cycle)
         {
             if (PedEventsForCycle.Count > 0)
             {

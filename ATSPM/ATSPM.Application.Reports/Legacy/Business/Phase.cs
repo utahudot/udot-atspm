@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,13 +31,13 @@ namespace Legacy.Common.Business
         }
 
 
-        public List<Models.Controller_Event_Log> Events;
+        public List<ATSPM.Data.Models.ControllerEventLog> Events;
 
        
 
         public List<PhaseCycleBase> Cycles { get; set; }
 
-        public Models.Approach Approach { get; set; }
+        public ATSPM.Data.Models.Approach Approach { get; set; }
 
         public string SignalId { get; set; }
 
@@ -53,8 +56,14 @@ namespace Legacy.Common.Business
 
         
 
-        public Phase(Models.Approach approach,
-            DateTime startDate, DateTime endDate, List<int> eventCodes, int startofCycleEvent, bool usePermissivePhase)
+        public Phase(
+            Approach approach,
+            DateTime startDate,
+            DateTime endDate,
+            List<int> eventCodes,
+            int startofCycleEvent,
+            bool usePermissivePhase,
+            IControllerEventLogRepository controllerEventLogRepository)
            
                 
         {
@@ -74,12 +83,10 @@ namespace Legacy.Common.Business
                 PhaseNumber = Approach.PermissivePhaseNumber??0;
             }
             IsOverlap = false;
-            SignalId = Approach.Signal.SignalID;
+            SignalId = Approach.Signal.Id;
 
 
-            Legacy.Common.Models.Repositories.IControllerEventLogRepository cer = Legacy.Common.Models.Repositories.ControllerEventLogRepositoryFactory.Create();
-
-            Events = cer.GetEventsByEventCodesParam(SignalId, startDate, endDate,
+           Events = controllerEventLogRepository.GetEventsByEventCodesParamDateTimeRange() .GetEventsByEventCodesParam(SignalId, startDate, endDate,
                 eventCodes, PhaseNumber);
 
             Cycles = PhaseCycleFactory.GetCycles(startofCycleEvent, Events, StartDate, EndDate);

@@ -134,16 +134,16 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public TimingAndActuationsOptions(string signalID, DateTime startDate, DateTime endDate)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             StartDate = startDate;
             EndDate = endDate;
-            MetricTypeID = 17;
+            MetricTypeId = 17;
             //ExtendSearch = 0;
         }
 
         public TimingAndActuationsOptions()
         {
-            MetricTypeID = 17;
+            MetricTypeId = 17;
             SetDefaults();
         }
 
@@ -151,7 +151,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             base.CreateMetric();
             var signalRepository = SignalsRepositoryFactory.Create();
-            Signal = signalRepository.GetVersionOfSignalByDateWithDetectionTypes(SignalID, StartDate);
+            Signal = signalRepository.GetVersionOfSignalByDateWithDetectionTypes(SignalId, StartDate);
             var chart = new Chart();
             HeadTitleCounter = 0;
             var timingAndActuationsForPhases = new List<TimingAndActuationsForPhase>();
@@ -237,7 +237,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
                 GlobalEventCodesList.Any() && GlobalEventCodesList.Count > 0 &&
                 GlobalEventParamsList.Any() && GlobalEventParamsList.Count > 0)
             {
-                var globalGetDataTimingAndActuations = new GlobalGetDataTimingAndActuations(SignalID, this);
+                var globalGetDataTimingAndActuations = new GlobalGetDataTimingAndActuations(SignalId, this);
                 GetGlobalChart(globalGetDataTimingAndActuations, this);
             }
             if (ShowLegend)

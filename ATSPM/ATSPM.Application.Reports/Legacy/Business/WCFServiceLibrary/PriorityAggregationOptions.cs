@@ -12,7 +12,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PriorityAggregationOptions()
         {
-            MetricTypeID = 24;
+            MetricTypeId = 24;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "PriorityNumber"});
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = "PriorityRequests"});

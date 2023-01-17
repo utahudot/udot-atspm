@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PhasePedAggregationOptions()
         {
-            MetricTypeID = 29;
+            MetricTypeId = 29;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = PhasePedAggregationByPhase.PED_CYCLES });
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = PhasePedAggregationByPhase.PED_DELAY_SUM });

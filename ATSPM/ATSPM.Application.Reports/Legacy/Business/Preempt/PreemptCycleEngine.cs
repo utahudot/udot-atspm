@@ -6,7 +6,7 @@ namespace Legacy.Common.Business.Preempt
 {
     public class PreemptCycleEngine
     {
-        public List<PreemptCycle> CreatePreemptCycle(ControllerEventLogs DTTB)
+        public List<PreemptCycle> CreatePreemptCycle(ControllerEventLogService DTTB)
         {
             var CycleCollection = new List<PreemptCycle>();
             PreemptCycle cycle = null;
@@ -151,7 +151,7 @@ namespace Legacy.Common.Business.Preempt
             return CycleCollection;
         }
 
-        private DateTime FindNext111Event(ControllerEventLogs DTTB, int counter)
+        private DateTime FindNext111Event(ControllerEventLogService DTTB, int counter)
         {
             var Next111Event = new DateTime();
             for (var x = counter; x < DTTB.Events.Count; x++)
@@ -163,7 +163,7 @@ namespace Legacy.Common.Business.Preempt
             return Next111Event;
         }
 
-        private bool DoesTheCycleEndNormal(ControllerEventLogs DTTB, int counter)
+        private bool DoesTheCycleEndNormal(ControllerEventLogService DTTB, int counter)
         {
             var foundEvent111 = false;
 
@@ -188,7 +188,7 @@ namespace Legacy.Common.Business.Preempt
             return foundEvent111;
         }
 
-        private bool DoesTrackClearEndNormal(ControllerEventLogs DTTB, int counter)
+        private bool DoesTrackClearEndNormal(ControllerEventLogService DTTB, int counter)
         {
             var foundEvent107 = false;
 

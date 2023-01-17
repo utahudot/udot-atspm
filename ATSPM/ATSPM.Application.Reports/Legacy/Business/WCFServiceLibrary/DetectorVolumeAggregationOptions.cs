@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public DetectorVolumeAggregationOptions()
         {
-            MetricTypeID = 16;
+            MetricTypeId = 16;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "DetectorActivationCount"});
         }

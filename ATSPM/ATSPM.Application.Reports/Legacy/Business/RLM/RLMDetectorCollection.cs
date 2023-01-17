@@ -7,248 +7,248 @@ namespace Legacy.Common.Business
 {
     public class RLMDetectorCollection
     {
-        private List<Legacy.Common.Business.Detector> NBdetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBDetectors
+        private List<Legacy.Common.Business.DetectorData> NBdetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBDetectors
         {
             get { return NBdetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBdetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBDetectors
+        private List<Legacy.Common.Business.DetectorData> SBdetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBDetectors
         {
             get { return SBdetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBdetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBDetectors
+        private List<Legacy.Common.Business.DetectorData> EBdetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBDetectors
         {
             get { return EBdetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBdetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBDetectors
+        private List<Legacy.Common.Business.DetectorData> WBdetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBDetectors
         {
             get { return WBdetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBbikedetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> NBbikedetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBBikeDetectors
         {
             get { return NBbikedetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBbikedetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> SBbikedetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBBikeDetectors
         {
             get { return SBbikedetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBbikedetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> EBbikedetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBBikeDetectors
         {
             get { return EBbikedetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBbikedetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> WBbikedetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBBikeDetectors
         {
             get { return WBbikedetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBpeddetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBPedDetectors
+        private List<Legacy.Common.Business.DetectorData> NBpeddetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBPedDetectors
         {
             get { return NBpeddetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBpeddetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBPedDetectors
+        private List<Legacy.Common.Business.DetectorData> SBpeddetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBPedDetectors
         {
             get { return SBpeddetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBpeddetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBPedDetectors
+        private List<Legacy.Common.Business.DetectorData> EBpeddetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBPedDetectors
         {
             get { return EBpeddetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBpeddetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBPedDetectors
+        private List<Legacy.Common.Business.DetectorData> WBpeddetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBPedDetectors
         {
             get { return WBpeddetectors; }
         }
 
-        private List<List<Detector>> pedDetectors = new List<List<Detector>>();
-        public List<List<Detector>> PedDetectors
+        private List<List<DetectorData>> pedDetectors = new List<List<DetectorData>>();
+        public List<List<DetectorData>> PedDetectors
         {
             get { return PedDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBleftDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBLeftDetectors
+        private List<Legacy.Common.Business.DetectorData> NBleftDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBLeftDetectors
         {
             get { return NBleftDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBleftDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBLeftDetectors
+        private List<Legacy.Common.Business.DetectorData> SBleftDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBLeftDetectors
         {
             get { return SBleftDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBleftDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBLeftDetectors
+        private List<Legacy.Common.Business.DetectorData> EBleftDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBLeftDetectors
         {
             get { return EBleftDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBleftDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBLeftDetectors
+        private List<Legacy.Common.Business.DetectorData> WBleftDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBLeftDetectors
         {
             get { return WBleftDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBrightDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBRightDetectors
+        private List<Legacy.Common.Business.DetectorData> NBrightDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBRightDetectors
         {
             get { return NBrightDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBrightDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBRightDetectors
+        private List<Legacy.Common.Business.DetectorData> SBrightDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBRightDetectors
         {
             get { return SBrightDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBrightDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBRightDetectors
+        private List<Legacy.Common.Business.DetectorData> EBrightDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBRightDetectors
         {
             get { return EBrightDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBrightDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBRightDetectors
+        private List<Legacy.Common.Business.DetectorData> WBrightDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBRightDetectors
         {
             get { return WBrightDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBthruDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBThruDetectors
+        private List<Legacy.Common.Business.DetectorData> NBthruDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBThruDetectors
         {
             get { return NBthruDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBthruDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBThruDetectors
+        private List<Legacy.Common.Business.DetectorData> SBthruDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBThruDetectors
         {
             get { return SBthruDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBthruDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBThruDetectors
+        private List<Legacy.Common.Business.DetectorData> EBthruDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBThruDetectors
         {
             get { return EBthruDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBthruDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBThruDetectors
+        private List<Legacy.Common.Business.DetectorData> WBthruDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBThruDetectors
         {
             get { return WBthruDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBexitDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBExitDetectors
+        private List<Legacy.Common.Business.DetectorData> NBexitDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBExitDetectors
         {
             get { return NBexitDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBexitDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBExitDetectors
+        private List<Legacy.Common.Business.DetectorData> SBexitDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBExitDetectors
         {
             get { return SBexitDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBexitDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBExitDetectors
+        private List<Legacy.Common.Business.DetectorData> EBexitDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBExitDetectors
         {
             get { return EBexitDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBexitDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBExitDetectors
+        private List<Legacy.Common.Business.DetectorData> WBexitDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBExitDetectors
         {
             get { return WBexitDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBLTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBLTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> NBLTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBLTBikeDetectors
         {
             get { return NBLTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBRTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBRTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> NBRTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBRTBikeDetectors
         {
             get { return NBRTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> NBThrubikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> NBThruBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> NBThrubikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> NBThruBikeDetectors
         {
             get { return NBThrubikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBLTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBLTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> SBLTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBLTBikeDetectors
         {
             get { return SBLTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBRTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBRTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> SBRTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBRTBikeDetectors
         {
             get { return SBRTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> SBThrubikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> SBThruBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> SBThrubikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> SBThruBikeDetectors
         {
             get { return SBThrubikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBLTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBLTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> EBLTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBLTBikeDetectors
         {
             get { return EBLTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBRTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBRTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> EBRTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBRTBikeDetectors
         {
             get { return EBRTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> EBThrubikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> EBThruBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> EBThrubikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> EBThruBikeDetectors
         {
             get { return EBThrubikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBLTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBLTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> WBLTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBLTBikeDetectors
         {
             get { return WBLTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBRTbikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBRTBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> WBRTbikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBRTBikeDetectors
         {
             get { return WBRTbikeDetectors; }
         }
 
-        private List<Legacy.Common.Business.Detector> WBThrubikeDetectors = new List<Detector>();
-        public List<Legacy.Common.Business.Detector> WBThruBikeDetectors
+        private List<Legacy.Common.Business.DetectorData> WBThrubikeDetectors = new List<DetectorData>();
+        public List<Legacy.Common.Business.DetectorData> WBThruBikeDetectors
         {
             get { return WBThrubikeDetectors; }
         }
@@ -259,7 +259,7 @@ namespace Legacy.Common.Business
             get { return signalId; }
         }
 
-        public List<Legacy.Common.Business.Detector> DetectorsForRLM = new List<Detector>();
+        public List<Legacy.Common.Business.DetectorData> DetectorsForRLM = new List<DetectorData>();
 
         /// <summary>
         /// Default constructor for the DetectorCollection used in the Turning Movement Counts charts
@@ -274,7 +274,7 @@ namespace Legacy.Common.Business
             var dets = approach.GetDetectorsForMetricType(11);
             foreach (Legacy.Common.Models.Detector detector in dets)
             {
-                Legacy.Common.Business.Detector Detector = new Detector(detector, startdate, enddate, binsize);
+                Legacy.Common.Business.DetectorData Detector = new Detector(detector, startdate, enddate, binsize);
                 DetectorsForRLM.Add(Detector);
             }
             //SortDetectors();
@@ -296,26 +296,26 @@ namespace Legacy.Common.Business
             foreach (Legacy.Common.Models.Detector row in dets)
             {
                // MOE.Common.Business.Detector Detector = new Detector(row.DetectorID.ToString(), signalID, row.Det_Channel, row.Lane.LaneType, ApproachDirection);
-                Legacy.Common.Business.Detector Detector = new Detector(row.DetectorID.ToString(), signalID, row.DetChannel, row.Approach);
+                Legacy.Common.Business.DetectorData Detector = new Detector(row.DetectorID.ToString(), signalID, row.DetChannel, row.Approach);
                 DetectorsForRLM.Add(Detector);
             }
 
         }
 
-        public Legacy.Common.Business.ControllerEventLogs CombineDetectorData(DateTime startDate, DateTime endDate, string signalId)
+        public Legacy.Common.Business.ControllerEventLogService CombineDetectorData(DateTime startDate, DateTime endDate, string signalId)
         {
             Legacy.Common.Models.SPM db = new Legacy.Common.Models.SPM();
-            Legacy.Common.Business.ControllerEventLogs detectortable = 
-                new Legacy.Common.Business.ControllerEventLogs(signalId, startDate, endDate);
-            List<Legacy.Common.Business.ControllerEventLogs> Tables = new List<Legacy.Common.Business.ControllerEventLogs>();
-            foreach (Legacy.Common.Business.Detector Detector in DetectorsForRLM)
+            Legacy.Common.Business.ControllerEventLogService detectortable = 
+                new Legacy.Common.Business.ControllerEventLogService(signalId, startDate, endDate);
+            List<Legacy.Common.Business.ControllerEventLogService> Tables = new List<Legacy.Common.Business.ControllerEventLogService>();
+            foreach (Legacy.Common.Business.DetectorData Detector in DetectorsForRLM)
             {
-                Legacy.Common.Business.ControllerEventLogs TEMPdetectortable =
-                    new Legacy.Common.Business.ControllerEventLogs(signalId, startDate, endDate, Detector.Channel, 
+                Legacy.Common.Business.ControllerEventLogService TEMPdetectortable =
+                    new Legacy.Common.Business.ControllerEventLogService(signalId, startDate, endDate, Detector.Channel, 
                         new List<int>() { 82 });
                 Tables.Add(TEMPdetectortable);
             }
-            foreach (Legacy.Common.Business.ControllerEventLogs Table in Tables)
+            foreach (Legacy.Common.Business.ControllerEventLogService Table in Tables)
             {
                 detectortable.MergeEvents(Table);
             }

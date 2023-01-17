@@ -104,9 +104,9 @@ namespace Legacy.Common.Business.TMC
 
         private void SetChartTitle(LaneType laneType, DirectionType direction, MovementType movementType)
         {
-            chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeID));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeId));
             chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
-                Options.SignalID, Options.StartDate, Options.EndDate));
+                Options.SignalId, Options.StartDate, Options.EndDate));
             chart.Titles.Add(ChartTitleFactory.GetBoldTitle(direction.Description + " " +
                                                             movementType.Description + " " + laneType.Description +
                                                             " Lanes"));

@@ -12,7 +12,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PreemptionAggregationOptions()
         {
-            MetricTypeID = 22;
+            MetricTypeId = 22;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "PreemptNumber"});
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = "PreemptRequests"});

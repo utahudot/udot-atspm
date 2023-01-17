@@ -20,12 +20,12 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             bool showYellowLightOccurrences, bool showPercentYellowLightOccurrences,
             bool showAverageTimeYellowOccurences)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             //StartDate = startDate;
             //EndDate = endDate;
             YAxisMax = yAxisMax;
             Y2AxisMax = y2AxisMax;
-            MetricTypeID = metricTypeID;
+            MetricTypeId = metricTypeID;
             SevereLevelSeconds = severeLevelSeconds;
             ShowRedLightViolations = showRedLightViolations;
             ShowSevereRedLightViolations = showSevereRedLightViolations;
@@ -40,7 +40,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public YellowAndRedOptions()
         {
-            MetricTypeID = 11;
+            MetricTypeId = 11;
             BinSize = 15;
             SetDefaults();
         }
@@ -90,7 +90,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
           
 
             var signalphasecollection =
-                new RLMSignalPhaseCollection(StartDate, EndDate, SignalID, BinSize, SevereLevelSeconds);
+                new RLMSignalPhaseCollection(StartDate, EndDate, SignalId, BinSize, SevereLevelSeconds);
 
             if (signalphasecollection.SignalPhaseList.Count > 0)
                 foreach (var signalPhase in signalphasecollection.SignalPhaseList)

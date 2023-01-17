@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using Legacy.Common.Models;
+using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
+using ATSPM.Data.Models;
+using ATSPM.Application.Repositories;
+using ATSPM.Application.Extensions;
+using ATSPM.Application.Enums;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Legacy.Common.Business
 {
-    public class PlansBase : ControllerEventLogs
+    public class PlansBase
     {
-        public PlansBase(string signalID, DateTime startDate, DateTime endDate) :
-            base(signalID, startDate, endDate, new List<int> {131})
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
+
+        public List<ControllerEventLog> Events { get; set; }
+        public PlansBase(string signalID, DateTime startDate, DateTime endDate, IControllerEventLogRepository controllerEventLogRepository)
         {
+            Events = controllerEventLogRepository.GetSignalEventsByEventCode(signalID, startDate, endDate, 131).ToList();
             //Get the plan Previous to the start date
             //if(this.Events.Count > 0)
             //{
-            var tempEvent = new Controller_Event_Log();
-            tempEvent.SignalID = signalID;
+            var tempEvent = new ControllerEventLog();
+            tempEvent.SignalId = signalID;
             tempEvent.Timestamp = startDate;
             tempEvent.EventCode = 131;
             tempEvent.EventParam = GetPreviousPlan(signalID, startDate);
@@ -23,7 +32,7 @@ namespace Legacy.Common.Business
 
             //Remove Duplicate Plans
             var x = -1;
-            var temp = new List<Controller_Event_Log>();
+            var temp = new List<ControllerEventLog>();
             foreach (var cel in Events)
                 temp.Add(cel);
             foreach (var cel in temp)
@@ -40,6 +49,17 @@ namespace Legacy.Common.Business
                     x = cel.EventParam;
                     Events.Remove(cel);
                 }
+
+            this.controllerEventLogRepository = controllerEventLogRepository;
+        }
+
+        public int GetPreviousPlan(string signalID, DateTime startDate)
+        {
+            var endDate = startDate.AddHours(-12);
+            var planRecord = controllerEventLogRepository.GetSignalEventsByEventCode(signalID, startDate, endDate, 131);
+            if (planRecord.Count() > 0)
+                return planRecord.OrderByDescending(s => s.Timestamp).FirstOrDefault().EventParam;
+            return 0;
         }
     }
 }

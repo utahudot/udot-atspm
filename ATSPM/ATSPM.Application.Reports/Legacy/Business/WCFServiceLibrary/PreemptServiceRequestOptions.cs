@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Web.UI.DataVisualization.Charting;
 using Legacy.Common.Business.Preempt;
 
 namespace Legacy.Common.Business.WCFServiceLibrary
@@ -11,7 +10,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PreemptServiceRequestOptions(string signalId, DateTime startDate, DateTime endDate)
         {
-            SignalID = signalId;
+            SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
         }
@@ -20,8 +19,8 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             base.CreateMetric();
             var returnList = new List<string>();
-            var eventsTable = new ControllerEventLogs();
-            eventsTable.FillforPreempt(SignalID, StartDate, EndDate);
+            var eventsTable = new ControllerEventLogService();
+            eventsTable.FillforPreempt(SignalId, StartDate, EndDate);
 
             var psrChart = new PreemptRequestChart(this, eventsTable);
             var chart = psrChart.PreemptServiceRequestChart;

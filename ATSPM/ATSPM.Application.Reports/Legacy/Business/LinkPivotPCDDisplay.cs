@@ -177,7 +177,7 @@ namespace Legacy.Common.Business
         }
 
 
-        private string CreateChart(SignalPhase signalPhase, DateTime startDate, DateTime endDate, string location,
+        private string CreateChart(SignalPhaseService signalPhase, DateTime startDate, DateTime endDate, string location,
             string chartNameSuffix, string chartLocation, int maxYAxis, string directionBeforeAfter)
         {
             //Instantiate the chart object
@@ -384,7 +384,7 @@ namespace Legacy.Common.Business
         }
 
 
-        private void AddDataToChart(Chart chart, SignalPhase signalPhase, DateTime startDate, bool showVolume,
+        private void AddDataToChart(Chart chart, SignalPhaseService signalPhase, DateTime startDate, bool showVolume,
             bool showArrivalOnGreen)
         {
             decimal totalDetectorHits = 0;

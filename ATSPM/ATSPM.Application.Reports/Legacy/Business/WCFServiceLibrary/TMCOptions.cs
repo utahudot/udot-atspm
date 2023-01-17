@@ -22,7 +22,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             int binSize, bool showPlanStatistics, bool showVolumes, int metricTypeID, bool showLaneVolumes,
             bool showTotalVolumes)
         {
-            SignalID = signalID;
+            SignalId = signalID;
             //StartDate = startDate;
             //EndDate = endDate;
             YAxisMax = yAxisMax;
@@ -66,9 +66,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
             var repository =
                 SignalsRepositoryFactory.Create();
-            var signal = repository.GetVersionOfSignalByDate(SignalID, StartDate);
+            var signal = repository.GetVersionOfSignalByDate(SignalId, StartDate);
             TmcInfo = new TMCInfo();
-            var plans = PlanFactory.GetBasicPlans(StartDate, EndDate, SignalID, null);
+            var plans = PlanService.GetBasicPlans(StartDate, EndDate, SignalId, null);
 
 
             var ltr = LaneTypeRepositoryFactory.Create();

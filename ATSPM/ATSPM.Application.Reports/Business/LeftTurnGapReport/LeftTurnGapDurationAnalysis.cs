@@ -1,5 +1,5 @@
-﻿using ATSPM.Application.Models;
-using ATSPM.IRepositories;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +12,13 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         private readonly IDetectorRepository _detectorRepository;
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
-        private readonly ISignalsRepository _signalsRepository;
+        private readonly ISignalRepository _signalsRepository;
         public LeftTurnGapDurationAnalysis(
             IApproachRepository approachRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
-            ISignalsRepository signalsRepository)
+            ISignalRepository signalsRepository)
         {
             _approachRepository = approachRepository;
             _detectorRepository = detectorRepository;
@@ -28,8 +28,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         }
         public GapDurationResult GetPercentOfGapDuration(string signalId, int approachId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, int[] daysOfWeek)
         {
-            var signal = _signalsRepository.GetVersionOfSignalByDate(signalId, start);
-            var approach = signal.Approaches.Where(a => a.ApproachId == approachId).FirstOrDefault();
+            var signal = _signalsRepository.GetLatestVersionOfSignal(signalId, start);
+            var approach = signal.Approaches.Where(a => a.Id == approachId).FirstOrDefault();
             int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
             int numberOfOposingLanes = GetNumberOfOpposingLanes(signal, opposingPhase);
             double criticalGap = GetCriticalGap(numberOfOposingLanes);
@@ -49,7 +49,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         private Dictionary<DateTime, double> GetGapsList(string signalId, int phaseNumber, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap, int[] daysOfWeek)
         {
-            List<Models.PhaseLeftTurnGapAggregation> amAggregations = new List<Models.PhaseLeftTurnGapAggregation>();
+            List<PhaseLeftTurnGapAggregation> amAggregations = new List<PhaseLeftTurnGapAggregation>();
             int gapColumn = GetGapColumn(criticalGap);
             Dictionary<DateTime, double> acceptableGaps = new Dictionary<DateTime, double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
@@ -96,7 +96,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         private double GetGapSummedTotal(string signalId, int phaseNumber, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap, int[] daysOfWeek)
         {
-            List<Models.PhaseLeftTurnGapAggregation> amAggregations = new List<Models.PhaseLeftTurnGapAggregation>();
+            List<PhaseLeftTurnGapAggregation> amAggregations = new List<PhaseLeftTurnGapAggregation>();
             int gapColumn = GetGapColumn(criticalGap);
             double gapTotal = 0;
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
@@ -152,7 +152,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             }
         }
 
-        public static int SumGapColumns(int gapColumn, List<Models.PhaseLeftTurnGapAggregation> leftTurnGaps)
+        public static int SumGapColumns(int gapColumn, List<PhaseLeftTurnGapAggregation> leftTurnGaps)
         {
             return gapColumn switch
             {

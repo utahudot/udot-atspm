@@ -17,7 +17,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             int binSize, bool showDirectionalSplits, bool showTotalVolume, bool showNbEbVolume, bool showSbWbVolume, bool showTmcDetection,
             bool showAdvanceDetection)
         {
-            SignalID = signalId;
+            SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
             YAxisMax = yAxisMax;
@@ -28,7 +28,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             ShowSbWbVolume = showSbWbVolume;
             ShowTMCDetection = showTmcDetection;
             ShowAdvanceDetection = showAdvanceDetection;
-            MetricTypeID = 7;
+            MetricTypeId = 7;
         }
 
         public ApproachVolumeOptions()
@@ -68,98 +68,5 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [DataMember]
         [Display(Name = "Show Advance Detection")]
         public bool ShowAdvanceDetection { get; set; }
-
-        public override List<string> CreateMetric()
-        {
-            base.CreateMetric();
-
-            var returnList = new List<string>();
-            MetricInfoList = new List<MetricInfo>();
-
-            var signalsRepository =SignalsRepositoryFactory.Create();
-            var directionRepository = DirectionTypeRepositoryFactory.Create();
-            var allDirections = directionRepository.GetAllDirections();
-            var signal = signalsRepository.GetVersionOfSignalByDate(SignalID, StartDate);
-            var directions = signal.GetAvailableDirections();
-            if (directions.Any(d => d.Description == "Northbound") || directions.Any(d => d.Description == "Southbound"))
-            {
-                DirectionType northboundDirection = allDirections.FirstOrDefault(d => d.Description == "Northbound");
-                DirectionType southboundDirection = allDirections.FirstOrDefault(d => d.Description == "Southbound");
-                List<Models.Approach> northboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == northboundDirection.DirectionTypeID && a.ProtectedPhaseNumber !=0).ToList();
-                List<Models.Approach> southboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == southboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                if (northboundApproaches.Count > 0 || southboundApproaches.Count >0)
-                {
-                    CreateAndSaveCharts(northboundDirection, southboundDirection, northboundApproaches, southboundApproaches);
-                }
-            }
-            if (directions.Any(d => d.Description == "Westbound") || directions.Any(d => d.Description == "Eastbound"))
-            {
-                DirectionType eastboundDirection = allDirections.FirstOrDefault(d => d.Description == "Eastbound");
-                DirectionType westboundDirection = allDirections.FirstOrDefault(d => d.Description == "Westbound");
-                var eastboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == eastboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                var westboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == westboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                if (eastboundApproaches.Count > 0 || westboundApproaches.Count > 0)
-                {
-                    CreateAndSaveCharts(eastboundDirection, westboundDirection, eastboundApproaches, westboundApproaches);
-                }
-            }
-            if (directions.Any(d => d.Description == "Northeast") || directions.Any(d => d.Description == "Southwest"))
-            {
-                DirectionType eastboundDirection = allDirections.FirstOrDefault(d => d.Description == "Northeast");
-                DirectionType westboundDirection = allDirections.FirstOrDefault(d => d.Description == "Southwest");
-                var eastboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == eastboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                var westboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == westboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                if (eastboundApproaches.Count > 0 || westboundApproaches.Count > 0)
-                {
-                    CreateAndSaveCharts(eastboundDirection, westboundDirection, eastboundApproaches, westboundApproaches);
-                }
-            }
-            if (directions.Any(d => d.Description == "Northwest") || directions.Any(d => d.Description == "Southeast"))
-            {
-                DirectionType eastboundDirection = allDirections.FirstOrDefault(d => d.Description == "Southeast");
-                DirectionType westboundDirection = allDirections.FirstOrDefault(d => d.Description == "Northwest");
-                var eastboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == eastboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                var westboundApproaches = signal.Approaches
-                    .Where(a => a.DirectionTypeID == westboundDirection.DirectionTypeID && a.ProtectedPhaseNumber != 0).ToList();
-                if (eastboundApproaches.Count > 0 || westboundApproaches.Count > 0)
-                {
-                    CreateAndSaveCharts(eastboundDirection, westboundDirection, eastboundApproaches, westboundApproaches);
-                }
-            }
-            return returnList;
-        }
-
-        private void CreateAndSaveCharts(DirectionType primaryDirection, DirectionType opposingDirection, List<Models.Approach> primaryApproaches, List<Models.Approach> opposingApproaches)
-        {
-            ApproachVolume.ApproachVolume advanceCountApproachVolume =
-                new ApproachVolume.ApproachVolume(primaryApproaches, opposingApproaches, this, primaryDirection, opposingDirection, 2);
-            ApproachVolume.ApproachVolume laneByLaneCountApproachVolume =
-                new ApproachVolume.ApproachVolume(primaryApproaches, opposingApproaches, this, primaryDirection, opposingDirection, 4);
-            if (advanceCountApproachVolume.PrimaryDirectionVolume != null &&
-                advanceCountApproachVolume.OpposingDirectionVolume != null && advanceCountApproachVolume.MetricInfo.CombinedVolume >0 && ShowAdvanceDetection)
-            {
-                string chartName = CreateFileName();
-                ApproachVolumeChart chart = new ApproachVolumeChart(this, advanceCountApproachVolume, primaryDirection, opposingDirection);
-                chart.Chart.SaveImage(MetricFileLocation + chartName, ChartImageFormat.Jpeg);
-                advanceCountApproachVolume.MetricInfo.ImageLocation = MetricWebPath + chartName;
-                MetricInfoList.Add(advanceCountApproachVolume.MetricInfo);
-            }
-            if (laneByLaneCountApproachVolume.PrimaryDirectionVolume != null &&
-                laneByLaneCountApproachVolume.OpposingDirectionVolume != null && laneByLaneCountApproachVolume.MetricInfo.CombinedVolume > 0 && ShowTMCDetection)
-            {
-                string chartName = CreateFileName();
-                ApproachVolumeChart chart = new ApproachVolumeChart(this, laneByLaneCountApproachVolume, primaryDirection, opposingDirection);
-                chart.Chart.SaveImage(MetricFileLocation + chartName, ChartImageFormat.Jpeg);
-                laneByLaneCountApproachVolume.MetricInfo.ImageLocation = MetricWebPath + chartName;
-                MetricInfoList.Add(laneByLaneCountApproachVolume.MetricInfo);
-            }
-        }
-    }
+}
 }

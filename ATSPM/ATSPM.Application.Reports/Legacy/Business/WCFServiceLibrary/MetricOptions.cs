@@ -18,7 +18,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     [KnownType(typeof(ApproachDelayOptions))]
     [KnownType(typeof(MetricOptions))]
     [KnownType(typeof(PhaseTerminationOptions))]
-    [KnownType(typeof(PreemptDetailOptions))]
+    [KnownType(typeof(PreemptDetailService))]
     [KnownType(typeof(PreemptServiceMetricOptions))]
     [KnownType(typeof(PreemptServiceRequestOptions))]
     [KnownType(typeof(YellowAndRedOptions))]
@@ -56,11 +56,11 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             var applicationSettingRepository = ApplicationSettingsRepositoryFactory.Create();
 
             GeneralSettings generalSettings = applicationSettingRepository.GetGeneralSettings();
-            SignalID = string.Empty;
+            SignalId = string.Empty;
             YAxisMin = 0;
             Y2AxisMax = 0;
             Y2AxisMin = 0;
-            MetricTypeID = 0;
+            MetricTypeId = 0;
             MetricFileLocation = generalSettings.ImagePath;
             MetricWebPath = generalSettings.ImageUrl;
             ReturnList = new List<string>();
@@ -69,10 +69,10 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [Key]
         [Required]
         [DataMember]
-        public string SignalID { get; set; }
+        public string SignalId { get; set; }
 
         [DataMember]
-        public int MetricTypeID { get; set; }
+        public int MetricTypeId { get; set; }
 
         [DataMember]
         public DateTime StartDate { get; set; }
@@ -117,7 +117,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             EndDate = EndDate.AddMinutes(1);
             var metricTypeRepository = MetricTypeRepositoryFactory.Create();
-            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeID);
+            MetricType = metricTypeRepository.GetMetricsByID(MetricTypeId);
             var settingsRepository = Models.Repositories.ApplicationSettingsRepositoryFactory.Create();
             var settings = settingsRepository.GetGeneralSettings();
             MetricFileLocation = settings.ImagePath;
@@ -160,7 +160,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public string GetSignalLocation()
         {
             var signalRepository = SignalsRepositoryFactory.Create();
-            return signalRepository.GetSignalLocation(SignalID);
+            return signalRepository.GetSignalLocation(SignalId);
         }
 
         public string CreateFileName()
@@ -168,11 +168,11 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             if (MetricType == null)
             {
                 var metricTypeRepository = MetricTypeRepositoryFactory.Create();
-                MetricType = metricTypeRepository.GetMetricsByID(MetricTypeID);
+                MetricType = metricTypeRepository.GetMetricsByID(MetricTypeId);
             }
 
             var fileName = MetricType.Abbreviation +
-                           SignalID +
+                           SignalId +
                            "-" +
                            StartDate.Year +
                            StartDate.ToString("MM") +

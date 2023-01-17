@@ -5,20 +5,26 @@ namespace ATSPM.Application.Reports.ViewModels.ApproachDelay
     public class ApproachDelayPlan : Plan
     {
         public ApproachDelayPlan(
-            double percentArrivalOnGreen,
-            double percentGreenTime,
-            double platoonRatio,
+            double averageDelay,
+            double totalDelay,
             DateTime start,
             DateTime end,
-            string planNumber) : base(planNumber, start, end)
+            string planNumber,
+            string planDescription) : base(planNumber, start, end)
         {
-            PercentArrivalOnGreen = percentArrivalOnGreen;
-            PercentGreenTime = percentGreenTime;
-            PlatoonRatio = platoonRatio;
+            AverageDelay = averageDelay;
+            TotalDelay = totalDelay;
+            Start = start;
+            End = end;
+            PlanNumber = planNumber;
+            PlanDescription = planDescription;
         }
 
-        public double PercentArrivalOnGreen { get; internal set; }
-        public double PercentGreenTime { get; internal set; }
-        public double PlatoonRatio { get; internal set; }
+        public double AverageDelay { get; }
+        public double TotalDelay { get; }
+        public DateTime Start { get; }
+        public DateTime End { get; }
+        public string PlanNumber { get; }
+        public string PlanDescription { get; }
     }
 }

@@ -99,9 +99,9 @@ namespace Legacy.Common.Business.PEDDelay
 
         private void SetChartTitle(Chart chart, PedPhase pedPhase, PedDelayOptions options)
         {
-            chart.Titles.Add(ChartTitleFactory.GetChartName(options.MetricTypeID));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(options.MetricTypeId));
             chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
-                options.SignalID, options.StartDate, options.EndDate));
+                options.SignalId, options.StartDate, options.EndDate));
             chart.Titles.Add(ChartTitleFactory.GetPhase(pedPhase.PhaseNumber));
             var statistics = new Dictionary<string, string>();
             statistics.Add("Ped Presses(PP)", pedPhase.PedPresses.ToString());

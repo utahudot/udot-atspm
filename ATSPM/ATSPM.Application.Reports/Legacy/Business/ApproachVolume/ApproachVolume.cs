@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Legacy.Common.Business.WCFServiceLibrary;
 using System;
@@ -19,8 +20,8 @@ namespace Legacy.Common.Business.ApproachVolume
         public VolumeCollection PrimaryDirectionVolume { get; private set; } 
         public VolumeCollection OpposingDirectionVolume { get; private set; }
         public VolumeCollection CombinedDirectionsVolumes { get; private set; }
-        public DirectionType PrimaryDirection { get; private set; }
-        public DirectionType OpposingDirection { get; private set; }
+        public DirectionTypes PrimaryDirection { get; private set; }
+        public DirectionTypes OpposingDirection { get; private set; }
         public DetectionType DetectionType { get; set; }
         public List<ATSPM.Data.Models.Detector> Detectors { get; set; } = new List<ATSPM.Data.Models.Detector>();
         public MetricInfo MetricInfo { get; set; } = new MetricInfo();
@@ -32,19 +33,19 @@ namespace Legacy.Common.Business.ApproachVolume
             List<Approach> primaryDirectionApproaches,
             List<Approach> opposingDirectionApproaches,
             ApproachVolumeOptions approachVolumeOptions,
-            DirectionType primaryDirection,
-            DirectionType opposingDirection,
-            int detectionTypeId,
+            DirectionTypes primaryDirection,
+            DirectionTypes opposingDirection,
+            DetectionTypes detectionType,
             IDetectionTypeRepository detectionTypeRepository,
             IControllerEventLogRepository controllerEventLogRepository)
         {
             //var detectionTypeRepository = DetectionTypeRepositoryFactory.Create();
-            DetectionType = detectionTypeRepository.GetDetectionTypeByDetectionTypeID(detectionTypeId);
+            DetectionType = detectionTypeRepository.Lookup(detectionType);
             PrimaryDirection = primaryDirection;
-            MetricInfo.Direction1 = primaryDirection.Description;
+            MetricInfo.Direction1 = primaryDirection.ToString();
             OpposingDirection = opposingDirection;
             _controllerEventLogRepository = controllerEventLogRepository;
-            MetricInfo.Direction2 = opposingDirection.Description;
+            MetricInfo.Direction2 = opposingDirection.ToString();
             _approachVolumeOptions = approachVolumeOptions;
             _primaryDirectionApproaches = primaryDirectionApproaches;
             _opposingDirectionApproaches = opposingDirectionApproaches;

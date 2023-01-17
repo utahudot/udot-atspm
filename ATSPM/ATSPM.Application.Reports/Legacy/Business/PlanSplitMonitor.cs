@@ -22,7 +22,7 @@ namespace Legacy.Common.Business
             var l = new List<int>();
             for (var i = 130; i <= 151; i++)
                 l.Add(i);
-            var splitsDt = new ControllerEventLogs(signalId, StartTime, StartTime.AddSeconds(2), l);
+            var splitsDt = new ControllerEventLogService(signalId, StartTime, StartTime.AddSeconds(2), l);
             foreach (var row in splitsDt.Events)
             {
                 if (row.EventCode == 132)

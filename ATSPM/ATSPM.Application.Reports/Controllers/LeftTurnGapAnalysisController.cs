@@ -12,10 +12,10 @@ namespace ATSPM.Application.Reports.Controllers
     {
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public LeftTurnGapAnalyisiChart Test()
+        public LeftTurnGapAnalysisResult Test()
         {
             Fixture fixture = new();
-            LeftTurnGapAnalyisiChart viewModel = fixture.Create<LeftTurnGapAnalyisiChart>();
+            LeftTurnGapAnalysisResult viewModel = fixture.Create<LeftTurnGapAnalysisResult>();
             return viewModel;
         }
 

@@ -12,7 +12,7 @@ namespace Legacy.Common.Business.Preempt
     {
         public Chart PreemptServiceRequestChart { get; set; }
 
-        public PreemptRequestChart(PreemptServiceRequestOptions options, ControllerEventLogs dttb)
+        public PreemptRequestChart(PreemptServiceRequestOptions options, ControllerEventLogService dttb)
         {
             Options = options;
             //Set the chart properties
@@ -78,8 +78,8 @@ namespace Legacy.Common.Business.Preempt
             //chart.Series["Posts"].Points.AddXY(Options.StartDate, 0);
             //chart.Series["Posts"].Points.AddXY(Options.EndDate, 0);
 
-            AddDataToChart(PreemptServiceRequestChart, Options.StartDate, Options.EndDate, dttb, Options.SignalID);
-            var plans = PlanFactory.GetBasicPlans(Options.StartDate, Options.EndDate, Options.SignalID, null);
+            AddDataToChart(PreemptServiceRequestChart, Options.StartDate, Options.EndDate, dttb, Options.SignalId);
+            var plans = PlanService.GetBasicPlans(Options.StartDate, Options.EndDate, Options.SignalId, null);
             SetSimplePlanStrips(plans, PreemptServiceRequestChart, Options.StartDate, dttb);
         }
 
@@ -87,13 +87,13 @@ namespace Legacy.Common.Business.Preempt
 
         private void SetChartTitle()
         {
-            PreemptServiceRequestChart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeID));
+            PreemptServiceRequestChart.Titles.Add(ChartTitleFactory.GetChartName(Options.MetricTypeId));
             PreemptServiceRequestChart.Titles.Add(
-                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalID, Options.StartDate, Options.EndDate));
+                ChartTitleFactory.GetSignalLocationAndDateRange(Options.SignalId, Options.StartDate, Options.EndDate));
         }
 
         protected void AddDataToChart(Chart chart, DateTime startDate,
-            DateTime endDate, ControllerEventLogs DTTB, string signalid)
+            DateTime endDate, ControllerEventLogService DTTB, string signalid)
         {
             var maxprempt = 0;
             foreach (var row in DTTB.Events)
@@ -110,7 +110,7 @@ namespace Legacy.Common.Business.Preempt
         }
 
         protected void SetSimplePlanStrips(List<Plan> plans, Chart chart, DateTime graphStartDate,
-            ControllerEventLogs DTTB)
+            ControllerEventLogService DTTB)
         {
             var backGroundColor = 1;
             foreach (var plan in plans)

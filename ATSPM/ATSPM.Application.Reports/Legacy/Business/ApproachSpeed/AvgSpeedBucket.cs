@@ -21,7 +21,7 @@ namespace Legacy.Common.Business
 
             foreach (var cycle in cycles)
                 if (cycle.StartTime >= startTime && cycle.StartTime < endTime)
-                    speedsForBucket.AddRange(cycle.SpeedEvents.Select(s => s.MPH));
+                    speedsForBucket.AddRange(cycle.SpeedEvents.Select(s => s.Mph));
 
             if (speedsForBucket.Count > 0)
             {

@@ -215,8 +215,8 @@ namespace Legacy.Common.Business
         public double SecondsAdded { get; set; }
         public double MaxArrivalOnGreen { get; set; }
         public double MaxPercentAog { get; set; }
-        public List<SignalPhase> UpstreamPcd { get; } = new List<SignalPhase>();
-        public List<SignalPhase> DownstreamPcd { get; } = new List<SignalPhase>();
+        public List<SignalPhaseService> UpstreamPcd { get; } = new List<SignalPhaseService>();
+        public List<SignalPhaseService> DownstreamPcd { get; } = new List<SignalPhaseService>();
         public double PaogUpstreamBefore { get; set; } = 0;
         public double PaogDownstreamBefore { get; set; }
         public double PaogDownstreamPredicted { get; set; }
@@ -504,7 +504,7 @@ namespace Legacy.Common.Business
         /// <param name="chartNameSuffix"></param>
         /// <param name="chartLocation"></param>
         /// <returns></returns>
-        private string CreateChart(SignalPhase sp, DateTime startDate, DateTime endDate, string location,
+        private string CreateChart(SignalPhaseService sp, DateTime startDate, DateTime endDate, string location,
             string chartNameSuffix, string chartLocation)
         {
             var chart = new Chart();
@@ -704,7 +704,7 @@ namespace Legacy.Common.Business
         /// <param name="chart"></param>
         /// <param name="signalPhase"></param>
         /// <param name="startDate"></param>
-        private void AddDataToChart(Chart chart, SignalPhase signalPhase, DateTime startDate, bool showVolume,
+        private void AddDataToChart(Chart chart, SignalPhaseService signalPhase, DateTime startDate, bool showVolume,
             bool showArrivalOnGreen)
         {
             decimal totalDetectorHits = 0;

@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Reports.Business.LeftTurnGapReport;
-using ATSPM.IRepositories;
+using ATSPM.Application.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,7 +18,7 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IApproachRepository _approachRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
         private readonly IPhaseTerminationAggregationRepository _phaseTerminationAggregationRepository;
-        private readonly ISignalsRepository _signalRepository;
+        private readonly ISignalRepository _signalRepository;
         private readonly IDetectorRepository _detectorRepository;
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
@@ -29,7 +29,7 @@ namespace ATSPM.Application.Reports.Controllers
             IApproachRepository approachRepository,
             IApproachCycleAggregationRepository approachCycleAggregationRepository,
             IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository,
-            ISignalsRepository signalRepository,
+            ISignalRepository signalRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository

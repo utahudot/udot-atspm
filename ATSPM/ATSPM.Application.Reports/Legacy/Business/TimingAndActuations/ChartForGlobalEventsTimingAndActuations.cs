@@ -104,9 +104,9 @@ namespace Legacy.Common.Business.TimingAndActuations
             Chart.ChartAreas[0].AxisY.Title = "";
             Chart.ChartAreas[0].AxisY2.Enabled = AxisEnabled.False;
             Chart.ChartAreas[0].AxisY2.Title = "";
-            Chart.Titles.Add(ChartTitleFactory.GetChartName(options.MetricTypeID));
+            Chart.Titles.Add(ChartTitleFactory.GetChartName(options.MetricTypeId));
             Chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
-                options.SignalID, options.StartDate,options.EndDate));
+                options.SignalId, options.StartDate,options.EndDate));
         }
     }
 }

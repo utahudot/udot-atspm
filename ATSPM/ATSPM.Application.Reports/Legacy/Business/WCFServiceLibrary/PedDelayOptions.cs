@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PedDelayOptions(string signalId, DateTime startDate, DateTime endDate, int timeBuffer, bool showPedBeginWalk, bool showCycleLength, bool showPercentDelay, bool showPedRecall, int pedRecallThreshold, double? yAxisMax)
         {
-            SignalID = signalId;
+            SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
             TimeBuffer = timeBuffer;
@@ -61,14 +61,14 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             base.CreateMetric();
             var signalRepository = SignalsRepositoryFactory.Create();
-            Signal signal = signalRepository.GetVersionOfSignalByDate(SignalID, StartDate);
+            Signal signal = signalRepository.GetVersionOfSignalByDate(SignalId, StartDate);
 
             var pedDelaySignal = new PedDelaySignal(signal, TimeBuffer, StartDate, EndDate);
 
             foreach (var pedPhase in pedDelaySignal.PedPhases)
                 if (pedPhase.Cycles.Count > 0)
                 {
-                    var cycleLength = CycleFactory.GetRedToRedCycles(pedPhase.Approach, StartDate, EndDate);
+                    var cycleLength = CycleService.GetRedToRedCycles(pedPhase.Approach, StartDate, EndDate);
                     var pdc = new PEDDelayChart(this, pedPhase, cycleLength);
                     var chart = pdc.Chart;
                     var chartName = CreateFileName();

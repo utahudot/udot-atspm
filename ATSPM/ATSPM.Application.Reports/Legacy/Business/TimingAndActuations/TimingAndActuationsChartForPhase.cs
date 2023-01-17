@@ -378,9 +378,9 @@ namespace Legacy.Common.Business.TimingAndActuations
             _headerDisaplay = 0;
             if (TimingAndActuationsForPhase.Options.ShowHeaderForEachPhase)
             {
-                Chart.Titles.Add(ChartTitleFactory.GetChartName(TimingAndActuationsForPhase.Options.MetricTypeID));
+                Chart.Titles.Add(ChartTitleFactory.GetChartName(TimingAndActuationsForPhase.Options.MetricTypeId));
                 Chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
-                    TimingAndActuationsForPhase.Options.SignalID, TimingAndActuationsForPhase.Options.StartDate,
+                    TimingAndActuationsForPhase.Options.SignalId, TimingAndActuationsForPhase.Options.StartDate,
                     TimingAndActuationsForPhase.Options.EndDate));
                 _headerDisaplay = 120;
             }
@@ -388,13 +388,13 @@ namespace Legacy.Common.Business.TimingAndActuations
             {
                 if (TimingAndActuationsForPhase.Options.HeadTitleCounter == 1)
                 {
-                    Chart.Titles.Add(ChartTitleFactory.GetChartName(TimingAndActuationsForPhase.Options.MetricTypeID));
+                    Chart.Titles.Add(ChartTitleFactory.GetChartName(TimingAndActuationsForPhase.Options.MetricTypeId));
                     //Chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
                     //TimingAndActuationsForPhase.Options.SignalID, TimingAndActuationsForPhase.Options.StartDate,
                     //TimingAndActuationsForPhase.Options.EndDate));
 
                     Chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(
-                        TimingAndActuationsForPhase.Options.SignalID, TimingAndActuationsForPhase.Options.StartDate,
+                        TimingAndActuationsForPhase.Options.SignalId, TimingAndActuationsForPhase.Options.StartDate,
                         TimingAndActuationsForPhase.Options.EndDate));
                     _headerDisaplay = 120;
                 }

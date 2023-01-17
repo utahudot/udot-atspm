@@ -21,7 +21,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public PhaseCycleAggregationOptions()
         {
-            MetricTypeID = 20;
+            MetricTypeId = 20;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType { Id = 0, DataName = RED_TIME });
             AggregatedDataTypes.Add(new AggregatedDataType { Id = 1, DataName = YELLOW_TIME });

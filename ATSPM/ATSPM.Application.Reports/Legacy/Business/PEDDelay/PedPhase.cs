@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
+using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
+using ATSPM.Data.Models;
 
 namespace Legacy.Common.Business.PEDDelay
 {
-    public class PedPhase : ControllerEventLogs
+    public class PedPhase 
     {
         public PedPhase(Approach approach, Signal signal, int timeBuffer, DateTime startDate, DateTime endDate,
             PlansBase plansData) : base(signal.SignalID, startDate, endDate, approach.GetPedDetectorsFromApproach(), approach.IsPedestrianPhaseOverlap ? new List<int> {67, 68, 45, 90} : new List<int> { 21, 22, 45, 90 })
         {
-            SignalID = signal.SignalID;
+            SignalID = signal.SignalId;
             TimeBuffer = timeBuffer;
             StartDate = startDate;
             EndDate = endDate;
             Approach = approach;
             PhaseNumber = approach.ProtectedPhaseNumber;
-            ApproachID = approach.ApproachID;
+            ApproachID = approach.Id;
             EndDate = endDate;
             Plans = new List<PedPlan>();
             Cycles = new List<PedCycle>();
-            PedBeginWalkEvents = new List<Controller_Event_Log>();
+            PedBeginWalkEvents = new List<ControllerEventLog>();
             HourlyTotals = new List<PedHourlyTotal>();
 
             for (var i = 0; i < plansData.Events.Count; i++)
@@ -72,10 +73,11 @@ namespace Legacy.Common.Business.PEDDelay
         public int PedRequests { get; private set; }
         public int ImputedPedCallsRegistered { get; set; }
         public int PedBeginWalkCount { get; set; }
-        public List<Controller_Event_Log> PedBeginWalkEvents { get; set; }
+        public List<ControllerEventLog> PedBeginWalkEvents { get; set; }
         public int PedCallsRegisteredCount { get; set; }
         private int BeginWalkEvent { get; set; }
         private int BeginClearanceEvent { get; set; }
+        private ControllerEventLogResult EventCollection { get; set; }
 
         private void AddCyclesToPlans()
         {
@@ -91,25 +93,25 @@ namespace Legacy.Common.Business.PEDDelay
 
         private void GetCycles()
         {
-            PedPresses = Events.Count(e => e.EventCode == 90);
-            UniquePedDetections = CountUniquePedDetections(Events);
+            PedPresses = EventCollection.Events.Count(e => e.EventCode == 90);
+            UniquePedDetections = CountUniquePedDetections(EventCollection.Events);
 
             CombineSequential90s();
 
-            PedRequests = (Events.Count(e => e.EventCode == 90));
-            PedCallsRegisteredCount = Events.Count(e => e.EventCode == 45);
+            PedRequests = (EventCollection.Events.Count(e => e.EventCode == 90));
+            PedCallsRegisteredCount = EventCollection.Events.Count(e => e.EventCode == 45);
 
             Remove45s();
 
-            PedBeginWalkCount = Events.Count(e => e.EventCode == BeginWalkEvent);
-            ImputedPedCallsRegistered = CountImputedPedCalls(Events);
+            PedBeginWalkCount = EventCollection.Events.Count(e => e.EventCode == BeginWalkEvent);
+            ImputedPedCallsRegistered = CountImputedPedCalls(EventCollection.Events);
 
-            if (Events.Count > 1 && Events[0].EventCode == 90 && Events[1].EventCode == BeginWalkEvent)
+            if (EventCollection.Events.Count > 1 && EventCollection.Events[0].EventCode == 90 && EventCollection.Events[1].EventCode == BeginWalkEvent)
             {
-                Cycles.Add(new PedCycle(Events[1].Timestamp, Events[0].Timestamp));  // Middle of the event
+                Cycles.Add(new PedCycle(EventCollection.Events[1].Timestamp, EventCollection.Events[0].Timestamp));  // Middle of the event
             }
 
-            for (var i = 0; i < Events.Count - 2; i++)
+            for (var i = 0; i < EventCollection.Events.Count - 2; i++)
             {
                 // there are four possibilities:
                 // 1) 22, 90 , 21
@@ -121,72 +123,72 @@ namespace Legacy.Common.Business.PEDDelay
                 // 4) 21, 90, 21
                 //    time betweeen 90 and last 21, count++
                 //
-                if (Events[i].EventCode == BeginClearanceEvent &&
-                    Events[i + 1].EventCode == 90 &&
-                    Events[i + 2].EventCode == BeginWalkEvent)
+                if (EventCollection.Events[i].EventCode == BeginClearanceEvent &&
+                    EventCollection.Events[i + 1].EventCode == 90 &&
+                    EventCollection.Events[i + 2].EventCode == BeginWalkEvent)
                 {
-                    Cycles.Add(new PedCycle(Events[i + 2].Timestamp, Events[i + 1].Timestamp));  // this is case 1
+                    Cycles.Add(new PedCycle(EventCollection.Events[i + 2].Timestamp, EventCollection.Events[i + 1].Timestamp));  // this is case 1
                     i++;
                 }
-                else if (Events[i].EventCode == BeginWalkEvent &&
-                         Events[i + 1].EventCode == 90 &&
-                         Events[i + 2].EventCode == BeginClearanceEvent)
+                else if (EventCollection.Events[i].EventCode == BeginWalkEvent &&
+                         EventCollection.Events[i + 1].EventCode == 90 &&
+                         EventCollection.Events[i + 2].EventCode == BeginClearanceEvent)
                 {
-                    Cycles.Add(new PedCycle(Events[i + 1].Timestamp, Events[i + 1].Timestamp));  // this is case 2
+                    Cycles.Add(new PedCycle(EventCollection.Events[i + 1].Timestamp, EventCollection.Events[i + 1].Timestamp));  // this is case 2
                     i++;
                 }
-                else if (Events[i].EventCode == BeginWalkEvent &&
-                         Events[i + 1].EventCode == 90 &&
-                         Events[i + 2].EventCode == BeginWalkEvent)
+                else if (EventCollection.Events[i].EventCode == BeginWalkEvent &&
+                         EventCollection.Events[i + 1].EventCode == 90 &&
+                         EventCollection.Events[i + 2].EventCode == BeginWalkEvent)
                 {
-                    Cycles.Add(new PedCycle(Events[i + 2].Timestamp, Events[i + 1].Timestamp));  // this is case 4
+                    Cycles.Add(new PedCycle(EventCollection.Events[i + 2].Timestamp, EventCollection.Events[i + 1].Timestamp));  // this is case 4
                     i++;
                 }
-                else if (Events[i].EventCode == BeginWalkEvent && (Cycles.Count == 0 || Events[i].Timestamp != Cycles.Last().BeginWalk))
+                else if (EventCollection.Events[i].EventCode == BeginWalkEvent && (Cycles.Count == 0 || EventCollection.Events[i].Timestamp != Cycles.Last().BeginWalk))
                 {
-                    PedBeginWalkEvents.Add(Events[i]); // collected loose BeginWalkEvents for chart
+                    PedBeginWalkEvents.Add(EventCollection.Events[i]); // collected loose BeginWalkEvents for chart
                 }
             }
-            if (Events.Count >= 1)
+            if (EventCollection.Events.Count >= 1)
             {
-                if (Events[Events.Count - 1].EventCode == BeginWalkEvent)
-                    PedBeginWalkEvents.Add(Events[Events.Count - 1]);
+                if (EventCollection.Events[EventCollection.Events.Count - 1].EventCode == BeginWalkEvent)
+                    PedBeginWalkEvents.Add(EventCollection.Events[EventCollection.Events.Count - 1]);
             }
-            if (Events.Count >= 2)
+            if (EventCollection.Events.Count >= 2)
             {
-                if (Events[Events.Count - 2].EventCode == BeginWalkEvent)
-                    PedBeginWalkEvents.Add(Events[Events.Count - 2]);
+                if (EventCollection.Events[EventCollection.Events.Count - 2].EventCode == BeginWalkEvent)
+                    PedBeginWalkEvents.Add(EventCollection.Events[EventCollection.Events.Count - 2]);
             }
         }
 
         private void CombineSequential90s()
         {
-            var tempEvents = new List<Models.Controller_Event_Log>();
-            for (int i = 0; i < Events.Count; i++)
+            var tempEvents = new List<ControllerEventLog>();
+            for (int i = 0; i < EventCollection.Events.Count; i++)
             {
-                if (Events[i].EventCode == 90)
+                if (EventCollection.Events[i].EventCode == 90)
                 {
-                    tempEvents.Add(Events[i]);
+                    tempEvents.Add(EventCollection.Events[i]);
 
-                    while (i + 1 < Events.Count && Events[i + 1].EventCode == 90)
+                    while (i + 1 < EventCollection.Events.Count && EventCollection.Events[i + 1].EventCode == 90)
                     {
                         i++;
                     }
                 }
                 else
                 {
-                    tempEvents.Add(Events[i]);
+                    tempEvents.Add(EventCollection.Events[i]);
                 }
             }
-            Events = tempEvents.OrderBy(t => t.Timestamp).ToList();
+            EventCollection.Events = tempEvents.OrderBy(t => t.Timestamp).ToList();
         }
 
         private void Remove45s()
         {
-            Events = Events.Where(e => e.EventCode != 45).OrderBy(t => t.Timestamp).ToList();
+            EventCollection.Events = EventCollection.Events.Where(e => e.EventCode != 45).OrderBy(t => t.Timestamp).ToList();
         }
 
-        private int CountImputedPedCalls(List<Controller_Event_Log> events)
+        private int CountImputedPedCalls(List<ControllerEventLog> events)
         {
             var tempEvents = events.Where(e => e.EventCode == 90 || e.EventCode == BeginWalkEvent).ToList();
             
@@ -207,7 +209,7 @@ namespace Legacy.Common.Business.PEDDelay
             return pedCalls;
         }
 
-        private int CountUniquePedDetections(List<Controller_Event_Log> events)
+        private int CountUniquePedDetections(List<ControllerEventLog> events)
         {
             var tempEvents = events.Where(e => e.EventCode == 90).ToList();
 
@@ -262,6 +264,23 @@ namespace Legacy.Common.Business.PEDDelay
                     nextDt = nextDt.AddHours(1);
                 }
             }
+        }
+
+        public static ControllerEventLog GetEventFromPreviousBin(string signalID, int phase, DateTime currentTime, List<int> chosenEvents, TimeSpan lookbackTime)
+        {
+            var db = new SPM();
+            var startTime = currentTime - lookbackTime;
+            var eventRecord = (from s in db.Controller_Event_Log
+                               where s.SignalID == signalID &&
+                                     s.EventParam == phase &&
+                                     s.Timestamp > startTime &&
+                                     s.Timestamp < currentTime &&
+                                     chosenEvents.Contains(s.EventCode)
+                               orderby s.Timestamp descending
+                               select s
+            ).FirstOrDefault();
+
+            return eventRecord;
         }
     }
 }

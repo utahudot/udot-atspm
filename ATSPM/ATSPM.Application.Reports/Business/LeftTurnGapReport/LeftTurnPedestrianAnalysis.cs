@@ -1,4 +1,5 @@
-﻿using ATSPM.IRepositories;
+﻿using ATSPM.Data.Models;
+using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,12 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
     public class LeftTurnPedestrianAnalysis
     {
-        private readonly ISignalsRepository _signalRepository;
+        private readonly ISignalRepository _signalRepository;
         private readonly IApproachRepository _approachRepository;
         private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
 
-        public LeftTurnPedestrianAnalysis(ISignalsRepository signalRepository, IApproachRepository approachRepository, IPhasePedAggregationRepository phasePedAggregationRepository, IApproachCycleAggregationRepository approachCycleAggregationRepository)
+        public LeftTurnPedestrianAnalysis(ISignalRepository signalRepository, IApproachRepository approachRepository, IPhasePedAggregationRepository phasePedAggregationRepository, IApproachCycleAggregationRepository approachCycleAggregationRepository)
         {
             _signalRepository = signalRepository;
             _approachRepository = approachRepository;
@@ -146,7 +147,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             TimeSpan startTime,
             TimeSpan endTime,
             int[] daysOfWeek,
-            List<Models.PhaseCycleAggregation> cycleAggregations)
+            List<ATSPM.Data.Models.PhaseCycleAggregation> cycleAggregations)
         {
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))

@@ -1,50 +1,36 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
-using Legacy.Common.Models.Repositories;
 
 namespace Legacy.Common.Business
 {
     public class SignalPhase
     {
-        private readonly bool _showVolume;
-        private readonly int _binSize;
-        private readonly int _metricTypeId;
-        private readonly int _pcdCycleTime = 0;
 
-        public SignalPhase(DateTime startDate, DateTime endDate, Approach approach,
-            bool showVolume, int binSize, int metricTypeId, bool getPermissivePhase)
+        public SignalPhase(
+            VolumeCollection volume, 
+            List<PlanPcd> plans, 
+            List<CyclePcd> cycles,
+            List<ControllerEventLog> detectorEvents,
+            Approach approach,
+            DateTime startDate,
+            DateTime endDate
+            )
         {
-            _showVolume = showVolume;
-            _binSize = binSize;
-            _metricTypeId = metricTypeId;
+            Volume = volume;
+            Plans = plans;
+            Cycles = cycles;
+            DetectorEvents = detectorEvents;
+            Approach = approach;
             StartDate = startDate;
             EndDate = endDate;
-            Approach = approach;
-            GetPermissivePhase = getPermissivePhase;
-            GetSignalPhaseData();
-        }
-
-        public SignalPhase(DateTime startDate, DateTime endDate, Approach approach,
-            bool showVolume, int binSize, int metricTypeId, bool getPermissivePhase, int pcdCycleTime)
-        {
-            _showVolume = showVolume;
-            _binSize = binSize;
-            _metricTypeId = metricTypeId;
-            _pcdCycleTime = pcdCycleTime;
-            StartDate = startDate;
-            EndDate = endDate;
-            Approach = approach;
-            GetPermissivePhase = getPermissivePhase;
-            GetSignalPhaseData();
         }
 
         public VolumeCollection Volume { get; private set; }
         public List<PlanPcd> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }
-        private List<Controller_Event_Log> DetectorEvents { get; set; }
-        public bool GetPermissivePhase { get; }
+        private List<ControllerEventLog> DetectorEvents { get; set; }
         public Approach Approach { get; }
         public double AvgDelay => TotalDelay / TotalVolume;
 
@@ -90,50 +76,9 @@ namespace Legacy.Common.Business
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
 
-        public void LinkPivotAddSeconds(int seconds)
+        public void ResetVolume()
         {
             Volume = null;
-            foreach (var cyclePcd in Cycles)
-            {
-                cyclePcd.AddSecondsToDetectorEvents(seconds);
-            }
-        }
-
-        private void GetSignalPhaseData()
-        {
-            using (var db = new SPM())
-            {
-                //db.Database.ExecuteSqlCommand("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;");
-                GetDetectorEvents(_metricTypeId,db);
-                GetPlansCyclesAndEvents(db);
-            }
-        }
-
-        private void GetPlansCyclesAndEvents(SPM db)
-        {
-            Cycles = CycleFactory.GetPcdCycles(StartDate, EndDate, Approach, DetectorEvents, GetPermissivePhase, _pcdCycleTime, db);
-            Plans = PlanFactory.GetPcdPlans(Cycles, StartDate, EndDate, Approach, db);
-            //GetPreemptEvents();
-            if (_showVolume)
-                SetVolume(DetectorEvents, _binSize);
-        }
-
-        private void GetDetectorEvents(int metricTypeId, SPM db)
-        {
-                var celRepository = ControllerEventLogRepositoryFactory.Create(db);
-                DetectorEvents = new List<Controller_Event_Log>();
-                var detectorsForMetric = Approach.GetDetectorsForMetricType(metricTypeId);
-                foreach (var d in detectorsForMetric)
-                    DetectorEvents.AddRange(celRepository.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
-                        Approach.SignalID, StartDate,
-                        EndDate, new List<int> {82}, d.DetChannel, d.GetOffset(), d.LatencyCorrection));
-            
-        }
-
-
-        private void SetVolume(List<Controller_Event_Log> detectorEvents, int binSize)
-        {
-            Volume = new VolumeCollection(StartDate, EndDate, detectorEvents, binSize);
         }
     }
 }

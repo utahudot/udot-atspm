@@ -19,7 +19,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             bool showArrivalsOnGreen)
         {
 
-            SignalID = signalID;
+            SignalId = signalID;
             YAxisMax = yAxisMax;
             Y2AxisMax = y2AxisMax;
             SelectedBinSize = binSize;
@@ -27,7 +27,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             ShowPlanStatistics = showPlanStatistics;
             ShowVolumes = showVolumes;
             ShowArrivalsOnGreen = showArrivalsOnGreen;
-            MetricTypeID = 6;
+            MetricTypeId = 6;
             StartDate = startDate;
             EndDate = endDate;
         }
@@ -38,7 +38,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             DotSizeList = new List<DotSizeItem>();
             DotSizeList.Add(new DotSizeItem(1, "Small"));
             DotSizeList.Add(new DotSizeItem(2, "Large"));
-            MetricTypeID = 6;
+            MetricTypeId = 6;
             ShowArrivalsOnGreen = true;
             SetDefaults();
         }
@@ -78,15 +78,15 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         {
             base.CreateMetric();
             var signalRepository = SignalsRepositoryFactory.Create();
-            Signal = signalRepository.GetVersionOfSignalByDate(SignalID, StartDate);
-            MetricTypeID = 6;
+            Signal = signalRepository.GetVersionOfSignalByDate(SignalId, StartDate);
+            MetricTypeId = 6;
             var chart = new Chart();
-            var metricApproaches = Signal.GetApproachesForSignalThatSupportMetric(MetricTypeID);
+            var metricApproaches = Signal.GetApproachesForSignalThatSupportMetric(MetricTypeId);
             if (metricApproaches.Count > 0)
                 foreach (var approach in metricApproaches)
                 {
                     var signalPhase = new SignalPhase(StartDate, EndDate, approach, ShowVolumes, SelectedBinSize,
-                        MetricTypeID, false);
+                        MetricTypeId, false);
                     chart = GetNewChart();
                     chart.ChartAreas[0].AxisX.Minimum = signalPhase.Cycles.Any()? signalPhase.Cycles.First().StartTime.ToOADate():StartDate.ToOADate();
                     chart.ChartAreas[0].AxisX.Maximum = signalPhase.Cycles.Any() ? signalPhase.Cycles.Last().EndTime.ToOADate():EndDate.ToOADate();
@@ -192,13 +192,13 @@ namespace Legacy.Common.Business.WCFServiceLibrary
                 chart.Legends.Add(chartLegend);
             }
 
-            void SetChartTitle(Chart chart, SignalPhase signalPhase, Dictionary<string, string> statistics)
+            void SetChartTitle(Chart chart, SignalPhaseService signalPhase, Dictionary<string, string> statistics)
             {
-                var detectorsForMetric = signalPhase.Approach.GetDetectorsForMetricType(MetricTypeID);
+                var detectorsForMetric = signalPhase.Approach.GetDetectorsForMetricType(MetricTypeId);
                 var message = "\n Advanced detector located " +
                               detectorsForMetric.FirstOrDefault().DistanceFromStopBar +
                               " ft. upstream of stop bar";
-                chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeID));
+                chart.Titles.Add(ChartTitleFactory.GetChartName(MetricTypeId));
                 chart.Titles.Add(
                     ChartTitleFactory.GetSignalLocationAndDateRangeAndMessage(signalPhase.Approach.SignalID, StartDate,
                         EndDate,
@@ -208,7 +208,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
                 chart.Titles.Add(ChartTitleFactory.GetStatistics(statistics));
             }
 
-            void AddDataToChart(Chart chart, SignalPhase signalPhase)
+            void AddDataToChart(Chart chart, SignalPhaseService signalPhase)
             {
                 double totalDetectorHits = 0;
                 double totalOnGreenArrivals = 0;
@@ -227,7 +227,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             }
 
             void AddArrivalOnGreen(Chart chart, double totalOnGreenArrivals, double totalDetectorHits,
-                SignalPhase signalPhase)
+                SignalPhaseService signalPhase)
             {
                 double percentArrivalOnGreen = 0;
                 if (totalDetectorHits > 0)

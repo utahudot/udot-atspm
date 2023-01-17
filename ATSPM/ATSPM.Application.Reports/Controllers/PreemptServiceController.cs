@@ -12,10 +12,10 @@ namespace ATSPM.Application.Reports.Controllers
     {
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public PreemptServiceChart Test()
+        public PreemptServiceResult Test()
         {
             Fixture fixture = new();
-            PreemptServiceChart viewModel = fixture.Create<PreemptServiceChart>();
+            PreemptServiceResult viewModel = fixture.Create<PreemptServiceResult>();
             return viewModel;
         }
 

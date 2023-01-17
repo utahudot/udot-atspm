@@ -15,7 +15,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
     {
         public PhaseTerminationAggregationOptions()
         {
-            MetricTypeID = 29;
+            MetricTypeId = 29;
             AggregatedDataTypes = new List<AggregatedDataType>();
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 0, DataName = "GapOuts"});
             AggregatedDataTypes.Add(new AggregatedDataType {Id = 1, DataName = "ForceOffs"});

@@ -5,6 +5,7 @@ using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ATSPM.Application.Extensions
 {
@@ -217,6 +218,36 @@ namespace ATSPM.Application.Extensions
             //return events
             //    .OrderBy(s => s.Timestamp)
             //    .Take(top).ToList();
+        }
+
+        public static IReadOnlyList<ControllerEventLog> GetTopEventsBeforeDateByEventCodesParam(this IControllerEventLogRepository repo, string signalId,
+           DateTime timestamp, List<int> eventCodes, int param, int top)
+        {
+            throw new NotImplementedException();
+            //var settings = _db.GeneralSettings.FirstOrDefault();
+            //var secondsToCompleteCycle = 900;
+            //if (settings != null)
+            //    secondsToCompleteCycle = Convert.ToInt32(settings.CycleCompletionSeconds);
+            //try
+            //{
+            //    var start = timestamp.AddSeconds(secondsToCompleteCycle * -1);
+            //    var events = _db.Controller_Event_Log.Where(c =>
+            //        c.SignalID == signalId &&
+            //        c.Timestamp < timestamp &&
+            //        c.Timestamp > start &&
+            //        c.EventParam == param &&
+            //        eventCodes.Contains(c.EventCode)).ToList();
+            //    return events
+            //        .OrderByDescending(s => s.Timestamp)
+            //        .Take(top).ToList();
+            //}
+            //catch (Exception e)
+            //{
+            //    var errorLog = ApplicationEventRepositoryFactory.Create();
+            //    errorLog.QuickAdd(Assembly.GetExecutingAssembly().FullName,
+            //        GetType().Name, e.TargetSite.ToString(), ApplicationEvent.SeverityLevels.Low, e.Message);
+            //    return null;
+            //}
         }
 
         public static IReadOnlyList<ControllerEventLog> GetTopNumberOfSignalEventsBetweenDates(this IControllerEventLogRepository repo, string signalId, int numberOfRecords, DateTime startTime, DateTime endTime)

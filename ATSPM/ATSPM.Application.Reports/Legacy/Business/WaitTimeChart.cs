@@ -80,7 +80,7 @@ namespace Legacy.Common.Business
         private void SetChartTitle(Chart chart, WaitTimeOptions waitTimeOptions, Signal signal, Approach approach,
             string detectionTypes)
         {
-            chart.Titles.Add(ChartTitleFactory.GetChartName(waitTimeOptions.MetricTypeID));
+            chart.Titles.Add(ChartTitleFactory.GetChartName(waitTimeOptions.MetricTypeId));
             chart.Titles.Add(ChartTitleFactory.GetSignalLocationAndDateRange(signal.SignalID, waitTimeOptions.StartDate,
                 waitTimeOptions.EndDate));
             chart.Titles.Add(ChartTitleFactory.GetPhaseAndPhaseDescriptions(approach, false));

@@ -26,10 +26,10 @@ namespace Legacy.Common.Business.SplitFail
 
             using (var db = new SPM())
             {
-                Cycles = CycleFactory.GetSplitFailCycles(options, approach, getPermissivePhase, db);
+                Cycles = CycleService.GetSplitFailCycles(options, approach, getPermissivePhase, db);
                 SetDetectorActivations(options, db);
                 AddDetectorActivationsToCycles();
-                Plans = PlanFactory.GetSplitFailPlans(Cycles, options, Approach, db);
+                Plans = PlanService.GetSplitFailPlans(Cycles, options, Approach, db);
             }
             TotalFails = Cycles.Count(c => c.IsSplitFail);
             Statistics = new Dictionary<string, string>();
@@ -162,7 +162,7 @@ namespace Legacy.Common.Business.SplitFail
                     Timestamp = options.EndDate,
                     EventCode = 81,
                     EventParam = detector.DetChannel,
-                    SignalID = options.SignalID
+                    SignalID = options.SignalId
                 });
         }
 
@@ -175,7 +175,7 @@ namespace Legacy.Common.Business.SplitFail
                     Timestamp = options.StartDate,
                     EventCode = 82,
                     EventParam = detector.DetChannel,
-                    SignalID = options.SignalID
+                    SignalID = options.SignalId
                 });
         }
 
@@ -183,10 +183,10 @@ namespace Legacy.Common.Business.SplitFail
             IControllerEventLogRepository controllerEventsRepository, Models.Detector detector)
         {
             var eventOnBeforeStart = controllerEventsRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalID,
+                options.SignalId,
                 detector.DetChannel, 81, options.StartDate);
             var eventOffBeforeStart = controllerEventsRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalID,
+                options.SignalId,
                 detector.DetChannel, 82, options.StartDate);
             if (eventOnBeforeStart != null && eventOffBeforeStart == null)
                 _detectorActivations.Add(new SplitFailDetectorActivation

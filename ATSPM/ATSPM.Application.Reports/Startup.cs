@@ -1,5 +1,5 @@
+using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Repositories.EntityFramework;
-using ATSPM.IRepositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;

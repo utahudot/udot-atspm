@@ -51,7 +51,7 @@ namespace Legacy.Common.Business.TimingAndActuations
             }
             if (Options.PhaseEventCodesList != null)
             {
-                var optionsSignalID = Options.SignalID;
+                var optionsSignalID = Options.SignalId;
                 GetRawCustomEvents(optionsSignalID, PhaseNumber, options.StartDate, options.EndDate);
             }
         }
@@ -139,7 +139,7 @@ namespace Legacy.Common.Business.TimingAndActuations
 
             string keyLabel = "Cycles Intervals " + PhaseNumber + " " + phasedata;
             var extendLeftSearch = Options.ExtendVsdSearch * 60;
-            CycleDataEventLogs = controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalID,
+            CycleDataEventLogs = controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalId,
                 optionsStartDate.AddSeconds(-extendLeftSearch), simpleEndDate,
                 phaseEventCodesForCycles, PhaseNumber);
             if (CycleDataEventLogs.Count > 0)
@@ -203,7 +203,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         var forceEventsForAllLanes = new List<Controller_Event_Log>();
                         var tempEvent1 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = phaseEventCode,
                             EventParam = PhaseNumber,
                             Timestamp = Options.StartDate.AddSeconds(-10)
@@ -211,7 +211,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = phaseEventCode,
                             EventParam = PhaseNumber,
                             Timestamp = Options.StartDate.AddSeconds(-9)
@@ -264,7 +264,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         var forceEventsForAllLanes = new List<Controller_Event_Log>();
                         var tempEvent1 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-10)
@@ -272,7 +272,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 81,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-9)
@@ -325,7 +325,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         var forceEventsForAllLanes = new List<Controller_Event_Log>();
                         var event1 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-10)
@@ -333,7 +333,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         forceEventsForAllLanes.Add(event1);
                         var event2 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventParam = detector.DetChannel,
                             EventCode = 81,
                             Timestamp = Options.StartDate.AddSeconds(-9)
@@ -391,7 +391,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         var forceEventsForAllLanes = new List<Controller_Event_Log>();
                         var tempEvent1 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-10)
@@ -399,7 +399,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 81,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-9)
@@ -453,7 +453,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         var forceEventsForAllLanes = new List<Controller_Event_Log>();
                         var tempEvent1 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-10)
@@ -461,7 +461,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new Controller_Event_Log()
                         {
-                            SignalID = Options.SignalID,
+                            SignalID = Options.SignalId,
                             EventCode = 81,
                             EventParam = detector.DetChannel,
                             Timestamp = Options.StartDate.AddSeconds(-9)
@@ -492,7 +492,7 @@ namespace Legacy.Common.Business.TimingAndActuations
             foreach (var pedDetector in pedDetectors)
             {
                 var pedDetectorEvents = new List<Controller_Event_Log>();
-                pedDetectorEvents.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalID,
+                pedDetectorEvents.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalId,
                     Options.StartDate.AddSeconds(-extendStartTime), Options.EndDate, new List<int> { 89, 90 }, pedDetector));
                 PedestrianEvents.Add(pedDetector.ToString(), pedDetectorEvents);
             }
@@ -510,7 +510,7 @@ namespace Legacy.Common.Business.TimingAndActuations
             var pedPhase = Approach.PedestrianPhaseNumber ?? Approach.ProtectedPhaseNumber;
 
             var controllerEventLogRepository = ControllerEventLogRepositoryFactory.Create();
-            PedestrianIntervals = controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalID,
+            PedestrianIntervals = controllerEventLogRepository.GetEventsByEventCodesParam(Options.SignalId,
                 Options.StartDate.AddSeconds(-extendStartSearch), Options.EndDate.AddSeconds(extendStartSearch),
                 overlapCodes, pedPhase);
         }
