@@ -30,7 +30,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.Approaches)
                 .ThenInclude(i => i.Detectors)
                 .Include(i => i.Areas);
-                //.Include(i => i.MetricComments);
+            //.Include(i => i.MetricComments);
         }
 
         #endregion
