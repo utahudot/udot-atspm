@@ -15,6 +15,7 @@ using ATSPM.Infrastructure.Services.HostedServices;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Google.Api;
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
+using System.Net.Sockets;
 using System.Reflection;
 
 var rootCmd = new EventLogCommands();
@@ -43,14 +45,13 @@ cmdBuilder.UseHost(a =>
         //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
         if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
         {
-            Console.WriteLine("hello");
             l.AddGoogle(new LoggingServiceOptions
             {
                 ProjectId = "1022556126938",
                 //ProjectId = "869261868126",
                 ServiceName = AppDomain.CurrentDomain.FriendlyName,
                 Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+                Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
             });
         }
     });
@@ -75,7 +76,7 @@ h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync("log -t 4 -i 1014 1015 1016 1023");
+await cmdParser.InvokeAsync(args);
 
 public static class CommandHostBuilder
 {
@@ -89,7 +90,6 @@ public static class CommandHostBuilder
 
             //repositories
             s.AddScoped<ISignalRepository, SignalEFRepository>();
-            //s.AddScoped<ISignalRepository, SignalFileRepository>();
             s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
             //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
@@ -113,7 +113,7 @@ public static class CommandHostBuilder
             s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
             s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-            //SignalControllerDataFlow
+            //SignalControllerLogger
             //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
             s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
 
@@ -141,9 +141,9 @@ public static class CommandHostBuilder
 
                 var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
 
-                s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
-                s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
-                s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
+                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
+                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
+                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
             }
 
             //hosted services
@@ -174,8 +174,8 @@ public static class CommandHostBuilder
             }
 
             //hosted services
-            //s.AddHostedService<ExportUtilityService>();
-            s.AddHostedService<TestExtractLogHostedService>();
+            s.AddHostedService<ExportUtilityService>();
+            //s.AddHostedService<TestExtractLogHostedService>();
         });
 
         return hostBuilder;
@@ -193,6 +193,8 @@ public class TestExtractLogHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
+
         _serviceProvider.PrintHostInformation();
 
         _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
@@ -235,6 +237,11 @@ public class TestExtractLogHostedService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
+
+        Console.WriteLine();
+        Console.WriteLine($"Operation Completed or Cancelled...");
+
         return Task.CompletedTask;
     }
 }
@@ -250,6 +257,8 @@ public class TestSignalLoggerHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
+
         _serviceProvider.PrintHostInformation();
 
         _log.LogInformation("Extraction Path: {path}", _options.Value.Path);
@@ -264,9 +273,6 @@ public class TestSignalLoggerHostedService : IHostedService
                     Console.WriteLine($"------------ping: {option.Value.PingControllerToVerify}");
                     Console.WriteLine($"------------delete: {option.Value.DeleteFile}");
                 }
-
-
-
 
                 if (_options.Value.ControllerTypes != null)
                 {
@@ -304,6 +310,11 @@ public class TestSignalLoggerHostedService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
+
+        Console.WriteLine();
+        Console.WriteLine($"Operation Completed or Cancelled...");
+
         return Task.CompletedTask;
     }
 }
