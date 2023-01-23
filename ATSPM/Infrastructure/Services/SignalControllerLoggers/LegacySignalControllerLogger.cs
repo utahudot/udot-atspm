@@ -20,7 +20,6 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 {
     public class LegacySignalControllerLogger : SignalControllerLoggerBase
     {
-        //private readonly ILogger _log;
         private readonly IOptions<SignalControllerLoggerConfiguration> _options;
         private readonly IServiceProvider _serviceProvider;
 
@@ -68,7 +67,6 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             {
                 var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(signal));
 
-                //await foreach (var file in downloader.Execute(s, progress, cancellationToken))
                 await foreach (var file in downloader.Execute(signal, cancellationToken))
                 {
                     fileList.Add(file);
@@ -107,9 +105,6 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             using (var scope = _serviceProvider.CreateScope())
             {
                 var db = scope.ServiceProvider.GetService<LegacyEventLogContext>();
-
-                //await db.ControllerEventLogs.AddRangeAsync(result);
-                //var count = await db.SaveChangesAsync();
 
                 await db.BulkInsertOrUpdateAsync(result.ToList(),
                     new BulkConfig()

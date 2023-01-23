@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,10 +26,6 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //_serviceProvider.PrintHostInformation();
-
-            cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
-
             try
             {
                 _log.LogInformation("Log Path: {path}", _options.Value.Path);
@@ -79,15 +76,12 @@ namespace ATSPM.Infrastructure.Services.HostedServices
             }
             catch (Exception e)
             {
-
                 _log.LogError("Exception: {e}", e);
             }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
-
             Console.WriteLine();
             Console.WriteLine($"Operation Completed or Cancelled...");
 
