@@ -31,9 +31,9 @@ namespace ATSPM.DataApi.EntityDataModel
 
             var signal = builder.EntityType<Signal>();
             signal.HasKey(k => k.Id);
-            signal.Property(p => p.Latitude).MaxLength = 30;
+            //signal.Property(p => p.Latitude).MaxLength = 30;
             signal.Property(p => p.Latitude).IsRequired();
-            signal.Property(p => p.Longitude).MaxLength = 30;
+            //signal.Property(p => p.Longitude).MaxLength = 30;
             signal.Property(p => p.Longitude).IsRequired();
             signal.Property(p => p.Note).IsRequired();
             signal.Property(p => p.PrimaryName).MaxLength = 100;
