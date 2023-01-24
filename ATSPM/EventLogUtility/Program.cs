@@ -29,54 +29,61 @@ using System.CommandLine.Parsing;
 using System.Net.Sockets;
 using System.Reflection;
 
-var rootCmd = new EventLogCommands();
-var cmdBuilder = new CommandLineBuilder(rootCmd);
-cmdBuilder.UseDefaults();
-
-cmdBuilder.UseHost(a =>
+var host = Host.CreateDefaultBuilder(args).UseConsoleLifetime();
+host.ConfigureServices((h, s) =>
 {
-    return Host.CreateDefaultBuilder(a)
-    .UseConsoleLifetime()
-    .ConfigureLogging((h, l) =>
-    {
-        //TODO: add a GoogleLogger section
-        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
-        //TODO: remove this to an extension method
-        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
-        if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
-        {
-            l.AddGoogle(new LoggingServiceOptions
-            {
-                ProjectId = "1022556126938",
-                //ProjectId = "869261868126",
-                ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
-            });
-        }
-    });
-}, 
-h =>
-{
-    var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
+    s.AddATSPMDbContext(h);
+}).Build();
 
-    switch (cmd)
-    {
-        case LogConsoleCommand:
-            {
-                h.BuildSignalLoggerHost((LogConsoleCommand)cmd);
-                break;
-            }
-        case ExtractConsoleCommand:
-            {
-                h.BuildExtractLogHost((ExtractConsoleCommand)cmd);
-                break;
-            }
-    }
-});
 
-var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync(args);
+//var rootCmd = new EventLogCommands();
+//var cmdBuilder = new CommandLineBuilder(rootCmd);
+//cmdBuilder.UseDefaults();
+
+//cmdBuilder.UseHost(a =>
+//{
+//    return Host.CreateDefaultBuilder(a)
+//    .UseConsoleLifetime()
+//    .ConfigureLogging((h, l) =>
+//    {
+//        //TODO: add a GoogleLogger section
+//        //LoggingServiceOptions GoogleOptions = h.Configuration.GetSection("GoogleLogging").Get<LoggingServiceOptions>();
+//        //TODO: remove this to an extension method
+//        //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
+//        if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
+//        {
+//            l.AddGoogle(new LoggingServiceOptions
+//            {
+//                ProjectId = "1022556126938",
+//                //ProjectId = "869261868126",
+//                ServiceName = AppDomain.CurrentDomain.FriendlyName,
+//                Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+//                Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
+//            });
+//        }
+//    });
+//}, 
+//h =>
+//{
+//    var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
+
+//    switch (cmd)
+//    {
+//        case LogConsoleCommand:
+//            {
+//                h.BuildSignalLoggerHost((LogConsoleCommand)cmd);
+//                break;
+//            }
+//        case ExtractConsoleCommand:
+//            {
+//                h.BuildExtractLogHost((ExtractConsoleCommand)cmd);
+//                break;
+//            }
+//    }
+//});
+
+//var cmdParser = cmdBuilder.Build();
+//await cmdParser.InvokeAsync(args);
 
 public static class CommandHostBuilder
 {
