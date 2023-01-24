@@ -16,14 +16,11 @@ namespace ATSPM.Data.Models
         IRelatedVersionAction,
         IRelatedApproaches
         //IRelatedMetricComments
-
     {
         public int Id { get; set; }
         public string SignalId { get; set; }
-
-        //TODO: Change long/lat to double
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public string PrimaryName { get; set; }
         public string SecondaryName { get; set; }
         public IPAddress Ipaddress { get; set; }

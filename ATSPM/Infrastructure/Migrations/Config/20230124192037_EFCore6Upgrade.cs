@@ -461,8 +461,8 @@ namespace ATSPM.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignalId = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    Latitude = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
-                    Longitude = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
                     PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
                     SecondaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('127.0.0.1')"),
