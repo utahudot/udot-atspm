@@ -3,7 +3,7 @@ using ATSPM.Application.Reports.Approach;
 using ATSPM.Application.Reports.ViewModels.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Google.Type;
+using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Detector
@@ -27,16 +27,16 @@ namespace ATSPM.Application.Reports.Detector
         {
             var detectorEvents = new List<ControllerEventLog>();
             foreach (var d in detectors)
-                DetectorEvents.AddRange(
+                detectorEvents.AddRange(
                     _controllerEventLogRepository.GetEventsByEventCodesParam(
                         signalId,
                         start,
                         end,
                         new List<int> { 82 },
-                        d,
+                        d.Id,
                         d.GetOffset(),
                         d.LatencyCorrection));
-
+            return detectorEvents;
         }
 
         internal void GetDetectorEvents(IEnumerable<string> enumerable, System.DateTime startDate, System.DateTime endDate)

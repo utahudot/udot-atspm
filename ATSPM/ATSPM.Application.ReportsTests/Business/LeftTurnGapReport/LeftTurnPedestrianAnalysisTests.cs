@@ -1,10 +1,7 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Business.LeftTurnGapReport;
+﻿using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
 {
@@ -18,13 +15,13 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
             TimeSpan startTime = new TimeSpan(6, 0, 0);
             TimeSpan endTime = new TimeSpan(9, 0, 0);
             int[] daysOfWeek = new int[5] { 1, 2, 3, 4, 5 };
-            List<Models.PhaseCycleAggregation> cyclesAggregate =
-                new List<Models.PhaseCycleAggregation>();
+            List<PhaseCycleAggregation> cyclesAggregate =
+                new List<PhaseCycleAggregation>();
             for (DateTime dt = DateTime.MinValue; dt < DateTime.MinValue.AddDays(5); dt = dt.AddMinutes(15))
             {
-                cyclesAggregate.Add(new Models.PhaseCycleAggregation { BinStartTime = dt, TotalRedToRedCycles = 5 });
+                cyclesAggregate.Add(new PhaseCycleAggregation { BinStartTime = dt, TotalRedToRedCycles = 5 });
             }
-            var result = LeftTurnPedestrianAnalysis.GetAverageCycles(start, end, startTime, endTime, daysOfWeek, cyclesAggregate);
+            var result = LeftTurnPedestrianAnalysisService.GetAverageCycles(start, end, startTime, endTime, daysOfWeek, cyclesAggregate);
             foreach (var p in result)
             {
                 Assert.True(p.Key.TimeOfDay >= startTime && p.Key.TimeOfDay < endTime);

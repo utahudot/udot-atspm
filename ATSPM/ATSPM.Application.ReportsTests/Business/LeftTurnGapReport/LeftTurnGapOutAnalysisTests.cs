@@ -1,11 +1,7 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Business.LeftTurnGapReport;
+﻿using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.IRepositories;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
 {
@@ -32,9 +28,9 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
         [Fact()]
         public void SumGapColumnsTest()
         {
-            List<Models.PhaseLeftTurnGapAggregation> leftTurnGaps = new List<Models.PhaseLeftTurnGapAggregation>()
+            List<PhaseLeftTurnGapAggregation> leftTurnGaps = new List<PhaseLeftTurnGapAggregation>()
             {
-                new Models.PhaseLeftTurnGapAggregation{ ApproachId=1,
+                new PhaseLeftTurnGapAggregation{ ApproachId=1,
                  BinStartTime = DateTime.Now,
                  GapCount1=1,
                  GapCount2=1,

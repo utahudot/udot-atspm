@@ -55,10 +55,11 @@ namespace ATSPM.Infrastructure.Repositories
         //TODO: this needs to be moved out of this repo
         public int GetMaximumDetectorChannel(int id)
         {
-            return _db.Set<Approach>()
-                .Where(a => a.SignalId == id)
-                .SelectMany(a => a.Detectors)
-                .Max(m => m.DetChannel);
+            throw new NotImplementedException();
+            //return _db.Set<Approach>()
+            //    .Where(a => a.SignalId == id)
+            //    .SelectMany(a => a.Detectors)
+            //    .Max(m => m.DetChannel);
         }
 
         #endregion

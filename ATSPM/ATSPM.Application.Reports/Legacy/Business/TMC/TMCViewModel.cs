@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
-using Legacy.Common.Models.Repositories;
 
 namespace Legacy.Common.Business.TMC
 {
@@ -16,22 +16,21 @@ namespace Legacy.Common.Business.TMC
         public List<Record> PeakHourValues = new List<Record>();
         public List<Record> Records = new List<Record>();
 
-        public TMCViewModel(bool showLaneVolumes, bool showDataTable)
+        public TMCViewModel(
+            bool showLaneVolumes,
+            bool showDataTable,
+            ILaneTypeRepository laneTypeRepository,
+            IDirectionTypeRepository directionTypeRepository,
+            IMovementTypeRepository movementTypeRepository)
         {
             ShowLaneVolumes = showLaneVolumes;
             ShowDataTable = showDataTable;
-            var laneRepository =
-                LaneTypeRepositoryFactory.Create();
-            var directionRepository =
-                DirectionTypeRepositoryFactory.Create();
-            var movementRepository =
-                MovementTypeRepositoryFactory.Create();
             Headers = new List<RecordHeader>();
             Records = new List<Record>();
             Footers = new List<RecordFooter>();
-            LaneTypes = laneRepository.GetAllLaneTypes();
-            DirectionTypes = directionRepository.GetAllDirections();
-            MovementTypes = movementRepository.GetAllMovementTypes();
+            LaneTypes = laneTypeRepository.GetList().ToList();
+            DirectionTypes = directionTypeRepository.GetList().ToList();
+            MovementTypes = movementTypeRepository.GetList().ToList();
             PeakHourFactor = 0;
         }
 
@@ -91,7 +90,7 @@ namespace Legacy.Common.Business.TMC
                                     && t.Timestamp >= PeakHour.Key
                                     && t.Timestamp < PeakHour.Key.AddHours(1))
                         .GroupBy(t => t.Timestamp)
-                        .Select(t => new {Id = t.Key, Count = t.Sum(y => y.Count)})
+                        .Select(t => new { Id = t.Key, Count = t.Sum(y => y.Count) })
                         .Max(t => t.Count);
                     double denominator = 4 * maxCount;
                     if (denominator != 0)
@@ -107,7 +106,7 @@ namespace Legacy.Common.Business.TMC
         private void SetBinStartTimes(List<TMCData> tMCData)
         {
             BinStartTimes = (from r in tMCData
-                select r.Timestamp).Distinct().OrderBy(r => r).ToList();
+                             select r.Timestamp).Distinct().OrderBy(r => r).ToList();
         }
 
         private void AddPeakHourDataToList(List<TMCData> tMCData)
@@ -212,10 +211,10 @@ namespace Legacy.Common.Business.TMC
         private void AddTimeStampsToRecordList(List<TMCData> tMCData)
         {
             var Timestamps = (from r in tMCData
-                select r.Timestamp).Distinct().ToList();
+                              select r.Timestamp).Distinct().ToList();
             foreach (var d in Timestamps)
-                Records.Add(new Record {Timestamp = d});
-            Footers.Add(new RecordFooter {Title = "Total"});
+                Records.Add(new Record { Timestamp = d });
+            Footers.Add(new RecordFooter { Title = "Total" });
         }
 
         private void AddHeaderRows()

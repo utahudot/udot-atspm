@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,13 +12,13 @@ namespace Legacy.Common.Business
             throw new System.NotImplementedException();
         }
 
-        public static List<PhaseCycleBase> GetSplitMonitorCycles(int phasenumber, string signalId, List<Models.Controller_Event_Log> cycleeventsTable, List<Models.Controller_Event_Log> Pedevents)
+        public static List<PhaseCycleBase> GetSplitMonitorCycles(int phasenumber, string signalId, List<ControllerEventLog> cycleeventsTable, List<ControllerEventLog> Pedevents)
         {
             PhaseCycleBase cycle = null;
 
             List < PhaseCycleBase > cycles = new List<PhaseCycleBase>();
 
-            foreach (Legacy.Common.Models.Controller_Event_Log row in cycleeventsTable)
+            foreach (ControllerEventLog row in cycleeventsTable)
             {
                 if (row.EventCode == 1 && row.EventParam == phasenumber)
                 {
@@ -58,7 +59,7 @@ namespace Legacy.Common.Business
 
             foreach (PhaseCycleBase c in cycles)
             {
-                List<Models.Controller_Event_Log> pedeventsForCycle = (from r in Pedevents
+                List<ControllerEventLog> pedeventsForCycle = (from r in Pedevents
                     where r.Timestamp >=
                           c.CycleStart && r.Timestamp <= c.CycleEnd
                     select r).ToList();
@@ -71,7 +72,7 @@ namespace Legacy.Common.Business
             return cycles;
         }
 
-        public static List<PhaseCycleBase> GetCycles(int startofCycleEvent, List<Models.Controller_Event_Log> events, DateTime start, DateTime end)
+        public static List<PhaseCycleBase> GetCycles(int startofCycleEvent, List<ControllerEventLog> events, DateTime start, DateTime end)
         {
 
             List < PhaseCycleBase > cycles = new List<PhaseCycleBase>();
@@ -260,7 +261,7 @@ namespace Legacy.Common.Business
 
         }
 
-        public static void SetPedTimesForCycle(List<Models.Controller_Event_Log> pedeventsForCycle, PhaseCycleBase cycle)
+        public static void SetPedTimesForCycle(List<ControllerEventLog> pedeventsForCycle, PhaseCycleBase cycle)
         {
             if (pedeventsForCycle.Count > 0)
             {
@@ -271,9 +272,9 @@ namespace Legacy.Common.Business
                     {
 
 
-                        Legacy.Common.Models.Controller_Event_Log current = orderedevents.ElementAt(i);
+                        ControllerEventLog current = orderedevents.ElementAt(i);
 
-                        Legacy.Common.Models.Controller_Event_Log next = orderedevents.ElementAt(i + 1);
+                        ControllerEventLog next = orderedevents.ElementAt(i + 1);
 
 
                         if (current.Timestamp.Ticks == next.Timestamp.Ticks)
@@ -336,7 +337,7 @@ namespace Legacy.Common.Business
                 else
                 {
 
-                    Legacy.Common.Models.Controller_Event_Log current = orderedevents.First();
+                    ControllerEventLog current = orderedevents.First();
                     switch (current.EventCode)
                     {
 

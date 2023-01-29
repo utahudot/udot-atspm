@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Legacy.Common.Business.WCFServiceLibrary
 {
     [DataContract]
-    public class LeftTurnGapAnalysisOptions : MetricOptions
+    public class LeftTurnGapAnalysisOptions
     {
         public const int EVENT_GREEN = 1;
         public const int EVENT_RED = 10;
@@ -71,8 +71,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public LeftTurnGapAnalysisOptions()
         {
-            YAxisMax = 60;
-            SetDefaults();
         }
 
         [DataMember]
@@ -178,6 +176,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         [DataMember]
         public double BinSize { get; set; }
+        public string SignalId { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
 
         //public override List<string> CreateMetric()
         //{
@@ -189,7 +190,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         //    var eventLogs = new ControllerEventLogService(SignalId, StartDate, EndDate,
         //        new List<int> {EVENT_DET, EVENT_GREEN, EVENT_RED});
-            
+
         //    //Get phase + check for opposing phase before creating chart
         //    var ebPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 6);
         //    if (ebPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 2))

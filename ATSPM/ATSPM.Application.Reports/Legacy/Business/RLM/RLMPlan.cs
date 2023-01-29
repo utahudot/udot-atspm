@@ -1,39 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
-using Legacy.Common.Models.Repositories;
+using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 
 namespace Legacy.Common.Business
 {
     public class RLMPlan
     {
         protected int cycleCount;
-
-
-        /// <summary>
-        ///     The end time of the plan
-        /// </summary>
         protected DateTime endTime;
-
-        /// <summary>
-        ///     The plan number
-        /// </summary>
         private readonly int planNumber;
-
-
         protected List<RLMCycle> rlmCycleCollection = new List<RLMCycle>();
-
-
-        //private double totalplantime;
-        //private double totalgreenphasetime;
-        //public SortedDictionary<int,int> phaseCountDictionary = new SortedDictionary<int,int>();
-
         public SortedDictionary<int, int> Splits = new SortedDictionary<int, int>();
-
-        /// <summary>
-        ///     The start time of the plan
-        /// </summary>
         protected DateTime startTime;
 
 
@@ -187,11 +167,11 @@ namespace Legacy.Common.Business
         }
 
 
-        public void SetHighCycleCount(AnalysisPhaseCollection phases)
+        public void SetHighCycleCount(AnalysisPhaseCollectionData phases)
         {
             //find all the phases cycles within the plan
             var HighCycleCount = 0;
-            foreach (var phase in phases.Items)
+            foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
                     where cycle.StartTime > StartTime && cycle.EndTime < endTime
@@ -206,10 +186,9 @@ namespace Legacy.Common.Business
             cycleCount = HighCycleCount;
         }
 
-        public void SetProgrammedSplits(string signalID)
+        public void SetProgrammedSplits(string signalID, IControllerEventLogRepository controllerEventLogRepository)
         {
-            var cer = ControllerEventLogRepositoryFactory.Create();
-            var SplitsDT = cer.GetSplitEvents(signalID, startTime, endTime);
+            var SplitsDT = controllerEventLogRepository.GetSplitEvents(signalID, startTime, endTime);
             Splits.Clear();
 
             foreach (var row in SplitsDT)
@@ -330,7 +309,7 @@ namespace Legacy.Common.Business
         }
 
         private void GetRedCycle(DateTime startTime, DateTime endTime,
-            List<Controller_Event_Log> cycleEvents)
+            List<ControllerEventLog> cycleEvents, IControllerEventLogRepository controllerEventLogRepository)
         {
             RLMCycle cycle = null;
             //use a counter to help determine when we are on the last row
@@ -362,19 +341,20 @@ namespace Legacy.Common.Business
                         }
                     }
             }
-            AddDetectorData();
+            AddDetectorData(controllerEventLogRepository);
         }
 
-        private void AddDetectorData()
+        private void AddDetectorData(IControllerEventLogRepository controllerEventLogRepository)
         {
-            var repository =
-                ControllerEventLogRepositoryFactory.Create();
             var detectors = Approach.GetDetectorsForMetricType(11);
-            var detectorActivations = new List<Controller_Event_Log>();
+            var detectorActivations = new List<ControllerEventLog>();
             foreach (var d in detectors)
-                detectorActivations.AddRange(repository.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(Approach.SignalID,
+                detectorActivations.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(
+                    Approach.SignalId,
                     StartTime, EndTime,
-                    new List<int> {82}, d.DetChannel, 0, d.LatencyCorrection));
+                    new List<int> {82}, d.DetChannel, 
+                    0, 
+                    d.LatencyCorrection));
             TotalVolume = detectorActivations.Count;
             foreach (var cycle in rlmCycleCollection)
             {

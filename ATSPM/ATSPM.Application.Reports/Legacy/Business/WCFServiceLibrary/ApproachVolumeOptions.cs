@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Legacy.Common.Business.WCFServiceLibrary
 {
     [DataContract]
-    public class ApproachVolumeOptions : MetricOptions
+    public class ApproachVolumeOptions
     {
         public List<MetricInfo> MetricInfoList;
 
@@ -20,7 +20,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
-            YAxisMax = yAxisMax;
             SelectedBinSize = binSize;
             ShowTotalVolume = showTotalVolume;
             ShowDirectionalSplits = showDirectionalSplits;
@@ -34,7 +33,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public ApproachVolumeOptions()
         {
             BinSizeList = new List<int>() { 5, 15 };
-            SetDefaults();
         }
 
         [Required]
@@ -68,5 +66,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [DataMember]
         [Display(Name = "Show Advance Detection")]
         public bool ShowAdvanceDetection { get; set; }
-}
+        public int MetricTypeId { get; private set; }
+        public string SignalId { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
+    }
 }

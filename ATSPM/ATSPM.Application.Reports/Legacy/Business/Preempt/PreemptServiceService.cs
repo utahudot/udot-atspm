@@ -5,6 +5,7 @@ using ATSPM.Application.Reports.ViewModels.PreemptService;
 using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
+using System;
 
 namespace Legacy.Common.Business.Preempt
 {
@@ -21,12 +22,12 @@ namespace Legacy.Common.Business.Preempt
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public PreemptServiceResult GetChartData(MetricOptions options)
+        public PreemptServiceResult GetChartData(string signalId, DateTime startDate, DateTime endDate)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
-            var events= controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.StartDate, options.EndDate);
+            var signal = signalRepository.GetLatestVersionOfSignal(signalId, startDate);
+            var events= controllerEventLogRepository.GetSignalEventsBetweenDates(signalId, startDate, endDate);
             var preemptEvents = GetPreemptEvents(events);
-            var plans = planService.GetBasicPlans(options.StartDate, options.EndDate, options.SignalId);
+            var plans = planService.GetBasicPlans(startDate, endDate, signalId);
             List<PreemptPlan> preemptPlans = new List<PreemptPlan>();   
             foreach(var pl in plans)
             {
@@ -34,10 +35,10 @@ namespace Legacy.Common.Business.Preempt
             }
             return new PreemptServiceResult(
                 "Preempt Service",
-                options.SignalId,
+                signalId,
                 signal.SignalDescription(),
-                options.StartDate,
-                options.EndDate,
+                startDate,
+                endDate,
                 preemptPlans,
                 preemptEvents
                 );

@@ -1,44 +1,46 @@
-﻿using System;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
+using Legacy.Common.Business.WCFServiceLibrary;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Legacy.Common.Business.WCFServiceLibrary;
-using Legacy.Common.Models;
 
 namespace Legacy.Common.Business.TimingAndActuations
 {
-    public class GlobalGetDataTimingAndActuations
+    public class GlobalGetDataTimingAndActuationsService
     {
-        public Dictionary<string, List<Controller_Event_Log>> GlobalCustomEvents { get; set; }
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public GlobalGetDataTimingAndActuations(string signalId, TimingAndActuationsOptions options)
+        public GlobalGetDataTimingAndActuationsService(IControllerEventLogRepository controllerEventLogRepository)
         {
+            this.controllerEventLogRepository = controllerEventLogRepository;
+        }
+
+        public Dictionary<string, List<ControllerEventLog>> GetGlobalGetDataTimingAndActuations(string signalId, TimingAndActuationsOptions options)
+        {
+            var globalCustomEventsDictionary = new Dictionary<string, List<ControllerEventLog>>();
             if (options.GlobalEventCodesList != null && options.GlobalEventParamsList != null &&
                 options.GlobalEventCodesList.Any() && options.GlobalEventCodesList.Count > 0 &&
                 options.GlobalEventParamsList.Any() && options.GlobalEventParamsList.Count > 0)
             {
-                GlobalCustomEvents = new Dictionary<string, List<Controller_Event_Log>>();
                 foreach (var globalEventCode in options.GlobalEventCodesList)
                 {
                     foreach (var globalEventParam in options.GlobalEventParamsList)
                     {
                         options.GlobalEventCounter = 1;
-                        var controllerEventLogRepository =
-                            Models.Repositories.ControllerEventLogRepositoryFactory.Create();
                         var globalCustomEvents = controllerEventLogRepository.GetEventsByEventCodesParam
                         (signalId, options.StartDate, options.EndDate,
-                            new List<int> { globalEventCode }, globalEventParam);
+                            new List<int> { globalEventCode }, globalEventParam).ToList();
                         if (globalCustomEvents.Count > 0)
                         {
-                            GlobalCustomEvents.Add("Global Events: Code: " + globalEventCode + " Param: " +
+                            globalCustomEventsDictionary.Add("Global Events: Code: " + globalEventCode + " Param: " +
                                     globalEventParam,
-    //                                globalEventParam + " Counter: " + options.GlobalEventCounter++,
                                     globalCustomEvents);
                         }
                     }
                 }
             }
+            return globalCustomEventsDictionary;
         }
     }
 }

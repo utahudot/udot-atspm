@@ -14,28 +14,32 @@ namespace Legacy.Common.Business
     {
         private readonly ISignalRepository signalRepository;
         private readonly PlanService planService;
+        private readonly SignalPhaseService signalPhaseService;
 
-        public ApproachDelayService(ISignalRepository signalRepository, PlanService planService )
+        public ApproachDelayService(ISignalRepository signalRepository, PlanService planService, SignalPhaseService signalPhaseService)
         {
             this.signalRepository = signalRepository;
             this.planService = planService;
+            this.signalPhaseService = signalPhaseService;
         }
 
 
         protected ApproachDelayResult GetChartData(
-            ApproachDelayOptions options, 
+            ApproachDelayOptions options,
             int binSize,
             bool showDelayPerHour,
             bool showDelayPerVehicle)
         {
-            var signalPhase = new SignalPhase(
+            var signalPhase = signalPhaseService.GetSignalPhaseData( 
                 options.StartDate, 
                 options.EndDate,
-                options.Approach, 
+                options.GetPermissivePhase,
                 false, 
-                options.BinSize, 
-                options.MetricTypeId, 
-                options.GetPermissivePhase);
+                null,
+                options.BinSize,
+                options.MetricTypeId,
+                options.Approach
+                );
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
             var dt = signalPhase.StartDate;
             List<ApproachDelayDataPoint> approachDelayDataPoints = new List<ApproachDelayDataPoint>();

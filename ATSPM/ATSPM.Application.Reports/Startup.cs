@@ -1,5 +1,4 @@
 using ATSPM.Application.Repositories;
-using ATSPM.Infrastructure.Repositories.EntityFramework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,16 +21,16 @@ namespace ATSPM.Application.Reports
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
-            services.AddScoped<ISignalsRepository, SignalsRepository>();
-            services.AddScoped<IApproachRepository, ApproachRepository>();
-            services.AddScoped<IDetectorRepository, DetectorRepository>();
-            services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();
-            services.AddScoped<IApproachCycleAggregationRepository, ApproachCycleAggregationRepository>();
-            services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationRepository>();
-            services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationRepository>();
-            services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationRepository>();
-            services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationRepository>();
+            //services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
+            //services.AddScoped<ISignalRepository, SignalRepository>();
+            //services.AddScoped<IApproachRepository, ApproachRepository>();
+            //services.AddScoped<IDetectorRepository, DetectorRepository>();
+            //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();
+            //services.AddScoped<IApproachCycleAggregationRepository, ApproachCycleAggregationRepository>();
+            //services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationRepository>();
+            //services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationRepository>();
+            //services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationRepository>();
+            //services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

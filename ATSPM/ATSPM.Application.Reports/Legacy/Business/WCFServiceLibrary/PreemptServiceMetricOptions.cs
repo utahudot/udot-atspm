@@ -1,41 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Web.UI.DataVisualization.Charting;
-using Legacy.Common.Business.Preempt;
 
 namespace Legacy.Common.Business.WCFServiceLibrary
 
 {
     [DataContract]
-    public class PreemptServiceMetricOptions : MetricOptions
+    public class PreemptServiceMetricOptions
     {
-        public PreemptServiceMetricOptions(string signalID, DateTime startDate, DateTime endDate, double yAxisMax)
+        public PreemptServiceMetricOptions(string signalId, DateTime startDate, DateTime endDate, double yAxisMax)
         {
-            SignalID = signalID;
+            SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
-            YAxisMax = yAxisMax;
-            //MetricTypeID = metricTypeID;
         }
 
-        public override List<string> CreateMetric()
-        {
-            base.CreateMetric();
-            var returnString = new List<string>();
+        public string SignalId { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
 
-            var eventsTable = new ControllerEventLogs();
+        //public override List<string> CreateMetric()
+        //{
+        //    base.CreateMetric();
+        //    var returnString = new List<string>();
 
-            eventsTable.FillforPreempt(SignalID, StartDate, EndDate);
-            if (eventsTable.Events.Count > 0)
-            {
-                var psChart = new PreemptServiceMetric(this, eventsTable);
-                var chart = psChart.ServiceChart;
-                var chartName = CreateFileName();
-                chart.SaveImage(MetricFileLocation + chartName, ChartImageFormat.Jpeg);
-                returnString.Add(MetricWebPath + chartName);
-            }
-            return returnString;
-        }
+        //    var eventsTable = new ControllerEventLogs();
+
+        //    eventsTable.FillforPreempt(SignalID, StartDate, EndDate);
+        //    if (eventsTable.Events.Count > 0)
+        //    {
+        //        var psChart = new PreemptServiceMetric(this, eventsTable);
+        //        var chart = psChart.ServiceChart;
+        //        var chartName = CreateFileName();
+        //        chart.SaveImage(MetricFileLocation + chartName, ChartImageFormat.Jpeg);
+        //        returnString.Add(MetricWebPath + chartName);
+        //    }
+        //    return returnString;
+        //}
     }
 }

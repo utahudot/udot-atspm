@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Legacy.Common.Business.WCFServiceLibrary
 {
     [DataContract]
-    public class ApproachSpeedOptions : MetricOptions
+    public class ApproachSpeedOptions 
     {
         public ApproachSpeedOptions(string signalID, DateTime startDate, DateTime endDate, double yAxisMax,
             double yAxisMin,
@@ -16,8 +16,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             SignalId = signalID;
             StartDate = startDate;
             EndDate = endDate;
-            YAxisMax = yAxisMax;
-            YAxisMin = yAxisMin;
             SelectedBinSize = binSize;
             ShowPlanStatistics = showPlanStatistics;
             ShowPostedSpeed = showPostedSpeed;
@@ -31,7 +29,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public ApproachSpeedOptions()
         {
             MetricTypeId = 10;
-            SetDefaults();
         }
 
         [Required]
@@ -58,7 +55,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [DataMember]
         [Display(Name = "Show 15% Speeds")]
         public bool Show15Percentile { get; set; }
-
-        
+        public int MetricTypeId { get; private set; }
+        public string SignalId { get; private set; }
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
     }
 }

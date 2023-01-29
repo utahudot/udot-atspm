@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Models;
 using ATSPM.Application.Reports.Business;
+using Legacy.Common.Business;
 
 namespace ATSPM.Application.Reports.Models
 {
     public class SignalPhase
     {
-        public Business.VolumeCollection Volume { get; private set; }
+        public VolumeCollection Volume { get; private set; }
 
-        public List<Business.PlanPcd> Plans { get; private set; }
-        public List<Business.CyclePcd> Cycles { get; private set; }
+        public List<PlanPcd> Plans { get; private set; }
+        public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public bool GetPermissivePhase { get; }
         public ATSPM.Data.Models.Approach Approach { get; }

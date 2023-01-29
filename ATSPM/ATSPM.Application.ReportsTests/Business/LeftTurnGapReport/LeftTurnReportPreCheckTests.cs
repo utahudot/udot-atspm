@@ -1,12 +1,13 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Business.LeftTurnGapReport;
-using ATSPM.Application.Models;
+﻿using ATSPM.Application.Models;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using ATSPM.IRepositories;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
 {
@@ -79,11 +80,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
             Assert.Equal(Dictionary1.Last().Key, pmGoodResult.Key);
             Assert.Equal(1, pmGoodResult.Value);
         }
-
+        
         [Fact()]
         public void GetOpposingPhaseTest()
         {
-            var approach = new Approach { ProtectedPhaseNumber = 0, PermissivePhaseNumber = 2 };
+            var approach = new Data.Models.Approach { ProtectedPhaseNumber = 0, PermissivePhaseNumber = 2 };
             Assert.Equal(6, LeftTurnReportPreCheck.GetOpposingPhase(approach));
 
             approach.PermissivePhaseNumber = 4;
@@ -173,11 +174,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
         [Fact()]
         public void LoadAveragesTest()
         {
-            var aggregations = new List<PhaseTerminationAggregation>
+            var aggregations = new List<Data.Models.PhaseTerminationAggregation>
             {
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=1, UnknownTerminationTypes=2}},
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=2, UnknownTerminationTypes=2}},
-                {new PhaseTerminationAggregation{GapOuts=1, ForceOffs=2, MaxOuts=2, UnknownTerminationTypes=2}}
+                {new Data.Models.PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=1, Unknown=2}},
+                {new Data.Models.PhaseTerminationAggregation{GapOuts=1, ForceOffs=1, MaxOuts=2, Unknown=2}},
+                {new Data.Models.PhaseTerminationAggregation{GapOuts=1, ForceOffs=2, MaxOuts=2, Unknown=2}}
             };
             var dictionary = new Dictionary<TimeSpan, double>();
             LeftTurnReportPreCheck.LoadAverages(dictionary, new TimeSpan(8, 0, 0), aggregations);
@@ -268,14 +269,34 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
         }
     }
 
-    class TestSignalRepository : ISignalsRepository
+    class TestSignalRepository : ISignalRepository
     {
+        public void Add(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAsync(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddList(List<Signal> signals)
         {
             throw new NotImplementedException();
         }
 
         public void AddOrUpdate(Signal signal)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddRange(IEnumerable<Signal> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddRangeAsync(IEnumerable<Signal> items)
         {
             throw new NotImplementedException();
         }
@@ -315,6 +336,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
             throw new NotImplementedException();
         }
 
+        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<Signal> GetAllVersionsOfSignalBySignalID(string signalID)
         {
             throw new NotImplementedException();
@@ -330,12 +356,52 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
             throw new NotImplementedException();
         }
 
+        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<Signal> GetLatestVersionOfAllSignalsForFtp()
         {
             throw new NotImplementedException();
         }
 
+        public Signal GetLatestVersionOfSignal(string signalId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Signal GetLatestVersionOfSignal(string signalId, DateTime startDate)
+        {
+            throw new NotImplementedException();
+        }
+
         public Signal GetLatestVersionOfSignalBySignalID(string signalID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<Signal> GetList()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IReadOnlyList<Signal> GetList(Expression<Func<Signal, bool>> criteria)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IReadOnlyList<Signal> GetList(ISpecification<Signal> criteria)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<Signal>> GetListAsync(Expression<Func<Signal, bool>> criteria)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyList<Signal>> GetListAsync(ISpecification<Signal> criteria)
         {
             throw new NotImplementedException();
         }
@@ -360,45 +426,84 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
             throw new NotImplementedException();
         }
 
-        public Signal GetVersionOfSignalByDate(string signalId, DateTime startDate)
-        {
+        //public Signal GetVersionOfSignalByDate(string signalId, DateTime startDate)
+        //{
 
-            var detector1 = new Detector {
-                DetectionTypeDetectors = new List<DetectionTypeDetector> {
-                                            new DetectionTypeDetector { DetectionTypeId = 1 },
-                                            new DetectionTypeDetector { DetectionTypeId = 2 },
-                                            },
-                DetectionHardwareId = 1
-            };
-            var detector2 = new Detector
-            {
-                DetectionTypeDetectors = new List<DetectionTypeDetector> {
-                                            new DetectionTypeDetector { DetectionTypeId = 3 },
-                                            new DetectionTypeDetector { DetectionTypeId = 4 },
-                                            },
-                DetectionHardwareId = 2
-            };
-            var detector3 = new Detector
-            {
-                DetectionTypeDetectors = new List<DetectionTypeDetector> {
-                                            new DetectionTypeDetector { DetectionTypeId = 5 },
-                                            new DetectionTypeDetector { DetectionTypeId = 6 }
-                                            },
-                DetectionHardwareId = 6
-            };
+        //    List<DetectionTypes> detectionTypes = new List<DetectionTypes> { DetectionTypes.B, DetectionTypes.AC };
+        //    var detector1 = new Data.Models.Detector
+        //    {
+        //        DetectionTypes = new ICollection<DetectionTypes> { DetectionTypes.B, DetectionTypes.AC };
+        //    DetectionHardwareId = DetectionHardwareTypes.WavetronixMatrix
+        //    };
+        //    var detector2 = new Detector
+        //    {
+        //        DetectionTypeDetectors = new List<DetectionTypeDetector> {
+        //                                    new DetectionTypeDetector { DetectionTypeId = 3 },
+        //                                    new DetectionTypeDetector { DetectionTypeId = 4 },
+        //                                    },
+        //        DetectionHardwareId = 2
+        //    };
+        //    var detector3 = new Detector
+        //    {
+        //        DetectionTypeDetectors = new List<DetectionTypeDetector> {
+        //                                    new DetectionTypeDetector { DetectionTypeId = 5 },
+        //                                    new DetectionTypeDetector { DetectionTypeId = 6 }
+        //                                    },
+        //        DetectionHardwareId = 6
+        //    };
 
-            var approach1 = new Approach
-            {
-                Detectors = new List<Detector> { detector1, detector2, detector3 }
-            };
-            var signal = new Signal
-            {
-                Approaches = new List<Approach> { approach1 }
-            };
-            return signal;
-        }
+        //    var approach1 = new Approach
+        //    {
+        //        Detectors = new List<Detector> { detector1, detector2, detector3 }
+        //    };
+        //    var signal = new Signal
+        //    {
+        //        Approaches = new List<Approach> { approach1 }
+        //    };
+        //    return signal;
+        //}
 
         public Signal GetVersionOfSignalByDateWithDetectionTypes(string signalId, DateTime startDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Signal Lookup(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Signal Lookup(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Signal> LookupAsync(object key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Signal> LookupAsync(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveAsync(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveRange(IEnumerable<Signal> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveRangeAsync(IEnumerable<Signal> items)
         {
             throw new NotImplementedException();
         }
@@ -409,6 +514,36 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport.Tests
         }
 
         public void SetVersionToDeleted(int versionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(Signal item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateRange(IEnumerable<Signal> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRangeAsync(IEnumerable<Signal> items)
+        {
+            throw new NotImplementedException();
+        }
+
+        IReadOnlyList<Signal> ISignalRepository.GetLatestVersionOfAllSignals()
+        {
+            throw new NotImplementedException();
+        }
+
+        IReadOnlyList<Signal> ISignalRepository.GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate)
         {
             throw new NotImplementedException();
         }

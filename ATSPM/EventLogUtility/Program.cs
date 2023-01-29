@@ -47,7 +47,7 @@ cmdBuilder.UseHost(a => Host.CreateDefaultBuilder(a).UseConsoleLifetime(), h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync();
+//await cmdParser.InvokeAsync();
 
 public static class CommandHostBuilder
 {

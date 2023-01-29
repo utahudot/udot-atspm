@@ -1,50 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Legacy.Common.Migrations;
 
 namespace Legacy.Common.Business.SplitMonitor
 {
+    public class SplitMonitorData
+    {
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public AnalysisPhaseCollectionData Phases { get; set; }
+        public string SignalID { get; set; }
+    }
+    
     public class SplitMonitor
     {
+        private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
+        private readonly PlanSplitMonitorService planSplitMonitorService;
 
-        public SplitMonitor(string signalID, DateTime startDate, DateTime endDate)
+        public SplitMonitor(AnalysisPhaseCollectionService analysisPhaseCollectionService, PlanSplitMonitorService planSplitMonitorService)
         {
-            SignalID = signalID;
-            StartDate = startDate;
-            EndDate = endDate;
-            Phases = new AnalysisPhaseCollection(SignalID, StartDate, EndDate);
-            if (Phases.Items.Count > 0)
+            this.analysisPhaseCollectionService = analysisPhaseCollectionService;
+            this.planSplitMonitorService = planSplitMonitorService;
+        }
+
+        public SplitMonitorData GetSplitMonitor(string signalID, DateTime startDate, DateTime endDate)
+        {
+            var splitMonitorData = new SplitMonitorData();
+            splitMonitorData.SignalID = signalID;
+            splitMonitorData.StartDate = startDate;
+            splitMonitorData.EndDate = endDate;
+            splitMonitorData.Phases = analysisPhaseCollectionService.GetAnalysisPhaseCollection(splitMonitorData.SignalID, splitMonitorData.StartDate, splitMonitorData.EndDate);
+            if (splitMonitorData.Phases.Plans.Count > 0)
             {
-                foreach (var plan in Phases.Plans)
+                foreach (var plan in splitMonitorData.Phases.Plans)
                 {
-                    plan.SetProgrammedSplits(SignalID);
-                    plan.SetHighCycleCount(Phases);
+                    planSplitMonitorService.SetProgrammedSplits(splitMonitorData.SignalID, plan);
+                    planSplitMonitorService.SetHighCycleCount(splitMonitorData.Phases, plan);
                 }
             }
-
-            var phasesInOrder = (Phases.Items.Select(r => r)).OrderBy(r => r.PhaseNumber);
-            foreach (var phase in phasesInOrder)
+            
+            foreach (var phase in splitMonitorData.Phases.AnalysisPhases)
             {
                 if (phase.Cycles.Items.Count > 0)
                 {
                     var maxSplitLength = 0;
-                    foreach (var plan in Phases.Plans)
+                    foreach (var plan in splitMonitorData.Phases.Plans)
                     {
-                        var highestSplit = plan.FindHighestRecordedSplitPhase();
-                        plan.FillMissingSplits(highestSplit);
+                        var highestSplit = planSplitMonitorService.FindHighestRecordedSplitPhase(plan);
+                        planSplitMonitorService.FillMissingSplits(highestSplit, plan);
                         if (plan.Splits[phase.PhaseNumber] > maxSplitLength)
                             maxSplitLength = plan.Splits[phase.PhaseNumber];
                     }
                 }
             }
+            return splitMonitorData;
         }
-
-        public DateTime StartDate { get; }
-        public DateTime EndDate { get; }
-        public AnalysisPhaseCollection Phases { get; private set; }
-        public string SignalID { get; }
     }
 }

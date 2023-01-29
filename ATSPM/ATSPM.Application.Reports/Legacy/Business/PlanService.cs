@@ -13,10 +13,12 @@ namespace Legacy.Common.Business
     public class PlanService
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly PlanSplitMonitorService planSplitMonitorService;
 
-        public PlanService(IControllerEventLogRepository controllerEventLogRepository)
+        public PlanService(IControllerEventLogRepository controllerEventLogRepository, PlanSplitMonitorService planSplitMonitorService)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.planSplitMonitorService = planSplitMonitorService;
         }
 
         public List<PlanPcd> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
@@ -128,20 +130,20 @@ namespace Legacy.Common.Business
             return plans;
         }
 
-        public List<PlanSplitMonitor> GetSplitMonitorPlans(DateTime startDate, DateTime endDate, string signalId)
+        public List<PlanSplitMonitorData> GetSplitMonitorPlans(DateTime startDate, DateTime endDate, string signalId)
         {
             var planEvents = GetPlanEvents(startDate, endDate, signalId);
-            var plans = new List<PlanSplitMonitor>();
+            var plans = new List<PlanSplitMonitorData>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
                 {
                     if (planEvents[i].Timestamp != endDate)
-                        plans.Add(new PlanSplitMonitor(planEvents[i].Timestamp, endDate, planEvents[i].EventParam));
+                        plans.Add(planSplitMonitorService.GetPlanSplitMonitor(planEvents[i].Timestamp, endDate, planEvents[i].EventParam));
                 }
                 else
                 {
                     if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
-                        plans.Add(new PlanSplitMonitor(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
+                        plans.Add(planSplitMonitorService.GetPlanSplitMonitor(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
                             planEvents[i].EventParam));
                 }
             return plans;

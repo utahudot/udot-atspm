@@ -9,7 +9,7 @@ namespace ATSPM.Data.Models
     {
         public DateTime BinStartTime { get; set; }
         public string SignalId { get; set; }
-        public int ApproachID { get; set; }
+        public int ApproachId { get; set; }
         public int DetectorPrimaryID { get; set; }
         public int EventCount { get; set; }
     }

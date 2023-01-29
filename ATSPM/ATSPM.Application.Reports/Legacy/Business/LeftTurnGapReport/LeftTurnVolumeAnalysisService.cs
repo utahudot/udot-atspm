@@ -13,16 +13,19 @@ namespace Legacy.Common.Business.LeftTurnGapReport
         private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
         private readonly IDetectorRepository detectorRepository;
         private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
+        private readonly ISignalRepository signalRepository;
 
         public LeftTurnVolumeAnalysisService(
             LeftTurnReportPreCheckService leftTurnReportPreCheckService,
             IDetectorRepository detectorRepository,
-            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            ISignalRepository signalRepository
             )
         {
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
             this.detectorRepository = detectorRepository;
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+            this.signalRepository = signalRepository;
         }
 
         public LeftTurnVolumeValue GetLeftTurnVolumeStats(
@@ -53,7 +56,7 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionType);
             var approach = leftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionType);
             int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
-            var opposingLanes = GetDetectorsByPhase(signalId, opposingPhase);
+            var opposingLanes = GetDetectorsByPhase(signalId, opposingPhase, start);
             leftTurnVolumeValue.OpposingLanes = opposingLanes.Count;
             List<DetectorEventCountAggregation> leftTurnVolumeAggregation = GetDetectorVolumebyDetector(detectors, start, end, startTime, endTime);
             List<DetectorEventCountAggregation> opposingVolumeAggregations = GetDetectorVolumebyDetector(opposingLanes, start, end, startTime, endTime);
@@ -135,9 +138,9 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             return approachType;
         }
 
-        public List<Detector> GetDetectorsByPhase(string signalId, int phase)   
+        public List<Detector> GetDetectorsByPhase(string signalId, int phase, DateTime start)   
         {
-            return detectorRepository.GetDetectorsBySignalID(signalId).Where(d => d.Approach.ProtectedPhaseNumber == phase).ToList();
+            return signalRepository.GetLatestVersionOfSignal(signalId, start).Approaches.Where(d => d.ProtectedPhaseNumber == phase).First().Detectors.ToList();
         }
 
         public List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<Detector> detectors, DateTime start,

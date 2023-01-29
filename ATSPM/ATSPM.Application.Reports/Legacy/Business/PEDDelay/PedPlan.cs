@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Models;
 
 namespace Legacy.Common.Business.PEDDelay
 {
@@ -19,7 +19,7 @@ namespace Legacy.Common.Business.PEDDelay
         public DateTime EndDate { get; }
         public int PlanNumber { get; }
         public int PhaseNumber { get; }
-        public List<Controller_Event_Log> Events { get; set; }
+        public List<ControllerEventLog> Events { get; set; }
         public List<PedCycle> Cycles { get; set; } = new List<PedCycle>();
         public int UniquePedDetections { get; set; }
         public double CyclesWithPedRequests => Cycles.Count;

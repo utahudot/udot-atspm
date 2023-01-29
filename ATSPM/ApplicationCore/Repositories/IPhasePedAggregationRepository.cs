@@ -10,6 +10,9 @@ namespace ATSPM.Application.Repositories
         void Update(PhasePedAggregation pedAggregation);
         void Remove(PhasePedAggregation pedAggregation);
         List<int> GetAvailablePhaseNumbers(Signal signal, DateTime startDate, DateTime endDate);
-        List<PhasePedAggregation> GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate);
+        List<PhasePedAggregation> GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate);       
+        List<PhaseCycleAggregation> GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(string signalId, int phase, DateTime start,
+            DateTime end);
+        bool Exists(string signalId, int phaseNumber, DateTime startDate, DateTime endDate);
     }
 }

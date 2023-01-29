@@ -1,38 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using Legacy.Common.Business.PEDDelay;
 using System.ComponentModel.DataAnnotations;
-using Legacy.Common.Models;
-using System.Linq;
-using System.Data;
-using Legacy.Common.Models.Repositories;
+using System.Runtime.Serialization;
 
 namespace Legacy.Common.Business.WCFServiceLibrary
 {
     [DataContract]
-    public class PedDelayOptions : MetricOptions
+    public class PedDelayOptions
     {
-        public PedDelayOptions(string signalId, DateTime startDate, DateTime endDate, int timeBuffer, bool showPedBeginWalk, bool showCycleLength, bool showPercentDelay, bool showPedRecall, int pedRecallThreshold, double? yAxisMax)
+        public PedDelayOptions(int approachId, DateTime startDate, DateTime endDate, int timeBuffer, bool showPedBeginWalk, bool showCycleLength, bool showPercentDelay, bool showPedRecall, int pedRecallThreshold)
         {
-            SignalId = signalId;
             StartDate = startDate;
             EndDate = endDate;
+            ApproachId = approachId;
+            StartDate = startDate;
             TimeBuffer = timeBuffer;
             ShowPedBeginWalk = showPedBeginWalk;
             ShowCycleLength = showCycleLength;
             ShowPercentDelay = showPercentDelay;
             ShowPedRecall = showPedRecall;
             PedRecallThreshold = pedRecallThreshold;
-            YAxisMax = yAxisMax;
         }
 
-        public PedDelayOptions()
-        {
-            Y2AxisMax = 10;
-            SetDefaults();
-        }
-
+        public int ApproachId { get; }
+        public DateTime StartDate { get; }
+        public DateTime EndDate { get; }
         [DataMember]
         [Display(Name = "Time Buffer Between Unique Ped Detections")]
         public int TimeBuffer { get; set; }
@@ -57,25 +48,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [Display(Name = "Ped Recall Threshold (Percent)")]
         public int PedRecallThreshold { get; set; }
 
-        public override List<string> CreateMetric()
-        {
-            base.CreateMetric();
-            var signalRepository = SignalsRepositoryFactory.Create();
-            Signal signal = signalRepository.GetVersionOfSignalByDate(SignalId, StartDate);
 
-            var pedDelaySignal = new PedDelaySignal(signal, TimeBuffer, StartDate, EndDate);
-
-            foreach (var pedPhase in pedDelaySignal.PedPhases)
-                if (pedPhase.Cycles.Count > 0)
-                {
-                    var cycleLength = CycleService.GetRedToRedCycles(pedPhase.Approach, StartDate, EndDate);
-                    var pdc = new PEDDelayChart(this, pedPhase, cycleLength);
-                    var chart = pdc.Chart;
-                    var chartName = CreateFileName();
-                    chart.SaveImage(MetricFileLocation + chartName);
-                    ReturnList.Add(MetricWebPath + chartName);
-                }
-            return ReturnList;
-        }
     }
 }

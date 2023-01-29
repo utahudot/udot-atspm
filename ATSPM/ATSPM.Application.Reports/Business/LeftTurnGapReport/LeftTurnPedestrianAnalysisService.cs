@@ -6,14 +6,18 @@ using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
-    public class LeftTurnPedestrianAnalysis
+    public class LeftTurnPedestrianAnalysisService
     {
         private readonly ISignalRepository _signalRepository;
         private readonly IApproachRepository _approachRepository;
         private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
 
-        public LeftTurnPedestrianAnalysis(ISignalRepository signalRepository, IApproachRepository approachRepository, IPhasePedAggregationRepository phasePedAggregationRepository, IApproachCycleAggregationRepository approachCycleAggregationRepository)
+        public LeftTurnPedestrianAnalysisService(
+            ISignalRepository signalRepository,
+            IApproachRepository approachRepository,
+            IPhasePedAggregationRepository phasePedAggregationRepository,
+            IApproachCycleAggregationRepository approachCycleAggregationRepository)
         {
             _signalRepository = signalRepository;
             _approachRepository = approachRepository;
@@ -29,8 +33,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             TimeSpan endTime,
             int[] daysOfWeek)
         {
-            var signal = _signalRepository.GetVersionOfSignalByDate(signalId, start);
-            var approach = signal.Approaches.Where(a => a.ApproachId == approachId).FirstOrDefault();
+            var signal = _signalRepository.GetLatestVersionOfSignal(signalId, start);
+            var approach = signal.Approaches.Where(a => a.Id == approachId).FirstOrDefault();
             var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(approachId, _approachRepository);
             int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
             var cycleAverage = GetCycleAverage(signalId, start, end, startTime, endTime, opposingPhase, daysOfWeek);
@@ -72,13 +76,17 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             int phase,
             int[] daysOfWeek)
         {
-            List<Models.PhasePedAggregation> cycleAggregations = new List<Models.PhasePedAggregation>();
+            List<PhasePedAggregation> cycleAggregations = new List<PhasePedAggregation>();
             List<double> hourlyPedCycles = new List<double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {
                 if (daysOfWeek.Contains((int)start.DayOfWeek))
                 {
-                    var pedAgg = _phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime));
+                    var pedAgg = _phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
+                        signalId,
+                        phase,
+                        tempDate.Date.Add(startTime),
+                        tempDate.Date.Add(endTime));
                     hourlyPedCycles.Add(pedAgg.Sum(p => p.PedCycles));
                     cycleAggregations.AddRange(pedAgg);
                 }
@@ -121,7 +129,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             int phase,
             int[] daysOfWeek)
         {
-            List<Models.PhaseCycleAggregation> cycleAggregations = new List<Models.PhaseCycleAggregation>();
+            List<PhaseCycleAggregation> cycleAggregations = new List<PhaseCycleAggregation>();
             List<double> hourlyCycles = new List<double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {

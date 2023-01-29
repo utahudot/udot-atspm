@@ -39,7 +39,7 @@ namespace Legacy.Common.Business
             }
         }
 
-        private SignalPhase GetSignalPhaseData(
+        public SignalPhase GetSignalPhaseData(
             DateTime start,
             DateTime end,
             bool getPermissivePhase,

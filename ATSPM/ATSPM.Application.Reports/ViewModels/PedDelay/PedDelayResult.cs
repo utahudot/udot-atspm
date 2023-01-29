@@ -6,9 +6,9 @@ namespace ATSPM.Application.Reports.ViewModels.PedDelay
     /// <summary>
     /// Ped Delay chart
     /// </summary>
-    public class PedDelayChart
+    public class PedDelayResult
     {
-        public PedDelayChart(
+        public PedDelayResult(
             string chartName,
             string signalId,
             string signalLocation,
@@ -22,11 +22,11 @@ namespace ATSPM.Application.Reports.ViewModels.PedDelay
             int uniquePedestrianDetections,
             double minDelay,
             double maxDelay,
-            string averageDelay,
+            double averageDelay,
             ICollection<PedDelayPlan> plans,
             ICollection<CycleLengths> cycleLengths,
             ICollection<PedestrianDelay> pedestrianDelay,
-            ICollection<string> startOfWalk,
+            ICollection<StartBeginWalk> startOfWalk,
             ICollection<PercentDelayByCycleLength> percentDelayByCycleLength)
         {
             ChartName = chartName;
@@ -63,11 +63,11 @@ namespace ATSPM.Application.Reports.ViewModels.PedDelay
         public int UniquePedestrianDetections { get; internal set; }
         public double MinDelay { get; internal set; }
         public double MaxDelay { get; internal set; }
-        public string AverageDelay { get; internal set; }
+        public double AverageDelay { get; internal set; }
         public ICollection<PedDelayPlan> Plans { get; internal set; }
         public ICollection<CycleLengths> CycleLengths { get; internal set; }
         public ICollection<PedestrianDelay> PedestrianDelay { get; internal set; }
-        public ICollection<string> StartOfWalk { get; internal set; }
+        public ICollection<StartBeginWalk> StartOfWalk { get; internal set; }
         public ICollection<PercentDelayByCycleLength> PercentDelayByCycleLength { get; internal set; }
 
     }

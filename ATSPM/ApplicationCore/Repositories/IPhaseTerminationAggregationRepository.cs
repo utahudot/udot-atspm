@@ -12,5 +12,6 @@ namespace ATSPM.Application.Repositories
         void Remove(PhaseTerminationAggregation priorityAggregation);
         List<int> GetAvailablePhaseNumbers(Signal signal, DateTime startDate, DateTime endDate);
         List<PhaseTerminationAggregation> GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(string signalId, int phaseNumber, DateTime startDate, DateTime endDate);
+        bool Exists(string signalId, int phaseNumber, DateTime startDate, DateTime endDate);
     }
 }

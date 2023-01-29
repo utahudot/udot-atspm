@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -112,11 +113,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         public int GetNumberOfOpposingLanes(Signal signal, int opposingPhase)
         {
-            List<int> thruMovements = new List<int>() { 1, 4, 5 };
+            List<MovementTypes> thruMovements = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
             return signal
                 .Approaches
                 .SelectMany(a => a.Detectors)
-                .Where(d => d.DetectionTypeDetectors.First().DetectionTypeId == 4 && thruMovements.Contains(d.MovementTypeId.Value))
+                .Where(d => d.DetectionTypes.First().Id == Data.Enums.DetectionTypes.LLC && thruMovements.Contains(d.MovementTypeId))
                 .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 

@@ -13,5 +13,8 @@ namespace ATSPM.Application.Repositories
         List<DetectorEventCountAggregation> GetDetectorEventCountAggregationByDetectorIdAndDateRange(
             int detectorId, DateTime start,
             DateTime end);
+
+        bool DetectorEventCountAggregationExists(int detectorId, DateTime start,
+            DateTime end);
     }
 }

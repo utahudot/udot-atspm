@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
@@ -41,7 +42,7 @@ namespace Legacy.Common.Business
 
         public bool HasPed { get; set; }
 
-        public List<Models.Speed_Events> SpeedsForCycle;
+        public List<SpeedEvent> SpeedsForCycle;
         public List<DetectorDataPoint> DetectorEvents { get; set; }
         public List<DetectorDataPoint> PreemptCollection { get; set; }
 
@@ -108,11 +109,11 @@ namespace Legacy.Common.Business
 
         public double TotalVolume => DetectorEvents.Count;
 
-        public void FindSpeedEventsForCycle(List<Models.Speed_Events> speeds)
+        public void FindSpeedEventsForCycle(List<SpeedEvent> speeds)
         {
             SpeedsForCycle = (from r in speeds
-                where r.timestamp > this.CycleStart
-                      && r.timestamp < this.CycleEnd
+                where r.Timestamp > this.CycleStart
+                      && r.Timestamp < this.CycleEnd
                 select r).ToList();
         }
 

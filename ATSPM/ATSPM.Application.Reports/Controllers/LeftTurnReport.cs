@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ATSPM.Data.Models;
+using ATSPM.Data.Enums;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -23,6 +25,7 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
         private readonly IApproachSplitFailAggregationRepository _approachSplitFailAggregationRepository;
+        private readonly LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService;
 
         public LeftTurnReport(ILogger<LeftTurnReport> logger,
             IPhasePedAggregationRepository phasePedAggregationRepository,
@@ -33,7 +36,8 @@ namespace ATSPM.Application.Reports.Controllers
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
-, IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository
+,           IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
+            LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService
             )
         {
             _logger = logger;
@@ -46,6 +50,7 @@ namespace ATSPM.Application.Reports.Controllers
             _detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             _phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             _approachSplitFailAggregationRepository = approachSplitFailAggregationRepository;
+            this.leftTurnVolumeAnalysisService = leftTurnVolumeAnalysisService;
         }
 
         [HttpPost("/DataCheck")]
@@ -58,7 +63,7 @@ namespace ATSPM.Application.Reports.Controllers
             var pmStartTime = new TimeSpan(15, 0, 0);
             var pmEndTime = new TimeSpan(19, 0, 0);
 
-            var approach = _approachRepository.GetApproachByApproachID(parameters.ApproachId);
+            var approach = _approachRepository.Lookup(parameters.ApproachId);
             var dataCheck = new DataCheckResult();
             dataCheck.ApproachDescriptions = approach.Description;
             dataCheck.GapOutOk = false;
@@ -67,12 +72,10 @@ namespace ATSPM.Application.Reports.Controllers
             dataCheck.InsufficientDetectorEventCount = false;
             dataCheck.InsufficientCycleAggregation = false;
             dataCheck.InsufficientPhaseTermination = false;
-            var detectors = new List<Models.Detector>();
+            var detectors = new List<Data.Models.Detector>();
             //if(approach.Detectors.Any(d => d.DetectionIDs.Contains(4)))
-            var movementTypes = new List<int>() { 3 };
-            foreach (var detector in approach.Detectors.Where(d =>
-            d.MovementTypeId.HasValue
-            && movementTypes.Contains(d.MovementTypeId.Value)).ToList())
+            var movementTypes = new List<MovementTypes>() { MovementTypes.L };
+            foreach (var detector in approach.Detectors.Where(d => movementTypes.Contains(d.MovementTypeId)).ToList())
             {
                 if (!_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(detector.Id, parameters.StartDate.Add(amStartTime), parameters.StartDate.Add(amEndTime)) &&
                     !_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(detector.Id, parameters.StartDate.Add(pmStartTime), parameters.StartDate.Add(pmEndTime)))
@@ -207,7 +210,7 @@ namespace ATSPM.Application.Reports.Controllers
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
 
-            var pedAnalysis = new LeftTurnPedestrianAnalysis(_signalRepository, _approachRepository, _phasePedAggregationRepository,
+            var pedAnalysis = new LeftTurnPedestrianAnalysisService(_signalRepository, _approachRepository, _phasePedAggregationRepository,
                 _approachCycleAggregationRepository);
             var pedActuationResult = new PedActuationResult();
             pedActuationResult = pedAnalysis.GetPedestrianPercentage(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, startTime, endTime, parameters.DaysOfWeek);
@@ -221,8 +224,8 @@ namespace ATSPM.Application.Reports.Controllers
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
 
-            var volumeResult = LeftTurnVolumeAnalysis.GetLeftTurnVolumeStats(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate,
-                startTime, endTime, _signalRepository, _approachRepository, _detectorRepository, _detectorEventCountAggregationRepository, parameters.DaysOfWeek);
+            var volumeResult = leftTurnVolumeAnalysisService.GetLeftTurnVolumeStats(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate,
+                startTime, endTime, parameters.DaysOfWeek);
 
             return volumeResult;
         }

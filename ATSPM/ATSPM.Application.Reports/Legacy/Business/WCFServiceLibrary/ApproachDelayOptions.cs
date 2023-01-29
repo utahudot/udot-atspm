@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace Legacy.Common.Business.WCFServiceLibrary
 {
     [DataContract]
-    public class ApproachDelayOptions : MetricOptions
+    public class ApproachDelayOptions 
     {
         public ApproachDelayOptions(
             Approach approach,
@@ -26,6 +26,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             ShowDelayPerVehicle = showDelayPerVehicle;
         }
 
+        public int MetricTypeId { get; }
         public Approach Approach { get; }
         public bool GetPermissivePhase { get; }
         public DateTime StartDate { get; }
@@ -33,5 +34,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public int BinSize { get; }
         public bool ShowPlanStatistics { get; }
         public bool ShowDelayPerVehicle { get; }
+        public string SignalId { get; internal set; }
     }
 }

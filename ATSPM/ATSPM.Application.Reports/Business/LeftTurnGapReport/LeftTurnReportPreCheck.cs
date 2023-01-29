@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
@@ -312,7 +313,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             {
                 throw new NotSupportedException("No Detectors found");
             }
-            List<Models.DetectorEventCountAggregation> volumeAggregations =
+            List<DetectorEventCountAggregation> volumeAggregations =
                 GetDetectorVolumebyDetector(detectors, startDate, endDate, amStartTime,
                 amEndTime, pmStartTime, pmEndTime, daysOfWeek, detectorEventCountAggregationRepository);
             if (!volumeAggregations.Any())
@@ -344,12 +345,12 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                                                                               Dictionary<TimeSpan, int> allDetectorsFlowRate,
                                                                               int approachId)
         {
-            List<Models.Detector> leftTurndetectors = GetLeftTurnLaneByLaneDetectorsForSignal(signalId, startDate, signalsRepository);
+            List<ATSPM.Data.Models.Detector> leftTurndetectors = GetLeftTurnLaneByLaneDetectorsForSignal(signalId, startDate, signalsRepository);
             if (!leftTurndetectors.Any())
             {
                 throw new NotSupportedException("No Left Turn Detectors found");
             }
-            List<Models.DetectorEventCountAggregation> leftTurnVolumeAggregations =
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregations =
                 GetDetectorVolumebyDetector(leftTurndetectors, startDate, endDate, amStartTime,
                 amEndTime, pmStartTime, pmEndTime, daysOfWeek, detectorEventCountAggregationRepository);
             if (!leftTurnVolumeAggregations.Any())
@@ -459,31 +460,31 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         public static List<ATSPM.Data.Models.Detector> GetLeftTurnDetectors(int approachId, IApproachRepository approachRepository)
         {
-            var movementTypes = new List<int>() { 3 };
+            var movementTypes = new List<MovementTypes>() { MovementTypes.L };
             //only return detector types of type 4
             return approachRepository.GetApproachByApproachID(approachId).Detectors.Where(d =>
-            d.DetectionTypeDetectors.Select(t => t.DetectionTypeId).Contains(4)
-            && movementTypes.Contains(d.MovementTypeId.Value)).ToList();
+            d.DetectionTypes.Select(t => t.Id).Contains(Data.Enums.DetectionTypes.LLC)
+            && movementTypes.Contains(d.MovementTypeId)).ToList();
         }
-
+        
         public static List<ATSPM.Data.Models.Detector> GetAllLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalRepository signalsRepository)
         {
             var detectors = signalsRepository.GetVersionOfSignalByDate(signalId, date)
                 .GetDetectorsForSignal();
-            List<Detector> detectorsList = new List<Detector>();
+            List<Data.Models.Detector> detectorsList = new List<Data.Models.Detector>();
             foreach (var detector in detectors)
             {
-                var detectionTypeIdList = detector.DetectionTypeDetectors.Select(d => d.DetectionTypeId).ToList();
-                if (detectionTypeIdList.Contains(4))
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.LLC))
                     detectorsList.Add(detector);
             }
             if (detectorsList.Count > 0)
                 return detectorsList;
-
+            
             foreach (var detector in detectors)
             {
-                var detectionTypeIdList = detector.DetectionTypeDetectors.Select(d => d.DetectionTypeId).ToList();
-                if (detectionTypeIdList.Contains(6))
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.SBP))
                     detectorsList.Add(detector);
             }
             return detectorsList;
@@ -496,8 +497,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             List<ATSPM.Data.Models.Detector> detectorsList = new List<ATSPM.Data.Models.Detector>();
             foreach (var detector in detectors)
             {
-                var detectionTypeIdList = detector.DetectionTypeDetectors.Select(d => d.DetectionTypeId).ToList();
-                if (detectionTypeIdList.Contains(4) && detector.MovementTypeId == 3)
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.LLC) && detector.MovementTypeId == MovementTypes.L)
                     detectorsList.Add(detector);
             }
             if (detectorsList.Count > 0)
@@ -505,8 +506,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
             foreach (var detector in detectors)
             {
-                var detectionTypeIdList = detector.DetectionTypeDetectors.Select(d => d.DetectionTypeId).ToList();
-                if (detectionTypeIdList.Contains(6) && detector.MovementTypeId == 3)
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.SBP) && detector.MovementTypeId == MovementTypes.L)
                     detectorsList.Add(detector);
             }
             return detectorsList;
