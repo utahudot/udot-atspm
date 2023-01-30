@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Renci.SshNet;
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
@@ -54,29 +55,88 @@ cmdBuilder.UseHost(a =>
                 Options = LoggingOptions.Create(LogLevel.Warning, AppDomain.CurrentDomain.FriendlyName)
             });
         }
+    })
+    .ConfigureServices((h, s) =>
+    {
+        s.AddLogging();
+
+        s.AddATSPMDbContext(h);
+
+        //repositories
+        s.AddScoped<ISignalRepository, SignalEFRepository>();
+        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+        //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+
+        //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+        //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+        s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+
+        //downloader clients
+        s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+        s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+        s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+
+        //downloaders
+        s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+        s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+        s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+        s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+        s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+
+        //decoders
+        s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+        s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+
+        //SignalControllerLogger
+        //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+        s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+
+        //controller logger configuration
+        s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+
+        //downloader configurations
+        s.ConfigureSignalControllerDownloaders(h);
+
+        //decoder configurations
+        s.ConfigureSignalControllerDecoders(h);
+
+        s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+
+        //command options
+        //if (cmd is ICommandOption<EventLogLoggingConfiguration> cmdOpt)
+        //{
+        //    s.AddSingleton(cmdOpt.GetOptionsBinder());
+        //    s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+
+        //    var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
+
+        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
+        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
+        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
+        //}
+
+        ////hosted services
+        //s.AddHostedService<SignalLoggerUtilityHostedService>();
+        //s.AddHostedService<TestSignalLoggerHostedService>();
+
+        //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
     });
 },
 h =>
 {
     var cmd = h.GetInvocationContext().ParseResult.CommandResult.Command;
 
-    switch (cmd)
+    h.ConfigureServices((h, s) =>
     {
-        case LogConsoleCommand:
-            {
-                h.BuildSignalLoggerHost((LogConsoleCommand)cmd);
-                break;
-            }
-        case ExtractConsoleCommand:
-            {
-                h.BuildExtractLogHost((ExtractConsoleCommand)cmd);
-                break;
-            }
-    }
+        if (cmd is ICommandOption opt)
+        {
+            opt.BindCommandOptions(s);
+        }
+    });
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync(args);
+await cmdParser.InvokeAsync("signal-info -t 4");
 
 public static class CommandHostBuilder
 {
@@ -268,6 +328,71 @@ public class TestSignalLoggerHostedService : IHostedService
                     Console.WriteLine($"------------ping: {option.Value.PingControllerToVerify}");
                     Console.WriteLine($"------------delete: {option.Value.DeleteFile}");
                 }
+
+                if (_options.Value.ControllerTypes != null)
+                {
+                    foreach (var s in _options.Value.ControllerTypes)
+                    {
+                        _log.LogInformation("Including Event Logs for Types(s): {type}", s);
+                    }
+                }
+
+                if (_options.Value.Included != null)
+                {
+                    foreach (var s in _options.Value.Included)
+                    {
+                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                    }
+                }
+
+                if (_options.Value.Excluded != null)
+                {
+                    foreach (var s in _options.Value.Excluded)
+                    {
+                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+            _log.LogError("Exception: {e}", e);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
+
+        Console.WriteLine();
+        Console.WriteLine($"Operation Completed or Cancelled...");
+
+        return Task.CompletedTask;
+    }
+}
+
+public class TestSignalInfoHostedService : IHostedService
+{
+    private readonly ILogger _log;
+    private IServiceProvider _serviceProvider;
+    private IOptions<EventLogSignalInfoConfiguration> _options;
+
+    public TestSignalInfoHostedService(ILogger<TestSignalInfoHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogSignalInfoConfiguration> options) =>
+            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
+
+        _serviceProvider.PrintHostInformation();
+
+        try
+        {
+            using (var scope = _serviceProvider.CreateAsyncScope())
+            {
 
                 if (_options.Value.ControllerTypes != null)
                 {

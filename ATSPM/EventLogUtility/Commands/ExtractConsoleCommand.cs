@@ -88,5 +88,12 @@ namespace ATSPM.EventLogUtility.Commands
 
             return binder;
         }
+
+        public void BindCommandOptions(IServiceCollection services)
+        {
+            services.AddSingleton(GetOptionsBinder());
+            services.AddOptions<EventLogExtractConfiguration>().BindCommandLine();
+            services.AddHostedService<TestExtractLogHostedService>();
+        }
     }
 }
