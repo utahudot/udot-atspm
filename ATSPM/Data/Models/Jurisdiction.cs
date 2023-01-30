@@ -15,5 +15,10 @@ namespace ATSPM.Data.Models
         public string OtherPartners { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+
+        public override string ToString()
+        {
+            return $"{Name} - {CountyParish}";
+        }
     }
 }
