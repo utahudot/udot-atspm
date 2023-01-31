@@ -6,39 +6,43 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using ATSPM.Application.Reports.ViewModels.ApproachDelay;
-using Legacy.Common.Business.WCFServiceLibrary;
+using Legacy.Common.Business;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
     public class ApproachDelayService
     {
         private readonly ISignalRepository signalRepository;
         private readonly PlanService planService;
         private readonly SignalPhaseService signalPhaseService;
+        private readonly IApproachRepository approachRepository;
 
-        public ApproachDelayService(ISignalRepository signalRepository, PlanService planService, SignalPhaseService signalPhaseService)
+        public ApproachDelayService(
+            ISignalRepository signalRepository,
+            PlanService planService,
+            SignalPhaseService signalPhaseService,
+            IApproachRepository approachRepository)
         {
             this.signalRepository = signalRepository;
             this.planService = planService;
             this.signalPhaseService = signalPhaseService;
+            this.approachRepository = approachRepository;
         }
 
 
-        protected ApproachDelayResult GetChartData(
-            ApproachDelayOptions options,
-            int binSize,
-            bool showDelayPerHour,
-            bool showDelayPerVehicle)
+        public ApproachDelayResult GetChartData(
+            ApproachDelayOptions options)
         {
-            var signalPhase = signalPhaseService.GetSignalPhaseData( 
-                options.StartDate, 
+            var approach = approachRepository.Lookup(options.ApproachId);
+            var signalPhase = signalPhaseService.GetSignalPhaseData(
+                options.StartDate,
                 options.EndDate,
                 options.GetPermissivePhase,
-                false, 
+                false,
                 null,
                 options.BinSize,
                 options.MetricTypeId,
-                options.Approach
+                approach
                 );
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
             var dt = signalPhase.StartDate;
@@ -47,8 +51,8 @@ namespace Legacy.Common.Business
             while (dt < signalPhase.EndDate)
             {
                 var pcdsInBin = from item in signalPhase.Cycles
-                    where item.StartTime >= dt && item.StartTime < dt.AddMinutes(binSize)
-                    select item;
+                                where item.StartTime >= dt && item.StartTime < dt.AddMinutes(options.BinSize)
+                                select item;
 
                 var binDelay = pcdsInBin.Sum(d => d.TotalDelay);
                 var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
@@ -60,22 +64,22 @@ namespace Legacy.Common.Business
                 else
                     bindDelaypervehicle = 0;
 
-                bindDelayperhour = binDelay * (60 / binSize) /60/60;
+                bindDelayperhour = binDelay * (60 / options.BinSize) / 60 / 60;
 
-                if (showDelayPerVehicle)
+                if (options.ShowDelayPerVehicle)
                     approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
-                if (showDelayPerHour)
+                if (options.ShowDelayPerHour)
                     approachDelayDataPoints.Add(new ApproachDelayDataPoint(dt, bindDelayperhour));
 
-                dt = dt.AddMinutes(binSize);
+                dt = dt.AddMinutes(options.BinSize);
             }
             var plans = GetPlans(signalPhase.Plans, options.StartDate, options.ShowPlanStatistics);
             return new ApproachDelayResult(
                 "Approach Delay",
-                options.Approach.SignalId,
-                options.Approach.Signal.SignalDescription(),
-                options.GetPermissivePhase ? options.Approach.PermissivePhaseNumber.Value : options.Approach.ProtectedPhaseNumber,
-                options.Approach.Description,
+                approach.SignalId,
+                approach.Signal.SignalDescription(),
+                options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
+                approach.Description,
                 options.StartDate,
                 options.EndDate,
                 approachDelayPerVehicleDataPoints.Average(d => d.DelayPerVehicle),
@@ -116,11 +120,11 @@ namespace Legacy.Common.Business
                 var totalDelay = Math.Round(plan.TotalDelay);
                 plans.Add(
                     new ApproachDelayPlan(
-                        avgDelay, 
-                        totalDelay, 
-                        plan.StartTime, 
-                        plan.EndTime, 
-                        plan.PlanNumber.ToString(), 
+                        avgDelay,
+                        totalDelay,
+                        plan.StartTime,
+                        plan.EndTime,
+                        plan.PlanNumber.ToString(),
                         planDescription)
                     );
             }

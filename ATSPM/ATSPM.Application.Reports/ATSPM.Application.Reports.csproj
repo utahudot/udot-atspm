@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Business\AppoachDelay\" />
     <Folder Include="Legacy\Business\Speed\" />
     <Folder Include="Signal\" />
   </ItemGroup>

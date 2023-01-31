@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Approach;
 using ATSPM.Application.Reports.ViewModels.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
@@ -11,12 +10,10 @@ namespace ATSPM.Application.Reports.Detector
     public class DetectorService
     {
         private readonly IControllerEventLogRepository _controllerEventLogRepository;
-        private readonly ApproachService _approachService;
 
-        public DetectorService(IControllerEventLogRepository controllerEventLogRepository, ApproachService approachService)
+        public DetectorService(IControllerEventLogRepository controllerEventLogRepository)
         {
             _controllerEventLogRepository = controllerEventLogRepository;
-            _approachService = approachService;
         }
 
         public List<ControllerEventLog> GetDetectorEvents(

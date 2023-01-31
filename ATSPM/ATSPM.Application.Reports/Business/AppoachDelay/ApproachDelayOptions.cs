@@ -2,22 +2,22 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
     [DataContract]
-    public class ApproachDelayOptions 
+    public class ApproachDelayOptions
     {
         public ApproachDelayOptions(
-            Approach approach,
+            int approach,
             bool getPermissivePhase,
-            DateTime startDate, 
+            DateTime startDate,
             DateTime endDate,
-            int binSize, 
+            int binSize,
             bool showPlanStatistics,
             bool showDelayPerVehicle)
         {
             MetricTypeId = 8;
-            Approach = approach;
+            ApproachId = approach;
             GetPermissivePhase = getPermissivePhase;
             StartDate = startDate;
             EndDate = endDate;
@@ -27,7 +27,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         }
 
         public int MetricTypeId { get; }
-        public Approach Approach { get; }
+        public int ApproachId { get; }
         public bool GetPermissivePhase { get; }
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
@@ -35,5 +35,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public bool ShowPlanStatistics { get; }
         public bool ShowDelayPerVehicle { get; }
         public string SignalId { get; internal set; }
+        public bool ShowDelayPerHour { get; internal set; }
     }
 }
