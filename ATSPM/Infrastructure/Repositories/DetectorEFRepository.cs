@@ -37,11 +37,6 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IDetectorRepository
 
-        public bool CheckReportAvialbility(Detector detector, int metricId)
-        {
-            return detector.DetectionTypes.SelectMany(s => s.MetricTypeMetrics).Any(a => a.Id == metricId);
-        }
-
         //TODO: this needs to be moved out of this repo
         public IReadOnlyList<Detector> GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(string signalId, DirectionTypes directionType, List<MovementTypes> movementTypeIds)
         {

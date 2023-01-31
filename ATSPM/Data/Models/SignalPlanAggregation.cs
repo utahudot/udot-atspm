@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class SignalPlanAggregation : ATSPMModelBase
+    public partial class SignalPlanAggregation : ATSPMAggregationBase
     {
         public string SignalId { get; set; }
         public DateTime Start { get; set; }

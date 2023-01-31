@@ -8,157 +8,157 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Data.Relationships
 {
-    internal interface IRelatedSignal
+    public interface IRelatedSignal
     {
         String SignalId { get; set; }
         Signal Signal { get; set; }
     }
 
-    internal interface IRelatedSignals
+    public interface IRelatedSignals
     {
         ICollection<Signal> Signals { get; set; }
     }
 
-    internal interface IRelatedControllerType
+    public interface IRelatedControllerType
     {
         int ControllerTypeId { get; set; }
         ControllerType ControllerType { get; set; }
     }
 
-    internal interface IRelatedJurisdiction
+    public interface IRelatedJurisdiction
     {
         int JurisdictionId { get; set; }
         Jurisdiction Jurisdiction { get; set; }
     }
 
-    internal interface IRelatedRegion
+    public interface IRelatedRegion
     {
         int RegionId { get; set; }
         Region Region { get; set; }
     }
 
-    internal interface IRelatedVersionAction
+    public interface IRelatedVersionAction
     {
         SignaVersionActions VersionActionId { get; set; }
         VersionAction VersionAction { get; set; }
     }
 
-    internal interface IRelatedRoute
+    public interface IRelatedRoute
     {
         int RouteId { get; set; }
         Route Route { get; set; }
     }
 
-    internal interface IRelatedRouteSignal
+    public interface IRelatedRouteSignal
     {
         int RouteSignalId { get; set; }
         RouteSignal RouteSignal { get; set; }
     }
 
-    internal interface IRelatedRouteSignals
+    public interface IRelatedRouteSignals
     {
         ICollection<RouteSignal> RouteSignals { get; set; }
     }
 
-    internal interface IRelatedRoutePhaseDirections
+    public interface IRelatedRoutePhaseDirections
     {
         ICollection<RoutePhaseDirection> RoutePhaseDirections { get; set; }
     }
 
-    internal interface IRelatedDirectionType
+    public interface IRelatedDirectionType
     {
         DirectionType DirectionType { get; set; }
         DirectionTypes DirectionTypeId { get; set; }
     }
 
-    internal interface IRelatedApproaches
+    public interface IRelatedApproaches
     {
         ICollection<Approach> Approaches { get; set; }
     }
 
-    internal interface IRelatedApproach
+    public interface IRelatedApproach
     {
         int ApproachId { get; set; }
         Approach Approach { get; set; }
     }
 
-    internal interface IRelatedDetector
+    public interface IRelatedDetector
     {
         int DetectorId { get; set; }
         Detector Detector { get; set; }
     }
 
-    internal interface IRelatedDetectors
+    public interface IRelatedDetectors
     {
         ICollection<Detector> Detectors { get; set; }
     }
 
-    internal interface IRelatedLaneType
+    public interface IRelatedLaneType
     {
         LaneTypes LaneTypeId { get; set; }
         LaneType LaneType { get; set; }
     }
 
-    internal interface IRelatedMovementType
+    public interface IRelatedMovementType
     {
         MovementTypes MovementTypeId { get; set; }
         MovementType MovementType { get; set; }
     }
 
-    internal interface IRelatedDetectionHardware
+    public interface IRelatedDetectionHardware
     {
         DetectionHardwareTypes DetectionHardwareId { get; set; }
         DetectionHardware DetectionHardware { get; set; }
     }
 
-    internal interface IRelatedDetectorComments
+    public interface IRelatedDetectorComments
     {
         ICollection<DetectorComment> DetectorComments { get; set; }
     }
 
-    internal interface IRelatedDetectionTypes
+    public interface IRelatedDetectionTypes
     {
         ICollection<DetectionType> DetectionTypes { get; set; }
     }
 
-    internal interface IRelatedApplicationSettings
+    public interface IRelatedApplicationSettings
     {
         ICollection<ApplicationSetting> ApplicationSettings { get; set; }
     }
 
-    internal interface IRelatedApplication
+    public interface IRelatedApplication
     {
         ApplicationTypes ApplicationId { get; set; }
         Application Application { get; set; }
     }
 
-    internal interface IRelatedDetectionType
+    public interface IRelatedDetectionType
     {
         ICollection<DetectionType> DetectionTypeDetectionTypes { get; set; }
     }
 
-    internal interface IRelatedMetricTypes
+    public interface IRelatedMetricTypes
     {
         ICollection<MetricType> MetricTypes { get; set; }
     }
 
-    internal interface IRelatedMetricComments
+    public interface IRelatedMetricComments
     {
         ICollection<MetricComment> MetricComments { get; set; }
     }
 
-    internal interface IRelatedActionLogs
+    public interface IRelatedActionLogs
     {
         ICollection<ActionLog> ActionLogs { get; set; }
     }
 
-    internal interface IRelatedAgency
+    public interface IRelatedAgency
     {
         AgencyTypes AgencyId { get; set; }
         Agency Agency { get; set; }
     }
 
-    internal interface IRelatedActions
+    public interface IRelatedActions
     {
         ICollection<Models.Action> Actions { get; set; }
     }
