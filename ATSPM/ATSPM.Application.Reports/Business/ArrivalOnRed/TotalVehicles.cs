@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.ArrivalOnRed
+namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
     public class TotalVehicles
     {

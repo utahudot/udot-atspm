@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.ArrivalOnRed
+namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
     /// <summary>
     /// Arrival On Red chart

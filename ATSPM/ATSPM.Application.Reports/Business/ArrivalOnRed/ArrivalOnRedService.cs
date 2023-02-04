@@ -3,32 +3,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Legacy.Common.Business.WCFServiceLibrary;
-using ATSPM.Application.Reports.ViewModels.ArrivalOnRed;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System.Collections.ObjectModel;
+using Legacy.Common.Business;
+using ATSPM.Data.Enums;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
-    public class ArriveOnRedService
+    public class ArrivalOnRedService
     {
         private readonly ISignalRepository signalRepository;
+        private readonly IApproachRepository approachRepository;
+        private readonly SignalPhaseService signalPhaseService;
 
-        public ArriveOnRedService(ISignalRepository signalRepository)
+        public ArrivalOnRedService(
+            ISignalRepository signalRepository,
+            IApproachRepository approachRepository,
+            SignalPhaseService signalPhaseService
+            )
         {
             this.signalRepository = signalRepository;
+            this.approachRepository = approachRepository;
+            this.signalPhaseService = signalPhaseService;
         }
 
 
-        protected ArrivalOnRedResult AddDataToChart(
-            SignalPhase signalPhase,
-            AoROptions options,
-            Approach approach,
-            bool getPermissivePhase)
+        public ArrivalOnRedResult GetChartData(
+            ArrivalOnRedOptions options)
         {
-            if (getPermissivePhase && approach.PermissivePhaseNumber == null)
-                throw new Exception("Permissive Phase Number is null");
-            int phaseNumber = getPermissivePhase ? approach.ProtectedPhaseNumber : approach.PermissivePhaseNumber.Value;
+            var approach = approachRepository.Lookup(options.ApproachId);
+            var signalPhase = signalPhaseService.GetSignalPhaseData(
+                options.StartDate,
+                options.EndDate,
+                false,
+                false,
+                null,
+                options.SelectedBinSize,
+                9,
+                approach
+                );
             double totalDetectorHits = 0;
             double totalAoR = 0;
             double totalCars = 0;
@@ -47,14 +61,14 @@ namespace Legacy.Common.Business
                     // Get cycles that start and end within the bin, and the cycle that starts before and ends
                     // within the bin, and the cycle that starts within and ends after the bin
                     var cycles = signalPhase.Cycles.Where(c =>
-                        c.StartTime >= dt && c.EndTime < dt.AddMinutes(options.SelectedBinSize) 
+                        c.StartTime >= dt && c.EndTime < dt.AddMinutes(options.SelectedBinSize)
                         || c.StartTime < dt && c.EndTime >= dt
-                        || c.EndTime >= dt.AddMinutes(options.SelectedBinSize) 
+                        || c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
                            && c.StartTime < dt.AddMinutes(options.SelectedBinSize));
                     foreach (var cycle in cycles)
                     {
                         // Filter cycle events to only include timestamps within the bin
-                        var binEvents = cycle.DetectorEvents.Where(e => e.TimeStamp >= dt 
+                        var binEvents = cycle.DetectorEvents.Where(e => e.TimeStamp >= dt
                         && e.TimeStamp < dt.AddMinutes(options.SelectedBinSize));
                         totalDetectorHits += binEvents.Count();
                         binDetectorHits += binEvents.Count();
@@ -77,13 +91,13 @@ namespace Legacy.Common.Business
 
             if (totalDetectorHits > 0)
                 totalPercentAoR = totalAoR / totalCars * 100;
-           
+
             var plans = GetArrivalOnRedPlans(signalPhase.Plans, options.ShowPlanStatistics);
             return new ArrivalOnRedResult(
                 "Arrival On Red",
                 approach.SignalId,
                 approach.Signal.SignalDescription(),
-                phaseNumber,
+                approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.StartDate,
                 options.EndDate,
@@ -113,9 +127,9 @@ namespace Legacy.Common.Business
                     planPcd.PercentRedTime));
             }
             return arrivals.AsReadOnly();
-            
+
         }
 
-       
+
     }
 }

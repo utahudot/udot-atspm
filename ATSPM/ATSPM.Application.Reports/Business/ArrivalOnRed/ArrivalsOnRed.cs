@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.ArrivalOnRed
+namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
-    public class PercentArrivalsOnRed
+    public class ArrivalsOnRed
     {
-        public PercentArrivalsOnRed(DateTime startTime, double volume)
+        public ArrivalsOnRed(DateTime startTime, double volume)
         {
             StartTime = startTime;
             Volume = volume;
@@ -12,5 +12,6 @@ namespace ATSPM.Application.Reports.ViewModels.ArrivalOnRed
 
         public DateTime StartTime { get; set; }
         public double Volume { get; set; }
+
     }
 }

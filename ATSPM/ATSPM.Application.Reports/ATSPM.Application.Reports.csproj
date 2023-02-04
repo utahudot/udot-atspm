@@ -28,6 +28,7 @@
     <Folder Include="Legacy\Business\ApproachSpeed\" />
     <Folder Include="Legacy\Business\Speed\" />
     <Folder Include="Signal\" />
+    <Folder Include="ViewModels\ArrivalOnRed\" />
   </ItemGroup>
 
 </Project>

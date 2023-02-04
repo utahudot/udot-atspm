@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ATSPM.Application.Reports.ViewModels;
+using System;
 
-namespace ATSPM.Application.Reports.ViewModels.ArrivalOnRed
+namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
     public class ArrivalOnRedPlan : Plan
     {
