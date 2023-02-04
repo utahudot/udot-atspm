@@ -2,13 +2,14 @@
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Legacy.Common.Business.WCFServiceLibrary;
+using Legacy.Common.Business;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.ApproachVolume
+namespace ATSPM.Application.Reports.Business.ApproachVolume
 {
     [DataContract]
     public class ApproachVolume
@@ -17,13 +18,13 @@ namespace Legacy.Common.Business.ApproachVolume
         private readonly IControllerEventLogRepository _controllerEventLogRepository;
         private readonly List<Approach> _primaryDirectionApproaches;
         private readonly List<Approach> _opposingDirectionApproaches;
-        public VolumeCollection PrimaryDirectionVolume { get; private set; } 
+        public VolumeCollection PrimaryDirectionVolume { get; private set; }
         public VolumeCollection OpposingDirectionVolume { get; private set; }
         public VolumeCollection CombinedDirectionsVolumes { get; private set; }
         public DirectionTypes PrimaryDirection { get; private set; }
         public DirectionTypes OpposingDirection { get; private set; }
         public DetectionType DetectionType { get; set; }
-        public List<ATSPM.Data.Models.Detector> Detectors { get; set; } = new List<ATSPM.Data.Models.Detector>();
+        public List<Data.Models.Detector> Detectors { get; set; } = new List<Data.Models.Detector>();
         public MetricInfo MetricInfo { get; set; } = new MetricInfo();
         public List<ControllerEventLog> PrimaryDetectorEvents { get; set; } = new List<ControllerEventLog>();
         public List<ControllerEventLog> OpposingDetectorEvents { get; set; } = new List<ControllerEventLog>();
@@ -33,7 +34,6 @@ namespace Legacy.Common.Business.ApproachVolume
             List<Approach> primaryDirectionApproaches,
             List<Approach> opposingDirectionApproaches,
             ApproachVolumeOptions approachVolumeOptions,
-            DirectionTypes primaryDirection,
             DirectionTypes opposingDirection,
             DetectionTypes detectionType,
             IDetectionTypeRepository detectionTypeRepository,
@@ -41,8 +41,8 @@ namespace Legacy.Common.Business.ApproachVolume
         {
             //var detectionTypeRepository = DetectionTypeRepositoryFactory.Create();
             DetectionType = detectionTypeRepository.Lookup(detectionType);
-            PrimaryDirection = primaryDirection;
-            MetricInfo.Direction1 = primaryDirection.ToString();
+            PrimaryDirection = approachVolumeOptions.Direction;
+            MetricInfo.Direction1 = PrimaryDirection.ToString();
             OpposingDirection = opposingDirection;
             _controllerEventLogRepository = controllerEventLogRepository;
             MetricInfo.Direction2 = opposingDirection.ToString();
@@ -61,14 +61,14 @@ namespace Legacy.Common.Business.ApproachVolume
 
         private VolumeCollection SetVolumeByDetection(List<Approach> approaches, List<ControllerEventLog> detectorEvents)
         {
-            
+
             foreach (var approach in approaches)
             {
                 foreach (var detector in approach.Detectors)
                 {
                     if (detector.DetectionTypes.Any(d => d.Id == DetectionType.Id))
                     {
-                        if (detector.LaneType.Id == ATSPM.Data.Enums.LaneTypes.V)
+                        if (detector.LaneType.Id == LaneTypes.V)
                         {
                             Detectors.Add(detector);
                             detectorEvents.AddRange(_controllerEventLogRepository.GetEventsByEventCodesParam(
@@ -90,9 +90,9 @@ namespace Legacy.Common.Business.ApproachVolume
         {
             int binSizeMultiplier = 60 / _approachVolumeOptions.SelectedBinSize;
             SetCombinedVolumeStatistics(binSizeMultiplier);
-            if(PrimaryDirectionVolume !=null)
+            if (PrimaryDirectionVolume != null)
                 SetPrimaryDirectionVolumeStatistics(binSizeMultiplier);
-            if(OpposingDirectionVolume != null)
+            if (OpposingDirectionVolume != null)
                 SetOpposingDirectionVolumeStatistics(binSizeMultiplier);
         }
 
@@ -137,7 +137,7 @@ namespace Legacy.Common.Business.ApproachVolume
             double combinedVolumeForPeakHour = CombinedDirectionsVolumes.Items
                 .Where(v => v.StartTime >= combinedPeakHourItem.Key && v.StartTime < combinedPeakHourItem.Key.AddHours(1)).Sum(v => v.DetectorCount);
             double combinedVolume = CombinedDirectionsVolumes.Items.Sum(v => v.DetectorCount);
-            return Math.Round(combinedVolumeForPeakHour/ combinedVolume,3);
+            return Math.Round(combinedVolumeForPeakHour / combinedVolume, 3);
         }
 
         public static double Round(double d, int digits)

@@ -4,7 +4,7 @@ using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using ATSPM.Data.Models;
 using Legacy.Common.Business;
 
-namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
+namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     public class SpeedDetector
     {

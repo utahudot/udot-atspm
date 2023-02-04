@@ -48,5 +48,10 @@ namespace ATSPM.Application.Extensions
             }
             return result;
         }
+
+        public static bool CheckReportAvialbility(this Detector detector, int metricId)
+        {
+            return detector.DetectionTypes.SelectMany(s => s.MetricTypeMetrics).Any(a => a.Id == metricId);
+        }
     }
 }

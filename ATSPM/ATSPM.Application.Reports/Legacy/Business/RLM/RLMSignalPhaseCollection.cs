@@ -44,7 +44,7 @@ namespace Legacy.Common.Business
                 var metricTypeID = 11;
                 var signal = signalRepository.GetVersionOfSignalByDate(signalID, startDate);
                 signalPhaseCollection.SevereRedLightViolationsSeconds = srlvSeconds;
-                var approachesForMetric = signal.GetApproachesForSignalThatSupportMetric(metricTypeID);
+                var approachesForMetric = signal.GetApproaches(metricTypeID);
                 //If there are phases in the database add the charts
                 if (approachesForMetric.Any())
                     foreach (var approach in approachesForMetric)

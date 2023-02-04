@@ -1,12 +1,10 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.ViewModels.ApproachDelay;
+using ATSPM.Application.Repositories;
+using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using ATSPM.Application.Reports.ViewModels.ApproachDelay;
-using Legacy.Common.Business;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {

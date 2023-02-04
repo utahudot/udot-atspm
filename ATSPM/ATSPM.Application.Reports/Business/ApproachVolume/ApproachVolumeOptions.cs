@@ -1,11 +1,10 @@
-﻿using Legacy.Common.Business.ApproachVolume;
+﻿using ATSPM.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.ApproachVolume
 {
     [DataContract]
     public class ApproachVolumeOptions
@@ -13,11 +12,23 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public List<MetricInfo> MetricInfoList;
 
 
-        public ApproachVolumeOptions(string signalId, DateTime startDate, DateTime endDate, double? yAxisMax,
-            int binSize, bool showDirectionalSplits, bool showTotalVolume, bool showNbEbVolume, bool showSbWbVolume, bool showTmcDetection,
+        public ApproachVolumeOptions(
+            string signalId,
+            DirectionTypes direction,
+            DetectionTypes detectionType,
+            DateTime startDate,
+            DateTime endDate,
+            int binSize,
+            bool showDirectionalSplits,
+            bool showTotalVolume,
+            bool showNbEbVolume,
+            bool showSbWbVolume,
+            bool showTmcDetection,
             bool showAdvanceDetection)
         {
             SignalId = signalId;
+            Direction = direction;
+            DetectionType = detectionType;
             StartDate = startDate;
             EndDate = endDate;
             SelectedBinSize = binSize;
@@ -30,18 +41,10 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             MetricTypeId = 7;
         }
 
-        public ApproachVolumeOptions()
-        {
-            BinSizeList = new List<int>() { 5, 15 };
-        }
-
         [Required]
         [DataMember]
         [Display(Name = "Volume Bin Size")]
         public int SelectedBinSize { get; set; }
-
-        [DataMember]
-        public List<int> BinSizeList { get; set; }
 
         [DataMember]
         [Display(Name = "Show Directional Splits")]
@@ -68,6 +71,8 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public bool ShowAdvanceDetection { get; set; }
         public int MetricTypeId { get; private set; }
         public string SignalId { get; private set; }
+        public DirectionTypes Direction { get; }
+        public DetectionTypes DetectionType { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
     }

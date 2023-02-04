@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using Legacy.Common.Business;
-using ATSPM.Application.Extensions;
+using System;
+using System.Linq;
 
-namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
+namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     public class SpeedDetectorService
     {
@@ -13,7 +12,10 @@ namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
         private readonly ISpeedEventRepository speedEventRepository;
         private readonly PlanService planService;
 
-        public SpeedDetectorService(CycleService cycleService, ISpeedEventRepository speedEventRepository, PlanService planService)
+        public SpeedDetectorService(
+            CycleService cycleService,
+            ISpeedEventRepository speedEventRepository,
+            PlanService planService)
         {
             this.cycleService = cycleService;
             this.speedEventRepository = speedEventRepository;

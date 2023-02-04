@@ -9,9 +9,9 @@ namespace ATSPM.Application.Reports.ViewModels.ApproachVolume;
 /// <summary>
 /// Approach Volume Chart
 /// </summary>
-public class ApproachVolumeChart
+public class ApproachVolumeResult
 {
-    public ApproachVolumeChart(
+    public ApproachVolumeResult(
         string chartName,
         string signalId,
         string signalLocation,

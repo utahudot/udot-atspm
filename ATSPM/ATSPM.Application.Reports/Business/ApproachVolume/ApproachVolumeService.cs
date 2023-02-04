@@ -3,21 +3,21 @@ using ATSPM.Application.Reports.ViewModels.ApproachVolume;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Legacy.Common.Business.WCFServiceLibrary;
+using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 
-namespace Legacy.Common.Business.ApproachVolume
+namespace ATSPM.Application.Reports.Business.ApproachVolume
 {
     public class ApproachVolumeService
     {
         private readonly ISignalRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IDetectionTypeRepository detectionTypeRepository;
-        public ApproachVolumeOptions Options { get; private set; }        
+        public ApproachVolumeOptions Options { get; private set; }
 
         public ApproachVolumeService(
             ISignalRepository signalRepository,
@@ -30,28 +30,25 @@ namespace Legacy.Common.Business.ApproachVolume
         }
 
         public static double GetPeakHourKFactor(double d, int digits)
+            
         {
             double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(d))) + 1);
             return scale * Math.Round(d / scale, digits);
         }
 
-        protected ApproachVolumeChart GetChartData(
-            DirectionTypes primaryDirection,
-            DirectionTypes opposingDirection,
-            DetectionTypes detectionType,
-            int distanceFromStopBar,
+        public ApproachVolumeResult GetChartData(
             ApproachVolumeOptions options)
         {
+            DirectionTypes opposingDirection = GetOpposingDirection(options);
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
-            var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == primaryDirection).ToList();
+            var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
             var opposingApproaches = signal.Approaches.Where(a => a.DirectionTypeId == opposingDirection).ToList();
             ApproachVolume approachVolume = new ApproachVolume(
                 primaryApproaches,
                 opposingApproaches,
                 options,
-                primaryDirection,
                 opposingDirection,
-                detectionType,
+                options.DetectionType,
                 detectionTypeRepository,
                 controllerEventLogRepository);
             var direction1Volumes = AddPrimaryDirectionSeries(approachVolume);
@@ -68,7 +65,7 @@ namespace Legacy.Common.Business.ApproachVolume
             KeyValuePair<DateTime, int> combinedPeakHourItem = GetPeakHourVolumeItem(approachVolume.CombinedDirectionsVolumes, binSizeMultiplier);
             int combinedPeakHourValue = FindPeakValueinHour(combinedPeakHourItem.Key, approachVolume.CombinedDirectionsVolumes, binSizeMultiplier);
             double combinedPeakHourFactor = GetPeakHourFactor(combinedPeakHourItem.Value, combinedPeakHourValue, binSizeMultiplier);
-            double combinedPeakHourKFactor = GetPeakHourKFactor(Convert.ToDouble(combinedPeakHourItem.Value) /primaryDirectionTotalVolume, 3);
+            double combinedPeakHourKFactor = GetPeakHourKFactor(Convert.ToDouble(combinedPeakHourItem.Value) / primaryDirectionTotalVolume, 3);
             string combinedPeakHourString = combinedPeakHourItem.Key.ToShortTimeString() + " - " + combinedPeakHourItem.Key.AddHours(1).ToShortTimeString();
             int combinedVolume = combinedDirectionVolumes.Sum(c => c.Value) / binSizeMultiplier;
             KeyValuePair<DateTime, int> primayDirectionPeakHourItem = GetPeakHourVolumeItem(approachVolume.PrimaryDirectionVolume, binSizeMultiplier);
@@ -83,14 +80,16 @@ namespace Legacy.Common.Business.ApproachVolume
             double opposingDirectionPeakHourKFactor = GetPeakHourKFactor(Convert.ToDouble(opposingDirectionPeakHourItem.Value) / Convert.ToDouble(opposingDirectionTotalVolume), 3);
             double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, approachVolume.PrimaryDirectionVolume, binSizeMultiplier);
             string opposingDirectionPeakHourString = opposingDirectionPeakHourItem.Key.ToShortTimeString() + " - " + opposingDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
+            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(options.DetectionType).First();
+            var distanceFromStopBar = detector.DistanceFromStopBar.HasValue ? detector.DistanceFromStopBar.Value : 0;
 
-            return new ApproachVolumeChart(
+            return new ApproachVolumeResult(
                 "Approach Volume",
                 options.SignalId,
                 signal.PrimaryName + "@" + signal.SecondaryName,
                 options.StartDate,
                 options.EndDate,
-                detectionType,
+                options.DetectionType,
                 distanceFromStopBar,
                 approachVolume.PrimaryDirection.ToString(),
                 AddPrimaryDirectionSeries(approachVolume),
@@ -114,7 +113,40 @@ namespace Legacy.Common.Business.ApproachVolume
                 opposingDirectionPeakHourItem.Value,
                 opposingDirectionPeakHourFactor,
                 Convert.ToInt32(opposingDirectionTotalVolume)
-                );            
+                );
+        }
+
+        private static DirectionTypes GetOpposingDirection(ApproachVolumeOptions options)
+        {
+            var opposingDirection = options.Direction;
+            switch (options.Direction)
+            {
+                case DirectionTypes.EB:
+                    opposingDirection = DirectionTypes.WB;
+                    break;
+                case DirectionTypes.WB:
+                    opposingDirection = DirectionTypes.EB;
+                    break;
+                case DirectionTypes.NB:
+                    opposingDirection = DirectionTypes.SB;
+                    break;
+                case DirectionTypes.SB:
+                    opposingDirection = DirectionTypes.NB;
+                    break;
+                case DirectionTypes.NE:
+                    opposingDirection = DirectionTypes.SW;
+                    break;
+                case DirectionTypes.NW:
+                    opposingDirection = DirectionTypes.SE;
+                    break;
+                case DirectionTypes.SE:
+                    opposingDirection = DirectionTypes.NW;
+                    break;
+                case DirectionTypes.SW:
+                    opposingDirection = DirectionTypes.NE;
+                    break;
+            };
+            return opposingDirection;
         }
 
         private List<DFactors> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
@@ -140,8 +172,8 @@ namespace Legacy.Common.Business.ApproachVolume
         {
             if (approachVolume.OpposingDirectionVolume.Items.Count > 0)
             {
-                if ((Options.ShowNbEbVolume && (approachVolume.OpposingDirection == DirectionTypes.NB  || approachVolume.OpposingDirection == DirectionTypes.EB )) ||
-                    (Options.ShowSbWbVolume && (approachVolume.OpposingDirection == DirectionTypes.SB  || approachVolume.OpposingDirection == DirectionTypes.WB )))
+                if (Options.ShowNbEbVolume && (approachVolume.OpposingDirection == DirectionTypes.NB || approachVolume.OpposingDirection == DirectionTypes.EB) ||
+                    Options.ShowSbWbVolume && (approachVolume.OpposingDirection == DirectionTypes.SB || approachVolume.OpposingDirection == DirectionTypes.WB))
                 {
                     return approachVolume.OpposingDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.XAxis, x.YAxis));
                 }
@@ -153,19 +185,19 @@ namespace Legacy.Common.Business.ApproachVolume
         {
             if (approachVolume.PrimaryDirectionVolume.Items.Count > 0)
             {
-                if ((Options.ShowNbEbVolume && (approachVolume.PrimaryDirection == DirectionTypes.NB  || approachVolume.PrimaryDirection == DirectionTypes.EB )) ||
-                    (Options.ShowSbWbVolume && (approachVolume.PrimaryDirection == DirectionTypes.SB  || approachVolume.PrimaryDirection == DirectionTypes.WB )))
+                if (Options.ShowNbEbVolume && (approachVolume.PrimaryDirection == DirectionTypes.NB || approachVolume.PrimaryDirection == DirectionTypes.EB) ||
+                    Options.ShowSbWbVolume && (approachVolume.PrimaryDirection == DirectionTypes.SB || approachVolume.PrimaryDirection == DirectionTypes.WB))
                 {
                     return approachVolume.PrimaryDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.XAxis, x.YAxis));
                 }
             }
             return new List<DirectionVolumes>();
-        }       
+        }
 
-        private static DataTable CreateAndSetVolumeMetricsTable(string direction1, string direction2, int direction1TotalVolume, int direction2TotalVolume, 
-            DateTime startTime, DateTime endTime, int combinedPeakVolume, double combinedPeakHourFactor, string combinedPeakHourString, 
-            int direction1PeakHourVolume, double direction1PeakHourFactor, int direction2PeakHourVolume, double direction2PeakHourFactor, 
-            string direction1PeakHourString, string direction2PeakHourString, int totalVolume, double peakHourKFactor, double direction1PeakHourKFactor, 
+        private static DataTable CreateAndSetVolumeMetricsTable(string direction1, string direction2, int direction1TotalVolume, int direction2TotalVolume,
+            DateTime startTime, DateTime endTime, int combinedPeakVolume, double combinedPeakHourFactor, string combinedPeakHourString,
+            int direction1PeakHourVolume, double direction1PeakHourFactor, int direction2PeakHourVolume, double direction2PeakHourFactor,
+            string direction1PeakHourString, string direction2PeakHourString, int totalVolume, double peakHourKFactor, double direction1PeakHourKFactor,
             double direction1PeakHourDFactor, double direction2PeakHourKFactor, double direction2PeakHourDFactor)
         {
             DataTable volumeMetricsTable = new DataTable();
@@ -223,7 +255,7 @@ namespace Legacy.Common.Business.ApproachVolume
                 D1PHF = GetPeakHourKFactor(D1PHF, 3);
             }
 
-            return D1PHF/binSizeMultiplier;
+            return D1PHF / binSizeMultiplier;
         }
 
         private static void CombineDirectionVolumes(List<DirectionVolumes> direction1Volumes, List<DirectionVolumes> direction2Volumes, SortedDictionary<DateTime, int> combinedDirectionVolumes)
@@ -231,7 +263,7 @@ namespace Legacy.Common.Business.ApproachVolume
             foreach (DirectionVolumes current in direction1Volumes)
             {
                 var index = direction2Volumes.FindIndex(d => d.StartTime == current.StartTime);
-                if (index >=0)
+                if (index >= 0)
                     combinedDirectionVolumes.Add(current.StartTime, direction2Volumes[index].Volume + current.Volume);
             }
         }
@@ -310,6 +342,6 @@ namespace Legacy.Common.Business.ApproachVolume
             else
                 PHDF = 0;
             return PHDF;
-        }        
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.ApproachVolume
+namespace ATSPM.Application.Reports.Business.ApproachVolume
 {
     [DataContract]
     public class MetricInfo
@@ -49,7 +49,7 @@ namespace Legacy.Common.Business.ApproachVolume
         public int Direction2Volume { get; set; }
         [DataMember]
         public int Direction1Volume { get; set; }
-        [DataMember]    
+        [DataMember]
         public int CombinedPeakHourVolume { get; set; }
     }
 }

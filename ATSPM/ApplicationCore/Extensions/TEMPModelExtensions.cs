@@ -49,32 +49,32 @@ namespace ATSPM.Application.Extensions
         }
     }
 
-    public static class DetectorExtensions
-    {
-        /// <summary>
-        /// Checks to see if <see cref="Detector"/>.<see cref="DetectionType"/> metrics contains <paramref name="metricId"/>
-        /// </summary>
-        /// <param name="detector"><see cref="Detector"/> whos <see cref="DetectionType"/> collection to check</param>
-        /// <param name="metricId"><see cref="MetricType"/> id to match within <see cref="DetectionType"/> collection</param>
-        /// <returns></returns>
-        public static bool CheckReportAvialbility (this Detector detector, int metricId)
-        {
-            return detector.DetectionTypes.SelectMany(s => s.MetricTypeMetrics).Any(a => a.Id == metricId);
-        }
+    //public static class DetectorExtensions
+    //{
+    //    /// <summary>
+    //    /// Checks to see if <see cref="Detector"/>.<see cref="DetectionType"/> metrics contains <paramref name="metricId"/>
+    //    /// </summary>
+    //    /// <param name="detector"><see cref="Detector"/> whos <see cref="DetectionType"/> collection to check</param>
+    //    /// <param name="metricId"><see cref="MetricType"/> id to match within <see cref="DetectionType"/> collection</param>
+    //    /// <returns></returns>
+    //    public static bool CheckReportAvialbility(this Detector detector, int metricId)
+    //    {
+    //        return detector.DetectionTypes.SelectMany(s => s.MetricTypeMetrics).Any(a => a.Id == metricId);
+    //    }
 
-        public static double GetOffset(this Detector detector)
-        {
-            detector.DecisionPoint ??= 0;
+    //    public static double GetOffset(this Detector detector)
+    //    {
+    //        detector.DecisionPoint ??= 0;
 
-            if (detector.Approach.Mph.HasValue && detector.Approach.Mph > 0)
-            {
-                //TODO: see if this is duplicated anywhere else
-                return Convert.ToDouble((detector.DistanceFromStopBar / (detector.Approach.Mph * 1.467) - detector.DecisionPoint) * 1000);
-            }
+    //        if (detector.Approach.Mph.HasValue && detector.Approach.Mph > 0)
+    //        {
+    //            //TODO: see if this is duplicated anywhere else
+    //            return Convert.ToDouble((detector.DistanceFromStopBar / (detector.Approach.Mph * 1.467) - detector.DecisionPoint) * 1000);
+    //        }
 
-            return 0;
-        }
-    }
+    //        return 0;
+    //    }
+    //}
 
     public static class IRelatedApproachesExtensions
     {

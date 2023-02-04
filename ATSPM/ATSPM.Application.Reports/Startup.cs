@@ -1,4 +1,5 @@
 using ATSPM.Application.Repositories;
+using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,9 @@ namespace ATSPM.Application.Reports
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
-            //services.AddScoped<ISignalRepository, SignalRepository>();
-            //services.AddScoped<IApproachRepository, ApproachRepository>();
-            //services.AddScoped<IDetectorRepository, DetectorRepository>();
+            //services.AddScoped<ISignalRepository, SignalEFRepository>();
+            //services.AddScoped<IApproachRepository, ApproachEFRepository>();
+            //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
             //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();
             //services.AddScoped<IApproachCycleAggregationRepository, ApproachCycleAggregationRepository>();
             //services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationRepository>();

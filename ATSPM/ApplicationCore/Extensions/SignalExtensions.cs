@@ -17,7 +17,7 @@ namespace ATSPM.Application.Extensions
             var approachesForMeticType = new List<Approach>();
             foreach (var a in signal.Approaches)
                 foreach (var d in a.Detectors)
-                    if (d.DetectorSupportsThisMetric(metricTypeID))
+                    if (d.SupportsMetricType(metricTypeID))
                     {
                         approachesForMeticType.Add(a);
                         break;

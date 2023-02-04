@@ -21,7 +21,7 @@ namespace ATSPM.Application.Extensions
             {
                 foreach (var d in approach.Detectors)
                 {
-                    if (d.DetectorSupportsThisMetric(metricTypeID))
+                    if (d.SupportsMetricType(metricTypeID))
                     {
                         detectorsForMetricType.Add(d);
                     }

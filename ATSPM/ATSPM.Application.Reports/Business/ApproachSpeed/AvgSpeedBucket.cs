@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Legacy.Common.Business;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     public class AvgSpeedBucket
     {

@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Reports.ViewModels.ApproachDelay;
+﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
+using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,13 @@ namespace ATSPM.Application.Reports.Controllers
     [ApiController]
     public class ApproachSpeedController : ControllerBase
     {
+        private readonly ApproachSpeedService approachSpeedService;
+
+        public ApproachSpeedController(ApproachSpeedService approachSpeedService)
+        {
+            this.approachSpeedService = approachSpeedService;
+        }
+
         [HttpGet("test")]
         public ApproachSpeedResult Test()
         {
@@ -17,5 +25,11 @@ namespace ATSPM.Application.Reports.Controllers
             return viewModel;
         }
 
+        [HttpPost("getChartData")]
+        public ApproachSpeedResult GetChartData([FromBody] ApproachSpeedOptions options)
+        {
+            ApproachSpeedResult viewModel = approachSpeedService.GetChartData(options);
+            return viewModel;
+        }
     }
 }

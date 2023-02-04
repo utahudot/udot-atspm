@@ -1,25 +1,31 @@
 ﻿using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
+using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.Application.Extensions;
 using System.Collections.Generic;
 using static Legacy.Common.Business.Bins.BinFactoryOptions;
 using System;
-using Legacy.Common.Business.WCFServiceLibrary;
 
-namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
+namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     public class ApproachSpeedService
     {
         private readonly SpeedDetectorService speedDetectorService;
+        private readonly IDetectorRepository detectorRepository;
 
-        public ApproachSpeedService(SpeedDetectorService speedDetectorService)
+        public ApproachSpeedService(
+            SpeedDetectorService speedDetectorService,
+            IDetectorRepository detectorRepository
+            )
         {
             this.speedDetectorService = speedDetectorService;
+            this.detectorRepository = detectorRepository;
         }
 
-        public ApproachSpeedResult GetChartData(DateTime start, DateTime end, int binSize, Data.Models.Detector detector, ApproachSpeedOptions options)
+        public ApproachSpeedResult GetChartData(ApproachSpeedOptions options)
         {
-            var speedDetector = speedDetectorService.GetSpeedDetector(detector, start, end, binSize, false);
+            var detector = detectorRepository.Lookup(options.DetectorId);
+            var speedDetector = speedDetectorService.GetSpeedDetector(detector, options.StartDate, options.EndDate, options.SelectedBinSize, false);
             var averageSpeeds = new List<AverageSpeeds>();
             var plans = new List<SpeedPlan>();
             var eightyFifthSpeeds = new List<EightyFifthSpeeds>();
@@ -31,7 +37,7 @@ namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
                 if (options.Show85Percentile)
                     eightyFifthSpeeds.Add(new EightyFifthSpeeds(bucket.StartTime, bucket.EightyFifth));
                 if (options.Show15Percentile)
-                    fifteenthSpeeds.Add(new FifteenthSpeeds(bucket.StartTime, bucket.FifteenthPercentile));                
+                    fifteenthSpeeds.Add(new FifteenthSpeeds(bucket.StartTime, bucket.FifteenthPercentile));
             }
             if (options.ShowPlanStatistics)
                 plans = speedDetector.Plans;
@@ -41,8 +47,8 @@ namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
                     detector.Approach.Signal.SignalDescription(),
                     detector.Approach.ProtectedPhaseNumber,
                     detector.Approach.Description,
-                    start,
-                    end,
+                    options.StartDate, 
+                    options.EndDate,
                     detector.DetectionTypes.ToString(),
                     detector.DistanceFromStopBar.Value,
                     detector.Approach.Mph.Value,
@@ -50,7 +56,7 @@ namespace ATSPM.Application.Reports.Legacy.Business.ApproachSpeed
                     averageSpeeds,
                     eightyFifthSpeeds,
                     fifteenthSpeeds
-                ); 
+                );
         }
     }
 }

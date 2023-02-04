@@ -469,8 +469,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         
         public static List<ATSPM.Data.Models.Detector> GetAllLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalRepository signalsRepository)
         {
-            var detectors = signalsRepository.GetVersionOfSignalByDate(signalId, date)
-                .GetDetectorsForSignal();
+            var detectors = signalsRepository.GetLatestVersionOfSignal(signalId, date)
+                .GetDetectors();
             List<Data.Models.Detector> detectorsList = new List<Data.Models.Detector>();
             foreach (var detector in detectors)
             {
@@ -492,8 +492,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         public static List<ATSPM.Data.Models.Detector> GetLeftTurnLaneByLaneDetectorsForSignal(string signalId, DateTime date, ISignalRepository signalsRepository)
         {
-            var detectors = signalsRepository.GetVersionOfSignalByDate(signalId, date)
-                .GetDetectorsForSignal();
+            var detectors = signalsRepository.GetLatestVersionOfSignal(signalId, date)
+                .GetDetectors();
             List<ATSPM.Data.Models.Detector> detectorsList = new List<ATSPM.Data.Models.Detector>();
             foreach (var detector in detectors)
             {

@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     [DataContract]
-    public class ApproachSpeedOptions 
+    public class ApproachSpeedOptions
     {
-        public ApproachSpeedOptions(string signalID, DateTime startDate, DateTime endDate, double yAxisMax,
-            double yAxisMin,
-            int binSize,bool showPlanStatistics, int metricTypeID, bool showPostedSpeed,
-            bool showAverageSpeed, bool show85Percentile, bool show15Percentile)
+        public ApproachSpeedOptions(
+            int detectorId,
+            DateTime startDate,
+            DateTime endDate,
+            int binSize,
+            bool showPlanStatistics,
+            int metricTypeID,
+            bool showPostedSpeed,
+            bool showAverageSpeed,
+            bool show85Percentile,
+            bool show15Percentile)
         {
-            SignalId = signalID;
+            DetectorId = detectorId;
             StartDate = startDate;
             EndDate = endDate;
             SelectedBinSize = binSize;
@@ -57,6 +64,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public bool Show15Percentile { get; set; }
         public int MetricTypeId { get; private set; }
         public string SignalId { get; private set; }
+        public int DetectorId { get; }
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
     }
