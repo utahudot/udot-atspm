@@ -29,6 +29,7 @@
     <Folder Include="Legacy\Business\Speed\" />
     <Folder Include="Signal\" />
     <Folder Include="ViewModels\ArrivalOnRed\" />
+    <Folder Include="ViewModels\LeftTurnGapAnalysis\" />
   </ItemGroup>
 
 </Project>

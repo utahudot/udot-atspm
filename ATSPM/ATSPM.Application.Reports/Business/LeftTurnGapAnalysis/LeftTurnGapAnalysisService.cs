@@ -1,34 +1,48 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.Application.Extensions;
-using Legacy.Common.Business.WCFServiceLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Enums;
 using Microsoft.Extensions.Options;
-using ATSPM.Application.Reports.ViewModels.LeftTurnGapAnalysis;
+using ATSPM.Application.Repositories;
 
-namespace Legacy.Common.Business.LeftTurnGapAnalysis
+namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisService
     {
         public const int EVENT_GREEN = 1;
         public const int EVENT_RED = 10;
-        public const int EVENT_DET = 81;        
+        public const int EVENT_DET = 81;
+        private readonly IApproachRepository approachRepository;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
+        public LeftTurnGapAnalysisService(
+            IApproachRepository approachRepository,
+            IControllerEventLogRepository controllerEventLogRepository)
+        {
+            this.approachRepository = approachRepository;
+            this.controllerEventLogRepository = controllerEventLogRepository;
+        }
 
-        private LeftTurnGapAnalysisResult GetLeftTurnData(
-            Approach approach,
-            List<ControllerEventLog> eventLogs,
+        public LeftTurnGapAnalysisResult GetChartData(
+            //Approach approach,
+            //List<ControllerEventLog> eventLogs,
             LeftTurnGapAnalysisOptions options)
         {
+            var approach = approachRepository.Lookup(options.ApproachId);
+            var eventLogs = controllerEventLogRepository.GetSignalEventsByEventCodes(
+                options.SignalId,
+                options.StartDate,
+                options.EndDate,
+                new List<int> { EVENT_GREEN, EVENT_RED, EVENT_DET });
             var phaseEvents = new List<ControllerEventLog>();
 
             phaseEvents.AddRange(eventLogs.Where(x =>
                 x.EventParam == approach.ProtectedPhaseNumber &&
                 (x.EventCode == EVENT_GREEN || x.EventCode == EVENT_RED)));
 
-            var detectorsToUse = new List<ATSPM.Data.Models.Detector>();
+            var detectorsToUse = new List<Data.Models.Detector>();
             var detectionTypeStr = "Detector Type: Lane-By-Lane Count";
 
             //Use only lane-by-lane count detectors if they exists, otherwise check for stop bar
@@ -55,11 +69,12 @@ namespace Legacy.Common.Business.LeftTurnGapAnalysis
 
             if (phaseEvents.Any())
             {
-                return GetData(phaseEvents, options, detectionTypeStr, approach);}
+                return GetData(phaseEvents, options, detectionTypeStr, approach);
+            }
             return null;
         }
 
-        private bool IsThruDetector(ATSPM.Data.Models.Detector detector)
+        private bool IsThruDetector(Data.Models.Detector detector)
         {
             return detector.MovementTypeId == MovementTypes.T || detector.MovementTypeId == MovementTypes.R ||
                    detector.MovementTypeId == MovementTypes.TR || detector.MovementTypeId == MovementTypes.TL;
@@ -152,7 +167,7 @@ namespace Legacy.Common.Business.LeftTurnGapAnalysis
             {
                 var upperTimeLimit = lowerTimeLimit.AddMinutes(options.BinSize);
                 var items = phaseTrackerList.Where(x => x.GreenTime >= lowerTimeLimit && x.GreenTime < upperTimeLimit).ToList();
-                
+
 
                 if (!items.Any()) continue;
                 gaps1.Add(new GapCount(upperTimeLimit, items.Sum(x => x.GapCounter1)));

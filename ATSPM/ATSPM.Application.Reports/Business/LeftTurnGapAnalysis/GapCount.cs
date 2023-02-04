@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.LeftTurnGapAnalysis
+namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
     public class GapCount
     {

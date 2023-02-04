@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
     [DataContract]
     public class LeftTurnGapAnalysisOptions
@@ -14,60 +14,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public const int EVENT_RED = 10;
         public const int EVENT_DET = 81;
 
-        public LeftTurnGapAnalysisOptions(string signalId, DateTime startDate, DateTime endDate, double gap1Min,
-            double gap1Max, double gap2Min, double gap2Max, double gap3Min, double gap3Max, double gap4Min,
-            double trendLineGapThreshold)
-        {
-            SignalId = signalId;
-            StartDate = startDate;
-            EndDate = endDate;
-            Gap1Min = gap1Min;
-            Gap1Max = gap1Max;
-            Gap2Min = gap2Min;
-            Gap2Max = gap2Max;
-            Gap3Min = gap3Min;
-            Gap3Max = gap3Max;
-            Gap4Min = gap4Min;
-            TrendLineGapThreshold = trendLineGapThreshold;
-        }
-
-        public LeftTurnGapAnalysisOptions(string signalId, DateTime startDate, DateTime endDate, double gap1Min,
-            double gap1Max, double gap2Min, double gap2Max, double gap3Min, double gap3Max, double gap4Min, double? gap4Max, double? gap5Min, double? gap5Max, 
-            double? gap6Min, double? gap6Max, double? gap7Min, double? gap7Max, double? gap8Min, double? gap8Max, double? gap9Min, double? gap9Max, 
-            double? gap10Min, double? gap10Max, double? gap11Min, double? gap11Max, double? sumGapDuration1, double? sumGapDuration2, double? sumGapDuration3,
-            double trendLineGapThreshold)
-        {
-            SignalId = signalId;
-            StartDate = startDate;
-            EndDate = endDate;
-            Gap1Min = gap1Min;
-            Gap1Max = gap1Max;
-            Gap2Min = gap2Min;
-            Gap2Max = gap2Max;
-            Gap3Min = gap3Min;
-            Gap3Max = gap3Max;
-            Gap4Min = gap4Min;
-            Gap4Max = gap4Max;
-            Gap5Min = gap5Min;
-            Gap5Max = gap5Max;
-            Gap6Min = gap6Min;
-            Gap6Max = gap6Max;
-            Gap7Min = gap7Min;
-            Gap7Max = gap7Max;
-            Gap8Min = gap8Min;
-            Gap8Max = gap8Max;
-            Gap9Min = gap9Min;
-            Gap9Max = gap9Max;
-            Gap10Min = gap10Min;
-            Gap10Max = gap10Max;
-            Gap11Min = gap11Min;
-            Gap11Max = gap11Max;
-            SumDurationGap1 = sumGapDuration1;
-            SumDurationGap2 = sumGapDuration2;
-            SumDurationGap3 = sumGapDuration3;
-            TrendLineGapThreshold = trendLineGapThreshold;
-            BinSize = 15;
-        }
+        
 
         public LeftTurnGapAnalysisOptions()
         {
@@ -176,9 +123,10 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         [DataMember]
         public double BinSize { get; set; }
-        public string SignalId { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
+        public string SignalId { get;  set; }
+        public DateTime StartDate { get;  set; }
+        public DateTime EndDate { get;  set; }
+        public int ApproachId { get;  set; }
 
         //public override List<string> CreateMetric()
         //{

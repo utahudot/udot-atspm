@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.LeftTurnGapAnalysis
+namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
     /// <summary>
     /// Left Turn Gap Analysis chart
