@@ -1,4 +1,6 @@
-﻿using ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
+﻿using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
+using ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,26 @@ namespace ATSPM.Application.Reports.Controllers
     [ApiController]
     public class PerdueCoordinationDiagramController : ControllerBase
     {
+        private readonly PerdueCoordinationDiagramService perdueCoordinationDiagramService;
+
+        public PerdueCoordinationDiagramController(PerdueCoordinationDiagramService perdueCoordinationDiagramService)
+        {
+            this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
+        }
+
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public PerdueCoordinationDiagramChart Test()
+        public PerdueCoordinationDiagramResult Test()
         {
             Fixture fixture = new();
-            PerdueCoordinationDiagramChart viewModel = fixture.Create<PerdueCoordinationDiagramChart>();
+            PerdueCoordinationDiagramResult viewModel = fixture.Create<PerdueCoordinationDiagramResult>();
+            return viewModel;
+        }
+
+        [HttpPost("getChartData")]
+        public PerdueCoordinationDiagramResult GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
+        {
+            PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options);
             return viewModel;
         }
 

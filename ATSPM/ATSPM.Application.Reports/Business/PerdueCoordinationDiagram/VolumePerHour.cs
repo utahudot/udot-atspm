@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
+namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 
 public class VolumePerHour
 {

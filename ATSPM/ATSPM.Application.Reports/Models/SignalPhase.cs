@@ -12,7 +12,7 @@ namespace ATSPM.Application.Reports.Models
     {
         public VolumeCollection Volume { get; private set; }
 
-        public List<PlanPcd> Plans { get; private set; }
+        public List<PerdueCoordinationPlan> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public bool GetPermissivePhase { get; }

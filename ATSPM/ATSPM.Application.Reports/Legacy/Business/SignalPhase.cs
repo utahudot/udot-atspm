@@ -10,7 +10,7 @@ namespace Legacy.Common.Business
 
         public SignalPhase(
             VolumeCollection volume, 
-            List<PlanPcd> plans, 
+            List<PerdueCoordinationPlan> plans, 
             List<CyclePcd> cycles,
             List<ControllerEventLog> detectorEvents,
             Approach approach,
@@ -28,7 +28,7 @@ namespace Legacy.Common.Business
         }
 
         public VolumeCollection Volume { get; private set; }
-        public List<PlanPcd> Plans { get; private set; }
+        public List<PerdueCoordinationPlan> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public Approach Approach { get; }

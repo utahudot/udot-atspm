@@ -1,14 +1,16 @@
+using Legacy.Common.Business;
+using Legacy.Common.Business.PEDDelay;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
+namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 
 /// <summary>
 /// Perdue Coordination Diagram chart
 /// </summary>
-public class PerdueCoordinationDiagramChart
+public class PerdueCoordinationDiagramResult
 {
-    public PerdueCoordinationDiagramChart(
+    public PerdueCoordinationDiagramResult(
         string chartName,
         string signalId,
         string signalLocation,
@@ -21,10 +23,7 @@ public class PerdueCoordinationDiagramChart
         double percentArrivalOnGreen,
         ICollection<PerdueCoordinationPlan> plans,
         ICollection<VolumePerHour> volumePerHour,
-        ICollection<GreenEvent> greenEvents,
-        ICollection<YellowEvent> yellowEvents,
-        ICollection<RedEvent> redEvents,
-        ICollection<DetectorActivation> detectorActivations)
+        ICollection<CyclePcd> cycles)
     {
         ChartName = chartName;
         SignalId = signalId;
@@ -38,10 +37,7 @@ public class PerdueCoordinationDiagramChart
         PercentArrivalOnGreen = percentArrivalOnGreen;
         Plans = plans;
         VolumePerHour = volumePerHour;
-        GreenEvents = greenEvents;
-        YellowEvents = yellowEvents;
-        RedEvents = redEvents;
-        DetectorActivations = detectorActivations;
+        Cycles = cycles;
     }
 
     public string ChartName { get; internal set; }
@@ -56,9 +52,6 @@ public class PerdueCoordinationDiagramChart
     public double PercentArrivalOnGreen { get; internal set; }
     public ICollection<PerdueCoordinationPlan> Plans { get; internal set; }
     public ICollection<VolumePerHour> VolumePerHour { get; internal set; }
-    public ICollection<GreenEvent> GreenEvents { get; internal set; }
-    public ICollection<YellowEvent> YellowEvents { get; internal set; }
-    public ICollection<RedEvent> RedEvents { get; internal set; }
-    public ICollection<DetectorActivation> DetectorActivations { get; internal set; }
+    public ICollection<CyclePcd> Cycles { get; set; }
 
 }

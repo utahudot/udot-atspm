@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Legacy.Common.Business
 {
-    public class PlanPcd : Plan
+    public class PerdueCoordinationPlan : Plan
     {
         public SortedDictionary<int, int> Splits = new SortedDictionary<int, int>();
 
-        public PlanPcd(DateTime start, DateTime end, int planNumber, List<CyclePcd> cyclesForPlan) : base(start, end,
+        public PerdueCoordinationPlan(DateTime start, DateTime end, int planNumber, List<CyclePcd> cyclesForPlan) : base(start, end,
             planNumber)
         {
             TotalTime = cyclesForPlan.Sum(d => d.TotalTime);

@@ -11,11 +11,11 @@ using ATSPM.Data.Enums;
 namespace ATSPM.Application.Reports.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class LeftTurnReport : ControllerBase
+    [Route("api/[controller]")]
+    public class LeftTurnReportController : ControllerBase
     {
 
-        private readonly ILogger<LeftTurnReport> _logger;
+        private readonly ILogger<LeftTurnReportController> _logger;
         private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
         private readonly IApproachRepository _approachRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
@@ -27,7 +27,7 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IApproachSplitFailAggregationRepository _approachSplitFailAggregationRepository;
         private readonly LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService;
 
-        public LeftTurnReport(ILogger<LeftTurnReport> logger,
+        public LeftTurnReportController(ILogger<LeftTurnReportController> logger,
             IPhasePedAggregationRepository phasePedAggregationRepository,
             IApproachRepository approachRepository,
             IApproachCycleAggregationRepository approachCycleAggregationRepository,

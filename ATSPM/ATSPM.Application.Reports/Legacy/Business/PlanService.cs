@@ -21,11 +21,11 @@ namespace Legacy.Common.Business
             this.planSplitMonitorService = planSplitMonitorService;
         }
 
-        public List<PlanPcd> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
+        public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach)
         {
             var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId);
-            var plans = new List<PlanPcd>();
+            var plans = new List<PerdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
                 {
@@ -33,7 +33,7 @@ namespace Legacy.Common.Business
                     {
                         var planCycles = cycles
                             .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
-                        plans.Add(new PlanPcd(planEvents[i].Timestamp, endDate, planEvents[i].EventParam, planCycles));
+                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam, planCycles));
                     }
                 }
                 else
@@ -43,7 +43,7 @@ namespace Legacy.Common.Business
                         var planCycles = cycles.Where(c =>
                                 c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
                             .ToList();
-                        plans.Add(new PlanPcd(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
+                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
                             planEvents[i].EventParam, planCycles));
                     }
                 }

@@ -89,7 +89,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         }
 
 
-        protected List<ApproachDelayPlan> GetPlans(List<PlanPcd> planCollection, DateTime graphStartDate,
+        protected List<ApproachDelayPlan> GetPlans(List<PerdueCoordinationPlan> planCollection, DateTime graphStartDate,
             bool showPlanStatistics)
         {
             var plans = new List<ApproachDelayPlan>();
