@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
-using ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 

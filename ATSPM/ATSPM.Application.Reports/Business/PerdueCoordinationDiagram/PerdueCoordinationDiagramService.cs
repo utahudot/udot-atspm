@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.ViewModels.PerdueCoordinationDiagram;
 using ATSPM.Application.Repositories;
 using Legacy.Common.Business;
 using System;
@@ -18,7 +17,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             this.signalPhaseService = signalPhaseService;
             this.approachRepository = approachRepository;
         }
-        
+
         public PerdueCoordinationDiagramResult GetChartData(PerdueCoordinationDiagramOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
@@ -32,7 +31,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 6,
                 approach
                 );
-            var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour (v.StartTime, v.YAxis ));
+            var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.YAxis));
             return new PerdueCoordinationDiagramResult(
                 "Perdue Coordination Diagram",
                 options.SignalId,
