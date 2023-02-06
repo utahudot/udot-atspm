@@ -88,8 +88,8 @@ cmdBuilder.UseHost(a =>
         s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
         //SignalControllerLogger
-        //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-        s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+        s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+        //s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
 
         //controller logger configuration
         s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
@@ -136,106 +136,106 @@ h =>
 });
 
 var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync("signal-info -t 4");
+await cmdParser.InvokeAsync("log -i 9712");
 
-public static class CommandHostBuilder
-{
-    public static IHostBuilder BuildSignalLoggerHost(this IHostBuilder hostBuilder, LogConsoleCommand cmd)
-    {
-        hostBuilder.ConfigureServices((h, s) =>
-        {
-            s.AddLogging();
+//public static class CommandHostBuilder
+//{
+//    public static IHostBuilder BuildSignalLoggerHost(this IHostBuilder hostBuilder, LogConsoleCommand cmd)
+//    {
+//        hostBuilder.ConfigureServices((h, s) =>
+//        {
+//            s.AddLogging();
 
-            s.AddATSPMDbContext(h);
+//            s.AddATSPMDbContext(h);
 
-            //repositories
-            s.AddScoped<ISignalRepository, SignalEFRepository>();
-            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-            //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+//            //repositories
+//            s.AddScoped<ISignalRepository, SignalEFRepository>();
+//            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+//            //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
-            //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
-            //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-            s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+//            //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
+//            //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
+//            s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
-            //downloader clients
-            s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
-            s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
-            s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
+//            //downloader clients
+//            s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
+//            s.AddTransient<IFTPDownloaderClient, FluentFTPDownloaderClient>();
+//            s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
-            //downloaders
-            s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-            s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-            s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-            s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-            s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+//            //downloaders
+//            s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
+//            s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
+//            s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
+//            s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
+//            s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
 
-            //decoders
-            s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-            s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+//            //decoders
+//            s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
+//            s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
 
-            //SignalControllerLogger
-            //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-            s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+//            //SignalControllerLogger
+//            //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
+//            s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
 
-            //controller logger configuration
-            s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+//            //controller logger configuration
+//            s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
 
-            //downloader configurations
-            s.ConfigureSignalControllerDownloaders(h);
+//            //downloader configurations
+//            s.ConfigureSignalControllerDownloaders(h);
 
-            //decoder configurations
-            s.ConfigureSignalControllerDecoders(h);
+//            //decoder configurations
+//            s.ConfigureSignalControllerDecoders(h);
 
-            s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+//            s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
 
-            //command options
-            if (cmd is ICommandOption<EventLogLoggingConfiguration> cmdOpt)
-            {
-                s.AddSingleton(cmdOpt.GetOptionsBinder());
-                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+//            //command options
+//            if (cmd is ICommandOption<EventLogLoggingConfiguration> cmdOpt)
+//            {
+//                s.AddSingleton(cmdOpt.GetOptionsBinder());
+//                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
 
-                var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
+//                var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
 
-                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
-                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
-                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
-            }
+//                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
+//                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
+//                //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
+//            }
 
-            //hosted services
-            s.AddHostedService<SignalLoggerUtilityHostedService>();
-            //s.AddHostedService<TestSignalLoggerHostedService>();
+//            //hosted services
+//            s.AddHostedService<SignalLoggerUtilityHostedService>();
+//            //s.AddHostedService<TestSignalLoggerHostedService>();
 
-            //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
-        });
+//            //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
+//        });
 
-        return hostBuilder;
-    }
+//        return hostBuilder;
+//    }
 
-    public static IHostBuilder BuildExtractLogHost(this IHostBuilder hostBuilder, ExtractConsoleCommand cmd)
-    {
-        hostBuilder.ConfigureServices((h, s) =>
-        {
-            //databases
-            s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+//    public static IHostBuilder BuildExtractLogHost(this IHostBuilder hostBuilder, ExtractConsoleCommand cmd)
+//    {
+//        hostBuilder.ConfigureServices((h, s) =>
+//        {
+//            //databases
+//            s.AddDbContext<EventLogContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
 
-            //repositories
-            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+//            //repositories
+//            s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
-            //command options
-            if (cmd is ICommandOption<EventLogExtractConfiguration> cmdOpt)
-            {
-                s.AddSingleton(cmdOpt.GetOptionsBinder());
-                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
-            }
+//            //command options
+//            if (cmd is ICommandOption<EventLogExtractConfiguration> cmdOpt)
+//            {
+//                s.AddSingleton(cmdOpt.GetOptionsBinder());
+//                s.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+//            }
 
-            //hosted services
-            s.AddHostedService<ExportUtilityService>();
-            //s.AddHostedService<TestExtractLogHostedService>();
-        });
+//            //hosted services
+//            s.AddHostedService<ExportUtilityService>();
+//            //s.AddHostedService<TestExtractLogHostedService>();
+//        });
 
-        return hostBuilder;
-    }
-}
+//        return hostBuilder;
+//    }
+//}
 
 public class TestExtractLogHostedService : IHostedService
 {
