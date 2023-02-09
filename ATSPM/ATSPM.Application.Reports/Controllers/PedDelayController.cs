@@ -1,9 +1,8 @@
-﻿using ATSPM.Application.Reports.ViewModels.PedDelay;
+﻿using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Application.Repositories;
 using AutoFixture;
 using Legacy.Common.Business;
 using Legacy.Common.Business.PEDDelay;
-using Legacy.Common.Business.WCFServiceLibrary;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

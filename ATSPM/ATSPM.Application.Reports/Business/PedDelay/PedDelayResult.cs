@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PedDelay
+namespace ATSPM.Application.Reports.Business.PedDelay
 {
     /// <summary>
     /// Ped Delay chart

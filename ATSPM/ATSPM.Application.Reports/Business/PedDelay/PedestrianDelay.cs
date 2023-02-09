@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PedDelay
+namespace ATSPM.Application.Reports.Business.PedDelay
 {
-    public class CycleLengths
+    public class PedestrianDelay
     {
-        public CycleLengths(DateTime startTime, double seconds)
+        public PedestrianDelay(DateTime startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;

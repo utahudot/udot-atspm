@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Application.Reports.Business.PhaseTermination;
+using System;
 using System.Linq;
 
 namespace Legacy.Common.Business.SplitMonitor
@@ -28,7 +29,7 @@ namespace Legacy.Common.Business.SplitMonitor
             splitMonitorData.SignalID = signalID;
             splitMonitorData.StartDate = startDate;
             splitMonitorData.EndDate = endDate;
-            splitMonitorData.Phases = analysisPhaseCollectionService.GetAnalysisPhaseCollection(splitMonitorData.SignalID, splitMonitorData.StartDate, splitMonitorData.EndDate);
+            splitMonitorData.Phases = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(splitMonitorData.SignalID, splitMonitorData.StartDate, splitMonitorData.EndDate);
             if (splitMonitorData.Phases.Plans.Count > 0)
             {
                 foreach (var plan in splitMonitorData.Phases.Plans)

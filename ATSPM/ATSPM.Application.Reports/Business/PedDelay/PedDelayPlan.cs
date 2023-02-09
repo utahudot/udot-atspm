@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ATSPM.Application.Reports.Business.Common;
+using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PedDelay
+namespace ATSPM.Application.Reports.Business.PedDelay
 {
     public class PedDelayPlan : Plan
     {

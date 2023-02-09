@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.PedDelay
 {
     [DataContract]
     public class PedDelayOptions

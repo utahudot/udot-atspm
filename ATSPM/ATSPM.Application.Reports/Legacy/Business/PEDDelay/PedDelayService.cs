@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
-using ATSPM.Application.Reports.ViewModels.PedDelay;
 using ATSPM.Application.Extensions;
 using Microsoft.Extensions.Options;
+using ATSPM.Application.Reports.Business.PedDelay;
 
 namespace Legacy.Common.Business.PEDDelay
 {

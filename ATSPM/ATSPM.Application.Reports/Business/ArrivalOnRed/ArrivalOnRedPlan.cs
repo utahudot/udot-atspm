@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Reports.ViewModels;
+﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 
 namespace ATSPM.Application.Reports.Business.ArrivalOnRed

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Application.Reports.Business.Common;
+using System;
 
 namespace ATSPM.Application.Reports.ViewModels.YellowRedActivations
 {

@@ -30,6 +30,7 @@
     <Folder Include="Signal\" />
     <Folder Include="ViewModels\ArrivalOnRed\" />
     <Folder Include="ViewModels\LeftTurnGapAnalysis\" />
+    <Folder Include="ViewModels\PedDelay\" />
     <Folder Include="ViewModels\PerdueCoordinationDiagram\" />
   </ItemGroup>
 

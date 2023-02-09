@@ -1,8 +1,6 @@
-﻿
+﻿using System;
 
-using System;
-
-namespace ATSPM.Application.Reports.ViewModels
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class Plan
     {

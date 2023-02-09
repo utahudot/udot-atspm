@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.PhaseTermination;
 using ATSPM.Data.Models;
 using Legacy.Common.Business.WCFServiceLibrary;
 using System;
@@ -16,7 +17,7 @@ namespace Legacy.Common.Business
         private readonly IEnumerable<ControllerEventLog> _phaseEvents;
         private readonly DateTime _startDate;
         private readonly DateTime _endDate;
-        private readonly AnalysisPhase _phaseInfo;
+        private readonly AnalysisPhaseData _phaseInfo;
         private readonly List<PlanSplitMonitorService> _plans;
 
         public class WaitTimeTracker
@@ -27,7 +28,7 @@ namespace Legacy.Common.Business
 
         public WaitTimeChart(WaitTimeOptions waitTimeOptions, Signal signal, Approach approach,
             IEnumerable<ControllerEventLog> phaseEvents, DateTime startDate, DateTime endDate,
-            AnalysisPhase phaseInfo, List<PlanSplitMonitorService> plans)
+            AnalysisPhaseData phaseInfo, List<PlanSplitMonitorService> plans)
         {
             _waitTimeOptions = waitTimeOptions;
             _signal = signal;

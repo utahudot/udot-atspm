@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PhaseTerminationChart;
+namespace ATSPM.Application.Reports.Business.PhaseTermination;
 
 public class ForceOff
 {

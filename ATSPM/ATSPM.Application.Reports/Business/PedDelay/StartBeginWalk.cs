@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PedDelay
+namespace ATSPM.Application.Reports.Business.PedDelay
 {
     public class StartBeginWalk
     {

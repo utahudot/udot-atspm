@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PhaseTerminationChart;
+namespace ATSPM.Application.Reports.Business.PhaseTermination;
 
-public class GapOut
+public class UnknownTermination
 {
-    public GapOut(DateTime startTime, int phaseNumber)
+    public UnknownTermination(DateTime startTime, int phaseNumber)
     {
         StartTime = startTime;
         PhaseNumber = phaseNumber;
@@ -12,5 +12,4 @@ public class GapOut
 
     public DateTime StartTime { get; internal set; }
     public int PhaseNumber { get; internal set; }
-
 }

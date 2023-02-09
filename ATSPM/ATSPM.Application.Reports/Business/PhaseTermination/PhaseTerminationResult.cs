@@ -1,19 +1,18 @@
+using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PhaseTerminationChart;
+namespace ATSPM.Application.Reports.Business.PhaseTermination;
 
 /// <summary>
 /// Phase Termination chart
 /// </summary>
-public class PhaseTerminationChart
+public class PhaseTerminationResult
 {
-    public PhaseTerminationChart(
+    public PhaseTerminationResult(
         string chartName,
         string signalId,
         string signalLocation,
-        int phaseNumber,
-        string phaseDescription,
         DateTime start,
         DateTime end,
         int consecutiveCount,
@@ -27,8 +26,6 @@ public class PhaseTerminationChart
         ChartName = chartName;
         SignalId = signalId;
         SignalLocation = signalLocation;
-        PhaseNumber = phaseNumber;
-        PhaseDescription = phaseDescription;
         Start = start;
         End = end;
         ConsecutiveCount = consecutiveCount;
@@ -43,8 +40,6 @@ public class PhaseTerminationChart
     public string ChartName { get; internal set; }
     public string SignalId { get; internal set; }
     public string SignalLocation { get; internal set; }
-    public int PhaseNumber { get; internal set; }
-    public string PhaseDescription { get; internal set; }
     public DateTime Start { get; internal set; }
     public DateTime End { get; internal set; }
     public int ConsecutiveCount { get; internal set; }
