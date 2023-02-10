@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptService
+namespace ATSPM.Application.Reports.Business.PreemptService
 {
     /// <summary>
     /// Preempt Service chart

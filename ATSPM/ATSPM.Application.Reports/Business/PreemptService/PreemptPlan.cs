@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptService
+namespace ATSPM.Application.Reports.Business.PreemptService
 {
     public class PreemptPlan : Plan
     {

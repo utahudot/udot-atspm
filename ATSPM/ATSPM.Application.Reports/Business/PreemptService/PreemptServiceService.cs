@@ -1,13 +1,13 @@
 ﻿using ATSPM.Application.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Application.Reports.ViewModels.PreemptService;
 using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System;
+using Legacy.Common.Business;
 
-namespace Legacy.Common.Business.Preempt
+namespace ATSPM.Application.Reports.Business.PreemptService
 {
     public class PreemptServiceService
     {
@@ -22,28 +22,28 @@ namespace Legacy.Common.Business.Preempt
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public PreemptServiceResult GetChartData(string signalId, DateTime startDate, DateTime endDate)
+        public PreemptServiceResult GetChartData(PreemptServiceMetricOptions options)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(signalId, startDate);
-            var events= controllerEventLogRepository.GetSignalEventsBetweenDates(signalId, startDate, endDate);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
+            var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.StartDate, options.EndDate);
             var preemptEvents = GetPreemptEvents(events);
-            var plans = planService.GetBasicPlans(startDate, endDate, signalId);
-            List<PreemptPlan> preemptPlans = new List<PreemptPlan>();   
-            foreach(var pl in plans)
+            var plans = planService.GetBasicPlans(options.StartDate, options.EndDate, options.SignalId);
+            List<PreemptPlan> preemptPlans = new List<PreemptPlan>();
+            foreach (var pl in plans)
             {
                 preemptPlans.Add(new PreemptPlan(pl.PlanNumber.ToString(), pl.StartTime, pl.EndTime, preemptEvents.Count(p => p.StartTime >= pl.StartTime && p.StartTime < pl.EndTime)));
             }
             return new PreemptServiceResult(
                 "Preempt Service",
-                signalId,
+                options.SignalId,
                 signal.SignalDescription(),
-                startDate,
-                endDate,
+                options.StartDate,
+                options.EndDate,
                 preemptPlans,
                 preemptEvents
                 );
         }
-      
+
 
         protected List<PreemptServiceEvent> GetPreemptEvents(IReadOnlyList<ControllerEventLog> events)
         {

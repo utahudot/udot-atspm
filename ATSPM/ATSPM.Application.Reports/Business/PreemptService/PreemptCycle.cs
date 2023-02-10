@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Legacy.Common.Business.Preempt
+namespace ATSPM.Application.Reports.Business.PreemptService
 {
     public class PreemptCycle
     {

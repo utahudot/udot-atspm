@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptService
+namespace ATSPM.Application.Reports.Business.PreemptService
 {
     public class PreemptServiceEvent
     {

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
-using Legacy.Common.Business.Preempt;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.PreempDetail
 {
