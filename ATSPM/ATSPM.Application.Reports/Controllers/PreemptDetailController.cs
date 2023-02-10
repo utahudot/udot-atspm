@@ -28,7 +28,7 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public PreemptDetailResult GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
+        public PreemptDetailResult GetChartData([FromBody] PreemptDetailOptions options)
         {
             PreemptDetailResult viewModel = preemptDetailService.GetChartData(options);
             return viewModel;
