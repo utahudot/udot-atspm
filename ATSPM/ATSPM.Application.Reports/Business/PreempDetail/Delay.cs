@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptDetail
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class InputOn
+    public class Delay
     {
-        public InputOn(DateTime startTime, double seconds)
+        public Delay(DateTime startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;

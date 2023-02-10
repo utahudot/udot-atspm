@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptDetail
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
     public class DwellTime
     {

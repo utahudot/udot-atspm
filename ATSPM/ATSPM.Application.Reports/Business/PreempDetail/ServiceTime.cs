@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptDetail
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class InputOff
+    public class ServiceTime
     {
-        public InputOff(DateTime startTime, double seconds)
+        public ServiceTime(DateTime startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;

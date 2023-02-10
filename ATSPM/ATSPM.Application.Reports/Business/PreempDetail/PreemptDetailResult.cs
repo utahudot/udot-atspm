@@ -2,7 +2,7 @@ using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptDetail
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
     /// <summary>
     /// Preempt Detail chart

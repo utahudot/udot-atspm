@@ -32,6 +32,7 @@
     <Folder Include="ViewModels\LeftTurnGapAnalysis\" />
     <Folder Include="ViewModels\PedDelay\" />
     <Folder Include="ViewModels\PerdueCoordinationDiagram\" />
+    <Folder Include="ViewModels\PreemptDetail\" />
   </ItemGroup>
 
 </Project>

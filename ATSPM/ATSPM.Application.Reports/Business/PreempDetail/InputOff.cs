@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptDetail
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class TrackClearTime
+    public class InputOff
     {
-        public TrackClearTime(DateTime startTime, double seconds)
+        public InputOff(DateTime startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;

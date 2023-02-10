@@ -5,11 +5,10 @@ using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
 using Legacy.Common.Business.Preempt;
-using ATSPM.Application.Reports.ViewModels.PreemptDetail;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class PreemptDetailService 
+    public class PreemptDetailService
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
@@ -20,12 +19,12 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             this.signalRepository = signalRepository;
         }
 
-        public PreemptDetailResult GetChartData(string signalId, DateTime startDate, DateTime endDate)
+        public PreemptDetailResult GetChartData(PreemptDetailOptions preemptDetailOptions)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(signalId, startDate);
+            var signal = signalRepository.GetLatestVersionOfSignal(preemptDetailOptions.SignalId, preemptDetailOptions.StartDate);
             var tables = new List<ControllerEventLogResult>();
             var preTestTables = new List<ControllerEventLogResult>();
-            var eventsTable = FillforPreempt(signalId, startDate, endDate);
+            var eventsTable = FillforPreempt(preemptDetailOptions.SignalId, preemptDetailOptions.StartDate, preemptDetailOptions.EndDate);
 
             var t1 = new ControllerEventLogResult();
             var t2 = new ControllerEventLogResult();
@@ -141,7 +140,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
             foreach (var t in tables)
             {
-                Add105Events(signalId, startDate, endDate, t);
+                Add105Events(preemptDetailOptions.SignalId, preemptDetailOptions.StartDate, preemptDetailOptions.EndDate, t);
             }
             throw new NotImplementedException();
             //return new PreemptDetailResult(
@@ -168,7 +167,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
 
         public void Add105Events(string signalId, DateTime startDate, DateTime endDate, ControllerEventLogResult existingEvents)
         {
-            var events = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startDate, endDate, new List<int> { 105, 111 });                
+            var events = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startDate, endDate, new List<int> { 105, 111 });
             foreach (var v in events)
             {
                 v.EventCode = 99;
@@ -184,10 +183,10 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             if (t.Events.Count > 0)
             {
                 var hasStart = from r in t.Events
-                    where r.EventCode == 105 ||
-                          r.EventCode == 111 ||
-                          r.EventCode == 107
-                    select r;
+                               where r.EventCode == 105 ||
+                                     r.EventCode == 111 ||
+                                     r.EventCode == 107
+                               select r;
 
                 if (hasStart.Any())
                     AddToTables = true;
