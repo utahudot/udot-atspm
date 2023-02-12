@@ -33,6 +33,7 @@
     <Folder Include="ViewModels\PedDelay\" />
     <Folder Include="ViewModels\PerdueCoordinationDiagram\" />
     <Folder Include="ViewModels\PreemptDetail\" />
+    <Folder Include="ViewModels\PreemptServiceRequest\" />
     <Folder Include="ViewModels\PreemptService\" />
   </ItemGroup>
 

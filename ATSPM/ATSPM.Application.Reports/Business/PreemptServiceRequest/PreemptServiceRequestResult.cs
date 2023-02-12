@@ -2,14 +2,14 @@ using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.PreemptServiceRequest
+namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
 {
     /// <summary>
     /// Preempt Service Request chart
     /// </summary>
-    public class PreemptServiceRequestChart
+    public class PreemptServiceRequestResult
     {
-        public PreemptServiceRequestChart(string chartName,
+        public PreemptServiceRequestResult(string chartName,
             string signalId,
             string signalLocation,
             DateTime start,

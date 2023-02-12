@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
 {
     [DataContract]
     public class PreemptServiceRequestOptions
