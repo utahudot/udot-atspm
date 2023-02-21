@@ -37,6 +37,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
                 //NameFormat = blockName,
                 MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism,
                 //BoundedCapacity = capcity,
+                //MaxMessagesPerTask = ?,
                 SingleProducerConstrained = true,
                 EnsureOrdered = false
             };
@@ -110,7 +111,8 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
                     new BulkConfig()
                     {
                         SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
-                        OmitClauseExistsExcept = true
+                        OmitClauseExistsExcept = true,
+                        BulkCopyTimeout = _options.Value.BulkCopyTimeout
                     },
                     null,
                     null,
