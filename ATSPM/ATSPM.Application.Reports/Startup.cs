@@ -1,9 +1,12 @@
 using ATSPM.Application.Reports.Business.AppoachDelay;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
+using ATSPM.Data;
+using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,8 +26,9 @@ namespace ATSPM.Application.Reports
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+           
             services.AddScoped<IChartDataService, ApproachDelayService>();
-            //services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
+            services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
             services.AddScoped<ISignalRepository, SignalEFRepository>();
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
             //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
