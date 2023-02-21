@@ -15,6 +15,7 @@ using ATSPM.Infrastructure.Services.HostedServices;
 using ATSPM.Infrastructure.Services.SignalControllerLoggers;
 using Google.Api;
 using Google.Cloud.Diagnostics.Common;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -340,3 +341,69 @@ public class TestSignalInfoHostedService : IHostedService
     }
 }
 
+public class TestAggregationHostedService : IHostedService
+{
+    private readonly ILogger _log;
+    private IServiceProvider _serviceProvider;
+    private IOptions<EventLogAggregateConfiguration> _options;
+
+    public TestAggregationHostedService(ILogger<TestAggregationHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogAggregateConfiguration> options) =>
+            (_log, _serviceProvider, _options) = (log, serviceProvider, options);
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.Register(() => Console.WriteLine($"StartAsync Cancelled..."));
+
+        _serviceProvider.PrintHostInformation();
+
+        try
+        {
+            using (var scope = _serviceProvider.CreateAsyncScope())
+            {
+                Console.WriteLine($"------------type: {_options.Value.AggregationType}");
+                Console.WriteLine($"------------size: {_options.Value.BinSize}");
+
+                if (_options.Value.Dates != null)
+                {
+                    foreach (var s in _options.Value.Dates)
+                    {
+                        _log.LogInformation("Extracting Event Logs for Date(s): {date}", s.ToString("dd/MM/yyyy"));
+                    }
+                }
+
+                if (_options.Value.Included != null)
+                {
+                    foreach (var s in _options.Value.Included)
+                    {
+                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                    }
+                }
+
+                if (_options.Value.Excluded != null)
+                {
+                    foreach (var s in _options.Value.Excluded)
+                    {
+                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+            _log.LogError("Exception: {e}", e);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.Register(() => Console.WriteLine($"StopAsync Cancelled..."));
+
+        Console.WriteLine();
+        Console.WriteLine($"Operation Completed or Cancelled...");
+
+        return Task.CompletedTask;
+    }
+}
