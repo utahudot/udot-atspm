@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.PreemptService
 
 {
     [DataContract]
@@ -14,9 +14,9 @@ namespace Legacy.Common.Business.WCFServiceLibrary
             EndDate = endDate;
         }
 
-        public string SignalId { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
+        public string SignalId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         //public override List<string> CreateMetric()
         //{

@@ -4,9 +4,9 @@ using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
+using ATSPM.Application.Reports.Business.SplitFail;
 
 namespace Legacy.Common.Business
 {

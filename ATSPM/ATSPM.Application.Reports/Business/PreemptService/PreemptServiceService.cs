@@ -1,7 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System;

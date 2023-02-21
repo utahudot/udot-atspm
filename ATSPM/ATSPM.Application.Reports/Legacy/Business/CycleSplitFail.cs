@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Business.SplitFail;
+using ATSPM.Application.Reports.Business.SplitFail;
 
 namespace Legacy.Common.Business
 {

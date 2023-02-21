@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Legacy.Common.Business.WCFServiceLibrary;
+using Legacy.Common.Business;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Legacy.Common.Business.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
-    public class SplitFailPhaseData 
+    public class SplitFailPhaseData
     {
         public List<SplitFailDetectorActivation> DetectorActivations = new List<SplitFailDetectorActivation>();
         public List<SplitFailBin> Bins { get; set; } = new List<SplitFailBin>();
@@ -19,30 +19,35 @@ namespace Legacy.Common.Business.SplitFail
         public Dictionary<string, string> Statistics { get; set; }
         public string PhaseNumberSort { get; set; }
     }
-    
+
     public class SplitFailPhaseService
     {
         private readonly CycleService cycleService;
         private readonly PlanService planService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IApproachRepository approachRepository;
 
         public SplitFailPhaseService(
             CycleService cycleService,
             PlanService planService,
-            IControllerEventLogRepository controllerEventLogRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            IApproachRepository approachRepository
+            )
         {
             this.cycleService = cycleService;
             this.planService = planService;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.approachRepository = approachRepository;
         }
 
-        public SplitFailPhaseData GetSplitFailPhaseData(Approach approach, SplitFailOptions options, bool getPermissivePhase)
+        public SplitFailPhaseData GetSplitFailPhaseData(SplitFailOptions options)
         {
+            var approach = approachRepository.Lookup(options.ApproachId);
             var splitFailPhaseData = new SplitFailPhaseData();
             splitFailPhaseData.Approach = approach;
-            splitFailPhaseData.GetPermissivePhase = getPermissivePhase;
-            splitFailPhaseData.PhaseNumberSort = getPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString()+"-1": approach.ProtectedPhaseNumber.ToString()+"-2";
-            splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(options, approach, getPermissivePhase);
+            splitFailPhaseData.GetPermissivePhase = options.UsePermissivePhase;
+            splitFailPhaseData.PhaseNumberSort = options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
+            splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(options, approach, options.UsePermissivePhase);
             SetDetectorActivations(options, splitFailPhaseData);
             AddDetectorActivationsToCycles(splitFailPhaseData);
             splitFailPhaseData.Plans = planService.GetSplitFailPlans(splitFailPhaseData.Cycles, options, splitFailPhaseData.Approach);
@@ -102,7 +107,7 @@ namespace Legacy.Common.Business.SplitFail
                             current.DetectorOn &&
                             d.DetectorOff >= current.DetectorOff
                         )
-                        //then add it to the overlap list
+                    //then add it to the overlap list
                     ).ToList();
 
                     //if there are any in the list (and here should be at least one that matches current)
@@ -135,17 +140,17 @@ namespace Legacy.Common.Business.SplitFail
         private void SetDetectorActivations(SplitFailOptions options, SplitFailPhaseData splitFailPhaseData)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
-            var detectors = splitFailPhaseData.Approach.GetAllDetectorsOfDetectionType(ATSPM.Data.Enums.DetectionTypes.SBP);// .GetDetectorsForMetricType(12);
+            var detectors = splitFailPhaseData.Approach.GetAllDetectorsOfDetectionType(Data.Enums.DetectionTypes.SBP);// .GetDetectorsForMetricType(12);
 
             foreach (var detector in detectors)
             {
                 //var lastCycle = Cycles.OrderBy(c => c.StartTime).LastOrDefault();
                 List<ControllerEventLog> events = controllerEventLogRepository.GetEventsByEventCodesParam(
                     splitFailPhaseData.Approach.SignalId,
-                    options.StartDate, 
-                    options.EndDate, 
-                    new List<int> {81, 82}, 
-                    detector.DetChannel, 
+                    options.StartDate,
+                    options.EndDate,
+                    new List<int> { 81, 82 },
+                    detector.DetChannel,
                     detector.LatencyCorrection).ToList();
                 if (!events.Any())
                 {
@@ -201,7 +206,7 @@ namespace Legacy.Common.Business.SplitFail
 
         private void CheckForDetectorOnBeforeStart(
             SplitFailOptions options,
-            Detector detector, 
+            Detector detector,
             SplitFailPhaseData splitFailPhaseData)
         {
             var eventOnBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(

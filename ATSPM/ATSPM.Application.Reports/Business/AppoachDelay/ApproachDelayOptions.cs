@@ -25,15 +25,15 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         //    ShowDelayPerVehicle = showDelayPerVehicle;
         //}
 
-        public int MetricTypeId { get; }
-        public int ApproachId { get; }
-        public bool GetPermissivePhase { get; }
-        public DateTime StartDate { get; }
-        public DateTime EndDate { get; }
-        public int BinSize { get; }
-        public bool ShowPlanStatistics { get; }
-        public bool ShowDelayPerVehicle { get; }
-        public string SignalId { get; internal set; }
-        public bool ShowDelayPerHour { get; internal set; }
+        public int MetricTypeId { get; set; }
+        public int ApproachId { get; set; }
+        public bool GetPermissivePhase { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int BinSize { get; set; }
+        public bool ShowPlanStatistics { get; set; }
+        public bool ShowDelayPerVehicle { get; set; }
+        public string SignalId { get; set; }
+        public bool ShowDelayPerHour { get; set; }
     }
 }

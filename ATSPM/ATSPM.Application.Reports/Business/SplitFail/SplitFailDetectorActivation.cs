@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Legacy.Common.Business.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     public class SplitFailDetectorActivation
 

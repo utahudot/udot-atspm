@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     public class SplitFailPlan : Plan
     {

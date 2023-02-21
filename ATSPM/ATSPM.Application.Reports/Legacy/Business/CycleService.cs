@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 //using System.IO;
 using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Reports.Business.SplitFail;
 
 namespace Legacy.Common.Business
 {

@@ -1,12 +1,8 @@
-﻿using Legacy.Common.Business.SplitFail;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     [DataContract]
     public class SplitFailOptions
@@ -46,10 +42,12 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         [DataMember]
         [Display(Name = "Show Percent Fail Lines")]
         public bool ShowPercentFailLines { get; set; }
-        public DateTime StartDate { get; internal set; }
-        public DateTime EndDate { get; internal set; }
-        public int MetricTypeId { get; }
-        public string SignalId { get; internal set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int MetricTypeId { get; set; } = 12;
+        public string SignalId { get; set; }
+        public int ApproachId { get; set; }
+        public bool UsePermissivePhase { get; set; }
 
         //public override List<string> CreateMetric()
         //{

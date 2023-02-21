@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     public class AverageRor
     {

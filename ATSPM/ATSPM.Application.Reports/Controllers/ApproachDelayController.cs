@@ -25,17 +25,13 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public ApproachDelayResult GetChartData([FromBody]ApproachDelayOptions options) 
+        public ApproachDelayResult GetChartData([FromBody] ApproachDelayOptions options)
         {
             ApproachDelayResult viewModel = approachDelayService.GetChartData(options);
             return viewModel;
         }
 
-        //[HttpPost("chart")]
-        //public ApproachDelayChart Chart( )
-        //{
-        //  return ApproachService.GetApproachDelayChart()
-        //}
+       
 
     }
 }

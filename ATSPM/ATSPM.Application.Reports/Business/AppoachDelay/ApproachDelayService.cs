@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using ATSPM.Application.Repositories;
 using Legacy.Common.Business;
@@ -8,7 +9,7 @@ using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
-    public class ApproachDelayService
+    public class ApproachDelayService : IChartDataService
     {
         private readonly ISignalRepository signalRepository;
         private readonly PlanService planService;

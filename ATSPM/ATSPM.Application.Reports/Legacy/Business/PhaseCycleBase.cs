@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Reports.Business.SplitFail;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace Legacy.Common.Business
 
         public double TotalArrivalOnGreen => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnGreen);
 
-        public SplitFail.SplitFailDetectorActivationCollection Activations = new SplitFail.SplitFailDetectorActivationCollection();
+        public SplitFailDetectorActivationCollection Activations = new ATSPM.Application.Reports.Business.SplitFail.SplitFailDetectorActivationCollection();
 
 
         /// <summary>

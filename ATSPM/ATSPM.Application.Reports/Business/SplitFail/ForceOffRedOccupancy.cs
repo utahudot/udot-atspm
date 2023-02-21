@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
-    public class PercentFail
+    public class ForceOffRedOccupancy
     {
-        public PercentFail(DateTime startTime, double percent)
+        public ForceOffRedOccupancy(DateTime startTime, double percent)
         {
             StartTime = startTime;
             Percent = percent;

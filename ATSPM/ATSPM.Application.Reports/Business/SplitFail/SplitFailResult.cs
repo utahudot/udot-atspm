@@ -1,14 +1,15 @@
+using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitFail
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     /// <summary>
     /// Split Fail chart
     /// </summary>
-    public class SplitFailChart
+    public class SplitFailResult
     {
-        public SplitFailChart(
+        public SplitFailResult(
             string chartName,
             string signalId,
             string signalLocation,
@@ -17,7 +18,7 @@ namespace ATSPM.Application.Reports.ViewModels.SplitFail
             DateTime start,
             DateTime end,
             int totalSplitFails,
-            ICollection<SplitFailPlan> plans,
+            ICollection<PlanSplitFail> plans,
             ICollection<FailLine> failLines,
             ICollection<GapOutGreenOccupancy> gapOutGreenOccupancies,
             ICollection<GapOutRedOccupancy> gapOutRedOccupancies,
@@ -46,22 +47,22 @@ namespace ATSPM.Application.Reports.ViewModels.SplitFail
             PercentFails = percentFails;
         }
 
-        public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
-        public int PhaseNumber { get; internal set; }
-        public string PhaseDescription { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
-        public int TotalSplitFails { get; internal set; }
-        public ICollection<SplitFailPlan> Plans { get; internal set; }
-        public ICollection<FailLine> FailLines { get; internal set; }
-        public ICollection<GapOutGreenOccupancy> GapOutGreenOccupancies { get; internal set; }
-        public ICollection<GapOutRedOccupancy> GapOutRedOccupancies { get; internal set; }
-        public ICollection<ForceOffGreenOccupancy> ForceOffGreenOccupancies { get; internal set; }
-        public ICollection<ForceOffRedOccupancy> ForceOffRedOccupancies { get; internal set; }
-        public ICollection<AverageGor> AverageGor { get; internal set; }
-        public ICollection<AverageRor> AverageRor { get; internal set; }
-        public ICollection<PercentFail> PercentFails { get; internal set; }
+        public string ChartName { get; set; }
+        public string SignalId { get; set; }
+        public string SignalLocation { get; set; }
+        public int PhaseNumber { get; set; }
+        public string PhaseDescription { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public int TotalSplitFails { get; set; }
+        public ICollection<PlanSplitFail> Plans { get; set; }
+        public ICollection<FailLine> FailLines { get; set; }
+        public ICollection<GapOutGreenOccupancy> GapOutGreenOccupancies { get; set; }
+        public ICollection<GapOutRedOccupancy> GapOutRedOccupancies { get; set; }
+        public ICollection<ForceOffGreenOccupancy> ForceOffGreenOccupancies { get; set; }
+        public ICollection<ForceOffRedOccupancy> ForceOffRedOccupancies { get; set; }
+        public ICollection<AverageGor> AverageGor { get; set; }
+        public ICollection<AverageRor> AverageRor { get; set; }
+        public ICollection<PercentFail> PercentFails { get; set; }
     }
 }
