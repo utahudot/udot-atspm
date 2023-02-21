@@ -21,7 +21,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        public Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -39,7 +39,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                 Client.OperationTimeout = TimeSpan.FromSeconds(operationTImeout);
 
-                await Task.Run(() => Client.Connect(), token);
+                //await Task.Run(() => Client.Connect(), token);
+                Client.Connect();
+
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {
@@ -47,7 +50,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             }
         }
 
-        public async Task DeleteFileAsync(string path, CancellationToken token = default)
+        public Task DeleteFileAsync(string path, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -56,7 +59,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             try
             {
-                await Task.Run(() => Client.DeleteFile(path), token);
+                //Task.Run(() => Client.DeleteFile(path), token);
+                Client.DeleteFile(path);
+
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {
@@ -64,7 +70,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             }
         }
 
-        public async Task DisconnectAsync(CancellationToken token = default)
+        public Task DisconnectAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -73,7 +79,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             try
             {
-                await Task.Run(() => Client.Disconnect(), token);
+                //await Task.Run(() => Client.Disconnect(), token);
+                Client.Disconnect();
+
+                return Task.CompletedTask;
             }
             catch (Exception e)
             {
