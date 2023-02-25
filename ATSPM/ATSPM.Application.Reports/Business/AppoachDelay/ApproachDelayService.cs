@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
-    public class ApproachDelayService : IChartDataService
+    public class ApproachDelayService 
     {
         private readonly ISignalRepository signalRepository;
         private readonly PlanService planService;

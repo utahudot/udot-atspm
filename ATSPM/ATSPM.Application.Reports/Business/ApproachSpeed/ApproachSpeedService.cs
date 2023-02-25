@@ -5,6 +5,7 @@ using ATSPM.Application.Extensions;
 using System.Collections.Generic;
 using static Legacy.Common.Business.Bins.BinFactoryOptions;
 using System;
+using ATSPM.Application.Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {

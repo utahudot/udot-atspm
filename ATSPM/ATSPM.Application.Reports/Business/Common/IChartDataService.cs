@@ -5,6 +5,6 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public interface IChartDataService
     {
-        ApproachDelayResult GetChartData(ApproachDelayOptions options);
+        object GetChartData(ApproachDelayOptions options);
     }
 }

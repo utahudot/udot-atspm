@@ -1,9 +1,15 @@
 using ATSPM.Application.Reports.Business.AppoachDelay;
+using ATSPM.Application.Reports.Business.ApproachSpeed;
+using ATSPM.Application.Reports.Business.ApproachVolume;
+using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Reports.Business.LeftTurnGapReport;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using Legacy.Common.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,11 +32,37 @@ namespace ATSPM.Application.Reports
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           
-            services.AddScoped<IChartDataService, ApproachDelayService>();
-            services.AddDbContext<MOEContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:SPM"]));
+            services.AddLogging();
+            services.AddDbContext<ConfigContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
+            services.AddDbContext<EventLogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
+            services.AddDbContext<SpeedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
+
             services.AddScoped<ISignalRepository, SignalEFRepository>();
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
+            services.AddScoped<IDetectorRepository, DetectorEFRepository>();
+            services.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+            services.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
+            services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
+            services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationEFRepository>();
+            services.AddScoped<IApproachCycleAggregationRepository, ApproachCycleAggregationEFRepository>();
+            services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationEFRepository>();
+            services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationEFRepository>();
+            services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationEFRepository>();
+            services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationEFRepository>();
+
+            services.AddScoped<ApproachDelayService>();
+            services.AddScoped<ApproachSpeedService>();
+            services.AddScoped<ApproachVolumeService>();
+            services.AddScoped<ArrivalOnRedService>();
+            services.AddScoped<LeftTurnGapAnalysisService>();
+            services.AddScoped<LeftTurnVolumeAnalysisService>();
+
+            services.AddScoped<PlanService>();
+            services.AddScoped<SignalPhaseService>();
+            services.AddScoped<PlanSplitMonitorService>();
+            services.AddScoped<CycleService>();
+            services.AddScoped<SpeedDetectorService>();
+
             //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
             //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();
             //services.AddScoped<IApproachCycleAggregationRepository, ApproachCycleAggregationRepository>();
