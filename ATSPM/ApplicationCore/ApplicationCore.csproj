@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -25,6 +29,10 @@
   <ItemGroup>
     <Folder Include="Handlers\" />
     <Folder Include="Attributes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Analysis\PhaseTerminationAnalysis.cs" />
   </ItemGroup>
 
 </Project>
