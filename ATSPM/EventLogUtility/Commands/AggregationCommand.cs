@@ -16,7 +16,7 @@ namespace ATSPM.EventLogUtility.Commands
     {
         public AggregationCommand() : base("aggregate", "Run data aggregation")
         {
-            AggregationType.FromAmong(
+            AggregationTypeArgument.FromAmong(
                 "approach-cycle",
                 "approach-pcd-cycle",
                 "approach-speed",
@@ -42,17 +42,17 @@ namespace ATSPM.EventLogUtility.Commands
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
 
-            AddArgument(AggregationType);
-            AddArgument(BinSize);
+            AddArgument(AggregationTypeArgument);
+            AddArgument(BinSizeArgument);
             AddOption(DateOption);
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
         }
 
-        public Argument<string> AggregationType { get; set; } = new Argument<string>("type", "Aggregation type to run");
+        public Argument<string> AggregationTypeArgument { get; set; } = new Argument<string>("type", "Aggregation type to run");
 
         //TODO: add a parse param to handle zero time to too large or a time
-        public Argument<int> BinSize { get; set; } = new Argument<int>("Size", () => 15, "Size in minutes to aggregate");
+        public Argument<int> BinSizeArgument { get; set; } = new Argument<int>("Size", () => 15, "Size in minutes to aggregate");
 
         public DateCommandOption DateOption { get; set; } = new();
 
@@ -64,8 +64,8 @@ namespace ATSPM.EventLogUtility.Commands
         {
             var binder = new ModelBinder<EventLogAggregateConfiguration>();
 
-            binder.BindMemberFromValue(b => b.AggregationType, AggregationType);
-            binder.BindMemberFromValue(b => b.BinSize, BinSize);
+            binder.BindMemberFromValue(b => b.AggregationType, AggregationTypeArgument);
+            binder.BindMemberFromValue(b => b.BinSize, BinSizeArgument);
             binder.BindMemberFromValue(b => b.Dates, DateOption);
             binder.BindMemberFromValue(b => b.Included, IncludeOption);
             binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
