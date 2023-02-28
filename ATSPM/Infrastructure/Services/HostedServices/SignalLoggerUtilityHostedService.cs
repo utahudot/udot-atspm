@@ -35,7 +35,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
                     var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
-                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.Enabled);
+                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.ChartEnabled);
 
                     if (_options.Value.ControllerTypes != null)
                     {
