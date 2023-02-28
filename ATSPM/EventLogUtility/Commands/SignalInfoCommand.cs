@@ -86,7 +86,7 @@ namespace ATSPM.EventLogUtility.Commands
                     var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
                     var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
-                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.Enabled);
+                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.ChartEnabled);
 
                     if (_options.Value.ControllerTypes != null)
                     {
@@ -154,7 +154,7 @@ namespace ATSPM.EventLogUtility.Commands
             Console.WriteLine($"secondary name: {signal.SecondaryName}");
             Console.WriteLine($"ip address: {signal.Ipaddress}");
             Console.WriteLine($"controller type: {signal.ControllerType}");
-            Console.WriteLine($"enabled: {signal.Enabled}");
+            Console.WriteLine($"enabled: {signal.ChartEnabled}");
             Console.WriteLine($"jurisdiction: {signal.Jurisdiction}");
             Console.WriteLine($"region: {signal.Region}");
             Console.WriteLine($"long/lat: {signal.Longitude}/{signal.Latitude}");
