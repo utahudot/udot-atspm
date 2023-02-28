@@ -26,7 +26,8 @@ namespace ATSPM.Data.Models
         public IPAddress Ipaddress { get; set; }
         public int RegionId { get; set; }
         public int ControllerTypeId { get; set; }
-        public bool Enabled { get; set; }
+        public bool ChartEnabled { get; set; }
+        public bool LoggingEnabled { get; set; }
         public SignaVersionActions VersionActionId { get; set; }
         public string Note { get; set; }
         public DateTime Start { get; set; }
