@@ -235,7 +235,7 @@ namespace InfrastructureTests.RepositoryTests
             _output.WriteLine($"Compare: {signal.Ipaddress} - {actual.Ipaddress}");
             _output.WriteLine($"Compare: {signal.RegionId} - {actual.RegionId}");
             _output.WriteLine($"Compare: {signal.ControllerTypeId} - {actual.ControllerTypeId}");
-            _output.WriteLine($"Compare: {signal.Enabled} - {actual.Enabled}");
+            _output.WriteLine($"Compare: {signal.ChartEnabled} - {actual.ChartEnabled}");
             _output.WriteLine($"Compare: {signal.VersionActionId} - {actual.VersionActionId}");
             _output.WriteLine($"Compare: {signal.Note} - {actual.Note}");
             _output.WriteLine($"Compare: {signal.Start} - {actual.Start}");
@@ -251,7 +251,7 @@ namespace InfrastructureTests.RepositoryTests
             Assert.Equal(expected: signal.Ipaddress.ToString(), actual: actual.Ipaddress.ToString());
             Assert.Equal(expected: signal.RegionId, actual: actual.RegionId);
             Assert.Equal(expected: signal.ControllerTypeId, actual: actual.ControllerTypeId);
-            Assert.Equal(expected: signal.Enabled, actual: actual.Enabled);
+            Assert.Equal(expected: signal.ChartEnabled, actual: actual.ChartEnabled);
             Assert.Equal(expected: SignaVersionActions.NewVersion, actual: actual.VersionActionId);
             Assert.Contains("Copy of", actual.Note);
             Assert.Equal(expected: DateTime.Today, actual: actual.Start);
