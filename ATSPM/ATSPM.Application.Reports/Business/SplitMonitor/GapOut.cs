@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
+namespace ATSPM.Application.Reports.Business.SplitMonitor;
 
-public class SplitMonitorForceOff
+public class SplitMonitorGapOut
 {
-    public SplitMonitorForceOff(DateTime startTime, double seconds)
+    public SplitMonitorGapOut(DateTime startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

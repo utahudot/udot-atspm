@@ -4,7 +4,7 @@ using System.Linq;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System;
-using Legacy.Common.Business;
+using ATSPM.Application.Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.PreemptService
 {

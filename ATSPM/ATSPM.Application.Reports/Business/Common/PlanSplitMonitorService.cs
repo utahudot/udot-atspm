@@ -5,11 +5,11 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.PhaseTermination;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlanSplitMonitorData : Plan
     {
-        public PlanSplitMonitorData(DateTime start, DateTime end, int planNumber) : base(start, end, planNumber)
+        public PlanSplitMonitorData(DateTime start, DateTime end, int planNumber) : base(planNumber.ToString(), start, end)
         {
         }
 
@@ -18,7 +18,7 @@ namespace Legacy.Common.Business
         public int OffsetLength { get; set; }
         public int CycleCount { get; set; }
     }
-    
+
     public class PlanSplitMonitorService
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
@@ -29,12 +29,12 @@ namespace Legacy.Common.Business
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public PlanSplitMonitorData GetPlanSplitMonitor(DateTime start, DateTime end, int planNumber ) 
+        public PlanSplitMonitorData GetPlanSplitMonitor(DateTime start, DateTime end, int planNumber)
         {
             return new PlanSplitMonitorData(start, end, planNumber);
         }
-        
-        public void SetProgrammedSplits(string signalId, PlanSplitMonitorData plan )
+
+        public void SetProgrammedSplits(string signalId, PlanSplitMonitorData plan)
         {
             plan.Splits.Clear();
             var l = new List<int>();
@@ -162,8 +162,8 @@ namespace Legacy.Common.Business
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
-                    where cycle.StartTime > planSplitMonitorData.StartTime && cycle.EndTime < planSplitMonitorData.EndTime
-                    select cycle;
+                             where cycle.StartTime > planSplitMonitorData.StartTime && cycle.EndTime < planSplitMonitorData.EndTime
+                             select cycle;
 
                 if (Cycles.Count() > HighCycleCount)
                     HighCycleCount = Cycles.Count();

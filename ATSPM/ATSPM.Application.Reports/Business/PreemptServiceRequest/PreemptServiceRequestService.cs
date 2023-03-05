@@ -5,7 +5,6 @@ using Legacy.Common.Business.WCFServiceLibrary;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System;
-using Legacy.Common.Business;
 using ATSPM.Application.Reports.Business.PreemptServiceRequest;
 using ATSPM.Application.Reports.Business.Common;
 

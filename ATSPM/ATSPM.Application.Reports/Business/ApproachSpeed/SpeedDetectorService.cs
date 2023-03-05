@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using Legacy.Common.Business;
 using System;
 using System.Linq;
 

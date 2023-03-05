@@ -1,8 +1,8 @@
-﻿namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
+﻿namespace ATSPM.Application.Reports.Business.SplitMonitor;
 
-public class Peds
+public class SplitMonitorUnknown
 {
-    public Peds(string startTime, double seconds)
+    public SplitMonitorUnknown(string startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

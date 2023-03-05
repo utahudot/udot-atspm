@@ -5,11 +5,16 @@ using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Reports.Business.LeftTurnGapReport;
+using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
+using ATSPM.Application.Reports.Business.PhaseTermination;
+using ATSPM.Application.Reports.Business.PreempDetail;
+using ATSPM.Application.Reports.Business.PreemptService;
+using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using Legacy.Common.Business;
+using Legacy.Common.Business.PEDDelay;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -33,10 +38,13 @@ namespace ATSPM.Application.Reports
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging();
+            //Contexts
+            //services.AddATSPMDbContext(h);
             services.AddDbContext<ConfigContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
             services.AddDbContext<EventLogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
             services.AddDbContext<SpeedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
 
+            //Repositories
             services.AddScoped<ISignalRepository, SignalEFRepository>();
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();
@@ -50,18 +58,29 @@ namespace ATSPM.Application.Reports
             services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationEFRepository>();
             services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationEFRepository>();
 
+            //Chart Services
             services.AddScoped<ApproachDelayService>();
             services.AddScoped<ApproachSpeedService>();
             services.AddScoped<ApproachVolumeService>();
             services.AddScoped<ArrivalOnRedService>();
             services.AddScoped<LeftTurnGapAnalysisService>();
             services.AddScoped<LeftTurnVolumeAnalysisService>();
+            services.AddScoped<PerdueCoordinationDiagramService>();
+            services.AddScoped<PreemptServiceService>();
+            services.AddScoped<PreemptServiceRequestService>();
+            services.AddScoped<SplitFailPhaseService>();
 
+            //Common Services
             services.AddScoped<PlanService>();
             services.AddScoped<SignalPhaseService>();
             services.AddScoped<PlanSplitMonitorService>();
             services.AddScoped<CycleService>();
             services.AddScoped<SpeedDetectorService>();
+            services.AddScoped<PedPhaseService>();
+            services.AddScoped<PlansBaseService>();
+            services.AddScoped<AnalysisPhaseCollectionService>();
+            services.AddScoped<AnalysisPhaseService>();
+            services.AddScoped<PreemptDetailService>();
 
             //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
             //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();

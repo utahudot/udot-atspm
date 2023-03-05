@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Reports.Business.SplitFail;
+using Legacy.Common.Business;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class CycleService
     {
@@ -37,7 +38,7 @@ namespace Legacy.Common.Business
                     i += 2;
                 }
 
-            return cycles.Where(c => (c.EndTime >= startTime && c.EndTime <= endTime) || (c.StartTime <= endTime && c.StartTime >= startTime)).ToList();
+            return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
         public List<RedToRedCycle> GetRedToRedCycles(Approach approach, DateTime startTime, DateTime endTime)
@@ -62,7 +63,7 @@ namespace Legacy.Common.Business
                     i += 2;
                 }
 
-            return cycles.Where(c => (c.EndTime >= startTime && c.EndTime <= endTime) || (c.StartTime <= endTime && c.StartTime >= startTime)).ToList();
+            return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
 
@@ -70,9 +71,9 @@ namespace Legacy.Common.Business
         public List<GreenToGreenCycle> GetGreenToGreenCycles(Approach approach, DateTime startTime, DateTime endTime,
             bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
         {
-        //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-        //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
-        //        GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
+            //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
+            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
+            //        GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
             var cycles = new List<GreenToGreenCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3
@@ -82,7 +83,7 @@ namespace Legacy.Common.Business
                     && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToGreen)
                     cycles.Add(new GreenToGreenCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
                         cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
-            return cycles.Where(c => (c.EndTime >= startTime && c.EndTime <= endTime) || (c.StartTime <= endTime && c.StartTime >= startTime)).ToList();
+            return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
         public List<CyclePcd> GetPcdCycles(DateTime startDate, DateTime endDate, Approach approach,
@@ -111,10 +112,10 @@ namespace Legacy.Common.Business
                 }
 
             //var totalSortedEvents = cycles.Sum(d => d.DetectorEvents.Count);
-            return cycles.Where(c => (c.EndTime >= startDate && c.EndTime <= endDate) || (c.StartTime <= endDate && c.StartTime >= startDate)).ToList(); 
+            return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
 
-        
+
 
         public List<TimingAndActuationCycle> GetTimingAndActuationCycles(DateTime startDate, DateTime endDate,
             Approach approach, bool getPermissivePhase)
@@ -200,7 +201,7 @@ namespace Legacy.Common.Business
         }
 
         public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, bool getPermissivePhase,
-            ATSPM.Data.Models.Detector detector)
+            Detector detector)
         {
             var cycleEvents = GetCycleEvents(getPermissivePhase, startDate, endDate, detector.Approach);
             if (cycleEvents.Any() && (GetEventType(cycleEvents.Last().EventCode) !=
@@ -219,7 +220,7 @@ namespace Legacy.Common.Business
                         && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
                         cycles.Add(new CycleSpeed(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
                             cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
-            
+
 
             return cycles;
         }
@@ -232,16 +233,16 @@ namespace Legacy.Common.Business
             if (getPermissivePhase)
             {
                 var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> {61, 63, 64, 66}
-                    : new List<int> {1, 8, 9};
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 8, 9 };
                 cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
                     endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
             }
             else
             {
                 var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> {61, 63, 64, 66}
-                    : new List<int> {1, 8, 9};
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 8, 9 };
                 cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
                     endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
             }
@@ -258,16 +259,16 @@ namespace Legacy.Common.Business
             if (getPermissivePhase)
             {
                 var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> {61, 63, 64, 66}
-                    : new List<int> {1, 3, 8, 9, 11};
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 3, 8, 9, 11 };
                 cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
                     endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
             }
             else
             {
                 var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> {61, 63, 64, 66}
-                    : new List<int> {1, 3, 8, 9, 11};
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 3, 8, 9, 11 };
                 cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
                     endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
             }
@@ -281,8 +282,8 @@ namespace Legacy.Common.Business
             if (getPermissivePhase)
             {
                 var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> {61, 63, 64, 65}
-                    : new List<int> {1, 8, 9, 11};
+                    ? new List<int> { 61, 63, 64, 65 }
+                    : new List<int> { 1, 8, 9, 11 };
                 var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
                     endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
                 if (eventsAfterEndDate != null)
@@ -291,8 +292,8 @@ namespace Legacy.Common.Business
             else
             {
                 var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> {61, 63, 64, 65}
-                    : new List<int> {1, 8, 9, 11};
+                    ? new List<int> { 61, 63, 64, 65 }
+                    : new List<int> { 1, 8, 9, 11 };
                 var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
                     endDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
                 if (eventsAfterEndDate != null)
@@ -307,7 +308,7 @@ namespace Legacy.Common.Business
             {
                 var cycleEventNumbers = approach.IsPermissivePhaseOverlap
                     ? new List<int> { 63, 64, 65 }
-                    : new List<int> {1, 8, 9, 11 };
+                    : new List<int> { 1, 8, 9, 11 };
                 var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
                     startDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
                 if (eventsBeforeStartDate != null)
@@ -348,7 +349,7 @@ namespace Legacy.Common.Business
                 }
 
             return cycles.Where(c =>
-                (c.EndTime >= options.StartDate && c.EndTime <= options.EndDate) || (c.StartTime <= options.EndDate && c.StartTime >= options.StartDate)).ToList();
+                c.EndTime >= options.StartDate && c.EndTime <= options.EndDate || c.StartTime <= options.EndDate && c.StartTime >= options.StartDate).ToList();
         }
 
         private CycleSplitFail.TerminationType GetTerminationEventBetweenStartAndEnd(DateTime start,
@@ -380,7 +381,7 @@ namespace Legacy.Common.Business
             Approach approach)
         {
             var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                endDate, new List<int> {4, 5, 6},
+                endDate, new List<int> { 4, 5, 6 },
                 getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).ToList();
             return cycleEvents;
         }
@@ -390,37 +391,37 @@ namespace Legacy.Common.Business
         {
             return new List<RLMCycle>();
         }
-    
 
-    private CycleService.EventType GetYellowToRedEventType(int EventCode)
+
+        private EventType GetYellowToRedEventType(int EventCode)
         {
             switch (EventCode)
             {
                 case 8:
-                    return CycleService.EventType.BeginYellowClearance;
+                    return EventType.BeginYellowClearance;
                 // overlap yellow
                 case 63:
-                    return CycleService.EventType.BeginYellowClearance;
+                    return EventType.BeginYellowClearance;
 
                 case 9:
-                    return CycleService.EventType.BeginRedClearance;
+                    return EventType.BeginRedClearance;
                 // overlap red
                 case 64:
-                    return CycleService.EventType.BeginRedClearance;
+                    return EventType.BeginRedClearance;
 
                 case 65:
-                    return CycleService.EventType.BeginRed;
+                    return EventType.BeginRed;
                 case 11:
-                    return CycleService.EventType.BeginRed;
+                    return EventType.BeginRed;
 
                 case 1:
-                    return CycleService.EventType.EndRed;
+                    return EventType.EndRed;
                 // overlap green
                 case 61:
-                    return CycleService.EventType.EndRed;
+                    return EventType.EndRed;
 
                 default:
-                    return CycleService.EventType.Unknown;
+                    return EventType.Unknown;
             }
         }
 

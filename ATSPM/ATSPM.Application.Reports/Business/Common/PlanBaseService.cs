@@ -8,7 +8,7 @@ using ATSPM.Application.Enums;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlansBaseService
     {

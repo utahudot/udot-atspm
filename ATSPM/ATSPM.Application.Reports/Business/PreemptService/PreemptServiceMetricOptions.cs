@@ -18,23 +18,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        //public override List<string> CreateMetric()
-        //{
-        //    base.CreateMetric();
-        //    var returnString = new List<string>();
-
-        //    var eventsTable = new ControllerEventLogs();
-
-        //    eventsTable.FillforPreempt(SignalID, StartDate, EndDate);
-        //    if (eventsTable.Events.Count > 0)
-        //    {
-        //        var psChart = new PreemptServiceMetric(this, eventsTable);
-        //        var chart = psChart.ServiceChart;
-        //        var chartName = CreateFileName();
-        //        chart.SaveImage(MetricFileLocation + chartName, ChartImageFormat.Jpeg);
-        //        returnString.Add(MetricWebPath + chartName);
-        //    }
-        //    return returnString;
-        //}
+        
     }
 }

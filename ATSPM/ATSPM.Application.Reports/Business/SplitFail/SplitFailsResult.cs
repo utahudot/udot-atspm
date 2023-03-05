@@ -1,15 +1,11 @@
-using Legacy.Common.Business;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.SplitFail
 {
-    /// <summary>
-    /// Split Fail chart
-    /// </summary>
-    public class SplitFailResult
+    public class SplitFailsResult
     {
-        public SplitFailResult(
+        public SplitFailsResult(
             string chartName,
             string signalId,
             string signalLocation,

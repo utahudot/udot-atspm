@@ -4,8 +4,9 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Legacy.Common.Business;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class SignalPhaseService
     {
@@ -28,7 +29,7 @@ namespace Legacy.Common.Business
             this.cycleService = cycleService;
         }
 
-       
+
 
         public void LinkPivotAddSeconds(SignalPhase signalPhase, int seconds)
         {
@@ -47,7 +48,8 @@ namespace Legacy.Common.Business
             int? pcdCycleTime,
             int binSize,
             int metricTypeId,
-            Approach approach)
+            Approach approach)//,
+            //List<ControllerEventLog> events)
         {
             var detectorEvents = GetDetectorEvents(metricTypeId, approach, start, end);
             var cycles = cycleService.GetPcdCycles(start, end, approach, detectorEvents, getPermissivePhase, pcdCycleTime);
@@ -64,22 +66,22 @@ namespace Legacy.Common.Business
         }
 
         private List<ControllerEventLog> GetDetectorEvents(
-            int metricTypeId, 
-            Approach approach, 
-            DateTime start, 
+            int metricTypeId,
+            Approach approach,
+            DateTime start,
             DateTime end)
         {
-                var events = new List<ControllerEventLog>();
-                var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
-                foreach (var d in detectorsForMetric)
-                    events.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(
-                        approach.SignalId, 
-                        start,
-                        end, 
-                        new List<int> {82}, 
-                        d.DetChannel, 
-                        d.GetOffset(), 
-                        d.LatencyCorrection));
+            var events = new List<ControllerEventLog>();
+            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
+            foreach (var d in detectorsForMetric)
+                events.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(
+                    approach.Signal.SignalId,
+                    start,
+                    end,
+                    new List<int> { 82 },
+                    d.DetChannel,
+                    d.GetOffset(),
+                    d.LatencyCorrection));
             return events;
         }
 

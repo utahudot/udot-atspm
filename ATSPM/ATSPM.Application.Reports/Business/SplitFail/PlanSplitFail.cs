@@ -1,8 +1,10 @@
-﻿using System;
+﻿
+using Legacy.Common.Business;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.SplitFail
 {
     public class PlanSplitFail : Plan
     {

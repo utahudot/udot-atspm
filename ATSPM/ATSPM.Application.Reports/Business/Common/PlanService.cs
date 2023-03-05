@@ -7,8 +7,9 @@ using System.Linq;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using ATSPM.Application.Reports.Business.SplitFail;
+using Legacy.Common.Business;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlanService
     {
@@ -55,7 +56,7 @@ namespace Legacy.Common.Business
             var planEvents = new List<ControllerEventLog>();
             var tempPlanEvents = controllerEventLogRepository.GetSignalEventsByEventCode(signalId, startDate, endDate, 131)
                 .OrderBy(e => e.Timestamp).ToList();
-            if(tempPlanEvents.Any() &&  tempPlanEvents.First().Timestamp != startDate)
+            if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
                 GetFirstPlan(startDate, signalId, planEvents);
             }
@@ -107,7 +108,7 @@ namespace Legacy.Common.Business
                     EventParam = 0,
                     SignalId = signalId
                 };
-                planEvents.Insert(0,firstPlanEvent);
+                planEvents.Insert(0, firstPlanEvent);
             }
         }
 
@@ -119,13 +120,13 @@ namespace Legacy.Common.Business
                 if (planEvents.Count - 1 == i)
                 {
                     if (planEvents[i].Timestamp != endDate)
-                        plans.Add(new Plan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam));
+                        plans.Add(new Plan(planEvents[i].EventParam.ToString(),planEvents[i].Timestamp, endDate));
                 }
                 else
                 {
                     if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
-                        plans.Add(new Plan(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
-                            planEvents[i].EventParam));
+                        plans.Add(new Plan(planEvents[i].EventParam.ToString(), planEvents[i].Timestamp, planEvents[i + 1].Timestamp
+                            ));
                 }
             return plans;
         }
@@ -154,15 +155,15 @@ namespace Legacy.Common.Business
         {
             var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId);
             var plans = new List<SpeedPlan>();
-            for (var i = 0; i < planEvents.Count; i++) 
-            { 
+            for (var i = 0; i < planEvents.Count; i++)
+            {
                 var planStart = new DateTime();
                 var planEnd = new DateTime();
                 var planNumber = 0;
                 var averageSpeed = 0;
                 var standardDeviation = 0;
                 var eightyFifthPercentile = 0;
-                var fifteenthPercentile =0;
+                var fifteenthPercentile = 0;
                 if (planEvents.Count - 1 == i)
                 {
                     if (planEvents[i].Timestamp != endDate)

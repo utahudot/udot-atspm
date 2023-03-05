@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using Legacy.Common.Business;
 using System;
 
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
@@ -18,7 +18,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             this.approachRepository = approachRepository;
         }
 
-        public PerdueCoordinationDiagramResult GetChartData(PerdueCoordinationDiagramOptions options)
+        public PerdueCoordinationDiagramResult GetChartData(PerdueCoordinationDiagramOptions options)//, Data.Models.Approach approach, System.Collections.Generic.IReadOnlyList<Data.Models.ControllerEventLog> events)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var signalPhase = signalPhaseService.GetSignalPhaseData(

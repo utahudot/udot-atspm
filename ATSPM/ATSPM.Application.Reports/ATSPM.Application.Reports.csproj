@@ -37,6 +37,7 @@
     <Folder Include="ViewModels\PreemptServiceRequest\" />
     <Folder Include="ViewModels\PreemptService\" />
     <Folder Include="ViewModels\SplitFail\" />
+    <Folder Include="ViewModels\SplitMonitor\" />
   </ItemGroup>
 
 </Project>

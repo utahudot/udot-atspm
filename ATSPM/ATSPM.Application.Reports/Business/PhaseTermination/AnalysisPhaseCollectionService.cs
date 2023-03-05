@@ -3,8 +3,8 @@ using ATSPM.Application.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Business;
 using ATSPM.Data.Models;
+using ATSPM.Application.Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.PhaseTermination
 {

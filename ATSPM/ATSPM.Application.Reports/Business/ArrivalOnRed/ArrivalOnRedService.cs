@@ -8,6 +8,7 @@ using ATSPM.Data.Models;
 using System.Collections.ObjectModel;
 using Legacy.Common.Business;
 using ATSPM.Data.Enums;
+using ATSPM.Application.Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {

@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.WCFServiceLibrary
+namespace ATSPM.Application.Reports.Business.SplitMonitor
 {
     [DataContract]
     public class SplitMonitorOptions
@@ -67,7 +67,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         public DateTime StartDate { get; private set; }
         public DateTime EndDate { get; private set; }
 
-       
+
 
         //public override List<string> CreateMetric()
         //{
@@ -352,7 +352,7 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         //        }
         //    }
         //}
-        
+
 
         //private void AddSplitMonitorDataToChart(Chart chart, AnalysisPhase phase, List<PlanSplitMonitor> plans)
         //{
@@ -402,6 +402,6 @@ namespace Legacy.Common.Business.WCFServiceLibrary
         //    }
         //}
 
-       
+
     }
 }

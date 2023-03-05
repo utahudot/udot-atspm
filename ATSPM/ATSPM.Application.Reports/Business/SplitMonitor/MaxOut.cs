@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.SplitMonitor;
+namespace ATSPM.Application.Reports.Business.SplitMonitor;
 
 public class SplitMonitorMaxOut
 {
