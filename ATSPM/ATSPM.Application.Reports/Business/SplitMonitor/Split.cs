@@ -4,14 +4,12 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor;
 
 public class Split
 {
-    public Split(DateTime startTime, DateTime endTime, int phaseNumber)
+    public Split(DateTime time, int phaseNumber)
     {
-        StartTime = startTime;
-        EndTime = endTime;
+        Time = time;
         PhaseNumber = phaseNumber;
     }
 
-    public DateTime StartTime { get; internal set; }
-    public DateTime EndTime { get; internal set; }
+    public DateTime Time { get; internal set; }
     public int PhaseNumber { get; internal set; }
 }

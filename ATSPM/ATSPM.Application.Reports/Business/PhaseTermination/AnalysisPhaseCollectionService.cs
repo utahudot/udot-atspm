@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Models;
 using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Reports.Business.SplitMonitor;
+using Legacy.Common.Business.PCD;
+using Legacy.Common.Business.SplitMonitor;
 
 namespace ATSPM.Application.Reports.Business.PhaseTermination
 {
@@ -23,18 +26,21 @@ namespace ATSPM.Application.Reports.Business.PhaseTermination
         private readonly ISignalRepository _signalRepository;
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
+        private readonly PlanSplitMonitorService planSplitMonitorService;
 
         public AnalysisPhaseCollectionService(
             IControllerEventLogRepository controllerEventLogRepository,
             ISignalRepository signalRepository,
             PlanService planService,
-            AnalysisPhaseService analysisPhaseService
+            AnalysisPhaseService analysisPhaseService,
+            PlanSplitMonitorService planSplitMonitorService
             )
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             _signalRepository = signalRepository;
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
+            this.planSplitMonitorService = planSplitMonitorService;
         }
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
@@ -85,6 +91,14 @@ namespace ATSPM.Application.Reports.Business.PhaseTermination
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
             analysisPhaseCollectionData.Signal = signal;
+            if (analysisPhaseCollectionData.Plans.Count > 0)
+            {
+                foreach (var plan in analysisPhaseCollectionData.Plans)
+                {
+                    planSplitMonitorService.SetProgrammedSplits(signalId, plan);
+                    planSplitMonitorService.SetHighCycleCount(analysisPhaseCollectionData, plan);
+                }
+            }
             return analysisPhaseCollectionData;
         }
 

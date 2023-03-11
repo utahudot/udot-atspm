@@ -17,8 +17,8 @@ public class SplitMonitorResult
     public string PhaseDescription { get; internal set; }
     public DateTime Start { get; internal set; }
     public DateTime End { get; internal set; }
-    public ICollection<Plan> Plans { get; internal set; }
-    public ICollection<Split> Splits { get; internal set; }
+    public ICollection<PlanSplitMonitorData> Plans { get; internal set; }
+    public ICollection<Split> ProgramedSplits { get; internal set; }
     public ICollection<SplitMonitorGapOut> GapOuts { get; internal set; }
     public ICollection<SplitMonitorMaxOut> MaxOuts { get; internal set; }
     public ICollection<SplitMonitorForceOff> ForceOffs { get; internal set; }

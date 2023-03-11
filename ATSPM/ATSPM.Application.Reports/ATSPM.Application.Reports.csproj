@@ -28,6 +28,7 @@
   <ItemGroup>
     <Folder Include="Legacy\Business\ApproachSpeed\" />
     <Folder Include="Legacy\Business\Speed\" />
+    <Folder Include="Legacy\Business\SplitMonitor\" />
     <Folder Include="Signal\" />
     <Folder Include="ViewModels\ArrivalOnRed\" />
     <Folder Include="ViewModels\LeftTurnGapAnalysis\" />
