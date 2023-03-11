@@ -31,7 +31,7 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public SplitMonitorResult GetChartData([FromBody] SplitMonitorOptions options)
         {
-            PreemptServiceRequestResult viewModel = splitMonitorService.GetChartData(options);
+            SplitMonitorResult viewModel = splitMonitorService.GetChartData(options);
             return viewModel;
         }
 
