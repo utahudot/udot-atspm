@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using Legacy.Common.Business;
 using ATSPM.Data.Enums;
 using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Infrastructure.Repositories;
 
 namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
@@ -17,16 +18,19 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
         private readonly ISignalRepository signalRepository;
         private readonly IApproachRepository approachRepository;
         private readonly SignalPhaseService signalPhaseService;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         public ArrivalOnRedService(
             ISignalRepository signalRepository,
             IApproachRepository approachRepository,
-            SignalPhaseService signalPhaseService
+            SignalPhaseService signalPhaseService,
+            IControllerEventLogRepository controllerEventLogRepository
             )
         {
             this.signalRepository = signalRepository;
             this.approachRepository = approachRepository;
             this.signalPhaseService = signalPhaseService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
@@ -34,6 +38,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
             ArrivalOnRedOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
+            var events = controllerEventLogRepository.GetDetectorEvents(9, approach, options.StartDate, options.EndDate);
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.StartDate,
                 options.EndDate,
@@ -41,8 +46,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                 false,
                 null,
                 options.SelectedBinSize,
-                9,
-                approach
+                //9,
+                approach,
+                events.ToList()
                 );
             double totalDetectorHits = 0;
             double totalAoR = 0;

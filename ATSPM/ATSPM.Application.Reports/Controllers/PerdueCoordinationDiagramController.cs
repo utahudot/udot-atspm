@@ -1,11 +1,14 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,15 +21,18 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly PerdueCoordinationDiagramService perdueCoordinationDiagramService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
+        private readonly SignalPhaseService signalPhaseService;
 
         public PerdueCoordinationDiagramController(
             PerdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
-            IApproachRepository approachRepository)
+            IApproachRepository approachRepository,
+            SignalPhaseService signalPhaseService)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.approachRepository = approachRepository;
+            this.signalPhaseService = signalPhaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -41,11 +47,22 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PerdueCoordinationDiagramResult GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
         {
-            //var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.StartDate, options.EndDate);
             var approach = approachRepository.Lookup(options.ApproachId);
-            PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options);//, approach, events);
+            var events = controllerEventLogRepository.GetDetectorEvents(6, approach, options.StartDate, options.EndDate);
+            var signalPhase = signalPhaseService.GetSignalPhaseData(
+                options.StartDate,
+                options.EndDate,
+                false,
+                options.ShowVolumes,
+                0,
+                options.SelectedBinSize,
+                approach,
+                events.ToList());
+            PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, approach, signalPhase);
             return viewModel;
         }
+
+        
 
     }
 }

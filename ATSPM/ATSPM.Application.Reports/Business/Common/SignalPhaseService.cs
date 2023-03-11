@@ -47,11 +47,9 @@ namespace ATSPM.Application.Reports.Business.Common
             bool showVolume,
             int? pcdCycleTime,
             int binSize,
-            int metricTypeId,
-            Approach approach)//,
-            //List<ControllerEventLog> events)
+            Approach approach,
+            List<ControllerEventLog> detectorEvents)
         {
-            var detectorEvents = GetDetectorEvents(metricTypeId, approach, start, end);
             var cycles = cycleService.GetPcdCycles(start, end, approach, detectorEvents, getPermissivePhase, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach);
             return new SignalPhase(
@@ -65,25 +63,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 );
         }
 
-        private List<ControllerEventLog> GetDetectorEvents(
-            int metricTypeId,
-            Approach approach,
-            DateTime start,
-            DateTime end)
-        {
-            var events = new List<ControllerEventLog>();
-            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
-            foreach (var d in detectorsForMetric)
-                events.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(
-                    approach.Signal.SignalId,
-                    start,
-                    end,
-                    new List<int> { 82 },
-                    d.DetChannel,
-                    d.GetOffset(),
-                    d.LatencyCorrection));
-            return events;
-        }
+       
 
 
         private VolumeCollection SetVolume(List<ControllerEventLog> detectorEvents, int binSize, DateTime start, DateTime end)

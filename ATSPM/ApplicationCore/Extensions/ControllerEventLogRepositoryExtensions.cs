@@ -132,13 +132,39 @@ namespace ATSPM.Application.Extensions
             throw new NotImplementedException();
         }
 
-        public static int GetDetectorActivationCount(this IControllerEventLogRepository repo, string signalId, DateTime startTime, DateTime endTime, int detectorChannel)
+        public static int GetDetectorActivationCount(
+            this IControllerEventLogRepository repo,
+            string signalId,
+            DateTime startTime,
+            DateTime endTime,
+            int detectorChannel)
         {
             var result = repo.GetSignalEventsBetweenDates(signalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(82, detectorChannel))
                 .ToList().Count;
 
             return result;
+        }
+
+        public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
+            this IControllerEventLogRepository repo,
+            int metricTypeId,
+            Approach approach,
+            DateTime start,
+            DateTime end)
+        {
+            var events = new List<ControllerEventLog>();
+            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
+            foreach (var d in detectorsForMetric)
+                events.AddRange(repo.GetEventsByEventCodesParam(
+                    approach.Signal.SignalId,
+                    start,
+                    end,
+                    new List<int> { 82 },
+                    d.DetChannel,
+                    d.GetOffset(),
+                    d.LatencyCorrection));
+            return events;
         }
 
         public static ControllerEventLog GetFirstEventBeforeDate(this IControllerEventLogRepository repo, string signalId, int eventCode, DateTime date)

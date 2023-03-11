@@ -18,19 +18,11 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             this.approachRepository = approachRepository;
         }
 
-        public PerdueCoordinationDiagramResult GetChartData(PerdueCoordinationDiagramOptions options)//, Data.Models.Approach approach, System.Collections.Generic.IReadOnlyList<Data.Models.ControllerEventLog> events)
-        {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
-                options.StartDate,
-                options.EndDate,
-                false,
-                options.ShowVolumes,
-                0,
-                options.SelectedBinSize,
-                6,
-                approach
-                );
+        public PerdueCoordinationDiagramResult GetChartData(
+            PerdueCoordinationDiagramOptions options,
+            Data.Models.Approach approach,
+            SignalPhase signalPhase)
+        {            
             var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.YAxis));
             return new PerdueCoordinationDiagramResult(
                 "Perdue Coordination Diagram",
@@ -47,8 +39,6 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 volume,
                 signalPhase.Cycles
                 );
-
-
         }
     }
 }

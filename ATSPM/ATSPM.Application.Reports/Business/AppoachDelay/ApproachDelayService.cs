@@ -2,6 +2,7 @@
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using ATSPM.Application.Repositories;
+using ATSPM.Infrastructure.Repositories;
 using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
@@ -15,17 +16,20 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         private readonly PlanService planService;
         private readonly SignalPhaseService signalPhaseService;
         private readonly IApproachRepository approachRepository;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         public ApproachDelayService(
             ISignalRepository signalRepository,
             PlanService planService,
             SignalPhaseService signalPhaseService,
-            IApproachRepository approachRepository)
+            IApproachRepository approachRepository,
+            IControllerEventLogRepository controllerEventLogRepository)
         {
             this.signalRepository = signalRepository;
             this.planService = planService;
             this.signalPhaseService = signalPhaseService;
             this.approachRepository = approachRepository;
+            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
@@ -33,6 +37,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             ApproachDelayOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
+            var events = controllerEventLogRepository.GetDetectorEvents(options.MetricTypeId, approach, options.StartDate, options.EndDate);
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.StartDate,
                 options.EndDate,
@@ -40,8 +45,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                 false,
                 null,
                 options.BinSize,
-                options.MetricTypeId,
-                approach
+                approach,
+                events.ToList()
                 );
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
             var dt = signalPhase.StartDate;
