@@ -40,13 +40,13 @@ namespace Legacy.Common.Business.TimingAndActuations
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public TimingAndActuationsForPhaseService(Approach approach, int phaseNumber, bool phaseOrOverlap, TimingAndActuationsOptions options)
+        public TimingAndActuationsForPhaseData  GetChartData(TimingAndActuationsOptions options)
         {
             var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseData();
             timingAndActuationsForPhaseData.Approach = approach;
             timingAndActuationsForPhaseData.PhaseNumber = phaseNumber;
             timingAndActuationsForPhaseData.Options = options;
-            timingAndActuationsForPhaseData.PhaseOrOverlap = phaseOrOverlap;
+            timingAndActuationsForPhaseData.PhaseOrOverlap =  phaseOrOverlap;
             GetAllRawCycleData(options.StartDate, options.EndDate, timingAndActuationsForPhaseData.PhaseOrOverlap, timingAndActuationsForPhaseData);
             if (timingAndActuationsForPhaseData.Options.ShowPedestrianIntervals)
             {
@@ -61,6 +61,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                 var optionsSignalID = timingAndActuationsForPhaseData.Options.SignalId;
                 GetRawCustomEvents(optionsSignalID, timingAndActuationsForPhaseData.PhaseNumber, options.StartDate, options.EndDate, timingAndActuationsForPhaseData);
             }
+            return timingAndActuationsForPhaseData;
         }
 
         public TimingAndActuationsForPhaseService(Approach approach, TimingAndActuationsOptions options,

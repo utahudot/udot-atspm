@@ -6,9 +6,9 @@ namespace ATSPM.Application.Reports.ViewModels.TimingAndActuation;
 /// <summary>
 /// Timing and Actuation chart
 /// </summary>
-public class TimingAndActuationChart
+public class TimingAndActuationResult
 {
-    public TimingAndActuationChart(string chartName, string signalId, string signalLocation, DateTime start, DateTime end, ICollection<EventType> eventTypes)
+    public TimingAndActuationResult(string chartName, string signalId, string signalLocation, DateTime start, DateTime end, ICollection<EventType> eventTypes)
     {
         ChartName = chartName;
         SignalId = signalId;

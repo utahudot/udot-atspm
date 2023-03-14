@@ -12,10 +12,10 @@ namespace ATSPM.Application.Reports.Controllers
     {
         // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public TimingAndActuationChart Test()
+        public TimingAndActuationResult Test()
         {
             Fixture fixture = new();
-            TimingAndActuationChart viewModel = fixture.Create<TimingAndActuationChart>();
+            TimingAndActuationResult viewModel = fixture.Create<TimingAndActuationResult>();
             return viewModel;
         }
 
