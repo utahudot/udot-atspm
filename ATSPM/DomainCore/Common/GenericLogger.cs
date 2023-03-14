@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Domain.Common
 {
-    // TODO: remove events since they can't be accessed. inseade add an action callback
+    // TODO: remove events since they can't be accessed. Instead add an action callback
     
     public class GenericLogger<T1, T2> : GenericLogger<T1>, ILogger<T2>
     {

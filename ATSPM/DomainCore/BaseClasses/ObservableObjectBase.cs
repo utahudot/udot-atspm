@@ -25,12 +25,14 @@ namespace ATSPM.Domain.BaseClasses
     {
         #region INotifyPropertyChanged
 
+        ///<inheritdoc/>
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
         #region INotifyPropertyChanging
 
+        ///<inheritdoc/>
         public event PropertyChangingEventHandler PropertyChanging;
 
         #endregion
