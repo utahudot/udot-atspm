@@ -77,6 +77,36 @@
             <param name="propertyName">Changed property name.</param>
             <param name="value">Changed property value.</param>
         </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ObjectModelBase.HasErrors">
+            <inheritdoc/>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObjectModelBase.ErrorsChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.GetErrors(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.BeginEdit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.CancelEdit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.EndEdit">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ObjectModelBase.IsChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.AcceptChanges">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.RejectChanges">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.Clone">
+            <inheritdoc/>
+        </member>
         <member name="M:ATSPM.Domain.BaseClasses.ObjectModelBase.RaiseErrorChanged(System.String)">
             <summary>
             Raise <see cref="E:ATSPM.Domain.BaseClasses.ObjectModelBase.ErrorsChanged"/> event that property has pending changes.
@@ -97,6 +127,12 @@
             </item>
             </list>
             </summary>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged">
+            <inheritdoc/>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging">
+            <inheritdoc/>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ObservableObjectBase.Set``1(``0@,``0,System.String)">
             <summary>
@@ -175,6 +211,24 @@
             Sets a properties value and raises the <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanging"/> and <see cref="E:ATSPM.Domain.BaseClasses.ObservableObjectBase.PropertyChanged"/> events if <paramref name="newValue"/> != <paramref name="currentValue"/>.
             </summary>
             <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
+        </member>
+        <member name="P:ATSPM.Domain.BaseClasses.ServiceObjectBase.IsInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.EndInit">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Dispose(System.Boolean)">
+            <summary>
+            Used for IDisposable Pattern
+            </summary>
+            <param name="disposing">Flag for keeping track of disposed state</param>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.RaiseInitialized">
             <summary>

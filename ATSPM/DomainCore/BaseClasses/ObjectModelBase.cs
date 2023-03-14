@@ -170,11 +170,14 @@ namespace ATSPM.Domain.BaseClasses
 
         #region INotifyDataErrorInfo
 
+        ///<inheritdoc/>
         [JsonIgnore]
         public bool HasErrors => _errors.Keys.Count > 0;
 
+        ///<inheritdoc/>
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
+        ///<inheritdoc/>
         public IEnumerable GetErrors(string propertyName)
         {
             if (!string.IsNullOrEmpty(propertyName))
@@ -204,11 +207,13 @@ namespace ATSPM.Domain.BaseClasses
 
         private bool _isEditing;
 
+        ///<inheritdoc/>
         public virtual void BeginEdit()
         {
             _isEditing = true;
         }
 
+        ///<inheritdoc/>
         public virtual void CancelEdit()
         {
             _isEditing = false;
@@ -216,6 +221,7 @@ namespace ATSPM.Domain.BaseClasses
             RaisePropertyChanged(string.Empty);
         }
 
+        ///<inheritdoc/>
         public virtual void EndEdit()
         {
             _isEditing = false;
@@ -227,15 +233,18 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IRevertibleChangeTracking
 
+        ///<inheritdoc/>
         [JsonIgnore]
         public bool IsChanged => changes.Keys.Count > 0;
 
+        ///<inheritdoc/>
         public void AcceptChanges()
         {
             changes?.Clear();
             RaisePropertyChanged(nameof(IsChanged));
         }
 
+        ///<inheritdoc/>
         public void RejectChanges()
         {
             //_changes?.Clear();
@@ -247,6 +256,7 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IClonable
 
+        ///<inheritdoc/>
         public virtual object Clone()
         {
             return MemberwiseClone();
