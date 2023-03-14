@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
+#nullable enable
+
 namespace ATSPM.Domain.Exceptions
 {
     /// <summary>
