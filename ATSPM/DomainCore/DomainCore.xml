@@ -330,6 +330,33 @@
             <param name="progress">IProgress reporting implmentation</param>
             <returns>Ouput result.</returns>
         </member>
+        <member name="T:ATSPM.Domain.Common.IFileTranscoder">
+            <summary>
+            Provides an abrstraction when working with different file types
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IFileTranscoder.FileExtension">
+            <summary>
+            File extension type to work with
+            <example>.txt</example>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IFileTranscoder.EncodeItem``1(``0)">
+            <summary>
+            Defines how the object should be encoded
+            </summary>
+            <typeparam name="T">object type</typeparam>
+            <param name="item">data to encode</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IFileTranscoder.DecodeItem``1(System.Byte[])">
+            <summary>
+            Defines how the file should be decoded
+            </summary>
+            <typeparam name="T">object type</typeparam>
+            <param name="data">data to decode</param>
+            <returns></returns>
+        </member>
         <member name="T:ATSPM.Domain.Common.LambdaEqualityComparer`1">
             <summary>
             Versitile IEqualityComparer implementation that provides passing of delegate functions
@@ -338,7 +365,6 @@
             <example>
             <code>new LambdaEqualityComparer((x, y) => Equals(x, y))</code>
             </example>
-            <exception cref="T:System.ArgumentNullException">Thrown either parameters are null</exception>
             <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iequalitycomparer-1?view=net-5.0">Wiki</seealso>
         </member>
         <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.#ctor(System.Func{`0,`0,System.Boolean})">
@@ -353,6 +379,7 @@
             </summary>
             <param name="lambdaComparer">Function that defines what to compare</param>
             <param name="lambdaHash">Function that defines how to generate HashCode</param>
+            <exception cref="T:System.ArgumentNullException"></exception>
         </member>
         <member name="M:ATSPM.Domain.Common.LambdaEqualityComparer`1.Equals(`0,`0)">
             <summary>
@@ -374,10 +401,15 @@
             Versitile IComparer implementation that provides passing of delegate functions
             </summary>
             <typeparam name="T">Type to compare</typeparam>
-            <exception cref="T:System.ArgumentNullException">Thrown when parameter is null</exception>
             <seealso href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.icomparer-1?view=net-5.0">Wiki</seealso>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:ATSPM.Domain.Common.LambdaComparer`1.#ctor(System.Func{`0,`0,System.Int32})" -->
+        <member name="M:ATSPM.Domain.Common.LambdaComparer`1.#ctor(System.Func{`0,`0,System.Int32})">
+            <summary>
+            Creates a new IComparerwith delegate function
+            </summary>
+            <param name="lambdaComparer"></param>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
         <member name="M:ATSPM.Domain.Common.LambdaComparer`1.Compare(`0,`0)">
             <summary>
             Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other based on a delegate function
@@ -385,6 +417,22 @@
             <param name="x">First object to compare</param>
             <param name="y">Second object to compare</param>
             <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Exceptions.ExecuteException">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.ExecuteException.#ctor">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Exceptions.ExecuteException.#ctor(System.String)">
+            <summary>
+            Used with <see cref="T:ATSPM.Domain.Common.IExecute"/> when <c>CanExecute</c> is false
+            </summary>
+            <param name="message">Enter custom <c>CanExecute</c> failed message</param>
         </member>
         <member name="T:ATSPM.Domain.Exceptions.UdotExceptionBase">
             <summary>
@@ -404,6 +452,200 @@
             </summary>
             <param name="message">The error message that explains the reason for the exception.</param>
             <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.CompressionExtensions">
+            <summary>
+            Data compression extension helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipCompressToByte(System.String)">
+            <summary>
+            GZip string and encode to byte array
+            </summary>
+            <param name="str">string to compress and encode</param>
+            <returns>byte array of compressed string</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToStream(System.IO.Stream)">
+            <summary>
+            GZip stream and encode to <see cref="T:System.IO.MemoryStream"/>
+            </summary>
+            <param name="stream">Stream to compress and convert</param>
+            <returns><see cref="T:System.IO.MemoryStream"/> of compressed stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToStream(System.Byte[])">
+            <summary>
+            Decompress and decode byte array to <see cref="T:System.IO.MemoryStream"/>
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns><see cref="T:System.IO.MemoryStream"/> of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToByteArray(System.IO.Stream)">
+            <summary>
+            Decompress GZip stream to byte array
+            </summary>
+            <param name="stream">Stream to decompress</param>
+            <returns>byte array of decompressed stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToByteArray(System.Byte[])">
+            <summary>
+            Decompress GZip byte array to byte array
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns>byte array of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToString(System.IO.Stream)">
+            <summary>
+            Decompress GZip stream to string
+            </summary>
+            <param name="stream">Stream to decompress</param>
+            <returns>String of decompressed Stream</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToString(System.Byte[])">
+            <summary>
+            Decompress GZip byte array to string
+            </summary>
+            <param name="bytes">byte array to decompress</param>
+            <returns>string of decompressed byte array</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.IsCompressed(System.IO.Stream)">
+            <summary>
+            Determines if Stream is compressed
+            </summary>
+            <param name="stream">Stream to check</param>
+            <returns>True if Stream is compressed</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.IsCompressed(System.Byte[])">
+            <summary>
+            Determines if byte array is compressed
+            </summary>
+            <param name="bytes">byte array to check</param>
+            <returns>True if byte array is compressed</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.FileSignature">
+            <summary>
+            Filesignature structure
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignature.#ctor(System.Byte[],System.Int32,System.String,System.String,System.Boolean)">
+            <summary>
+            Filesignature
+            </summary>
+            <param name="magicHeader">File Magic Header</param>
+            <param name="offset">Offset from start byte</param>
+            <param name="extension">File extension</param>
+            <param name="description">File type description</param>
+            <param name="isCompressed">True if file type is compressed</param>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.MagicHeader">
+            <summary>
+            File Magic Header
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Offset">
+            <summary>
+            Offset from start byte
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Extension">
+            <summary>
+            File extension
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.Description">
+            <summary>
+            File type description
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignature.IsCompressed">
+            <summary>
+            True if file type is compressed
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.FileSignatureExtensions">
+            <summary>
+            FileSignature Extensions
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Extensions.FileSignatureExtensions.FileSignatures">
+            <summary>
+            <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> List
+            <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromExtension(System.IO.FileInfo)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> from <see cref="T:System.IO.FileInfo"/>
+            </summary>
+            <param name="file"><see cref="T:System.IO.FileInfo"/> to get info for</param>
+            <returns>List of <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> that match file type</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromExtension(System.String)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> from string
+            </summary>
+            <param name="fileExtension">string to get info for</param>
+            <returns>List of <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> that match extension type</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.FileSignatureExtensions.GetFileSignatureFromMagicHeader(System.Byte[])">
+            <summary>
+            Gets the <see cref="T:ATSPM.Domain.Extensions.FileSignature"/> info from Magic Header byte array
+            </summary>
+            <param name="bytes">array representing Magic Header</param>
+            <returns><see cref="T:ATSPM.Domain.Extensions.FileSignature"/> info that matches Magic Header bytes</returns>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.HostingExtensions">
+            <summary>
+            Microsoft Hosting Extension Helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintHostInformation(System.IServiceProvider)">
+            <summary>
+            Print hosting information
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintEnvironment(Microsoft.Extensions.Hosting.IHostEnvironment)">
+            <summary>
+            Print environment information
+            </summary>
+            <param name="environment"></param>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.HostingExtensions.PrintConfiguration(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Print configuration information
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="T:ATSPM.Domain.Extensions.IPAddressExtensions">
+            <summary>
+            <see cref="T:System.Net.IPAddress"/> extension helpers
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.IsValidIPAddress(System.String,System.Boolean)">
+            <summary>
+            Checks to see if ipaddres string is valid
+            </summary>
+            <param name="ipaddress">ipaddress string to validate</param>
+            <param name="ping">True if system should validate by ping</param>
+            <returns>True if address is valid</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.IsValidIPAddress(System.Net.IPAddress,System.Boolean)">
+            <summary>
+            Checks to see if <see cref="T:System.Net.IPAddress"/> is valid
+            </summary>
+            <param name="ipaddress"><see cref="T:System.Net.IPAddress"/> to validate</param>
+            <param name="ping">True if system should validate by ping</param>
+            <returns>True if address is valid</returns>
+        </member>
+        <member name="M:ATSPM.Domain.Extensions.IPAddressExtensions.PingIPAddress(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Pings ip address
+            </summary>
+            <param name="ipaddress">IPAddress to ping</param>
+            <param name="timeout">Ping timeout in milliseconds</param>
+            <returns>True if ping succeeds</returns>
         </member>
         <member name="T:ATSPM.Domain.Extensions.QueryExtensions">
             <summary>
