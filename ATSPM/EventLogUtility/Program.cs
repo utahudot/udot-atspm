@@ -3,8 +3,10 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Data;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
+using ATSPM.EventLogUtility;
 using ATSPM.EventLogUtility.Commands;
 using ATSPM.Infrastructure.Converters;
 using ATSPM.Infrastructure.Extensions;
@@ -30,6 +32,66 @@ using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks.Dataflow;
+
+List<ControllerEventLog> list1 = new();
+List<ControllerEventLog> list2 = new();
+List<ControllerEventLog> list3 = new();
+
+Random r = new Random();
+
+for (int i = 0; i < 10; i++)
+{
+    list1.Add(new ControllerEventLog() { SignalId = "1001", EventCode = 7, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
+    list2.Add(new ControllerEventLog() { SignalId = "1001", EventCode = r.Next(4, 7), EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
+    list3.Add(new ControllerEventLog() { SignalId = "1001", EventCode = 23, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
+}
+
+Console.WriteLine($"list1: {list1.Count}");
+Console.WriteLine($"list2: {list2.Count}");
+Console.WriteLine($"list3: {list3.Count}");
+
+
+var test = new ATSPMProcessWorkflow();
+
+
+await foreach (var result in test.PhaseTerminationMeasureInformation.ReceiveAllAsync())
+{
+    //return result as object to web client;
+}
+
+
+
+
+
+
+
+
+
+
+
+Console.ReadLine();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 var rootCmd = new EventLogCommands();
 var cmdBuilder = new CommandLineBuilder(rootCmd);
@@ -136,8 +198,8 @@ h =>
     });
 });
 
-var cmdParser = cmdBuilder.Build();
-await cmdParser.InvokeAsync(args);
+//var cmdParser = cmdBuilder.Build();
+//await cmdParser.InvokeAsync(args);
 
 public class TestExtractLogHostedService : IHostedService
 {
