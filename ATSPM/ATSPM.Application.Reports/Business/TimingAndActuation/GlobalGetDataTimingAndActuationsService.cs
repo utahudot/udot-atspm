@@ -1,11 +1,10 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
-using Legacy.Common.Business.WCFServiceLibrary;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Legacy.Common.Business.TimingAndActuations
+namespace ATSPM.Application.Reports.Business.TimingAndActuation
 {
     public class GlobalGetDataTimingAndActuationsService
     {
@@ -29,7 +28,7 @@ namespace Legacy.Common.Business.TimingAndActuations
                     {
                         options.GlobalEventCounter = 1;
                         var globalCustomEvents = controllerEventLogRepository.GetEventsByEventCodesParam
-                        (signalId, options.StartDate, options.EndDate,
+                        (signalId, options.Start, options.End,
                             new List<int> { globalEventCode }, globalEventParam).ToList();
                         if (globalCustomEvents.Count > 0)
                         {

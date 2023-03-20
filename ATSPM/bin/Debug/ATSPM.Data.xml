@@ -1,0 +1,802 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ATSPM.Data</name>
+    </assembly>
+    <members>
+        <!-- Badly formed XML comment ignored for member "T:ATSPM.Data.Enums.DataLoggerEnum" -->
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseOn">
+            <summary>
+            Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen">
+            <summary>
+            Set when either solid or flashing green indication has begun.
+            Do not set repeatedly during flashing operation
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseCheck">
+            <summary>
+            Set when a conflicting call is registered against the active phase. (Marks beginning of MAX timing)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMinComplete">
+            <summary>
+            Set when phase min timer expires
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut">
+            <summary>
+            Phase termination due to gap out termination condition.
+            Set once per phase when phase gaps out but may not necessarily occur upon phase termination
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut">
+            <summary>
+            Set when phase MAX timer expires but may not necessarily occur upon phase termination due to last car passage or other features
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff">
+            <summary>
+            Set when phase force off is applied by the coordinator to the active green phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination">
+            <summary>
+            Set when phase green indications are terminated into either yellow change interval or permissive (FYA) movement
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange">
+            <summary>
+            Set when phase yellow indication becomes active and interval timer begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange">
+            <summary>
+            Set when phase yellow indication becomes inactive
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginRedClearance">
+            <summary>
+            Set only if phase red clearance is served. Set when red clearance timing begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndRedClearance">
+            <summary>
+            Set only if phase red clearance is served. Set when red clearance timing concludes.
+            This may not necessarily coincide with completion of the phase,
+            especially during clearance of trailing overlaps, red revert timing, red rest, or delay for other ring terminations
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseInactive">
+            <summary>
+            Set when the phase is no longer active within the ring,
+            including completion of any trailing overlaps or end of barrier delays for adjacent ring termination
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ExtensionTimerGapOut">
+            <summary>
+            Set when phase extension timer gaps out
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseSkipped">
+            <summary>
+            Set when phase in the programmed ring is skipped for any reason
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ExtensionTimerReductionStart">
+            <summary>
+            Set when extension timer starts to reduce (the time before reduction)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ExtensionTimerMinimumAchieved">
+            <summary>
+            Set when extension timer minimum is reached (after the time to reduce)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AddedInitialComplete">
+            <summary>
+            Set when phase added initial timer expires
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.NextPhaseDecision">
+            <summary>
+            Set when the controller determines a phase will be next to begin green after the current active phase(s) end red clearance
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPEarlyForceOffPhase">
+            <summary>
+            Set when TSP early force off is applied to an active phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionForceOff20">
+            <summary>
+            Set when controller applies preemption force off to the active cycle
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginWalk">
+            <summary>
+            Set when walk indication becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginChangeInterval">
+            <summary>
+            Set when flashing don’t walk indication becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginSolidDontWalk">
+            <summary>
+            Set when don’t walk indication becomes solid (non-flashing) from either termination of pedestrian change interval,
+            or head illumination after a pedestrian dark interval
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianDark">
+            <summary>
+            Set when the pedestrian outputs are set off
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ExtendedPedestrianChangeInterval">
+            <summary>
+            Set when extended pedestrian change interval is requested by pressing the pedestrian push button for two (2) seconds.
+            See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Signals and Detectors - Extended Pushbutton Press Features for more details
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OversizedPedestrianServed">
+            <summary>
+            Set when pedestrian phase is active beyond pedestrian change interval or force off point
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.BarrierTermination">
+            <summary>
+            Set when all active phases become inactive in the ring and cross barrier phases are next to be served
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.FYABeginPermissive">
+            <summary>
+            Set when flashing yellow arrow becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.FYAEndPermissive">
+            <summary>
+            Set when flashing yellow arrow becomes inactive through either clearance of the permissive movement or transition into a protected movement
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseHoldActive">
+            <summary>
+            Set when phase hold is applied by the coordinator, preemptor, or external logic.
+            Phase does not necessarily need to be actively timing for this event to occur
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseHoldReleased">
+            <summary>
+            Set when phase hold is released by the coordinator, preemptor, or external logic.
+            Phase does not necessarily need to be actively timing for this event to occur
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseCallRegistered">
+            <summary>
+            Call to service on a phase is registered by vehicular demand.
+            This event will not be set if a recall exists on the phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseCallDropped">
+            <summary>
+            Call to service on a phase is cleared by either service of the phase or removal of call
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianCallRegistered">
+            <summary>
+            Call to service on a phase is registered by pedestrian demand.
+            This event will not be set if a recall exists on the phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseOmitOn">
+            <summary>
+            Set when phase omit is applied by the coordinator, preemptor, or other dynamic sources.
+            Phase does not necessarily need to be actively timing for this event to occur.
+            This event is not set when phase is removed from the active sequence or other configuration-level change has occurred
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseOmitOff">
+            <summary>
+            Set when phase omit is released by the coordinator, preemptor, or other dynamic sources.
+            Phase does not necessarily need to be actively timing for this event to occur.
+            This event is not set when phase is added from the active sequence or other configuration-level change has occurred
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOmitOn">
+            <summary>
+            Set when pedestrian omit is applied by the coordinator, preemptor, or other dynamic sources.
+            Phase does not necessarily need to be actively timing for this event to occur.
+            This event is not set when phase is removed from the active sequence or other configuration-level change has occurred
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOmitOff">
+            <summary>
+            Set when pedestrian omit is released by the coordinator, preemptor, or other dynamic sources.
+            Phase does not necessarily need to be actively timing for this event to occur.
+            This event is not set when phase is added from the active sequence or other configuration-level change has occurred
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.MAX1InEffect">
+            <summary>
+            Set when maximum green (MAX 1) interval is in-effect for the active phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.MAX2InEffect">
+            <summary>
+            Set when maximum green (MAX 2) interval is in-effect for the active phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DynamicMAXInEffect">
+            <summary>
+            Set when dynamic max interval is in-effect for the active phase.
+            This event shall be populated upon termination of MAX green (MAX 1 or MAX 2) interval
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DynamicMAXStepUp">
+            <summary>
+            Set when dynamic max interval steps up for the active phase (initially after two consecutive phase max out events)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DynamicMAXStepDown">
+            <summary>
+            Set when dynamic max interval steps down for the active phase (initially after two consecutive phase gap out events)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AdvanceWarningSignOn">
+            <summary>
+            Set when advance warning sign is on
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AdvanceWarningSignOff">
+            <summary>
+            Set when advance warning sign is off
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginGreen">
+            <summary>
+            Set when overlap becomes green.
+            Do not set repeatedly when overlap is flashing green.
+            Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual signal head colors
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginTrailingGreenExtension">
+            <summary>
+            Set when overlap is green and extension timers begin timing
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginYellow">
+            <summary>
+            Set when overlap is in a yellow change interval state
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginRedClearance">
+            <summary>
+            Set when overlap begins timing red clearance intervals
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapOffInactivewithredindication">
+            <summary>
+            Set when overlap has completed all timing,
+            allowing any conflicting phase next to begin service
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapDark">
+            <summary>
+            Set when overlap head is set dark (no active outputs).
+            The end of this interval shall be recorded by either an overlap off state or other active overlap state
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginWalk">
+            <summary>
+            Set when walk indication becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginClearance">
+            <summary>
+            Set when flashing don’t walk indication becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk">
+            <summary>
+            Set when don’t walk indication becomes solid (non flashing) from either termination of ped clearance,
+            or head illumination after a ped dark interval
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapDark">
+            <summary>
+            Set when the pedestrian outputs are set off
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AdvanceWarningSignActive">
+            <summary>
+            Set when advance warning sign becomes active
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive">
+            <summary>
+            Set when advance warning sign becomes inactive
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOff">
+            <summary>
+            Detector on and off events shall be triggered post any detector delay/extension processing
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn">
+            <summary>
+            Detector on and off events shall be triggered post any detector delay/extension processing
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorRestored">
+            <summary>
+            Detector restored to non-failed state by either manual restoration or re-enabling via continued diagnostics
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorFaultOther">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorFaultWatchdogFault">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorFaultOpenLoopFault">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorFaultShortedLoopFault">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorFaultExcessiveChangeFault">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedDetectorOff">
+            <summary>
+            Ped detector events shall be triggered post any detector delay/extension processing and may be set multiple times for a single pedestrian call.
+            (with future intent to eventually support ped presence and volume)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedDetectorOn">
+            <summary>
+            Ped detector events shall be triggered post any detector delay/extension processing and may be set multiple times for a single pedestrian call.
+            (with future intent to eventually support ped presence and volume)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianDetectorFailed">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianDetectorRestored">
+            <summary>
+            Detector failure logged upon local controller diagnostics only (not system diagnostics)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPDetectorOff">
+            <summary>
+            TSP detector events shall be triggered post any detector delay/extension processing
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPDetectorOn">
+            <summary>
+            TSP detector events shall be triggered post any detector delay/extension processing
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptAdvanceWarningInput">
+            <summary>
+            Set when preemption advance warning input is activated
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOn">
+            <summary>
+            Set when preemption input is activated.
+            (prior to preemption delay timing) May be set multiple times if input is intermittent during preemption service
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptGateDownInputReceived">
+            <summary>
+            Set when gate down input is received by the controller (if available)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOff">
+            <summary>
+            Set when preemption input is de-activated.
+            May be set multiple times if input is intermittent preemption service
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted">
+            <summary>
+            Set when preemption delay expires,
+            and controller begins transition timing (force off) to serve preemption
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginTrackClearance">
+            <summary>
+            Set when track clearance phases are green and track clearance timing begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginDwellService">
+            <summary>
+            Set when preemption dwell or limited service begins,
+            or minimum dwell timer is reset due to call drop and reapplication
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionLinkActiveOn">
+            <summary>
+            Set when linked preemptor input is applied from active preemptor
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionLinkActiveOff">
+            <summary>
+            Set when linked preemptor input is dropped from active preemptor
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionMaxPresenceExceeded">
+            <summary>
+            Set when preemption max presence timer is exceeded,
+            and preemption input is released from service
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginExitInterval">
+            <summary>
+            Set when preemption exit interval phases are green and exit timing begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn">
+            <summary>
+            Set when request for priority is received
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen">
+            <summary>
+            Set when controller is adjusting active cycle to accommodate early service to TSP phases
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen">
+            <summary>
+            Set when controller is adjusting active cycle to accommodate extended service to TSP phases
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckOut">
+            <summary>
+            Set when request for priority is retracted
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionForceOff116">
+            <summary>
+            Set when preemption force off is applied to the active cycle
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPEarlyForceOffCycle">
+            <summary>
+            Set when TSP early force off is applied to the active cycle
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPServiceStart">
+            <summary>
+            Set when requested TSP service begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TSPServiceEnd">
+            <summary>
+            Set when requested TSP service ends
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange">
+            <summary>
+            Coordination pattern that is actively running in the controller.
+            (Highest priority of TOD, System or manual command). 
+            This event will not be reapplied if coordination is temporarily suspended for preemption or other external control
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.CycleLengthChange">
+            <summary>
+            This event shall be populated upon selection of a new coordination pattern change that selects a new cycle length.
+            Cycle lengths in excess of 255 shall record this event with a 255 parameter, along with event code 156
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OffsetLengthChange">
+            <summary>
+            This event shall be populated upon selection of a new coordination pattern change that selects a new cycle length.
+            Offsets in  excess of 255 shall record this event with a 255 parameter,
+            requiring controller database lookup for this actual value
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split1Change">
+            <summary>
+            Split change events shall be populated upon selection of a new coordination pattern
+            as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+            Adaptive Control System (ACS) Lite or other adaptive control system
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split2Change">
+            <summary>
+            Split 2 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split3Change">
+            <summary>
+            Split 3 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split4Change">
+            <summary>
+            Split 4 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split5Change">
+            <summary>
+            Split 5 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split6Change">
+            <summary>
+            Split 6 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split7Change">
+            <summary>
+            Split 7 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split8Change">
+            <summary>
+            Split 8 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split9Change">
+            <summary>
+            Split 9 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split10Change">
+            <summary>
+            Split 10 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split11Change">
+            <summary>
+            Split 11 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split12Change">
+            <summary>
+            Split 12 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split13Change">
+            <summary>
+            Split 13 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split14Change">
+            <summary>
+            Split 14 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split15Change">
+            <summary>
+            Split 15 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split16Change">
+            <summary>
+            Split 16 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Coordcyclestatechange">
+            <summary>
+            Coord cycle state change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Coordinatedphaseyieldpoint">
+            <summary>
+            Set once per cycle for each coordinated phase when controller suspends the coordinated phase
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Coordinatedphasebegin">
+            <summary>
+            Set when coordinated phase begins
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.LogicStatementTrue">
+            <summary>
+            Set when the logic statement evaluation changes from “False” to “True”
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.LogicStatementFalse">
+            <summary>
+            Set when the logic statement evaluation changes from “True” to “False”
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.UnitControlStatusChange">
+            <summary>
+            See NTCIP 1202v0326 5.4.5 for definition
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AdditionalCycleLengthChange">
+            <summary>
+            Set simultaneously with Event Code 132 when existing cycle length exceeds 255 seconds.
+            When this Event Code 156 is used, Event Code 132 shall be 255, 
+            where the value of this Event Code 156 will be the additional cycle length above 255 (in seconds).
+            Cycle lengths longer than 510 seconds will require a controller look up
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TestInputOn">
+            <summary>
+            Cabinet test or special function input as defined by the local controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.TestInputOff">
+            <summary>
+            Cabinet test or special function input as defined by the local controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.UnitFlashStatusChange">
+            <summary>
+            See NTCIP 1202 2.4.6 for definition
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.UnitAlarmStatus1Change">
+            <summary>
+            See NTCIP 1202 2.4.8 for definition
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AlarmGroupStateChange">
+            <summary>
+            See NTCIP 1202 2.4.12.2 for definition
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.SpecialFunctionOutputOn">
+            <summary>
+            Special function output as defined by the local controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.SpecialFunctionOutputOff">
+            <summary>
+            Special function output as defined by the local controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ManualcontrolenableOnOff">
+            <summary>
+            Special function output as defined by the local controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.IntervalAdvanceOnOff">
+            <summary>
+            Leading edge on (1), lagging edge (0) optional
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.StopTimeInputOnOff">
+            <summary>
+            Set when stop time input is applied or removed, regardless of source of stop or state
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ControllerClockUpdated">
+            <summary>
+            Set when the controller OS clock is adjusted via communications, OS command, or external input
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PowerFailureDetected">
+            <summary>
+            Line voltage drops between 0-89 volts AC for more than 100ms
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.PowerRestored">
+            <summary>
+            Line voltage applied/reapplied greater than 98 volts AC
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.VendorSpecificAlarm">
+            <summary>
+            Placeholder for generic failure/alarm types as defined by vendor
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AlarmOn">
+            <summary>
+            Set when cabinet/system alarm is activated
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AlarmOff">
+            <summary>
+            Set when cabinet/system alarm is released
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.AuxSwitchOnOff">
+            <summary>
+            Set when local controller aux switch is active (1) or inactive (0)
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split17Change">
+            <summary>
+            Split change events shall be populated upon selection of a new coordination pattern as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+            Adaptive Control System (ACS) Lite or other adaptive control system
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split18Change">
+            <summary>
+            Split 18 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split19Change">
+            <summary>
+            Split 19 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split20Change">
+            <summary>
+            Split 20 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split21Change">
+            <summary>
+            Split 21 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split22Change">
+            <summary>
+            Split 22 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split23Change">
+            <summary>
+            Split 23 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split24Change">
+            <summary>
+            Split 24 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split25Change">
+            <summary>
+            Split 25 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split26Change">
+            <summary>
+            Split 26 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split27Change">
+            <summary>
+            Split 27 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split28Change">
+            <summary>
+            Split 28 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split29Change">
+            <summary>
+            Split 29 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split30Change">
+            <summary>
+            Split 30 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split31Change">
+            <summary>
+            Split 31 Change
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split32Change">
+            <summary>
+            Split 32 Change
+            </summary>
+        </member>
+    </members>
+</doc>

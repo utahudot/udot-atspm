@@ -1,13 +1,10 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.SplitMonitor;
-using Legacy.Common.Business.PCD;
-using Legacy.Common.Business.SplitMonitor;
 
 namespace ATSPM.Application.Reports.Business.PhaseTermination
 {
