@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.TurningMovementCounts;
+using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace Legacy.Common.Business.TMC
         public double PeakHourFactor { get; set; }
 
 
-        public void PopulateViewModel(List<TMCData> tMCData, int binSize)
+        public void PopulateViewModel(List<TurningMovementCountsData> tMCData, int binSize)
         {
             BinSize = binSize;
             SetBinStartTimes(tMCData);
@@ -75,7 +76,7 @@ namespace Legacy.Common.Business.TMC
             }
         }
 
-        private void SetPeakHourFactor(List<TMCData> tMCData)
+        private void SetPeakHourFactor(List<TurningMovementCountsData> tMCData)
         {
             try
             {
@@ -103,13 +104,13 @@ namespace Legacy.Common.Business.TMC
             }
         }
 
-        private void SetBinStartTimes(List<TMCData> tMCData)
+        private void SetBinStartTimes(List<TurningMovementCountsData> tMCData)
         {
             BinStartTimes = (from r in tMCData
                              select r.Timestamp).Distinct().OrderBy(r => r).ToList();
         }
 
-        private void AddPeakHourDataToList(List<TMCData> tMCData)
+        private void AddPeakHourDataToList(List<TurningMovementCountsData> tMCData)
         {
             PeakHourValues.Add(new Record());
             PeakHourValues[0].Values = new List<Tuple<int, string>>();
@@ -146,7 +147,7 @@ namespace Legacy.Common.Business.TMC
             }
         }
 
-        private KeyValuePair<DateTime, int> FindPeakHour(List<TMCData> tMCData)
+        private KeyValuePair<DateTime, int> FindPeakHour(List<TurningMovementCountsData> tMCData)
         {
             var totalVolume = new KeyValuePair<DateTime, int>(DateTime.MinValue, 0);
 
@@ -171,7 +172,7 @@ namespace Legacy.Common.Business.TMC
             PeakHourHeaders[0].SetSpans();
         }
 
-        private void AddDirectionTypeTotals(LaneType l, DirectionType d, List<TMCData> tMCData)
+        private void AddDirectionTypeTotals(LaneType l, DirectionType d, List<TurningMovementCountsData> tMCData)
         {
             AddHeaderInfo(l.Description, l.Description, d.Description, d.Description + l.Description, "Total",
                 "DirectionTotal");
@@ -189,7 +190,7 @@ namespace Legacy.Common.Business.TMC
                 .Sum(t => t.Count));
         }
 
-        private void AddLaneTypeTotals(LaneType l, List<TMCData> tMCData)
+        private void AddLaneTypeTotals(LaneType l, List<TurningMovementCountsData> tMCData)
         {
             AddHeaderInfo(l.Description, l.Description, string.Empty, l.Description, l.Description + " Total",
                 "LaneTypeTotal");
@@ -208,7 +209,7 @@ namespace Legacy.Common.Business.TMC
             Footers[0].Values.Add(value);
         }
 
-        private void AddTimeStampsToRecordList(List<TMCData> tMCData)
+        private void AddTimeStampsToRecordList(List<TurningMovementCountsData> tMCData)
         {
             var Timestamps = (from r in tMCData
                               select r.Timestamp).Distinct().ToList();
@@ -227,7 +228,7 @@ namespace Legacy.Common.Business.TMC
         }
 
         private void SumLaneCountsByLaneTypeDirectionAndMovement(LaneType lane, DirectionType direction,
-            MovementType movement, List<TMCData> tMCData)
+            MovementType movement, List<TurningMovementCountsData> tMCData)
         {
             AddHeaderInfo(lane.Description, lane.Description,
                 direction.Description, direction.Description + lane.Description,

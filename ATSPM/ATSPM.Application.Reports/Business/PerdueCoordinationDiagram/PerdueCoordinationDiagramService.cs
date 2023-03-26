@@ -23,7 +23,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             Data.Models.Approach approach,
             SignalPhase signalPhase)
         {            
-            var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.YAxis));
+            var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.HourlyVolume));
             return new PerdueCoordinationDiagramResult(
                 "Perdue Coordination Diagram",
                 options.SignalId,

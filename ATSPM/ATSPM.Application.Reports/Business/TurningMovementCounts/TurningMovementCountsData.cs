@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Legacy.Common.Business.TMC
+namespace ATSPM.Application.Reports.Business.TurningMovementCounts
 {
     [DataContract]
-    public class TMCData
+    public class TurningMovementCountsData
     {
         [DataMember]
         public string Direction { get; set; }

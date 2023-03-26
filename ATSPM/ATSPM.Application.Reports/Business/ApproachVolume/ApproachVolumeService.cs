@@ -54,8 +54,8 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             var direction1Volumes = AddPrimaryDirectionSeries(approachVolume);
             var direction2Volumes = AddOpposingDirectionSeries(approachVolume);
 
-            var primaryDirectionTotalVolume = Convert.ToDouble(approachVolume.PrimaryDirectionVolume.Items.Sum(d => d.YAxis));
-            var opposingDirectionTotalVolume = Convert.ToDouble(approachVolume.OpposingDirectionVolume.Items.Sum(d => d.YAxis));
+            var primaryDirectionTotalVolume = Convert.ToDouble(approachVolume.PrimaryDirectionVolume.Items.Sum(d => d.HourlyVolume));
+            var opposingDirectionTotalVolume = Convert.ToDouble(approachVolume.OpposingDirectionVolume.Items.Sum(d => d.HourlyVolume));
 
             DateTime startTime, endTime;
             SetStartTimeAndEndTime(approachVolume.PrimaryDirectionVolume, approachVolume.OpposingDirectionVolume, out startTime, out endTime);
@@ -154,7 +154,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             List<DFactors> result = new List<DFactors>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
             {
-                result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].YAxis) / Convert.ToDouble(combinedVolume.Items[i].YAxis)));
+                result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].HourlyVolume) / Convert.ToDouble(combinedVolume.Items[i].HourlyVolume)));
             }
             return result;
         }
@@ -163,7 +163,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
         {
             if (approachVolume.CombinedDirectionsVolumes.Items.Count > 0 && Options.ShowTotalVolume)
             {
-                return approachVolume.CombinedDirectionsVolumes.Items.ConvertAll(x => new DirectionVolumes(x.XAxis, x.YAxis));
+                return approachVolume.CombinedDirectionsVolumes.Items.ConvertAll(x => new DirectionVolumes(x.StartTime, x.HourlyVolume));
             }
             return new List<DirectionVolumes>();
         }
@@ -175,7 +175,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
                 if (Options.ShowNbEbVolume && (approachVolume.OpposingDirection == DirectionTypes.NB || approachVolume.OpposingDirection == DirectionTypes.EB) ||
                     Options.ShowSbWbVolume && (approachVolume.OpposingDirection == DirectionTypes.SB || approachVolume.OpposingDirection == DirectionTypes.WB))
                 {
-                    return approachVolume.OpposingDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.XAxis, x.YAxis));
+                    return approachVolume.OpposingDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.StartTime, x.HourlyVolume));
                 }
             }
             return new List<DirectionVolumes>();
@@ -188,7 +188,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
                 if (Options.ShowNbEbVolume && (approachVolume.PrimaryDirection == DirectionTypes.NB || approachVolume.PrimaryDirection == DirectionTypes.EB) ||
                     Options.ShowSbWbVolume && (approachVolume.PrimaryDirection == DirectionTypes.SB || approachVolume.PrimaryDirection == DirectionTypes.WB))
                 {
-                    return approachVolume.PrimaryDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.XAxis, x.YAxis));
+                    return approachVolume.PrimaryDirectionVolume.Items.ConvertAll(x => new DirectionVolumes(x.StartTime, x.HourlyVolume));
                 }
             }
             return new List<DirectionVolumes>();
@@ -299,7 +299,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             SortedDictionary<DateTime, int> iteratedVolumes = new SortedDictionary<DateTime, int>();
             foreach (var volume in volumes.Items)
             {
-                iteratedVolumes.Add(volume.StartTime, volumes.Items.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.YAxis));
+                iteratedVolumes.Add(volume.StartTime, volumes.Items.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.HourlyVolume));
             }
             peakHourValue = iteratedVolumes.OrderByDescending(i => i.Value).FirstOrDefault();
 
@@ -314,8 +314,8 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             for (int i = 0; i < binMultiplier; i++)
             {
                 if (volDic.Items.Any(d => d.StartTime == StartofHour))
-                    if (maxVolume < volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).YAxis)
-                        maxVolume = volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).YAxis;
+                    if (maxVolume < volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).HourlyVolume)
+                        maxVolume = volDic.Items.FirstOrDefault(i => i.StartTime == StartofHour).HourlyVolume;
 
                 StartofHour = StartofHour.AddMinutes(60 / binMultiplier);
             }
@@ -331,7 +331,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             for (int i = 0; i < binMultiplier; i++)
             {
                 if (volDic.Items.Any(d => d.StartTime == StartofHour))
-                    totalVolume = totalVolume + volDic.Items.FirstOrDefault(d => d.StartTime == StartofHour).YAxis;
+                    totalVolume = totalVolume + volDic.Items.FirstOrDefault(d => d.StartTime == StartofHour).HourlyVolume;
 
                 StartofHour = StartofHour.AddMinutes(60 / binMultiplier);
             }

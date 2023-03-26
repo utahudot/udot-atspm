@@ -12,14 +12,11 @@ namespace Legacy.Common.Business
         {
             StartTime = startTime;
             EndTime = endTime;
-            XAxis = startTime;
             if (binSize == 0)
                 binSizeMultiplier = 0;
             else
                 binSizeMultiplier = 60 / binSize;
         }
-
-        public DateTime XAxis { get; set; }
 
         public DateTime StartTime { get; }
 
@@ -27,20 +24,6 @@ namespace Legacy.Common.Business
 
         public int DetectorCount { get; set; }
 
-        public int YAxis => DetectorCount * binSizeMultiplier;
-
-        //public Volume(DateTime startTime, DateTime endTime, int binSize, int volume)
-        //{
-        //    this.startTime = startTime;
-        //    this.endTime = endTime;
-        //    this.xAxis = endTime;
-        //    this.binSizeMultiplier = 60 / binSize;
-        //    this.detectorCount = volume;
-        //}
-
-        //public void AddDetectorToVolume()
-        //{
-        //    DetectorCount++;
-        //}
+        public int HourlyVolume => DetectorCount * binSizeMultiplier;
     }
 }

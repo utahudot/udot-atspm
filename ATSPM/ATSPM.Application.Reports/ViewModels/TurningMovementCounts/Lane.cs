@@ -1,16 +1,14 @@
-﻿using System;
+﻿using ATSPM.Data.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.ViewModels.TurningMovementCounts
 {
     public class Lane
     {
-        public Lane(DateTime startTime, int volume)
-        {
-            StartTime = startTime;
-            Volume = volume;
-        }
-
-        public DateTime StartTime { get; internal set; }
-        public int Volume { get; internal set; }
+        public int? LaneNumber { get; set; }
+        public MovementTypes MovementType { get; set; }
+        public List<LaneVolume> Volume { get; set; }
+        public LaneTypes LaneType { get; set;}
     }
 }
