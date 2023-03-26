@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.TurningMovementCounts
+namespace ATSPM.Application.Reports.Business.TurningMovementCounts
 {
     public class LaneVolume
     {

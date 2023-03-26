@@ -1,5 +1,4 @@
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.ViewModels.TurningMovementCounts;
 using System;
 using System.Collections.Generic;
 

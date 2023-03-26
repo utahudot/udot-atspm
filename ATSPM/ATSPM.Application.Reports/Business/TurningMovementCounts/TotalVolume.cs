@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.TurningMovementCounts
+namespace ATSPM.Application.Reports.Business.TurningMovementCounts
 {
-    public class ThruLeft
+    public partial class TotalVolume
     {
-        public ThruLeft(DateTime startTime, int volume)
+        public TotalVolume(DateTime startTime, int volume)
         {
             StartTime = startTime;
             Volume = volume;
