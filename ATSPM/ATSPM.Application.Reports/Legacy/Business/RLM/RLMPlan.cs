@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.PhaseTermination;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 

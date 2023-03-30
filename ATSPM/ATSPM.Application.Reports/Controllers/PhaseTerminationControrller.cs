@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PhaseTermination;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;

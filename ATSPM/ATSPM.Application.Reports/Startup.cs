@@ -6,7 +6,6 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Reports.Business.LeftTurnGapReport;
 using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
-using ATSPM.Application.Reports.Business.PhaseTermination;
 using ATSPM.Application.Reports.Business.PreempDetail;
 using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Reports.Business.SplitFail;

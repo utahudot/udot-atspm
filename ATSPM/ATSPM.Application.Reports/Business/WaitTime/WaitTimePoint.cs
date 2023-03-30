@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace ATSPM.Application.Reports.ViewModels.WaitTime
+namespace ATSPM.Application.Reports.Business.WaitTime
 {
-    public class WaitTimeForceOff
+    public class WaitTimePoint
     {
-        public WaitTimeForceOff(DateTime startTime, double waitTime)
+        public WaitTimePoint(DateTime startTime, double waitTime)
         {
             StartTime = startTime;
             WaitTime = waitTime;

@@ -4,7 +4,7 @@ using Legacy.Common.Business;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.Application.Reports.Business.PhaseTermination
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class AnalysisPhaseData
     {

@@ -1,10 +1,8 @@
-﻿using ATSPM.Application.Reports.ViewModels.TurningMovementCounts;
+﻿using ATSPM.Data.Models;
+using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
-using ATSPM.Application.Reports.Business;
-using Legacy.Common.Business;
 
 namespace ATSPM.Application.Reports.Models
 {

@@ -2,12 +2,10 @@
 using ATSPM.Application.Reports.ViewModels.ApproachVolume;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.ApproachVolume
@@ -30,7 +28,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
         }
 
         public static double GetPeakHourKFactor(double d, int digits)
-            
+
         {
             double scale = Math.Pow(10, Math.Floor(Math.Log10(Math.Abs(d))) + 1);
             return scale * Math.Round(d / scale, digits);

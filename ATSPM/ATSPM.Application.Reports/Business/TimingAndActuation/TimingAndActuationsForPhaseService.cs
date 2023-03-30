@@ -1,11 +1,8 @@
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Legacy.Common.Business;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +12,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
     {
 
         public TimingAndActuationsForPhaseResult GetChartData(
-            TimingAndActuationsOptions options, 
+            TimingAndActuationsOptions options,
             Approach approach,
             List<ControllerEventLog> controllerEventLogs
             )
@@ -57,7 +54,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                 timingAndActuationsForPhaseData.PhaseCustomEvents = GetPhaseCustomEvents(approach, options, controllerEventLogs);
             }
             return timingAndActuationsForPhaseData;
-        }       
+        }
 
         public Dictionary<string, List<ControllerEventLog>> GetCycleEvents(
             TimingAndActuationsOptions options,
@@ -223,7 +220,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         {
             List<int> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
             var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
-            return controllerEventLogs.Where(c =>overlapCodes.Contains(c.EventCode) && c.EventParam == pedPhase).ToList();
+            return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode) && c.EventParam == pedPhase).ToList();
         }
 
         public List<int> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)

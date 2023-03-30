@@ -1,12 +1,11 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.Application.Reports.Business.PhaseTermination
+namespace ATSPM.Application.Reports.Business.Common
 {
     public class AnalysisPhaseCollectionData
     {
@@ -94,6 +93,8 @@ namespace ATSPM.Application.Reports.Business.PhaseTermination
                 {
                     planSplitMonitorService.SetProgrammedSplits(signalId, plan);
                     planSplitMonitorService.SetHighCycleCount(analysisPhaseCollectionData, plan);
+                    var highestSplit = planSplitMonitorService.FindHighestRecordedSplitPhase(plan);
+                    planSplitMonitorService.FillMissingSplits(highestSplit, plan);
                 }
             }
             return analysisPhaseCollectionData;
