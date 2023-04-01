@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     /// <summary>
     ///     Data that represents a red to red cycle for a signal phase

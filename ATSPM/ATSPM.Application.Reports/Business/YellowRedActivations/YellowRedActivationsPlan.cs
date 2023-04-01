@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 
-namespace ATSPM.Application.Reports.ViewModels.YellowRedActivations
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     public class YellowRedActivationsPlan : Plan
     {

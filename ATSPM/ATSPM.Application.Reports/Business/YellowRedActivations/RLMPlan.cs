@@ -6,7 +6,7 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     public class RLMPlan
     {
@@ -175,8 +175,8 @@ namespace Legacy.Common.Business
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
-                    where cycle.StartTime > StartTime && cycle.EndTime < endTime
-                    select cycle;
+                             where cycle.StartTime > StartTime && cycle.EndTime < endTime
+                             select cycle;
 
                 if (Cycles.Count() > HighCycleCount)
                     HighCycleCount = Cycles.Count();
@@ -353,8 +353,8 @@ namespace Legacy.Common.Business
                 detectorActivations.AddRange(controllerEventLogRepository.GetEventsByEventCodesParam(
                     Approach.SignalId,
                     StartTime, EndTime,
-                    new List<int> {82}, d.DetChannel, 
-                    0, 
+                    new List<int> { 82 }, d.DetChannel,
+                    0,
                     d.LatencyCorrection));
             TotalVolume = detectorActivations.Count;
             foreach (var cycle in rlmCycleCollection)

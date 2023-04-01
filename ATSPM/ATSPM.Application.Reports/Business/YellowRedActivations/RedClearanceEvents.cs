@@ -1,8 +1,8 @@
-﻿namespace ATSPM.Application.Reports.ViewModels.YellowRedActivations
+﻿namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
-    public class YellowEvents
+    public class RedClearanceEvents
     {
-        public YellowEvents(string startTime, double seconds)
+        public RedClearanceEvents(string startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;

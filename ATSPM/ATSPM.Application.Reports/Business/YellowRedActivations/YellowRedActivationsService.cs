@@ -5,50 +5,76 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
-    public class RedLLightMonitorService
+    public class YellowRedActivationsService
     {
         private int _detChannel;
-        private bool _showVolume;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public RedLLightMonitorService(IControllerEventLogRepository controllerEventLogRepository)
+        public YellowRedActivationsService(IControllerEventLogRepository controllerEventLogRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
-        public RLMSignalPhaseData GetRedLLightMonitorSignalPhaseData(DateTime startDate, DateTime endDate, int binSize, double severeRedLightViolationsSeconds,
-            Approach approach, bool usePermissivePhase)
+        public YellowRedActivationsResult GetChartData(
+            YellowRedActivationsOptions options,   
+            Approach approach)
         {
             var rlmSignalPhase = new RLMSignalPhaseData();
-            rlmSignalPhase.SevereRedLightViolationSeconds = severeRedLightViolationsSeconds;
+            rlmSignalPhase.SevereRedLightViolationSeconds = options.SevereLevelSeconds;
             rlmSignalPhase.Approach = approach;
-            rlmSignalPhase.GetPermissivePhase = usePermissivePhase;
-                if (usePermissivePhase)
+            rlmSignalPhase.GetPermissivePhase = options.UsePermissivePhase;
+            if (options.UsePermissivePhase)
+            {
+                if (rlmSignalPhase.Approach.IsPermissivePhaseOverlap)
                 {
-                    if (rlmSignalPhase.Approach.IsPermissivePhaseOverlap)
-                    {
-                        GetSignalOverlapData(startDate, endDate, _showVolume, binSize, usePermissivePhase,rlmSignalPhase);
-                    }
-                    else
-                    {
-                        GetSignalPhaseData(startDate, endDate, usePermissivePhase, rlmSignalPhase);
-                    }
+                    GetSignalOverlapData(options.Start, options.End, rlmSignalPhase);
                 }
                 else
                 {
-                    if (rlmSignalPhase.Approach.IsProtectedPhaseOverlap)
-                    {
-                        GetSignalOverlapData(startDate, endDate, _showVolume, binSize, usePermissivePhase, rlmSignalPhase);
-                    }
-                    else
-                    {
-                        GetSignalPhaseData(startDate, endDate, usePermissivePhase, rlmSignalPhase);
-                    }
+                    GetSignalPhaseData(options.Start, options.End, options.UsePermissivePhase, rlmSignalPhase);
                 }
-            return rlmSignalPhase;
+            }
+            else
+            {
+                if (rlmSignalPhase.Approach.IsProtectedPhaseOverlap)
+                {
+                    GetSignalOverlapData(options.Start, options.End, rlmSignalPhase);
+                }
+                else
+                {
+                    GetSignalPhaseData(options.Start, options.End, options.UsePermissivePhase, rlmSignalPhase);
+                }
+            }
+            var detectorEvents = rlmSignalPhase.Cycles.SelectMany(c => c.DetectorCollection).ToList();
+
+            return new YellowRedActivationsResult(
+                "Yellow and Red Activations",
+                approach.Id,
+                approach.Description,
+                options.UsePermissivePhase? approach.PermissivePhaseNumber.Value: approach.ProtectedPhaseNumber,
+                options.Start,
+                options.End,
+                Convert.ToInt32(rlmSignalPhase.Violations),
+                Convert.ToInt32(rlmSignalPhase.SevereRedLightViolations),
+                Convert.ToInt32(rlmSignalPhase.YellowOccurrences),
+                rlmSignalPhase.Plans.PlanList.Select(p => new YellowRedActivationsPlan(
+                                                                p.PlanNumber.ToString(), 
+                                                                p.StartTime, 
+                                                                p.EndTime, 
+                                                                Convert.ToInt32(p.Violations),
+                                                                Convert.ToInt32(p.SevereRedLightViolations),
+                                                                p.PercentViolations,
+                                                                p.PercentSevereViolations,
+                                                                p.AverageTRLV
+                                                                )).ToList(),
+                rlmSignalPhase.Cycles.Select(c => new YellowRedActivationEvent(c.RedEvent, c.RedBeginY)).ToList(),
+                rlmSignalPhase.Cycles.Select(c => new YellowRedActivationEvent(c.YellowClearanceEvent, c.YellowClearanceBeginY)).ToList(),
+                rlmSignalPhase.Cycles.Select(c => new YellowRedActivationEvent(c.RedClearanceEvent, c.RedClearanceBeginY)).ToList(),
+                detectorEvents.Select(d => new YellowRedActivationEvent(d.TimeStamp, d.YPoint)).ToList()
+                );
         }
 
 
@@ -81,19 +107,19 @@ namespace Legacy.Common.Business
         }
 
 
-        private void GetSignalOverlapData(DateTime startDate, DateTime endDate, bool showVolume, int binSize, bool usePermissive, RLMSignalPhaseData rlmSignalPhase)
+        private void GetSignalOverlapData(DateTime startDate, DateTime endDate, RLMSignalPhaseData rlmSignalPhase)
         {
             var li = new List<int> { 62, 63, 64 };
             var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(rlmSignalPhase.Approach.SignalId,
                 startDate.AddSeconds(-900), endDate.AddSeconds(900), li, rlmSignalPhase.Approach.ProtectedPhaseNumber).ToList();
-            
+
             GetRedCycle(startDate, endDate, cycleEvents, rlmSignalPhase);
             rlmSignalPhase.Plans = GetPlanCollection(startDate, endDate, rlmSignalPhase.Cycles, rlmSignalPhase.Approach, rlmSignalPhase.SevereRedLightViolationSeconds);
             if (rlmSignalPhase.Plans.PlanList.Count == 0)
                 rlmSignalPhase.Plans.PlanList.Add(new RLMPlan(startDate, endDate, 0, rlmSignalPhase.Cycles, rlmSignalPhase.SevereRedLightViolationSeconds,
                     rlmSignalPhase.Approach));
         }
-        
+
         public List<ControllerEventLog> GetEventsToCompleteCycle(bool getPermissivePhase, DateTime endDate, Approach approach)
         {
             if (getPermissivePhase)
@@ -174,7 +200,7 @@ namespace Legacy.Common.Business
                     }
                 }
             }
-            rlmSignalPhase.Cycles = rlmSignalPhase.Cycles.Where(c => (c.EndTime >= startTime && c.EndTime <= endTime) || (c.StartTime <= endTime && c.StartTime >= startTime)).ToList();
+            rlmSignalPhase.Cycles = rlmSignalPhase.Cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
             AddDetectorData(startTime, endTime, rlmSignalPhase);
         }
 
@@ -240,7 +266,7 @@ namespace Legacy.Common.Business
             double severeRedLightViolationSeconds)
         {
             var planCollection = new RedLightMonitorPlanCollectionData();
-            var ds =controllerEventLogRepository.GetSignalEventsByEventCodes(approach.SignalId, startDate, endDate, new List<int> { 131 }).ToList();
+            var ds = controllerEventLogRepository.GetSignalEventsByEventCodes(approach.SignalId, startDate, endDate, new List<int> { 131 }).ToList();
             var row = new ControllerEventLog();
             row.Timestamp = startDate;
             row.SignalId = approach.SignalId;
@@ -257,7 +283,7 @@ namespace Legacy.Common.Business
                 ds.Insert(0, row);
             }
             // remove duplicate plan entries
-            MergeEvents(ds,ds,startDate, endDate);
+            MergeEvents(ds, ds, startDate, endDate);
             for (var i = 0; i < ds.Count(); i++)
                 //if this is the last plan then we want the end of the plan
                 //to cooincide with the end of the graph

@@ -1,9 +1,10 @@
 ﻿using ATSPM.Data.Models;
+using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     public class RLMSignalPhaseData
     {

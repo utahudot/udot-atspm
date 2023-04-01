@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Legacy.Common.Business
+namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     public class RLMDetectorDataPoint
     {
