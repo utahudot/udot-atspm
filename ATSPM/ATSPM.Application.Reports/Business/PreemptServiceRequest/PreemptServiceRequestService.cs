@@ -1,12 +1,10 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Reports.Business.PreemptServiceRequest;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
-using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
-using System;
-using ATSPM.Application.Reports.Business.PreemptServiceRequest;
-using ATSPM.Application.Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.PreemptService
 {

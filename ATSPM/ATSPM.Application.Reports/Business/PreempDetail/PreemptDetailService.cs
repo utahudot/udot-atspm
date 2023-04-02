@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
 using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;

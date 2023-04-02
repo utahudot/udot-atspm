@@ -1,6 +1,4 @@
 ﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
-using ATSPM.Application.Reports.ViewModels.ApproachDelay;
-using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Reports.Business.SplitFail;
-using Legacy.Common.Business;
 using ATSPM.Application.Reports.Business.YellowRedActivations;
+using ATSPM.Application.Reports.Business.ApproachSpeed;
 
 namespace ATSPM.Application.Reports.Business.Common
 {

@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Reports.Business.AppoachDelay;
-using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 

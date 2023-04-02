@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using ATSPM.Application.Reports.Business.SplitFail;
-using Legacy.Common.Business;
+using ATSPM.Application.Reports.Business.ApproachSpeed;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -34,7 +33,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     {
                         var planCycles = cycles
                             .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
-                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam, planCycles));
+                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam.ToString(), planCycles));
                     }
                 }
                 else
@@ -45,7 +44,7 @@ namespace ATSPM.Application.Reports.Business.Common
                                 c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
                             .ToList();
                         plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
-                            planEvents[i].EventParam, planCycles));
+                            planEvents[i].EventParam.ToString(), planCycles));
                     }
                 }
             return plans;
@@ -284,7 +283,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     {
                         var planCycles = cycles.Where(c =>
                             c.StartTime >= planEvents[i].Timestamp && c.StartTime < options.EndDate).ToList();
-                        plans.Add(new PlanSplitFail(planEvents[i].Timestamp, options.EndDate, planEvents[i].EventParam,
+                        plans.Add(new PlanSplitFail(planEvents[i].Timestamp, options.EndDate, planEvents[i].EventParam.ToString(),
                             planCycles));
                     }
                 }
@@ -296,7 +295,7 @@ namespace ATSPM.Application.Reports.Business.Common
                                 c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
                             .ToList();
                         plans.Add(new PlanSplitFail(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
-                            planEvents[i].EventParam, planCycles));
+                            planEvents[i].EventParam.ToString(), planCycles));
                     }
                 }
             return plans;

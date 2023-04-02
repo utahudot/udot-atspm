@@ -1,8 +1,6 @@
-﻿using ATSPM.Application.Reports.Business.SplitMonitor;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.TimingAndActuation;
-using ATSPM.Application.Reports.ViewModels.TimingAndActuation;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -47,13 +45,13 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var eventCodes = new List<int> { };
-            if(options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
-                eventCodes.AddRange( new List<int> { 81, 82 });
-            if(options.ShowPedestrianActuation)
+            if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
+                eventCodes.AddRange(new List<int> { 81, 82 });
+            if (options.ShowPedestrianActuation)
                 eventCodes.AddRange(new List<int> { 89, 90 });
             if (options.ShowPedestrianIntervals)
                 eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap));
-            if(options.PhaseEventCodesList!= null)
+            if (options.PhaseEventCodesList != null)
                 eventCodes.AddRange(options.PhaseEventCodesList);
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(
                 (options.GetPermissivePhase && approach.IsPermissivePhaseOverlap) ||

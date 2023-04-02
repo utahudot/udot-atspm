@@ -1,9 +1,8 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.PreemptService;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
 using AutoFixture;
-using Legacy.Common.Business.WCFServiceLibrary;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -54,16 +53,16 @@ namespace ATSPM.Application.Reports.Controllers
                 splitFailData.Plans,
                 splitFailData.Bins.Select(b => new FailLine(b.StartTime, Convert.ToInt32(b.SplitFails))).ToList(),
                 splitFailData.Cycles
-                    .Where(c => c.TerminationEvent == Legacy.Common.Business.CycleSplitFail.TerminationType.GapOut)
+                    .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
                     .Select(b => new GapOutGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
-                    .Where(c => c.TerminationEvent == Legacy.Common.Business.CycleSplitFail.TerminationType.GapOut)
+                    .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
                     .Select(b => new GapOutRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
                 splitFailData.Cycles
-                    .Where(c => c.TerminationEvent == Legacy.Common.Business.CycleSplitFail.TerminationType.ForceOff)
+                    .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
                     .Select(b => new ForceOffGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
-                    .Where(c => c.TerminationEvent == Legacy.Common.Business.CycleSplitFail.TerminationType.ForceOff)
+                    .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
                     .Select(b => new ForceOffRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new AverageGor(b.StartTime, b.AverageGreenOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),

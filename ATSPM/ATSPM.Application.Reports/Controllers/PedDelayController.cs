@@ -2,7 +2,6 @@
 using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Application.Repositories;
 using AutoFixture;
-using Legacy.Common.Business.PEDDelay;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

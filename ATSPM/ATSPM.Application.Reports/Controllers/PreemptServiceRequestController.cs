@@ -1,7 +1,6 @@
 ﻿using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Reports.Business.PreemptServiceRequest;
 using AutoFixture;
-using Legacy.Common.Business.WCFServiceLibrary;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

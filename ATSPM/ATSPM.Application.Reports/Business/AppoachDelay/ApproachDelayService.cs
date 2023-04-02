@@ -1,9 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.ViewModels.ApproachDelay;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Repositories;
-using Legacy.Common.Business;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -105,13 +103,13 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                 var planDescription = "Unknown";
                 switch (plan.PlanNumber)
                 {
-                    case 254:
+                    case "254":
                         planDescription = "Free";
                         break;
-                    case 255:
+                    case "255":
                         planDescription = "Flash";
                         break;
-                    case 0:
+                    case "0":
                         planDescription = "Unknown";
                         break;
                     default:

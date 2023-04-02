@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
-using ATSPM.Application.Reports.ViewModels.ApproachVolume;
 using ATSPM.Application.Reports.Business.ApproachVolume;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;

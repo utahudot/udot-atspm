@@ -1,5 +1,4 @@
-using Legacy.Common.Business;
-using Legacy.Common.Business.PEDDelay;
+using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 

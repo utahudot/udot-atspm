@@ -1,7 +1,4 @@
-﻿using ATSPM.Data.Models;
-using Legacy.Common.Business.WCFServiceLibrary;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
@@ -49,7 +46,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         public string SignalId { get; set; }
         public int ApproachId { get; set; }
 
-        
+
 
     }
 }

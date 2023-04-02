@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Legacy.Common.Business;
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using ATSPM.Application.Reports.ViewModels.ControllerEventLog;
-using ATSPM.Data.Models;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Enums;
-using System.Collections.Immutable;
+using ATSPM.Data.Models;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.Common

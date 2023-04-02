@@ -1,15 +1,9 @@
-﻿using ATSPM.Application.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Legacy.Common.Business.WCFServiceLibrary;
-using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
-using System.Collections.ObjectModel;
-using Legacy.Common.Business;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Infrastructure.Repositories;
+using ATSPM.Application.Repositories;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {

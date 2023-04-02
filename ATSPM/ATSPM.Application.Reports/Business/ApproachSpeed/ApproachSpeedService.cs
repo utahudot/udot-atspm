@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.Application.Extensions;
 using System.Collections.Generic;

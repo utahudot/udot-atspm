@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ATSPM.Application.Reports.ViewModels.ApproachSpeed;
 using ATSPM.Data.Models;
-using Legacy.Common.Business;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {

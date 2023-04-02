@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Reports.Business.ApproachVolume;
-using ATSPM.Application.Reports.Business.ArrivalOnRed;
-using ATSPM.Application.Reports.ViewModels.ApproachVolume;
+﻿using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 
