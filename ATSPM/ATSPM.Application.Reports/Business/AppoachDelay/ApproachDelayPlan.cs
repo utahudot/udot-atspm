@@ -25,7 +25,6 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         public double TotalDelay { get; }
         public DateTime Start { get; }
         public DateTime End { get; }
-        public string PlanNumber { get; }
         public string PlanDescription { get; }
     }
 }

@@ -154,7 +154,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -200,7 +200,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     volumeCollection.Items.Select(v => new WaitTime.Volume(v.StartTime, v.HourlyVolume)).ToList()
                     );
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

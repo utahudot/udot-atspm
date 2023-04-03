@@ -1,29 +1,20 @@
 ﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
     public class SignalPhaseService
     {
-        private readonly bool _showVolume;
-        private readonly int _binSize;
-        private readonly int _metricTypeId;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly PlanService planService;
         private readonly CycleService cycleService;
-        private readonly int _pcdCycleTime = 0;
 
         public SignalPhaseService(
-            IControllerEventLogRepository controllerEventLogRepository,
             PlanService planService,
             CycleService cycleService
             )
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
             this.planService = planService;
             this.cycleService = cycleService;
         }
@@ -62,7 +53,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 );
         }
 
-       
+
 
 
         private VolumeCollection SetVolume(List<ControllerEventLog> detectorEvents, int binSize, DateTime start, DateTime end)

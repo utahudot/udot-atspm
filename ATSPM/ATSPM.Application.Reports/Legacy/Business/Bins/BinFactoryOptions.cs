@@ -38,7 +38,6 @@ namespace Legacy.Common.Business.Bins
             TimeOfDayStartMinute = timeOfDayStartMinute;
             TimeOfDayEndHour = timeOfDayEndHour;
             TimeOfDayEndMinute = timeOfDayEndMinute;
-            int dayOfWeekCounter = 0;
             DateTime oneDay = Start;
             DaysOfWeek = daysOfWeek;
             SelectedBinSize = binSize;

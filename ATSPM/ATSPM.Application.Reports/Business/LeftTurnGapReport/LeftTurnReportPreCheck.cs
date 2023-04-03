@@ -35,7 +35,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         {
             Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(signalId, approachId, startDate, endDate,
                 amStartTime, amEndTime, pmStartTime, pmEndTime, daysOfWeek, _signalRepository, _approachRepository, _detectorEventCountAggregationRepository);
-            ATSPM.Data.Models.Approach approach = _approachRepository.GetApproachByApproachID(approachId);
+            ATSPM.Data.Models.Approach approach = _approachRepository.Lookup(approachId);
             int opposingPhase = GetOpposingPhase(approach);
             Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(signalId, opposingPhase, startDate, endDate, peaks);
             Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(signalId, opposingPhase, startDate, endDate, peaks);
@@ -285,7 +285,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 
         private int GetLTPhaseNumberByDirection(int approachId)
         {
-            var approach = _approachRepository.GetApproachByApproachID(approachId);
+            var approach = _approachRepository.Lookup(approachId);
             return approach.PermissivePhaseNumber ?? approach.ProtectedPhaseNumber;
         }
 
@@ -462,7 +462,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         {
             var movementTypes = new List<MovementTypes>() { MovementTypes.L };
             //only return detector types of type 4
-            return approachRepository.GetApproachByApproachID(approachId).Detectors.Where(d =>
+            return approachRepository.Lookup(approachId).Detectors.Where(d =>
             d.DetectionTypes.Select(t => t.Id).Contains(Data.Enums.DetectionTypes.LLC)
             && movementTypes.Contains(d.MovementTypeId)).ToList();
         }

@@ -264,7 +264,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     }
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 throw new Exception("Error creating Percentile");
             }

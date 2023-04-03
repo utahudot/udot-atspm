@@ -9,7 +9,6 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
     public class YellowRedActivationsService
     {
-        private int _detChannel;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         public YellowRedActivationsService(IControllerEventLogRepository controllerEventLogRepository)

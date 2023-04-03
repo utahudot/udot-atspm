@@ -17,10 +17,12 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly PlanSplitMonitorService planSplitMonitorService;
 
-        public SplitMonitorService(AnalysisPhaseCollectionService analysisPhaseCollectionService)
+        public SplitMonitorService(
+            AnalysisPhaseCollectionService analysisPhaseCollectionService,
+            PlanSplitMonitorService planSplitMonitorService)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
-            planSplitMonitorService = planSplitMonitorService;
+            this.planSplitMonitorService = planSplitMonitorService;
         }
 
         public SplitMonitorResult GetChartData(SplitMonitorOptions options)

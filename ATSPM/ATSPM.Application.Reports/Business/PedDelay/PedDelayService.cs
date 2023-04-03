@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using ATSPM.Data.Models;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
-using ATSPM.Data.Enums;
-using ATSPM.Application.Extensions;
-using Microsoft.Extensions.Options;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.PedDelay
 {

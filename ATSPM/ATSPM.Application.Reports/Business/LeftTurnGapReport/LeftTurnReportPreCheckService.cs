@@ -143,7 +143,6 @@ namespace Legacy.Common.Business.LeftTurnGapReport
 
         public int GetOpposingPhase(Approach approach)
         {
-            int opposingPhase = 0;
             //If permissive only 2 = 6, 4 = 8, 6 = 2 and 8 = 4
             if (approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue)
             {
@@ -298,7 +297,7 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             {
                 throw new NotSupportedException("Detectors not found");
             }
-            var approach = approachRepository.GetApproachByApproachID(detectors.First().ApproachId);
+            var approach = approachRepository.Lookup(detectors.First().ApproachId);
             return approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
         }
 
@@ -311,7 +310,7 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             {
                 throw new NotSupportedException("Detectors not found");
             }
-            return approachRepository.GetApproachByApproachID(detectors.First().ApproachId);
+            return approachRepository.Lookup(detectors.First().ApproachId);
            
         }
 

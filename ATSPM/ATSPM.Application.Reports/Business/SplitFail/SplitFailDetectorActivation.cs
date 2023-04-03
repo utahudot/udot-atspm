@@ -13,9 +13,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
         {
             get
             {
-                if (DetectorOff != null && DetectorOn != null)
-                    return (DetectorOff - DetectorOn).TotalMilliseconds;
-                return 0;
+                return (DetectorOff - DetectorOn).TotalMilliseconds;
             }
         }
     }

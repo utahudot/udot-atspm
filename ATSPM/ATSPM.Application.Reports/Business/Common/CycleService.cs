@@ -229,7 +229,6 @@ namespace ATSPM.Application.Reports.Business.Common
         private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
             DateTime endDate, Approach approach)
         {
-            IControllerEventLogRepository celRepository;
             List<ControllerEventLog> cycleEvents;
             if (getPermissivePhase)
             {
