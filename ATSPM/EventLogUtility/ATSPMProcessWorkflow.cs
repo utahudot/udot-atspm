@@ -4,12 +4,137 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using System.Windows.Input;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Common;
+using ATSPM.Domain.Exceptions;
 using Google.Protobuf.WellKnownTypes;
 
 namespace ATSPM.EventLogUtility
 {
+    public abstract class ProcessWorkflowStepBase<T1, T2, T3> : IExecuteAsyncWithProgress<T1, T2, T3>, IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
+    {
+        public event EventHandler? CanExecuteChanged;
+
+        private readonly IPropagatorBlock<T1, T2> _workflowProcess;
+
+        public ProcessWorkflowStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default, IProgress<T3> progress = default)
+        {
+            dataflowBlockOptions.NameFormat = this.GetType().Name;
+            _workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, progress, dataflowBlockOptions.CancellationToken), dataflowBlockOptions);
+        }
+
+        #region IPropagatorBlock
+
+        #region IDataflowBlock
+
+        public Task Completion => _workflowProcess.Completion;
+
+        public void Complete()
+        {
+            _workflowProcess.Complete();
+        }
+
+        public void Fault(Exception exception)
+        {
+            _workflowProcess.Fault(exception);
+        }
+
+        #endregion
+
+        #region ISourceBlock
+
+        public T2? ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target, out bool messageConsumed)
+        {
+            return _workflowProcess.ConsumeMessage(messageHeader, target, out messageConsumed);
+        }
+
+        public IDisposable LinkTo(ITargetBlock<T2> target, DataflowLinkOptions linkOptions)
+        {
+            return _workflowProcess.LinkTo(target, linkOptions);
+        }
+
+        public void ReleaseReservation(DataflowMessageHeader messageHeader, ITargetBlock<T2> target)
+        {
+            _workflowProcess?.ReleaseReservation(messageHeader, target);
+        }
+
+        public bool ReserveMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target)
+        {
+            return _workflowProcess.ReserveMessage(messageHeader, target);
+        }
+
+        #endregion
+
+        #region ITargetBlock
+
+        public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T1 messageValue, ISourceBlock<T1>? source, bool consumeToAccept)
+        {
+            return _workflowProcess.OfferMessage(messageHeader,messageValue, source, consumeToAccept);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IExecuteAsyncWithProgress
+
+        public abstract Task<T2> ExecuteAsync(T1 parameter, IProgress<T3>? progress = null, CancellationToken cancelToken = default);
+
+        public virtual bool CanExecute(T1 parameter)
+        {
+            return true;
+        }
+
+        public virtual Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
+        {
+            return ExecuteAsync(parameter, default, cancelToken);
+        }
+
+        Task? IExecuteAsync.ExecuteAsync(object parameter)
+        {
+            if (parameter is T1 p)
+                return Task.Run(() => ExecuteAsync(p, default, default));
+            return default;
+        }
+
+        bool ICommand.CanExecute(object? parameter)
+        {
+            if (parameter is T1 p)
+                return CanExecute(p);
+            return default;
+        }
+
+        void ICommand.Execute(object? parameter)
+        {
+            if (parameter is T1 p)
+                Task.Run(() => ExecuteAsync(p, default, default));
+        }
+
+        #endregion
+    }
+
+    public class IdentifyUnknownTerminationTypes<T> : ProcessWorkflowStepBase<List<ControllerEventLog>, List<ControllerEventLog>, T>
+    {
+        public IdentifyUnknownTerminationTypes(ExecutionDataflowBlockOptions dataflowBlockOptions = default, IProgress<T> progress = default) : base(dataflowBlockOptions, progress){}
+
+        public override Task<List<ControllerEventLog>> ExecuteAsync(List<ControllerEventLog> parameter, IProgress<T>? progress = null, CancellationToken cancelToken = default)
+        {
+            if (cancelToken.IsCancellationRequested)
+                return Task.FromCanceled<List<ControllerEventLog>>(cancelToken);
+
+            if (!CanExecute(parameter))
+                return Task.FromException<List<ControllerEventLog>>(new ExecuteException());
+
+            return Task.FromResult(parameter.Where(p => p.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).ToList());
+        }
+    }
+
+
+
+
+
     public class AnalysisPhase
     {
         public int Data { get; set; }
