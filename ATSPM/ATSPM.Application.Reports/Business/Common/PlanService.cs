@@ -22,9 +22,9 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
         public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
-            DateTime endDate, Approach approach)
+            DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId);
+            var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId, events);
             var plans = new List<PerdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -50,11 +50,16 @@ namespace ATSPM.Application.Reports.Business.Common
             return plans;
         }
 
-        public List<ControllerEventLog> GetPlanEvents(DateTime startDate, DateTime endDate, string signalId)
+        /// <summary>
+        /// Needs Event codes 131
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="signalId"></param>
+        /// <returns></returns>
+        public List<ControllerEventLog> GetPlanEvents(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> tempPlanEvents)
         {
             var planEvents = new List<ControllerEventLog>();
-            var tempPlanEvents = controllerEventLogRepository.GetSignalEventsByEventCode(signalId, startDate, endDate, 131)
-                .OrderBy(e => e.Timestamp).ToList();
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
                 GetFirstPlan(startDate, signalId, planEvents);
@@ -111,9 +116,9 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
-        public List<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId)
+        public List<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId);
+            var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
             var plans = new List<Plan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -130,9 +135,9 @@ namespace ATSPM.Application.Reports.Business.Common
             return plans;
         }
 
-        public List<PlanSplitMonitorData> GetSplitMonitorPlans(DateTime startDate, DateTime endDate, string signalId)
+        public List<PlanSplitMonitorData> GetSplitMonitorPlans(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId);
+            var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
             var plans = new List<PlanSplitMonitorData>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -149,10 +154,19 @@ namespace ATSPM.Application.Reports.Business.Common
             return plans;
         }
 
+        /// <summary>
+        /// Needs event code 131
+        /// </summary>
+        /// <param name="cycles"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <param name="events"></param>
+        /// <returns></returns>
         public List<SpeedPlan> GetSpeedPlans(List<CycleSpeed> cycles, DateTime startDate,
-            DateTime endDate, Approach approach)
+            DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId);
+            var planEvents = GetPlanEvents(startDate, endDate, approach.SignalId, events);
             var plans = new List<SpeedPlan>();
             for (var i = 0; i < planEvents.Count; i++)
             {
@@ -272,9 +286,9 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
         public List<PlanSplitFail> GetSplitFailPlans(List<CycleSplitFail> cycles, SplitFailOptions options,
-            Approach approach)
+            Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(options.StartDate, options.EndDate, approach.SignalId);
+            var planEvents = GetPlanEvents(options.StartDate, options.EndDate, approach.SignalId, events);
             var plans = new List<PlanSplitFail>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)

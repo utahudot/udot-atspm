@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                     }
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 //TODO:
                 //var errorLog = ApplicationEventRepositoryFactory.Create();

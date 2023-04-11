@@ -1,7 +1,11 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -9,14 +13,17 @@ namespace ATSPM.Application.Reports.Business.Common
     {
         private readonly PlanService planService;
         private readonly CycleService cycleService;
+        private readonly ILogger logger;
 
         public SignalPhaseService(
             PlanService planService,
-            CycleService cycleService
+            CycleService cycleService,
+            ILogger logger
             )
         {
             this.planService = planService;
             this.cycleService = cycleService;
+            this.logger = logger;
         }
 
 
@@ -30,6 +37,18 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64,131,82
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="showVolume"></param>
+        /// <param name="pcdCycleTime"></param>
+        /// <param name="binSize"></param>
+        /// <param name="approach"></param>
+        /// <param name="events"></param>
+        /// <returns></returns>
         public SignalPhase GetSignalPhaseData(
             DateTime start,
             DateTime end,
@@ -38,12 +57,22 @@ namespace ATSPM.Application.Reports.Business.Common
             int? pcdCycleTime,
             int binSize,
             Approach approach,
+            List<ControllerEventLog> cycleEvents,
+            List<ControllerEventLog> planEvents,
             List<ControllerEventLog> detectorEvents)
         {
-            var cycles = cycleService.GetPcdCycles(start, end, approach, detectorEvents, getPermissivePhase, pcdCycleTime);
-            var plans = planService.GetPcdPlans(cycles, start, end, approach);
+            if (approach == null)
+            {
+                logger.LogError("Approach cannot be null");
+                throw new ReportsNullAgrumentException("Approach cannot be null");
+            }
+
+            if (cycleEvents.IsNullOrEmpty())
+                return new SignalPhase();
+            var cycles = cycleService.GetPcdCycles(start, end, approach, cycleEvents, getPermissivePhase, pcdCycleTime);
+            var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
             return new SignalPhase(
-                showVolume ? SetVolume(detectorEvents, binSize, start, end) : null,
+                showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
                 plans,
                 cycles,
                 detectorEvents,
@@ -51,14 +80,6 @@ namespace ATSPM.Application.Reports.Business.Common
                 start,
                 end
                 );
-        }
-
-
-
-
-        private VolumeCollection SetVolume(List<ControllerEventLog> detectorEvents, int binSize, DateTime start, DateTime end)
-        {
-            return new VolumeCollection(start, end, detectorEvents, binSize);
         }
     }
 }

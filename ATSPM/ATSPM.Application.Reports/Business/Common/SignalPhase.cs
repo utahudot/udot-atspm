@@ -27,6 +27,10 @@ namespace ATSPM.Application.Reports.Business.Common
             EndDate = endDate;
         }
 
+        public SignalPhase()
+        {
+        }
+
         public VolumeCollection Volume { get; private set; }
         public List<PerdueCoordinationPlan> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }

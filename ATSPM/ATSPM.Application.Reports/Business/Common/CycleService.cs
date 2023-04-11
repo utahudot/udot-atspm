@@ -19,7 +19,15 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
-
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64
+        /// </summary>
+        /// <param name="approach"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="cycleEvents"></param>
+        /// <returns></returns>
         public List<RedToRedCycle> GetRedToRedCycles(Approach approach, DateTime startTime, DateTime endTime,
             bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
         {
@@ -42,6 +50,13 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64
+        /// </summary>
+        /// <param name="approach"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
         public List<RedToRedCycle> GetRedToRedCycles(Approach approach, DateTime startTime, DateTime endTime)
         {
             var cycleEventNumbers = approach.IsPermissivePhaseOverlap
@@ -68,7 +83,15 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
 
-
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64
+        /// </summary>
+        /// <param name="approach"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="cycleEvents"></param>
+        /// <returns></returns>
         public List<GreenToGreenCycle> GetGreenToGreenCycles(Approach approach, DateTime startTime, DateTime endTime,
             bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
         {
@@ -87,11 +110,26 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
-        public List<CyclePcd> GetPcdCycles(DateTime startDate, DateTime endDate, Approach approach,
-            List<ControllerEventLog> detectorEvents, bool getPermissivePhase, int? pcdCycleTime)
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <param name="detectorEvents"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="pcdCycleTime"></param>
+        /// <returns></returns>
+        public List<CyclePcd> GetPcdCycles(
+            DateTime startDate,
+            DateTime endDate,
+            Approach approach,
+            List<ControllerEventLog> detectorEvents,
+            List<ControllerEventLog> cycleEvents,
+            int? pcdCycleTime)
         {
             double pcdCycleShift = pcdCycleTime ?? 0;
-            var cycleEvents = GetCycleEvents(getPermissivePhase, startDate.AddSeconds(-900), endDate.AddSeconds(900), approach);
+            //var cycleEvents = GetCycleEvents(getPermissivePhase, startDate.AddSeconds(-900), endDate.AddSeconds(900), approach);
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3
@@ -117,7 +155,14 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
 
-
+        /// <summary>
+        /// Needs event codes 1,3,8,9,11,61,63,64
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <returns></returns>
         public List<TimingAndActuationCycle> GetTimingAndActuationCycles(DateTime startDate, DateTime endDate,
             Approach approach, bool getPermissivePhase)
         {
@@ -201,10 +246,17 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="detector"></param>
+        /// <returns></returns>
         public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, bool getPermissivePhase,
-            Detector detector)
+            Detector detector, List<ControllerEventLog> cycleEvents)
         {
-            var cycleEvents = GetCycleEvents(getPermissivePhase, startDate, endDate, detector.Approach);
             if (cycleEvents.Any() && (GetEventType(cycleEvents.Last().EventCode) !=
                 RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endDate))
                 GetEventsToCompleteCycle(getPermissivePhase, endDate, detector.Approach, cycleEvents);
@@ -226,30 +278,46 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles;
         }
 
-        private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
-            DateTime endDate, Approach approach)
-        {
-            List<ControllerEventLog> cycleEvents;
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
-            }
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64,66
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <returns></returns>
+        //private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
+        //    DateTime endDate, Approach approach, List<ControllerEventLog> cycleEvents)
+        //{
+        //    List<ControllerEventLog> cycleEvents;
+        //    if (getPermissivePhase)
+        //    {
+        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
+        //            ? new List<int> { 61, 63, 64, 66 }
+        //            : new List<int> { 1, 8, 9 };
+        //        cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
+        //            endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
+        //    }
+        //    else
+        //    {
+        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
+        //            ? new List<int> { 61, 63, 64, 66 }
+        //            : new List<int> { 1, 8, 9 };
+        //        cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
+        //            endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
+        //    }
 
-            return cycleEvents;
-        }
+        //    return cycleEvents;
+        //}
 
+        /// <summary>
+        /// Needs event codes 1,3,8,9,11,61,63,64,66
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <returns></returns>
         private List<ControllerEventLog> GetDetailedCycleEvents(bool getPermissivePhase, DateTime startDate,
             DateTime endDate, Approach approach)
         {
@@ -276,6 +344,13 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycleEvents;
         }
 
+        /// <summary>
+        /// Needs event codes 1,3,8,9,11,61,63,64,65
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <param name="cycleEvents"></param>
         public void GetEventsToCompleteCycle(bool getPermissivePhase, DateTime endDate, Approach approach,
             List<ControllerEventLog> cycleEvents)
         {
@@ -301,6 +376,13 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
+        /// <summary>
+        /// Needs event codes 1,3,8,9,11,63,64,65
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="startDate"></param>
+        /// <param name="approach"></param>
+        /// <param name="cycleEvents"></param>
         public void GetEventsToStartCycle(bool getPermissivePhase, DateTime startDate, Approach approach,
             List<ControllerEventLog> cycleEvents)
         {
@@ -326,6 +408,13 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64,66
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="approach"></param>
+        /// <param name="getPermissivePhase"></param>
+        /// <returns></returns>
         public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, Approach approach,
             bool getPermissivePhase)
         {
@@ -376,6 +465,14 @@ namespace ATSPM.Application.Reports.Business.Common
             return terminationType;
         }
 
+        /// <summary>
+        /// Needs event codes 4,5,6
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <returns></returns>
         private List<ControllerEventLog> GetTerminationEvents(bool getPermissivePhase, DateTime startDate,
             DateTime endDate,
             Approach approach)

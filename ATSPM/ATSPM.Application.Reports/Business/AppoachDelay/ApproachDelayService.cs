@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using ATSPM.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -10,52 +11,24 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
     public class ApproachDelayService 
     {
-        private readonly ISignalRepository signalRepository;
-        private readonly PlanService planService;
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly IApproachRepository approachRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public ApproachDelayService(
-            ISignalRepository signalRepository,
-            PlanService planService,
-            SignalPhaseService signalPhaseService,
-            IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository)
+        public ApproachDelayService()
         {
-            this.signalRepository = signalRepository;
-            this.planService = planService;
-            this.signalPhaseService = signalPhaseService;
-            this.approachRepository = approachRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
         public ApproachDelayResult GetChartData(
-            ApproachDelayOptions options)
-        {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var events = controllerEventLogRepository.GetDetectorEvents(options.MetricTypeId, approach, options.StartDate, options.EndDate);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
-                options.StartDate,
-                options.EndDate,
-                options.GetPermissivePhase,
-                false,
-                null,
-                options.BinSize,
-                approach,
-                events.ToList()
-                );
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
+            ApproachDelayOptions options,
+            Data.Models.Approach approach,
+            SignalPhase signalPhase)
+        {            
             var dt = signalPhase.StartDate;
             List<ApproachDelayDataPoint> approachDelayDataPoints = new List<ApproachDelayDataPoint>();
             List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
             while (dt < signalPhase.EndDate)
             {
-                var pcdsInBin = from item in signalPhase.Cycles
-                                where item.StartTime >= dt && item.StartTime < dt.AddMinutes(options.BinSize)
-                                select item;
-
+                var endDt = dt.AddMinutes(options.BinSize);
+                var pcdsInBin = signalPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
                 var binDelay = pcdsInBin.Sum(d => d.TotalDelay);
                 var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
                 double bindDelaypervehicle = 0;
@@ -67,23 +40,19 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                     bindDelaypervehicle = 0;
 
                 bindDelayperhour = binDelay * (60 / options.BinSize) / 60 / 60;
-
-                if (options.ShowDelayPerVehicle)
-                    approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
-                if (options.ShowDelayPerHour)
-                    approachDelayDataPoints.Add(new ApproachDelayDataPoint(dt, bindDelayperhour));
-
+                approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
+                approachDelayDataPoints.Add(new ApproachDelayDataPoint(dt, bindDelayperhour));
                 dt = dt.AddMinutes(options.BinSize);
             }
-            var plans = GetPlans(signalPhase.Plans, options.StartDate, options.ShowPlanStatistics);
+            var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
                 "Approach Delay",
                 approach.SignalId,
                 approach.Signal.SignalDescription(),
                 options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
                 approach.Description,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 approachDelayPerVehicleDataPoints.Average(d => d.DelayPerVehicle),
                 approachDelayPerVehicleDataPoints.Sum(d => d.DelayPerVehicle),
                 plans,
@@ -93,8 +62,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         }
 
 
-        protected List<ApproachDelayPlan> GetPlans(List<PerdueCoordinationPlan> planCollection, DateTime graphStartDate,
-            bool showPlanStatistics)
+        protected List<ApproachDelayPlan> GetPlans(List<PerdueCoordinationPlan> planCollection)
         {
             var plans = new List<ApproachDelayPlan>();
             foreach (var plan in planCollection)
