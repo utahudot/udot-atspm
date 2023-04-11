@@ -19,12 +19,12 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
 
         public ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
-            Data.Models.Approach approach,
+            Approach approach,
             SignalPhase signalPhase)
         {            
             var dt = signalPhase.StartDate;
-            List<ApproachDelayDataPoint> approachDelayDataPoints = new List<ApproachDelayDataPoint>();
-            List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
+            var approachDelayDataPoints = new List<ApproachDelayDataPoint>();
+            var approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
             while (dt < signalPhase.EndDate)
             {
                 var endDt = dt.AddMinutes(options.BinSize);
@@ -57,8 +57,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                 approachDelayPerVehicleDataPoints.Sum(d => d.DelayPerVehicle),
                 plans,
                 approachDelayDataPoints,
-                approachDelayPerVehicleDataPoints
-                );
+                approachDelayPerVehicleDataPoints);
         }
 
 
