@@ -52,7 +52,7 @@ Console.WriteLine($"list2: {list2.Count}");
 Console.WriteLine($"list3: {list3.Count}");
 
 
-var test = new ATSPMProcessWorkflow();
+var test = new PhaseTerminationProcess();
 
 
 await foreach (var result in test.PhaseTerminationMeasureInformation.ReceiveAllAsync())
