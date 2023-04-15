@@ -40,14 +40,16 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             this.approachRepository = approachRepository;
         }
 
-        public SplitFailPhaseData GetSplitFailPhaseData(SplitFailOptions options)
+        public SplitFailPhaseData GetSplitFailPhaseData(
+            SplitFailOptions options,
+            List<ControllerEventLog> cycleEvents,
+            Approach approach)
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
             var splitFailPhaseData = new SplitFailPhaseData();
             splitFailPhaseData.Approach = approach;
             splitFailPhaseData.GetPermissivePhase = options.UsePermissivePhase;
             splitFailPhaseData.PhaseNumberSort = options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
-            splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(options, approach, options.UsePermissivePhase);
+            splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(options, approach, options.UsePermissivePhase, cycleEvents);
             SetDetectorActivations(options, splitFailPhaseData);
             AddDetectorActivationsToCycles(splitFailPhaseData);
             splitFailPhaseData.Plans = planService.GetSplitFailPlans(splitFailPhaseData.Cycles, options, splitFailPhaseData.Approach);

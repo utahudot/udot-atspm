@@ -48,5 +48,12 @@ namespace ATSPM.Application.Extensions
             }
             return new List<Detector>();
         }
+
+        public static List<int> GetCycleEventCodes(this Approach approach, bool getPermissivePhase)
+        { 
+                return approach.IsPermissivePhaseOverlap || approach.IsPedestrianPhaseOverlap
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 8, 9 };
+        }
     }
 }

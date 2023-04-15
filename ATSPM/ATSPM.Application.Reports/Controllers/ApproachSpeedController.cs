@@ -50,34 +50,26 @@ namespace ATSPM.Application.Reports.Controllers
                 options.Start,
                 options.End,
                 detector.MinSpeedFilter ?? 5).ToList();
-            var events = GetCycleEvents(options.UsePermissivePhase, options.Start, options.End, approach);
-            events.AddRange(controllerEventLogRepository.GetSignalEventsByEventCode(approach.SignalId, options.Start, options.End, 131).ToList());
-            ApproachSpeedResult viewModel = approachSpeedService.GetChartData(options);
+            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
+                approach.SignalId,
+                options.Start,
+                options.End,
+                approach.GetCycleEventCodes(options.UsePermissivePhase),
+                approach.PermissivePhaseNumber.Value).ToList();
+            var planEvents = controllerEventLogRepository.GetSignalEventsByEventCode(
+                approach.SignalId,
+                options.Start,
+                options.End,
+                131).ToList();
+            ApproachSpeedResult viewModel = approachSpeedService.GetChartData(
+                options,
+                cycleEvents,
+                planEvents,
+                speedEvents,
+                detector);
             return viewModel;
         }
 
-        private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
-           DateTime endDate, Approach approach)
-        {
-            List<ControllerEventLog> cycleEvents;
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
-            }
-
-            return cycleEvents;
-        }
+        
     }
 }

@@ -39,37 +39,37 @@ namespace ATSPM.Application.Reports.Business.Common
             this.planSplitMonitorService = planSplitMonitorService;
         }
 
-        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-            string signalId,
-            DateTime startTime,
-            DateTime endTime,
-            int consecutivecount)
-        {
-            var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
-            var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-            analysisPhaseCollectionData.SignalId = signalId;
-            var ptedt = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                analysisPhaseCollectionData.SignalId,
-                startTime,
-                endTime,
-                new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
-            var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                analysisPhaseCollectionData.SignalId,
-                startTime,
-                endTime,
-                new List<int> { 1 });
-            ptedt = ptedt.OrderByDescending(i => i.Timestamp).ToList();
-            var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
-            foreach (var row in phasesInUse)
-            {
-                var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, signal);
-                analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
-            }
-            analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
-            analysisPhaseCollectionData.MaxPhaseInUse = FindMaxPhase(analysisPhaseCollectionData.AnalysisPhases);
-            return analysisPhaseCollectionData;
-        }
+        //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
+        //    string signalId,
+        //    DateTime startTime,
+        //    DateTime endTime,
+        //    int consecutivecount)
+        //{
+        //    var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
+        //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
+        //    analysisPhaseCollectionData.SignalId = signalId;
+        //    var ptedt = controllerEventLogRepository.GetSignalEventsByEventCodes(
+        //        analysisPhaseCollectionData.SignalId,
+        //        startTime,
+        //        endTime,
+        //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
+        //    var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(
+        //        analysisPhaseCollectionData.SignalId,
+        //        startTime,
+        //        endTime,
+        //        new List<int> { 1 });
+        //    ptedt = ptedt.OrderByDescending(i => i.Timestamp).ToList();
+        //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
+        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
+        //    foreach (var row in phasesInUse)
+        //    {
+        //        var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, signal);
+        //        analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
+        //    }
+        //    analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
+        //    analysisPhaseCollectionData.MaxPhaseInUse = FindMaxPhase(analysisPhaseCollectionData.AnalysisPhases);
+        //    return analysisPhaseCollectionData;
+        //}
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(string signalId, DateTime startTime, DateTime endTime)
         {

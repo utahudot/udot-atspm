@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -29,21 +30,23 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 
 
         public ArrivalOnRedResult GetChartData(
-            ArrivalOnRedOptions options)
+            ArrivalOnRedOptions options,
+            SignalPhase signalPhase            
+            ) 
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var events = controllerEventLogRepository.GetDetectorEvents(9, approach, options.StartDate, options.EndDate);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
-                options.StartDate,
-                options.EndDate,
-                false,
-                false,
-                null,
-                options.SelectedBinSize,
-                //9,
-                approach,
-                events.ToList()
-                );
+            //var signalPhase = signalPhaseService.GetSignalPhaseData(
+            //    options.StartDate,
+            //    options.EndDate,
+            //    false,
+            //    false,
+            //    null,
+            //    options.SelectedBinSize,
+            //    //9,
+            //    approach,
+            //    events.ToList()
+            //    );
             double totalDetectorHits = 0;
             double totalAoR = 0;
             double totalCars = 0;

@@ -2,9 +2,12 @@
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,13 +20,17 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
         private readonly ISignalRepository signalRepository;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IApproachRepository approachRepository;
 
         public SplitFailController(
             SplitFailPhaseService splitFailPhaseService,
-            ISignalRepository signalRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            IApproachRepository approachRepository)
         {
             this.splitFailPhaseService = splitFailPhaseService;
-            this.signalRepository = signalRepository;
+            this.controllerEventLogRepository = controllerEventLogRepository;
+            this.approachRepository = approachRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -40,7 +47,10 @@ namespace ATSPM.Application.Reports.Controllers
         public SplitFailsResult GetChartData([FromBody] SplitFailOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
-            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options);
+
+            var approach = approachRepository.Lookup(options.ApproachId);
+            var cycleEvents = GetCycleEvents(options.UsePermissivePhase, options.StartDate, options.EndDate, approach)
+            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options,cycleEvents,approach);
             return new SplitFailsResult(
                 "Split Fail Chart",
                 options.SignalId,
@@ -68,6 +78,39 @@ namespace ATSPM.Application.Reports.Controllers
                 splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
                 );
+        }
+
+
+        /// <summary>
+        /// Needs event codes 1,8,9,61,63,64,66
+        /// </summary>
+        /// <param name="getPermissivePhase"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="approach"></param>
+        /// <returns></returns>
+        private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
+            DateTime endDate, Approach approach)
+        {
+            List<ControllerEventLog> cycleEvents;
+            if (getPermissivePhase)
+            {
+                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 8, 9 };
+                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
+                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
+            }
+            else
+            {
+                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
+                    ? new List<int> { 61, 63, 64, 66 }
+                    : new List<int> { 1, 8, 9 };
+                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
+                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
+            }
+
+            return cycleEvents;
         }
 
     }

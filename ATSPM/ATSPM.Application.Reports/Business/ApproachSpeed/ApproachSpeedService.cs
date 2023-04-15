@@ -12,7 +12,6 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
     public class ApproachSpeedService
     {
-        private readonly IDetectorRepository detectorRepository;
         private readonly CycleService cycleService;
         private readonly PlanService planService;
 
@@ -27,11 +26,20 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
 
         public ApproachSpeedResult GetChartData(
             ApproachSpeedOptions options,
-            Approach approach,
-            List<ControllerEventLog> events,
-            List<SpeedEvent> speedEvents)        
+            List<ControllerEventLog> cycleEvents,
+            List<ControllerEventLog> planEvents,
+            List<SpeedEvent> speedEvents,
+            Detector detector)        
         {
-            var speedDetector = GetSpeedDetector(detector, options.Start, options.End, options.SelectedBinSize, false, events, speedEvents);
+            var speedDetector = GetSpeedDetector(
+                detector,
+                options.Start,
+                options.End,
+                options.SelectedBinSize,
+                false,
+                planEvents,
+                cycleEvents,
+                speedEvents);
             var averageSpeeds = new List<AverageSpeeds>();
             var eightyFifthSpeeds = new List<EightyFifthSpeeds>();
             var fifteenthSpeeds = new List<FifteenthSpeeds>();
@@ -59,7 +67,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 );
         }
 
-        public SpeedDetector GetSpeedDetector(Data.Models.Detector detector, DateTime start, DateTime end, int binSize,
+        public SpeedDetector GetSpeedDetector(Detector detector, DateTime start, DateTime end, int binSize,
            bool getPermissivePhase, List<ControllerEventLog> planEvents, List<ControllerEventLog> cycleEvents, List<SpeedEvent> speedEvents)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, getPermissivePhase, detector, cycleEvents);
@@ -70,7 +78,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
             }
 
             var totalDetectorHits = cycles.Sum(c => c.SpeedEvents.Count);
-            var plans = planService.GetSpeedPlans(cycles, start, end, detector.Approach, events.Where(e => e.EventCode == 131).OrderBy(e => e.Timestamp).ToList());
+            var plans = planService.GetSpeedPlans(cycles, start, end, detector.Approach, planEvents);
             var movementDelay = 0;
             if (detector.MovementDelay != null)
                 movementDelay = detector.MovementDelay.Value;

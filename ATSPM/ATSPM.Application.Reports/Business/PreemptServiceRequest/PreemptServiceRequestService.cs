@@ -21,12 +21,12 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public PreemptServiceRequestResult GetChartData(PreemptServiceRequestOptions options)
+        public PreemptServiceRequestResult GetChartData(PreemptServiceRequestOptions options, List<ControllerEventLog> planEvents)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
             var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.StartDate, options.EndDate);
             var preemptEvents = GetPreemptEvents(events);
-            var plans = planService.GetBasicPlans(options.StartDate, options.EndDate, options.SignalId);
+            var plans = planService.GetBasicPlans(options.StartDate, options.EndDate, options.SignalId, planEvents);
             List<Common.Plan> preemptPlans = new List<Common.Plan>();
             foreach (var pl in plans)
             {

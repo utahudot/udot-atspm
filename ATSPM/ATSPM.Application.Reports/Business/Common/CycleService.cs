@@ -416,9 +416,9 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <returns></returns>
         public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, Approach approach,
-            bool getPermissivePhase)
+            bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
         {
-            var cycleEvents = GetCycleEvents(getPermissivePhase, options.StartDate.AddSeconds(-900), options.EndDate.AddSeconds(900), approach);
+            //var cycleEvents = GetCycleEvents(getPermissivePhase, options.StartDate.AddSeconds(-900), options.EndDate.AddSeconds(900), approach);
             var terminationEvents =
                 GetTerminationEvents(getPermissivePhase, options.StartDate, options.EndDate, approach);
             var cycles = new List<CycleSplitFail>();
