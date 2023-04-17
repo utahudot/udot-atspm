@@ -69,7 +69,7 @@ namespace ATSPM.Application.Reports.Controllers
                 planEvents.ToList(),
                 detectorEvents.ToList()
                 );
-            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase);
+            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase, approach);
             return viewModel;
         }
 

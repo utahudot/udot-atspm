@@ -10,32 +10,19 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 {
     public class ArrivalOnRedService
     {
-        private readonly ISignalRepository signalRepository;
-        private readonly IApproachRepository approachRepository;
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         public ArrivalOnRedService(
-            ISignalRepository signalRepository,
-            IApproachRepository approachRepository,
-            SignalPhaseService signalPhaseService,
-            IControllerEventLogRepository controllerEventLogRepository
             )
         {
-            this.signalRepository = signalRepository;
-            this.approachRepository = approachRepository;
-            this.signalPhaseService = signalPhaseService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
         public ArrivalOnRedResult GetChartData(
             ArrivalOnRedOptions options,
-            SignalPhase signalPhase            
-            ) 
+            SignalPhase signalPhase,
+            Approach approach
+            )
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var events = controllerEventLogRepository.GetDetectorEvents(9, approach, options.Start, options.End, true, false);
             double totalDetectorHits = 0;
             double totalAoR = 0;
             double totalCars = 0;
