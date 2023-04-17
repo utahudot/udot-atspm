@@ -48,7 +48,9 @@ namespace ATSPM.Application.Reports.Controllers
         public PerdueCoordinationDiagramResult GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
-            var events = controllerEventLogRepository.GetDetectorEvents(6, approach, options.StartDate, options.EndDate);
+            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(6, approach, options.StartDate, options.EndDate, true, false);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.SignalId, options.StartDate, options.EndDate);
+            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.StartDate, options.EndDate);
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.StartDate,
                 options.EndDate,
@@ -57,7 +59,9 @@ namespace ATSPM.Application.Reports.Controllers
                 0,
                 options.SelectedBinSize,
                 approach,
-                events.ToList());
+                cycleEvents.ToList(),
+                planEvents.ToList(),
+                detectorEvents.ToList());
             PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, approach, signalPhase);
             return viewModel;
         }

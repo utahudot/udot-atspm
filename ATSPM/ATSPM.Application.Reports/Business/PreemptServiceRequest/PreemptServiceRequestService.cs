@@ -23,10 +23,10 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
         public PreemptServiceRequestResult GetChartData(PreemptServiceRequestOptions options, List<ControllerEventLog> planEvents)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
-            var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.StartDate, options.EndDate);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
+            var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.Start, options.End);
             var preemptEvents = GetPreemptEvents(events);
-            var plans = planService.GetBasicPlans(options.StartDate, options.EndDate, options.SignalId, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
             List<Common.Plan> preemptPlans = new List<Common.Plan>();
             foreach (var pl in plans)
             {
@@ -36,8 +36,8 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 "Preempt Service",
                 options.SignalId,
                 signal.SignalDescription(),
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 preemptPlans,
                 preemptEvents
                 );

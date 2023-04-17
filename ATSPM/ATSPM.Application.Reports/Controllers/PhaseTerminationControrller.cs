@@ -1,6 +1,8 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PhaseTermination;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -14,10 +16,14 @@ namespace ATSPM.Application.Reports.Controllers
     public class PhaseTerminationController : ControllerBase
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public PhaseTerminationController(AnalysisPhaseCollectionService analysisPhaseCollectionService)
+        public PhaseTerminationController(
+            AnalysisPhaseCollectionService analysisPhaseCollectionService,
+            IControllerEventLogRepository controllerEventLogRepository)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -34,10 +40,15 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PhaseTerminationResult GetChartData([FromBody] PhaseTerminationOptions options)
         {
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
+                options.SignalId,
+                options.Start,
+                options.End);
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 options.SignalId,
-                options.StartDate,
-                options.EndDate);
+                options.Start,
+                options.End,
+                planEvents.ToList());
             var gapOuts = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveGapOuts).Select(p => new GapOut(p.Timestamp, p.EventParam)).ToList();
             var maxOuts = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveMaxOut).Select(p => new MaxOut(p.Timestamp, p.EventParam)).ToList();
             var forceOffs = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveForceOff).Select(p => new ForceOff(p.Timestamp, p.EventParam)).ToList();
@@ -48,8 +59,8 @@ namespace ATSPM.Application.Reports.Controllers
                 "Phase Termination Chart",
                 phaseCollectionData.SignalId,
                 phaseCollectionData.Signal.SignalDescription(),
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 options.SelectedConsecutiveCount,
                 plans,
                 gapOuts,

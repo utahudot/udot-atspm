@@ -48,6 +48,10 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var detectorChannels = approach.GetDetectorsForMetricType(32).Select(d => d.DetChannel).ToList();
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
+                approach.SignalId,
+                options.Start,
+                options.End);
             var events = controllerEventLogRepository.GetSignalEventsByEventCodes(
                 approach.SignalId,
                 options.Start,
@@ -67,7 +71,8 @@ namespace ATSPM.Application.Reports.Controllers
             var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 approach.SignalId,
                 options.Start,
-                options.End);
+                options.End,
+                planEvents.ToList());
             var analysisPhaseData = analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).FirstOrDefault();
             return waitTimeService.GetChartData(
                 options,

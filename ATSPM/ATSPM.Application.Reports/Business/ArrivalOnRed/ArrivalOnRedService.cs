@@ -35,18 +35,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
             ) 
         {
             var approach = approachRepository.Lookup(options.ApproachId);
-            var events = controllerEventLogRepository.GetDetectorEvents(9, approach, options.StartDate, options.EndDate);
-            //var signalPhase = signalPhaseService.GetSignalPhaseData(
-            //    options.StartDate,
-            //    options.EndDate,
-            //    false,
-            //    false,
-            //    null,
-            //    options.SelectedBinSize,
-            //    //9,
-            //    approach,
-            //    events.ToList()
-            //    );
+            var events = controllerEventLogRepository.GetDetectorEvents(9, approach, options.Start, options.End, true, false);
             double totalDetectorHits = 0;
             double totalAoR = 0;
             double totalCars = 0;
@@ -103,8 +92,8 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                 approach.Signal.SignalDescription(),
                 approach.ProtectedPhaseNumber,
                 approach.Description,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 totalDetectorHits,
                 totalAoR,
                 totalPercentAoR,

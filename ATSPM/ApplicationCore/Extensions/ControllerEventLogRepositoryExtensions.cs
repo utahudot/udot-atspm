@@ -2,10 +2,13 @@
 using ATSPM.Application.Specifications;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Channels;
 
 namespace ATSPM.Application.Extensions
 {
@@ -151,8 +154,17 @@ namespace ATSPM.Application.Extensions
             int metricTypeId,
             Approach approach,
             DateTime start,
-            DateTime end)
+            DateTime end,
+            bool detectorOn,
+            bool detectorOff)
         {
+            var eventCodes = new List<int>();
+            if(detectorOn)
+                eventCodes.Add(82);
+            if(detectorOff)
+                eventCodes.Add(81);
+            if (!detectorOn && !detectorOff)
+                throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var events = new List<ControllerEventLog>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
             foreach (var d in detectorsForMetric)
@@ -160,12 +172,44 @@ namespace ATSPM.Application.Extensions
                     approach.Signal.SignalId,
                     start,
                     end,
-                    new List<int> { 82 },
+                    eventCodes,
                     d.DetChannel,
                     d.GetOffset(),
                     d.LatencyCorrection));
-            return events;
+            return events.OrderBy(e => e.Timestamp).ToList();
         }
+
+        public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
+           this IControllerEventLogRepository repo,
+           string signalId,
+           DateTime start,
+           DateTime end)
+        {
+            return repo.GetSignalEventsByEventCode(
+                signalId,
+                start,
+                end,
+                131)
+                .OrderBy(e => e.Timestamp)
+                .ToList();
+        } 
+        
+        public static IReadOnlyList<ControllerEventLog> GetCycleEventsWithTimeExtension(
+           this IControllerEventLogRepository repo,
+           Approach approach,
+           bool getPermissivePhase,
+           DateTime start,
+           DateTime end)
+        {
+            return repo.GetEventsByEventCodesParam(
+                approach.SignalId,
+                start.AddSeconds(-900),
+                end.AddSeconds(900),
+                approach.GetCycleEventCodes(getPermissivePhase),
+                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+        }
+
+
 
         public static ControllerEventLog GetFirstEventBeforeDate(this IControllerEventLogRepository repo, string signalId, int eventCode, DateTime date)
         {

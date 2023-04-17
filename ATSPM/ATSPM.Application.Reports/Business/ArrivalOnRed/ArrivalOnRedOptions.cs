@@ -16,8 +16,8 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
         [Display(Name = "Show Plans")]
         public bool ShowPlanStatistics { get; set; }
         public int ApproachId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool UsePermissivePhase { get; internal set; }
     }
 }

@@ -44,13 +44,13 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public SplitFailsResult GetChartData([FromBody] SplitFailOptions options)
+        public SplitFailsResult GetChartData([FromBody] SplitFailOptions options, List<ControllerEventLog> planEvents)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
 
             var approach = approachRepository.Lookup(options.ApproachId);
-            var cycleEvents = GetCycleEvents(options.UsePermissivePhase, options.StartDate, options.EndDate, approach)
-            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options,cycleEvents,approach);
+            var cycleEvents = GetCycleEvents(options.UsePermissivePhase, options.StartDate, options.EndDate, approach);
+            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options,cycleEvents,planEvents, approach);
             return new SplitFailsResult(
                 "Split Fail Chart",
                 options.SignalId,

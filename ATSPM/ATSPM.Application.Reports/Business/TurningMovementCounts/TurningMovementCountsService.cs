@@ -27,9 +27,10 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             TurningMovementCountsOptions options,
             Approach approach,
             List<Detector> detectors,
-            List<ControllerEventLog> events)
+            List<ControllerEventLog> events,
+            List<ControllerEventLog> planEvents)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, approach.SignalId);
+            var plans = planService.GetBasicPlans(options.Start, options.End, approach.SignalId, planEvents);
             var movementTotals = new SortedDictionary<DateTime, int>();
             var laneTotals = new SortedDictionary<string, int>();
             var binSizeMultiplier = 60 / options.SelectedBinSize;

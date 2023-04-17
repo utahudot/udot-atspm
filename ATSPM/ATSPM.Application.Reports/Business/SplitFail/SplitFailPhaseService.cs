@@ -43,6 +43,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
         public SplitFailPhaseData GetSplitFailPhaseData(
             SplitFailOptions options,
             List<ControllerEventLog> cycleEvents,
+            List<ControllerEventLog> planEvents,
             Approach approach)
         {
             var splitFailPhaseData = new SplitFailPhaseData();
@@ -52,7 +53,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(options, approach, options.UsePermissivePhase, cycleEvents);
             SetDetectorActivations(options, splitFailPhaseData);
             AddDetectorActivationsToCycles(splitFailPhaseData);
-            splitFailPhaseData.Plans = planService.GetSplitFailPlans(splitFailPhaseData.Cycles, options, splitFailPhaseData.Approach);
+            splitFailPhaseData.Plans = planService.GetSplitFailPlans(splitFailPhaseData.Cycles, options, splitFailPhaseData.Approach, planEvents);
             splitFailPhaseData.TotalFails = splitFailPhaseData.Cycles.Count(c => c.IsSplitFail);
             splitFailPhaseData.Statistics = new Dictionary<string, string>();
             splitFailPhaseData.Statistics.Add("Total Split Failures", splitFailPhaseData.TotalFails.ToString());

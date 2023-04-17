@@ -44,32 +44,21 @@ namespace ATSPM.Application.Reports.Controllers
         public ApproachDelayResult GetChartData([FromBody] ApproachDelayOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
-            var approachDetectors = approach.GetDetectorsForMetricType(options.MetricTypeId).ToList();
-            var cycleEventCodes = options.GetPermissivePhase ? new List<int> { 61, 63, 64 } : new List<int> { 1, 8, 9 };
-            var planEvents = controllerEventLogRepository.GetSignalEventsByEventCode(
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
                 approach.SignalId,
                 options.Start,
-                options.End,
-                131).OrderBy(e => e.Timestamp).ToList();
+                options.End);
             var detectorEvents = new List<ControllerEventLog>();
             if (options.GetVolume)
             {
-                var channels = approachDetectors.Select(a => a.DetChannel).ToList();
-                detectorEvents = controllerEventLogRepository.GetRecordsByParameterAndEvent(
-                    approach.SignalId,
-                    options.Start,
-                    options.End,
-                    channels,
-                    new List<int> { 82 })
-                    .OrderBy(e => e.Timestamp)
-                    .ToList();
+                detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
             }
-            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
-                approach.SignalId,
-                options.Start.AddSeconds(-900),
-                options.End.AddSeconds(900),
-                cycleEventCodes,
-                options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
+                approach,
+                options.GetPermissivePhase,
+                options.Start,
+                options.End);
+                
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.Start,
                 options.End,
@@ -78,8 +67,8 @@ namespace ATSPM.Application.Reports.Controllers
                 null,
                 options.BinSize,
                 approach,
-                cycleEvents,
-                planEvents,
+                cycleEvents.ToList(),
+                planEvents.ToList(),
                 detectorEvents); 
             ApproachDelayResult viewModel = approachDelayService.GetChartData(
                 options,

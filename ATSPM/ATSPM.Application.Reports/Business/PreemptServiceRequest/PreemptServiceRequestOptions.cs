@@ -9,12 +9,12 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
         public PreemptServiceRequestOptions(string signalId, DateTime startDate, DateTime endDate)
         {
             SignalId = signalId;
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
         }
 
         public string SignalId { get;  set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
     }
 }

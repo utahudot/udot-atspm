@@ -69,7 +69,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
             if (cycleEvents.IsNullOrEmpty())
                 return new SignalPhase();
-            var cycles = cycleService.GetPcdCycles(start, end, approach, cycleEvents, getPermissivePhase, pcdCycleTime);
+            var cycles = cycleService.GetPcdCycles(start, end, approach, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
             return new SignalPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,

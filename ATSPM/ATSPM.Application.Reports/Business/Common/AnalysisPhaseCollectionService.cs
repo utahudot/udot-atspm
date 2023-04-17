@@ -71,7 +71,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //    return analysisPhaseCollectionData;
         //}
 
-        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(string signalId, DateTime startTime, DateTime endTime)
+        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(string signalId, DateTime startTime, DateTime endTime, List<ControllerEventLog> planEvents)
         {
             var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
@@ -79,7 +79,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 }).ToList();
             var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
             var phasesInUse = dapta.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId);
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents);
             foreach (var row in phasesInUse)
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, signal, ptedt);

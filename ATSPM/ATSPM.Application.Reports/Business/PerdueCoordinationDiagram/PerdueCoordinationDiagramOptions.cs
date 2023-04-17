@@ -26,27 +26,14 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             StartDate = startDate;
             EndDate = endDate;
         }
-
-        [Required]
-        [Display(Name = "Volume Bin Size")]
-        [DataMember]
         public int SelectedBinSize { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Plans")]
         public bool ShowPlanStatistics { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Volumes")]
         public bool ShowVolumes { get; set; }
-
         [DataMember] public bool ShowArrivalsOnGreen { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string SignalId { get; set; }
         public int ApproachId { get; set; }
-
-
-
+        public bool UsePermissivePhase { get; set; }
     }
 }

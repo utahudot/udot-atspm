@@ -29,8 +29,8 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             SignalId = signalId;
             Direction = direction;
             DetectionType = detectionType;
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
             SelectedBinSize = binSize;
             ShowTotalVolume = showTotalVolume;
             ShowDirectionalSplits = showDirectionalSplits;
@@ -73,7 +73,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
         public string SignalId { get; private set; }
         public DirectionTypes Direction { get; }
         public DetectionTypes DetectionType { get; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
+        public DateTime Start { get; private set; }
+        public DateTime End { get; private set; }
     }
 }

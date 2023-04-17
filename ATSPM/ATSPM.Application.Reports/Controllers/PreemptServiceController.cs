@@ -1,7 +1,10 @@
-﻿using ATSPM.Application.Reports.Business.PreempDetail;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.PreemptService;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,10 +15,15 @@ namespace ATSPM.Application.Reports.Controllers
     public class PreemptServiceController : ControllerBase
     {
         private readonly PreemptServiceService preemptServiceService;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public PreemptServiceController(PreemptServiceService preemptServiceService)
+        public PreemptServiceController(
+            PreemptServiceService preemptServiceService,
+            IControllerEventLogRepository controllerEventLogRepository
+            )
         {
             this.preemptServiceService = preemptServiceService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -30,7 +38,11 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PreemptServiceResult GetChartData([FromBody] PreemptServiceMetricOptions options)
         {
-            PreemptServiceResult viewModel = preemptServiceService.GetChartData(options);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
+                options.SignalId,
+                options.Start,
+                options.End);
+            PreemptServiceResult viewModel = preemptServiceService.GetChartData(options, planEvents.ToList());
             return viewModel;
         }
 

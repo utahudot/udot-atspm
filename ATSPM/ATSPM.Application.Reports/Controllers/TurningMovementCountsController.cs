@@ -44,12 +44,21 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var movementTypes = options.MovementTypes.Select(m => (int)m);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
+                approach.SignalId,
+                options.Start,
+                options.End);
             var detectors = approach.GetDetectorsForMetricType(5)
                 .Where(d => d.LaneType.Id == options.LaneType && movementTypes.Contains((int)d.MovementType.Id)).ToList();
             var detectorChannels = detectors.Select(d => d.DetChannel).ToList();
             var events = controllerEventLogRepository.GetRecordsByParameterAndEvent(approach.SignalId, options.Start,
                         options.End, new List<int> { 82 }, detectorChannels).ToList();
-            var result = turningMovementCountsService.GetChartData(options, approach, detectors, events);
+            var result = turningMovementCountsService.GetChartData(
+                options,
+                approach,
+                detectors,
+                events,
+                planEvents.ToList());
             return result;
         }
 

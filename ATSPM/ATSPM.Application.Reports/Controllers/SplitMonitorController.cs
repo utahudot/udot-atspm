@@ -1,8 +1,10 @@
-﻿using ATSPM.Application.Reports.Business.PreemptService;
-using ATSPM.Application.Reports.Business.PreemptServiceRequest;
-using ATSPM.Application.Reports.Business.SplitMonitor;
+﻿using ATSPM.Application.Reports.Business.SplitMonitor;
+using ATSPM.Application.Repositories;
+using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,10 +15,14 @@ namespace ATSPM.Application.Reports.Controllers
     public class SplitMonitorController : ControllerBase
     {
         private readonly SplitMonitorService splitMonitorService;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public SplitMonitorController(SplitMonitorService splitMonitorService)
+        public SplitMonitorController(
+            SplitMonitorService splitMonitorService,
+            IControllerEventLogRepository controllerEventLogRepository)
         {
             this.splitMonitorService = splitMonitorService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -31,7 +37,11 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public SplitMonitorResult GetChartData([FromBody] SplitMonitorOptions options)
         {
-            SplitMonitorResult viewModel = splitMonitorService.GetChartData(options);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(
+                options.SignalId,
+                options.Start,
+                options.End);
+            SplitMonitorResult viewModel = splitMonitorService.GetChartData(options, planEvents.ToList());
             return viewModel;
         }
 

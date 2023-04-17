@@ -74,7 +74,6 @@ namespace ATSPM.Application.Reports
             services.AddScoped<SignalPhaseService>();
             services.AddScoped<PlanSplitMonitorService>();
             services.AddScoped<CycleService>();
-            services.AddScoped<SpeedDetectorService>();
             services.AddScoped<PedPhaseService>();
             services.AddScoped<PlansBaseService>();
             services.AddScoped<AnalysisPhaseCollectionService>();

@@ -7,7 +7,6 @@ using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.SplitMonitor
 {
-    [DataContract]
     public class SplitMonitorOptions
     {
         public SplitMonitorOptions(string signalID, double? yAxisMax, int metricTypeID,
@@ -17,8 +16,8 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         {
             SignalId = signalID;
             MetricTypeId = metricTypeID;
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
             SelectedPercentileSplit = percentileSplit;
             ShowPlanStripes = showPlanStripes;
             ShowPedActivity = showPedActivity;
@@ -31,41 +30,18 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         public SplitMonitorOptions()
         {
         }
-
-        [DataMember]
-        [Display(Name = "Percentile Split")]
         public int? SelectedPercentileSplit { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Plans")]
         public bool ShowPlanStripes { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Ped Activity")]
         public bool ShowPedActivity { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Average Split")]
         public bool ShowAverageSplit { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show % Max Out/ForceOff")]
         public bool ShowPercentMaxOutForceOff { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Percent GapOuts")]
         public bool ShowPercentGapOuts { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Percent Skip")]
         public bool ShowPercentSkip { get; set; }
-
-        [Display(Name = "Adjust Y Axis")]
         public bool AdjustYAxis { get; set; }
         public string SignalId { get; private set; }
         public int MetricTypeId { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
+        public DateTime Start { get; private set; }
+        public DateTime End { get; private set; }
 
 
 

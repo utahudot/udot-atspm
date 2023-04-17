@@ -10,13 +10,13 @@ namespace ATSPM.Application.Reports.Business.PreemptService
         public PreemptServiceMetricOptions(string signalId, DateTime startDate, DateTime endDate, double yAxisMax)
         {
             SignalId = signalId;
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
         }
 
         public string SignalId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
 
         
     }
