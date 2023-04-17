@@ -14,28 +14,16 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
         public const int EVENT_GREEN = 1;
         public const int EVENT_RED = 10;
         public const int EVENT_DET = 81;
-        private readonly IApproachRepository approachRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public LeftTurnGapAnalysisService(
-            IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository)
+        public LeftTurnGapAnalysisService()
         {
-            this.approachRepository = approachRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
         public LeftTurnGapAnalysisResult GetChartData(
-            //Approach approach,
-            //List<ControllerEventLog> eventLogs,
-            LeftTurnGapAnalysisOptions options)
+            LeftTurnGapAnalysisOptions options,
+            Approach approach,
+            List<ControllerEventLog> eventLogs)
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var eventLogs = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                options.SignalId,
-                options.StartDate,
-                options.EndDate,
-                new List<int> { EVENT_GREEN, EVENT_RED, EVENT_DET });
             var phaseEvents = new List<ControllerEventLog>();
 
             phaseEvents.AddRange(eventLogs.Where(x =>
