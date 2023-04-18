@@ -57,7 +57,7 @@ namespace ATSPM.Application.Analysis
         #region ISourceBlock
 
         /// <inheritdoc/>
-        public T2? ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target, out bool messageConsumed)
+        public T2 ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target, out bool messageConsumed)
         {
             return _workflowProcess.ConsumeMessage(messageHeader, target, out messageConsumed);
         }
@@ -130,7 +130,7 @@ namespace ATSPM.Application.Analysis
         }
 
         /// <inheritdoc/>
-        bool ICommand.CanExecute(object? parameter)
+        bool ICommand.CanExecute(object parameter)
         {
             if (parameter is T1 p)
                 return CanExecute(p);
@@ -138,7 +138,7 @@ namespace ATSPM.Application.Analysis
         }
 
         /// <inheritdoc/>
-        void ICommand.Execute(object? parameter)
+        void ICommand.Execute(object parameter)
         {
             if (parameter is T1 p)
                 Task.Run(() => ExecuteAsync(p, default));
@@ -146,6 +146,12 @@ namespace ATSPM.Application.Analysis
 
         #endregion
 
+        /// <summary>
+        /// Process to perform when <see cref="ExecuteAsync(T1, CancellationToken)"/> is called
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="cancelToken"></param>
+        /// <returns></returns>
         public abstract Task<T2> Process(T1 input, CancellationToken cancelToken = default);
     }
 }
