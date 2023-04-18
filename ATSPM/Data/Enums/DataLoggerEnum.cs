@@ -667,7 +667,6 @@ namespace ATSPM.Data.Enums
         [Display(Name = "Split 6 Change")]
         Split6Change = 139,
 
-
         ///<summary>
         ///Split 7 Change
         ///</summary>
