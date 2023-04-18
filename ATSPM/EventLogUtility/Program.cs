@@ -34,40 +34,68 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks.Dataflow;
 
-List<ControllerEventLog> list1 = new();
-List<ControllerEventLog> list2 = new();
-List<ControllerEventLog> list3 = new();
-
 Random r = new Random();
 
-for (int i = 0; i < 10; i++)
+var list = new List<ControllerEventLog>();
+
+for(int i = 0; i <= 150; i++)
 {
-    list1.Add(new ControllerEventLog() { SignalId = "1001", EventCode = 7, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
-    list2.Add(new ControllerEventLog() { SignalId = "1001", EventCode = r.Next(4, 7), EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
-    list3.Add(new ControllerEventLog() { SignalId = "1001", EventCode = 23, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
-}
-
-Console.WriteLine($"list1: {list1.Count}");
-Console.WriteLine($"list2: {list2.Count}");
-Console.WriteLine($"list3: {list3.Count}");
-
-
-var test = new PhaseTerminationProcess();
-
-
-await foreach (var result in test.PhaseTerminationMeasureInformation.ReceiveAllAsync())
-{
-    //return result as object to web client;
+    list.Add(new ControllerEventLog() { SignalId = "1001", EventCode = i, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
 }
 
 
+var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
 
+var FilteredPreemptionData = new FilteredPreemptionData();
+var FilteredIndicationData = new FilteredIndicationData();
+var FilteredDetectorData = new FilteredDetectorData();
+var FilteredPedPhases = new FilteredPedPhases();
+var FilteredTerminationStatus = new FilteredTerminationStatus();
+var FilteredTerminations = new FilteredTerminations();
+var FilteredSplitsData = new FilteredSplitsData();
+var FilteredPhaseIntervalChanges = new FilteredPhaseIntervalChanges();
+var FilteredCallStatus = new FilteredCallStatus();
+var FilteredPedCalls = new FilteredPedCalls();
+var FilteredPedPhaseData = new FilteredPedPhaseData();
+var FilteredTimingActuationData = new FilteredTimingActuationData();
 
+broadcast.LinkTo(FilteredPreemptionData);
+broadcast.LinkTo(FilteredIndicationData);
+broadcast.LinkTo(FilteredDetectorData);
+broadcast.LinkTo(FilteredPedPhases);
+broadcast.LinkTo(FilteredTerminationStatus);
+broadcast.LinkTo(FilteredTerminations);
+broadcast.LinkTo(FilteredSplitsData);
+broadcast.LinkTo(FilteredPhaseIntervalChanges);
+broadcast.LinkTo(FilteredCallStatus);
+broadcast.LinkTo(FilteredPedCalls);
+broadcast.LinkTo(FilteredPedPhaseData);
+broadcast.LinkTo(FilteredTimingActuationData);
 
+var result = new ActionBlock<IEnumerable<ControllerEventLog>>(a =>
+{
+    Console.WriteLine($"-----------------------------------------------------");
+    foreach (var item in a)
+    {
+        Console.WriteLine($"{item.EventCode}");
+    }
+    Console.WriteLine($"-----------------------------------------------------");
+});
 
+FilteredPreemptionData.LinkTo(result);
+FilteredIndicationData.LinkTo(result);
+FilteredDetectorData.LinkTo(result);
+FilteredPedPhases.LinkTo(result);
+FilteredTerminationStatus.LinkTo(result);
+FilteredTerminations.LinkTo(result);
+FilteredSplitsData.LinkTo(result);
+FilteredPhaseIntervalChanges.LinkTo(result);
+FilteredCallStatus.LinkTo(result);
+FilteredPedCalls.LinkTo(result);
+FilteredPedPhaseData.LinkTo(result);
+FilteredTimingActuationData.LinkTo(result);
 
-
-
+broadcast.Post(list);
 
 
 Console.ReadLine();
