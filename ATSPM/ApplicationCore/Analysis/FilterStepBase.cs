@@ -18,6 +18,9 @@ namespace ATSPM.Application.Analysis
     {
         private readonly IPropagatorBlock<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>> _workflowProcess;
 
+        /// <summary>
+        /// List of filtered event codes
+        /// </summary>
         protected List<int> filteredList = new();
 
         public FilterStepBase(DataflowBlockOptions dataflowBlockOptions = default)
