@@ -55,5 +55,18 @@ namespace ATSPM.Application.Extensions
                     ? new List<int> { 61, 63, 64, 66 }
                     : new List<int> { 1, 8, 9 };
         }
+        
+        public static List<int> GetPedestrianCycleEventCodes(this Approach approach)
+        {
+            return approach.IsPedestrianPhaseOverlap ? new List<int> { 67, 68, 45, 90 } : new List<int> { 21, 22, 45, 90 };
+
+        }
+
+        public static List<int> GetPedDetectorsFromApproach(this Approach approach)
+        {
+            return !string.IsNullOrEmpty(approach.PedestrianDetectors) ? approach.PedestrianDetectors.Split(new char[] { ',', '-' }).Select(int.Parse).ToList() : new List<int>() { approach.ProtectedPhaseNumber };
+        }
+
+
     }
 }

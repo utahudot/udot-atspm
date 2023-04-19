@@ -74,9 +74,5 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             return PhaseType.ProtectedPermissive;
         }
 
-        public static List<int> GetPedDetectorsFromApproach(this Approach approach)
-        {
-            return !string.IsNullOrEmpty(approach.PedestrianDetectors) ? approach.PedestrianDetectors.Split(new char[] { ',', '-' }).Select(int.Parse).ToList() : new List<int>() { approach.ProtectedPhaseNumber };
-        }
     }
 }

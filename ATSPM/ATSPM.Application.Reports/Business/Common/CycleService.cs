@@ -22,18 +22,15 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <summary>
         /// Needs event codes 1,8,9,61,63,64
         /// </summary>
-        /// <param name="approach"></param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
-        /// <param name="getPermissivePhase"></param>
         /// <param name="cycleEvents"></param>
         /// <returns></returns>
-        public List<RedToRedCycle> GetRedToRedCycles(Approach approach, DateTime startTime, DateTime endTime,
-            bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
+        public List<RedToRedCycle> GetRedToRedCycles(
+            DateTime startTime,
+            DateTime endTime,
+            List<ControllerEventLog> cycleEvents)
         {
-            //if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-            //    RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endTime))
-            //    GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
             var cycles = new List<RedToRedCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3

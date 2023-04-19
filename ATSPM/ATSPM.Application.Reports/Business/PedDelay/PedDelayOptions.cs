@@ -9,10 +9,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
     {
         public PedDelayOptions(int approachId, DateTime startDate, DateTime endDate, int timeBuffer, bool showPedBeginWalk, bool showCycleLength, bool showPercentDelay, bool showPedRecall, int pedRecallThreshold)
         {
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
             ApproachId = approachId;
-            StartDate = startDate;
+            Start = startDate;
             TimeBuffer = timeBuffer;
             ShowPedBeginWalk = showPedBeginWalk;
             ShowCycleLength = showCycleLength;
@@ -22,32 +22,14 @@ namespace ATSPM.Application.Reports.Business.PedDelay
         }
 
         public int ApproachId { get; }
-        public DateTime StartDate { get; }
-        public DateTime EndDate { get; }
-        [DataMember]
-        [Display(Name = "Time Buffer Between Unique Ped Detections")]
+        public DateTime Start { get; }
+        public DateTime End { get; }
         public int TimeBuffer { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Ped Begin Walk")]
         public bool ShowPedBeginWalk { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Cycle Length")]
         public bool ShowCycleLength { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Percent Delay")]
         public bool ShowPercentDelay { get; set; }
-
-        [DataMember]
-        [Display(Name = "Show Ped Recall")]
         public bool ShowPedRecall { get; set; }
-
-        [DataMember]
-        [Display(Name = "Ped Recall Threshold (Percent)")]
         public int PedRecallThreshold { get; set; }
-
-
+        public bool UsePermissivePhase { get; internal set; }
     }
 }
