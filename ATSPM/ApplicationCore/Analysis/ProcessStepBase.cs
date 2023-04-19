@@ -20,17 +20,17 @@ namespace ATSPM.Application.Analysis
     /// </summary>
     /// <typeparam name="T1">Input data type</typeparam>
     /// <typeparam name="T2">Output data type</typeparam>
-    public abstract class ProcessStepBase<T1, T2> : IExecuteAsync<T1, T2>, IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
+    public abstract class ProcessStepBase<T1, T2> : IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
     {
         public event EventHandler CanExecuteChanged;
 
-        private readonly IPropagatorBlock<T1, T2> _workflowProcess;
+        protected IPropagatorBlock<T1, T2> workflowProcess;
+        protected DataflowBlockOptions options;
 
-        public ProcessStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default)
+        public ProcessStepBase(DataflowBlockOptions dataflowBlockOptions = default)
         {
-            dataflowBlockOptions ??= new();
-            dataflowBlockOptions.NameFormat = this.GetType().Name;
-            _workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, dataflowBlockOptions.CancellationToken), dataflowBlockOptions);
+            options = dataflowBlockOptions ?? new();
+            options.NameFormat = this.GetType().Name;
         }
 
         #region IPropagatorBlock
@@ -38,18 +38,18 @@ namespace ATSPM.Application.Analysis
         #region IDataflowBlock
 
         /// <inheritdoc/>
-        public Task Completion => _workflowProcess.Completion;
+        public Task Completion => workflowProcess.Completion;
 
         /// <inheritdoc/>
         public void Complete()
         {
-            _workflowProcess.Complete();
+            workflowProcess.Complete();
         }
 
         /// <inheritdoc/>
         public void Fault(Exception exception)
         {
-            _workflowProcess.Fault(exception);
+            workflowProcess.Fault(exception);
         }
 
         #endregion
@@ -59,25 +59,25 @@ namespace ATSPM.Application.Analysis
         /// <inheritdoc/>
         public T2 ConsumeMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target, out bool messageConsumed)
         {
-            return _workflowProcess.ConsumeMessage(messageHeader, target, out messageConsumed);
+            return workflowProcess.ConsumeMessage(messageHeader, target, out messageConsumed);
         }
 
         /// <inheritdoc/>
         public IDisposable LinkTo(ITargetBlock<T2> target, DataflowLinkOptions linkOptions)
         {
-            return _workflowProcess.LinkTo(target, linkOptions);
+            return workflowProcess.LinkTo(target, linkOptions);
         }
 
         /// <inheritdoc/>
         public void ReleaseReservation(DataflowMessageHeader messageHeader, ITargetBlock<T2> target)
         {
-            _workflowProcess?.ReleaseReservation(messageHeader, target);
+            workflowProcess?.ReleaseReservation(messageHeader, target);
         }
 
         /// <inheritdoc/>
         public bool ReserveMessage(DataflowMessageHeader messageHeader, ITargetBlock<T2> target)
         {
-            return _workflowProcess.ReserveMessage(messageHeader, target);
+            return workflowProcess.ReserveMessage(messageHeader, target);
         }
 
         #endregion
@@ -87,71 +87,11 @@ namespace ATSPM.Application.Analysis
         /// <inheritdoc/>
         public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T1 messageValue, ISourceBlock<T1>? source, bool consumeToAccept)
         {
-            return _workflowProcess.OfferMessage(messageHeader, messageValue, source, consumeToAccept);
+            return workflowProcess.OfferMessage(messageHeader, messageValue, source, consumeToAccept);
         }
 
         #endregion
 
         #endregion
-
-        #region IExecuteAsyncWithProgress
-
-        /// <inheritdoc/>
-        public virtual bool CanExecute(T1 parameter)
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
-        {
-            if (cancelToken.IsCancellationRequested)
-                return await Task.FromCanceled<T2>(cancelToken);
-
-            if (!CanExecute(parameter))
-                return await Task.FromException<T2>(new ExecuteException());
-
-            try
-            {
-                return await Process(parameter, cancelToken);
-            }
-            catch (Exception e)
-            {
-                return await Task.FromException<T2>(e);
-            }
-        }
-
-        /// <inheritdoc/>
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is T1 p)
-                return Task.Run(() => ExecuteAsync(p, default));
-            return default;
-        }
-
-        /// <inheritdoc/>
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is T1 p)
-                return CanExecute(p);
-            return default;
-        }
-
-        /// <inheritdoc/>
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is T1 p)
-                Task.Run(() => ExecuteAsync(p, default));
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Process to perform when <see cref="ExecuteAsync(T1, CancellationToken)"/> is called
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="cancelToken"></param>
-        /// <returns></returns>
-        public abstract Task<T2> Process(T1 input, CancellationToken cancelToken = default);
     }
 }
