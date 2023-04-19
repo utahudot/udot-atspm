@@ -33,69 +33,290 @@ using System.CommandLine.Parsing;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks.Dataflow;
+using ATSPM.Application.Analysis;
+using ATSPM.Data.Enums;
+using System.Security.Cryptography.X509Certificates;
+using Google.Protobuf.Reflection;
 
-Random r = new Random();
+//Random r = new Random();
+
+//var list = new List<ControllerEventLog>();
+
+//for(int i = 0; i <= 150; i++)
+//{
+//    list.Add(new ControllerEventLog() { SignalId = "1001", EventCode = i, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
+//}
+
+
+//var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
+
+//var FilteredPreemptionData = new FilteredPreemptionData();
+//var FilteredIndicationData = new FilteredIndicationData();
+//var FilteredDetectorData = new FilteredDetectorData();
+//var FilteredPedPhases = new FilteredPedPhases();
+//var FilteredTerminationStatus = new FilteredTerminationStatus();
+//var FilteredTerminations = new FilteredTerminations();
+//var FilteredSplitsData = new FilteredSplitsData();
+//var FilteredPhaseIntervalChanges = new FilteredPhaseIntervalChanges();
+//var FilteredCallStatus = new FilteredCallStatus();
+//var FilteredPedCalls = new FilteredPedCalls();
+//var FilteredPedPhaseData = new FilteredPedPhaseData();
+//var FilteredTimingActuationData = new FilteredTimingActuationData();
+
+//broadcast.LinkTo(FilteredPreemptionData);
+//broadcast.LinkTo(FilteredIndicationData);
+//broadcast.LinkTo(FilteredDetectorData);
+//broadcast.LinkTo(FilteredPedPhases);
+//broadcast.LinkTo(FilteredTerminationStatus);
+//broadcast.LinkTo(FilteredTerminations);
+//broadcast.LinkTo(FilteredSplitsData);
+//broadcast.LinkTo(FilteredPhaseIntervalChanges);
+//broadcast.LinkTo(FilteredCallStatus);
+//broadcast.LinkTo(FilteredPedCalls);
+//broadcast.LinkTo(FilteredPedPhaseData);
+//broadcast.LinkTo(FilteredTimingActuationData);
+
+//var result = new ActionBlock<IEnumerable<ControllerEventLog>>(a =>
+//{
+//    Console.WriteLine($"-----------------------------------------------------");
+//    foreach (var item in a)
+//    {
+//        Console.WriteLine($"{item.EventCode}");
+//    }
+//    Console.WriteLine($"-----------------------------------------------------");
+//});
+
+//FilteredPreemptionData.LinkTo(result);
+//FilteredIndicationData.LinkTo(result);
+//FilteredDetectorData.LinkTo(result);
+//FilteredPedPhases.LinkTo(result);
+//FilteredTerminationStatus.LinkTo(result);
+//FilteredTerminations.LinkTo(result);
+//FilteredSplitsData.LinkTo(result);
+//FilteredPhaseIntervalChanges.LinkTo(result);
+//FilteredCallStatus.LinkTo(result);
+//FilteredPedCalls.LinkTo(result);
+//FilteredPedPhaseData.LinkTo(result);
+//FilteredTimingActuationData.LinkTo(result);
+
+//broadcast.Post(list);
+
 
 var list = new List<ControllerEventLog>();
 
-for(int i = 0; i <= 150; i++)
-{
-    list.Add(new ControllerEventLog() { SignalId = "1001", EventCode = i, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
-}
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:46:47.1000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:46:47.1000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:46:54.3000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:46:54.3000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:51:11.9000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:51:11.9000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:51:17.7000000"), EventCode = 107, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:51:19.2000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 17:51:21.2000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 18:01:45.7000000"), EventCode = 105, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 18:01:45.7000000"), EventCode = 102, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 18:02:05.0000000"), EventCode = 107, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 18:02:23.0000000"), EventCode = 104, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-03 18:02:23.2000000"), EventCode = 111, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-07 10:33:06.2000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-07 10:33:06.2000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-07 10:33:12.5000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-07 10:33:13.6000000"), EventCode = 107, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-07 10:33:16.7000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-09 23:56:41.2000000"), EventCode = 105, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-09 23:56:41.2000000"), EventCode = 102, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-09 23:56:47.4000000"), EventCode = 107, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-09 23:57:19.4000000"), EventCode = 104, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-09 23:57:19.6000000"), EventCode = 111, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-10 10:13:47.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-10 10:13:47.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-10 10:13:52.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-10 10:13:53.4000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-10 10:13:56.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-12 14:07:27.8000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-12 14:07:27.8000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-12 14:07:43.2000000"), EventCode = 107, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-12 14:07:56.0000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-12 14:07:56.2000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-14 06:09:14.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-14 06:09:14.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-14 06:09:20.7000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-14 06:09:21.1000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-14 06:09:24.2000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 20:22:37.9000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 20:22:37.9000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 20:22:43.5000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 20:22:44.1000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 20:22:46.6000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 23:59:44.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 23:59:44.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 23:59:50.8000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 23:59:52.5000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-16 23:59:53.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:19:45.6000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:19:45.6000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:19:52.9000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:19:53.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:19:56.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:20:03.6000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:20:03.6000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:20:10.3000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:20:10.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:20:13.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:22:32.6000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:22:32.6000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:22:39.8000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:22:39.8000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:41:13.7000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:41:13.7000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:41:19.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 11:41:19.9000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 23:01:33.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 23:01:33.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 23:01:39.5000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 23:01:39.9000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-20 23:01:43.0000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:21:59.8000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:21:59.8000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:22:06.0000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:22:06.0000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:33:54.8000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:33:54.8000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:34:00.1000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-23 19:34:00.1000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-27 10:09:02.1000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-27 10:09:02.1000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-27 10:09:07.3000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-27 10:09:07.3000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-29 15:05:42.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-29 15:05:42.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-29 15:05:49.8000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-29 15:05:49.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-30 19:55:47.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-30 19:55:47.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-30 19:55:57.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2020-06-30 19:55:57.4000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-05 14:58:48.3000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-05 14:58:48.3000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-05 14:58:54.5000000"), EventCode = 107, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-05 14:59:00.5000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-05 14:59:00.7000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-16 21:07:28.4000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-16 21:07:28.4000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "6826", Timestamp = DateTime.Parse("2021-07-16 21:07:43.6000000"), EventCode = 107, EventParam = 4 });
+
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:46:47.1000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:46:47.1000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:46:54.3000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:46:54.3000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:51:11.9000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:51:11.9000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:51:17.7000000"), EventCode = 107, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:51:19.2000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 17:51:21.2000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 18:01:45.7000000"), EventCode = 105, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 18:01:45.7000000"), EventCode = 102, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 18:02:05.0000000"), EventCode = 107, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 18:02:23.0000000"), EventCode = 104, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-03 18:02:23.2000000"), EventCode = 111, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-07 10:33:06.2000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-07 10:33:06.2000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-07 10:33:12.5000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-07 10:33:13.6000000"), EventCode = 107, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-07 10:33:16.7000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-09 23:56:41.2000000"), EventCode = 105, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-09 23:56:41.2000000"), EventCode = 102, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-09 23:56:47.4000000"), EventCode = 107, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-09 23:57:19.4000000"), EventCode = 104, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-09 23:57:19.6000000"), EventCode = 111, EventParam = 6 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-10 10:13:47.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-10 10:13:47.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-10 10:13:52.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-10 10:13:53.4000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-10 10:13:56.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-12 14:07:27.8000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-12 14:07:27.8000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-12 14:07:43.2000000"), EventCode = 107, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-12 14:07:56.0000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-12 14:07:56.2000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-14 06:09:14.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-14 06:09:14.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-14 06:09:20.7000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-14 06:09:21.1000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-14 06:09:24.2000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 20:22:37.9000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 20:22:37.9000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 20:22:43.5000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 20:22:44.1000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 20:22:46.6000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 23:59:44.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 23:59:44.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 23:59:50.8000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 23:59:52.5000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-16 23:59:53.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:19:45.6000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:19:45.6000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:19:52.9000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:19:53.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:19:56.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:20:03.6000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:20:03.6000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:20:10.3000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:20:10.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:20:13.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:22:32.6000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:22:32.6000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:22:39.8000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:22:39.8000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:41:13.7000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:41:13.7000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:41:19.9000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 11:41:19.9000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 23:01:33.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 23:01:33.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 23:01:39.5000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 23:01:39.9000000"), EventCode = 107, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-20 23:01:43.0000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:21:59.8000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:21:59.8000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:22:06.0000000"), EventCode = 111, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:22:06.0000000"), EventCode = 104, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:33:54.8000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:33:54.8000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:34:00.1000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-23 19:34:00.1000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-27 10:09:02.1000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-27 10:09:02.1000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-27 10:09:07.3000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-27 10:09:07.3000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-29 15:05:42.5000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-29 15:05:42.5000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-29 15:05:49.8000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-29 15:05:49.8000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-30 19:55:47.2000000"), EventCode = 105, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-30 19:55:47.2000000"), EventCode = 102, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-30 19:55:57.4000000"), EventCode = 111, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2020-06-30 19:55:57.4000000"), EventCode = 104, EventParam = 3 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-05 14:58:48.3000000"), EventCode = 105, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-05 14:58:48.3000000"), EventCode = 102, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-05 14:58:54.5000000"), EventCode = 107, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-05 14:59:00.5000000"), EventCode = 104, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-05 14:59:00.7000000"), EventCode = 111, EventParam = 5 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-16 21:07:28.4000000"), EventCode = 105, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-16 21:07:28.4000000"), EventCode = 102, EventParam = 4 });
+list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-16 21:07:43.6000000"), EventCode = 107, EventParam = 4 });
 
 
-var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
 
-var FilteredPreemptionData = new FilteredPreemptionData();
-var FilteredIndicationData = new FilteredIndicationData();
-var FilteredDetectorData = new FilteredDetectorData();
-var FilteredPedPhases = new FilteredPedPhases();
-var FilteredTerminationStatus = new FilteredTerminationStatus();
-var FilteredTerminations = new FilteredTerminations();
-var FilteredSplitsData = new FilteredSplitsData();
-var FilteredPhaseIntervalChanges = new FilteredPhaseIntervalChanges();
-var FilteredCallStatus = new FilteredCallStatus();
-var FilteredPedCalls = new FilteredPedCalls();
-var FilteredPedPhaseData = new FilteredPedPhaseData();
-var FilteredTimingActuationData = new FilteredTimingActuationData();
+PreemptionDetailsWorkflow PreemptionDetailsWorkflow = new PreemptionDetailsWorkflow();
 
-broadcast.LinkTo(FilteredPreemptionData);
-broadcast.LinkTo(FilteredIndicationData);
-broadcast.LinkTo(FilteredDetectorData);
-broadcast.LinkTo(FilteredPedPhases);
-broadcast.LinkTo(FilteredTerminationStatus);
-broadcast.LinkTo(FilteredTerminations);
-broadcast.LinkTo(FilteredSplitsData);
-broadcast.LinkTo(FilteredPhaseIntervalChanges);
-broadcast.LinkTo(FilteredCallStatus);
-broadcast.LinkTo(FilteredPedCalls);
-broadcast.LinkTo(FilteredPedPhaseData);
-broadcast.LinkTo(FilteredTimingActuationData);
+PreemptionDetailsWorkflow.Execute(list);
 
-var result = new ActionBlock<IEnumerable<ControllerEventLog>>(a =>
-{
-    Console.WriteLine($"-----------------------------------------------------");
-    foreach (var item in a)
-    {
-        Console.WriteLine($"{item.EventCode}");
-    }
-    Console.WriteLine($"-----------------------------------------------------");
-});
+//foreach (var c in test)
+//{
+//    Console.WriteLine($"{c.StartTime} - {c.Seconds} - {c.PreemptNumber}");
+//}
 
-FilteredPreemptionData.LinkTo(result);
-FilteredIndicationData.LinkTo(result);
-FilteredDetectorData.LinkTo(result);
-FilteredPedPhases.LinkTo(result);
-FilteredTerminationStatus.LinkTo(result);
-FilteredTerminations.LinkTo(result);
-FilteredSplitsData.LinkTo(result);
-FilteredPhaseIntervalChanges.LinkTo(result);
-FilteredCallStatus.LinkTo(result);
-FilteredPedCalls.LinkTo(result);
-FilteredPedPhaseData.LinkTo(result);
-FilteredTimingActuationData.LinkTo(result);
-
-broadcast.Post(list);
 
 
 Console.ReadLine();
