@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredDetectorData : FilterStepBase
     {
-        public FilteredDetectorData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.DetectorOff);
             filteredList.Add((int)DataLoggerEnum.DetectorOn);
