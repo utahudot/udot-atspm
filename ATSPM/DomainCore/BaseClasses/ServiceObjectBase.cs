@@ -89,7 +89,7 @@ namespace ATSPM.Domain.BaseClasses
         public bool IsInitialized
         {
             get { return _isInitialized; }
-            private set
+            protected set
             {
                 _isInitialized = value;
                 RaisePropertyChanged(nameof(IsInitialized));
