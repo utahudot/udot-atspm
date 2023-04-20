@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredTerminations : FilterStepBase
     {
-        public FilteredTerminations(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseGapOut);
             filteredList.Add((int)DataLoggerEnum.PhaseMaxOut);
