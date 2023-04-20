@@ -333,17 +333,17 @@ list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Pars
 //Console.WriteLine($"adjusted: {adjusted:yyyy-MM-dd'T'HH:mm:ss.f}");
 //Console.WriteLine($"difference: {adjusted - original}");
 
-AtspmMath.
-
-
 
 
 PreemptionDetailsWorkflow PreemptionDetailsWorkflow = new PreemptionDetailsWorkflow();
 
-PreemptionDetailsWorkflow.Execute(list);
+await foreach (var item in PreemptionDetailsWorkflow.Execute(list, default, default))
+{
+    Console.WriteLine($"{item}");
+}
 
 
-
+Console.WriteLine($"{PreemptionDetailsWorkflow.IsInitialized}");
 
 
 
