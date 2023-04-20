@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
+using ATSPM.Application;
 using ATSPM.Application.Analysis;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
@@ -17,34 +18,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace ATSPM.EventLogUtility
 {
-    public static class AtspmMath
-    {
-        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
-        {
-            var preFilter = items.OrderBy(o => o.Timestamp)
-                .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
-                //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
-                .ToList();
-
-            var result = preFilter.Where((x, y) =>
-                    (y < preFilter.Count() - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
-                    (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
-                        .Chunk(2)
-                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
-
-            return result;
-        }
-
-        //public static TimeSpan AdjustOffset(DateTime timestamp, int approachSpeed, int distanceFromStopBar)
-        //{
-        //    return AdjustTimeStamp(timestamp, approachSpeed, distanceFromStopBar, 0).Millisecond;
-        //}
-
-        public static DateTime AdjustTimeStamp(DateTime timestamp, int approachSpeed, int distanceFromStopBar, double latencyCorrection = 0)
-        {
-            return timestamp.AddSeconds(distanceFromStopBar / (approachSpeed * 1.467)).AddSeconds(latencyCorrection * -1);
-        }
-    }
+    
 
     public class DetectorEvent
     {
