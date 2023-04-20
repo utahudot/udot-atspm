@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredPedCalls : FilterStepBase
     {
-        public FilteredPedCalls(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredPedCalls(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PedestrianCallRegistered);
             filteredList.Add((int)DataLoggerEnum.PedDetectorOn);

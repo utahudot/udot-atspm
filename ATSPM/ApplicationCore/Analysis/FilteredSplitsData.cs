@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredSplitsData : FilterStepBase
     {
-        public FilteredSplitsData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredSplitsData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             for (int i = (int)DataLoggerEnum.Split1Change; i <= (int)DataLoggerEnum.Split16Change; i++)
             {
