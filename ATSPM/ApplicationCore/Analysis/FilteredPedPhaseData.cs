@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredPedPhaseData : FilterStepBase
     {
-        public FilteredPedPhaseData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredPedPhaseData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PedestrianBeginWalk);
             filteredList.Add((int)DataLoggerEnum.PedestrianBeginChangeInterval);
