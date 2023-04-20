@@ -26,7 +26,8 @@ namespace ATSPM.Application.Analysis
 
         public TransformProcessStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions ?? new())
         {
-            workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, dataflowBlockOptions.CancellationToken), (ExecutionDataflowBlockOptions)options);
+            workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, options.CancellationToken), (ExecutionDataflowBlockOptions)options);
+            workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }
 
         #region IExecuteAsyncWithProgress
