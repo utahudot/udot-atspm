@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredTimingActuationData : FilterStepBase
     {
-        public FilteredTimingActuationData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredTimingActuationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
             filteredList.Add((int)DataLoggerEnum.PhaseMinComplete);

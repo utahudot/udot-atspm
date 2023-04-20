@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredPreemptionData : FilterStepBase
     {
-        public FilteredPreemptionData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PreemptCallInputOn);
             filteredList.Add((int)DataLoggerEnum.PreemptGateDownInputReceived);

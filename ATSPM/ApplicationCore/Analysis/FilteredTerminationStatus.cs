@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredTerminationStatus : FilterStepBase
     {
-        public FilteredTerminationStatus(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredTerminationStatus(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseGreenTermination);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,18 +13,97 @@ using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using ATSPM.EventLogUtility;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace ATSPM.EventLogUtility
 {
+    public static class AtspmMath
+    {
+        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        {
+            var preFilter = items.OrderBy(o => o.Timestamp)
+                .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
+                //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
+                .ToList();
+
+            var result = preFilter.Where((x, y) =>
+                    (y < preFilter.Count() - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
+                    (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
+                        .Chunk(2)
+                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
+
+            return result;
+        }
+
+        //public static TimeSpan AdjustOffset(DateTime timestamp, int approachSpeed, int distanceFromStopBar)
+        //{
+        //    return AdjustTimeStamp(timestamp, approachSpeed, distanceFromStopBar, 0).Millisecond;
+        //}
+
+        public static DateTime AdjustTimeStamp(DateTime timestamp, int approachSpeed, int distanceFromStopBar, double latencyCorrection = 0)
+        {
+            return timestamp.AddSeconds(distanceFromStopBar / (approachSpeed * 1.467)).AddSeconds(latencyCorrection * -1);
+        }
+    }
+
+    public class DetectorEvent
+    {
+        //public DateTime Timestamp { get; set; }
+        //public int ApproachSpeed { get; set; }
+        //public int DistanceFromStopBar { get; set; }
+        //public double LatencyCorrection { get; set; }
+
+
+        public Detector Detector { get; set; }
+        public IList<ControllerEventLog> EventLogs { get; set; } = new List<ControllerEventLog>();
+    }
+
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<DetectorEvent, DetectorEvent>
+    {
+        public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<DetectorEvent> Process(DetectorEvent input, CancellationToken cancelToken = default)
+        {
+            foreach(var log in input.EventLogs)
+            {
+                log.Timestamp = AtspmMath.AdjustTimeStamp(
+                    log.Timestamp,
+                    input.Detector.Approach?.Mph ?? 0,
+                    input.Detector.DistanceFromStopBar ?? 0,
+                    input.Detector.LatencyCorrection);
+            }
+
+            return Task.FromResult(input);
+        }
+    }
+
+
+
+    public class ApproachDelayWorkflow
+    {
+        public void Execute()
+        {
+            var FilteredDetectorData = new FilteredDetectorData();
+            var FilteredPhaseIntervalChanges = new FilteredPhaseIntervalChanges();
+
+
+
+
+        }
+    }
+
+
+
+
+    
+    #region PreemptiveStuff
     public abstract class PreempDetailValueBase
     {
         public string SignalId { get; set; }
         public int PreemptNumber { get; set; }
-        public DateTime Start => ControllerEventLogs[0].Timestamp;
-        public DateTime End => ControllerEventLogs[1].Timestamp;
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public TimeSpan Seconds { get; set; }
-
-        public ControllerEventLog[] ControllerEventLogs { get; set; }
     }
 
 
@@ -57,25 +137,6 @@ namespace ATSPM.EventLogUtility
         //public ICollection<InputOff> InputOffs { get; set; }
     }
 
-    public static class AtspmMath
-    {
-        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
-        {
-            var preFilter = items.OrderBy(o => o.Timestamp)
-                .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
-                .Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
-                .ToList();
-
-            var result = preFilter.Where((x, y) =>
-                    (y < preFilter.Count() - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
-                    (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
-                        .Chunk(2)
-                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
-
-            return result;
-        }
-    }
-    
     public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
     {
         protected DataLoggerEnum first;
@@ -85,17 +146,35 @@ namespace ATSPM.EventLogUtility
 
         protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(signal => signal.SignalId)
-                .SelectMany(s => s.GroupBy(preemptNumber => preemptNumber.EventParam)
+            var result = input.GroupBy(g => g.SignalId)
+                .SelectMany(s => s.GroupBy(g => g.EventParam)
                 .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
-                    {
-                        //PreemptNumber = s.Item1[0].EventParam,
-                        //Start = s.Item1[0].Timestamp,
-                        //End = s.Item1[0].Timestamp,
-                        Seconds = s.Item2,
-                        ControllerEventLogs = s.Item1
-                    })));
+                {
+                    SignalId = (s.Item1[0].SignalId == s.Item1[1].SignalId) ? s.Item1[0].SignalId : string.Empty,
+                    PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
+                    Start = s.Item1[0].Timestamp,
+                    End = s.Item1[1].Timestamp,
+                    Seconds = s.Item2
+                })));
+
+
+
+
+
+            foreach (var group in result)
+            {
+                Console.WriteLine($"{this.GetType().Name} {group.Count()}------------------------------------------------------------------------");
+                foreach (var item in group)
+                {
+                    Console.WriteLine($"{item.GetType().Name} - {item.SignalId} - {item.PreemptNumber} - {item.Start} - {item.End} - {item.Seconds}");
+                }
+            }
+
+
+
+
+
 
             return Task.FromResult(result);
         }
@@ -104,7 +183,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateDwellTime : PreemptiveProcessBase<DwellTimeValue>
     {
-        public CalculateDwellTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateDwellTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptionBeginDwellService;
             second = DataLoggerEnum.PreemptionBeginExitInterval;
@@ -113,7 +192,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateTrackClearTime : PreemptiveProcessBase<TrackClearTimeValue>
     {
-        public CalculateTrackClearTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateTrackClearTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptionBeginTrackClearance;
             second = DataLoggerEnum.PreemptionBeginDwellService;
@@ -122,7 +201,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateTimeToService : PreemptiveProcessBase<TimeToServiceValue>
     {
-        public CalculateTimeToService(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateTimeToService(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptionBeginDwellService;
@@ -131,7 +210,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateDelay : PreemptiveProcessBase<DelayTimeValue>
     {
-        public CalculateDelay(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateDelay(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptEntryStarted;
@@ -140,7 +219,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateTimeToGateDown : PreemptiveProcessBase<TimeToGateDownValue>
     {
-        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptGateDownInputReceived;
@@ -149,7 +228,7 @@ namespace ATSPM.EventLogUtility
 
     public class CalculateTimeToCallMaxOut : PreemptiveProcessBase<TimeToCallMaxOutValue>
     {
-        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptionMaxPresenceExceeded;
@@ -214,32 +293,50 @@ namespace ATSPM.EventLogUtility
 
             var GeneratePreemptDetailResults = new TransformManyBlock<Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>>, PreemptDetailResult>(p =>
             {
-                var merge = p.Item1.Item1.Union(p.Item1.Item2.Union(p.Item1.Item3))
-                .Union(p.Item2.Item1.Union(p.Item2.Item2.Union(p.Item2.Item3)))
-                .GroupBy(g => g.PreemptNumber);
+               
+
 
                 var result = new List<PreemptDetailResult>();
 
-                foreach (var item in merge)
+                var signals = p.Item1.Item1.Union(p.Item1.Item2.Union(p.Item1.Item3))
+                .Union(p.Item2.Item1.Union(p.Item2.Item2.Union(p.Item2.Item3)))
+                .GroupBy(g => g.SignalId);
+
+                foreach (var signal in signals)
                 {
-                    Console.WriteLine($"item: {merge.Count()} {item.Key} - {item.Count()}");
+                    Console.WriteLine($"{signal.Key}===============================================================");
 
-                    var test = new PreemptDetailResult()
+                    foreach (var item in signal.GroupBy(g => g.PreemptNumber))
                     {
-                        SignalId = "",
-                        PreemptNumber = item.Key,
-                        //Start = default,
-                        //End = default,
-                        DwellTimes = (IEnumerable<DwellTimeValue>)p.Item1.Item1,
-                        TrackClearTimes = (IEnumerable<TrackClearTimeValue>)p.Item1.Item2,
-                        ServiceTimes = (IEnumerable<TimeToServiceValue>)p.Item1.Item3,
-                        Delay = (IEnumerable<DelayTimeValue>)p.Item2.Item1,
-                        GateDownTimes = (IEnumerable<TimeToGateDownValue>)p.Item2.Item2,
-                        CallMaxOutTimes = (IEnumerable<TimeToCallMaxOutValue>)p.Item2.Item3
-                    };
+                        Console.WriteLine($"{item.Key}******************************************************************");
 
-                    result.Add(test);
+                        var test = new PreemptDetailResult()
+                        {
+                            SignalId = signal.Key,
+                            PreemptNumber = item.Key,
+                            Start = item.Min(m => m.Start),
+                            End = item.Max(m => m.End),
+                            DwellTimes = (IEnumerable<DwellTimeValue>)p.Item1.Item1,
+                            TrackClearTimes = (IEnumerable<TrackClearTimeValue>)p.Item1.Item2,
+                            ServiceTimes = (IEnumerable<TimeToServiceValue>)p.Item1.Item3,
+                            Delay = (IEnumerable<DelayTimeValue>)p.Item2.Item1,
+                            GateDownTimes = (IEnumerable<TimeToGateDownValue>)p.Item2.Item2,
+                            CallMaxOutTimes = (IEnumerable<TimeToCallMaxOutValue>)p.Item2.Item3
+                        };
+
+                        Console.WriteLine($"{test.SignalId} - {test.PreemptNumber} - {test.Start} - {test.End} - {test.DwellTimes.Count()} - {test.TrackClearTimes.Count()} - {test.ServiceTimes.Count()} - {test.Delay.Count()} - {test.GateDownTimes.Count()} - {test.CallMaxOutTimes.Count()}");
+
+                        result.Add(test);
+                    }
                 }
+
+                //var signal = p.Item1.Item1.Union(p.Item1.Item2.Union(p.Item1.Item3))
+                //.Union(p.Item2.Item1.Union(p.Item2.Item2.Union(p.Item2.Item3)))
+                //.GroupBy(g => g.PreemptNumber);
+
+
+
+
 
                 return result;
             });
@@ -248,9 +345,9 @@ namespace ATSPM.EventLogUtility
 
             var action = new ActionBlock<PreemptDetailResult>(test =>
             {
-                
 
-                Console.WriteLine($"{test.SignalId} - {test.PreemptNumber} - {test.Start} - {test.End} - " + $"{test.DwellTimes.Count()} - {test.TrackClearTimes.Count()} - {test.ServiceTimes.Count()} - {test.Delay.Count()} - {test.GateDownTimes.Count()} - {test.CallMaxOutTimes.Count()}");
+
+                //Console.WriteLine($"{test.SignalId} - {test.PreemptNumber} - {test.Start} - {test.End} - " + $"{test.DwellTimes.Count()} - {test.TrackClearTimes.Count()} - {test.ServiceTimes.Count()} - {test.Delay.Count()} - {test.GateDownTimes.Count()} - {test.CallMaxOutTimes.Count()}");
             });
 
             GeneratePreemptDetailResults.LinkTo(action, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -261,6 +358,8 @@ namespace ATSPM.EventLogUtility
     }
 
 
+
+    #endregion
 
 
 
@@ -395,6 +494,6 @@ namespace ATSPM.EventLogUtility
     //        base.Initialize();
     //    }
 
-        
+
     //}
 }
