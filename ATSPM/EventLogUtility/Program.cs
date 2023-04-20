@@ -306,16 +306,43 @@ list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Pars
 list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-16 21:07:28.4000000"), EventCode = 102, EventParam = 4 });
 list.Add(new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("2021-07-16 21:07:43.6000000"), EventCode = 107, EventParam = 4 });
 
+//var test1 = new CalculateDwellTime();
+
+//var action = new ActionBlock<IEnumerable<PreempDetailValueBase>>(a =>
+//{
+//    Console.WriteLine($"{a.Count()}------------------------------------------------------------------------");
+
+//    foreach (var item in a)
+//    {
+//        Console.WriteLine($"{item.GetType().Name} - {item.SignalId} - {item.PreemptNumber} - {item.Start} - {item.End} - {item.Seconds}");
+//    }
+//});
+
+//test1.LinkTo(action, new DataflowLinkOptions() { PropagateCompletion = true });
+
+//test1.Post(list);
+//test1.Complete();
+
+//test1.ExecuteAsync(list);
+
+//var original = DateTime.Parse("4/17/2023 8:00:0.2");
+//var adjusted = AtspmMath.AdjustTimeStamp(original, 45, 340, 1.2);
+
+//Console.WriteLine($"original: {original:yyyy-MM-dd'T'HH:mm:ss.f}");
+//Console.WriteLine($"adjusted: {adjusted:yyyy-MM-dd'T'HH:mm:ss.f}");
+//Console.WriteLine($"difference: {adjusted - original}");
+
+
+
+
 
 
 PreemptionDetailsWorkflow PreemptionDetailsWorkflow = new PreemptionDetailsWorkflow();
 
 PreemptionDetailsWorkflow.Execute(list);
 
-//foreach (var c in test)
-//{
-//    Console.WriteLine($"{c.StartTime} - {c.Seconds} - {c.PreemptNumber}");
-//}
+
+
 
 
 

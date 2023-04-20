@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredIndicationData : FilterStepBase
     {
-        public FilteredIndicationData(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredIndicationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
             filteredList.Add((int)DataLoggerEnum.PhaseBeginRedClearance);

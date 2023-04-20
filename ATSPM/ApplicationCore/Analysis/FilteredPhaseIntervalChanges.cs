@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis
 {
     public class FilteredPhaseIntervalChanges : FilterStepBase
     {
-        public FilteredPhaseIntervalChanges(DataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
             filteredList.Add((int)DataLoggerEnum.PhaseBeginYellowChange);
