@@ -18,22 +18,16 @@ namespace ATSPM.Application.Reports.Business.Common
 
     public class AnalysisPhaseCollectionService
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository _signalRepository;
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
         private readonly PlanSplitMonitorService planSplitMonitorService;
 
         public AnalysisPhaseCollectionService(
-            IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
             PlanService planService,
             AnalysisPhaseService analysisPhaseService,
             PlanSplitMonitorService planSplitMonitorService
             )
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            _signalRepository = signalRepository;
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
             this.planSplitMonitorService = planSplitMonitorService;
@@ -71,18 +65,21 @@ namespace ATSPM.Application.Reports.Business.Common
         //    return analysisPhaseCollectionData;
         //}
 
-        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(string signalId, DateTime startTime, DateTime endTime, List<ControllerEventLog> planEvents)
-        {
-            var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
+        public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
+            string signalId,
+            DateTime startTime,
+            DateTime endTime,
+            List<ControllerEventLog> planEvents,
+            List<ControllerEventLog> phaseEvents,
+            Signal signal)
+        {            
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-            var ptedt = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startTime, endTime,
-                new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 }).ToList();
-            var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
-            var phasesInUse = dapta.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
+            //var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
+            var phasesInUse = phaseEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
             analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents);
             foreach (var row in phasesInUse)
             {
-                var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, signal, ptedt);
+                var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, signal, phaseEvents);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();

@@ -26,13 +26,8 @@ namespace ATSPM.Application.Reports.Business.Common
 
     public class AnalysisPhaseService
     {
-        private readonly ISignalRepository _signalRepository;
-
-
-
-        public AnalysisPhaseService(ISignalRepository signalRepository)
+        public AnalysisPhaseService()
         {
-            _signalRepository = signalRepository;
         }
 
         public AnalysisPhaseData GetAnalysisPhaseData(
