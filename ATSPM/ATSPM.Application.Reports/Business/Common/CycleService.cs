@@ -13,11 +13,9 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public class CycleService
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public CycleService(IControllerEventLogRepository controllerEventLogRepository)
+        public CycleService()
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
         /// <summary>
         /// Needs event codes 1,8,9,61,63,64
@@ -47,37 +45,7 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
-        /// <summary>
-        /// Needs event codes 1,8,9,61,63,64
-        /// </summary>
-        /// <param name="approach"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
-        /// <returns></returns>
-        public List<RedToRedCycle> GetRedToRedCycles(Approach approach, DateTime startTime, DateTime endTime)
-        {
-            var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                      ? new List<int> { 61, 63, 64 }
-                      : new List<int> { 1, 8, 9 };
-            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startTime, endTime.AddSeconds(900),
-                cycleEventNumbers,
-                approach.ProtectedPhaseNumber);
-            var cycles = new List<RedToRedCycle>();
-
-            for (var i = 0; i < cycleEvents.Count; i++)
-                if (i < cycleEvents.Count - 3
-                    && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                    && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                    && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                    && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
-                {
-                    cycles.Add(new RedToRedCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                        cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
-                    i += 2;
-                }
-
-            return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
-        }
+        
 
 
         /// <summary>
@@ -160,61 +128,61 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="approach"></param>
         /// <param name="getPermissivePhase"></param>
         /// <returns></returns>
-        public List<TimingAndActuationCycle> GetTimingAndActuationCycles(DateTime startDate, DateTime endDate,
-            Approach approach, bool getPermissivePhase)
-        {
-            var cycleEvents = GetDetailedCycleEvents(getPermissivePhase, startDate, endDate, approach);
-            if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endDate))
-                GetEventsToCompleteCycle(getPermissivePhase, endDate, approach, cycleEvents);
-            var cycles = new List<TimingAndActuationCycle>();
-            DateTime dummyTime;
-            for (var i = 0; i < cycleEvents.Count; i++)
-            {
-                dummyTime = new DateTime(1900, 1, 1);
-                if (i < cycleEvents.Count - 5
-                    && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                    && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToEndMinGreen
-                    && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                    && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                    && GetEventType(cycleEvents[i + 4].EventCode) == RedToRedCycle.EventType.ChangeToEndOfRedClearance
-                    && GetEventType(cycleEvents[i + 5].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                )
-                    cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                        cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp, cycleEvents[i + 4].Timestamp,
-                        cycleEvents[i + 5].Timestamp, dummyTime));
-            }
+        //public List<TimingAndActuationCycle> GetTimingAndActuationCycles(DateTime startDate, DateTime endDate,
+        //    Approach approach, bool getPermissivePhase)
+        //{
+        //    var cycleEvents = GetDetailedCycleEvents(getPermissivePhase, startDate, endDate, approach);
+        //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
+        //        RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endDate))
+        //        GetEventsToCompleteCycle(getPermissivePhase, endDate, approach, cycleEvents);
+        //    var cycles = new List<TimingAndActuationCycle>();
+        //    DateTime dummyTime;
+        //    for (var i = 0; i < cycleEvents.Count; i++)
+        //    {
+        //        dummyTime = new DateTime(1900, 1, 1);
+        //        if (i < cycleEvents.Count - 5
+        //            && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
+        //            && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToEndMinGreen
+        //            && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
+        //            && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed
+        //            && GetEventType(cycleEvents[i + 4].EventCode) == RedToRedCycle.EventType.ChangeToEndOfRedClearance
+        //            && GetEventType(cycleEvents[i + 5].EventCode) == RedToRedCycle.EventType.ChangeToGreen
+        //        )
+        //            cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
+        //                cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp, cycleEvents[i + 4].Timestamp,
+        //                cycleEvents[i + 5].Timestamp, dummyTime));
+        //    }
 
-            //// If there are no 5 part cycles, Try to get a 3 or 4 part cycle.
-            //get 4 part series is 61, 63,64 and maybe 66
-            if (cycles.Count != 0) return cycles;
-            {
-                var endRedEvent = new DateTime();
-                dummyTime = new DateTime(1900, 1, 1);
-                for (var i = 0; i < cycleEvents.Count; i++)
-                {
-                    if (i < cycleEvents.Count - 5
-                        && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                        && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                        && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                    )
-                    {
-                        var overlapDarkTime = cycleEvents[i + 3].Timestamp;
-                        endRedEvent = cycleEvents[i + 4].Timestamp;
+        //    //// If there are no 5 part cycles, Try to get a 3 or 4 part cycle.
+        //    //get 4 part series is 61, 63,64 and maybe 66
+        //    if (cycles.Count != 0) return cycles;
+        //    {
+        //        var endRedEvent = new DateTime();
+        //        dummyTime = new DateTime(1900, 1, 1);
+        //        for (var i = 0; i < cycleEvents.Count; i++)
+        //        {
+        //            if (i < cycleEvents.Count - 5
+        //                && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
+        //                && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow
+        //                && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed
+        //            )
+        //            {
+        //                var overlapDarkTime = cycleEvents[i + 3].Timestamp;
+        //                endRedEvent = cycleEvents[i + 4].Timestamp;
 
-                        if (GetEventType(cycleEvents[i + 3].EventCode) != RedToRedCycle.EventType.OverLapDark)
-                        {
-                            endRedEvent = cycleEvents[i + 3].Timestamp;
-                        }
+        //                if (GetEventType(cycleEvents[i + 3].EventCode) != RedToRedCycle.EventType.OverLapDark)
+        //                {
+        //                    endRedEvent = cycleEvents[i + 3].Timestamp;
+        //                }
 
-                        cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, dummyTime,
-                            cycleEvents[i + 1].Timestamp,
-                            dummyTime, cycleEvents[i + 2].Timestamp, endRedEvent, overlapDarkTime));
-                    }
-                }
-            }
-            return cycles;
-        }
+        //                cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, dummyTime,
+        //                    cycleEvents[i + 1].Timestamp,
+        //                    dummyTime, cycleEvents[i + 2].Timestamp, endRedEvent, overlapDarkTime));
+        //            }
+        //        }
+        //    }
+        //    return cycles;
+        //}
 
         private RedToRedCycle.EventType GetEventType(int eventCode)
         {
@@ -254,22 +222,27 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, bool getPermissivePhase,
             Detector detector, List<ControllerEventLog> cycleEvents)
         {
-            if (cycleEvents.Any() && (GetEventType(cycleEvents.Last().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endDate))
-                GetEventsToCompleteCycle(getPermissivePhase, endDate, detector.Approach, cycleEvents);
-            if (cycleEvents.Any() && (GetEventType(cycleEvents.First().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp > startDate))
-                GetEventsToStartCycle(getPermissivePhase, startDate, detector.Approach, cycleEvents);
+            var mainEvents = cycleEvents.Where(c => c.Timestamp<=endDate && c.Timestamp>=startDate).ToList();
+            var previousEvents = cycleEvents.Where(c => c.Timestamp < startDate).ToList();
+            var nextEvents = cycleEvents.Where(c => c.Timestamp > endDate).ToList();
+            if (mainEvents.Any() && (GetEventType(mainEvents.Last().EventCode) !=
+                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp < endDate))
+                //Get events to complete cycles
+                mainEvents.AddRange(nextEvents.OrderBy(e => e.Timestamp).Take(3));
+            if (mainEvents.Any() && (GetEventType(mainEvents.First().EventCode) !=
+                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp > startDate))
+                //Get events to start cycles
+                mainEvents.InsertRange(0, nextEvents.OrderByDescending(e => e.Timestamp).Take(3).OrderBy(e => e.Timestamp));
             var cycles = new List<CycleSpeed>();
-            if (cycleEvents != null)
-                for (var i = 0; i < cycleEvents.Count; i++)
-                    if (i < cycleEvents.Count - 3
-                        && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                        && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                        && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                        && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
-                        cycles.Add(new CycleSpeed(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                            cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
+            if (mainEvents != null)
+                for (var i = 0; i < mainEvents.Count; i++)
+                    if (i < mainEvents.Count - 3
+                        && GetEventType(mainEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToRed
+                        && GetEventType(mainEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
+                        && GetEventType(mainEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
+                        && GetEventType(mainEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
+                        cycles.Add(new CycleSpeed(mainEvents[i].Timestamp, mainEvents[i + 1].Timestamp,
+                            mainEvents[i + 2].Timestamp, mainEvents[i + 3].Timestamp));
 
 
             return cycles;
@@ -307,39 +280,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //    return cycleEvents;
         //}
 
-        /// <summary>
-        /// Needs event codes 1,3,8,9,11,61,63,64,66
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <returns></returns>
-        private List<ControllerEventLog> GetDetailedCycleEvents(bool getPermissivePhase, DateTime startDate,
-            DateTime endDate, Approach approach)
-        {
-            List<ControllerEventLog> cycleEvents;
-
-
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 3, 8, 9, 11 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 3, 8, 9, 11 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
-            }
-
-            return cycleEvents;
-        }
+        
 
         /// <summary>
         /// Needs event codes 1,3,8,9,11,61,63,64,65
@@ -348,30 +289,31 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="endDate"></param>
         /// <param name="approach"></param>
         /// <param name="cycleEvents"></param>
-        public void GetEventsToCompleteCycle(bool getPermissivePhase, DateTime endDate, Approach approach,
-            List<ControllerEventLog> cycleEvents)
-        {
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 61, 63, 64, 65 }
-                    : new List<int> { 1, 8, 9, 11 };
-                var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
-                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
-                if (eventsAfterEndDate != null)
-                    cycleEvents.AddRange(eventsAfterEndDate);
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 61, 63, 64, 65 }
-                    : new List<int> { 1, 8, 9, 11 };
-                var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
-                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
-                if (eventsAfterEndDate != null)
-                    cycleEvents.AddRange(eventsAfterEndDate);
-            }
-        }
+        //public void GetEventsToCompleteCycle(bool getPermissivePhase, DateTime endDate, Approach approach,
+        //    List<ControllerEventLog> mainEvents, List<ControllerEventLog> nextEvents)
+        //{
+        //    nextEvents.OrderBy(e => e.Timestamp).Take(3);
+        //    if (getPermissivePhase)
+        //    {
+        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
+        //            ? new List<int> { 61, 63, 64, 65 }
+        //            : new List<int> { 1, 8, 9, 11 };
+        //        var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
+        //            endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
+        //        if (eventsAfterEndDate != null)
+        //            mainEvents.AddRange(eventsAfterEndDate);
+        //    }
+        //    else
+        //    {
+        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
+        //            ? new List<int> { 61, 63, 64, 65 }
+        //            : new List<int> { 1, 8, 9, 11 };
+        //        var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
+        //            endDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
+        //        if (eventsAfterEndDate != null)
+        //            mainEvents.AddRange(eventsAfterEndDate);
+        //    }
+        //}
 
         /// <summary>
         /// Needs event codes 1,3,8,9,11,63,64,65
@@ -380,30 +322,30 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="startDate"></param>
         /// <param name="approach"></param>
         /// <param name="cycleEvents"></param>
-        public void GetEventsToStartCycle(bool getPermissivePhase, DateTime startDate, Approach approach,
-            List<ControllerEventLog> cycleEvents)
-        {
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 63, 64, 65 }
-                    : new List<int> { 1, 8, 9, 11 };
-                var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
-                    startDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
-                if (eventsBeforeStartDate != null)
-                    cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 63, 64, 65 }
-                    : new List<int> { 1, 8, 9, 11 };
-                var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
-                    startDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
-                if (eventsBeforeStartDate != null)
-                    cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
-            }
-        }
+        //public void GetEventsToStartCycle(bool getPermissivePhase, DateTime startDate, Approach approach,
+        //    List<ControllerEventLog> cycleEvents)
+        //{
+        //    if (getPermissivePhase)
+        //    {
+        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
+        //            ? new List<int> { 63, 64, 65 }
+        //            : new List<int> { 1, 8, 9, 11 };
+        //        var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
+        //            startDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
+        //        if (eventsBeforeStartDate != null)
+        //            cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
+        //    }
+        //    else
+        //    {
+        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
+        //            ? new List<int> { 63, 64, 65 }
+        //            : new List<int> { 1, 8, 9, 11 };
+        //        var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
+        //            startDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
+        //        if (eventsBeforeStartDate != null)
+        //            cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
+        //    }
+        //}
 
         /// <summary>
         /// Needs event codes 1,8,9,61,63,64,66
@@ -413,11 +355,8 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <returns></returns>
         public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, Approach approach,
-            bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
+            bool getPermissivePhase, List<ControllerEventLog> cycleEvents, List<ControllerEventLog> terminationEvents)
         {
-            //var cycleEvents = GetCycleEvents(getPermissivePhase, options.StartDate.AddSeconds(-900), options.EndDate.AddSeconds(900), approach);
-            var terminationEvents =
-                GetTerminationEvents(getPermissivePhase, options.StartDate, options.EndDate, approach);
             var cycles = new List<CycleSplitFail>();
             for (var i = 0; i < cycleEvents.Count - 3; i++)
                 if (GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
@@ -462,30 +401,6 @@ namespace ATSPM.Application.Reports.Business.Common
             return terminationType;
         }
 
-        /// <summary>
-        /// Needs event codes 4,5,6
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <returns></returns>
-        private List<ControllerEventLog> GetTerminationEvents(bool getPermissivePhase, DateTime startDate,
-            DateTime endDate,
-            Approach approach)
-        {
-            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                endDate, new List<int> { 4, 5, 6 },
-                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).ToList();
-            return cycleEvents;
-        }
-
-        public List<RLMCycle> GetYellowToRedCycles(DateTime startDate, DateTime endDate, string signalId,
-            int phaseNumber)
-        {
-            return new List<RLMCycle>();
-        }
-
 
         private EventType GetYellowToRedEventType(int EventCode)
         {
@@ -526,13 +441,6 @@ namespace ATSPM.Application.Reports.Business.Common
             BeginRed,
             EndRed,
             Unknown
-        }
-
-        public enum NextEventResponse
-        {
-            GroupOK,
-            GroupMissingData,
-            GroupComplete
         }
 
     }

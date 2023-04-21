@@ -50,17 +50,12 @@ namespace ATSPM.Application.Reports.Controllers
                 options.Start,
                 options.End,
                 detector.MinSpeedFilter ?? 5).ToList();
-            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
-                approach.SignalId,
+            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
+                approach,
+                options.UsePermissivePhase,
                 options.Start,
-                options.End,
-                approach.GetCycleEventCodes(options.UsePermissivePhase),
-                approach.PermissivePhaseNumber.Value).ToList();
-            var planEvents = controllerEventLogRepository.GetSignalEventsByEventCode(
-                approach.SignalId,
-                options.Start,
-                options.End,
-                131).ToList();
+                options.End).ToList();
+            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.SignalId, options.Start, options.End).ToList(); 
             ApproachSpeedResult viewModel = approachSpeedService.GetChartData(
                 options,
                 cycleEvents,

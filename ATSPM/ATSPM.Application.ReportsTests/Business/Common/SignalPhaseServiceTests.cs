@@ -16,7 +16,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
     public class SignalPhaseServiceTests
     {
         private readonly PlanService planService = new PlanService(null,null);
-        private readonly CycleService cycleService = new CycleService(null);
+        private readonly CycleService cycleService = new CycleService();
         private readonly NullLogger<SignalPhaseService> logger = new NullLogger<SignalPhaseService>();
         private Fixture fixture;
 

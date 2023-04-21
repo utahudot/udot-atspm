@@ -50,7 +50,13 @@ namespace ATSPM.Application.Reports.Controllers
 
             var approach = approachRepository.Lookup(options.ApproachId);
             var cycleEvents = GetCycleEvents(options.UsePermissivePhase, options.StartDate, options.EndDate, approach);
-            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options,cycleEvents,planEvents, approach);
+            var terminationEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
+                approach.SignalId,
+                options.StartDate,
+                options.EndDate,
+                new List<int> { 4, 5, 6 },
+                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).ToList();
+            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options, cycleEvents, planEvents, terminationEvents, approach);
             return new SplitFailsResult(
                 "Split Fail Chart",
                 options.SignalId,

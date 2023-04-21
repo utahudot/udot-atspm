@@ -254,10 +254,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 var nextDt = dt.AddHours(1);
                 while (dt < pedPhaseData.EndDate)
                 {
-                    var hourDelay = (from c in pedPhaseData.Cycles
-                                     where c.CallRegistered >= dt &&
-                                           c.CallRegistered < nextDt
-                                     select c.Delay).Sum();
+                    var hourDelay = pedPhaseData.Cycles
+                        .Where(c => c.CallRegistered >= dt && c.CallRegistered < nextDt)
+                        .Select(c => c.Delay)
+                        .Sum();
                     pedPhaseData.HourlyTotals.Add(new PedHourlyTotal(dt, hourDelay));
                     dt = dt.AddHours(1);
                     nextDt = nextDt.AddHours(1);
