@@ -120,9 +120,13 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
-        public IList<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, IList<ControllerEventLog> events)
+        public IReadOnlyList<Plan> GetBasicPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string signalId,
+            IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
+            var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
             var plans = new List<Plan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -143,7 +147,7 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime startDate,
             DateTime endDate,
             string signalId,
-            IReadOnlyList<ControllerEventLog> events)
+            IList<ControllerEventLog> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
             var plans = new List<PlanSplitMonitorData>();

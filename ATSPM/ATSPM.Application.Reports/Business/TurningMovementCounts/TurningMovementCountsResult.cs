@@ -16,9 +16,9 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             DateTime start,
             DateTime end,
             string direction,
-            ICollection<Plan> plans,
-            ICollection<Lane> lanes,
-            ICollection<TotalVolume> totalVolumes,
+            IReadOnlyList<Plan> plans,
+            IReadOnlyList<Lane> lanes,
+            IReadOnlyList<TotalVolume> totalVolumes,
             int totalVolume,
             string peakHour,
             double? peakHourVolume,
@@ -47,9 +47,9 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string Direction { get; set; }
-        public ICollection<Plan> Plans { get; set; }
-        public ICollection<Lane> Lanes { get; set; }
-        public ICollection<TotalVolume> TotalVolumes { get; set; }
+        public IReadOnlyList<Plan> Plans { get; set; }
+        public IReadOnlyList<Lane> Lanes { get; set; }
+        public IReadOnlyList<TotalVolume> TotalVolumes { get; set; }
         public int TotalVolume { get; set; }
         public double? PeakHourVolume { get; set; }
         public double? PeakHourFactor { get; set; }

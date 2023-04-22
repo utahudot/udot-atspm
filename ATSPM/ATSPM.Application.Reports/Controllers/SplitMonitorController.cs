@@ -5,6 +5,7 @@ using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,13 +17,16 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly SplitMonitorService splitMonitorService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
 
         public SplitMonitorController(
             SplitMonitorService splitMonitorService,
-            IControllerEventLogRepository controllerEventLogRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository)
         {
             this.splitMonitorService = splitMonitorService;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -37,13 +41,18 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public SplitMonitorResult GetChartData([FromBody] SplitMonitorOptions options)
         {
+            var signal = signalRepository.GetVersionOfSignalByDate(options.SignalId, options.Start);
+            var phaseEvents = controllerEventLogRepository.GetSignalEventsByEventCodes(options.SignalId, options.Start, options.End,
+                new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
             var planEvents = controllerEventLogRepository.GetPlanEvents(
                 options.SignalId,
                 options.Start,
                 options.End);
             SplitMonitorResult viewModel = splitMonitorService.GetChartData(
                 options,
-                planEvents));
+                planEvents,
+                phaseEvents,
+                signal);
             return viewModel;
         }
 

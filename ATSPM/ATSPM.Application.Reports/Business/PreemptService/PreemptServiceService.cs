@@ -18,12 +18,11 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
         public PreemptServiceResult GetChartData(
             PreemptServiceMetricOptions options,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> preemptEvents)
+            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> preemptEvents)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
-            List<PreemptPlan> preemptPlans = new List<PreemptPlan>(); 
-            preemptPlans = plans.Select(pl => new PreemptPlan(
+            IReadOnlyList<Plan> plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
+            var preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
                 pl.StartTime,
                 pl.EndTime,
@@ -37,22 +36,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 preemptPlans,
                 preemptEvents.Select(p => new PreemptServiceEvent(p.Timestamp, p.EventParam)).ToList()  
                 );
-        }
-
-
-
-
-        protected List<PreemptServiceEvent> GetPreemptEvents(IReadOnlyList<ControllerEventLog> events)
-        {
-            List<PreemptServiceEvent> preemtpEvents = new List<PreemptServiceEvent>();
-            foreach (var row in events)
-            {
-                if (row.EventCode == 105)
-                {
-                    preemtpEvents.Add(new PreemptServiceEvent(row.Timestamp, row.EventParam));
-                }
-            }
-            return preemtpEvents;
         }
     }
 }

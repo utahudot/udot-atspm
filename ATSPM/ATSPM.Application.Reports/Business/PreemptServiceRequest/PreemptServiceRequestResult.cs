@@ -11,15 +11,13 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
     {
         public PreemptServiceRequestResult(string chartName,
             string signalId,
-            string signalLocation,
             DateTime start,
             DateTime end,
-            ICollection<Plan> plans,
-            ICollection<PreemptRequest> preemptRequests)
+            IReadOnlyList<Plan> plans,
+            IReadOnlyList<PreemptRequest> preemptRequests)
         {
             ChartName = chartName;
             SignalId = signalId;
-            SignalLocation = signalLocation;
             Start = start;
             End = end;
             Plans = plans;
@@ -28,10 +26,9 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
 
         public string ChartName { get; internal set; }
         public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
         public DateTime Start { get; internal set; }
         public DateTime End { get; internal set; }
-        public ICollection<Plan> Plans { get; internal set; }
-        public ICollection<PreemptRequest> PreemptRequests { get; internal set; }
+        public IReadOnlyList<Plan> Plans { get; internal set; }
+        public IReadOnlyList<PreemptRequest> PreemptRequests { get; internal set; }
     }
 }

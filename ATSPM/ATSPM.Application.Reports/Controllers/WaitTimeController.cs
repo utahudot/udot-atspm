@@ -62,7 +62,7 @@ namespace ATSPM.Application.Reports.Controllers
                     WaitTimeOptions.PHASE_CALL_DROPPED,
                     WaitTimeOptions.PHASE_END_RED_CLEARANCE,
                     WaitTimeOptions.PHASE_CALL_REGISTERED}
-                ).ToList();
+                );
             var volume = new VolumeCollection(
                 options.Start,
                 options.End,
@@ -72,7 +72,9 @@ namespace ATSPM.Application.Reports.Controllers
                 approach.SignalId,
                 options.Start,
                 options.End,
-                planEvents);
+                planEvents,
+                phaseEvents,
+                approach.Signal);
             var analysisPhaseData = analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).FirstOrDefault();
             return waitTimeService.GetChartData(
                 options,

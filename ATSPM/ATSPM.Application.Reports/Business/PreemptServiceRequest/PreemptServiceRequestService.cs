@@ -11,21 +11,19 @@ namespace ATSPM.Application.Reports.Business.PreemptService
     public class PreemptServiceRequestService
     {
         private readonly PlanService planService;
-        private readonly ISignalRepository signalRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public PreemptServiceRequestService(PlanService planService, ISignalRepository signalRepository, IControllerEventLogRepository controllerEventLogRepository)
+        public PreemptServiceRequestService(PlanService planService)
         {
             this.planService = planService;
-            this.signalRepository = signalRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public PreemptServiceRequestResult GetChartData(PreemptServiceRequestOptions options, List<ControllerEventLog> planEvents)
+        public PreemptServiceRequestResult GetChartData(
+            PreemptServiceRequestOptions options,
+            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> events)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
-            var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.Start, options.End);
-            var preemptEvents = GetPreemptEvents(events);
+            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new PreemptRequest(row.Timestamp, row.EventParam));
+
             var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
             List<Common.Plan> preemptPlans = new List<Common.Plan>();
             foreach (var pl in plans)
@@ -35,26 +33,11 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             return new PreemptServiceRequestResult(
                 "Preempt Service",
                 options.SignalId,
-                signal.SignalDescription(),
                 options.Start,
                 options.End,
                 preemptPlans,
-                preemptEvents
+                preemptEvents.ToList()
                 );
-        }
-
-
-        protected List<PreemptRequest> GetPreemptEvents(IReadOnlyList<ControllerEventLog> events)
-        {
-            List<PreemptRequest> preemtpEvents = new List<PreemptRequest>();
-            foreach (var row in events)
-            {
-                if (row.EventCode == 102)
-                {
-                    preemtpEvents.Add(new PreemptRequest(row.Timestamp, row.EventParam));
-                }
-            }
-            return preemtpEvents;
         }
     }
 }

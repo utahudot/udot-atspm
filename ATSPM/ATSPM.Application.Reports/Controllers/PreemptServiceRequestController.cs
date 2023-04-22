@@ -6,6 +6,7 @@ using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using ATSPM.Infrastructure.Repositories;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,11 +39,12 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PreemptServiceRequestResult GetChartData([FromBody] PreemptServiceRequestOptions options)
         {
+            var events = controllerEventLogRepository.GetSignalEventsByEventCode(options.SignalId, options.Start, options.End,102);
             var planEvents = controllerEventLogRepository.GetPlanEvents(
                 options.SignalId,
                 options.Start,
                 options.End);
-            PreemptServiceRequestResult viewModel = preemptServiceRequestService.GetChartData(options, planEvents.ToList());
+            PreemptServiceRequestResult viewModel = preemptServiceRequestService.GetChartData(options, planEvents, events);
             return viewModel;
         }
 
