@@ -30,11 +30,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 pl.StartTime,
                 pl.EndTime,
                 preemptEvents.Count(p => p.StartTime >= pl.StartTime && p.StartTime < pl.EndTime))).ToList();
-
-            foreach (var pl in plans)
-            {
-                preemptPlans.Add(new PreemptPlan(pl.PlanNumber.ToString(), pl.StartTime, pl.EndTime, preemptEvents.Count(p => p.StartTime >= pl.StartTime && p.StartTime < pl.EndTime)));
-            }
             return new PreemptServiceRequestResult(
                 "Preempt Service",
                 options.SignalId,

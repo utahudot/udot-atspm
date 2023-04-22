@@ -75,56 +75,6 @@ namespace ATSPM.Application.Reports.Business.Common
             return planEvents;
         }
 
-
-        /// <summary>
-        /// Needs Event codes 131
-        /// </summary>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="signalId"></param>
-        /// <returns></returns>
-        //public IReadOnlyList<ControllerEventLog> GetPlanEvents(
-        //    DateTime startDate,
-        //    DateTime endDate,
-        //    string signalId,
-        //    IList<ControllerEventLog> tempPlanEvents)
-        //{
-        //    var planEvents = new List<ControllerEventLog>();
-        //    if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
-        //    {
-        //        GetFirstPlan(startDate, signalId, planEvents);
-        //    }
-        //    else if (!planEvents.Any())
-        //    {
-        //        GetFirstPlan(startDate, signalId, planEvents);
-        //    }
-        //    tempPlanEvents.Add(new ControllerEventLog { SignalId = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
-
-        //    for (var x = 0; x < tempPlanEvents.Count(); x++)
-        //        if (x + 2 < tempPlanEvents.Count())
-        //        {
-        //            if (tempPlanEvents[x].EventParam == tempPlanEvents[x + 1].EventParam)
-        //            {
-        //                planEvents.Add(tempPlanEvents[x]);
-        //                x++;
-        //            }
-        //            else
-        //            {
-        //                planEvents.Add(tempPlanEvents[x]);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (tempPlanEvents.Count >= 2 && tempPlanEvents.Last().EventCode ==
-        //                tempPlanEvents[tempPlanEvents.Count() - 2].EventCode)
-        //                planEvents.Add(tempPlanEvents[tempPlanEvents.Count() - 2]);
-        //            else
-        //                planEvents.Add(tempPlanEvents.Last());
-        //        }
-
-        //    return planEvents;
-        //}
-
         private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
         {
             var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(signalId, 131, startDate);
@@ -155,30 +105,6 @@ namespace ATSPM.Application.Reports.Business.Common
                                   .ToList();
             return plans;
         }
-
-
-        //public IReadOnlyList<Plan> GetBasicPlans(
-        //    DateTime startDate,
-        //    DateTime endDate,
-        //    string signalId,
-        //    IReadOnlyList<ControllerEventLog> events)
-        //{
-        //    var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
-        //    var plans = new List<Plan>();
-        //    for (var i = 0; i < planEvents.Count; i++)
-        //        if (planEvents.Count - 1 == i)
-        //        {
-        //            if (planEvents[i].Timestamp != endDate)
-        //                plans.Add(new Plan(planEvents[i].EventParam.ToString(),planEvents[i].Timestamp, endDate));
-        //        }
-        //        else
-        //        {
-        //            if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
-        //                plans.Add(new Plan(planEvents[i].EventParam.ToString(), planEvents[i].Timestamp, planEvents[i + 1].Timestamp
-        //                    ));
-        //        }
-        //    return plans;
-        //}
 
         public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(
             DateTime startDate,
