@@ -45,9 +45,9 @@ namespace ATSPM.Application.Reports.Business.WaitTime
         public WaitTimeResult GetChartData(
             WaitTimeOptions options,
             Approach approach,
-            List<ControllerEventLog> controllerEventLogs,
+            IReadOnlyList<ControllerEventLog> controllerEventLogs,
             AnalysisPhaseData analysisPhaseData,
-            List<PlanSplitMonitorData> plans,
+            IReadOnlyList<PlanSplitMonitorData> plans,
             VolumeCollection volumeCollection
             )
         {
@@ -206,8 +206,8 @@ namespace ATSPM.Application.Reports.Business.WaitTime
             }
         }
 
-        private List<PlanWaitTime> GetWaitTimePlans(List<PlanSplitMonitorData> plans,
-            List<WaitTimeTracker> waitTimeTrackerList)
+        private IReadOnlyList<PlanWaitTime> GetWaitTimePlans(IReadOnlyList<PlanSplitMonitorData> plans,
+            IReadOnlyList<WaitTimeTracker> waitTimeTrackerList)
         {
             var planWaitTimes = new List<PlanWaitTime>();
             foreach (var plan in plans)

@@ -2,6 +2,7 @@
 using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -38,11 +39,15 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PreemptServiceResult GetChartData([FromBody] PreemptServiceMetricOptions options)
         {
+            var preemptEvents = controllerEventLogRepository.GetSignalEventsByEventCode(options.SignalId, options.Start, options.End, 105);
             var planEvents = controllerEventLogRepository.GetPlanEvents(
                 options.SignalId,
                 options.Start,
                 options.End);
-            PreemptServiceResult viewModel = preemptServiceService.GetChartData(options, planEvents.ToList());
+            PreemptServiceResult viewModel = preemptServiceService.GetChartData(
+                options,
+                planEvents.ToList(),
+                preemptEvents.ToList());
             return viewModel;
         }
 

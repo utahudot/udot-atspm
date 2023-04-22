@@ -9,7 +9,7 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public class AnalysisPhaseCollectionData
     {
-        public List<PlanSplitMonitorData> Plans { get; set; }
+        public IReadOnlyList<PlanSplitMonitorData> Plans { get; set; }
         public int MaxPhaseInUse { get; set; }
         public string SignalId { get; set; }
         public List<AnalysisPhaseData> AnalysisPhases { get; set; }
@@ -69,17 +69,17 @@ namespace ATSPM.Application.Reports.Business.Common
             string signalId,
             DateTime startTime,
             DateTime endTime,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> phaseEvents,
+            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> phaseEvents,
             Signal signal)
         {            
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             //var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
             var phasesInUse = phaseEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents);
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents.ToList());
             foreach (var row in phasesInUse)
             {
-                var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, signal, phaseEvents);
+                var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, signal, phaseEvents.ToList());
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();

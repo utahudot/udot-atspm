@@ -11,39 +11,35 @@ namespace ATSPM.Application.Reports.Business.PreemptService
     public class PreemptServiceService
     {
         private readonly PlanService planService;
-        private readonly ISignalRepository signalRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-
-        public PreemptServiceService(PlanService planService, ISignalRepository signalRepository, IControllerEventLogRepository controllerEventLogRepository)
+        public PreemptServiceService(PlanService planService)
         {
             this.planService = planService;
-            this.signalRepository = signalRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
         public PreemptServiceResult GetChartData(
             PreemptServiceMetricOptions options,
-            List<ControllerEventLog> planEvents)
+            List<ControllerEventLog> planEvents,
+            List<ControllerEventLog> preemptEvents)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
-            var events = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.Start, options.End);
-            var preemptEvents = GetPreemptEvents(events);
             var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
-            List<PreemptPlan> preemptPlans = new List<PreemptPlan>();
-            foreach (var pl in plans)
-            {
-                preemptPlans.Add(new PreemptPlan(pl.PlanNumber.ToString(), pl.StartTime, pl.EndTime, preemptEvents.Count(p => p.StartTime >= pl.StartTime && p.StartTime < pl.EndTime)));
-            }
+            List<PreemptPlan> preemptPlans = new List<PreemptPlan>(); 
+            preemptPlans = plans.Select(pl => new PreemptPlan(
+                pl.PlanNumber.ToString(),
+                pl.StartTime,
+                pl.EndTime,
+                preemptEvents.Count(p => p.EventCode == 105 && p.Timestamp >= pl.StartTime && p.Timestamp < pl.EndTime))).ToList();
+
             return new PreemptServiceResult(
                 "Preempt Service",
                 options.SignalId,
-                signal.SignalDescription(),
                 options.Start,
                 options.End,
                 preemptPlans,
-                preemptEvents
+                preemptEvents.Select(p => new PreemptServiceEvent(p.Timestamp, p.EventParam)).ToList()  
                 );
         }
+
+
 
 
         protected List<PreemptServiceEvent> GetPreemptEvents(IReadOnlyList<ControllerEventLog> events)

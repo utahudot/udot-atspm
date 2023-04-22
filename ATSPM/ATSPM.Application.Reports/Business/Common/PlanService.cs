@@ -57,7 +57,11 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="endDate"></param>
         /// <param name="signalId"></param>
         /// <returns></returns>
-        public List<ControllerEventLog> GetPlanEvents(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> tempPlanEvents)
+        public IReadOnlyList<ControllerEventLog> GetPlanEvents(
+            DateTime startDate,
+            DateTime endDate,
+            string signalId,
+            IList<ControllerEventLog> tempPlanEvents)
         {
             var planEvents = new List<ControllerEventLog>();
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
@@ -116,7 +120,7 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
-        public List<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> events)
+        public IList<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, IList<ControllerEventLog> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
             var plans = new List<Plan>();
@@ -135,7 +139,11 @@ namespace ATSPM.Application.Reports.Business.Common
             return plans;
         }
 
-        public List<PlanSplitMonitorData> GetSplitMonitorPlans(DateTime startDate, DateTime endDate, string signalId, List<ControllerEventLog> events)
+        public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string signalId,
+            IReadOnlyList<ControllerEventLog> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
             var plans = new List<PlanSplitMonitorData>();

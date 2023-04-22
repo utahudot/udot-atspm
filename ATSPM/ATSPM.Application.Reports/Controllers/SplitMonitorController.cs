@@ -41,7 +41,9 @@ namespace ATSPM.Application.Reports.Controllers
                 options.SignalId,
                 options.Start,
                 options.End);
-            SplitMonitorResult viewModel = splitMonitorService.GetChartData(options, planEvents.ToList());
+            SplitMonitorResult viewModel = splitMonitorService.GetChartData(
+                options,
+                planEvents));
             return viewModel;
         }
 

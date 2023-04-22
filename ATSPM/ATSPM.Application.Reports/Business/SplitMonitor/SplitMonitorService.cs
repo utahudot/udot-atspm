@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,9 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
 
         public SplitMonitorResult GetChartData(
             SplitMonitorOptions options,
-            List<ControllerEventLog> planEvents)
+            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> phaseEvents,
+            Signal signal)
         {
             var splitMonitorData = new SplitMonitorResult();
             splitMonitorData.SignalId = options.SignalId;
@@ -39,7 +42,9 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 options.SignalId,
                 options.Start,
                 options.End,
-                planEvents);
+                planEvents,
+                phaseEvents,
+                signal);
             if (phases.AnalysisPhases.Count > 0)
             {
                 var phasesInOrder = phases.AnalysisPhases.Select(r => r).OrderBy(r => r.PhaseNumber);

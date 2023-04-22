@@ -52,7 +52,7 @@ namespace ATSPM.Application.Reports.Controllers
                 approach.SignalId,
                 options.Start,
                 options.End);
-            var events = controllerEventLogRepository.GetSignalEventsByEventCodes(
+            var phaseEvents = controllerEventLogRepository.GetSignalEventsByEventCodes(
                 approach.SignalId,
                 options.Start,
                 options.End,
@@ -66,18 +66,18 @@ namespace ATSPM.Application.Reports.Controllers
             var volume = new VolumeCollection(
                 options.Start,
                 options.End,
-                events.Where(e => e.EventCode == 82).ToList(),
+                phaseEvents.Where(e => e.EventCode == 82).ToList(),
                 options.BinSize);
             var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 approach.SignalId,
                 options.Start,
                 options.End,
-                planEvents.ToList());
+                planEvents);
             var analysisPhaseData = analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).FirstOrDefault();
             return waitTimeService.GetChartData(
                 options,
                 approach,
-                events,
+                phaseEvents,
                 analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).First(),
                 analysisPhaseDataCollection.Plans,
                 volume
