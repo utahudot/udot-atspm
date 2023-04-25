@@ -1,83 +1,76 @@
-﻿using ATSPM.Application.Reports.Business.AppoachDelay;
+﻿using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ATSPM.Application.Reports.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ApproachDelayController : ControllerBase
+    public class ArrivalOnRedController : ControllerBase
     {
-        private readonly ApproachDelayService approachDelayService;
+        private readonly ArrivalOnRedService arrivalOnRedService;
         private readonly SignalPhaseService signalPhaseService;
         private readonly IApproachRepository approachRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public ApproachDelayController(
-            ApproachDelayService approachDelayService,
+        public ArrivalOnRedController(
+            ArrivalOnRedService arrivalOnRedService,
             SignalPhaseService signalPhaseService,
             IApproachRepository approachRepository,
             IControllerEventLogRepository controllerEventLogRepository
             )
         {
-            this.approachDelayService = approachDelayService;
+            this.arrivalOnRedService = arrivalOnRedService;
             this.signalPhaseService = signalPhaseService;
             this.approachRepository = approachRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
+        // GET: api/<ApproachVolumeController>
         [HttpGet("test")]
-        public ApproachDelayResult Test()
+        public ArrivalOnRedResult Test()
         {
             Fixture fixture = new();
-            ApproachDelayResult viewModel = fixture.Create<ApproachDelayResult>();
+            ArrivalOnRedResult viewModel = fixture.Create<ArrivalOnRedResult>();
             return viewModel;
         }
 
         [HttpPost("getChartData")]
-        public ApproachDelayResult GetChartData([FromBody] ApproachDelayOptions options)
+        public ArrivalOnRedResult GetChartData([FromBody] ArrivalOnRedOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var planEvents = controllerEventLogRepository.GetPlanEvents(
                 approach.SignalId,
                 options.Start,
                 options.End);
-            var detectorEvents = new List<ControllerEventLog>();
-            if (options.GetVolume)
-            {
-                detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
-            }
+            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false);
             var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
                 approach,
-                options.GetPermissivePhase,
+                options.UsePermissivePhase,
                 options.Start,
                 options.End);
-                
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.Start,
                 options.End,
-                options.GetPermissivePhase,
                 false,
                 null,
-                options.BinSize,
+                options.SelectedBinSize,
+                //9,
                 approach,
                 cycleEvents.ToList(),
                 planEvents.ToList(),
-                detectorEvents); 
-            ApproachDelayResult viewModel = approachDelayService.GetChartData(
-                options,
-                approach,
-                signalPhase);
+                detectorEvents.ToList()
+                );
+            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase, approach);
             return viewModel;
         }
-
-
 
     }
 }

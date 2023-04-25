@@ -227,67 +227,29 @@ namespace ATSPM.Application.Reports.Business.Common
             fifteenth = GetPercentile(rawSpeeds, .15);
         }
 
-        private int GetPercentile(List<int> speeds, double percentile)
+        private int GetPercentile(IReadOnlyList<int> speeds, double percentile)
         {
-            speeds.Sort();
-            var percentileValue = 0;
-            try
-            {
-                var tempPercentileIndex = speeds.Count * percentile - 1;
-
-                if (speeds.Count > 3)
-                {
-                    var percentileIndex = 0;
-                    if (tempPercentileIndex % 1 > 0)
-                    {
-                        percentileIndex = Convert.ToInt32(Math.Round(tempPercentileIndex + .5));
-                        percentileValue = speeds[percentileIndex];
-                    }
-                    else
-                    {
-                        percentileIndex = Convert.ToInt32(tempPercentileIndex);
-                        var speed1 = speeds[percentileIndex];
-                        var speed2 = speeds[percentileIndex + 1];
-                        double rawEightyfifth = (speed1 + speed2) / 2;
-                        percentileValue = Convert.ToInt32(Math.Round(rawEightyfifth));
-                    }
-                }
-            }
-            catch 
-            {
-                throw new Exception("Error creating Percentile");
-            }
+            var sortedSpeeds = speeds.OrderBy(x => x).ToList();
+            var index = (int)Math.Ceiling(percentile * (sortedSpeeds.Count - 1));
+            var percentileValue = sortedSpeeds[index];
             return percentileValue;
         }
 
-        public List<PlanSplitFail> GetSplitFailPlans(List<CycleSplitFail> cycles, SplitFailOptions options,
-            Approach approach, List<ControllerEventLog> events)
+        public List<PlanSplitFail> GetSplitFailPlans(
+            List<CycleSplitFail> cycles,
+            SplitFailOptions options,
+            Approach approach,
+            IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(options.StartDate, options.EndDate, approach.SignalId, events);
-            var plans = new List<PlanSplitFail>();
-            for (var i = 0; i < planEvents.Count; i++)
-                if (planEvents.Count - 1 == i)
-                {
-                    if (planEvents[i].Timestamp != options.EndDate)
-                    {
-                        var planCycles = cycles.Where(c =>
-                            c.StartTime >= planEvents[i].Timestamp && c.StartTime < options.EndDate).ToList();
-                        plans.Add(new PlanSplitFail(planEvents[i].Timestamp, options.EndDate, planEvents[i].EventParam.ToString(),
-                            planCycles));
-                    }
-                }
-                else
-                {
-                    if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
-                    {
-                        var planCycles = cycles.Where(c =>
-                                c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
-                            .ToList();
-                        plans.Add(new PlanSplitFail(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
-                            planEvents[i].EventParam.ToString(), planCycles));
-                    }
-                }
+            var planEvents = GetPlanEvents(options.StartDate, options.EndDate, approach.SignalId, events.ToList());
+            var plans = planEvents.Select((x, i) =>
+            {
+                var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.EndDate)).ToList();
+                return new PlanSplitFail(x.Timestamp, i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.EndDate, x.EventParam.ToString(), planCycles);
+            })
+                .ToList();
             return plans;
         }
+
     }
 }

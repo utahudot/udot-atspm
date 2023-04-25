@@ -49,14 +49,45 @@ namespace ATSPM.Application.Reports.Controllers
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
 
             var approach = approachRepository.Lookup(options.ApproachId);
-            var cycleEvents = GetCycleEvents(options.UsePermissivePhase, options.StartDate, options.EndDate, approach);
+            var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
+            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
+                approach.SignalId,
+                options.StartDate,
+                options.EndDate,
+                cycleEventCodes,
+                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
             var terminationEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
                 approach.SignalId,
                 options.StartDate,
                 options.EndDate,
                 new List<int> { 4, 5, 6 },
-                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).ToList();
-            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(options, cycleEvents, planEvents, terminationEvents, approach);
+                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
+            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
+                12,
+                approach,
+                options.StartDate,
+                options.EndDate,
+                true,
+                true).ToList();
+            //I think this is trying to add 81,82 to the list of events if it finds it before the start dateTime. The way this is done 
+            //does not make sense since it adds an event at the start and end date time. I think it should be something like this:
+            //Add a 82, 81 to the list of events at the start date time if it finds it before the start date time. Need to verify with
+            //a traffic engineer.
+            //if(EventsBeforeStart(options.StartDate, detector))
+            //{
+            //    detectorEvents.Add(new SplitFailDetectorActivation
+            //    {
+            //        DetectorOn = options.StartDate,
+            //        DetectorOff = options.EndDate
+            //    });
+            //}
+            var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(
+                options,
+                cycleEvents,
+                planEvents,
+                terminationEvents,
+                detectorEvents,
+                approach);
             return new SplitFailsResult(
                 "Split Fail Chart",
                 options.SignalId,
@@ -84,39 +115,23 @@ namespace ATSPM.Application.Reports.Controllers
                 splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
                 );
-        }
+        }      
 
 
-        /// <summary>
-        /// Needs event codes 1,8,9,61,63,64,66
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <returns></returns>
-        private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
-            DateTime endDate, Approach approach)
+
+        private bool EventsBeforeStart(
+            SplitFailOptions options,
+            Detector detector,
+            SplitFailPhaseData splitFailPhaseData)
         {
-            List<ControllerEventLog> cycleEvents;
-            if (getPermissivePhase)
-            {
-                var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
-            }
-            else
-            {
-                var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-                    ? new List<int> { 61, 63, 64, 66 }
-                    : new List<int> { 1, 8, 9 };
-                cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-                    endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
-            }
-
-            return cycleEvents;
+            var eventOnBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
+                options.SignalId,
+                detector.DetChannel, 81, options.StartDate);
+            var eventOffBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
+                options.SignalId,
+                detector.DetChannel, 82, options.StartDate);
+            return (eventOnBeforeStart != null && eventOffBeforeStart == null); 
+                
         }
 
     }

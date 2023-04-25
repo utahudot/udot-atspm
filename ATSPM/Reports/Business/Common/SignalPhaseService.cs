@@ -52,7 +52,6 @@ namespace ATSPM.Application.Reports.Business.Common
         public SignalPhase GetSignalPhaseData(
             DateTime start,
             DateTime end,
-            bool getPermissivePhase,
             bool showVolume,
             int? pcdCycleTime,
             int binSize,

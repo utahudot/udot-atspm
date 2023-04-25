@@ -248,137 +248,30 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles;
         }
 
-        /// <summary>
-        /// Needs event codes 1,8,9,61,63,64,66
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <returns></returns>
-        //private List<ControllerEventLog> GetCycleEvents(bool getPermissivePhase, DateTime startDate,
-        //    DateTime endDate, Approach approach, List<ControllerEventLog> cycleEvents)
-        //{
-        //    List<ControllerEventLog> cycleEvents;
-        //    if (getPermissivePhase)
-        //    {
-        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-        //            ? new List<int> { 61, 63, 64, 66 }
-        //            : new List<int> { 1, 8, 9 };
-        //        cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-        //            endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value).ToList();
-        //    }
-        //    else
-        //    {
-        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-        //            ? new List<int> { 61, 63, 64, 66 }
-        //            : new List<int> { 1, 8, 9 };
-        //        cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(approach.SignalId, startDate,
-        //            endDate, cycleEventNumbers, approach.ProtectedPhaseNumber).ToList();
-        //    }
 
-        //    return cycleEvents;
-        //}
 
-        
-
-        /// <summary>
-        /// Needs event codes 1,3,8,9,11,61,63,64,65
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <param name="cycleEvents"></param>
-        //public void GetEventsToCompleteCycle(bool getPermissivePhase, DateTime endDate, Approach approach,
-        //    List<ControllerEventLog> mainEvents, List<ControllerEventLog> nextEvents)
-        //{
-        //    nextEvents.OrderBy(e => e.Timestamp).Take(3);
-        //    if (getPermissivePhase)
-        //    {
-        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-        //            ? new List<int> { 61, 63, 64, 65 }
-        //            : new List<int> { 1, 8, 9, 11 };
-        //        var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
-        //            endDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
-        //        if (eventsAfterEndDate != null)
-        //            mainEvents.AddRange(eventsAfterEndDate);
-        //    }
-        //    else
-        //    {
-        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-        //            ? new List<int> { 61, 63, 64, 65 }
-        //            : new List<int> { 1, 8, 9, 11 };
-        //        var eventsAfterEndDate = controllerEventLogRepository.GetTopEventsAfterDateByEventCodesParam(approach.SignalId,
-        //            endDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
-        //        if (eventsAfterEndDate != null)
-        //            mainEvents.AddRange(eventsAfterEndDate);
-        //    }
-        //}
-
-        /// <summary>
-        /// Needs event codes 1,3,8,9,11,63,64,65
-        /// </summary>
-        /// <param name="getPermissivePhase"></param>
-        /// <param name="startDate"></param>
-        /// <param name="approach"></param>
-        /// <param name="cycleEvents"></param>
-        //public void GetEventsToStartCycle(bool getPermissivePhase, DateTime startDate, Approach approach,
-        //    List<ControllerEventLog> cycleEvents)
-        //{
-        //    if (getPermissivePhase)
-        //    {
-        //        var cycleEventNumbers = approach.IsPermissivePhaseOverlap
-        //            ? new List<int> { 63, 64, 65 }
-        //            : new List<int> { 1, 8, 9, 11 };
-        //        var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
-        //            startDate, cycleEventNumbers, approach.PermissivePhaseNumber.Value, 3);
-        //        if (eventsBeforeStartDate != null)
-        //            cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
-        //    }
-        //    else
-        //    {
-        //        var cycleEventNumbers = approach.IsProtectedPhaseOverlap
-        //            ? new List<int> { 63, 64, 65 }
-        //            : new List<int> { 1, 8, 9, 11 };
-        //        var eventsBeforeStartDate = controllerEventLogRepository.GetTopEventsBeforeDateByEventCodesParam(approach.SignalId,
-        //            startDate, cycleEventNumbers, approach.ProtectedPhaseNumber, 3);
-        //        if (eventsBeforeStartDate != null)
-        //            cycleEvents.InsertRange(0, eventsBeforeStartDate.OrderBy(e => e.Timestamp));
-        //    }
-        //}
-
-        /// <summary>
-        /// Needs event codes 1,8,9,61,63,64,66
-        /// </summary>
-        /// <param name="options"></param>
-        /// <param name="approach"></param>
-        /// <param name="getPermissivePhase"></param>
-        /// <returns></returns>
-        public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, Approach approach,
-            bool getPermissivePhase, List<ControllerEventLog> cycleEvents, List<ControllerEventLog> terminationEvents)
+        public List<CycleSplitFail> GetSplitFailCycles(SplitFailOptions options, IReadOnlyList<ControllerEventLog> cycleEvents, IReadOnlyList<ControllerEventLog> terminationEvents)
         {
-            var cycles = new List<CycleSplitFail>();
-            for (var i = 0; i < cycleEvents.Count - 3; i++)
-                if (GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                    && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                    && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                    && (GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToGreen ||
-                        cycleEvents[i + 3].EventCode == 66))
+            var cycles = Enumerable.Range(0, cycleEvents.Count - 3)
+                .Where(i => GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen &&
+                            GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow &&
+                            GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed &&
+                            (GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToGreen ||
+                            cycleEvents[i + 3].EventCode == 66))
+                .Select(i =>
                 {
-                    var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].Timestamp,
-                        cycleEvents[i + 3].Timestamp, terminationEvents);
-                    cycles.Add(new CycleSplitFail(cycleEvents[i].Timestamp, cycleEvents[i + 2].Timestamp,
-                        cycleEvents[i + 1].Timestamp, cycleEvents[i + 3].Timestamp, termEvent,
-                        options.FirstSecondsOfRed));
-                    //i = i + 2;
-                }
+                    var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].Timestamp, cycleEvents[i + 3].Timestamp, terminationEvents);
+                    return new CycleSplitFail(cycleEvents[i].Timestamp, cycleEvents[i + 2].Timestamp, cycleEvents[i + 1].Timestamp,
+                                              cycleEvents[i + 3].Timestamp, termEvent, options.FirstSecondsOfRed);
+                })
+                .Where(c => c.EndTime >= options.StartDate && c.EndTime <= options.EndDate || c.StartTime <= options.EndDate && c.StartTime >= options.StartDate)
+                .ToList();
 
-            return cycles.Where(c =>
-                c.EndTime >= options.StartDate && c.EndTime <= options.EndDate || c.StartTime <= options.EndDate && c.StartTime >= options.StartDate).ToList();
+            return cycles;
         }
 
         private CycleSplitFail.TerminationType GetTerminationEventBetweenStartAndEnd(DateTime start,
-            DateTime end, List<ControllerEventLog> terminationEvents)
+            DateTime end, IReadOnlyList<ControllerEventLog> terminationEvents)
         {
             var terminationType = CycleSplitFail.TerminationType.Unknown;
             var terminationEvent = terminationEvents.FirstOrDefault(t => t.Timestamp > start && t.Timestamp <= end);

@@ -54,7 +54,6 @@ namespace ATSPM.Application.Reports.Controllers
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.StartDate,
                 options.EndDate,
-                false,
                 options.ShowVolumes,
                 0,
                 options.SelectedBinSize,

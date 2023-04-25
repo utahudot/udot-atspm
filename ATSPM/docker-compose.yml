@@ -8,5 +8,12 @@ services:
       context: .
       dockerfile: SignalControllerLogger/Dockerfile
     tty: true
+  ATSPM.Application.Reports:
+    image: ${DOCKER_REGISTRY-}reports
+    build:
+      context: .
+      dockerfile: Reports/Dockerfile
+    ports:
+      - "8080:80"
 
  

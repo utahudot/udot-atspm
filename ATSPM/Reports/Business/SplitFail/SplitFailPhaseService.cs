@@ -24,27 +24,22 @@ namespace ATSPM.Application.Reports.Business.SplitFail
     {
         private readonly CycleService cycleService;
         private readonly PlanService planService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly IApproachRepository approachRepository;
 
         public SplitFailPhaseService(
             CycleService cycleService,
-            PlanService planService,
-            IControllerEventLogRepository controllerEventLogRepository,
-            IApproachRepository approachRepository
+            PlanService planService
             )
         {
             this.cycleService = cycleService;
             this.planService = planService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.approachRepository = approachRepository;
         }
 
         public SplitFailPhaseData GetSplitFailPhaseData(
             SplitFailOptions options,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> terminationEvents,
+            IReadOnlyList<ControllerEventLog> cycleEvents,
+            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
+            IReadOnlyList<ControllerEventLog> detectorEvents,
             Approach approach)
         {
             var splitFailPhaseData = new SplitFailPhaseData();
@@ -53,13 +48,15 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             splitFailPhaseData.PhaseNumberSort = options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
             splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(
                 options,
-                approach,
-                options.UsePermissivePhase,
                 cycleEvents,
                 terminationEvents);
-            SetDetectorActivations(options, splitFailPhaseData);
+            SetDetectorActivations(options, splitFailPhaseData, detectorEvents);
             AddDetectorActivationsToCycles(splitFailPhaseData);
-            splitFailPhaseData.Plans = planService.GetSplitFailPlans(splitFailPhaseData.Cycles, options, splitFailPhaseData.Approach, planEvents);
+            splitFailPhaseData.Plans = planService.GetSplitFailPlans(
+                splitFailPhaseData.Cycles,
+                options,
+                splitFailPhaseData.Approach,
+                planEvents);
             splitFailPhaseData.TotalFails = splitFailPhaseData.Cycles.Count(c => c.IsSplitFail);
             splitFailPhaseData.Statistics = new Dictionary<string, string>();
             splitFailPhaseData.Statistics.Add("Total Split Failures", splitFailPhaseData.TotalFails.ToString());
@@ -146,31 +143,27 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             }
         }
 
-        private void SetDetectorActivations(SplitFailOptions options, SplitFailPhaseData splitFailPhaseData)
+        private void SetDetectorActivations(
+            SplitFailOptions options,
+            SplitFailPhaseData splitFailPhaseData,
+            IReadOnlyList<ControllerEventLog> detectorEvents)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
             var detectors = splitFailPhaseData.Approach.GetAllDetectorsOfDetectionType(Data.Enums.DetectionTypes.SBP);// .GetDetectorsForMetricType(12);
 
             foreach (var detector in detectors)
             {
-                //var lastCycle = Cycles.OrderBy(c => c.StartTime).LastOrDefault();
-                List<ControllerEventLog> events = controllerEventLogRepository.GetEventsByEventCodesParam(
-                    splitFailPhaseData.Approach.SignalId,
-                    options.StartDate,
-                    options.EndDate,
-                    new List<int> { 81, 82 },
-                    detector.DetChannel,
-                    detector.LatencyCorrection).ToList();
-                if (!events.Any())
-                {
-                    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
-                }
-                else
-                {
+                var events = detectorEvents.Where(d => d.EventParam == detector.DetChannel).ToList();
+                //if (!events.Any())
+                //{
+                //    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
+                //}
+                //else
+                //{
                     AddDetectorOnToBeginningIfNecessary(options, detector, events);
                     AddDetectorOffToEndIfNecessary(options, detector, events);
                     AddDetectorActivationsFromList(events, splitFailPhaseData);
-                }
+                //}
             }
             CombineDetectorActivations(splitFailPhaseData);
         }
@@ -210,25 +203,6 @@ namespace ATSPM.Application.Reports.Business.SplitFail
                     EventCode = 82,
                     EventParam = detector.DetChannel,
                     SignalId = options.SignalId
-                });
-        }
-
-        private void CheckForDetectorOnBeforeStart(
-            SplitFailOptions options,
-            Detector detector,
-            SplitFailPhaseData splitFailPhaseData)
-        {
-            var eventOnBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalId,
-                detector.DetChannel, 81, options.StartDate);
-            var eventOffBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalId,
-                detector.DetChannel, 82, options.StartDate);
-            if (eventOnBeforeStart != null && eventOffBeforeStart == null)
-                splitFailPhaseData.DetectorActivations.Add(new SplitFailDetectorActivation
-                {
-                    DetectorOn = options.StartDate,
-                    DetectorOff = options.EndDate
                 });
         }
     }
