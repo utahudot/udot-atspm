@@ -72,14 +72,14 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void SetBinStatistics(SplitFailOptions options, SplitFailPhaseData splitFailPhaseData)
         {
-            var startTime = options.StartDate;
+            var startTime = options.Start;
             do
             {
                 var endTime = startTime.AddMinutes(15);
                 var cycles = splitFailPhaseData.Cycles.Where(c => c.StartTime >= startTime && c.StartTime < endTime).ToList();
                 splitFailPhaseData.Bins.Add(new SplitFailBin(startTime, endTime, cycles));
                 startTime = startTime.AddMinutes(15);
-            } while (startTime < options.EndDate);
+            } while (startTime < options.End);
         }
 
         private void CombineDetectorActivations(SplitFailPhaseData splitFailPhaseData)
@@ -145,7 +145,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void SetDetectorActivations(
             SplitFailOptions options,
-            SplitFailPhaseData splitFailPhaseData,
+            SplitFailPhaseData splitFailPhaseData, 
             IReadOnlyList<ControllerEventLog> detectorEvents)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
@@ -154,6 +154,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             foreach (var detector in detectors)
             {
                 var events = detectorEvents.Where(d => d.EventParam == detector.DetChannel).ToList();
+                //TODO: Verify that this is not needed
                 //if (!events.Any())
                 //{
                 //    CheckForDetectorOnBeforeStart(options, detector, splitFailPhaseData);
@@ -186,7 +187,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.LastOrDefault()?.EventCode == 82)
                 events.Insert(events.Count, new ControllerEventLog
                 {
-                    Timestamp = options.EndDate,
+                    Timestamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetChannel,
                     SignalId = options.SignalId
@@ -199,7 +200,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.FirstOrDefault()?.EventCode == 81)
                 events.Insert(0, new ControllerEventLog
                 {
-                    Timestamp = options.StartDate,
+                    Timestamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetChannel,
                     SignalId = options.SignalId

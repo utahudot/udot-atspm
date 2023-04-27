@@ -44,29 +44,30 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public SplitFailsResult GetChartData([FromBody] SplitFailOptions options, List<ControllerEventLog> planEvents)
+        public SplitFailsResult GetChartData([FromBody] SplitFailOptions options)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.StartDate);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
 
             var approach = approachRepository.Lookup(options.ApproachId);
             var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
                 approach.SignalId,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 cycleEventCodes,
                 options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.SignalId, options.Start, options.End);
             var terminationEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
                 approach.SignalId,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 new List<int> { 4, 5, 6 },
                 options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
                 12,
                 approach,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 true,
                 true).ToList();
             //I think this is trying to add 81,82 to the list of events if it finds it before the start dateTime. The way this is done 
@@ -94,8 +95,8 @@ namespace ATSPM.Application.Reports.Controllers
                 signal.SignalDescription(),
                 options.UsePermissivePhase ? splitFailData.Approach.PermissivePhaseNumber.Value : splitFailData.Approach.ProtectedPhaseNumber,
                 splitFailData.Approach.Description,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 splitFailData.TotalFails,
                 splitFailData.Plans,
                 splitFailData.Bins.Select(b => new FailLine(b.StartTime, Convert.ToInt32(b.SplitFails))).ToList(),
@@ -126,10 +127,10 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var eventOnBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
                 options.SignalId,
-                detector.DetChannel, 81, options.StartDate);
+                detector.DetChannel, 81, options.Start);
             var eventOffBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
                 options.SignalId,
-                detector.DetChannel, 82, options.StartDate);
+                detector.DetChannel, 82, options.Start);
             return (eventOnBeforeStart != null && eventOffBeforeStart == null); 
                 
         }

@@ -19,8 +19,8 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         [Display(Name = "Show Percent Fail Lines")]
         public bool ShowPercentFailLines { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public int MetricTypeId { get; set; } = 12;
         public string SignalId { get; set; }
         public int ApproachId { get; set; }

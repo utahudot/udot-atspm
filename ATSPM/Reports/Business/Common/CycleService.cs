@@ -264,7 +264,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     return new CycleSplitFail(cycleEvents[i].Timestamp, cycleEvents[i + 2].Timestamp, cycleEvents[i + 1].Timestamp,
                                               cycleEvents[i + 3].Timestamp, termEvent, options.FirstSecondsOfRed);
                 })
-                .Where(c => c.EndTime >= options.StartDate && c.EndTime <= options.EndDate || c.StartTime <= options.EndDate && c.StartTime >= options.StartDate)
+                .Where(c => c.EndTime >= options.Start && c.EndTime <= options.End || c.StartTime <= options.End && c.StartTime >= options.Start)
                 .ToList();
 
             return cycles;

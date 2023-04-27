@@ -12,12 +12,10 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlanService
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly PlanSplitMonitorService planSplitMonitorService;
 
-        public PlanService(IControllerEventLogRepository controllerEventLogRepository, PlanSplitMonitorService planSplitMonitorService)
+        public PlanService(PlanSplitMonitorService planSplitMonitorService)
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
             this.planSplitMonitorService = planSplitMonitorService;
         }
 
@@ -75,16 +73,26 @@ namespace ATSPM.Application.Reports.Business.Common
             return planEvents;
         }
 
+
         private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
         {
-            var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(signalId, 131, startDate);
+            var firstPlanEvent = planEvents.FirstOrDefault(e => e.Timestamp < startDate);
+
             if (firstPlanEvent != null)
             {
+                // update the timestamp of the first event to match the start date
                 firstPlanEvent.Timestamp = startDate;
-                planEvents.Add(firstPlanEvent);
+
+                // remove all events before the first event
+                var indexToRemove = planEvents.IndexOf(firstPlanEvent);
+                if (indexToRemove != -1)
+                {
+                    planEvents.RemoveRange(0, indexToRemove);
+                }
             }
             else
             {
+                // create a new event with the specified properties and add it to the beginning of the list
                 firstPlanEvent = new ControllerEventLog
                 {
                     Timestamp = startDate,
@@ -95,6 +103,26 @@ namespace ATSPM.Application.Reports.Business.Common
                 planEvents.Insert(0, firstPlanEvent);
             }
         }
+        //private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
+        //{
+        //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(signalId, 131, startDate);
+        //    if (firstPlanEvent != null)
+        //    {
+        //        firstPlanEvent.Timestamp = startDate;
+        //        planEvents.Add(firstPlanEvent);
+        //    }
+        //    else
+        //    {
+        //        firstPlanEvent = new ControllerEventLog
+        //        {
+        //            Timestamp = startDate,
+        //            EventCode = 131,
+        //            EventParam = 0,
+        //            SignalId = signalId
+        //        };
+        //        planEvents.Insert(0, firstPlanEvent);
+        //    }
+        //}
 
         public IReadOnlyList<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, IReadOnlyList<ControllerEventLog> events)
         {
@@ -241,11 +269,11 @@ namespace ATSPM.Application.Reports.Business.Common
             Approach approach,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(options.StartDate, options.EndDate, approach.SignalId, events.ToList());
+            var planEvents = GetPlanEvents(options.Start, options.End, approach.SignalId, events.ToList());
             var plans = planEvents.Select((x, i) =>
             {
-                var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.EndDate)).ToList();
-                return new PlanSplitFail(x.Timestamp, i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.EndDate, x.EventParam.ToString(), planCycles);
+                var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.End)).ToList();
+                return new PlanSplitFail(x.Timestamp, i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.End, x.EventParam.ToString(), planCycles);
             })
                 .ToList();
             return plans;
