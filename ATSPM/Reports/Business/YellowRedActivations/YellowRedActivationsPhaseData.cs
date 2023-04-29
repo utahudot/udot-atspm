@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
-    public class RLMSignalPhaseData
+    public class YellowRedActivationsPhaseData
     {
         public bool GetPermissivePhase { get; set; }
 
@@ -16,18 +16,18 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
         public double Violations
         {
-            get { return Plans.PlanList.Sum(d => d.Violations); }
+            get { return Plans.Sum(d => d.Violations); }
         }
 
-        public RedLightMonitorPlanCollectionData Plans { get; set; }
+        public IList<YellowRedActivationPlan> Plans { get; set; }
 
-        public List<RLMCycle> Cycles { get; set; }
+        public List<YellowRedActivationsCycle> Cycles { get; set; }
 
         public double SevereRedLightViolationSeconds { get; set; }
 
         public double SevereRedLightViolations
         {
-            get { return Plans.PlanList.Sum(d => d.SevereRedLightViolations); }
+            get { return Plans.Sum(d => d.SevereRedLightViolations); }
         }
 
         public double TotalVolume { get; set; }
@@ -54,12 +54,12 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
         public double YellowOccurrences
         {
-            get { return Plans.PlanList.Sum(d => d.YellowOccurrences); }
+            get { return Plans.Sum(d => d.YellowOccurrences); }
         }
 
         public double TotalYellowTime
         {
-            get { return Plans.PlanList.Sum(d => d.TotalYellowTime); }
+            get { return Plans.Sum(d => d.TotalYellowTime); }
         }
 
         public double AverageTYLO => Math.Round(TotalYellowTime / YellowOccurrences, 1);
@@ -76,7 +76,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
         public double ViolationTime
         {
-            get { return Plans.PlanList.Sum(p => p.ViolationTime); }
+            get { return Plans.Sum(p => p.ViolationTime); }
         }
 
         public Approach Approach { get; set; }

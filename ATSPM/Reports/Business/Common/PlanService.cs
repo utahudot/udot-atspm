@@ -7,6 +7,7 @@ using System.Linq;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Reports.Business.ApproachSpeed;
+using ATSPM.Application.Reports.Business.YellowRedActivations;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -124,7 +125,11 @@ namespace ATSPM.Application.Reports.Business.Common
         //    }
         //}
 
-        public IReadOnlyList<Plan> GetBasicPlans(DateTime startDate, DateTime endDate, string signalId, IReadOnlyList<ControllerEventLog> events)
+        public IReadOnlyList<Plan> GetBasicPlans(
+            DateTime startDate,
+            DateTime endDate,
+            string signalId,
+            IReadOnlyList<ControllerEventLog> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
             var plans = planEvents.Select((x, i) => i == planEvents.Count - 1
@@ -132,6 +137,30 @@ namespace ATSPM.Application.Reports.Business.Common
                                         : new Plan(x.EventParam.ToString(), x.Timestamp, planEvents[i + 1].Timestamp))
                                   .ToList();
             return plans;
+        }
+
+        public IReadOnlyList<YellowRedActivationPlan> GetYellowRedActivationPlans(
+            DateTime startDate,
+            DateTime endDate,
+            List<YellowRedActivationsCycle> cycles,
+            Approach approach,
+            double severeRedLightViolationSeconds,
+            IReadOnlyList<ControllerEventLog> planEvents)
+        {
+            var plans = GetBasicPlans(
+                startDate,
+                endDate,
+                approach.SignalId,
+                planEvents).ToList();
+            if (plans.Count == 0)
+                plans.Add(new Plan("0", startDate, endDate));
+            return plans.Select(plan => new YellowRedActivationPlan(
+                plan.StartTime,
+                plan.EndTime,
+                plan.PlanNumber,
+                cycles.Where(c => c.StartTime >= plan.StartTime && c.StartTime < plan.EndTime).ToList(),
+                severeRedLightViolationSeconds,
+                approach)).ToList();
         }
 
         public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(

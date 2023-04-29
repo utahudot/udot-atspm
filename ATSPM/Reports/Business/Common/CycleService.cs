@@ -29,18 +29,20 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime endTime,
             List<ControllerEventLog> cycleEvents)
         {
-            var cycles = new List<RedToRedCycle>();
-            for (var i = 0; i < cycleEvents.Count; i++)
-                if (i < cycleEvents.Count - 3
-                    && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToRed
-                    && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-                    && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-                    && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
-                {
-                    cycles.Add(new RedToRedCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                        cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
-                    i += 2;
-                }
+            var cycles = cycleEvents
+                .Select((eventLog, index) => new { EventLog = eventLog, Index = index })
+                .Where(item =>
+                    item.Index < cycleEvents.Count - 3
+                    && GetEventType(cycleEvents[item.Index].EventCode) == RedToRedCycle.EventType.ChangeToRed
+                    && GetEventType(cycleEvents[item.Index + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
+                    && GetEventType(cycleEvents[item.Index + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
+                    && GetEventType(cycleEvents[item.Index + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
+                .Select(item => new RedToRedCycle(
+                    cycleEvents[item.Index].Timestamp,
+                    cycleEvents[item.Index + 1].Timestamp,
+                    cycleEvents[item.Index + 2].Timestamp,
+                    cycleEvents[item.Index + 3].Timestamp))
+                .ToList();
 
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
@@ -75,6 +77,37 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
+        public List<YellowRedActivationsCycle> GetYellowRedActivationsCycles(
+            DateTime startTime,
+            DateTime endTime,
+            IReadOnlyList<ControllerEventLog> cycleEvents,
+            IReadOnlyList<ControllerEventLog> detectorEvents,
+            double severeViolationSeconds)
+        {
+            var cycles = cycleEvents
+                .Select((eventLog, index) => new { EventLog = eventLog, Index = index })
+                .Where(item =>
+                    item.Index < cycleEvents.Count - 3
+                    && GetYellowToRedEventType(cycleEvents[item.Index].EventCode) == YellowRedEventType.BeginYellowClearance
+                    && GetYellowToRedEventType(cycleEvents[item.Index + 1].EventCode) == YellowRedEventType.BeginRedClearance
+                    && GetYellowToRedEventType(cycleEvents[item.Index + 2].EventCode) == YellowRedEventType.BeginRed
+                    && GetYellowToRedEventType(cycleEvents[item.Index + 3].EventCode) == YellowRedEventType.EndRed)
+                .Select(item => new YellowRedActivationsCycle(
+                    cycleEvents[item.Index].Timestamp,
+                    cycleEvents[item.Index + 1].Timestamp,
+                    cycleEvents[item.Index + 2].Timestamp,
+                    cycleEvents[item.Index + 3].Timestamp,
+                    severeViolationSeconds,
+                    detectorEvents
+                    ))
+                .ToList();
+            return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
+
+            
+        }
+
+
+
         /// <summary>
         /// Needs event codes 1,8,9,61,63,64
         /// </summary>
@@ -94,7 +127,6 @@ namespace ATSPM.Application.Reports.Business.Common
             int? pcdCycleTime)
         {
             double pcdCycleShift = pcdCycleTime ?? 0;
-            //var cycleEvents = GetCycleEvents(getPermissivePhase, startDate.AddSeconds(-900), endDate.AddSeconds(900), approach);
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
                 if (i < cycleEvents.Count - 3
@@ -119,70 +151,6 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
 
-
-        /// <summary>
-        /// Needs event codes 1,3,8,9,11,61,63,64
-        /// </summary>
-        /// <param name="startDate"></param>
-        /// <param name="endDate"></param>
-        /// <param name="approach"></param>
-        /// <param name="getPermissivePhase"></param>
-        /// <returns></returns>
-        //public List<TimingAndActuationCycle> GetTimingAndActuationCycles(DateTime startDate, DateTime endDate,
-        //    Approach approach, bool getPermissivePhase)
-        //{
-        //    var cycleEvents = GetDetailedCycleEvents(getPermissivePhase, startDate, endDate, approach);
-        //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-        //        RedToRedCycle.EventType.ChangeToRed || cycleEvents.LastOrDefault().Timestamp < endDate))
-        //        GetEventsToCompleteCycle(getPermissivePhase, endDate, approach, cycleEvents);
-        //    var cycles = new List<TimingAndActuationCycle>();
-        //    DateTime dummyTime;
-        //    for (var i = 0; i < cycleEvents.Count; i++)
-        //    {
-        //        dummyTime = new DateTime(1900, 1, 1);
-        //        if (i < cycleEvents.Count - 5
-        //            && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-        //            && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToEndMinGreen
-        //            && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-        //            && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed
-        //            && GetEventType(cycleEvents[i + 4].EventCode) == RedToRedCycle.EventType.ChangeToEndOfRedClearance
-        //            && GetEventType(cycleEvents[i + 5].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-        //        )
-        //            cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-        //                cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp, cycleEvents[i + 4].Timestamp,
-        //                cycleEvents[i + 5].Timestamp, dummyTime));
-        //    }
-
-        //    //// If there are no 5 part cycles, Try to get a 3 or 4 part cycle.
-        //    //get 4 part series is 61, 63,64 and maybe 66
-        //    if (cycles.Count != 0) return cycles;
-        //    {
-        //        var endRedEvent = new DateTime();
-        //        dummyTime = new DateTime(1900, 1, 1);
-        //        for (var i = 0; i < cycleEvents.Count; i++)
-        //        {
-        //            if (i < cycleEvents.Count - 5
-        //                && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToGreen
-        //                && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow
-        //                && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed
-        //            )
-        //            {
-        //                var overlapDarkTime = cycleEvents[i + 3].Timestamp;
-        //                endRedEvent = cycleEvents[i + 4].Timestamp;
-
-        //                if (GetEventType(cycleEvents[i + 3].EventCode) != RedToRedCycle.EventType.OverLapDark)
-        //                {
-        //                    endRedEvent = cycleEvents[i + 3].Timestamp;
-        //                }
-
-        //                cycles.Add(new TimingAndActuationCycle(cycleEvents[i].Timestamp, dummyTime,
-        //                    cycleEvents[i + 1].Timestamp,
-        //                    dummyTime, cycleEvents[i + 2].Timestamp, endRedEvent, overlapDarkTime));
-        //            }
-        //        }
-        //    }
-        //    return cycles;
-        //}
 
         private RedToRedCycle.EventType GetEventType(int eventCode)
         {
@@ -295,39 +263,39 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
 
-        private EventType GetYellowToRedEventType(int EventCode)
+        private YellowRedEventType GetYellowToRedEventType(int EventCode)
         {
             switch (EventCode)
             {
                 case 8:
-                    return EventType.BeginYellowClearance;
+                    return YellowRedEventType.BeginYellowClearance;
                 // overlap yellow
                 case 63:
-                    return EventType.BeginYellowClearance;
+                    return YellowRedEventType.BeginYellowClearance;
 
                 case 9:
-                    return EventType.BeginRedClearance;
+                    return YellowRedEventType.BeginRedClearance;
                 // overlap red
                 case 64:
-                    return EventType.BeginRedClearance;
+                    return YellowRedEventType.BeginRedClearance;
 
                 case 65:
-                    return EventType.BeginRed;
+                    return YellowRedEventType.BeginRed;
                 case 11:
-                    return EventType.BeginRed;
+                    return YellowRedEventType.BeginRed;
 
                 case 1:
-                    return EventType.EndRed;
+                    return YellowRedEventType.EndRed;
                 // overlap green
                 case 61:
-                    return EventType.EndRed;
+                    return YellowRedEventType.EndRed;
 
                 default:
-                    return EventType.Unknown;
+                    return YellowRedEventType.Unknown;
             }
         }
 
-        public enum EventType
+        public enum YellowRedEventType
         {
             BeginYellowClearance,
             BeginRedClearance,

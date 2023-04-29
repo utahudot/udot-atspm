@@ -2,7 +2,7 @@
 
 namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
-    public class RLMDetectorDataPoint
+    public class YellowRedActivation
     {
         //The actual time of the detector activation
 
@@ -15,7 +15,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="eventTime"></param>
-        public RLMDetectorDataPoint(DateTime startDate, DateTime eventTime)
+        public YellowRedActivation(DateTime startDate, DateTime eventTime)
         {
             TimeStamp = eventTime;
             YPoint = (eventTime - startDate).TotalSeconds;
