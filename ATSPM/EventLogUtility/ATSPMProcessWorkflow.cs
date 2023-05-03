@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
@@ -20,7 +21,107 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace ATSPM.EventLogUtility
 {
-    
+    public class RedToRedCycle
+    {
+        //public RedToRedCycle(DateTime firstRedEvent, DateTime greenEvent, DateTime yellowEvent, DateTime lastRedEvent)
+        //{
+        //    StartTime = firstRedEvent;
+        //    GreenEvent = greenEvent;
+        //    GreenLineY = (greenEvent - StartTime).TotalSeconds;
+        //    YellowEvent = yellowEvent;
+        //    YellowLineY = (yellowEvent - StartTime).TotalSeconds;
+        //    EndTime = lastRedEvent;
+        //    RedLineY = (lastRedEvent - StartTime).TotalSeconds;
+        //    //PreemptCollection = new List<DetectorDataPoint>();
+        //}
+
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        //public double GreenLineY { get; }
+        //public double YellowLineY { get; }
+        //public double RedLineY { get; }
+        public DateTime GreenEvent { get; set; }
+        public DateTime YellowEvent { get; set; }
+
+        public int Phase { get; set; }
+
+        public ICollection<ControllerEventLog> EventLogs { get; set; } = new List<ControllerEventLog>();
+
+
+        public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
+        public double TotalYellowTime => (EndTime - YellowEvent).TotalSeconds;
+        public double TotalRedTime => (GreenEvent - StartTime).TotalSeconds;
+        public double TotalTime => (EndTime - StartTime).TotalSeconds;
+        public double TotalGreenTimeMilliseconds => (YellowEvent - GreenEvent).TotalMilliseconds;
+        public double TotalYellowTimeMilliseconds => (EndTime - YellowEvent).TotalMilliseconds;
+        public double TotalRedTimeMilliseconds => (GreenEvent - StartTime).TotalMilliseconds;
+        public double TotalTimeMilliseconds => (EndTime - StartTime).TotalMilliseconds;
+
+        public override string? ToString()
+        {
+            return $"Phase: {Phase} Start: {StartTime:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {EndTime:yyyy-MM-dd'T'HH:mm:ss.f}";
+        }
+    }
+
+    public enum ArrivalType
+    {
+        Unknown,
+        ArrivalOnGreen,
+        ArrivalOnYellow,
+        ArrivalOnRed
+    }
+
+    public class Vehicle
+    {
+        //public double YPoint { get; private set; }
+
+        //public DateTime StartOfCycle { get; }
+
+        //The actual time of the detector activation
+        public DateTime TimeStamp { get; set; }
+
+        //public DateTime YellowEvent { get; set; }
+
+        //public DateTime GreenEvent { get; set; }
+
+        //public DateTime RedEvent { get; set; }
+
+        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (RedToRedCycle?.GreenEvent - TimeStamp).Value.TotalSeconds : 0;
+
+        public int DetectorChannel { get; set; }
+
+        public ArrivalType ArrivalType
+        {
+            get
+            {
+                if (TimeStamp < RedToRedCycle?.GreenEvent)
+                {
+                    return ArrivalType.ArrivalOnRed;
+                }
+
+                else if (TimeStamp >= RedToRedCycle?.GreenEvent && TimeStamp < RedToRedCycle?.YellowEvent)
+                {
+                    return ArrivalType.ArrivalOnGreen;
+                }
+
+                else if (TimeStamp >= RedToRedCycle?.YellowEvent)
+                {
+                    return ArrivalType.ArrivalOnYellow;
+                }
+
+                return ArrivalType.Unknown;
+            }
+        }
+
+        public Detector Detector { get; set; }
+
+        public RedToRedCycle RedToRedCycle { get; set; }
+
+        public override string? ToString()
+        {
+            return $"{DetectorChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
+        }
+    }
 
     public class DetectorEvent
     {
@@ -34,22 +135,77 @@ namespace ATSPM.EventLogUtility
         public IList<ControllerEventLog> EventLogs { get; set; } = new List<ControllerEventLog>();
     }
 
-    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<DetectorEvent, DetectorEvent>
+    public class CreateRedToRedCycles : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<RedToRedCycle>>
+    {
+        public CreateRedToRedCycles(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IEnumerable<IEnumerable<RedToRedCycle>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        {
+            //    var result = input.GroupBy(g => g.SignalId)
+            //        .SelectMany(s => s.GroupBy(g => g.EventParam)
+            //        .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
+            //        .Select(s => new T()
+            //        {
+            //            SignalId = (s.Item1[0].SignalId == s.Item1[1].SignalId) ? s.Item1[0].SignalId : string.Empty,
+            //            PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
+            //            Start = s.Item1[0].Timestamp,
+            //            End = s.Item1[1].Timestamp,
+            //            Seconds = s.Item2
+            //        })));
+
+
+            //    var preFilter = logs.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
+            //.OrderBy(o => o.Timestamp)
+            //.ToList();
+
+            //    var result = preFilter.Where((w, i) => i <= preFilter.Count - 3 && w.EventCode == 9 && preFilter[i + 1].EventCode == 1 && preFilter[i + 2].EventCode == 8 && preFilter[i + 3].EventCode == 9)
+            //        .Select((s, i) => new { s, i = preFilter.IndexOf(s) })
+            //        .Select(s => preFilter.Skip(s.i).Take(4))
+            //        .Select(s => new RedToRedCycle()
+            //        {
+            //            StartTime = s.ElementAt(0).Timestamp,
+            //            EndTime = s.ElementAt(3).Timestamp,
+            //            GreenEvent = s.ElementAt(1).Timestamp,
+            //            YellowEvent = s.ElementAt(2).Timestamp,
+            //            Phase = s.ElementAt(0).EventParam,
+            //            EventLogs = logs.Where(l => l.EventCode != 1 && l.EventCode != 8 && l.EventCode != 9).ToList()
+            //        });
+
+            //    return result;
+
+
+            return null;
+        }
+    }
+
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<DetectorEvent, IEnumerable<Vehicle>>
     {
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<DetectorEvent> Process(DetectorEvent input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Vehicle>> Process(DetectorEvent input, CancellationToken cancelToken = default)
         {
+            var result = new List<Vehicle>();
+            
             foreach(var log in input.EventLogs)
             {
-                log.Timestamp = AtspmMath.AdjustTimeStamp(
-                    log.Timestamp,
-                    input.Detector.Approach?.Mph ?? 0,
-                    input.Detector.DistanceFromStopBar ?? 0,
-                    input.Detector.LatencyCorrection);
+                if (log.EventCode == (int)DataLoggerEnum.DetectorOn)
+                {
+                    //var original = log.Timestamp.ToString("MM/dd/yyyy HH:mm:ss.f");
+
+                    result.Add(new Vehicle()
+                    {
+                        TimeStamp = log.Timestamp = AtspmMath.AdjustTimeStamp(log.Timestamp, input.Detector.Approach?.Mph ?? 0, input.Detector.DistanceFromStopBar ?? 0, input.Detector.LatencyCorrection),
+                        DetectorChannel = log.EventParam,
+                        Detector = input.Detector
+                    });
+
+                    //var adjusted = log.Timestamp.ToString("MM/dd/yyyy HH:mm:ss.f");
+
+                    //Console.WriteLine($"original: {original} adjusted: {adjusted}");
+                }
             }
 
-            return Task.FromResult(input);
+            return Task.FromResult<IEnumerable<Vehicle>>(result);
         }
     }
 
@@ -259,12 +415,13 @@ namespace ATSPM.EventLogUtility
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     Output.Completion.ContinueWith(t =>
                     {
-                        Console.WriteLine($"Output is complete!");
+                        Console.WriteLine($"Output is complete! {t.Status}");
                         this.IsInitialized = false;
-                    });
+                    }, cancelToken);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-                    await Task.WhenAll(Steps.Select(s => s.Completion)).ContinueWith(t => Console.WriteLine($"All steps are complete!"));
+                    
+
 
                     //return Steps.All(t => t.Completion.IsCompletedSuccessfully);
                 }
@@ -280,6 +437,8 @@ namespace ATSPM.EventLogUtility
 
                 await foreach (var item in Output.ReceiveAllAsync(cancelToken))
                     yield return item;
+
+                await Task.WhenAll(Steps.Select(s => s.Completion)).ContinueWith(t => Console.WriteLine($"All steps are complete! {t.Status}"), cancelToken);
             }
             else
             {
