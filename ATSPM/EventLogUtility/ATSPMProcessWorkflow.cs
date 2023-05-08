@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -21,6 +22,29 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace ATSPM.EventLogUtility
 {
+    public class ApproachDelayResult
+    {
+        //public string ChartName { get; }
+        public string SignalId { get; set; }
+        //public string SignalLocation { get; }
+        public int Phase { get; set; }
+        //public string PhaseDescription { get; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public double AverageDelay => Vehicles.Average(a => a.Delay);
+        public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
+        //public List<ApproachDelayPlan> Plans { get; }
+        //public List<ApproachDelayDataPoint> ApproachDelayDataPoints { get; }
+        //public List<ApproachDelayPerVehicleDataPoint> ApproachDelayPerVehicleDataPoints { get; }
+
+        public List<Vehicle> Vehicles { get; set; } = new();
+
+        public override string? ToString()
+        {
+            return $"Signal: {SignalId} Phase: {Phase} Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f} Avg: {AverageDelay:0.00} Total: {TotalDelay:0.0h} Vehicles: {Vehicles.Count}";
+        }
+    }
+    
     public class RedToRedCycle
     {
         //public RedToRedCycle(DateTime firstRedEvent, DateTime greenEvent, DateTime yellowEvent, DateTime lastRedEvent)
@@ -43,9 +67,10 @@ namespace ATSPM.EventLogUtility
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
+        public string SignalId { get; set; }
         public int Phase { get; set; }
 
-        public ICollection<ControllerEventLog> EventLogs { get; set; } = new List<ControllerEventLog>();
+        //public ICollection<ControllerEventLog> VehicleEvents { get; set; } = new List<ControllerEventLog>();
 
 
         public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
@@ -59,7 +84,7 @@ namespace ATSPM.EventLogUtility
 
         public override string? ToString()
         {
-            return $"Phase: {Phase} Start: {StartTime:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {EndTime:yyyy-MM-dd'T'HH:mm:ss.f}";
+            return $"Signal: {SignalId} Phase: {Phase} Start: {StartTime:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {EndTime:yyyy-MM-dd'T'HH:mm:ss.f}";
         }
     }
 
@@ -73,6 +98,8 @@ namespace ATSPM.EventLogUtility
 
     public class Vehicle
     {
+        public string SignalId { get; set; }
+
         //public double YPoint { get; private set; }
 
         //public DateTime StartOfCycle { get; }
@@ -141,71 +168,59 @@ namespace ATSPM.EventLogUtility
 
         protected override Task<IEnumerable<IEnumerable<RedToRedCycle>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            //    var result = input.GroupBy(g => g.SignalId)
-            //        .SelectMany(s => s.GroupBy(g => g.EventParam)
-            //        .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
-            //        .Select(s => new T()
-            //        {
-            //            SignalId = (s.Item1[0].SignalId == s.Item1[1].SignalId) ? s.Item1[0].SignalId : string.Empty,
-            //            PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
-            //            Start = s.Item1[0].Timestamp,
-            //            End = s.Item1[1].Timestamp,
-            //            Seconds = s.Item2
-            //        })));
-
-
-            //    var preFilter = logs.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
-            //.OrderBy(o => o.Timestamp)
-            //.ToList();
-
-            //    var result = preFilter.Where((w, i) => i <= preFilter.Count - 3 && w.EventCode == 9 && preFilter[i + 1].EventCode == 1 && preFilter[i + 2].EventCode == 8 && preFilter[i + 3].EventCode == 9)
-            //        .Select((s, i) => new { s, i = preFilter.IndexOf(s) })
-            //        .Select(s => preFilter.Skip(s.i).Take(4))
-            //        .Select(s => new RedToRedCycle()
-            //        {
-            //            StartTime = s.ElementAt(0).Timestamp,
-            //            EndTime = s.ElementAt(3).Timestamp,
-            //            GreenEvent = s.ElementAt(1).Timestamp,
-            //            YellowEvent = s.ElementAt(2).Timestamp,
-            //            Phase = s.ElementAt(0).EventParam,
-            //            EventLogs = logs.Where(l => l.EventCode != 1 && l.EventCode != 8 && l.EventCode != 9).ToList()
-            //        });
-
-            //    return result;
-
-
-            return null;
-        }
-    }
-
-    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<DetectorEvent, IEnumerable<Vehicle>>
-    {
-        public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<Vehicle>> Process(DetectorEvent input, CancellationToken cancelToken = default)
-        {
-            var result = new List<Vehicle>();
+            var result = new List<IEnumerable<RedToRedCycle>>();
             
-            foreach(var log in input.EventLogs)
+            var signalFilter = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
+        .OrderBy(o => o.Timestamp)
+        .GroupBy(g => g.SignalId);
+
+            foreach (var signal in signalFilter)
             {
-                if (log.EventCode == (int)DataLoggerEnum.DetectorOn)
+                foreach (var phase in signal.GroupBy(g => g.EventParam))
                 {
-                    //var original = log.Timestamp.ToString("MM/dd/yyyy HH:mm:ss.f");
+                    var items = phase.Select(s => s).ToList();
+                    var group = items
+                        .Where((w, i) => i <= items.Count - 3 && w.EventCode == 9 && items[i + 1].EventCode == 1 && items[i + 2].EventCode == 8 && items[i + 3].EventCode == 9)
+                        .Select((s, i) => new { s, i = items.IndexOf(s) })
+                        .Select(s => items.Skip(s.i).Take(4))
+                        .Select(s => new RedToRedCycle()
+                        {
+                            StartTime = s.ElementAt(0).Timestamp,
+                            EndTime = s.ElementAt(3).Timestamp,
+                            GreenEvent = s.ElementAt(1).Timestamp,
+                            YellowEvent = s.ElementAt(2).Timestamp,
+                            Phase = phase.Key,
+                            SignalId = signal.Key
+                            //VehicleEvents = input.Where(w => w.EventCode == 82 && w.SignalId == signal.Key && w.Timestamp >= s.ElementAt(0).Timestamp && w.Timestamp <= s.ElementAt(3).Timestamp).ToList()
+                        });
 
-                    result.Add(new Vehicle()
-                    {
-                        TimeStamp = log.Timestamp = AtspmMath.AdjustTimeStamp(log.Timestamp, input.Detector.Approach?.Mph ?? 0, input.Detector.DistanceFromStopBar ?? 0, input.Detector.LatencyCorrection),
-                        DetectorChannel = log.EventParam,
-                        Detector = input.Detector
-                    });
-
-                    //var adjusted = log.Timestamp.ToString("MM/dd/yyyy HH:mm:ss.f");
-
-                    //Console.WriteLine($"original: {original} adjusted: {adjusted}");
+                    result.Add(group);
                 }
             }
 
-            return Task.FromResult<IEnumerable<Vehicle>>(result);
+            return Task.FromResult<IEnumerable<IEnumerable<RedToRedCycle>>>(result);
+        }
+    }
+
+    public class IdentifyandAdjustVehicleActivations : TransformManyProcessStepBase<Tuple<Detector, IEnumerable<ControllerEventLog>>, IEnumerable<Vehicle>>
+    {
+        public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IEnumerable<IEnumerable<Vehicle>>> Process(Tuple<Detector, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        {
+            //TODO: I DONT KNOW IF THIS MATCHES UP OR NOT
+            var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && l.EventParam == input.Item1.DetChannel)
+                .GroupBy(g => g.SignalId).Select(s => s.ToList()).ToList()
+                .Select(i => i.Select(s =>
+                new Vehicle()
+                {
+                    SignalId = s.SignalId,
+                    TimeStamp = s.Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1.Approach?.Mph ?? 0, input.Item1.DistanceFromStopBar ?? 0, input.Item1.LatencyCorrection),
+                    DetectorChannel = s.EventParam,
+                    Detector = input.Item1
+                }));
+
+            return Task.FromResult<IEnumerable<IEnumerable<Vehicle>>>(result);
         }
     }
 
@@ -229,383 +244,9 @@ namespace ATSPM.EventLogUtility
 
     
     #region PreemptiveStuff
-    public abstract class PreempDetailValueBase
-    {
-        public string SignalId { get; set; }
-        public int PreemptNumber { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public TimeSpan Seconds { get; set; }
+    
 
-        public override string ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{Seconds}";
-    }
-
-
-    public class DwellTimeValue : PreempDetailValueBase { }
-    public class TrackClearTimeValue : PreempDetailValueBase { }
-    public class TimeToServiceValue : PreempDetailValueBase { }
-    public class DelayTimeValue : PreempDetailValueBase { }
-    public class TimeToGateDownValue : PreempDetailValueBase { }
-    public class TimeToCallMaxOutValue : PreempDetailValueBase { }
-
-    public class PreemptDetailResult
-    {
-        public string SignalId { get; set; }
-        public int PreemptNumber { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-
-        public IEnumerable<DwellTimeValue> DwellTimes { get; set; }
-        public IEnumerable<TrackClearTimeValue> TrackClearTimes { get; set; }
-        public IEnumerable<TimeToServiceValue> ServiceTimes { get; set; }
-        public IEnumerable<DelayTimeValue> Delay { get; set; }
-        public IEnumerable<TimeToGateDownValue> GateDownTimes { get; set; }
-        public IEnumerable<TimeToCallMaxOutValue> CallMaxOutTimes { get; set; }
-
-        public override string? ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{DwellTimes.Count()}-{TrackClearTimes?.Count()}-{ServiceTimes?.Count()}-{Delay?.Count()}-{GateDownTimes?.Count()}-{CallMaxOutTimes?.Count()}";
-
-        //public string ChartName { get; set; }
-        //public string SignalLocation { get; set; }
-
-        //public ICollection<Plan> Plans { get; set; }
-
-        //public ICollection<InputOn> InputOns { get; set; }
-        //public ICollection<InputOff> InputOffs { get; set; }
-    }
-
-    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
-    {
-        protected DataLoggerEnum first;
-        protected DataLoggerEnum second;
-
-        public PreemptiveProcessBase(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-        {
-            var result = input.GroupBy(g => g.SignalId)
-                .SelectMany(s => s.GroupBy(g => g.EventParam)
-                .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
-                .Select(s => new T()
-                {
-                    SignalId = (s.Item1[0].SignalId == s.Item1[1].SignalId) ? s.Item1[0].SignalId : string.Empty,
-                    PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
-                    Start = s.Item1[0].Timestamp,
-                    End = s.Item1[1].Timestamp,
-                    Seconds = s.Item2
-                })));
-
-
-
-
-
-            foreach (var group in result)
-            {
-                Console.WriteLine($"{this.GetType().Name} {group.Count()}------------------------------------------------------------------------");
-                foreach (var item in group)
-                {
-                    Console.WriteLine($"{item}");
-                }
-            }
-
-
-
-
-
-
-            return Task.FromResult(result);
-        }
-    }
-
-
-    public class CalculateDwellTime : PreemptiveProcessBase<DwellTimeValue>
-    {
-        public CalculateDwellTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptionBeginDwellService;
-            second = DataLoggerEnum.PreemptionBeginExitInterval;
-        }
-    }
-
-    public class CalculateTrackClearTime : PreemptiveProcessBase<TrackClearTimeValue>
-    {
-        public CalculateTrackClearTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptionBeginTrackClearance;
-            second = DataLoggerEnum.PreemptionBeginDwellService;
-        }
-    }
-
-    public class CalculateTimeToService : PreemptiveProcessBase<TimeToServiceValue>
-    {
-        public CalculateTimeToService(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptionBeginDwellService;
-        }
-    }
-
-    public class CalculateDelay : PreemptiveProcessBase<DelayTimeValue>
-    {
-        public CalculateDelay(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptEntryStarted;
-        }
-    }
-
-    public class CalculateTimeToGateDown : PreemptiveProcessBase<TimeToGateDownValue>
-    {
-        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptGateDownInputReceived;
-        }
-    }
-
-    public class CalculateTimeToCallMaxOut : PreemptiveProcessBase<TimeToCallMaxOutValue>
-    {
-        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptionMaxPresenceExceeded;
-        }
-    }
-
-    public abstract class WorkflowBase<T1, T2> : ServiceObjectBase, IExecuteWithProgress<T1, IAsyncEnumerable<T2>, int>
-    {
-        public event EventHandler CanExecuteChanged;
-
-        public List<IDataflowBlock> Steps { get; set; }
-
-        public BufferBlock<T1> Input { get; set; }
-        public BufferBlock<T2> Output { get; set; }
-
-        #region IExecuteWithProgress
-
-        public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, IProgress<int> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
-        {
-            if (!IsInitialized)
-                BeginInit();
-
-            if (CanExecute(parameter))
-            {
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
-
-                //logMessages.LoggerStartedMessage(DateTime.Now, parameter.Count);
-
-                //var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
-
-                //foreach (ITargetBlock<Signal> step in Steps.Where(f => f is ITargetBlock<Signal>))
-                //{
-                //    signalSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
-                //}
-
-                //Steps.Add(signalSender);
-
-                try
-                {
-                    //foreach (T1 item in parameter)
-                    //{
-                        await Input.SendAsync(parameter);
-                    //}
-
-                    Input.Complete();
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    Output.Completion.ContinueWith(t =>
-                    {
-                        Console.WriteLine($"Output is complete! {t.Status}");
-                        this.IsInitialized = false;
-                    }, cancelToken);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-                    
-
-
-                    //return Steps.All(t => t.Completion.IsCompletedSuccessfully);
-                }
-                catch (Exception e)
-                {
-                    //logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Signal Controller Logger Service", e));
-                }
-                finally
-                {
-                    //logMessages.LoggerCompletedMessage(DateTime.Now, sw.Elapsed);
-                    sw.Stop();
-                }
-
-                await foreach (var item in Output.ReceiveAllAsync(cancelToken))
-                    yield return item;
-
-                await Task.WhenAll(Steps.Select(s => s.Completion)).ContinueWith(t => Console.WriteLine($"All steps are complete! {t.Status}"), cancelToken);
-            }
-            else
-            {
-                throw new ExecuteException();
-            }
-        }
-
-        public virtual bool CanExecute(T1 parameter)
-        {
-            return this.IsInitialized;
-        }
-
-        public async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
-        {
-            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
-            {
-                yield return item;
-            }
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is T1 p)
-                return CanExecute(p);
-            return false;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is T1 p)
-                Task.Run(() => Execute(p, default, default));
-        }
-
-        #endregion
-    }
-
-    public class PreemptionDetailsWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PreemptDetailResult>
-    {
-        protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinOne;
-        protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinTwo;
-        protected JoinBlock<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> joinThree;
-        protected MergePreemptionTimes mergePreemptionTimes;
-
-        public FilteredPreemptionData FilteredPreemptionData { get; private set; }
-        public CalculateDwellTime CalculateDwellTime { get; private set; }
-        public CalculateTrackClearTime CalculateTrackClearTime { get; private set; }
-        public CalculateTimeToService CalculateTimeToService { get; private set; }
-        public CalculateDelay CalculateDelay { get; private set; }
-        public CalculateTimeToGateDown CalculateTimeToGateDown { get; private set; }
-        public CalculateTimeToCallMaxOut CalculateTimeToCallMaxOut { get; private set; }
-        public GeneratePreemptDetailResults GeneratePreemptDetailResults { get; private set; }
-
-        public override void Initialize()
-        {
-            Steps = new();
-
-            Input = new();
-            Output = new();
-
-            FilteredPreemptionData = new();
-            
-            CalculateDwellTime = new();
-            CalculateTrackClearTime = new();
-            CalculateTimeToService = new();
-            CalculateDelay = new();
-            CalculateTimeToGateDown = new();
-            CalculateTimeToCallMaxOut = new();
-            
-            GeneratePreemptDetailResults = new();
-
-            joinOne = new();
-            joinTwo = new();
-            joinThree = new();
-            mergePreemptionTimes = new();
-
-            Steps.Add(Input);
-            Steps.Add(FilteredPreemptionData);
-            Steps.Add(CalculateDwellTime);
-            Steps.Add(CalculateTrackClearTime);
-            Steps.Add(CalculateTimeToService);
-            Steps.Add(CalculateDelay);
-            Steps.Add(CalculateTimeToGateDown);
-            Steps.Add(CalculateTimeToCallMaxOut);
-            Steps.Add(GeneratePreemptDetailResults);
-            Steps.Add(joinOne);
-            Steps.Add(joinTwo);
-            Steps.Add(joinThree);
-            Steps.Add(mergePreemptionTimes);
-
-            Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            FilteredPreemptionData.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            joinOne.LinkTo(joinThree.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            joinTwo.LinkTo(joinThree.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            CalculateDwellTime.LinkTo(joinOne.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTrackClearTime.LinkTo(joinOne.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToService.LinkTo(joinOne.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateDelay.LinkTo(joinTwo.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToGateDown.LinkTo(joinTwo.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToCallMaxOut.LinkTo(joinTwo.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            joinThree.LinkTo(mergePreemptionTimes, new DataflowLinkOptions() { PropagateCompletion = true });
-            mergePreemptionTimes.LinkTo(GeneratePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
-            GeneratePreemptDetailResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //var action = new ActionBlock<PreemptDetailResult>(test =>
-            //{
-            //    Console.WriteLine($"----------------------------------------------------------------------------------");
-            //    Console.WriteLine($"{test.SignalId} - {test.PreemptNumber} - {test.Start} - {test.End} - {test.DwellTimes.Count()} - {test.TrackClearTimes.Count()} - {test.ServiceTimes.Count()} - {test.Delay.Count()} - {test.GateDownTimes.Count()} - {test.CallMaxOutTimes.Count()}");
-            //});
-
-            //Output.LinkTo(action, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            base.Initialize();
-        }
-    }
-
-    public class MergePreemptionTimes : TransformProcessStepBase<Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>>, IEnumerable<PreempDetailValueBase>>
-    {
-        public MergePreemptionTimes(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<PreempDetailValueBase>> Process(Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> input, CancellationToken cancelToken = default)
-        {
-            var result = input.Item1.Item1.Union(input.Item1.Item2.Union(input.Item1.Item3)).Union(input.Item2.Item1.Union(input.Item2.Item2.Union(input.Item2.Item3)));
-
-            return Task.FromResult(result);
-        }
-    }
-
-    public class GeneratePreemptDetailResults : TransformManyProcessStepBase<IEnumerable<PreempDetailValueBase>, PreemptDetailResult>
-    {
-        public GeneratePreemptDetailResults(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<PreemptDetailResult>> Process(IEnumerable<PreempDetailValueBase> input, CancellationToken cancelToken = default)
-        {
-            var result = new List<PreemptDetailResult>();
-
-            foreach (var signal in input.GroupBy(g => g.SignalId))
-            {
-                foreach (var item in signal.GroupBy(g => g.PreemptNumber))
-                {
-                    result.Add(new PreemptDetailResult()
-                    {
-                        SignalId = signal.Key,
-                        PreemptNumber = item.Key,
-                        Start = item.Min(m => m.Start),
-                        End = item.Max(m => m.End),
-                        DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>(),
-                        TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>(),
-                        ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>(),
-                        Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>(),
-                        GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>(),
-                        CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>()
-                    });
-                }
-            }
-
-            return Task.FromResult<IEnumerable<PreemptDetailResult>>(result);
-        }
-    }
+    
 
     #endregion
 
