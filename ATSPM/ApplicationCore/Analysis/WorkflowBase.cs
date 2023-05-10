@@ -19,7 +19,7 @@ namespace ATSPM.Application.Analysis
 
         public List<IDataflowBlock> Steps { get; set; }
 
-        public BufferBlock<T1> Input { get; set; }
+        public BroadcastBlock<T1> Input { get; set; }
         public BufferBlock<T2> Output { get; set; }
 
         #region IExecuteWithProgress
