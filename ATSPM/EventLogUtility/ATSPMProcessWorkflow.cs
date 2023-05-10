@@ -168,11 +168,13 @@ namespace ATSPM.EventLogUtility
 
         protected override Task<IEnumerable<IEnumerable<RedToRedCycle>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
+            Console.WriteLine($"CreateRedToRedCycles {input.Count()}");
+
             var result = new List<IEnumerable<RedToRedCycle>>();
             
             var signalFilter = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
-        .OrderBy(o => o.Timestamp)
-        .GroupBy(g => g.SignalId);
+                .OrderBy(o => o.Timestamp)
+                .GroupBy(g => g.SignalId);
 
             foreach (var signal in signalFilter)
             {
@@ -208,6 +210,8 @@ namespace ATSPM.EventLogUtility
 
         protected override Task<IEnumerable<IEnumerable<Vehicle>>> Process(Tuple<Detector, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
+            Console.WriteLine($"IdentifyandAdjustVehicleActivations {input.Item2.Count()}");
+
             //TODO: I DONT KNOW IF THIS MATCHES UP OR NOT
             var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && l.EventParam == input.Item1.DetChannel)
                 .GroupBy(g => g.SignalId).Select(s => s.ToList()).ToList()
@@ -224,33 +228,127 @@ namespace ATSPM.EventLogUtility
         }
     }
 
-
-
-    public class ApproachDelayWorkflow
+    public class CalculateDelayValues : TransformProcessStepBase<Tuple<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
     {
-        public void Execute()
+        public CalculateDelayValues(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
-            var FilteredDetectorData = new FilteredDetectorData();
-            var FilteredPhaseIntervalChanges = new FilteredPhaseIntervalChanges();
+            var result = new List<Vehicle>();
 
+            var redToRedCycles = input.Item2.ToList();
 
+            foreach (var v in input.Item1)
+            {
+                v.RedToRedCycle = redToRedCycles.FirstOrDefault(w => w.SignalId == v.SignalId && v.TimeStamp >= w.StartTime && v.TimeStamp <= w.EndTime);
 
+                if (v.RedToRedCycle != null)
+                    result.Add(v);
+            }
 
+            return Task.FromResult<IEnumerable<Vehicle>>(result);
         }
+    }
+
+    public class GenerateApproachDelayResults : TransformProcessStepBase<IEnumerable<Vehicle>, ApproachDelayResult>
+    {
+        public GenerateApproachDelayResults(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<ApproachDelayResult> Process(IEnumerable<Vehicle> input, CancellationToken cancelToken = default)
+        {
+            var result = new ApproachDelayResult()
+            {
+                Start = input.Select(a => a.RedToRedCycle).Min(m => m.StartTime),
+                End = input.Select(a => a.RedToRedCycle).Max(m => m.EndTime),
+                SignalId = input.GroupBy(g => g.SignalId).FirstOrDefault().Key,
+                Phase= input.GroupBy(g => g.RedToRedCycle.Phase).FirstOrDefault().Key,
+                Vehicles = input.ToList()
+            };
+
+            Console.WriteLine($"ApproachDelayResult {result}");
+
+            return Task.FromResult<ApproachDelayResult>(result);
+        }
+    }
+
+
+    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
+    {
+        protected JoinBlock<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
+
+        protected GetDetectorEvents GetDetectorEvents { get; private set; }
+
+        public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
+        public FilteredDetectorData FilteredDetectorData { get; private set; }
+        public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
+        public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
+        public CalculateDelayValues CalculateDelayValues { get; private set; }
+        public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
+
+        public override void Initialize()
+        {
+            Steps = new();
+
+            Input = new(null);
+            Output = new();
+
+            FilteredPhaseIntervalChanges = new();
+            FilteredDetectorData = new();
+
+            CreateRedToRedCycles = new();
+            IdentifyandAdjustVehicleActivations = new();
+            mergeCalculateDelayValues = new();
+            CalculateDelayValues = new();
+            GenerateApproachDelayResults = new();
+
+            GetDetectorEvents = new();
+
+            Steps.Add(Input);
+            Steps.Add(FilteredPhaseIntervalChanges);
+            Steps.Add(FilteredDetectorData);
+            Steps.Add(CreateRedToRedCycles);
+            Steps.Add(IdentifyandAdjustVehicleActivations);
+            Steps.Add(mergeCalculateDelayValues);
+            Steps.Add(CalculateDelayValues);
+            Steps.Add(GenerateApproachDelayResults);
+
+            Steps.Add(GetDetectorEvents);
+
+            Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
+            Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            FilteredPhaseIntervalChanges.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            IdentifyandAdjustVehicleActivations.LinkTo(mergeCalculateDelayValues.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            CreateRedToRedCycles.LinkTo(mergeCalculateDelayValues.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            mergeCalculateDelayValues.LinkTo(CalculateDelayValues, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateDelayValues.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
+            GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            base.Initialize();
+        }
+
     }
 
 
 
 
-    
-    #region PreemptiveStuff
-    
 
-    
+    public class GetDetectorEvents : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, Tuple<Detector, IEnumerable<ControllerEventLog>>>
+    {
+        public GetDetectorEvents(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-    #endregion
+        protected override Task<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        {
+            var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
+                .GroupBy(g => g.EventParam)
+                .Select(s => s.AsEnumerable())
+                .Select(s => Tuple.Create(new Detector() { DetChannel = 2, DistanceFromStopBar = 340, LatencyCorrection = 1.2, Approach = new Approach() { Mph = 45 } }, s));
 
-
+            return Task.FromResult(result);
+        }
+    }
 
 
 
