@@ -75,24 +75,6 @@ namespace ATSPM.Application.Analysis
                     Seconds = s.Item2
                 })));
 
-
-
-
-
-            foreach (var group in result)
-            {
-                Console.WriteLine($"{this.GetType().Name} {group.Count()}------------------------------------------------------------------------");
-                foreach (var item in group)
-                {
-                    Console.WriteLine($"{item}");
-                }
-            }
-
-
-
-
-
-
             return Task.FromResult(result);
         }
     }
@@ -174,7 +156,7 @@ namespace ATSPM.Application.Analysis
         {
             Steps = new();
 
-            Input = new();
+            Input = new(null);
             Output = new();
 
             FilteredPreemptionData = new();
@@ -229,14 +211,6 @@ namespace ATSPM.Application.Analysis
             joinThree.LinkTo(mergePreemptionTimes, new DataflowLinkOptions() { PropagateCompletion = true });
             mergePreemptionTimes.LinkTo(GeneratePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GeneratePreemptDetailResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //var action = new ActionBlock<PreemptDetailResult>(test =>
-            //{
-            //    Console.WriteLine($"----------------------------------------------------------------------------------");
-            //    Console.WriteLine($"{test.SignalId} - {test.PreemptNumber} - {test.Start} - {test.End} - {test.DwellTimes.Count()} - {test.TrackClearTimes.Count()} - {test.ServiceTimes.Count()} - {test.Delay.Count()} - {test.GateDownTimes.Count()} - {test.CallMaxOutTimes.Count()}");
-            //});
-
-            //Output.LinkTo(action, new DataflowLinkOptions() { PropagateCompletion = true });
 
             base.Initialize();
         }
