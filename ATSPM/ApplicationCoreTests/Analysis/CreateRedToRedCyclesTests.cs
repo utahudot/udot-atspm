@@ -161,6 +161,28 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
+        [Trait(nameof(CreateRedToRedCycles), "Event Order")]
+        public async void CreateRedToRedCyclesEventOrderTest()
+        {
+            var sut = new CreateRedToRedCycles();
+
+            var testData = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+            };
+
+            var result = await sut.ExecuteAsync(testData);
+            var cycle = result.First().First();
+
+            var condition = cycle.StartTime < cycle.GreenEvent && cycle.GreenEvent < cycle.YellowEvent && cycle.YellowEvent < cycle.EndTime;
+
+            Assert.True(condition);
+        }
+
+        [Fact]
         [Trait(nameof(CreateRedToRedCycles), "Mismatched Signals")]
         public async void CreateRedToRedCyclesMismatchedSignalTest()
         {

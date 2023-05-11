@@ -226,7 +226,7 @@ namespace ATSPM.Application.Analysis
 
             foreach (var v in input.Item1)
             {
-                var redCycle = input.Item2.FirstOrDefault(w => w.SignalId == v.SignalId && v.TimeStamp >= w.StartTime && v.TimeStamp <= w.EndTime);
+                var redCycle = input.Item2?.FirstOrDefault(w => w.SignalId == v.SignalId && v.TimeStamp >= w.StartTime && v.TimeStamp <= w.EndTime);
 
                 if (redCycle != null)
                 {
