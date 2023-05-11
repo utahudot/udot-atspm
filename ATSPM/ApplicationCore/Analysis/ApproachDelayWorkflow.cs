@@ -95,11 +95,21 @@ namespace ATSPM.Application.Analysis
 
     public class Vehicle : CorrectedDetectorEvent
     {
-        public Vehicle(CorrectedDetectorEvent value)
+        public Vehicle() { }
+        
+        public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
         {
-            SignalId = value.SignalId;
-            TimeStamp = value.TimeStamp;
-            DetChannel = value.DetChannel;
+            if (detectorEvent.SignalId == redToRedCycle.SignalId)
+            {
+                SignalId = detectorEvent.SignalId;
+                TimeStamp = detectorEvent.TimeStamp;
+                DetChannel = detectorEvent.DetChannel;
+                Phase = redToRedCycle.Phase;
+                StartTime = redToRedCycle.StartTime;
+                EndTime = redToRedCycle.EndTime;
+                YellowEvent = redToRedCycle.YellowEvent;
+                GreenEvent = redToRedCycle.GreenEvent;
+            }
         }
 
         public int Phase { get; set; }
@@ -115,7 +125,7 @@ namespace ATSPM.Application.Analysis
         {
             get
             {
-                if (TimeStamp < GreenEvent)
+                if (TimeStamp < GreenEvent && TimeStamp >= StartTime)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
@@ -125,7 +135,7 @@ namespace ATSPM.Application.Analysis
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (TimeStamp >= YellowEvent)
+                else if (TimeStamp >= YellowEvent && TimeStamp <= EndTime)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
@@ -183,6 +193,7 @@ namespace ATSPM.Application.Analysis
         }
     }
 
+    //HACK: this doesn't verify that all ControllerEventLogs EventParams match the Detectors DetChannel
     public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Detector, IEnumerable<ControllerEventLog>>, IEnumerable<CorrectedDetectorEvent>>
     {
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
@@ -214,6 +225,7 @@ namespace ATSPM.Application.Analysis
         }
     }
 
+    //HACK: this doesn't filter out different signals, phases or detchannels
     public class CalculateDelayValues : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
     {
         public CalculateDelayValues(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
@@ -230,14 +242,7 @@ namespace ATSPM.Application.Analysis
 
                 if (redCycle != null)
                 {
-                    result.Add(new Vehicle(v)
-                    {
-                        Phase = redCycle.Phase,
-                        StartTime = redCycle.StartTime,
-                        EndTime = redCycle.EndTime,
-                        YellowEvent = redCycle.YellowEvent,
-                        GreenEvent = redCycle.GreenEvent
-                    });
+                    result.Add(new Vehicle(v, redCycle));
                 }
                     
             }
@@ -246,6 +251,7 @@ namespace ATSPM.Application.Analysis
         }
     }
 
+    //HACK: this doesn't filter out different signals, phases or detchannels
     public class GenerateApproachDelayResults : TransformProcessStepBase<IEnumerable<Vehicle>, ApproachDelayResult>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
