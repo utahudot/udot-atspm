@@ -76,6 +76,15 @@ namespace ATSPM.Application.Analysis
         }
     }
 
+    public class CorrectedDetectorEvent
+    {
+        public string SignalId { get; set; }
+        public DateTime TimeStamp { get; set; }
+        public int DetChannel { get; set; }
+
+        //public Detector Detector { get; set; }
+    }
+
     public enum ArrivalType
     {
         Unknown,
@@ -84,42 +93,39 @@ namespace ATSPM.Application.Analysis
         ArrivalOnRed
     }
 
-    public class Vehicle
+    public class Vehicle : CorrectedDetectorEvent
     {
-        public string SignalId { get; set; }
+        public Vehicle(CorrectedDetectorEvent value)
+        {
+            SignalId = value.SignalId;
+            TimeStamp = value.TimeStamp;
+            DetChannel = value.DetChannel;
+        }
 
-        //public double YPoint { get; private set; }
+        public int Phase { get; set; }
 
-        //public DateTime StartOfCycle { get; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime GreenEvent { get; set; }
+        public DateTime YellowEvent { get; set; }
 
-        //The actual time of the detector activation
-        public DateTime TimeStamp { get; set; }
-
-        //public DateTime YellowEvent { get; set; }
-
-        //public DateTime GreenEvent { get; set; }
-
-        //public DateTime RedEvent { get; set; }
-
-        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (RedToRedCycle?.GreenEvent - TimeStamp).Value.TotalSeconds : 0;
-
-        public int DetectorChannel { get; set; }
+        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - TimeStamp).TotalSeconds : 0;
 
         public ArrivalType ArrivalType
         {
             get
             {
-                if (TimeStamp < RedToRedCycle?.GreenEvent)
+                if (TimeStamp < GreenEvent)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
 
-                else if (TimeStamp >= RedToRedCycle?.GreenEvent && TimeStamp < RedToRedCycle?.YellowEvent)
+                else if (TimeStamp >= GreenEvent && TimeStamp < YellowEvent)
                 {
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (TimeStamp >= RedToRedCycle?.YellowEvent)
+                else if (TimeStamp >= YellowEvent)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
@@ -128,13 +134,13 @@ namespace ATSPM.Application.Analysis
             }
         }
 
-        public Detector Detector { get; set; }
+        //public Detector Detector { get; set; }
 
-        public RedToRedCycle RedToRedCycle { get; set; }
+        //public RedToRedCycle RedToRedCycle { get; set; }
 
         public override string? ToString()
         {
-            return $"{DetectorChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
+            return $"{DetChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
         }
     }
 
@@ -177,43 +183,63 @@ namespace ATSPM.Application.Analysis
         }
     }
 
-    public class IdentifyandAdjustVehicleActivations : TransformManyProcessStepBase<Tuple<Detector, IEnumerable<ControllerEventLog>>, IEnumerable<Vehicle>>
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Detector, IEnumerable<ControllerEventLog>>, IEnumerable<CorrectedDetectorEvent>>
     {
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IEnumerable<Vehicle>>> Process(Tuple<Detector, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<CorrectedDetectorEvent>> Process(Tuple<Detector, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && l.EventParam == input.Item1.DetChannel)
-                .GroupBy(g => g.SignalId).Select(s => s.ToList()).ToList()
-                .Select(i => i.Select(s =>
-                new Vehicle()
+            //var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && input.Item1.Approach?.Signal?.SignalId == l.SignalId && l.EventParam == input.Item1.DetChannel)
+            //    .GroupBy(g => g.SignalId).Select(s => s.ToList()).ToList()
+            //    .Select(i => i.Select(s =>
+            //    new Vehicle()
+            //    {
+            //        SignalId = s.SignalId,
+            //        TimeStamp = s.Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1.Approach?.Mph ?? 0, input.Item1.DistanceFromStopBar ?? 0, input.Item1.LatencyCorrection),
+            //        DetectorChannel = s.EventParam,
+            //        Detector = input.Item1
+            //    }));
+
+            var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && input.Item1.Approach?.Signal?.SignalId == l.SignalId && l.EventParam == input.Item1.DetChannel)
+                .Select(s =>
+                new CorrectedDetectorEvent()
                 {
                     SignalId = s.SignalId,
                     TimeStamp = s.Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1.Approach?.Mph ?? 0, input.Item1.DistanceFromStopBar ?? 0, input.Item1.LatencyCorrection),
-                    DetectorChannel = s.EventParam,
-                    Detector = input.Item1
-                }));
+                    DetChannel = s.EventParam
+                    //Detector = input.Item1
+                });
 
-            return Task.FromResult<IEnumerable<IEnumerable<Vehicle>>>(result);
+            return Task.FromResult<IEnumerable<CorrectedDetectorEvent>>(result);
         }
     }
 
-    public class CalculateDelayValues : TransformProcessStepBase<Tuple<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
+    public class CalculateDelayValues : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
     {
         public CalculateDelayValues(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = new List<Vehicle>();
 
-            var redToRedCycles = input.Item2.ToList();
+            //var redToRedCycles = input.Item2.ToList();
 
             foreach (var v in input.Item1)
             {
-                v.RedToRedCycle = redToRedCycles.FirstOrDefault(w => w.SignalId == v.SignalId && v.TimeStamp >= w.StartTime && v.TimeStamp <= w.EndTime);
+                var redCycle = input.Item2.FirstOrDefault(w => w.SignalId == v.SignalId && v.TimeStamp >= w.StartTime && v.TimeStamp <= w.EndTime);
 
-                if (v.RedToRedCycle != null)
-                    result.Add(v);
+                if (redCycle != null)
+                {
+                    result.Add(new Vehicle(v)
+                    {
+                        Phase = redCycle.Phase,
+                        StartTime = redCycle.StartTime,
+                        EndTime = redCycle.EndTime,
+                        YellowEvent = redCycle.YellowEvent,
+                        GreenEvent = redCycle.GreenEvent
+                    });
+                }
+                    
             }
 
             return Task.FromResult<IEnumerable<Vehicle>>(result);
@@ -228,10 +254,10 @@ namespace ATSPM.Application.Analysis
         {
             var result = new ApproachDelayResult()
             {
-                Start = input.Select(a => a.RedToRedCycle).Min(m => m.StartTime),
-                End = input.Select(a => a.RedToRedCycle).Max(m => m.EndTime),
+                Start = input.Min(m => m.StartTime),
+                End = input.Max(m => m.EndTime),
                 SignalId = input.GroupBy(g => g.SignalId).FirstOrDefault().Key,
-                Phase = input.GroupBy(g => g.RedToRedCycle.Phase).FirstOrDefault().Key,
+                Phase = input.GroupBy(g => g.Phase).FirstOrDefault().Key,
                 Vehicles = input.ToList()
             };
 
@@ -241,7 +267,7 @@ namespace ATSPM.Application.Analysis
 
     public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
     {
-        protected JoinBlock<IEnumerable<Vehicle>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
+        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
 
         protected GetDetectorEvents GetDetectorEvents { get; private set; }
 
