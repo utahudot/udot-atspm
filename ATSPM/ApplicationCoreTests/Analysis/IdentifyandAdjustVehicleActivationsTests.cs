@@ -1,9 +1,12 @@
+using ATSPM.Application;
 using ATSPM.Application.Analysis;
 using ATSPM.Data.Models;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Channels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,28 +15,10 @@ namespace ApplicationCoreTests.Analysis
     public class IdentifyandAdjustVehicleActivationsTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly Detector _detector;
-
-        private StringWriter _consoleOut = new StringWriter();
 
         public IdentifyandAdjustVehicleActivationsTests(ITestOutputHelper output)
         {
             _output = output;
-
-            _detector = new Detector()
-            {
-                DetChannel = 2,
-                DistanceFromStopBar = 340,
-                LatencyCorrection = 1.2,
-                Approach = new Approach() 
-                { 
-                    Mph = 45,
-                    Signal = new Signal()
-                    {
-                        SignalId = "1001"
-                    }
-                }
-            };
         }
 
         [Fact]
@@ -42,23 +27,14 @@ namespace ApplicationCoreTests.Analysis
         {
             var sut = new IdentifyandAdjustVehicleActivations();
 
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:0.2"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:2.3"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:00:6.3"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:00:7.1"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1003", Timestamp = DateTime.Parse("4/17/2023 8:00:7.3"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1003", Timestamp = DateTime.Parse("4/17/2023 8:00:10.5"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1004", Timestamp = DateTime.Parse("4/17/2023 8:00:11.9"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1004", Timestamp = DateTime.Parse("4/17/2023 8:00:12.2"), EventCode = 82, EventParam = _detector.DetChannel}
-            };
+            var testData = Enumerable.Range(1, 10).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), 1, 10)).ToList();
 
-            var result = await sut.ExecuteAsync(Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(_detector, testData));
+            var result = await sut.ExecuteAsync(testData);
 
-            var condition = result.All(a => a.SignalId == _detector.Approach.Signal.SignalId);
+            var actual = result.Select(s => s.SignalId).Distinct().OrderBy(o => o);
+            var expected = testData.SelectMany(s => s.Item2).Select(s => s.SignalId).Distinct().OrderBy(o => o);
 
-            Assert.True(condition);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -67,24 +43,23 @@ namespace ApplicationCoreTests.Analysis
         {
             var sut = new IdentifyandAdjustVehicleActivations();
 
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:0.2"), EventCode = 82, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:2.3"), EventCode = 82, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:6.3"), EventCode = 82, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:7.1"), EventCode = 82, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:7.3"), EventCode = 82, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:10.5"), EventCode = 82, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:11.9"), EventCode = 82, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:12.2"), EventCode = 82, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:12.2"), EventCode = 82, EventParam = 3}
-            };
+            var detChannel = 1;
 
-            var result = await sut.ExecuteAsync(Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(_detector, testData));
+            var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), detChannel, 10))
+                .Select(s => Tuple.Create(s.Item1, s.Item2.Select(l => new ControllerEventLog
+                 {
+                     SignalId = l.SignalId,
+                     EventCode = l.EventCode,
+                     EventParam = Random.Shared.Next(1, 5),
+                     Timestamp = l.Timestamp
+                 }).ToList().AsEnumerable())).ToList();
 
-            var condition = result.All(a => a.DetChannel == _detector.DetChannel);
+            var result = await sut.ExecuteAsync(testData);
 
-            Assert.True(condition);
+            var expected = testData.First().Item2.Where(w => w.EventParam == detChannel).Count();
+            var actual = result.Where(w => w.DetChannel == detChannel).Count();
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -93,42 +68,19 @@ namespace ApplicationCoreTests.Analysis
         {
             var sut = new IdentifyandAdjustVehicleActivations();
 
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:0.2"), EventCode = 1, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:2.3"), EventCode = 2, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:6.3"), EventCode = 3, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:7.1"), EventCode = 4, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:7.3"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:10.5"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:11.9"), EventCode = 82, EventParam = _detector.DetChannel},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:12.2"), EventCode = 82, EventParam = _detector.DetChannel}
-            };
+            var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), 1, 10))
+                .Select(s => Tuple.Create(s.Item1, s.Item2.Select(l => new ControllerEventLog
+                {
+                    SignalId = l.SignalId,
+                    EventCode = Random.Shared.Next(82, 85),
+                    EventParam = l.EventParam,
+                    Timestamp = l.Timestamp
+                }).ToList().AsEnumerable())).ToList();
 
-            var result = await sut.ExecuteAsync(Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(_detector, testData));
+            var result = await sut.ExecuteAsync(testData);
 
-            var condition = result.Count() == 4;
-
-            Assert.True(condition);
-        }
-
-        [Fact]
-        [Trait(nameof(IdentifyandAdjustVehicleActivations), "Latency Correnction")]
-        public async void IdentifyandAdjustVehicleActivationsLatencyCorrectionTest()
-        {
-            var sut = new IdentifyandAdjustVehicleActivations();
-
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:0.2"), EventCode = 82, EventParam = _detector.DetChannel}
-            };
-
-            //
-
-            var result = await sut.ExecuteAsync(Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(_detector, testData));
-
-            var actual = result.First().TimeStamp;
-            var expected = DateTime.Parse("4/17/2023 8:00:4.15");
+            var expected = testData.First().Item2.Where(w => w.EventCode == 82).Count();
+            var actual = result.Count();
 
             Assert.Equal(expected, actual);
         }
@@ -139,18 +91,83 @@ namespace ApplicationCoreTests.Analysis
         {
             var sut = new IdentifyandAdjustVehicleActivations();
 
-            var testData = new List<ControllerEventLog>
+            string signal = "1001";
+            int channel = 1;
+
+            var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(signal, channel, 10)).ToList();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            Assert.True(result.All(a => a.SignalId == signal));
+            Assert.True(result.All(a => a.DetChannel == channel));
+        }
+
+        [Fact]
+        [Trait(nameof(IdentifyandAdjustVehicleActivations), "Valid Latency Correnction")]
+        public async void IdentifyandAdjustVehicleActivationsValidLatencyCorrectionTest()
+        {
+            var sut = new IdentifyandAdjustVehicleActivations();
+
+            var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents("1001", 1, 10)).ToList();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var actual = result.Select(s => s.TimeStamp).OrderBy(o => o);
+            var expected = testData.SelectMany(s => 
+            s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
+                .OrderBy(o => o);
+
+            _output.WriteLine($"count1: {actual.Count()}");
+            _output.WriteLine($"count2: {expected.Count()}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(IdentifyandAdjustVehicleActivations), "Invalid Latency Correnction")]
+        public async void IdentifyandAdjustVehicleActivationsInvalidLatencyCorrectionTest()
+        {
+            var sut = new IdentifyandAdjustVehicleActivations();
+
+            var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents("1001", 1, 10)).ToList();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var actual = result.Select(s => s.TimeStamp).OrderBy(o => o);
+            var expected = testData.SelectMany(s =>s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
+
+            _output.WriteLine($"count1: {actual.Count()}");
+            _output.WriteLine($"count2: {expected.Count()}");
+
+            Assert.NotEqual(expected, actual);
+        }
+
+        private Tuple<Detector, IEnumerable<ControllerEventLog>> GenerateDetectorEvents(string signalId, int detChannel, int logCount)
+        {
+            var d = new Detector()
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:00:0.2"), EventCode = 82, EventParam = _detector.DetChannel}
+                DetChannel = detChannel,
+                DistanceFromStopBar = 340,
+                LatencyCorrection = 1.2,
+                Approach = new Approach()
+                {
+                    Mph = 45,
+                    Signal = new Signal()
+                    {
+                        SignalId = signalId
+                    }
+                }
             };
 
-            var result = await sut.ExecuteAsync(Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(_detector, testData));
+            var logs = Enumerable.Range(1, logCount).Select(s => new ControllerEventLog()
+            {
+                SignalId = signalId,
+                Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+                EventCode = 82,
+                EventParam = detChannel
+            }).ToList();
 
-            var actual = result.First();
-            var expected = _detector;
-
-            Assert.Equal(expected.DetChannel, actual.DetChannel);
-            Assert.Equal(expected.Approach.Signal.SignalId, actual.SignalId);
+            return Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(d, logs);
         }
 
         public void Dispose()
