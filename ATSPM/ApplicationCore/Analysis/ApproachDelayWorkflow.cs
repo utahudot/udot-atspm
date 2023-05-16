@@ -206,7 +206,9 @@ namespace ATSPM.Application.Analysis
                 foreach (var phase in signal.GroupBy(g => g.EventParam))
                 {
                     var items = phase.Select(s => s).ToList();
-                    var group = items
+                    if (items.Count > 3)
+                    {
+                        var group = items
                         .Where((w, i) => i <= items.Count - 3 && w.EventCode == 9 && items[i + 1].EventCode == 1 && items[i + 2].EventCode == 8 && items[i + 3].EventCode == 9)
                         .Select((s, i) => new { s, i = items.IndexOf(s) })
                         .Select(s => items.Skip(s.i).Take(4))
@@ -220,7 +222,8 @@ namespace ATSPM.Application.Analysis
                             SignalId = signal.Key
                         });
 
-                    result.AddRange(group);
+                        result.AddRange(group);
+                    }
                 }
             }
 
@@ -279,24 +282,27 @@ namespace ATSPM.Application.Analysis
 
         protected override Task<IEnumerable<ApproachDelayResult>> Process(IEnumerable<Vehicle> input, CancellationToken cancelToken = default)
         {
-            var result = input
-                .GroupBy(s => s.SignalId)
-                .Select(x => x
-                .GroupBy(p => p.Phase)
-                .Select(y => y
-                .GroupBy(c => c.DetChannel)
-                .Select(a =>
-                new ApproachDelayResult()
-                {
-                    Start = a.Min(m => m.StartTime),
-                    End = a.Max(m => m.EndTime),
-                    SignalId = a.GroupBy(g => g.SignalId).FirstOrDefault().Key,
-                    Phase = input.GroupBy(g => g.Phase).FirstOrDefault().Key,
-                    Vehicles = input.ToList()
-                })))
-                .SelectMany(a => a.SelectMany(b => b));
+            var result = new List<ApproachDelayResult>();
 
-            return Task.FromResult(result);
+            foreach (var signal in input.GroupBy(g => g.SignalId))
+            {
+                foreach (var phase in signal.GroupBy(g => g.Phase))
+                {
+                    foreach (var vehicles in phase.GroupBy(g => g.DetChannel))
+                    {
+                        result.Add(new ApproachDelayResult()
+                        {
+                            Start = vehicles.Min(m => m.StartTime),
+                            End = vehicles.Max(m => m.EndTime),
+                            SignalId = signal.Key,
+                            Phase = phase.Key,
+                            Vehicles = vehicles.ToList()
+                        });
+                    }
+                }
+            }
+
+            return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
         }
     }
 
