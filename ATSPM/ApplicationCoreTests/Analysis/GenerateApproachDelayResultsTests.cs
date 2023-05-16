@@ -13,8 +13,6 @@ namespace ApplicationCoreTests.Analysis
     {
         private readonly ITestOutputHelper _output;
 
-        private StringWriter _consoleOut = new StringWriter();
-
         public GenerateApproachDelayResultsTests(ITestOutputHelper output)
         {
             _output = output;
@@ -22,15 +20,12 @@ namespace ApplicationCoreTests.Analysis
 
         [Fact]
         [Trait(nameof(GenerateApproachDelayResults), "Data Check")]
-        public async void GenerateApproachDelayResultsCheckDataTest()
+        public void GenerateApproachDelayResultsCheckDataTest()
         {
             var sut = new GenerateApproachDelayResults();
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                //SignalId = (s + 1000).ToString(),
-                //Phase = Random.Shared.Next(1, 8),
-                //DetChannel = Random.Shared.Next(1, 8),
                 SignalId = "1001",
                 Phase = 1,
                 DetChannel = 2,
@@ -41,7 +36,7 @@ namespace ApplicationCoreTests.Analysis
                 TimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
-            var result = await sut.ExecuteAsync(testData);
+            var result = sut.ExecuteAsync(testData).Result.First();
 
             Assert.Equal("1001", result.SignalId);
             Assert.Equal(1, result.Phase);
@@ -51,7 +46,6 @@ namespace ApplicationCoreTests.Analysis
             Assert.Equal(testData.Sum(s => s.Delay) / 3600, result.TotalDelay);
         }
 
-        //TODO: verify that all phases and detector channels sum to a single result or if they need to be different
         [Fact]
         [Trait(nameof(GenerateApproachDelayResults), "Signal Grouping")]
         public async void GenerateApproachDelayResultsSignalGroupingTest()
@@ -60,7 +54,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalId = (1000 + Random.Shared.Next(1, 3)).ToString(),
+                SignalId = (1000 + Random.Shared.Next(1, 4)).ToString(),
                 Phase = 1,
                 DetChannel = 2,
                 StartTime = GetStaticDateTime(s),
@@ -72,10 +66,12 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.False(true);
+            var actual = result.GroupBy(g => g.SignalId).Select(s => s.Key);
+            var expected = testData.GroupBy(g => g.SignalId).Select(s => s.Key);
+
+            Assert.Equal(expected, actual);
         }
 
-        //TODO: verify that all phases and detector channels sum to a single result or if they need to be different
         [Fact]
         [Trait(nameof(GenerateApproachDelayResults), "Phase Grouping")]
         public async void GenerateApproachDelayResultsPhaseGroupingTest()
@@ -85,7 +81,7 @@ namespace ApplicationCoreTests.Analysis
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
                 SignalId = "1001",
-                Phase = Random.Shared.Next(1, 3),
+                Phase = Random.Shared.Next(1, 4),
                 DetChannel = 2,
                 StartTime = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
@@ -96,10 +92,12 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.False(true);
+            var actual = result.GroupBy(g => g.Phase).Select(s => s.Key);
+            var expected = testData.GroupBy(g => g.Phase).Select(s => s.Key);
+
+            Assert.Equal(expected, actual);
         }
 
-        //TODO: verify that all phases and detector channels sum to a single result or if they need to be different
         [Fact]
         [Trait(nameof(GenerateApproachDelayResults), "DetChannel Grouping")]
         public async void GenerateApproachDelayResultsDetChannelGroupingTest()
@@ -110,7 +108,7 @@ namespace ApplicationCoreTests.Analysis
             {
                 SignalId = "1001",
                 Phase = 1,
-                DetChannel = Random.Shared.Next(1, 3),
+                DetChannel = Random.Shared.Next(1, 4),
                 StartTime = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
@@ -120,7 +118,10 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.False(true);
+            var actual = result.Count();
+            var expected = testData.GroupBy(g => g.DetChannel).Count();
+
+            Assert.Equal(expected, actual);
         }
 
         private DateTime GetStaticDateTime(int offset)
