@@ -7,20 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Analysis\CalculateDelayValuesTests.cs" />
-    <Compile Remove="Analysis\CreateRedToRedCyclesTests.cs" />
-    <Compile Remove="Analysis\GenerateApproachDelayResultsTests.cs" />
-    <Compile Remove="Analysis\IdentifyandAdjustVehicleActivationsTests.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Analysis\CalculateDelayValuesTests.cs" />
-    <None Include="Analysis\CreateRedToRedCyclesTests.cs" />
-    <None Include="Analysis\GenerateApproachDelayResultsTests.cs" />
-    <None Include="Analysis\IdentifyandAdjustVehicleActivationsTests.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="xunit" Version="2.4.2" />
