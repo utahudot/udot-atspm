@@ -26,7 +26,7 @@ namespace ATSPM.Application.Analysis
         {
             workflowProcess = new TransformManyBlock<T1, T2>(p => ExecuteAsync(p, options.CancellationToken), (ExecutionDataflowBlockOptions)options);
             
-            workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
+            workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!! {t.Status}"));
         }
 
         #region IExecuteAsyncWithProgress
