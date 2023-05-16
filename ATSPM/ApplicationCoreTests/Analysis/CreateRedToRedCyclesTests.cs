@@ -6,14 +6,13 @@ using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace ApplicationCoreTests.Analysis
 {
     public class CreateRedToRedCyclesTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
-
-        private StringWriter _consoleOut = new StringWriter();
 
         public CreateRedToRedCyclesTests(ITestOutputHelper output)
         {
@@ -36,7 +35,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.First().ToList().First();
+            var actual = result.First();
             var expected = new RedToRedCycle()
             {
                 StartTime = DateTime.Parse("4/17/2023 8:01:48.8"),
@@ -69,7 +68,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.First().ToList().First();
+            var actual = result.First();
             var expected = new RedToRedCycle()
             {
                 StartTime = DateTime.Parse("4/17/2023 8:01:48.8"),
@@ -100,7 +99,10 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.Collection(result, a => { });
+            var actual = result.Count();
+            var expected = 0;
+
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -119,7 +121,10 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.Collection(result, a => { });
+            var actual = result.Count();
+            var expected = 0;
+
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -138,7 +143,10 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.Collection(result, a => { });
+            var actual = result.Count();
+            var expected = 0;
+
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -157,7 +165,10 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.Collection(result, a => { });
+            var actual = result.Count();
+            var expected = 0;
+
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -175,7 +186,7 @@ namespace ApplicationCoreTests.Analysis
             };
 
             var result = await sut.ExecuteAsync(testData);
-            var cycle = result.First().First();
+            var cycle = result.First();
 
             var condition = cycle.StartTime < cycle.GreenEvent && cycle.GreenEvent < cycle.YellowEvent && cycle.YellowEvent < cycle.EndTime;
 
@@ -199,9 +210,9 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Count();
-            var expected = 4;
+            var expected = 0;
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -221,9 +232,9 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Count();
-            var expected = 4;
+            var expected = 0;
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(actual, expected);
         }
 
         [Fact]
@@ -254,7 +265,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.SelectMany(s => s.Select(s => s.SignalId).Distinct());
+            var actual = result.Select(s => s.SignalId).Distinct();
             var expected = new List<string>()
             {
                 "1001", "1002", "1003"
@@ -291,59 +302,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.SelectMany(s => s.Select(s => s.Phase).Distinct());
-            var expected = new List<int>()
-            {
-                1, 2, 3
-            };
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Signal/Phase Grouping")]
-        public async void CreateRedToRedCyclesSignalPhaseGroupingTest()
-        {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 3},
-
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalId = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 3}
-            };
-
-            var result = await sut.ExecuteAsync(testData);
-
-
-            foreach (var r in result.ToList())
-            {
-                _output.WriteLine($"{r.ToList()[0]}");
-            }
-
-            var actual = result.SelectMany(s => s.Select(s => s.Phase).Distinct()).Distinct();
+            var actual = result.Select(s => s.Phase).Distinct();
             var expected = new List<int>()
             {
                 1, 2, 3

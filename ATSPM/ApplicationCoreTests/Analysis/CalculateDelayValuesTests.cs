@@ -14,8 +14,6 @@ namespace ApplicationCoreTests.Analysis
         private readonly ITestOutputHelper _output;
         private readonly List<RedToRedCycle> _redCycles;
 
-        private StringWriter _consoleOut = new StringWriter();
-
         public CalculateDelayValuesTests(ITestOutputHelper output)
         {
             _output = output;
