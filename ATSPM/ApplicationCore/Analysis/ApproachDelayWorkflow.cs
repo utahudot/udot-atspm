@@ -1,8 +1,10 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +15,11 @@ namespace ATSPM.Application.Analysis
     public class ApproachDelayResult
     {
         //public string ChartName { get; }
-        public string SignalId { get; set; }
+        public string SignalId 
+        { 
+            get; 
+            set; 
+        }
         //public string SignalLocation { get; }
         public int Phase { get; set; }
         //public string PhaseDescription { get; }
@@ -83,6 +89,11 @@ namespace ATSPM.Application.Analysis
         public int DetChannel { get; set; }
 
         //public Detector Detector { get; set; }
+
+        public override string? ToString()
+        {
+            return $"{SignalId}-{DetChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
+        }
     }
 
     public enum ArrivalType
@@ -150,17 +161,41 @@ namespace ATSPM.Application.Analysis
 
         public override string? ToString()
         {
-            return $"{DetChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
+            return $"{SignalId}-{DetChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
         }
     }
 
-    public class CreateRedToRedCycles : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<RedToRedCycle>>
+    //public class GroupEventsBySignalId : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
+    //{
+    //    public GroupEventsBySignalId(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+    //    protected override Task<IEnumerable<IEnumerable<ControllerEventLog>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+    //    {
+    //        var result = input.GroupBy(g => g.SignalId).Select(s => s.AsEnumerable());
+
+    //        return Task.FromResult(result);
+    //    }
+    //}
+
+    //public class GroupEventsByEventParam : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
+    //{
+    //    public GroupEventsByEventParam(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+    //    protected override Task<IEnumerable<IEnumerable<ControllerEventLog>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+    //    {
+    //        var result = input.GroupBy(g => g.EventParam).Select(s => s.AsEnumerable());
+
+    //        return Task.FromResult(result);
+    //    }
+    //}
+
+    public class CreateRedToRedCycles : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<RedToRedCycle>>
     {
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IEnumerable<RedToRedCycle>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            var result = new List<IEnumerable<RedToRedCycle>>();
+            var result = new List<RedToRedCycle>();
 
             var signalFilter = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
                 .OrderBy(o => o.Timestamp)
@@ -185,47 +220,37 @@ namespace ATSPM.Application.Analysis
                             SignalId = signal.Key
                         });
 
-                        result.Add(group);
+                    result.AddRange(group);
                 }
             }
 
-            return Task.FromResult<IEnumerable<IEnumerable<RedToRedCycle>>>(result);
+            return Task.FromResult<IEnumerable<RedToRedCycle>>(result);
         }
     }
 
-    //HACK: this doesn't verify that all ControllerEventLogs EventParams match the Detectors DetChannel
-    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Detector, IEnumerable<ControllerEventLog>>, IEnumerable<CorrectedDetectorEvent>>
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>, IEnumerable<CorrectedDetectorEvent>>
     {
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<CorrectedDetectorEvent>> Process(Tuple<Detector, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<CorrectedDetectorEvent>> Process(IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>> input, CancellationToken cancelToken = default)
         {
-            //var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && input.Item1.Approach?.Signal?.SignalId == l.SignalId && l.EventParam == input.Item1.DetChannel)
-            //    .GroupBy(g => g.SignalId).Select(s => s.ToList()).ToList()
-            //    .Select(i => i.Select(s =>
-            //    new Vehicle()
-            //    {
-            //        SignalId = s.SignalId,
-            //        TimeStamp = s.Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1.Approach?.Mph ?? 0, input.Item1.DistanceFromStopBar ?? 0, input.Item1.LatencyCorrection),
-            //        DetectorChannel = s.EventParam,
-            //        Detector = input.Item1
-            //    }));
-
-            var result = input.Item2.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn && input.Item1.Approach?.Signal?.SignalId == l.SignalId && l.EventParam == input.Item1.DetChannel)
+            var result = input
                 .Select(s =>
+                Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalId == w.SignalId && w.EventParam == s.Item1.DetChannel)))
+                .Select(s => s
+                .Item2.Select(c =>
                 new CorrectedDetectorEvent()
                 {
-                    SignalId = s.SignalId,
-                    TimeStamp = s.Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1.Approach?.Mph ?? 0, input.Item1.DistanceFromStopBar ?? 0, input.Item1.LatencyCorrection),
-                    DetChannel = s.EventParam
-                    //Detector = input.Item1
-                });
+                    SignalId = c.SignalId,
+                    TimeStamp = c.Timestamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection),
+                    DetChannel = c.EventParam
+                }))
+                .SelectMany(s => s);
 
-            return Task.FromResult<IEnumerable<CorrectedDetectorEvent>>(result);
+            return Task.FromResult(result);
         }
     }
 
-    //HACK: this doesn't filter out different signals, phases or detchannels
     public class CalculateDelayValues : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
     {
         public CalculateDelayValues(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
@@ -233,8 +258,6 @@ namespace ATSPM.Application.Analysis
         protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = new List<Vehicle>();
-
-            //var redToRedCycles = input.Item2.ToList();
 
             foreach (var v in input.Item1)
             {
@@ -244,40 +267,51 @@ namespace ATSPM.Application.Analysis
                 {
                     result.Add(new Vehicle(v, redCycle));
                 }
-                    
             }
 
             return Task.FromResult<IEnumerable<Vehicle>>(result);
         }
     }
 
-    //HACK: this doesn't filter out different signals, phases or detchannels
-    public class GenerateApproachDelayResults : TransformProcessStepBase<IEnumerable<Vehicle>, ApproachDelayResult>
+    public class GenerateApproachDelayResults : TransformProcessStepBase<IEnumerable<Vehicle>, IEnumerable<ApproachDelayResult>>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<ApproachDelayResult> Process(IEnumerable<Vehicle> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<ApproachDelayResult>> Process(IEnumerable<Vehicle> input, CancellationToken cancelToken = default)
         {
-            var result = new ApproachDelayResult()
-            {
-                Start = input.Min(m => m.StartTime),
-                End = input.Max(m => m.EndTime),
-                SignalId = input.GroupBy(g => g.SignalId).FirstOrDefault().Key,
-                Phase = input.GroupBy(g => g.Phase).FirstOrDefault().Key,
-                Vehicles = input.ToList()
-            };
+            var result = input
+                .GroupBy(s => s.SignalId)
+                .Select(x => x
+                .GroupBy(p => p.Phase)
+                .Select(y => y
+                .GroupBy(c => c.DetChannel)
+                .Select(a =>
+                new ApproachDelayResult()
+                {
+                    Start = a.Min(m => m.StartTime),
+                    End = a.Max(m => m.EndTime),
+                    SignalId = a.GroupBy(g => g.SignalId).FirstOrDefault().Key,
+                    Phase = input.GroupBy(g => g.Phase).FirstOrDefault().Key,
+                    Vehicles = input.ToList()
+                })))
+                .SelectMany(a => a.SelectMany(b => b));
 
-            return Task.FromResult<ApproachDelayResult>(result);
+            return Task.FromResult(result);
         }
     }
 
-    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
+    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
 
         protected GetDetectorEvents GetDetectorEvents { get; private set; }
 
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
+
+        //public GroupEventsBySignalId GroupEventsBySignalId { get; private set; }
+        //public GroupEventsByEventParam GroupEventsByPhase { get; private set; }
+        //public GroupEventsByEventParam GroupEventsByDetectorChannel { get; private set; }
+
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
@@ -293,7 +327,6 @@ namespace ATSPM.Application.Analysis
 
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
-
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
             mergeCalculateDelayValues = new();
@@ -303,6 +336,7 @@ namespace ATSPM.Application.Analysis
             GetDetectorEvents = new();
 
             Steps.Add(Input);
+
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
             Steps.Add(CreateRedToRedCycles);
@@ -329,16 +363,28 @@ namespace ATSPM.Application.Analysis
         }
     }
 
-    public class GetDetectorEvents : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, Tuple<Detector, IEnumerable<ControllerEventLog>>>
+    public class GetDetectorEvents : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>>
     {
         public GetDetectorEvents(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
+                .GroupBy(g => g.SignalId)
+                .Select(signal => signal.AsEnumerable()
                 .GroupBy(g => g.EventParam)
-                .Select(s => s.AsEnumerable())
-                .Select(s => Tuple.Create(new Detector() { DetChannel = 2, DistanceFromStopBar = 340, LatencyCorrection = 1.2, Approach = new Approach() { Mph = 45 } }, s));
+                    .Select(s => Tuple.Create(new Detector()
+                    {
+                        DetChannel = s.Key,
+                        DistanceFromStopBar = 340,
+                        LatencyCorrection = 1.2,
+                        Approach = new Approach()
+                        {
+                            Mph = 45,
+                            Signal = new Signal() { SignalId = signal.Key }
+                        }
+                    }, s.AsEnumerable())))
+                .SelectMany(s => s);
 
             return Task.FromResult(result);
         }

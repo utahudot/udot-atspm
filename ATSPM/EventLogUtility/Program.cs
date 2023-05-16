@@ -87,14 +87,17 @@ var test = new ActionBlock<ApproachDelayResult>(a =>
 
 var approachDelayWorkflow = new ApproachDelayWorkflow();
 
-await foreach(var r in approachDelayWorkflow.Execute(list, default, default))
+await foreach (var r in approachDelayWorkflow.Execute(list, default, default))
 {
-    Console.WriteLine($"ApproachDelayResult {r}");
+    foreach (var a in r)
+    {
+        Console.WriteLine($"ApproachDelayResult {a}");
+    }
 }
 
 
 
-
+Console.ReadLine();
 
 IEnumerable<ControllerEventLog[]> ArrivalOnRed(IEnumerable<ControllerEventLog> logs)
 {
