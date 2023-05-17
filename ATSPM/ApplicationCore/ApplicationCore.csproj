@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Analysis\LeftTurnGap\" />
-    <Folder Include="Analysis\ApproachVolume\" />
     <Folder Include="Analysis\ApproachSpeed\" />
     <Folder Include="Analysis\TimingAndActuation\" />
     <Folder Include="Analysis\PurdueSplitFailure\" />
@@ -36,7 +35,6 @@
     <Folder Include="Analysis\PedestrianDelay\" />
     <Folder Include="Analysis\YellowAndRedActuations\" />
     <Folder Include="Analysis\TurningMovemen\" />
-    <Folder Include="Analysis\PhaseTermination\" />
     <Folder Include="Analysis\WaitTime\" />
     <Folder Include="Analysis\SplitMonitor\" />
     <Folder Include="Handlers\" />

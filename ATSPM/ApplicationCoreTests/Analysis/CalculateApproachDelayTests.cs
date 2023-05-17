@@ -11,12 +11,12 @@ using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis
 {
-    public class CalculateDelayValuesTests : IDisposable
+    public class CalculateApproachDelayTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly List<RedToRedCycle> _redCycles;
 
-        public CalculateDelayValuesTests(ITestOutputHelper output)
+        public CalculateApproachDelayTests(ITestOutputHelper output)
         {
             _output = output;
 
@@ -35,10 +35,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare Signal Pass")]
-        public async void CalculateDelayValuesCompareSignalPassTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare Signal Pass")]
+        public async void CalculateApproachDelayCompareSignalPassTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -53,10 +53,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare Signal Fail")]
-        public async void CalculateDelayValuesCompareSignalFailTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare Signal Fail")]
+        public async void CalculateApproachDelayCompareSignalFailTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -71,10 +71,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare Start Pass")]
-        public async void CalculateDelayValuesCompareStartPassTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare Start Pass")]
+        public async void CalculateApproachDelayCompareStartPassTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -89,10 +89,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare Start Fail")]
-        public async void CalculateDelayValuesCompareStartFailTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare Start Fail")]
+        public async void CalculateApproachDelayCompareStartFailTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -107,10 +107,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare End Pass")]
-        public async void CalculateDelayValuesCompareEndPassTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare End Pass")]
+        public async void CalculateApproachDelayCompareEndPassTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -125,10 +125,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Compare End Fail")]
-        public async void CalculateDelayValuesCompareEndFailTest()
+        [Trait(nameof(CalculateApproachDelay), "Compare End Fail")]
+        public async void CalculateApproachDelayCompareEndFailTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -143,10 +143,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Data Check")]
-        public async void CalculateDelayValuesDataCheckTest()
+        [Trait(nameof(CalculateApproachDelay), "Data Check")]
+        public async void CalculateApproachDelayDataCheckTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -170,10 +170,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Red Delay")]
-        public async void CalculateDelayValuesRedDelayTest()
+        [Trait(nameof(CalculateApproachDelay), "Red Delay")]
+        public async void CalculateApproachDelayRedDelayTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -192,10 +192,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red result should be 0
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Green Delay")]
-        public async void CalculateDelayValuesGreenDelayTest()
+        [Trait(nameof(CalculateApproachDelay), "Green Delay")]
+        public async void CalculateApproachDelayGreenDelayTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -216,10 +216,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red result should be 0
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Yellow Delay")]
-        public async void CalculateDelayValuesYellowDelayTest()
+        [Trait(nameof(CalculateApproachDelay), "Yellow Delay")]
+        public async void CalculateApproachDelayYellowDelayTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -235,10 +235,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Arrival on Red")]
-        public async void CalculateDelayValuesArrivalOnRedTest()
+        [Trait(nameof(CalculateApproachDelay), "Arrival on Red")]
+        public async void CalculateApproachDelayArrivalOnRedTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -253,10 +253,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Arrival on Green")]
-        public async void CalculateDelayValuesArrivalOnGreenTest()
+        [Trait(nameof(CalculateApproachDelay), "Arrival on Green")]
+        public async void CalculateApproachDelayArrivalOnGreenTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -271,10 +271,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Arrival on Yellow")]
-        public async void CalculateDelayValuesArrivalOnYellowTest()
+        [Trait(nameof(CalculateApproachDelay), "Arrival on Yellow")]
+        public async void CalculateApproachDelayArrivalOnYellowTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -289,10 +289,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateDelayValues), "Null Cycles")]
-        public async void CalculateDelayValuesNullCyclesTest()
+        [Trait(nameof(CalculateApproachDelay), "Null Cycles")]
+        public async void CalculateApproachDelayNullCyclesTest()
         {
-            var sut = new CalculateDelayValues();
+            var sut = new CalculateApproachDelay();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
