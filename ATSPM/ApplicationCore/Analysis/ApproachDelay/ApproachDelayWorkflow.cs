@@ -15,7 +15,6 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.ApproachDelay
 {
-
     public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
@@ -34,13 +33,8 @@ namespace ATSPM.Application.Analysis.ApproachDelay
         public CalculateDelayValues CalculateDelayValues { get; private set; }
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
-        public override void Initialize()
+        public override void InstantiateSteps()
         {
-            Steps = new();
-
-            Input = new(null);
-            Output = new();
-
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
             CreateRedToRedCycles = new();
@@ -50,9 +44,10 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             GenerateApproachDelayResults = new();
 
             GetDetectorEvents = new();
+        }
 
-            Steps.Add(Input);
-
+        public override void AddStepsToTracker()
+        {
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
             Steps.Add(CreateRedToRedCycles);
@@ -62,7 +57,10 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             Steps.Add(GenerateApproachDelayResults);
 
             Steps.Add(GetDetectorEvents);
+        }
 
+        public override void LinkSteps()
+        {
             Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -74,8 +72,6 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             mergeCalculateDelayValues.LinkTo(CalculateDelayValues, new DataflowLinkOptions() { PropagateCompletion = true });
             CalculateDelayValues.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            base.Initialize();
         }
     }
 

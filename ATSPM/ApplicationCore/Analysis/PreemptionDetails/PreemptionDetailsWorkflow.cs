@@ -1,6 +1,6 @@
-﻿using ATSPM.Application.Analysis.WorkflowFilters;
+﻿using ATSPM.Application.Analysis.ApproachDelay;
+using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -12,132 +12,6 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.PreemptionDetails
 {
-    public abstract class PreempDetailValueBase
-    {
-        public string SignalId { get; set; }
-        public int PreemptNumber { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public TimeSpan Seconds { get; set; }
-
-        public override string ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{Seconds}";
-    }
-
-
-    public class DwellTimeValue : PreempDetailValueBase { }
-    public class TrackClearTimeValue : PreempDetailValueBase { }
-    public class TimeToServiceValue : PreempDetailValueBase { }
-    public class DelayTimeValue : PreempDetailValueBase { }
-    public class TimeToGateDownValue : PreempDetailValueBase { }
-    public class TimeToCallMaxOutValue : PreempDetailValueBase { }
-
-    public class PreemptDetailResult
-    {
-        public string SignalId { get; set; }
-        public int PreemptNumber { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-
-        public IEnumerable<DwellTimeValue> DwellTimes { get; set; }
-        public IEnumerable<TrackClearTimeValue> TrackClearTimes { get; set; }
-        public IEnumerable<TimeToServiceValue> ServiceTimes { get; set; }
-        public IEnumerable<DelayTimeValue> Delay { get; set; }
-        public IEnumerable<TimeToGateDownValue> GateDownTimes { get; set; }
-        public IEnumerable<TimeToCallMaxOutValue> CallMaxOutTimes { get; set; }
-
-        public override string ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{DwellTimes.Count()}-{TrackClearTimes?.Count()}-{ServiceTimes?.Count()}-{Delay?.Count()}-{GateDownTimes?.Count()}-{CallMaxOutTimes?.Count()}";
-
-        //public string ChartName { get; set; }
-        //public string SignalLocation { get; set; }
-
-        //public ICollection<Plan> Plans { get; set; }
-
-        //public ICollection<InputOn> InputOns { get; set; }
-        //public ICollection<InputOff> InputOffs { get; set; }
-    }
-
-    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
-    {
-        protected DataLoggerEnum first;
-        protected DataLoggerEnum second;
-
-        public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-        {
-            var result = input.GroupBy(g => g.SignalId)
-                .SelectMany(s => s.GroupBy(g => g.EventParam)
-                .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
-                .Select(s => new T()
-                {
-                    SignalId = s.Item1[0].SignalId == s.Item1[1].SignalId ? s.Item1[0].SignalId : string.Empty,
-                    PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
-                    Start = s.Item1[0].Timestamp,
-                    End = s.Item1[1].Timestamp,
-                    Seconds = s.Item2
-                })));
-
-            return Task.FromResult(result);
-        }
-    }
-
-
-    public class CalculateDwellTime : PreemptiveProcessBase<DwellTimeValue>
-    {
-        public CalculateDwellTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptionBeginDwellService;
-            second = DataLoggerEnum.PreemptionBeginExitInterval;
-        }
-    }
-
-    public class CalculateTrackClearTime : PreemptiveProcessBase<TrackClearTimeValue>
-    {
-        public CalculateTrackClearTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptionBeginTrackClearance;
-            second = DataLoggerEnum.PreemptionBeginDwellService;
-        }
-    }
-
-    public class CalculateTimeToService : PreemptiveProcessBase<TimeToServiceValue>
-    {
-        public CalculateTimeToService(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptionBeginDwellService;
-        }
-    }
-
-    public class CalculateDelay : PreemptiveProcessBase<DelayTimeValue>
-    {
-        public CalculateDelay(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptEntryStarted;
-        }
-    }
-
-    public class CalculateTimeToGateDown : PreemptiveProcessBase<TimeToGateDownValue>
-    {
-        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptGateDownInputReceived;
-        }
-    }
-
-    public class CalculateTimeToCallMaxOut : PreemptiveProcessBase<TimeToCallMaxOutValue>
-    {
-        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptionMaxPresenceExceeded;
-        }
-    }
-
-
-
     public class PreemptionDetailsWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PreemptDetailResult>
     {
         protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinOne;
@@ -154,13 +28,8 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
         public CalculateTimeToCallMaxOut CalculateTimeToCallMaxOut { get; private set; }
         public GeneratePreemptDetailResults GeneratePreemptDetailResults { get; private set; }
 
-        public override void Initialize()
+        public override void InstantiateSteps()
         {
-            Steps = new();
-
-            Input = new(null);
-            Output = new();
-
             FilteredPreemptionData = new();
 
             CalculateDwellTime = new();
@@ -176,8 +45,10 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             joinTwo = new();
             joinThree = new();
             mergePreemptionTimes = new();
+        }
 
-            Steps.Add(Input);
+        public override void AddStepsToTracker()
+        {
             Steps.Add(FilteredPreemptionData);
             Steps.Add(CalculateDwellTime);
             Steps.Add(CalculateTrackClearTime);
@@ -190,7 +61,10 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             Steps.Add(joinTwo);
             Steps.Add(joinThree);
             Steps.Add(mergePreemptionTimes);
+        }
 
+        public override void LinkSteps()
+        {
             Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
 
             FilteredPreemptionData.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -213,8 +87,6 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             joinThree.LinkTo(mergePreemptionTimes, new DataflowLinkOptions() { PropagateCompletion = true });
             mergePreemptionTimes.LinkTo(GeneratePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GeneratePreemptDetailResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            base.Initialize();
         }
     }
 
@@ -227,38 +99,6 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             var result = input.Item1.Item1.Union(input.Item1.Item2.Union(input.Item1.Item3)).Union(input.Item2.Item1.Union(input.Item2.Item2.Union(input.Item2.Item3)));
 
             return Task.FromResult(result);
-        }
-    }
-
-    public class GeneratePreemptDetailResults : TransformManyProcessStepBase<IEnumerable<PreempDetailValueBase>, PreemptDetailResult>
-    {
-        public GeneratePreemptDetailResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<PreemptDetailResult>> Process(IEnumerable<PreempDetailValueBase> input, CancellationToken cancelToken = default)
-        {
-            var result = new List<PreemptDetailResult>();
-
-            foreach (var signal in input.GroupBy(g => g.SignalId))
-            {
-                foreach (var item in signal.GroupBy(g => g.PreemptNumber))
-                {
-                    result.Add(new PreemptDetailResult()
-                    {
-                        SignalId = signal.Key,
-                        PreemptNumber = item.Key,
-                        Start = item.Min(m => m.Start),
-                        End = item.Max(m => m.End),
-                        DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>(),
-                        TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>(),
-                        ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>(),
-                        Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>(),
-                        GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>(),
-                        CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>()
-                    });
-                }
-            }
-
-            return Task.FromResult<IEnumerable<PreemptDetailResult>>(result);
         }
     }
 }
