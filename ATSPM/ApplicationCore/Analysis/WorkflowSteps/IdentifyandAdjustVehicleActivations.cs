@@ -24,6 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 new CorrectedDetectorEvent()
                 {
                     SignalId = c.SignalId,
+                    Phase = s.Item1.Approach?.ProtectedPhaseNumber ?? 0,
                     TimeStamp = c.Timestamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection),
                     DetChannel = c.EventParam
                 }))

@@ -19,18 +19,14 @@ namespace ATSPM.Application.Analysis.ApproachDelay
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
 
-        protected GetDetectorEvents GetDetectorEvents { get; private set; }
+        internal GetDetectorEvents GetDetectorEvents { get; private set; }
 
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
-
-        //public GroupEventsBySignalId GroupEventsBySignalId { get; private set; }
-        //public GroupEventsByEventParam GroupEventsByPhase { get; private set; }
-        //public GroupEventsByEventParam GroupEventsByDetectorChannel { get; private set; }
 
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        public CalculateDelayValues CalculateDelayValues { get; private set; }
+        public CalculateApproachDelay CalculateDelayValues { get; private set; }
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         public override void InstantiateSteps()
@@ -75,7 +71,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
         }
     }
 
-    public class GetDetectorEvents : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>>
+    internal class GetDetectorEvents : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>>
     {
         public GetDetectorEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 

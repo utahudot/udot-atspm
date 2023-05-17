@@ -1,5 +1,6 @@
 using ATSPM.Application;
 using ATSPM.Application.Analysis.ApproachDelay;
+using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
@@ -93,12 +94,14 @@ namespace ApplicationCoreTests.Analysis
 
             string signal = "1001";
             int channel = 1;
+            int phase = 2;
 
             var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(signal, channel, 10)).ToList();
 
             var result = await sut.ExecuteAsync(testData);
 
             Assert.True(result.All(a => a.SignalId == signal));
+            Assert.True(result.All(a => a.Phase == phase));
             Assert.True(result.All(a => a.DetChannel == channel));
         }
 
@@ -151,6 +154,7 @@ namespace ApplicationCoreTests.Analysis
                 LatencyCorrection = 1.2,
                 Approach = new Approach()
                 {
+                    ProtectedPhaseNumber = 2,
                     Mph = 45,
                     Signal = new Signal()
                     {
