@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Application.Analysis.WorkflowFilters
 {
     /// <summary>
     /// Base class for filter controller event log data used in process workflows

@@ -13,20 +13,19 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     /// <summary>
-    /// Base class for ATSPM process steps using <see cref="TransformBlock{TInput, TOutput}"/>
+    /// Base class for ATSPM process steps using <see cref="TransformManyBlock{TInput, TOutput}"/>
     /// </summary>
     /// <typeparam name="T1">Input data type</typeparam>
     /// <typeparam name="T2">Output data type</typeparam>
-    public abstract class TransformProcessStepBase<T1, T2> : ProcessStepBase<T1, T2>, IExecuteAsync<T1, T2>
+    public abstract class TransformManyProcessStepBase<T1, T2> : ProcessStepBase<T1, T2>, IExecuteAsync<T1, IEnumerable<T2>>
     {
-        public event EventHandler CanExecuteChanged;
-
-        public TransformProcessStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions ?? new())
+        public TransformManyProcessStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions) : base(dataflowBlockOptions ?? new())
         {
-            workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, options.CancellationToken), (ExecutionDataflowBlockOptions)options);
+            workflowProcess = new TransformManyBlock<T1, T2>(p => ExecuteAsync(p, options.CancellationToken), (ExecutionDataflowBlockOptions)options);
+
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!! {t.Status}"));
         }
 
@@ -39,13 +38,13 @@ namespace ATSPM.Application.Analysis
         }
 
         /// <inheritdoc/>
-        public virtual async Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
+        public async Task<IEnumerable<T2>> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
         {
             if (cancelToken.IsCancellationRequested)
-                return await Task.FromCanceled<T2>(cancelToken);
+                return await Task.FromCanceled<IEnumerable<T2>>(cancelToken);
 
             if (!CanExecute(parameter))
-                return await Task.FromException<T2>(new ExecuteException());
+                return await Task.FromException<IEnumerable<T2>>(new ExecuteException());
 
             try
             {
@@ -53,7 +52,7 @@ namespace ATSPM.Application.Analysis
             }
             catch (Exception e)
             {
-                return await Task.FromException<T2>(e);
+                return await Task.FromException<IEnumerable<T2>>(e);
             }
         }
 
@@ -88,6 +87,6 @@ namespace ATSPM.Application.Analysis
         /// <param name="input"></param>
         /// <param name="cancelToken"></param>
         /// <returns></returns>
-        protected abstract Task<T2> Process(T1 input, CancellationToken cancelToken = default);
+        protected abstract Task<IEnumerable<T2>> Process(T1 input, CancellationToken cancelToken = default);
     }
 }
