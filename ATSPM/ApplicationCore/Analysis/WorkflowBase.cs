@@ -22,6 +22,30 @@ namespace ATSPM.Application.Analysis
         public BroadcastBlock<T1> Input { get; set; }
         public BufferBlock<T2> Output { get; set; }
 
+        public override void Initialize()
+        {
+            Steps = new();
+
+            Input = new(null);
+            Output = new();
+
+            InstantiateSteps();
+
+            Steps.Add(Input);
+
+            AddStepsToTracker();
+
+            LinkSteps();
+
+            base.Initialize();
+        }
+
+        public abstract void InstantiateSteps();
+
+        public abstract void AddStepsToTracker();
+
+        public abstract void LinkSteps();
+
         #region IExecuteWithProgress
 
         public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, IProgress<int> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
