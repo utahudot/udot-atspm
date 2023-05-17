@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     /// <summary>
     /// Base class for ATSPM process steps
@@ -30,7 +30,7 @@ namespace ATSPM.Application.Analysis
         public ProcessStepBase(DataflowBlockOptions dataflowBlockOptions = default)
         {
             options = dataflowBlockOptions ?? new();
-            options.NameFormat = this.GetType().Name;
+            options.NameFormat = GetType().Name;
         }
 
         #region IPropagatorBlock
@@ -85,7 +85,7 @@ namespace ATSPM.Application.Analysis
         #region ITargetBlock
 
         /// <inheritdoc/>
-        public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T1 messageValue, ISourceBlock<T1>? source, bool consumeToAccept)
+        public DataflowMessageStatus OfferMessage(DataflowMessageHeader messageHeader, T1 messageValue, ISourceBlock<T1> source, bool consumeToAccept)
         {
             return workflowProcess.OfferMessage(messageHeader, messageValue, source, consumeToAccept);
         }
