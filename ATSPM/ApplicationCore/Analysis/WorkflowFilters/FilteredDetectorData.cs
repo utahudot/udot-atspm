@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Application.Analysis.WorkflowFilters
 {
     public class FilteredDetectorData : FilterStepBase
     {
