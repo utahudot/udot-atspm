@@ -1,4 +1,6 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Analysis.WorkflowFilters;
+using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Application.Analysis.PreemptionDetails
 {
     public abstract class PreempDetailValueBase
     {
@@ -43,7 +45,7 @@ namespace ATSPM.Application.Analysis
         public IEnumerable<TimeToGateDownValue> GateDownTimes { get; set; }
         public IEnumerable<TimeToCallMaxOutValue> CallMaxOutTimes { get; set; }
 
-        public override string? ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{DwellTimes.Count()}-{TrackClearTimes?.Count()}-{ServiceTimes?.Count()}-{Delay?.Count()}-{GateDownTimes?.Count()}-{CallMaxOutTimes?.Count()}";
+        public override string ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{DwellTimes.Count()}-{TrackClearTimes?.Count()}-{ServiceTimes?.Count()}-{Delay?.Count()}-{GateDownTimes?.Count()}-{CallMaxOutTimes?.Count()}";
 
         //public string ChartName { get; set; }
         //public string SignalLocation { get; set; }
@@ -59,7 +61,7 @@ namespace ATSPM.Application.Analysis
         protected DataLoggerEnum first;
         protected DataLoggerEnum second;
 
-        public PreemptiveProcessBase(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
@@ -68,7 +70,7 @@ namespace ATSPM.Application.Analysis
                 .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
                 {
-                    SignalId = (s.Item1[0].SignalId == s.Item1[1].SignalId) ? s.Item1[0].SignalId : string.Empty,
+                    SignalId = s.Item1[0].SignalId == s.Item1[1].SignalId ? s.Item1[0].SignalId : string.Empty,
                     PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
                     Start = s.Item1[0].Timestamp,
                     End = s.Item1[1].Timestamp,
@@ -82,7 +84,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateDwellTime : PreemptiveProcessBase<DwellTimeValue>
     {
-        public CalculateDwellTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateDwellTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptionBeginDwellService;
             second = DataLoggerEnum.PreemptionBeginExitInterval;
@@ -91,7 +93,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateTrackClearTime : PreemptiveProcessBase<TrackClearTimeValue>
     {
-        public CalculateTrackClearTime(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateTrackClearTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptionBeginTrackClearance;
             second = DataLoggerEnum.PreemptionBeginDwellService;
@@ -100,7 +102,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateTimeToService : PreemptiveProcessBase<TimeToServiceValue>
     {
-        public CalculateTimeToService(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateTimeToService(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptionBeginDwellService;
@@ -109,7 +111,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateDelay : PreemptiveProcessBase<DelayTimeValue>
     {
-        public CalculateDelay(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateDelay(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptEntryStarted;
@@ -118,7 +120,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateTimeToGateDown : PreemptiveProcessBase<TimeToGateDownValue>
     {
-        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateTimeToGateDown(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptGateDownInputReceived;
@@ -127,7 +129,7 @@ namespace ATSPM.Application.Analysis
 
     public class CalculateTimeToCallMaxOut : PreemptiveProcessBase<TimeToCallMaxOutValue>
     {
-        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             first = DataLoggerEnum.PreemptCallInputOn;
             second = DataLoggerEnum.PreemptionMaxPresenceExceeded;
@@ -218,7 +220,7 @@ namespace ATSPM.Application.Analysis
 
     public class MergePreemptionTimes : TransformProcessStepBase<Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>>, IEnumerable<PreempDetailValueBase>>
     {
-        public MergePreemptionTimes(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public MergePreemptionTimes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<PreempDetailValueBase>> Process(Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> input, CancellationToken cancelToken = default)
         {
@@ -230,7 +232,7 @@ namespace ATSPM.Application.Analysis
 
     public class GeneratePreemptDetailResults : TransformManyProcessStepBase<IEnumerable<PreempDetailValueBase>, PreemptDetailResult>
     {
-        public GeneratePreemptDetailResults(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public GeneratePreemptDetailResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<PreemptDetailResult>> Process(IEnumerable<PreempDetailValueBase> input, CancellationToken cancelToken = default)
         {
