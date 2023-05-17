@@ -1,60 +1,26 @@
-﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Services;
-using ATSPM.Application.Services.SignalControllerProtocols;
-using ATSPM.Data;
+﻿using ATSPM.Application.Analysis.ApproachDelay;
+using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Application.Configuration;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
-using ATSPM.EventLogUtility;
-using ATSPM.EventLogUtility.Commands;
-using ATSPM.Infrastructure.Converters;
-using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.Services.HostedServices;
-using ATSPM.Infrastructure.Services.SignalControllerLoggers;
-using Google.Api;
-using Google.Cloud.Diagnostics.Common;
 using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Renci.SshNet;
-using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.Hosting;
-using System.CommandLine.Parsing;
-using System.Net.Sockets;
-using System.Reflection;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks.Dataflow;
-using ATSPM.Data.Enums;
-using System.Security.Cryptography.X509Certificates;
-using Google.Protobuf.Reflection;
-using ATSPM.Application;
-using System.Collections.Generic;
-using static ATSPM.Application.Analysis.PreemptionDetailsWorkflow;
-using System.Linq;
-using ATSPM.Application.Analysis.ApproachDelay;
-
-//Random r = new Random();
-
-//var list = new List<ControllerEventLog>();
-
-//for(int i = 0; i <= 150; i++)
-//{
-//    list.Add(new ControllerEventLog() { SignalId = "1001", EventCode = i, EventParam = r.Next(1, 9), Timestamp = DateTime.Now });
-//}
+using ATSPM.Application.Analysis.ApproachVolume;
 
 
+//var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
+//var path2 = "C:\\temp\\TestData\\1001_Approach_Delay.csv";
 
-var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
-var path2 = "C:\\temp\\TestData\\1001_Approach_Delay.csv";
+var path1 = "C:\\temp\\TestData\\7115_Approach_Volume.csv";
 
 var list =  File.ReadAllLines(path1)
                .Skip(1)
@@ -67,89 +33,150 @@ var list =  File.ReadAllLines(path1)
                    EventParam = int.Parse(x[3])
                }).ToList();
 
-list.AddRange(File.ReadAllLines(path2)
-               .Skip(1)
-               .Select(x => x.Split(','))
-               .Select(x => new ControllerEventLog
-               {
-                   SignalId = x[0],
-                   Timestamp = DateTime.Parse(x[1]),
-                   EventCode = int.Parse(x[2]),
-                   EventParam = int.Parse(x[3])
-               }).ToList());
 
 
-var test = new ActionBlock<ApproachDelayResult>(a =>
+var s = new Signal() { SignalId = "7115" };
+
+
+var d1 = new Detector()
 {
-    Console.WriteLine($"ApproachDelayResult {a}");
-});
-
-
-var approachDelayWorkflow = new ApproachDelayWorkflow();
-
-await foreach (var r in approachDelayWorkflow.Execute(list, default, default))
-{
-    foreach (var a in r)
+    DetChannel = 2,
+    DistanceFromStopBar = 340,
+    LatencyCorrection = 1.2,
+    Approach = new Approach()
     {
-        Console.WriteLine($"ApproachDelayResult {a}");
+        ProtectedPhaseNumber = 2,
+        DirectionTypeId = DirectionTypes.NB,
+        Mph = 45,
+        Signal = s
     }
+};
+
+var d2 = new Detector()
+{
+    DetChannel = 6,
+    DistanceFromStopBar = 340,
+    LatencyCorrection = 1.2,
+    Approach = new Approach()
+    {
+        ProtectedPhaseNumber = 6,
+        DirectionTypeId = DirectionTypes.SB,
+        Mph = 45,
+        Signal = s
+    }
+};
+
+int bin = 15;
+
+var start = DateTime.Parse("4/17/2023 8:00:0.0");
+var end = DateTime.Parse("4/17/2023 10:00:0.0");
+
+
+var timeFrame = DateTimeRange.GenerateTimeFrameInMinutes(start, end, bin);
+
+foreach (var t in timeFrame)
+{
+    Console.WriteLine($"T: {t}");
 }
+
+Console.WriteLine($"input count: {list.Count}");
+
+var config = new List<Tuple<Detector, IEnumerable<ControllerEventLog>>>()
+{
+    Tuple.Create(d1, list.Where(l => l.EventParam == d1.DetChannel)),
+    Tuple.Create(d2, list.Where(l => l.EventParam == d2.DetChannel))
+};
+
+var identifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
+
+var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteAsync(config);
+
+Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
+
+
+//get phase 2 events in 15 min chunks
+var e = correctedDetectorEvents.GroupBy(g => g.Phase, (k, v) =>
+    timeFrame
+    .Select((s, i) => new Volume()
+    {
+        Phase = k,
+        StartTime = s.StartTime,
+        EndTime = s.EndTime,
+        DetectorCount = v.Where(w => w.TimeStamp >= s.StartTime && w.TimeStamp < s.EndTime).Count()
+    })).SelectMany(m => m.Where(v => v != null));
+
+foreach (var v in e)
+{
+    Console.WriteLine($"v: {v}");
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 Console.ReadLine();
 
-IEnumerable<ControllerEventLog[]> ArrivalOnRed(IEnumerable<ControllerEventLog> logs)
+public interface IDateTimeRange
 {
-    var result = new List<ControllerEventLog[]>();
+    DateTime StartTime { get; set; }
 
-    var preFilter = logs.OrderBy(o => o.Timestamp).ToList();
-    int i = 0;
+    DateTime EndTime { get; set; }
 
-    while (i <= preFilter.Count)
-    {
-        var red = preFilter.FindIndex(i, f => f.EventCode == 9);
-
-        if (red >= 0)
-        {
-            var green = preFilter.FindIndex(red, f => f.EventCode == 1);
-            //var yellow = preFilter.FindIndex(i, f => f.EventCode == 8);
-
-            Console.BackgroundColor = ConsoleColor.Black;
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Red {preFilter.ElementAt(red).Timestamp}------------------------------------------------------------------");
-
-            Console.ForegroundColor = ConsoleColor.White;
-            foreach (var item in preFilter.GetRange(red, green - red).Where(w => w.EventCode == 82))
-            {
-                Console.WriteLine($"{item} --- Delay: {(preFilter.ElementAt(green).Timestamp - item.Timestamp).TotalSeconds}");
-            }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Green {preFilter.ElementAt(green).Timestamp}------------------------------------------------------------------\n");
-
-            result.Add(preFilter.GetRange(red, green - red).Where(w => w.EventCode == 82).ToArray());
-
-            i = +green;
-        }
-        else
-        {
-            i = preFilter.Count;
-        }
-    }
-
-    return result;
+    bool InRange(DateTime time);
 }
 
+public class DateTimeRange : IDateTimeRange
+{
+    public DateTime StartTime { get; set; }
 
+    public DateTime EndTime { get; set; }
 
+    public bool InRange(DateTime time)
+    {
+        return time >= StartTime && time < EndTime;
+    }
 
+    public static List<DateTimeRange> GenerateTimeFrameInHours(DateTime start, DateTime end, int size)
+    {
+        var values = Enumerable
+            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalHours - start.TimeOfDay.TotalHours) / size))
+            .Select((s, i) => start.AddHours(i * size)).ToList();
 
+        return ReturnDateTimeRangeList(values);
+    }
 
+    public static List<DateTimeRange> GenerateTimeFrameInMinutes(DateTime start, DateTime end, int size)
+    {
+        var values = Enumerable
+            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size))
+            .Select((s, i) => start.AddMinutes(i * size)).ToList();
 
+        return ReturnDateTimeRangeList(values);
+    }
 
+    public static List<DateTimeRange> GenerateTimeFrameInSeconds(DateTime start, DateTime end, int size)
+    {
+        var values = Enumerable
+            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalSeconds - start.TimeOfDay.TotalSeconds) / size))
+            .Select((s, i) => start.AddSeconds(i * size)).ToList();
 
+        return ReturnDateTimeRangeList(values);
+    }
+
+    private static List<DateTimeRange> ReturnDateTimeRangeList(List<DateTime> values)
+    {
+        return values.Take(values.Count() - 1).Select((s, i) => new DateTimeRange() { StartTime = values[0], EndTime = values[0 + 1] }).ToList();
+    }
+}
 
 
 

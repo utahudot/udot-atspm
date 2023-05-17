@@ -22,6 +22,8 @@ namespace ATSPM.Application.Analysis.Common
             }
         }
 
+
+        //HACK: this could come from detectorEvent or Cycle! need to validate that they are the same!
         public int Phase { get; set; }
 
         public DateTime StartTime { get; set; }
