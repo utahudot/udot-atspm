@@ -5,6 +5,7 @@ namespace ATSPM.Application.Analysis.Common
     public class CorrectedDetectorEvent
     {
         public string SignalId { get; set; }
+        public int Phase { get; set; }
         public DateTime TimeStamp { get; set; }
         public int DetChannel { get; set; }
 
