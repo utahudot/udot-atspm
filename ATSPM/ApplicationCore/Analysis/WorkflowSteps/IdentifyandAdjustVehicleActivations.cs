@@ -21,12 +21,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalId == w.SignalId && w.EventParam == s.Item1.DetChannel)))
                 .Select(s => s
                 .Item2.Select(c =>
-                new CorrectedDetectorEvent()
+                new CorrectedDetectorEvent(s.Item1)
                 {
-                    SignalId = c.SignalId,
-                    Phase = s.Item1.Approach?.ProtectedPhaseNumber ?? 0,
-                    TimeStamp = c.Timestamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection),
-                    DetChannel = c.EventParam
+                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
                 }))
                 .SelectMany(s => s);
 
