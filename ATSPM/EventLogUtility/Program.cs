@@ -15,6 +15,9 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks.Dataflow;
 using ATSPM.Application.Analysis.ApproachVolume;
+using ATSPM.Domain.Common;
+using System.CommandLine;
+using ATSPM.Application;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -66,18 +69,14 @@ var d2 = new Detector()
     }
 };
 
-int bin = 15;
+Console.WriteLine($"test PHF: {AtspmMath.PeakHourFactor(2143, 610, 60/15)}");
 
-var start = DateTime.Parse("4/17/2023 8:00:0.0");
-var end = DateTime.Parse("4/17/2023 10:00:0.0");
-
-
-var timeFrame = DateTimeRange.GenerateTimeFrameInMinutes(start, end, bin);
-
-foreach (var t in timeFrame)
+var _options = new TimelineOptions()
 {
-    Console.WriteLine($"T: {t}");
-}
+    Start = DateTime.Parse("4/17/2023 8:00:0.0"),
+    End = DateTime.Parse("4/17/2023 10:00:0.0"),
+    Size = 15
+};
 
 Console.WriteLine($"input count: {list.Count}");
 
@@ -93,91 +92,43 @@ var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteA
 
 Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
 
+var calculatePhaseVolume = new CalculatePhaseVolume(_options);
 
-//get phase 2 events in 15 min chunks
-var e = correctedDetectorEvents.GroupBy(g => g.Phase, (k, v) =>
-    timeFrame
-    .Select((s, i) => new Volume()
-    {
-        Phase = k,
-        StartTime = s.StartTime,
-        EndTime = s.EndTime,
-        DetectorCount = v.Where(w => w.TimeStamp >= s.StartTime && w.TimeStamp < s.EndTime).Count()
-    })).SelectMany(m => m.Where(v => v != null));
-
-foreach (var v in e)
-{
-    Console.WriteLine($"v: {v}");
-}
+var volumes = await calculatePhaseVolume.ExecuteAsync(correctedDetectorEvents);
 
 
+//foreach (var t in volumes)
+//{
+//    foreach (var v in t)
+//    {
+//        Console.WriteLine($"v: {v}");
+//    }
+//}
+//var htl = Timeline.GenerateTimeFrameInHours<VolumeByHour>(_options.Start, _options.End, 1);
 
+//htl.ForEach(a =>
+//{
+//    a.
+//});
 
-
-
-
-
-
-
+//foreach (var h in htl)
+//{
+//    Console.WriteLine($"h: {h.Start} - {h.End}");
+//}
 
 
 
 
 Console.ReadLine();
 
-public interface IDateTimeRange
+
+public class VolumeByHour : TotalVolume
 {
-    DateTime StartTime { get; set; }
-
-    DateTime EndTime { get; set; }
-
-    bool InRange(DateTime time);
+    //public int TotalVolume { get; set; }
+    public double PHF { get; set; }
+    public double DFactor { get; set; }
+    public double KFactor { get; set; }
 }
-
-public class DateTimeRange : IDateTimeRange
-{
-    public DateTime StartTime { get; set; }
-
-    public DateTime EndTime { get; set; }
-
-    public bool InRange(DateTime time)
-    {
-        return time >= StartTime && time < EndTime;
-    }
-
-    public static List<DateTimeRange> GenerateTimeFrameInHours(DateTime start, DateTime end, int size)
-    {
-        var values = Enumerable
-            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalHours - start.TimeOfDay.TotalHours) / size))
-            .Select((s, i) => start.AddHours(i * size)).ToList();
-
-        return ReturnDateTimeRangeList(values);
-    }
-
-    public static List<DateTimeRange> GenerateTimeFrameInMinutes(DateTime start, DateTime end, int size)
-    {
-        var values = Enumerable
-            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size))
-            .Select((s, i) => start.AddMinutes(i * size)).ToList();
-
-        return ReturnDateTimeRangeList(values);
-    }
-
-    public static List<DateTimeRange> GenerateTimeFrameInSeconds(DateTime start, DateTime end, int size)
-    {
-        var values = Enumerable
-            .Range(0, Convert.ToInt32((end.TimeOfDay.TotalSeconds - start.TimeOfDay.TotalSeconds) / size))
-            .Select((s, i) => start.AddSeconds(i * size)).ToList();
-
-        return ReturnDateTimeRangeList(values);
-    }
-
-    private static List<DateTimeRange> ReturnDateTimeRangeList(List<DateTime> values)
-    {
-        return values.Take(values.Count() - 1).Select((s, i) => new DateTimeRange() { StartTime = values[0], EndTime = values[0 + 1] }).ToList();
-    }
-}
-
 
 
 
