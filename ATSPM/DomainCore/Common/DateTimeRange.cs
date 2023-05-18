@@ -1,0 +1,167 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ATSPM.Domain.Common
+{
+    public interface IStartEndRange
+    {
+        DateTime End { get; }
+        DateTime Start { get; }
+
+        bool InRange(DateTime time);
+    }
+
+    //public interface IDateTimeRange
+    //{
+    //    DateTime StartTime { get; set; }
+
+    //    DateTime EndTime { get; set; }
+
+    //    bool InRange(DateTime time);
+    //}
+
+    public class StartEndRange : IStartEndRange
+    {
+        public DateTime Start { get; set; }
+
+        public DateTime End { get; set; }
+
+        public virtual bool InRange(DateTime time)
+        {
+            return time >= Start && time < End;
+        }
+
+        public override string ToString()
+        {
+            return $"Start: {Start} End: {End}";
+        }
+    }
+
+    public enum TimelineType
+    {
+        Hours,
+        Minutes,
+        Seconds
+    }
+
+    public class TimelineOptions
+    {
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public int Size { get; set; }
+        public TimelineType Type { get; set; } = TimelineType.Minutes;
+    }
+
+    public static class Timeline
+    {
+        //public Timeline() { }
+
+        //public Timeline(int capacity) : base(capacity) { }
+
+        //public Timeline(IEnumerable<StartEndRange> collection) : base(collection) { }
+
+        public static Timeline<T> FromType<T>(TimelineType tlTYpe, DateTime start, DateTime end, int size) where T : StartEndRange, new()
+        {
+            switch (tlTYpe)
+            {
+                case TimelineType.Hours:
+                    return FromHours<T>(start, end, size);
+                case TimelineType.Minutes:
+                    return InMinutes<T>(start, end, size);
+                case TimelineType.Seconds:
+                    return FromSeconds<T>(start, end, size);
+            }
+
+            return null;
+        }
+
+        public static Timeline<T> FromHours<T>(DateTime start, DateTime end, int size) where T : StartEndRange, new()
+        {
+            var values = Enumerable
+                .Range(0, Convert.ToInt32((end.TimeOfDay.TotalHours - start.TimeOfDay.TotalHours) / size + 1))
+                .Select((s, i) => start.AddHours(i * size)).ToList();
+
+            var result = ReturnDateTimeRangeList<T>(values);
+
+            result.Start = start;
+            result.End = end;
+            result.Size = size;
+            result.Type = TimelineType.Hours;
+
+            return result;
+        }
+
+        public static Timeline<T> InMinutes<T>(DateTime start, DateTime end, int size) where T : StartEndRange, new()
+        {
+            var values = Enumerable
+                .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size + 1))
+                .Select((s, i) => start.AddMinutes(i * size)).ToList();
+
+            var result = ReturnDateTimeRangeList<T>(values);
+
+            result.Start = start;
+            result.End = end;
+            result.Size = size;
+            result.Type = TimelineType.Minutes;
+
+            return result;
+        }
+
+        public static Timeline<T> FromSeconds<T>(DateTime start, DateTime end, int size) where T : StartEndRange, new()
+        {
+            var values = Enumerable
+                .Range(0, Convert.ToInt32((end.TimeOfDay.TotalSeconds - start.TimeOfDay.TotalSeconds) / size + 1))
+                .Select((s, i) => start.AddSeconds(i * size)).ToList();
+
+            var result = ReturnDateTimeRangeList<T>(values);
+
+            result.Start = start;
+            result.End = end;
+            result.Size = size;
+            result.Type = TimelineType.Seconds;
+
+            return result;
+        }
+
+        private static Timeline<T> ReturnDateTimeRangeList<T>(List<DateTime> values) where T : StartEndRange, new()
+        {
+            return new Timeline<T>(values.Take(values.Count() - 1).Select((s, i) => new T() { Start = values[i], End = values[i + 1] }));
+        }
+    }
+
+    public class Timeline<T> : List<T>, IStartEndRange where T : StartEndRange, new()
+    {
+        public Timeline(TimelineOptions options) : this(Timeline.FromType<T>(options.Type, options.Start, options.End, options.Size)) 
+        {
+            Type = options.Type;
+        }
+
+        //public Timeline(int capacity) : base(capacity) { }
+
+        public Timeline(Timeline<T> collection) : base(collection) 
+        {
+            Start = this.Min(m => m.Start);
+            End = this.Max(m => m.End);
+
+        }
+
+        //public Timeline(IEnumerable<T> collection) : base(collection)
+        //{
+        //    Size = options.Size;
+        //    Start = options.Start;
+        //    End = options.End;
+        //    Type = options.Type;
+        //}
+
+        public int Size { get; internal set; }
+        public DateTime End { get; internal set; }
+        public DateTime Start { get; internal set; }
+        public TimelineType Type { get; internal set; }
+
+        public bool InRange(DateTime time)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

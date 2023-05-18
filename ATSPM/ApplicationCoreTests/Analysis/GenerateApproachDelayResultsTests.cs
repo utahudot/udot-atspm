@@ -35,7 +35,7 @@ namespace ApplicationCoreTests.Analysis
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
                 EndTime = GetStaticDateTime(s + 3),
-                TimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
+                CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
             var result = sut.ExecuteAsync(testData).Result.First();
@@ -63,7 +63,7 @@ namespace ApplicationCoreTests.Analysis
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
                 EndTime = GetStaticDateTime(s + 3),
-                TimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
+                CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -89,7 +89,7 @@ namespace ApplicationCoreTests.Analysis
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
                 EndTime = GetStaticDateTime(s + 3),
-                TimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
+                CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -115,7 +115,7 @@ namespace ApplicationCoreTests.Analysis
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
                 EndTime = GetStaticDateTime(s + 3),
-                TimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
+                CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
             var result = await sut.ExecuteAsync(testData);

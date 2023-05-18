@@ -1,6 +1,7 @@
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Enums;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace ApplicationCoreTests.Analysis
     {
         private readonly ITestOutputHelper _output;
         private readonly List<RedToRedCycle> _redCycles;
+        private readonly Detector _detector;
 
         public CalculateApproachDelayTests(ITestOutputHelper output)
         {
@@ -32,6 +34,23 @@ namespace ApplicationCoreTests.Analysis
                     EndTime = DateTime.Parse("4/17/2023 8:00:3.1")
                 }
             };
+
+            _detector = new Detector()
+            {
+                DetChannel = 1,
+                DistanceFromStopBar = 340,
+                LatencyCorrection = 1.2,
+                Approach = new Approach()
+                {
+                    ProtectedPhaseNumber = 2,
+                    DirectionTypeId = DirectionTypes.NB,
+                    Mph = 45,
+                    Signal = new Signal()
+                    {
+                        SignalId = "1001"
+                    }
+                }
+            };
         }
 
         [Fact]
@@ -42,7 +61,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -60,7 +79,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1002", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -78,7 +97,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -96,7 +115,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 7:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 7:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -114,7 +133,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -132,7 +151,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 9:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 9:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -150,7 +169,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -177,13 +196,13 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
 
             var actual = result.First().Delay;
-            var expected = (_redCycles.First().GreenEvent - testEvents.First().TimeStamp).TotalSeconds;
+            var expected = (_redCycles.First().GreenEvent - testEvents.First().CorrectedTimeStamp).TotalSeconds;
 
             Assert.Equal(expected, actual);
         }
@@ -199,12 +218,12 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:1.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:1.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
 
-            _output.WriteLine($"{result.First().GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} - {result.First().TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}");
+            _output.WriteLine($"{result.First().GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} - {result.First().CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}");
 
             var actual = result.First().Delay;
             var expected = 0;
@@ -223,7 +242,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:2.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:2.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -242,7 +261,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -260,7 +279,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:1.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:1.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -278,7 +297,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:2.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:2.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
@@ -296,7 +315,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() {SignalId = "1001", DetChannel = 1, TimeStamp = DateTime.Parse("4/17/2023 8:00:0.5")}
+                new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, null));

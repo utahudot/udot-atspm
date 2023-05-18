@@ -78,7 +78,7 @@ namespace ATSPM.Application.ValueObjects
         /// <param name="hasSpeed"></param>
         /// <param name="hasPhase"></param>
         /// <param name="hasTMC"></param>
-        /// <returns>SortedDictionary<int, Boolean></returns>
+        /// <returns>SortedDictionary<int Boolean></returns>
         private SortedDictionary<int, bool> FindReports(bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC,
             bool hasRLM, bool hasSplitFail)
         {
