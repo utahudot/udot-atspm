@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,25 @@ namespace ATSPM.Application
     /// </summary>
     public static class AtspmMath
     {
-
+        /// <summary>
+        /// Calculates the Peak Hour Factor for Approach Volumes
+        /// <list type="bullet">
+        /// <listheader>Used in the following steps of Approach Volume:</listheader>
+        /// <item>
+        /// <term>Equation 2</term>
+        /// <description>Step 3: Calculate Peak Hour Factor</description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="peakHourVolume">Peak vehicle volume hour</param>
+        /// <param name="peakBinVolume">Peak vehicle volume per bin</param>
+        /// <param name="binSize">Bin size to break up hours</param>
+        /// <returns></returns>
+        public static double PeakHourFactor(double peakHourVolume, double peakBinVolume, int binSize)
+        {
+            return peakHourVolume / (binSize * peakBinVolume);
+        }
+        
         /// <summary>
         /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="DataLoggerEnum"/>
         /// <list type="bullet">
