@@ -1,7 +1,9 @@
 using ATSPM.Application;
 using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -32,7 +34,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.SignalId).Distinct().OrderBy(o => o);
+            var actual = result.Select(s => s.Detector.Approach.Signal.SignalId).Distinct().OrderBy(o => o);
             var expected = testData.SelectMany(s => s.Item2).Select(s => s.SignalId).Distinct().OrderBy(o => o);
 
             Assert.Equal(expected, actual);
@@ -58,7 +60,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var expected = testData.First().Item2.Where(w => w.EventParam == detChannel).Count();
-            var actual = result.Where(w => w.DetChannel == detChannel).Count();
+            var actual = result.Where(w => w.Detector.DetChannel == detChannel).Count();
 
             Assert.Equal(expected, actual);
         }
@@ -94,15 +96,18 @@ namespace ApplicationCoreTests.Analysis
 
             string signal = "1001";
             int channel = 1;
-            int phase = 2;
 
             var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(signal, channel, 10)).ToList();
 
             var result = await sut.ExecuteAsync(testData);
 
-            Assert.True(result.All(a => a.SignalId == signal));
-            Assert.True(result.All(a => a.Phase == phase));
-            Assert.True(result.All(a => a.DetChannel == channel));
+            var actual = result.First().CorrectedTimeStamp;
+            var expected = AtspmMath.AdjustTimeStamp(testData.First().Item2.First().Timestamp,
+                testData.First().Item1.Approach?.Mph ?? 0,
+                testData.First().Item1.DistanceFromStopBar ?? 0,
+                testData.First().Item1.LatencyCorrection);
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -115,7 +120,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.TimeStamp).OrderBy(o => o);
+            var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
             var expected = testData.SelectMany(s => 
             s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
                 .OrderBy(o => o);
@@ -136,7 +141,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.TimeStamp).OrderBy(o => o);
+            var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
             var expected = testData.SelectMany(s =>s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
@@ -155,6 +160,7 @@ namespace ApplicationCoreTests.Analysis
                 Approach = new Approach()
                 {
                     ProtectedPhaseNumber = 2,
+                    DirectionTypeId = DirectionTypes.NB,
                     Mph = 45,
                     Signal = new Signal()
                     {

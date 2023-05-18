@@ -3,51 +3,51 @@ using System;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class Vehicle : CorrectedDetectorEvent
+    public class Vehicle
     {
         public Vehicle() { }
 
         public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
         {
-            if (detectorEvent.SignalId == redToRedCycle.SignalId)
-            {
-                SignalId = detectorEvent.SignalId;
-                TimeStamp = detectorEvent.TimeStamp;
-                DetChannel = detectorEvent.DetChannel;
-                Phase = redToRedCycle.Phase;
-                StartTime = redToRedCycle.StartTime;
-                EndTime = redToRedCycle.EndTime;
-                YellowEvent = redToRedCycle.YellowEvent;
-                GreenEvent = redToRedCycle.GreenEvent;
-            }
+            SignalId = detectorEvent.Detector.Approach?.Signal?.SignalId;
+            CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
+            DetChannel = detectorEvent.Detector.DetChannel;
+            Phase = redToRedCycle.Phase;
+            StartTime = redToRedCycle.StartTime;
+            EndTime = redToRedCycle.EndTime;
+            YellowEvent = redToRedCycle.YellowEvent;
+            GreenEvent = redToRedCycle.GreenEvent;
         }
 
+        public string SignalId { get; set; }
 
         //HACK: this could come from detectorEvent or Cycle! need to validate that they are the same!
         public int Phase { get; set; }
+        public int DetChannel { get; set; }
+        public DateTime CorrectedTimeStamp { get; set; }
 
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
-        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - TimeStamp).TotalSeconds : 0;
+        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - CorrectedTimeStamp).TotalSeconds : 0;
 
         public ArrivalType ArrivalType
         {
             get
             {
-                if (TimeStamp < GreenEvent && TimeStamp >= StartTime)
+                if (CorrectedTimeStamp < GreenEvent && CorrectedTimeStamp >= StartTime)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
 
-                else if (TimeStamp >= GreenEvent && TimeStamp < YellowEvent)
+                else if (CorrectedTimeStamp >= GreenEvent && CorrectedTimeStamp < YellowEvent)
                 {
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (TimeStamp >= YellowEvent && TimeStamp <= EndTime)
+                else if (CorrectedTimeStamp >= YellowEvent && CorrectedTimeStamp <= EndTime)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
@@ -62,7 +62,7 @@ namespace ATSPM.Application.Analysis.Common
 
         public override string ToString()
         {
-            return $"{SignalId}-{DetChannel}-{TimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
+            return $"{SignalId}-{DetChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
         }
     }
 }
