@@ -19,7 +19,7 @@ namespace ATSPM.Application
         /// <list type="bullet">
         /// <listheader>Used in the following steps of Approach Volume:</listheader>
         /// <item>
-        /// <term>Equation 2</term>
+        /// <term>Equation 3</term>
         /// <description>Step 3: Calculate Peak Hour Factor</description>
         /// </item>
         /// </list>
@@ -30,9 +30,19 @@ namespace ATSPM.Application
         /// <returns></returns>
         public static double PeakHourFactor(double peakHourVolume, double peakBinVolume, int binSize)
         {
-            return peakHourVolume / (binSize * peakBinVolume);
+            return Math.Round(peakHourVolume / (binSize * peakBinVolume), 3);
         }
-        
+
+        public static double PeakHourDFactor(double peakHourVolumeA, double peakHourVolumeB)
+        {
+            return Math.Round(peakHourVolumeA / (peakHourVolumeA + peakHourVolumeB), 3);
+        }
+
+        public static double PeakHourKFactor(double totalVolumeA, double peakHourVolumeA, double totalVolumeB, double peakHourVolumeB)
+        {
+            return Math.Round((peakHourVolumeA + peakHourVolumeB) / (totalVolumeA + totalVolumeB), 3);
+        }
+
         /// <summary>
         /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="DataLoggerEnum"/>
         /// <list type="bullet">

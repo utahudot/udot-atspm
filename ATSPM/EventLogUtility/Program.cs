@@ -69,8 +69,6 @@ var d2 = new Detector()
     }
 };
 
-Console.WriteLine($"test PHF: {AtspmMath.PeakHourFactor(2143, 610, 60/15)}");
-
 var _options = new TimelineOptions()
 {
     Start = DateTime.Parse("4/17/2023 8:00:0.0"),
@@ -92,16 +90,35 @@ var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteA
 
 Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
 
-var calculatePhaseVolume = new CalculatePhaseVolume(_options);
 
-var volumes = await calculatePhaseVolume.ExecuteAsync(correctedDetectorEvents);
+var calculateTotalVolumes = new CalculateTotalVolumes(_options);
+
+var totalVolumes = await calculateTotalVolumes.ExecuteAsync(correctedDetectorEvents);
+
+var generateApproachVolumeResults = new GenerateApproachVolumeResults(_options);
+
+foreach (var t in totalVolumes)
+{
+    var peakVolume = await generateApproachVolumeResults.ExecuteAsync(t);
+
+    //Console.WriteLine($"peak: {peakVolume}");
+
+    //foreach (var p in peakVolume)
+    //{
+    //    Console.WriteLine($"total volumes: {p}");
+    //}
+}
 
 
-//foreach (var t in volumes)
+
+
+//foreach (var t in totalVolumes)
 //{
+//    Console.WriteLine($"total volumes: {t}");
+
 //    foreach (var v in t)
 //    {
-//        Console.WriteLine($"v: {v}");
+//        Console.WriteLine($"total volume: {v}");
 //    }
 //}
 //var htl = Timeline.GenerateTimeFrameInHours<VolumeByHour>(_options.Start, _options.End, 1);
@@ -122,13 +139,13 @@ var volumes = await calculatePhaseVolume.ExecuteAsync(correctedDetectorEvents);
 Console.ReadLine();
 
 
-public class VolumeByHour : TotalVolume
-{
-    //public int TotalVolume { get; set; }
-    public double PHF { get; set; }
-    public double DFactor { get; set; }
-    public double KFactor { get; set; }
-}
+//public class VolumeByHour : TotalVolume
+//{
+//    //public int TotalVolume { get; set; }
+//    public double PHF { get; set; }
+//    public double DFactor { get; set; }
+//    public double KFactor { get; set; }
+//}
 
 
 
