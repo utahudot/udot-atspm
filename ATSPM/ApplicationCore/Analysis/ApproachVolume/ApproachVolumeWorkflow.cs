@@ -18,6 +18,16 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ATSPM.Application.Analysis.ApproachVolume
 {
+    public static class AtspmExtensions
+    {
+        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : VolumeBase
+        {
+            return volumes.Where((w, i) => i <= volumes.Count() - chunks)
+                .Select((s, i) => volumes.Skip(i).Take(chunks))
+                .Aggregate((a, b) => a.Sum(s => s.DetectorCount) >= b.Sum(s => s.DetectorCount) ? a : b).ToList();
+        }
+    }
+
     public readonly struct OpposingDirection
     {
         private readonly DirectionTypes _direction;
@@ -51,10 +61,12 @@ namespace ATSPM.Application.Analysis.ApproachVolume
         };
     }
 
-    public class TotalVolume: Volume
+    public class TotalVolume : VolumeBase
     {
         public Volume Primary { get; set; }
-        public Volume Oppossing { get; set; }
+        public Volume Opposing { get; set; }
+
+        public int DetectorCount => Primary?.DetectorCount + Opposing?.DetectorCount ?? 0;
 
         public override bool InRange(DateTime time)
         {
@@ -63,28 +75,64 @@ namespace ATSPM.Application.Analysis.ApproachVolume
 
         public override string ToString()
         {
-            return $"{Start}***{Primary} --- {Oppossing} --- {DetectorCount}***{End}";
+            return $"{Start}***{Primary} --- {Opposing} --- {DetectorCount}***{End}";
         }
     }
 
-    public class PeakVolume : Timeline<Volume>
+    public class ApproachVolumeResult
     {
-        public PeakVolume(TimelineOptions options) : base(options) { }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
 
-        public PeakVolume(IEnumerable<Volume> collection) : base(collection) { }
+        public int PrimaryTotalVolume { get; set; }
+        public int PrimaryPeakVolume { get; set; }
+        public double PrimaryPHF { get; set; }
+        public double PrimaryDFactor { get; set; }
+        public double PrimaryKFactor { get; set; }
 
-        public PeakVolume(TimelineOptions options, IEnumerable<Volume> collection) : base(options, collection) { }
+        public int OpposingTotalVolume { get; set; }
+        public int OpposingPeakVolume { get; set; }
+        public double OpposingPHF { get; set; }
+        public double OpposingDFactor { get; set; }
+        public double OpposingKFactor { get; set; }
 
-        public double PHF => AtspmMath.PeakHourFactor(this.Sum(s => s.DetectorCount), this.Max(m => m.DetectorCount), 60 / Size);
-        public double DFactor { get; set; }
-        public double KFactor { get; set; }
+        public int TotalVolume { get; set; }
+        public int TotalPeakVolume { get; set; }
+        public double TotalPHF { get; set; }
+        public double TotalKFactor { get; set; }
     }
 
-    public class Volume : StartEndRange
+    public class TotalVolumes : Timeline<TotalVolume>
+    {
+        public TotalVolumes(TimelineOptions options) : base(options) { }
+
+        public TotalVolumes(Timeline<TotalVolume> collection) : base(collection) { }
+
+        //public TotalVolumes(TimelineOptions options, IEnumerable<TotalVolume> collection) : base(options, collection) { }
+
+        public int DetectorCount => this.Sum(s => s.DetectorCount);
+
+        public override bool InRange(DateTime time)
+        {
+            return time >= Start && time < End;
+        }
+
+        public override string ToString()
+        {
+            return $"{Start}***{DetectorCount}***{End}";
+        }
+    }
+
+    public abstract class VolumeBase : StartEndRange
+    {
+        public int DetectorCount { get; set; }
+    }
+
+    public class Volume : VolumeBase
     {
         public int Phase { get; set; }
         public DirectionTypes Direction { get; set; }
-        public int DetectorCount { get; set; }
+        //public int DetectorCount { get; set; }
 
         //public DirectionTypes OpposingDirection => new OpposingDirection(Direction);
 
@@ -99,135 +147,110 @@ namespace ATSPM.Application.Analysis.ApproachVolume
         }
     }
 
-    public class CalculatePhaseVolume : TransformProcessStepBase<IEnumerable<CorrectedDetectorEvent>, IReadOnlyList<Timeline<TotalVolume>>>
+    public class CalculateTotalVolumes : TransformManyProcessStepBase<IEnumerable<CorrectedDetectorEvent>, TotalVolumes>
     {
         private readonly TimelineOptions _options;
         
-        public CalculatePhaseVolume(TimelineOptions options, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
+        public CalculateTotalVolumes(TimelineOptions options, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
         {
             _options = options;
         }
 
-        protected override Task<IReadOnlyList<Timeline<TotalVolume>>> Process(IEnumerable<CorrectedDetectorEvent> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<TotalVolumes>> Process(IEnumerable<CorrectedDetectorEvent> input, CancellationToken cancelToken = default)
         {
-            //var result = input.GroupBy(g => g.Detector?.Approach, (k, v) =>
-            //new Timeline<Volume>().GenerateTimeFrameInMinutes(_options.Start, _options.End, _options.Bin)
-            //.Select((s, i) => new Volume()
-            //{
-            //    Phase = k.ProtectedPhaseNumber,
-            //    Direction = k.DirectionTypeId,
-            //    //StartTime = s.Start,
-            //    //EndTime = s.End,
-            //    DetectorCount = v.Where(w => w.CorrectedTimeStamp >= s.Start && w.CorrectedTimeStamp < s.End).Count()
-            //})).SelectMany(m => m)
-            //.ToList();
-
-            var result = new List<Timeline<TotalVolume>>();
+            var result = new List<TotalVolumes>();
 
             var test = input.GroupBy(g => g.Detector.Approach);
 
             foreach (var t in test)
             {
-                //Console.WriteLine($"approach: {t.Key.ProtectedPhaseNumber}-{t.Key.DirectionTypeId}");
+                var total = new TotalVolumes(_options);
 
                 var c = new OpposingDirection(t.Key.DirectionTypeId);
 
                 var o = test.Where(w => w.Key.DirectionTypeId == c).FirstOrDefault();
 
-                var pv = Timeline.InMinutes<Volume>(_options.Start, _options.End, _options.Size);
-
-                //Console.WriteLine($"pv count: {pv.Count}");
-
-                pv.ForEach(a =>
-                 {
-                     a.Direction = t.Key.DirectionTypeId;
-                     a.Phase = t.Key.ProtectedPhaseNumber;
-                     a.DetectorCount = t.Where(w => a.InRange(w.CorrectedTimeStamp)).Count();
-                 });
-
-                //foreach (var v in pv)
-                //{
-                //    Console.WriteLine($"pv: {v}");
-                //}
-
-                var pvp = GetPeakVolume(pv);
-
-                Console.WriteLine($"pvp PHF: {pvp.PHF}");
-                foreach (var v in pvp)
+                total.ForEach(f =>
                 {
-                    Console.WriteLine($"pv: {v}");
-                }
+                    f.Primary = new Volume()
+                    {
+                        Start = f.Start,
+                        End = f.End,
+                        Direction = t.Key.DirectionTypeId,
+                        Phase = t.Key.ProtectedPhaseNumber,
+                        DetectorCount = t.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
+                    };
 
-
-                var ov = Timeline.InMinutes<Volume>(_options.Start, _options.End, _options.Size);
-
-                //Console.WriteLine($"ov count: {ov.Count}");
-
-                ov.ForEach(a =>
-                {
-                    a.Direction = o.Key.DirectionTypeId;
-                    a.Phase = o.Key.ProtectedPhaseNumber;
-                    a.DetectorCount = o.Where(w => a.InRange(w.CorrectedTimeStamp)).Count();
+                    f.Opposing = new Volume()
+                    {
+                        Start = f.Start,
+                        End = f.End,
+                        Direction = o.Key.DirectionTypeId,
+                        Phase = o.Key.ProtectedPhaseNumber,
+                        DetectorCount = o.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
+                    };
                 });
 
-                //foreach (var v in ov)
+                result.Add(total);
+
+                //foreach (var a in total)
                 //{
-                //    Console.WriteLine($"ov: {v}");
+                //    Console.WriteLine($"p: {a.Primary}");
+                //    Console.WriteLine($"o: {a.Oppossing}");
                 //}
-
-                var zip = pv.Zip(ov, (p, o) => new TotalVolume() 
-                { 
-                    Phase = t.Key.ProtectedPhaseNumber,
-                    DetectorCount = p.DetectorCount + o.DetectorCount,
-                    Primary = p, 
-                    Oppossing = o, 
-                    Start = o.Start, 
-                    End = o.End 
-                });
-
-                var final = new Timeline<TotalVolume>(zip);
-
-                //foreach (var f in final)
-                //{
-                //    Console.WriteLine($"final: {f}");
-                //}
-
-                result.Add(final);
-
-
             }
 
-            return Task.FromResult<IReadOnlyList<Timeline<TotalVolume>>>(result);
+            return Task.FromResult<IEnumerable<TotalVolumes>>(result);
+        }
+    }
+
+    public class GenerateApproachVolumeResults : TransformProcessStepBase<TotalVolumes, ApproachVolumeResult>
+    {
+        private readonly TimelineOptions _options;
+
+        public GenerateApproachVolumeResults(TimelineOptions options, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        {
+            _options = options;
         }
 
-        public PeakVolume GetPeakVolume(IEnumerable<Volume> volumes)
+        protected override Task<ApproachVolumeResult> Process(TotalVolumes input, CancellationToken cancelToken = default)
         {
-            var chunks = 60 / 15;
+            var chunks = 60 / input.Size;
 
-            var blocks = new List<List<Volume>>();
+            var peakA = input.Select(s => s.Primary).GetPeakVolumes(chunks).ToList();
+            var o = input.Where(w => peakA.Contains(w.Primary)).Select(s => s.Opposing).Sum(s => s.DetectorCount);
 
-            for (int i = 0; i < chunks; i++)
-            {
-                blocks.Add(volumes.Skip(i).Take(chunks).ToList());
+            var peakB = input.Select(s => s.Opposing).GetPeakVolumes(chunks);
+            var p = input.Where(w => peakB.Contains(w.Opposing)).Select(s => s.Primary).Sum(s => s.DetectorCount);
 
-                //var test = this.Skip(i).Take(chunks).Select(s => s.DetectorCount).Aggregate((a, b) => a + b);
-                // Console.WriteLine($"t: {this[i].Start} - {test}");
-            }
+            var peakTotal = input.GetPeakVolumes(chunks);
 
-            //var max = blocks.Max(m => blocks.Select(s => s.DetectorCount).Aggregate((a, b) => a + b));
+            var result = new ApproachVolumeResult();
 
-            var group = blocks.Aggregate((a, b) => a.Sum(s => s.DetectorCount) >= b.Sum(s => s.DetectorCount) ? a : b);
+            result.Start = input.Start;
+            result.End = input.End;
 
-            //Console.WriteLine($"t: {max}");
+            result.PrimaryTotalVolume = input.Select(s => s.Primary).Sum(s => s.DetectorCount);
+            result.PrimaryPeakVolume = peakA.Sum(s => s.DetectorCount);
+            result.PrimaryPHF = AtspmMath.PeakHourFactor(result.PrimaryPeakVolume, peakA.Max(m => m.DetectorCount), chunks);
 
-            foreach (var g in group)
-            {
-                Console.WriteLine($"g: {g}");
-            }
+            result.OpposingTotalVolume = input.Select(s => s.Opposing).Sum(s => s.DetectorCount);
+            result.OpposingPeakVolume = peakB.Sum(s => s.DetectorCount);
+            result.OpposingPHF = AtspmMath.PeakHourFactor(result.OpposingPeakVolume, peakB.Max(m => m.DetectorCount), chunks);
 
+            result.PrimaryDFactor = AtspmMath.PeakHourDFactor(result.PrimaryPeakVolume, o);
+            result.OpposingDFactor = AtspmMath.PeakHourDFactor(result.OpposingPeakVolume, p);
+            result.PrimaryKFactor = AtspmMath.PeakHourKFactor(result.PrimaryTotalVolume, result.PrimaryPeakVolume, result.OpposingTotalVolume, o);
+            result.OpposingKFactor = AtspmMath.PeakHourKFactor(result.OpposingTotalVolume, result.OpposingPeakVolume, result.PrimaryTotalVolume, p);
 
+            result.TotalVolume = input.DetectorCount;
+            result.TotalPeakVolume = peakTotal.Sum(s => s.DetectorCount);
+            result.TotalPHF = AtspmMath.PeakHourFactor(result.TotalPeakVolume, peakTotal.Max(m => m.DetectorCount), chunks);
+            result.TotalKFactor = Math.Round(Convert.ToDouble(result.TotalPeakVolume) / Convert.ToDouble(result.TotalVolume), 3);
 
-            return new PeakVolume(group);
+            Console.WriteLine($"kfactor: {result.TotalKFactor}");
+
+            return Task.FromResult(result);
         }
     }
 
