@@ -100,6 +100,15 @@ namespace ATSPM.Application.Analysis.ApproachVolume
         public int TotalPeakVolume { get; set; }
         public double TotalPHF { get; set; }
         public double TotalKFactor { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Start} " +
+                $"- ptv:{PrimaryTotalVolume} - ppv:{PrimaryPeakVolume} - pphf:{PrimaryPHF} - pdf:{PrimaryDFactor} - pkf:{PrimaryKFactor} " +
+                $"- otv:{OpposingTotalVolume} - opv:{OpposingPeakVolume} - ophf:{OpposingPHF} - odf:{OpposingDFactor} - okf:{OpposingKFactor} " +
+                $"- tv:{TotalVolume} - tpv:{TotalPeakVolume} - tphf:{TotalPHF} - tkf:{TotalKFactor} " +
+                $"- {End}";
+        }
     }
 
     public class TotalVolumes : Timeline<TotalVolume>
@@ -193,11 +202,11 @@ namespace ATSPM.Application.Analysis.ApproachVolume
 
                 result.Add(total);
 
-                //foreach (var a in total)
-                //{
-                //    Console.WriteLine($"p: {a.Primary}");
-                //    Console.WriteLine($"o: {a.Oppossing}");
-                //}
+                foreach (var a in total)
+                {
+                    Console.WriteLine($"p: {a.Primary}");
+                    Console.WriteLine($"o: {a.Opposing}");
+                }
             }
 
             return Task.FromResult<IEnumerable<TotalVolumes>>(result);
@@ -208,10 +217,7 @@ namespace ATSPM.Application.Analysis.ApproachVolume
     {
         private readonly TimelineOptions _options;
 
-        public GenerateApproachVolumeResults(TimelineOptions options, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            _options = options;
-        }
+        public GenerateApproachVolumeResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<ApproachVolumeResult> Process(TotalVolumes input, CancellationToken cancelToken = default)
         {
@@ -248,68 +254,60 @@ namespace ATSPM.Application.Analysis.ApproachVolume
             result.TotalPHF = AtspmMath.PeakHourFactor(result.TotalPeakVolume, peakTotal.Max(m => m.DetectorCount), chunks);
             result.TotalKFactor = Math.Round(Convert.ToDouble(result.TotalPeakVolume) / Convert.ToDouble(result.TotalVolume), 3);
 
-            Console.WriteLine($"kfactor: {result.TotalKFactor}");
-
             return Task.FromResult(result);
         }
     }
 
-    public class ApproachVolumeWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
+    public class ApproachVolumeWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachVolumeResult>
     {
         //protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
 
-        //internal GetDetectorEvents GetDetectorEvents { get; private set; }
+        internal GetDetectorEvents GetDetectorEvents { get; private set; }
 
-        //public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
-
-        //public FilteredDetectorData FilteredDetectorData { get; private set; }
-        //public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
-        //public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        //public CalculateApproachDelay CalculateDelayValues { get; private set; }
-        //public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
+        public FilteredDetectorData FilteredDetectorData { get; private set; }
+        public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
+        public CalculateTotalVolumes CalculateTotalVolumes { get; private set; }
+        public GenerateApproachVolumeResults GenerateApproachVolumeResults { get; private set; }
 
         public override void InstantiateSteps()
         {
-            //FilteredPhaseIntervalChanges = new();
-            //FilteredDetectorData = new();
-            //CreateRedToRedCycles = new();
-            //IdentifyandAdjustVehicleActivations = new();
-            //mergeCalculateDelayValues = new();
-            //CalculateDelayValues = new();
-            //GenerateApproachDelayResults = new();
+            FilteredDetectorData = new();
+            IdentifyandAdjustVehicleActivations = new();
+            //HACK: figure this out!
+            CalculateTotalVolumes = new(new TimelineOptions()
+            {
+                Start = DateTime.Parse("4/17/2023 8:00:0.0"),
+                End = DateTime.Parse("4/17/2023 10:00:0.0"),
+                Size = 15
+            });
+            GenerateApproachVolumeResults = new();
 
-            //GetDetectorEvents = new();
+            GetDetectorEvents = new();
         }
 
         public override void AddStepsToTracker()
         {
-            //Steps.Add(FilteredPhaseIntervalChanges);
-            //Steps.Add(FilteredDetectorData);
-            //Steps.Add(CreateRedToRedCycles);
-            //Steps.Add(IdentifyandAdjustVehicleActivations);
-            //Steps.Add(mergeCalculateDelayValues);
-            //Steps.Add(CalculateDelayValues);
-            //Steps.Add(GenerateApproachDelayResults);
+            Steps.Add(FilteredDetectorData);
+            Steps.Add(IdentifyandAdjustVehicleActivations);
+            Steps.Add(CalculateTotalVolumes);
+            Steps.Add(GenerateApproachVolumeResults);
 
-            //Steps.Add(GetDetectorEvents);
+            Steps.Add(GetDetectorEvents);
         }
 
         public override void LinkSteps()
         {
-            //Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
-            //Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
+            Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            //FilteredPhaseIntervalChanges.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
-            //FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            //IdentifyandAdjustVehicleActivations.LinkTo(mergeCalculateDelayValues.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            //CreateRedToRedCycles.LinkTo(mergeCalculateDelayValues.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            //mergeCalculateDelayValues.LinkTo(CalculateDelayValues, new DataflowLinkOptions() { PropagateCompletion = true });
-            //CalculateDelayValues.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            IdentifyandAdjustVehicleActivations.LinkTo(CalculateTotalVolumes, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateTotalVolumes.LinkTo(GenerateApproachVolumeResults, new DataflowLinkOptions() { PropagateCompletion = true });
+            GenerateApproachVolumeResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 
+    //HACK: figure this out! can't do this with only one detector because you can't figure out opposing
     internal class GetDetectorEvents : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>>
     {
         public GetDetectorEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
