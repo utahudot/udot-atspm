@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Reports.Business.Common;
+using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.SplitFail
 {
-    public class SplitFailsResult
+    public class SplitFailsResult:ApproachResult
     {
         public SplitFailsResult(
-            string chartName,
             string signalId,
-            string signalLocation,
+            int approachId,
             int phaseNumber,
-            string phaseDescription,
             DateTime start,
             DateTime end,
             int totalSplitFails,
@@ -22,15 +21,9 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             ICollection<ForceOffRedOccupancy> forceOffRedOccupancies,
             ICollection<AverageGor> averageGor,
             ICollection<AverageRor> averageRor,
-            ICollection<PercentFail> percentFails)
+            ICollection<PercentFail> percentFails):base(approachId, signalId, start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
             PhaseNumber = phaseNumber;
-            PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
             TotalSplitFails = totalSplitFails;
             Plans = plans;
             FailLines = failLines;
@@ -42,14 +35,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             AverageRor = averageRor;
             PercentFails = percentFails;
         }
-
-        public string ChartName { get; set; }
-        public string SignalId { get; set; }
-        public string SignalLocation { get; set; }
         public int PhaseNumber { get; set; }
-        public string PhaseDescription { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
         public int TotalSplitFails { get; set; }
         public ICollection<PlanSplitFail> Plans { get; set; }
         public ICollection<FailLine> FailLines { get; set; }

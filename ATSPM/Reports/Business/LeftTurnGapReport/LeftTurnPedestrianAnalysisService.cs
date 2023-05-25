@@ -12,17 +12,20 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         private readonly IApproachRepository _approachRepository;
         private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
+        private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
 
         public LeftTurnPedestrianAnalysisService(
             ISignalRepository signalRepository,
             IApproachRepository approachRepository,
             IPhasePedAggregationRepository phasePedAggregationRepository,
-            IApproachCycleAggregationRepository approachCycleAggregationRepository)
+            IApproachCycleAggregationRepository approachCycleAggregationRepository,
+            LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
             _signalRepository = signalRepository;
             _approachRepository = approachRepository;
             _phasePedAggregationRepository = phasePedAggregationRepository;
             _approachCycleAggregationRepository = approachCycleAggregationRepository;
+            this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
         public PedActuationResult GetPedestrianPercentage(
             string signalId,
@@ -35,8 +38,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         {
             var signal = _signalRepository.GetLatestVersionOfSignal(signalId, start);
             var approach = signal.Approaches.Where(a => a.Id == approachId).FirstOrDefault();
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(approachId, _approachRepository);
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
             var cycleAverage = GetCycleAverage(signalId, start, end, startTime, endTime, opposingPhase, daysOfWeek);
             var pedCycleAverage = GetPedCycleAverage(signalId, start, end, startTime, endTime, opposingPhase, daysOfWeek);
 

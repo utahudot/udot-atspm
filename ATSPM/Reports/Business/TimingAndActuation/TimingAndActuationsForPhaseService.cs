@@ -17,43 +17,76 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             List<ControllerEventLog> controllerEventLogs
             )
         {
-            var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseResult
-            {
-                GetPermissivePhase = options.GetPermissivePhase,
-                ApproachId = options.ApproachId,
-                PhaseNumber = options.PhaseNumber,
-                PhaseOrOverlap = options.PhaseOrOverlap,
-                CycleAllEvents = GetCycleEvents(options, approach, controllerEventLogs)
-            };
+            var stopBarEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var pedestrianEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var laneByLanes = new Dictionary<string, List<ControllerEventLog>>();
+            var advancePresenceEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var advanceCountEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var phaseCustomEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var pedestrianIntervals = new List<ControllerEventLog>();
+
+
             if (options.ShowStopBarPresence)
             {
-                timingAndActuationsForPhaseData.StopBarEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.SBP);
+                stopBarEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.SBP);
             }
             if (options.ShowPedestrianActuation && !options.GetPermissivePhase)
             {
-                timingAndActuationsForPhaseData.PedestrianEvents = GetPedestrianEvents(approach, options, controllerEventLogs);
+                pedestrianEvents = GetPedestrianEvents(approach, options, controllerEventLogs);
             }
             if (options.ShowPedestrianIntervals && !options.GetPermissivePhase)
             {
-                timingAndActuationsForPhaseData.PedestrianIntervals = GetPedestrianIntervals(approach, options, controllerEventLogs);
+                pedestrianIntervals = GetPedestrianIntervals(approach, options, controllerEventLogs);
             }
             if (options.ShowLaneByLaneCount)
             {
-                timingAndActuationsForPhaseData.LaneByLanes = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.LLC);
+                laneByLanes = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.LLC);
             }
             if (options.ShowAdvancedDilemmaZone)
             {
-                timingAndActuationsForPhaseData.AdvancePresenceEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AP);
+                advancePresenceEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AP);
             }
             if (options.ShowAdvancedCount)
             {
-                timingAndActuationsForPhaseData.AdvanceCountEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AC);
+                advanceCountEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AC);
             }
             if (options.PhaseEventCodesList != null)
             {
-                timingAndActuationsForPhaseData.PhaseCustomEvents = GetPhaseCustomEvents(approach, options, controllerEventLogs);
+                phaseCustomEvents = GetPhaseCustomEvents(approach, options, controllerEventLogs);
             }
+            var cycleAllEvents = GetCycleEvents(options, approach, controllerEventLogs);
+            var phaseNumberSort = GetPhaseSort(options, approach);
+            var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseResult(
+                options.ApproachId,
+                approach.SignalId,
+                options.Start,
+                options.End,
+                options.PhaseNumber,
+                options.PhaseOrOverlap,
+                phaseNumberSort,
+                options.GetPermissivePhase,
+                pedestrianIntervals,
+                pedestrianEvents,
+                cycleAllEvents,
+                advanceCountEvents,
+                advancePresenceEvents,
+                stopBarEvents,
+                laneByLanes,
+                phaseCustomEvents
+                );
             return timingAndActuationsForPhaseData;
+        }
+
+        private string GetPhaseSort(TimingAndActuationsOptions options, Approach approach)
+        {
+            return options.GetPermissivePhase?  // Check if the 'GetPermissivePhase' property of 'options' is true
+                approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
+                    "zOverlap - " + approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    : "Phase - " + approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                :  // If 'GetPermissivePhase' is false
+                approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
+                    "zOverlap - " + approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    : "Phase = " + approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
         }
 
         public Dictionary<string, List<ControllerEventLog>> GetCycleEvents(

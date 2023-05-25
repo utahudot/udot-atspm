@@ -1,4 +1,5 @@
 using ATSPM.Data.Enums;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Transactions;
@@ -8,12 +9,11 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume;
 /// <summary>
 /// Approach Volume Chart
 /// </summary>
-public class ApproachVolumeResult
+public class ApproachVolumeResult : ApproachResult
 {
     public ApproachVolumeResult(
-        string chartName,
         string signalId,
-        string signalLocation,
+        int approachId,
         DateTime start,
         DateTime end,
         DetectionTypes detectorType,
@@ -39,13 +39,8 @@ public class ApproachVolumeResult
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume)
+        int opposingTotalVolume):base(approachId, signalId, start, end)
     {
-        ChartName = chartName;
-        SignalId = signalId;
-        SignalLocation = signalLocation;
-        Start = start;
-        End = end;
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;
         PrimaryDirectionName = primaryDirectionName;
@@ -72,11 +67,6 @@ public class ApproachVolumeResult
         OpposingTotalVolume = opposingTotalVolume;
     }
 
-    public string ChartName { get; internal set; }
-    public string SignalId { get; internal set; }
-    public string SignalLocation { get; internal set; }
-    public DateTime Start { get; internal set; }
-    public DateTime End { get; internal set; }
     public DetectionTypes DetectorType { get; internal set; }
     public int DistanceFromStopBar { get; internal set; }
     public string PrimaryDirectionName { get; internal set; }

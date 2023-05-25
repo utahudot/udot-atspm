@@ -1,4 +1,5 @@
 using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -7,12 +8,10 @@ namespace ATSPM.Application.Reports.Business.PhaseTermination;
 /// <summary>
 /// Phase Termination chart
 /// </summary>
-public class PhaseTerminationResult
+public class PhaseTerminationResult:SignalResult
 {
     public PhaseTerminationResult(
-        string chartName,
         string signalId,
-        string signalLocation,
         DateTime start,
         DateTime end,
         int consecutiveCount,
@@ -21,13 +20,8 @@ public class PhaseTerminationResult
         ICollection<MaxOut> maxOuts,
         ICollection<ForceOff> forceOffs,
         ICollection<PedWalkBegin> pedWalkBegins,
-        ICollection<UnknownTermination> unknownTerminations)
+        ICollection<UnknownTermination> unknownTerminations):base(signalId,  start, end)
     {
-        ChartName = chartName;
-        SignalId = signalId;
-        SignalLocation = signalLocation;
-        Start = start;
-        End = end;
         ConsecutiveCount = consecutiveCount;
         Plans = plans;
         GapOuts = gapOuts;
@@ -36,12 +30,6 @@ public class PhaseTerminationResult
         PedWalkBegins = pedWalkBegins;
         UnknownTerminations = unknownTerminations;
     }
-
-    public string ChartName { get; internal set; }
-    public string SignalId { get; internal set; }
-    public string SignalLocation { get; internal set; }
-    public DateTime Start { get; internal set; }
-    public DateTime End { get; internal set; }
     public int ConsecutiveCount { get; internal set; }
     public ICollection<Plan> Plans { get; internal set; }
     public ICollection<GapOut> GapOuts { get; internal set; }

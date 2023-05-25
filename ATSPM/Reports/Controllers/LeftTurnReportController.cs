@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Models;
 using ATSPM.Data.Enums;
+using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.PedDelay;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -26,6 +28,9 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
         private readonly IApproachSplitFailAggregationRepository _approachSplitFailAggregationRepository;
         private readonly LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService;
+        private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
+        private readonly LeftTurnPedestrianAnalysisService leftTurnPedestrianAnalysisService;
+        private readonly LeftTurnGapDurationAnalysis leftTurnGapDurationAnalysis;
 
         public LeftTurnReportController(ILogger<LeftTurnReportController> logger,
             IPhasePedAggregationRepository phasePedAggregationRepository,
@@ -36,8 +41,11 @@ namespace ATSPM.Application.Reports.Controllers
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
-,           IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
-            LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService
+, IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
+            LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService,
+            LeftTurnReportPreCheckService leftTurnReportPreCheckService,
+            LeftTurnPedestrianAnalysisService leftTurnPedestrianAnalysisService,
+            LeftTurnGapDurationAnalysis leftTurnGapDurationAnalysis
             )
         {
             _logger = logger;
@@ -51,12 +59,13 @@ namespace ATSPM.Application.Reports.Controllers
             _phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             _approachSplitFailAggregationRepository = approachSplitFailAggregationRepository;
             this.leftTurnVolumeAnalysisService = leftTurnVolumeAnalysisService;
+            this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
+            this.leftTurnPedestrianAnalysisService = leftTurnPedestrianAnalysisService;
+            this.leftTurnGapDurationAnalysis = leftTurnGapDurationAnalysis;
         }
 
         [HttpPost("/DataCheck")]
         public DataCheckResult Get([FromBody] DataCheckParameters parameters)
-        //(string signalId, int approachId, DateTime startDate, DateTime endDate, int volumePerHourThreshold, 
-        //double gapOutThreshold, double pedestrianThreshold, int[] daysOfWeek)
         {
             var amStartTime = new TimeSpan(6, 0, 0);
             var amEndTime = new TimeSpan(9, 0, 0);
@@ -64,60 +73,235 @@ namespace ATSPM.Application.Reports.Controllers
             var pmEndTime = new TimeSpan(19, 0, 0);
 
             var approach = _approachRepository.Lookup(parameters.ApproachId);
-            var dataCheck = new DataCheckResult();
-            dataCheck.ApproachDescriptions = approach.Description;
-            dataCheck.GapOutOk = false;
-            dataCheck.LeftTurnVolumeOk = false;
-            dataCheck.PedCycleOk = false;
-            dataCheck.InsufficientDetectorEventCount = false;
-            dataCheck.InsufficientCycleAggregation = false;
-            dataCheck.InsufficientPhaseTermination = false;
-            var detectors = new List<Data.Models.Detector>();
-            //if(approach.Detectors.Any(d => d.DetectionIDs.Contains(4)))
-            var movementTypes = new List<MovementTypes>() { MovementTypes.L };
-            foreach (var detector in approach.Detectors.Where(d => movementTypes.Contains(d.MovementTypeId)).ToList())
-            {
-                if (!_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(detector.Id, parameters.StartDate.Add(amStartTime), parameters.StartDate.Add(amEndTime)) &&
-                    !_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(detector.Id, parameters.StartDate.Add(pmStartTime), parameters.StartDate.Add(pmEndTime)))
-                {
-                    dataCheck.InsufficientDetectorEventCount = true;
-                    break;
-                }
-            }
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            DataCheckResult dataCheck = SetDataCheckDefaults(approach);
+            dataCheck.InsufficientDetectorEventCount = CheckDetectorEventCountAggregationsExist(
+                parameters,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                approach);
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+            int? phaseNumber = null;
+
             if (approach.ProtectedPhaseNumber != 0)
             {
-                CheckTablesForData(approach.SignalId, approach.ProtectedPhaseNumber, parameters, amStartTime, amEndTime, pmStartTime, pmEndTime, dataCheck, opposingPhase);
+                phaseNumber = approach.ProtectedPhaseNumber;
             }
             else if (approach.PermissivePhaseNumber.HasValue)
             {
-                CheckTablesForData(approach.SignalId, approach.PermissivePhaseNumber.Value, parameters, amStartTime, amEndTime, pmStartTime, pmEndTime, dataCheck, opposingPhase);
+                phaseNumber = approach.PermissivePhaseNumber.Value;
+            }
+
+            if (phaseNumber.HasValue)
+            {
+                CheckTablesForData(
+                    approach.SignalId,
+                    phaseNumber.Value,
+                    parameters,
+                    amStartTime,
+                    amEndTime,
+                    pmStartTime,
+                    pmEndTime,
+                    dataCheck,
+                    opposingPhase);
             }
 
             if (dataCheck.InsufficientDetectorEventCount || dataCheck.InsufficientCycleAggregation || dataCheck.InsufficientPhaseTermination)
                 return dataCheck;
-            LeftTurnReportPreCheck leftTurnReportPreCheck = new LeftTurnReportPreCheck(_phasePedAggregationRepository, _approachRepository,
-                _approachCycleAggregationRepository, _signalRepository, _detectorRepository,
-                _detectorEventCountAggregationRepository, _phaseTerminationAggregationRepository);
+            List<Detector> leftTurndetectors = GetLeftTurnLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!leftTurndetectors.Any())
+            {
+                throw new NotSupportedException("No Left Turn Detectors found");
+            }
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregations =
+                GetDetectorVolumebyDetector(
+                    leftTurndetectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    amStartTime,
+                    amEndTime,
+                    pmStartTime,
+                    pmEndTime,
+                    parameters.DaysOfWeek);
 
-            var flowRate = LeftTurnReportPreCheck.GetAMPMPeakFlowRate(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, amStartTime,
-            amEndTime, pmStartTime, pmEndTime, parameters.DaysOfWeek, _signalRepository, _approachRepository, _detectorEventCountAggregationRepository);
+            List<Detector> detectors = GetAllLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!detectors.Any())
+            {
+                throw new NotSupportedException("No Detectors found");
+            }
+            List<DetectorEventCountAggregation> volumeAggregations =
+                GetDetectorVolumebyDetector(
+                    detectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    amStartTime,
+                    amEndTime,
+                    pmStartTime,
+                    pmEndTime,
+                    parameters.DaysOfWeek);
+            if (!volumeAggregations.Any())
+            {
+                throw new NotSupportedException("No Detector Activation Aggregations found");
+            }
+
+            var flowRate = leftTurnReportPreCheckService.GetAMPMPeakFlowRate(
+                parameters.StartDate,
+                parameters.EndDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                parameters.DaysOfWeek,
+                approach,
+                leftTurnVolumeAggregations,
+                volumeAggregations);
             dataCheck.LeftTurnVolumeOk = flowRate.First().Value >= parameters.VolumePerHourThreshold
                 || flowRate.Last().Value >= parameters.VolumePerHourThreshold;
 
-            var gapOut = leftTurnReportPreCheck.GetAMPMPeakGapOut(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, amStartTime,
-            amEndTime, pmStartTime, pmEndTime, parameters.DaysOfWeek);
+            var phaseTerminationAggregations = Enumerable.Range(0, (parameters.EndDate - parameters.StartDate).Days + 1)
+                .Select(offset => parameters.StartDate.AddDays(offset))
+                .Select(tempDate => _phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(
+                    approach.SignalId,
+                    approach.PermissivePhaseNumber ?? approach.ProtectedPhaseNumber,
+                    tempDate.Add(amStartTime),
+                    tempDate.Add(amEndTime)))
+                .SelectMany(phaseTerminationsForDate => phaseTerminationsForDate)
+                .ToList();
+
+            List<PhaseCycleAggregation> cycleAggregations = GetCycleAggregations(
+                parameters,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                approach,
+                opposingPhase);
+
+            var gapOut = leftTurnReportPreCheckService.GetAMPMPeakGapOut(
+                parameters.StartDate,
+                parameters.EndDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                parameters.DaysOfWeek,
+                approach,
+                phaseTerminationAggregations,
+                leftTurnVolumeAggregations,
+                volumeAggregations,
+                cycleAggregations);
             dataCheck.GapOutOk = gapOut.First().Value <= parameters.GapOutThreshold && gapOut.Last().Value <= parameters.GapOutThreshold;
 
-            var pedestrianPercentage = leftTurnReportPreCheck.GetAMPMPeakPedCyclesPercentages(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, amStartTime,
-            amEndTime, pmStartTime, pmEndTime, parameters.DaysOfWeek);
+            var phasePedAggregations = Enumerable.Range(0, (parameters.EndDate - parameters.StartDate).Days + 1)
+                .Select(offset => parameters.StartDate.AddDays(offset))
+                .Select(tempDate => _phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
+                    approach.SignalId,
+                    approach.PermissivePhaseNumber ?? approach.ProtectedPhaseNumber,
+                    tempDate.Add(amStartTime),
+                    tempDate.Add(amEndTime)))
+                .SelectMany(phasePedsForDate => phasePedsForDate)
+                .ToList();
+
+            var pedestrianPercentage = leftTurnReportPreCheckService.GetAMPMPeakPedCyclesPercentages(
+                parameters.ApproachId,
+                parameters.StartDate,
+                parameters.EndDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                parameters.DaysOfWeek,
+                approach,
+                leftTurnVolumeAggregations,
+                volumeAggregations,
+                cycleAggregations,
+                phasePedAggregations);
             dataCheck.PedCycleOk = pedestrianPercentage.First().Value <= parameters.PedestrianThreshold && pedestrianPercentage.Last().Value <= parameters.PedestrianThreshold;
 
             return dataCheck;
         }
 
-        private void CheckTablesForData(string signalId, int phaseNumber, DataCheckParameters parameters, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime,
-            TimeSpan pmEndTime, DataCheckResult dataCheck, int opposingPhase)
+        private bool CheckDetectorEventCountAggregationsExist(
+            DataCheckParameters parameters,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            Approach approach)
+        {
+            var movementTypes = new List<MovementTypes>() { MovementTypes.L };
+            foreach (var detector in approach.Detectors.Where(d => movementTypes.Contains(d.MovementTypeId)).ToList())
+            {
+                if (!_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(
+                    detector.Id,
+                    parameters.StartDate.Add(amStartTime),
+                    parameters.StartDate.Add(amEndTime)) &&
+                    !_detectorEventCountAggregationRepository.DetectorEventCountAggregationExists(
+                    detector.Id,
+                    parameters.StartDate.Add(pmStartTime),
+                    parameters.StartDate.Add(pmEndTime)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static DataCheckResult SetDataCheckDefaults(Approach approach)
+        {
+            return new DataCheckResult
+            {
+                ApproachDescriptions = approach.Description,
+                GapOutOk = false,
+                LeftTurnVolumeOk = false,
+                PedCycleOk = false,
+                InsufficientDetectorEventCount = false,
+                InsufficientCycleAggregation = false,
+                InsufficientPhaseTermination = false
+            };
+        }
+
+        private List<PhaseCycleAggregation> GetCycleAggregations(
+            DataCheckParameters parameters,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            Approach approach,
+            int opposingPhase)
+        {
+            var cycleAggregations = Enumerable.Range(0, (parameters.EndDate - parameters.StartDate).Days + 1)
+                             .Select(offset => parameters.StartDate.AddDays(offset))
+                             .Select(tempDate => _approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(
+                                 approach.SignalId,
+                                 opposingPhase,
+                                 tempDate.Add(amStartTime),
+                                 tempDate.Add(amEndTime)))
+                             .SelectMany(cycleAggregationsForDate => cycleAggregationsForDate)
+                             .ToList();
+            cycleAggregations.AddRange(Enumerable.Range(0, (parameters.EndDate - parameters.StartDate).Days + 1)
+                 .Select(offset => parameters.StartDate.AddDays(offset))
+                 .Select(tempDate => _approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(
+                     approach.SignalId,
+                     opposingPhase,
+                     tempDate.Add(pmStartTime),
+                     tempDate.Add(pmEndTime)))
+                 .SelectMany(cycleAggregationsForDate => cycleAggregationsForDate)
+                 .ToList());
+            return cycleAggregations;
+        }
+
+        private void CheckTablesForData(
+            string signalId,
+            int phaseNumber,
+            DataCheckParameters parameters,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            DataCheckResult dataCheck,
+            int opposingPhase)
         {
             if (!_approachCycleAggregationRepository.Exists(signalId, phaseNumber, parameters.StartDate.Add(amStartTime), parameters.StartDate.Add(amEndTime)) &&
                                 !_approachCycleAggregationRepository.Exists(signalId, phaseNumber, parameters.StartDate.Add(pmStartTime), parameters.StartDate.Add(pmEndTime)))
@@ -157,13 +341,57 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("/PeakHours")]
         public PeakHourResult GetPeakHours(PeakHourParameters parameters)
         {
+            var approach = _approachRepository.Lookup(parameters.ApproachId);
             var amStartTime = new TimeSpan(6, 0, 0);
             var amEndTime = new TimeSpan(9, 0, 0);
             var pmStartTime = new TimeSpan(15, 0, 0);
             var pmEndTime = new TimeSpan(18, 0, 0);
             PeakHourResult result = new PeakHourResult();
-            var peakResult = LeftTurnReportPreCheck.GetAMPMPeakFlowRate(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, amStartTime,
-            amEndTime, pmStartTime, pmEndTime, parameters.DaysOfWeek, _signalRepository, _approachRepository, _detectorEventCountAggregationRepository);
+            List<Detector> leftTurndetectors = GetLeftTurnLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!leftTurndetectors.Any())
+            {
+                throw new NotSupportedException("No Left Turn Detectors found");
+            }
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregations =
+                GetDetectorVolumebyDetector(
+                    leftTurndetectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    amStartTime,
+                    amEndTime,
+                    pmStartTime,
+                    pmEndTime,
+                    parameters.DaysOfWeek);
+            List<Detector> detectors = GetAllLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!detectors.Any())
+            {
+                throw new NotSupportedException("No Detectors found");
+            }
+            List<DetectorEventCountAggregation> volumeAggregations =
+                GetDetectorVolumebyDetector(
+                    detectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    amStartTime,
+                    amEndTime,
+                    pmStartTime,
+                    pmEndTime,
+                    parameters.DaysOfWeek);
+            if (!volumeAggregations.Any())
+            {
+                throw new NotSupportedException("No Detector Activation Aggregations found");
+            }
+            var peakResult = leftTurnReportPreCheckService.GetAMPMPeakFlowRate(
+                parameters.StartDate,
+                parameters.EndDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                parameters.DaysOfWeek,
+                approach,
+                leftTurnVolumeAggregations,
+                volumeAggregations);
             var amPeak = peakResult.First();
             result.AmStartHour = amPeak.Key.Hours;
             result.AmStartMinute = amPeak.Key.Minutes;
@@ -182,12 +410,18 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("/GapDuration")]
         public GapDurationResult GetGapDurationAnalysis(ReportParameters parameters)
         {
+            var signal = _signalRepository.GetLatestVersionOfSignal(parameters.SignalId, parameters.StartDate);
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
-            var gapOutAnalysis = new LeftTurnGapDurationAnalysis(_approachRepository, _detectorRepository, _detectorEventCountAggregationRepository,
-                _phaseLeftTurnGapAggregationRepository, _signalRepository);
-            GapDurationResult gapDurationResult = gapOutAnalysis.GetPercentOfGapDuration(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate,
-                startTime, endTime, parameters.DaysOfWeek);
+            GapDurationResult gapDurationResult = leftTurnGapDurationAnalysis.GetPercentOfGapDuration(
+                parameters.SignalId,
+                parameters.ApproachId,
+                parameters.StartDate,
+                parameters.EndDate,
+                startTime,
+                endTime,
+                parameters.DaysOfWeek,
+                signal);
 
             return gapDurationResult;
         }
@@ -199,7 +433,13 @@ namespace ATSPM.Application.Reports.Controllers
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
             var splitFailResult = new SplitFailResult();
             var splitFailAnalysis = new LeftTurnSplitFailAnalysis(_approachRepository, _approachSplitFailAggregationRepository);
-            splitFailResult = splitFailAnalysis.GetSplitFailPercent(parameters.ApproachId, parameters.StartDate, parameters.EndDate, startTime, endTime, parameters.DaysOfWeek);
+            splitFailResult = splitFailAnalysis.GetSplitFailPercent(
+                parameters.ApproachId,
+                parameters.StartDate,
+                parameters.EndDate,
+                startTime,
+                endTime,
+                parameters.DaysOfWeek);
 
             return splitFailResult;
         }
@@ -209,26 +449,146 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
+            return leftTurnPedestrianAnalysisService.GetPedestrianPercentage(
+                parameters.SignalId,
+                parameters.ApproachId,
+                parameters.StartDate,
+                parameters.EndDate,
+                startTime,
+                endTime,
+                parameters.DaysOfWeek);
 
-            var pedAnalysis = new LeftTurnPedestrianAnalysisService(_signalRepository, _approachRepository, _phasePedAggregationRepository,
-                _approachCycleAggregationRepository);
-            var pedActuationResult = new PedActuationResult();
-            pedActuationResult = pedAnalysis.GetPedestrianPercentage(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate, startTime, endTime, parameters.DaysOfWeek);
-
-            return pedActuationResult;
         }
 
         [HttpPost("/Volume")]
         public LeftTurnVolumeValue GetVolumeAnalysis(ReportParameters parameters)
         {
+            var approach = _approachRepository.Lookup(parameters.ApproachId);
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
+            List<Detector> leftTurndetectors = GetLeftTurnLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!leftTurndetectors.Any())
+            {
+                throw new NotSupportedException("No Left Turn Detectors found");
+            }
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregations =
+                GetDetectorVolumebyDetector(
+                    leftTurndetectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    new TimeSpan(6, 0, 0),
+                    new TimeSpan(9, 0, 0),
+                    new TimeSpan(15, 0, 0),
+                    new TimeSpan(18, 0, 0),
+                    parameters.DaysOfWeek);
 
-            var volumeResult = leftTurnVolumeAnalysisService.GetLeftTurnVolumeStats(parameters.SignalId, parameters.ApproachId, parameters.StartDate, parameters.EndDate,
-                startTime, endTime, parameters.DaysOfWeek);
+            List<Detector> detectors = GetAllLaneByLaneDetectorsForSignal(approach.Signal);
+            if (!detectors.Any())
+            {
+                throw new NotSupportedException("No Detectors found");
+            }
+            List<DetectorEventCountAggregation> volumeAggregations =
+                GetDetectorVolumebyDetector(
+                    detectors,
+                    parameters.StartDate,
+                    parameters.EndDate,
+                    new TimeSpan(6, 0, 0),
+                    new TimeSpan(9, 0, 0),
+                    new TimeSpan(15, 0, 0),
+                    new TimeSpan(18, 0, 0),
+                    parameters.DaysOfWeek);
+            if (!volumeAggregations.Any())
+            {
+                throw new NotSupportedException("No Detector Activation Aggregations found");
+            }
+
+            var volumeResult = leftTurnVolumeAnalysisService.GetLeftTurnVolumeStats(
+                approach,
+                parameters.StartDate,
+                parameters.EndDate,
+                startTime,
+                endTime,
+                parameters.DaysOfWeek,
+                leftTurnVolumeAggregations,
+                volumeAggregations);
 
             return volumeResult;
         }
+
+        private List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(
+            List<Detector> detectors,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            int[] daysOfWeek)
+        {
+            var detectorAggregations = new List<DetectorEventCountAggregation>();
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                if (daysOfWeek.Contains((int)startDate.DayOfWeek))
+                    foreach (var detector in detectors)
+                    {
+                        detectorAggregations.AddRange(_detectorEventCountAggregationRepository
+                            .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(amStartTime), tempDate.Add(amEndTime)));
+                        detectorAggregations.AddRange(_detectorEventCountAggregationRepository
+                            .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(pmStartTime), tempDate.Add(pmEndTime)));
+                    }
+            }
+            return detectorAggregations;
+        }
+
+        private List<Detector> GetLeftTurnLaneByLaneDetectorsForSignal(
+            Signal signal)
+        {
+            var detectors = signal.GetDetectors();
+            List<Detector> detectorsList = new List<Detector>();
+            foreach (var detector in detectors)
+            {
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.LLC) && detector.MovementTypeId == MovementTypes.L)
+                    detectorsList.Add(detector);
+            }
+            if (detectorsList.Count > 0)
+                return detectorsList;
+
+            foreach (var detector in detectors)
+            {
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.SBP) && detector.MovementTypeId == MovementTypes.L)
+                    detectorsList.Add(detector);
+            }
+            return detectorsList;
+        }
+
+
+
+        private List<Detector> GetAllLaneByLaneDetectorsForSignal(
+            Signal signal)
+        {
+            var detectors = signal.GetDetectors();
+            List<Detector> detectorsList = new List<Detector>();
+            foreach (var detector in detectors)
+            {
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.LLC))
+                    detectorsList.Add(detector);
+            }
+            if (detectorsList.Count > 0)
+                return detectorsList;
+
+            foreach (var detector in detectors)
+            {
+                var detectionTypeIdList = detector.DetectionTypes.Select(d => d.Id).ToList();
+                if (detectionTypeIdList.Contains(DetectionTypes.SBP))
+                    detectorsList.Add(detector);
+            }
+            return detectorsList;
+        }
+
+
     }
 }
 

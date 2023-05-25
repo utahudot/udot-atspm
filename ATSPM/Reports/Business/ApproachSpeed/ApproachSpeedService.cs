@@ -50,9 +50,8 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 fifteenthSpeeds.Add(new FifteenthSpeeds(bucket.StartTime, bucket.FifteenthPercentile));
             }
             return new ApproachSpeedResult(
-                    "Approach Speed",
                     detector.Approach.SignalId,
-                    detector.Approach.Signal.SignalDescription(),
+                    detector.ApproachId,
                     detector.Approach.ProtectedPhaseNumber,
                     detector.Approach.Description,
                     options.Start, 

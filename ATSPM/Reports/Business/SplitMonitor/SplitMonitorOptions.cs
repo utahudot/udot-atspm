@@ -9,13 +9,15 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
 {
     public class SplitMonitorOptions
     {
-        public SplitMonitorOptions(string signalID, double? yAxisMax, int metricTypeID,
+
+        public SplitMonitorOptions(string signalID,int approachId, int phaseNumber, 
             DateTime startDate, DateTime endDate,
             int percentileSplit, bool showPlanStripes, bool showPedActivity,
             bool showAverageSplit, bool showPercentMaxOutForceOff, bool showPercentGapOuts, bool showPercentSkip)
         {
             SignalId = signalID;
-            MetricTypeId = metricTypeID;
+            ApproachId = approachId;
+            PhaseNumber = phaseNumber;
             Start = startDate;
             End = endDate;
             SelectedPercentileSplit = percentileSplit;
@@ -39,7 +41,8 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         public bool ShowPercentSkip { get; set; }
         public bool AdjustYAxis { get; set; }
         public string SignalId { get; private set; }
-        public int MetricTypeId { get; private set; }
+        public int ApproachId { get; private set; }
+        public int PhaseNumber { get; }
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
 

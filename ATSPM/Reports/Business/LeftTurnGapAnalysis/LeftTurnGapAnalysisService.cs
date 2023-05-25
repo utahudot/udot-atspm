@@ -214,9 +214,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             }
 
             return new LeftTurnGapAnalysisResult(
-                "Left Turn Gap Analysis",
                 approach.SignalId,
-                approach.Signal.SignalDescription(),
+                approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.StartDate,

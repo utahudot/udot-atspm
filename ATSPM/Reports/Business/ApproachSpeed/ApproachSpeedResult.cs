@@ -1,14 +1,14 @@
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
-    public class ApproachSpeedResult
+    public class ApproachSpeedResult:ApproachResult
     {
         public ApproachSpeedResult(
-            string chartName,
             string signalId,
-            string signalLocation,
+            int approachId,
             int phaseNumber,
             string phaseDescription,
             DateTime start,
@@ -19,15 +19,10 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
             ICollection<SpeedPlan> plans,
             ICollection<AverageSpeeds> averageSpeeds,
             ICollection<EightyFifthSpeeds> eightyFifthSpeeds,
-            ICollection<FifteenthSpeeds> fifteenthSpeeds)
+            ICollection<FifteenthSpeeds> fifteenthSpeeds):base(approachId, signalId, start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
             DetectionType = detectionType;
             DistanceFromStopBar = distanceFromStopBar;
             PostedSpeed = postedSpeed;
@@ -36,14 +31,8 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
             EightyFifthSpeeds = eightyFifthSpeeds;
             FifteenthSpeeds = fifteenthSpeeds;
         }
-
-        public string ChartName { get; set; }
-        public string SignalId { get; set; }
-        public string SignalLocation { get; set; }
         public int PhaseNumber { get; set; }
         public string PhaseDescription { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
         public string DetectionType { get; set; }
         public int DistanceFromStopBar { get; set; }
         public double PostedSpeed { get; set; }

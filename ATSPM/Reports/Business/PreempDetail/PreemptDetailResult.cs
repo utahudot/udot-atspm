@@ -1,4 +1,5 @@
 using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -7,12 +8,10 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
     /// <summary>
     /// Preempt Detail chart
     /// </summary>
-    public class PreemptDetailResult
+    public class PreemptDetailResult:SignalResult
     {
         public PreemptDetailResult(
-            string chartName,
             string signalId,
-            string signalLocation,
             DateTime start,
             DateTime end,
             int preemptNumber,
@@ -24,13 +23,8 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
             ICollection<CallMaxOutTime> callMaxOutTimes,
             ICollection<GateDownTime> gateDownTimes,
             ICollection<InputOn> inputOns,
-            ICollection<InputOff> inputOffs)
+            ICollection<InputOff> inputOffs):base(signalId, start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
-            Start = start;
-            End = end;
             PreemptNumber = preemptNumber;
             Plans = plans;
             Delay = delay;
@@ -42,12 +36,6 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
             InputOns = inputOns;
             InputOffs = inputOffs;
         }
-
-        public string ChartName { get; set; }
-        public string SignalId { get; set; }
-        public string SignalLocation { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
         public int PreemptNumber { get; set; }
         public ICollection<Plan> Plans { get; set; }
         public ICollection<Delay> Delay { get; set; }

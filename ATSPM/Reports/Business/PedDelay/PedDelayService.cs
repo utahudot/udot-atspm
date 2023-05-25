@@ -79,9 +79,8 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 }
             }
             return new PedDelayResult(
-                "Ped Delay",
                 pedPhase.Approach.SignalId,
-                pedPhase.Approach.Signal.SignalDescription(),
+                pedPhase.Approach.Id,
                 pedPhase.Approach.ProtectedPhaseNumber,
                 pedPhase.Approach.Description,
                 options.Start,

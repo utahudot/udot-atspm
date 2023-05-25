@@ -25,9 +25,8 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         {            
             var volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.HourlyVolume));
             return new PerdueCoordinationDiagramResult(
-                "Perdue Coordination Diagram",
                 options.SignalId,
-                approach.Signal.SignalDescription(),
+                approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.StartDate,

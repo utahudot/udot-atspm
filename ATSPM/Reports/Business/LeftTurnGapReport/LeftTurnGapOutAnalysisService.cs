@@ -5,6 +5,7 @@ using ATSPM.Data.Models;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
+using ATSPM.Application.Reports.Business.LeftTurnGapReport;
 
 namespace Legacy.Common.Business.LeftTurnGapReport
 {
@@ -32,37 +33,36 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             this.signalRepository = signalRepository;
         }
 
-        public double GetPercentOfGapDuration(
-            string signalId,
-            DirectionTypes directionType,
-            DateTime start,
-            DateTime end,
-            TimeSpan startTime,
-            TimeSpan endTime)
-        {
-            var approach = leftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionType);
-            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
-            int numberOfOposingLanes = GetNumberOfOpposingLanes(signalId, opposingPhase, start);
-            double criticalGap = GetCriticalGap(numberOfOposingLanes);
+        //public double GetPercentOfGapDuration(
+        //    string signalId,
+        //    DirectionTypes directionType,
+        //    DateTime start,
+        //    DateTime end,
+        //    TimeSpan startTime,
+        //    TimeSpan endTime)
+        //{
+        //    //var approach = leftTurnReportPreCheckService. .GetLTPhaseNumberPhaseTypeByDirection(signalId, directionType);
+        //    int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+        //    int numberOfOposingLanes = GetNumberOfOpposingLanes(signalId, opposingPhase, start);
+        //    double criticalGap = GetCriticalGap(numberOfOposingLanes);
 
-            int gapCountTotal = GetGapSummedTotal(signalId, opposingPhase, start, end, startTime, endTime, criticalGap);
-            //int gapForAllGapsGreaterThanCriticalGapTotal = GetGapForAllGapsGreaterThanCriticalGapTotal(signalId, opposingPhase, start, end, startTime, endTime, criticalGap);
-            double gapDemand = GetGapDemand(signalId, directionType, start, end, startTime, endTime, criticalGap);
-            if (gapCountTotal == 0)
-                throw new ArithmeticException("Gap Count cannot be zero");
-            return (gapDemand / gapCountTotal);
-        }
+        //    int gapCountTotal = GetGapSummedTotal(signalId, opposingPhase, start, end, startTime, endTime, criticalGap);
+        //    //int gapForAllGapsGreaterThanCriticalGapTotal = GetGapForAllGapsGreaterThanCriticalGapTotal(signalId, opposingPhase, start, end, startTime, endTime, criticalGap);
+        //    double gapDemand = GetGapDemand(signalId, directionType, start, end, startTime, endTime, criticalGap);
+        //    if (gapCountTotal == 0)
+        //        throw new ArithmeticException("Gap Count cannot be zero");
+        //    return (gapDemand / gapCountTotal);
+        //}
 
         private double GetGapDemand(
-            string signalId,
-            DirectionTypes directionType,
+            Approach approach,
             DateTime start,
             DateTime end,
             TimeSpan startTime,
             TimeSpan endTime,
             double criticalGap)
         {
-            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionType);
+            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
             int totalActivations = 0;
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {

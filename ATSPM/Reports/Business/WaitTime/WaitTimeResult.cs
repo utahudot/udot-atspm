@@ -1,3 +1,4 @@
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -7,9 +8,9 @@ namespace ATSPM.Application.Reports.Business.WaitTime
     /// <summary>
     /// Wait Time chart
     /// </summary>
-    public class WaitTimeResult
+    public class WaitTimeResult:ApproachResult
     {
-        public WaitTimeResult(string chartName,
+        public WaitTimeResult(string signalId,
                              int approachId,
                              string approachDescription,
                              int phaseNumber,
@@ -22,14 +23,11 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                              IReadOnlyList<WaitTimePoint> forceOffs,
                              IReadOnlyList<WaitTimePoint> unknowns,
                              IReadOnlyList<WaitTimePoint> average,
-                             IReadOnlyList<Volume> volumes)
+                             IReadOnlyList<Volume> volumes):base(approachId, signalId, start, end)
         {
-            ChartName = chartName;
             ApproachId = approachId;
             ApproachDescription = approachDescription;
             PhaseNumber = phaseNumber;
-            Start = start;
-            End = end;
             DetectionTypes = detectionTypes;
             Plans = plans;
             GapOuts = gapOuts;
@@ -39,13 +37,8 @@ namespace ATSPM.Application.Reports.Business.WaitTime
             Average = average;
             Volumes = volumes;
         }
-
-        public string ChartName { get; internal set; }
-        public int ApproachId { get; internal set; }
         public string ApproachDescription { get; internal set; }
         public int PhaseNumber { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
         public string DetectionTypes { get; internal set; }
         public IReadOnlyList<PlanWaitTime> Plans { get; internal set; }
         public IReadOnlyList<WaitTimePoint> GapOuts { get; internal set; }

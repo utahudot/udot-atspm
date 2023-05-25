@@ -74,9 +74,8 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 
             var plans = GetArrivalOnRedPlans(signalPhase.Plans, options.ShowPlanStatistics);
             return new ArrivalOnRedResult(
-                "Arrival On Red",
                 approach.SignalId,
-                approach.Signal.SignalDescription(),
+                approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.Start,

@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Reports.Business.Common;
+using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
-    public class ApproachDelayResult
+    public class ApproachDelayResult: ApproachResult
     {
         public ApproachDelayResult(
-            string chartName,
+            int approachId,
             string signalId,
-            string signalLocation,
             int phaseNumber,
             string phaseDescription,
             DateTime start,
@@ -17,15 +17,10 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             double totalDelay,
             List<ApproachDelayPlan> plans,
             List<ApproachDelayDataPoint> approachDelayDataPoints,
-            List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints)
+            List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints):base(approachId, signalId, start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
             AverageDelayPerVehicle = averageDelayPerVehicle;
             TotalDelay = totalDelay;
             Plans = plans;
@@ -33,13 +28,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             ApproachDelayPerVehicleDataPoints = approachDelayPerVehicleDataPoints;
         }
 
-        public string ChartName { get; }
-        public string SignalId { get; }
-        public string SignalLocation { get; }
         public int PhaseNumber { get; }
         public string PhaseDescription { get; }
-        public DateTime Start { get; }
-        public DateTime End { get; }
         public double AverageDelayPerVehicle { get; }
         public double TotalDelay { get; }
         public List<ApproachDelayPlan> Plans { get; }

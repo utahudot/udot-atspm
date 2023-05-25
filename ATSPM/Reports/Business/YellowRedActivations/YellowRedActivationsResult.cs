@@ -1,3 +1,4 @@
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -6,9 +7,10 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
     /// <summary>
     /// Yellow Red Activations chart
     /// </summary>
-    public class YellowRedActivationsResult
+    public class YellowRedActivationsResult:ApproachResult
     {
-        public YellowRedActivationsResult(string chartName,
+        public YellowRedActivationsResult(
+            string signalId,
             int approachId,
             string approachDescription,
             int phaseNumber,
@@ -21,14 +23,11 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             ICollection<YellowRedActivationEvent> redEvents,
             ICollection<YellowRedActivationEvent> yellowEvents,
             ICollection<YellowRedActivationEvent> redClearanceEvents,
-            ICollection<YellowRedActivationEvent> detectorEvents)
+            ICollection<YellowRedActivationEvent> detectorEvents):base(approachId, signalId,  start, end)
         {
-            ChartName = chartName;
             ApproachId = approachId;
             ApproachDescription = approachDescription;
             PhaseNumber = phaseNumber;
-            Start = start;
-            End = end;
             TotalViolations = totalViolations;
             SevereViolations = severeViolations;
             YellowLightOccurences = yellowLightOccurences;
@@ -39,12 +38,8 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DetectorEvents = detectorEvents;
         }
 
-        public string ChartName { get; internal set; }
-        public int ApproachId { get; internal set; }
         public string ApproachDescription { get; internal set; }
         public int PhaseNumber { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
         public int TotalViolations { get; internal set; }
         public int SevereViolations { get; internal set; }
         public int YellowLightOccurences { get; internal set; }

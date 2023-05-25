@@ -86,9 +86,8 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             var distanceFromStopBar = detector.DistanceFromStopBar.HasValue ? detector.DistanceFromStopBar.Value : 0;
 
             return new ApproachVolumeResult(
-                "Approach Volume",
                 options.SignalId,
-                signal.PrimaryName + "@" + signal.SecondaryName,
+                primaryApproaches.First().Id,
                 options.Start,
                 options.End,
                 options.DetectionType,

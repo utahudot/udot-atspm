@@ -13,32 +13,40 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         private readonly IDetectorRepository _detectorRepository;
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
-        private readonly ISignalRepository _signalsRepository;
+        private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
+
         public LeftTurnGapDurationAnalysis(
             IApproachRepository approachRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
-            ISignalRepository signalsRepository)
+            LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
             _approachRepository = approachRepository;
             _detectorRepository = detectorRepository;
             _detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             _phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
-            _signalsRepository = signalsRepository;
+            this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
-        public GapDurationResult GetPercentOfGapDuration(string signalId, int approachId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, int[] daysOfWeek)
+        public GapDurationResult GetPercentOfGapDuration(
+            string signalId,
+            int approachId,
+            DateTime start,
+            DateTime end,
+            TimeSpan startTime,
+            TimeSpan endTime,
+            int[] daysOfWeek,
+            Signal signal)
         {
-            var signal = _signalsRepository.GetLatestVersionOfSignal(signalId, start);
             var approach = signal.Approaches.Where(a => a.Id == approachId).FirstOrDefault();
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
             int numberOfOposingLanes = GetNumberOfOpposingLanes(signal, opposingPhase);
             double criticalGap = GetCriticalGap(numberOfOposingLanes);
             var gapDurationResult = new GapDurationResult
             {
                 Capacity = GetGapSummedTotal(signalId, opposingPhase, start, end, startTime, endTime, criticalGap, daysOfWeek),
                 AcceptableGaps = GetGapsList(signalId, opposingPhase, start, end, startTime, endTime, criticalGap, daysOfWeek),
-                Demand = GetGapDemand(approachId, start, end, startTime, endTime, criticalGap),
+                Demand = GetGapDemand(approach, start, end, startTime, endTime, criticalGap),
                 Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType.Abbreviation,
                 OpposingDirection = GetOpposingPhaseDirection(signal, opposingPhase)
             };
@@ -81,15 +89,24 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return acceptableGaps;
         }
 
-        private double GetGapDemand(int approachId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime, double criticalGap)
+        private double GetGapDemand(
+            Approach approach,
+            DateTime start,
+            DateTime end,
+            TimeSpan startTime,
+            TimeSpan endTime,
+            double criticalGap)
         {
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(approachId, _approachRepository);
+            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
             int totalActivations = 0;
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {
                 foreach (var detector in detectors)
                 {
-                    totalActivations += _detectorEventCountAggregationRepository.GetDetectorEventCountSumAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime));
+                    totalActivations += _detectorEventCountAggregationRepository.GetDetectorEventCountSumAggregationByDetectorIdAndDateRange(
+                        detector.Id,
+                        tempDate.Date.Add(startTime),
+                        tempDate.Date.Add(endTime));
                 }
             }
             return CalculateGapDemand(criticalGap, totalActivations);

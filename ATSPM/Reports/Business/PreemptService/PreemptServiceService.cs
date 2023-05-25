@@ -29,7 +29,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 preemptEvents.Count(p => p.EventCode == 105 && p.Timestamp >= pl.StartTime && p.Timestamp < pl.EndTime))).ToList();
 
             return new PreemptServiceResult(
-                "Preempt Service",
                 options.SignalId,
                 options.Start,
                 options.End,

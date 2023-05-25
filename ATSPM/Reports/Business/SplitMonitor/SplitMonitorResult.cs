@@ -1,4 +1,5 @@
 using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -7,16 +8,33 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor;
 /// <summary>
 /// Split Monitor chart
 /// </summary>
-public class SplitMonitorResult
-{    
+public class SplitMonitorResult:ApproachResult
+{
 
-    public string ChartName { get; internal set; }
-    public string SignalId { get; internal set; }
-    public string SignalLocation { get; internal set; }
+    public SplitMonitorResult(
+        int approachId,
+        string signalId,
+        DateTime start,
+        DateTime end,
+        int phaseNumber,
+        ICollection<PlanSplitMonitorData> plans,
+        ICollection<Split> programedSplits,
+        ICollection<SplitMonitorGapOut> gapOuts,
+        ICollection<SplitMonitorMaxOut> maxOuts,
+        ICollection<SplitMonitorForceOff> forceOffs,
+        ICollection<SplitMonitorUnknown> unknowns,
+        ICollection<Peds> peds) : base(approachId, signalId, start, end)
+    {
+        PhaseNumber = phaseNumber;
+        Plans = plans;
+        ProgramedSplits = programedSplits;
+        GapOuts = gapOuts;
+        MaxOuts = maxOuts;
+        ForceOffs = forceOffs;
+        Unknowns = unknowns;
+        Peds = peds;
+    }
     public int PhaseNumber { get; internal set; }
-    public string PhaseDescription { get; internal set; }
-    public DateTime Start { get; internal set; }
-    public DateTime End { get; internal set; }
     public ICollection<PlanSplitMonitorData> Plans { get; internal set; }
     public ICollection<Split> ProgramedSplits { get; internal set; }
     public ICollection<SplitMonitorGapOut> GapOuts { get; internal set; }

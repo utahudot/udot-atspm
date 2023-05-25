@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.LeftTurnGapReport;
+using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
@@ -22,24 +23,30 @@ namespace Legacy.Common.Business.LeftTurnGapReport
             this.approachSplitFailAggregationRepository = approachSplitFailAggregationRepository;
         }
 
-        public double GetSplitFailPercent(string signalId, DirectionTypes directionTypeId, DateTime start, DateTime end, TimeSpan startTime, TimeSpan endTime)
-        {
-            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionTypeId);
-            var approach = leftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
-            var phase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
-            List<ApproachSplitFailAggregation> splitFailsAggregates = new List<ApproachSplitFailAggregation>();
-            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
-            {
-                splitFailsAggregates.AddRange(approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(detectors.First().ApproachId, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime),
-                    true));
-                splitFailsAggregates.AddRange(approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(detectors.First().ApproachId, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime),
-                    false));
-            }
-            int cycles = splitFailsAggregates.Sum(s => s.Cycles);
-            int splitFails = splitFailsAggregates.Sum(s => s.SplitFailures);
-            if (cycles == 0)
-                throw new ArithmeticException("Cycles cannot be zero");
-            return splitFails / cycles;
-        }
+        //public double GetSplitFailPercent(
+        //    string signalId,
+        //    DirectionTypes directionTypeId,
+        //    DateTime start,
+        //    DateTime end,
+        //    TimeSpan startTime,
+        //    TimeSpan endTime)
+        //{
+        //    var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(signalId, directionTypeId);
+        //    var approach = leftTurnReportPreCheckService.GetLTPhaseNumberPhaseTypeByDirection(signalId, directionTypeId);
+        //    var phase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+        //    List<ApproachSplitFailAggregation> splitFailsAggregates = new List<ApproachSplitFailAggregation>();
+        //    for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
+        //    {
+        //        splitFailsAggregates.AddRange(approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(detectors.First().ApproachId, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime),
+        //            true));
+        //        splitFailsAggregates.AddRange(approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(detectors.First().ApproachId, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime),
+        //            false));
+        //    }
+        //    int cycles = splitFailsAggregates.Sum(s => s.Cycles);
+        //    int splitFails = splitFailsAggregates.Sum(s => s.SplitFailures);
+        //    if (cycles == 0)
+        //        throw new ArithmeticException("Cycles cannot be zero");
+        //    return splitFails / cycles;
+        //}
     }
 }

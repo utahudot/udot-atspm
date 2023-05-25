@@ -65,9 +65,7 @@ namespace ATSPM.Application.Reports.Controllers
             var unknownEvents = phaseCollectionData.AnalysisPhases.SelectMany(p => p.UnknownTermination).Select(p => new UnknownTermination(p.Timestamp, p.EventParam)).ToList();
             var plans = phaseCollectionData.Plans.Select(p => new Business.Common.Plan(p.PlanNumber.ToString(), p.StartTime, p.EndTime)).ToList();
             return new PhaseTerminationResult(
-                "Phase Termination Chart",
                 phaseCollectionData.SignalId,
-                phaseCollectionData.Signal.SignalDescription(),
                 options.Start,
                 options.End,
                 options.SelectedConsecutiveCount,

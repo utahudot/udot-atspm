@@ -90,11 +90,9 @@ namespace ATSPM.Application.Reports.Controllers
                 detectorEvents,
                 approach);
             return new SplitFailsResult(
-                "Split Fail Chart",
                 options.SignalId,
-                signal.SignalDescription(),
+                options.ApproachId,    
                 options.UsePermissivePhase ? splitFailData.Approach.PermissivePhaseNumber.Value : splitFailData.Approach.ProtectedPhaseNumber,
-                splitFailData.Approach.Description,
                 options.Start,
                 options.End,
                 splitFailData.TotalFails,

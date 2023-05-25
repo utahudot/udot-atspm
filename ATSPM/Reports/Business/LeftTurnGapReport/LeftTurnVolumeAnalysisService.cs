@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,30 +13,32 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
         private readonly ISignalRepository signalsRepository;
         private readonly IApproachRepository approachRepository;
         private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
+        private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
 
         public LeftTurnVolumeAnalysisService(
             ISignalRepository signalsRepository,
             IApproachRepository approachRepository,
-            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
             this.signalsRepository = signalsRepository;
             this.approachRepository = approachRepository;
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+            this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
 
         public LeftTurnVolumeValue GetLeftTurnVolumeStats(
-            string signalId,
-            int approachId,
+            Approach approach,
             DateTime start,
             DateTime end,
             TimeSpan startTime,
             TimeSpan endTime,
-            int[] daysOfWeek)
+            int[] daysOfWeek,
+            List<DetectorEventCountAggregation> leftTurnDetectorEventCountAggregations,
+            List<DetectorEventCountAggregation> volumeCountAggregtions)
         {
 
-            Dictionary<TimeSpan, int> peaks = LeftTurnReportPreCheck.GetAMPMPeakFlowRate(
-                signalId,
-                approachId,
+            Dictionary<TimeSpan, int> peaks = leftTurnReportPreCheckService.GetAMPMPeakFlowRate(
                 start,
                 end,
                 new TimeSpan(6, 0, 0),
@@ -43,18 +46,17 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                 new TimeSpan(15, 0, 0),
                 new TimeSpan(18, 0, 0),
                 daysOfWeek,
-                signalsRepository,
-                approachRepository,
-                detectorEventCountAggregationRepository);
+                approach,
+                leftTurnDetectorEventCountAggregations,
+                volumeCountAggregtions
+                );
             //Need a test that looks at the volume and the opposing volume
-            var signal = signalsRepository.GetLatestVersionOfSignal(signalId, start);
-            var approach = signal.Approaches.Where(a => a.Id == approachId).FirstOrDefault();
             LeftTurnVolumeValue leftTurnVolumeValue = new LeftTurnVolumeValue();
-            var detectors = LeftTurnReportPreCheck.GetLeftTurnDetectors(approachId, approachRepository);
-            int opposingPhase = LeftTurnReportPreCheck.GetOpposingPhase(approach);
+            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
             List<MovementTypes> movementTypes = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
             List<ATSPM.Data.Models.Detector> opposingDetectors =
-                GetOpposingDetectors(opposingPhase, signal, movementTypes);//GetDetectorsByPhase(signalId, opposingPhase, detectorRepository);
+                GetOpposingDetectors(opposingPhase, approach.Signal, movementTypes);//GetDetectorsByPhase(signalId, opposingPhase, detectorRepository);
             leftTurnVolumeValue.OpposingLanes = opposingDetectors.Count;
             List< ATSPM.Data.Models.DetectorEventCountAggregation > leftTurnVolumeAggregation =
                 GetDetectorVolumebyDetector(detectors, start, end, startTime, endTime, detectorEventCountAggregationRepository);
@@ -71,7 +73,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             SetDecisionBoundariesReview(leftTurnVolumeValue, leftTurnVolume, opposingVolume, approachType);
             leftTurnVolumeValue.DemandList = GetDemandList(start, end, startTime, endTime, daysOfWeek, leftTurnVolumeAggregation);
             leftTurnVolumeValue.Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType.Abbreviation;
-            leftTurnVolumeValue.OpposingDirection = signal.Approaches.Where(a => a.ProtectedPhaseNumber == opposingPhase).FirstOrDefault()?.DirectionType.Abbreviation;
+            leftTurnVolumeValue.OpposingDirection = approach.Signal.Approaches.Where(a => a.ProtectedPhaseNumber == opposingPhase).FirstOrDefault()?.DirectionType.Abbreviation;
             return leftTurnVolumeValue;
         }
 
@@ -179,7 +181,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             }
         }
 
-        public static ApproachType GetApproachType(ATSPM.Data.Models.Approach approach)
+        public static ApproachType GetApproachType(Approach approach)
         {
             if (approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue)
                 return ApproachType.Permissive;

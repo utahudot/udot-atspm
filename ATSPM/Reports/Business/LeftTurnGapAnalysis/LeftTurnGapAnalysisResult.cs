@@ -1,3 +1,4 @@
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -6,12 +7,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
     /// <summary>
     /// Left Turn Gap Analysis chart
     /// </summary>
-    public class LeftTurnGapAnalysisResult
+    public class LeftTurnGapAnalysisResult:ApproachResult
     {
         public LeftTurnGapAnalysisResult(
-            string chartName,
             string signalId,
-            string signalLocation,
+            int approachId,
             int phaseNumber,
             string phaseDescription,
             DateTime start,
@@ -45,15 +45,10 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             double? sumDuration3,
             double sumGreenTime,
             int highestTotal,
-            string detectionTypeStr)
+            string detectionTypeStr):base(approachId, signalId,  start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
             DetectionTypeDescription = detectionTypeDescription;
             Gap1 = gap1;
             Gap1Count = gap1Count;
@@ -85,14 +80,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             HighestTotal = highestTotal;
             DetectionTypeStr = detectionTypeStr;
         }
-
-        public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
         public int PhaseNumber { get; internal set; }
         public string PhaseDescription { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
         public string DetectionTypeDescription { get; internal set; }
         public double Gap1 { get; internal set; }
         public ICollection<GapCount> Gap1Count { get; internal set; }

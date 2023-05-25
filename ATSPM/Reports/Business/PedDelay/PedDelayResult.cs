@@ -1,3 +1,4 @@
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -6,12 +7,11 @@ namespace ATSPM.Application.Reports.Business.PedDelay
     /// <summary>
     /// Ped Delay chart
     /// </summary>
-    public class PedDelayResult
+    public class PedDelayResult:ApproachResult
     {
         public PedDelayResult(
-            string chartName,
             string signalId,
-            string signalLocation,
+            int approachId,
             int phaseNumber,
             string phaseDescription,
             DateTime start,
@@ -27,15 +27,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             ICollection<CycleLengths> cycleLengths,
             ICollection<PedestrianDelay> pedestrianDelay,
             ICollection<StartBeginWalk> startOfWalk,
-            ICollection<PercentDelayByCycleLength> percentDelayByCycleLength)
+            ICollection<PercentDelayByCycleLength> percentDelayByCycleLength):base(approachId, signalId,  start, end)
         {
-            ChartName = chartName;
-            SignalId = signalId;
-            SignalLocation = signalLocation;
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
-            Start = start;
-            End = end;
             PedPresses = pedPresses;
             CyclesWithPedRequests = cyclesWithPedRequests;
             TimeBuffered = timeBuffered;
@@ -49,14 +44,8 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             StartOfWalk = startOfWalk;
             PercentDelayByCycleLength = percentDelayByCycleLength;
         }
-
-        public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
         public int PhaseNumber { get; internal set; }
         public string PhaseDescription { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
         public int PedPresses { get; internal set; }
         public double CyclesWithPedRequests { get; internal set; }
         public int TimeBuffered { get; internal set; }
