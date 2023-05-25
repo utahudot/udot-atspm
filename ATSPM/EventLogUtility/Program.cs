@@ -18,6 +18,7 @@ using ATSPM.Application.Analysis.ApproachVolume;
 using ATSPM.Domain.Common;
 using System.CommandLine;
 using ATSPM.Application;
+using Microsoft.AspNetCore.Mvc;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -69,69 +70,73 @@ var d2 = new Detector()
     }
 };
 
-var _options = new TimelineOptions()
+
+
+
+
+
+
+
+
+
+
+
+
+var approachVolumeWorkflow = new ApproachVolumeWorkflow();
+
+Console.WriteLine($"init?: {approachVolumeWorkflow.IsInitialized}");
+
+await foreach (var result in approachVolumeWorkflow.Execute(list, default))
 {
-    Start = DateTime.Parse("4/17/2023 8:00:0.0"),
-    End = DateTime.Parse("4/17/2023 10:00:0.0"),
-    Size = 15
-};
-
-Console.WriteLine($"input count: {list.Count}");
-
-var config = new List<Tuple<Detector, IEnumerable<ControllerEventLog>>>()
-{
-    Tuple.Create(d1, list.Where(l => l.EventParam == d1.DetChannel)),
-    Tuple.Create(d2, list.Where(l => l.EventParam == d2.DetChannel))
-};
-
-var identifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
-
-var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteAsync(config);
-
-Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
-
-
-var calculateTotalVolumes = new CalculateTotalVolumes(_options);
-
-var totalVolumes = await calculateTotalVolumes.ExecuteAsync(correctedDetectorEvents);
-
-var generateApproachVolumeResults = new GenerateApproachVolumeResults(_options);
-
-foreach (var t in totalVolumes)
-{
-    var peakVolume = await generateApproachVolumeResults.ExecuteAsync(t);
-
-    //Console.WriteLine($"peak: {peakVolume}");
-
-    //foreach (var p in peakVolume)
-    //{
-    //    Console.WriteLine($"total volumes: {p}");
-    //}
+    Console.WriteLine($"result: {result}");
 }
 
 
 
 
+
+
+
+
+
+
+
+//var _options = new TimelineOptions()
+//{
+//    Start = DateTime.Parse("4/17/2023 8:00:0.0"),
+//    End = DateTime.Parse("4/17/2023 10:00:0.0"),
+//    Size = 15
+//};
+
+//Console.WriteLine($"input count: {list.Count}");
+
+//var config = new List<Tuple<Detector, IEnumerable<ControllerEventLog>>>()
+//{
+//    Tuple.Create(d1, list.Where(l => l.EventParam == d1.DetChannel)),
+//    Tuple.Create(d2, list.Where(l => l.EventParam == d2.DetChannel))
+//};
+
+//var identifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
+
+//var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteAsync(config);
+
+//Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
+
+
+//var calculateTotalVolumes = new CalculateTotalVolumes(_options);
+
+//var totalVolumes = await calculateTotalVolumes.ExecuteAsync(correctedDetectorEvents);
+
+//var generateApproachVolumeResults = new GenerateApproachVolumeResults();
+
 //foreach (var t in totalVolumes)
 //{
-//    Console.WriteLine($"total volumes: {t}");
-
-//    foreach (var v in t)
-//    {
-//        Console.WriteLine($"total volume: {v}");
-//    }
+//    var peakVolume = await generateApproachVolumeResults.ExecuteAsync(t);
 //}
-//var htl = Timeline.GenerateTimeFrameInHours<VolumeByHour>(_options.Start, _options.End, 1);
 
-//htl.ForEach(a =>
-//{
-//    a.
-//});
 
-//foreach (var h in htl)
-//{
-//    Console.WriteLine($"h: {h.Start} - {h.End}");
-//}
+
+
 
 
 
