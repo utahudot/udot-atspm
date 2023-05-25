@@ -9,6 +9,8 @@ using ATSPM.Data.Models;
 using ATSPM.Data.Enums;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.PedDelay;
+using ATSPM.Infrastructure.Repositories;
+using Microsoft.Extensions.Options;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -40,8 +42,8 @@ namespace ATSPM.Application.Reports.Controllers
             ISignalRepository signalRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
-, IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository, 
+            IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
             LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService,
             LeftTurnReportPreCheckService leftTurnReportPreCheckService,
             LeftTurnPedestrianAnalysisService leftTurnPedestrianAnalysisService,
@@ -471,7 +473,7 @@ namespace ATSPM.Application.Reports.Controllers
             {
                 throw new NotSupportedException("No Left Turn Detectors found");
             }
-            List<DetectorEventCountAggregation> leftTurnVolumeAggregations =
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregationsPeakHours =
                 GetDetectorVolumebyDetector(
                     leftTurndetectors,
                     parameters.StartDate,
@@ -502,6 +504,16 @@ namespace ATSPM.Application.Reports.Controllers
                 throw new NotSupportedException("No Detector Activation Aggregations found");
             }
 
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+            List<MovementTypes> movementTypes = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
+            List<Detector> opposingDetectors =
+                GetOpposingDetectors(opposingPhase, approach.Signal, movementTypes);
+
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregation =
+               GetDetectorVolumebyDetector(detectors, parameters.StartDate, parameters.EndDate, startTime, endTime);
+            List<DetectorEventCountAggregation> opposingVolumeAggregations =
+                GetDetectorVolumebyDetector(opposingDetectors, parameters.StartDate, parameters.EndDate, startTime, endTime);
+
             var volumeResult = leftTurnVolumeAnalysisService.GetLeftTurnVolumeStats(
                 approach,
                 parameters.StartDate,
@@ -509,8 +521,12 @@ namespace ATSPM.Application.Reports.Controllers
                 startTime,
                 endTime,
                 parameters.DaysOfWeek,
-                leftTurnVolumeAggregations,
-                volumeAggregations);
+                leftTurnVolumeAggregationsPeakHours,
+                volumeAggregations,
+                leftTurnVolumeAggregation,
+                opposingVolumeAggregations,
+                opposingDetectors,
+                opposingPhase);
 
             return volumeResult;
         }
@@ -588,6 +604,32 @@ namespace ATSPM.Application.Reports.Controllers
             return detectorsList;
         }
 
+        public List<Data.Models.DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<Data.Models.Detector> detectors, DateTime start,
+           DateTime end, TimeSpan startTime, TimeSpan endTime)
+        {
+            var detectorAggregations = new List<ATSPM.Data.Models.DetectorEventCountAggregation>();
+            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
+            {
+                foreach (var detector in detectors)
+                {
+                    _detectorEventCountAggregationRepository.GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(startTime), tempDate.Add(endTime));
+                }
+            }
+            return detectorAggregations;
+        }
+
+        public static List<Data.Models.Detector> GetOpposingDetectors(
+            int opposingPhase,
+            Data.Models.Signal signal,
+            List<MovementTypes> movementTypes)
+        {
+            return signal
+                            .Approaches
+                            .Where(a => a.ProtectedPhaseNumber == opposingPhase)
+                            .SelectMany(a => a.Detectors)
+                            .Where(d => movementTypes.Contains(d.MovementTypeId) && d.DetectionTypes.First().Id == DetectionTypes.LLC)
+                            .ToList();
+        }
 
     }
 }

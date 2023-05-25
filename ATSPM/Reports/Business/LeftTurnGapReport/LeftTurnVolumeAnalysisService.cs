@@ -10,20 +10,20 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
     public class LeftTurnVolumeAnalysisService
     {
-        private readonly ISignalRepository signalsRepository;
-        private readonly IApproachRepository approachRepository;
-        private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
+        //private readonly ISignalRepository signalsRepository;
+        //private readonly IApproachRepository approachRepository;
+        //private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
         private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
 
         public LeftTurnVolumeAnalysisService(
-            ISignalRepository signalsRepository,
-            IApproachRepository approachRepository,
-            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            //ISignalRepository signalsRepository,
+            //IApproachRepository approachRepository,
+            //IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
-            this.signalsRepository = signalsRepository;
-            this.approachRepository = approachRepository;
-            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+            //this.signalsRepository = signalsRepository;
+            //this.approachRepository = approachRepository;
+            //this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
 
@@ -35,7 +35,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             TimeSpan endTime,
             int[] daysOfWeek,
             List<DetectorEventCountAggregation> leftTurnDetectorEventCountAggregations,
-            List<DetectorEventCountAggregation> volumeCountAggregtions)
+            List<DetectorEventCountAggregation> volumeCountAggregtions,
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregation,
+            List<DetectorEventCountAggregation> opposingVolumeAggregations,
+            List<Detector> opposingDetectors,
+            int opposingPhase)
         {
 
             Dictionary<TimeSpan, int> peaks = leftTurnReportPreCheckService.GetAMPMPeakFlowRate(
@@ -53,15 +57,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             //Need a test that looks at the volume and the opposing volume
             LeftTurnVolumeValue leftTurnVolumeValue = new LeftTurnVolumeValue();
             var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
-            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
-            List<MovementTypes> movementTypes = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
-            List<ATSPM.Data.Models.Detector> opposingDetectors =
-                GetOpposingDetectors(opposingPhase, approach.Signal, movementTypes);//GetDetectorsByPhase(signalId, opposingPhase, detectorRepository);
-            leftTurnVolumeValue.OpposingLanes = opposingDetectors.Count;
-            List< ATSPM.Data.Models.DetectorEventCountAggregation > leftTurnVolumeAggregation =
-                GetDetectorVolumebyDetector(detectors, start, end, startTime, endTime, detectorEventCountAggregationRepository);
-            List<ATSPM.Data.Models.DetectorEventCountAggregation> opposingVolumeAggregations =
-                GetDetectorVolumebyDetector(opposingDetectors, start, end, startTime, endTime, detectorEventCountAggregationRepository);
+            leftTurnVolumeValue.OpposingLanes = opposingDetectors.Count;           
             double leftTurnVolume = leftTurnVolumeAggregation.Sum(l => l.EventCount);
             double opposingVolume = opposingVolumeAggregations.Sum(o => o.EventCount);
             double crossVolumeProduct = GetCrossProduct(leftTurnVolume, opposingVolume);
@@ -104,18 +100,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
             return leftTurnVolume * opposingVolume;
         }
 
-        public static List<Data.Models.Detector> GetOpposingDetectors(
-            int opposingPhase,
-            Data.Models.Signal signal,
-            List<MovementTypes> movementTypes)
-        {
-            return signal
-                            .Approaches
-                            .Where(a => a.ProtectedPhaseNumber == opposingPhase)
-                            .SelectMany(a => a.Detectors)
-                            .Where(d => movementTypes.Contains(d.MovementTypeId) && d.DetectionTypes.First().Id == DetectionTypes.LLC)
-                            .ToList();
-        }
+        
 
         public static bool GetCrossProductReview(double crossVolumeProduct, int opposingLanes)
         {
@@ -191,26 +176,13 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                 return ApproachType.Protected;
         }
 
-        public List<Data.Models.Detector> GetDetectorsByPhase(string signalId, int phase)
-        {
-            var detectors = signalsRepository.GetLatestVersionOfSignal(signalId).Approaches.Where(d => d.ProtectedPhaseNumber == phase).First().Detectors.ToList();
-            return detectors;
-        }
+        //public List<Data.Models.Detector> GetDetectorsByPhase(string signalId, int phase)
+        //{
+        //    var detectors = signalsRepository.GetLatestVersionOfSignal(signalId).Approaches.Where(d => d.ProtectedPhaseNumber == phase).First().Detectors.ToList();
+        //    return detectors;
+        //}
 
-        public static List<Data.Models.DetectorEventCountAggregation> GetDetectorVolumebyDetector(List<Data.Models.Detector> detectors, DateTime start,
-            DateTime end, TimeSpan startTime, TimeSpan endTime, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
-        {
-            var detectorAggregations = new List<ATSPM.Data.Models.DetectorEventCountAggregation>();
-            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
-            {
-                foreach (var detector in detectors)
-                {
-                    detectorAggregations.AddRange(detectorEventCountAggregationRepository
-                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(startTime), tempDate.Add(endTime)));
-                }
-            }
-            return detectorAggregations;
-        }
+       
 
     }
 
