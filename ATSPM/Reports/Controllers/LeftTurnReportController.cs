@@ -22,7 +22,6 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
         private readonly IPhaseTerminationAggregationRepository _phaseTerminationAggregationRepository;
         private readonly ISignalRepository _signalRepository;
-        private readonly IDetectorRepository _detectorRepository;
         private readonly IDetectorEventCountAggregationRepository _detectorEventCountAggregationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository _phaseLeftTurnGapAggregationRepository;
         private readonly IApproachSplitFailAggregationRepository _approachSplitFailAggregationRepository;
@@ -53,7 +52,6 @@ namespace ATSPM.Application.Reports.Controllers
             _approachCycleAggregationRepository = approachCycleAggregationRepository;
             _phaseTerminationAggregationRepository = phaseTerminationAggregationRepository;
             _signalRepository = signalRepository;
-            _detectorRepository = detectorRepository;
             _detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             _phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             _approachSplitFailAggregationRepository = approachSplitFailAggregationRepository;
