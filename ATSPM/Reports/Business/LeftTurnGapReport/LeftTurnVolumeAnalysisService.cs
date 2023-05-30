@@ -10,20 +10,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
     public class LeftTurnVolumeAnalysisService
     {
-        //private readonly ISignalRepository signalsRepository;
-        //private readonly IApproachRepository approachRepository;
-        //private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
         private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
 
         public LeftTurnVolumeAnalysisService(
-            //ISignalRepository signalsRepository,
-            //IApproachRepository approachRepository,
-            //IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
-            //this.signalsRepository = signalsRepository;
-            //this.approachRepository = approachRepository;
-            //this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
 
@@ -174,16 +165,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                 return ApproachType.PermissiveProtected;
             else
                 return ApproachType.Protected;
-        }
-
-        //public List<Data.Models.Detector> GetDetectorsByPhase(string signalId, int phase)
-        //{
-        //    var detectors = signalsRepository.GetLatestVersionOfSignal(signalId).Approaches.Where(d => d.ProtectedPhaseNumber == phase).First().Detectors.ToList();
-        //    return detectors;
-        //}
-
-       
-
+        }     
     }
 
     public class LeftTurnVolumeValue

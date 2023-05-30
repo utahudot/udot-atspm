@@ -1,439 +1,529 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using ATSPM.Data.Models;
-//using ATSPM.Application.Repositories;
-//using ATSPM.Application.Extensions;
-//using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-//namespace Legacy.Common.Business.LeftTurnGapReport
-//{
-//    public class LeftTurnReportPreCheckService
-//    {
-//        private readonly ISignalRepository signalRepository;
-//        private readonly IApproachRepository approachRepository;
-//        private readonly IDetectorRepository detectorRepository;
-//        private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
-//        private readonly IPhaseCycleAggregationRepository phaseCycleAggregationRepository;
-//        private readonly IPhasePedAggregationRepository phasePedAggregationRepository;
-//        private readonly IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository;
+namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
+{
+    public class LeftTurnReportPreCheckService
+    {
 
-//        public LeftTurnReportPreCheckService(
-//            ISignalRepository signalRepository,
-//            IApproachRepository approachRepository,
-//            IDetectorRepository detectorRepository,
-//            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-//            IPhaseCycleAggregationRepository phaseCycleAggregationRepository,
-//            IPhasePedAggregationRepository phasePedAggregationRepository,
-//            IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository)
-//        {
-//            this.signalRepository = signalRepository;
-//            this.approachRepository = approachRepository;
-//            this.detectorRepository = detectorRepository;
-//            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
-//            this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
-//            this.phasePedAggregationRepository = phasePedAggregationRepository;
-//            this.phaseTerminationAggregationRepository = phaseTerminationAggregationRepository;
-//        }
+        public LeftTurnReportPreCheckService()
+        {
+        }
 
-//        public Dictionary<TimeSpan, double> GetAMPMPeakPedCyclesPercentages(
-//            string signalId,
-//            DirectionTypes directionType,
-//            DateTime startDate,
-//            DateTime endDate,
-//            TimeSpan amStartTime,
-//            TimeSpan amEndTime,
-//            TimeSpan pmStartTime,
-//            TimeSpan pmEndTime)
-//        {
-//            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
-//                signalId,
-//                directionType,
-//                startDate,
-//                endDate,
-//                amStartTime,
-//                amEndTime,
-//                pmStartTime,
-//                pmEndTime);
-//            Approach approach = GetLTPhaseNumberPhaseTypeByDirection(signalId, directionType);
-//            int opposingPhase = GetOpposingPhase(approach);
-//            Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(
-//                signalId,
-//                opposingPhase,
-//                startDate,
-//                endDate,
-//                peaks);
-//            Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(
-//                signalId,
-//                opposingPhase,
-//                startDate,
-//                endDate,
-//                peaks);
-//            return GetPercentageOfPedCycles(averageCyles, averagePedCycles);
-//        }
+        public Dictionary<TimeSpan, double> GetAMPMPeakPedCyclesPercentages(
+            int approachId,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            int[] daysOfWeek,
+            Approach approach,
+            List<DetectorEventCountAggregation> leftTurnDetectorEventCountAggregations,
+            List<DetectorEventCountAggregation> volumeCountAggregations,
+            List<PhaseCycleAggregation> phaseCycleAggregations,
+            List<PhasePedAggregation> phasePedAggregations)
+        {
+            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                daysOfWeek,
+                approach,
+                leftTurnDetectorEventCountAggregations,
+                volumeCountAggregations);
+            int opposingPhase = GetOpposingPhase(approach);
+            Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(
+                approach.Signal.SignalId,
+                opposingPhase,
+                startDate,
+                endDate,
+                peaks,
+                phaseCycleAggregations);
+            Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(
+                approach.Signal.SignalId,
+                opposingPhase,
+                startDate,
+                endDate,
+                peaks,
+                phasePedAggregations);
+            return GetPercentageOfPedCycles(averageCyles, averagePedCycles);
+        }
 
-//        private Dictionary<TimeSpan, double> GetPercentageOfPedCycles(Dictionary<TimeSpan, double> averageCyles, Dictionary<TimeSpan, double> averagePedCycles)
-//        {
-//            if (averageCyles.Values.Contains(0))
-//            {
-//                throw new ArithmeticException("Average Gap Out cannot be zero");
-//            }
-//            if (!averageCyles.Keys.Contains(averagePedCycles.Keys.Min()) ||
-//                !averageCyles.Keys.Contains(averagePedCycles.Keys.Max()))
-//            {
-//                throw new IndexOutOfRangeException("Peak hours do not align for AM/PM peak");
-//            }
-//            var amPeak = averagePedCycles.Keys.Min();
-//            var pmPeak = averagePedCycles.Keys.Max();
-//            Dictionary<TimeSpan, double> percentages = new Dictionary<TimeSpan, double>();
-//            percentages.Add(amPeak, averagePedCycles[amPeak] / averageCyles[amPeak]);
-//            percentages.Add(pmPeak, averagePedCycles[pmPeak] / averageCyles[pmPeak]);
-//            return percentages;
-//        }
+        public static Dictionary<TimeSpan, double> GetPercentageOfPedCycles(
+            Dictionary<TimeSpan, double> averageCyles,
+            Dictionary<TimeSpan, double> averagePedCycles)
+        {
 
-//        private Dictionary<TimeSpan, double> GetAveragePedCycles(
-//            string signalId,
-//            int phase,
-//            DateTime startDate,
-//            DateTime endDate,
-//            Dictionary<TimeSpan, int> peaks)
-//        {
-//            Dictionary<TimeSpan, double> averagePedCycles = new Dictionary<TimeSpan, double>();
-//            List<PhasePedAggregation> amAggregations = new List<PhasePedAggregation>();
-//            var amPeak = peaks.Min(p => p.Key);
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                amAggregations.AddRange(phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
-//            }
-//            averagePedCycles.Add(amPeak, amAggregations.Average(a => a.PedCycles));
-//            var pmPeak = peaks.Max(p => p.Key);
-//            List<PhasePedAggregation> pmAggregations = new List<PhasePedAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                pmAggregations.AddRange(phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
-//            }
-//            averagePedCycles.Add(amPeak, pmAggregations.Average(a => a.PedCycles));
-//            return averagePedCycles;
-//        }
+            if (averagePedCycles is null)
+            {
+                throw new ArgumentNullException(nameof(averagePedCycles));
+            }
 
-//        private Dictionary<TimeSpan, double> GetAverageCycles(
-//            string signalId,
-//            int phase,
-//            DateTime startDate,
-//            DateTime endDate,
-//            Dictionary<TimeSpan, int> peaks)
-//        {
-//            Dictionary<TimeSpan, double> averageCycles = new Dictionary<TimeSpan, double>();
-//            List<PhaseCycleAggregation> amAggregations = new List<PhaseCycleAggregation>();
-//            var amPeak = peaks.Min(p => p.Key);
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                amAggregations.AddRange(phaseCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
-//            }
-//            averageCycles.Add(amPeak, amAggregations.Average(a => a.TotalRedToRedCycles));
-//            var pmPeak = peaks.Max(p => p.Key);
-//            List<PhaseCycleAggregation> pmAggregations = new List<PhaseCycleAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                pmAggregations.AddRange(phaseCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
-//            }
-//            averageCycles.Add(amPeak, pmAggregations.Average(a => a.TotalRedToRedCycles));
-//            return averageCycles;
-//        }
+            if (averageCyles is null)
+            {
+                throw new ArgumentNullException(nameof(averageCyles));
+            }
 
-//        public int GetOpposingPhase(Approach approach)
-//        {
-//            //If permissive only 2 = 6, 4 = 8, 6 = 2 and 8 = 4
-//            if (approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue)
-//            {
-//                switch (approach.PermissivePhaseNumber)
-//                {
-//                    case 2: return 6;
-//                    case 4: return 8;
-//                    case 6: return 2;
-//                    case 8: return 4;
-//                    default: throw new ArgumentException("Invalid Phase");
-//                }
-//            }
-//            //1=2, 3=4, 5=6, and 7=8 if there is a protected.
-//            else
-//            {
-//                switch (approach.ProtectedPhaseNumber)
-//                {
-//                    case 1: return 2;
-//                    case 2: return 1;
-//                    case 3: return 4;
-//                    case 4: return 3;
-//                    case 5: return 6;
-//                    case 6: return 5;
-//                    case 7: return 8;
-//                    case 8: return 7;
-//                    default: throw new ArgumentException("Invalid Phase");
-//                }
-//            }
+            if (averageCyles.Values.Contains(0))
+            {
+                throw new ArithmeticException("Average Gap Out cannot be zero");
+            }
 
-//        }
+            if (!averageCyles.Keys.Contains(averagePedCycles.Keys.Min()) ||
+                !averageCyles.Keys.Contains(averagePedCycles.Keys.Max()))
+            {
+                throw new IndexOutOfRangeException("Peak hours must be the same for Cycles and Ped Cycles");
+            }
+            var amPeak = averagePedCycles.Keys.Min();
+            var pmPeak = averagePedCycles.Keys.Max();
+            Dictionary<TimeSpan, double> percentages = new Dictionary<TimeSpan, double>();
+            percentages.Add(amPeak, averagePedCycles[amPeak] / averageCyles[amPeak]);
+            percentages.Add(pmPeak, averagePedCycles[pmPeak] / averageCyles[pmPeak]);
+            return percentages;
+        }
 
-//        public Dictionary<TimeSpan, double> GetAMPMPeakGapOut(
-//            string signalId,
-//            DirectionTypes directionType,
-//            DateTime startDate,
-//            DateTime endDate,
-//            TimeSpan amStartTime,
-//            TimeSpan amEndTime,
-//            TimeSpan pmStartTime,
-//            TimeSpan pmEndTime)
-//        {
-//            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
-//                signalId,
-//                directionType,
-//                startDate,
-//                endDate,
-//                amStartTime,
-//                amEndTime,
-//                pmStartTime,
-//                pmEndTime);
-//            int phaseNumber = GetLTPhaseNumberByDirection(
-//                signalId,
-//                directionType);
-//            Dictionary <TimeSpan, double> averageTerminations = GetAverageTerminationsForPhase(
-//                signalId,
-//                phaseNumber,
-//                startDate,
-//                endDate,
-//                peaks);
-//            Dictionary <TimeSpan, double> averageGapOuts = GetAverageGapOutsForPhase(
-//                signalId,
-//                phaseNumber,
-//                startDate,
-//                endDate,
-//                amStartTime,
-//                peaks);
-//            return GetPercentageOfGapOuts(averageTerminations, averageGapOuts);
-            
-//        }
+        private Dictionary<TimeSpan, double> GetAveragePedCycles(
+            string signalId,
+            int phase,
+            DateTime startDate,
+            DateTime endDate,
+            Dictionary<TimeSpan, int> peaks,
+            List<PhasePedAggregation> phasePedAggregations)
+        {
+            Dictionary<TimeSpan, double> averagePedCycles = new Dictionary<TimeSpan, double>();
+            List<double> amAggregations = new List<double>();
+            var amPeak = peaks.Min(p => p.Key);
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                amAggregations.Add(phasePedAggregations.Where(p => 
+                p.SignalId == signalId 
+                && p.PhaseNumber == phase 
+                && p.BinStartTime >= tempDate.Date.Add(amPeak) 
+                && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
+                //amAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
+            }
+            if (amAggregations.Count > 0)
+                averagePedCycles.Add(amPeak, amAggregations.Average(a => a));
+            else
+                averagePedCycles.Add(amPeak, 0);
+            var pmPeak = peaks.Max(p => p.Key);
+            List<double> pmAggregations = new List<double>();
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
 
-//        private Dictionary<TimeSpan, double> GetPercentageOfGapOuts(
-//            Dictionary<TimeSpan, double> averageTerminations,
-//            Dictionary<TimeSpan, double> averageGapOuts)
-//        {
-//            if(averageGapOuts.Values.Contains(0))
-//            {
-//                throw new ArithmeticException("Average Gap Out cannot be zero");
-//            }
-//            if(!averageGapOuts.Keys.Contains(averageGapOuts.Keys.Min()) ||
-//                !averageGapOuts.Keys.Contains(averageGapOuts.Keys.Max()))
-//            {
-//                throw new IndexOutOfRangeException("Peak hours do not align for AM/PM peak");
-//            }
-//            var amPeak = averageGapOuts.Keys.Min();
-//            var pmPeak = averageGapOuts.Keys.Max();
-//            Dictionary<TimeSpan, double> percentages = new Dictionary<TimeSpan, double>();
-//            percentages.Add(amPeak, averageGapOuts[amPeak] / averageTerminations[amPeak]);
-//            percentages.Add(pmPeak, averageGapOuts[pmPeak] / averageTerminations[pmPeak]);
-//            return percentages;
-//        }
+                amAggregations.Add(phasePedAggregations.Where(p =>
+                p.SignalId == signalId
+                && p.PhaseNumber == phase
+                && p.BinStartTime >= tempDate.Date.Add(pmPeak)
+                && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
+                //pmAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
+            }
+            if (pmAggregations.Count > 0)
+                averagePedCycles.Add(pmPeak, pmAggregations.Average(a => a));
+            else
+                averagePedCycles.Add(pmPeak, 0);
+            return averagePedCycles;
+        }
 
-//        private Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(
-//            string signalId,
-//            int phaseNumber,
-//            DateTime startDate,
-//            DateTime endDate,
-//            TimeSpan amStartTime,
-//            Dictionary<TimeSpan, int> peaks)
-//        {
-//            Dictionary<TimeSpan, double> averages = new Dictionary<TimeSpan, double>();
-//            var amPeak = peaks.Min(p => p.Key);
-//            List<PhaseTerminationAggregation> amAggregations = new List<PhaseTerminationAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                amAggregations.AddRange(phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
-//            }
-//            averages.Add(amPeak, amAggregations.Average(a => a.GapOuts));
-//            var pmPeak = peaks.Max(p => p.Key);
-//            List<PhaseTerminationAggregation> pmAggregations = new List<PhaseTerminationAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                pmAggregations.AddRange(phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
-//            }
-//            averages.Add(amPeak, pmAggregations.Average(a => a.GapOuts));
+        private Dictionary<TimeSpan, double> GetAverageCycles(
+            string signalId,
+            int phase,
+            DateTime startDate,
+            DateTime endDate,
+            Dictionary<TimeSpan, int> peaks,
+            List<PhaseCycleAggregation> approachCycleAggregations
+            )
+        {
+            Dictionary<TimeSpan, double> averageCycles = new Dictionary<TimeSpan, double>();
+            List<PhaseCycleAggregation> amAggregations = new List<PhaseCycleAggregation>();
+            var amPeak = peaks.Min(p => p.Key);
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                amAggregations.AddRange(approachCycleAggregations.Where(a => a.SignalId == signalId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(amPeak) && a.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)));
+                //amAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+            }
+            averageCycles.Add(amPeak, amAggregations.Average(a => a.TotalRedToRedCycles));
+            var pmPeak = peaks.Max(p => p.Key);
+            List<PhaseCycleAggregation> pmAggregations = new List<PhaseCycleAggregation>();
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                amAggregations.AddRange(approachCycleAggregations.Where(a => a.SignalId == signalId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(pmPeak) && a.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)));
+                //pmAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
+            }
+            averageCycles.Add(pmPeak, pmAggregations.Average(a => a.TotalRedToRedCycles));
+            return averageCycles;
+        }
 
-//            return averages;
-//        }
-    
+        public int GetOpposingPhase(Approach approach)
+        {
+            //If permissive only 2 = 6, 4 = 8, 6 = 2 and 8 = 4
+            if (approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue)
+            {
+                switch (approach.PermissivePhaseNumber)
+                {
+                    case 2: return 6;
+                    case 4: return 8;
+                    case 6: return 2;
+                    case 8: return 4;
+                    default: throw new ArgumentException("Invalid Phase");
+                }
+            }
+            //1=2, 3=4, 5=6, and 7=8 if there is a protected.
+            else
+            {
+                switch (approach.ProtectedPhaseNumber)
+                {
+                    case 1: return 2;
+                    case 3: return 4;
+                    case 5: return 6;
+                    case 7: return 8;
+                    case 2: return 6;
+                    case 4: return 8;
+                    case 6: return 2;
+                    case 8: return 4;
+                    default: throw new ArgumentException("Invalid Phase");
+                }
+            }
 
-//        private Dictionary<TimeSpan, double> GetAverageTerminationsForPhase(
-//            string signalId,
-//            int phaseNumber,
-//            DateTime startDate,
-//            DateTime endDate,
-//            Dictionary<TimeSpan, int> peaks)
-//        {
-//            Dictionary<TimeSpan, double> averages = new Dictionary<TimeSpan, double>();
-//            var amPeak = peaks.Min(p => p.Key);
-//            List<PhaseTerminationAggregation> amAggregations = new List<PhaseTerminationAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                amAggregations.AddRange(phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));               
-//            }
-//            averages.Add(amPeak, amAggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.Unknown));
+        }
 
-//            List<PhaseTerminationAggregation> pmAggregations = new List<PhaseTerminationAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                pmAggregations.AddRange(phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
-//            }
-//            averages.Add(amPeak, pmAggregations.Average(a => a.ForceOffs + a.GapOuts + a.MaxOuts + a.Unknown));
+        public Dictionary<TimeSpan, double> GetAMPMPeakGapOut(
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            int[] daysOfWeek,
+            Approach approach,
+            List<PhaseTerminationAggregation> phaseTerminationAggregations,
+            List<DetectorEventCountAggregation> leftTurnDetectorEventCountAggregations,
+            List<DetectorEventCountAggregation> volumeCountAggregations,
+            List<PhaseCycleAggregation> cycleAggregations)
+        {
+            Dictionary<TimeSpan, int> peaks = GetAMPMPeakFlowRate(
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                daysOfWeek,
+                approach,
+                leftTurnDetectorEventCountAggregations,
+                volumeCountAggregations);
+            int phaseNumber = approach.PermissivePhaseNumber ?? approach.ProtectedPhaseNumber; 
+            var maxCycles = GetMaxCycles(
+                approach.Signal.SignalId,
+                phaseNumber,
+                startDate,
+                endDate,
+                peaks,
+                cycleAggregations);
+            Dictionary<TimeSpan, double> averageGapOuts = GetAverageGapOutsForPhase(
+                approach.Signal.SignalId,
+                phaseNumber,
+                startDate,
+                endDate,
+                amStartTime,
+                peaks,
+                phaseTerminationAggregations);
+            return GetPercentageOfGapOuts(maxCycles, averageGapOuts);
 
-//            return averages;
-//        }
+        }
 
-//        private int GetLTPhaseNumberByDirection(
-//            string signalId,
-//            DirectionTypes directionType)
-//        {
-//            var detectors = GetLeftTurnDetectors(signalId, directionType);
-//            if(!detectors.Any())
-//            {
-//                throw new NotSupportedException("Detectors not found");
-//            }
-//            var approach = approachRepository.Lookup(detectors.First().ApproachId);
-//            return approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
-//        }
+        private Dictionary<TimeSpan, double> GetMaxCycles(
+            string signalId,
+            int phaseNumber,
+            DateTime startDate,
+            DateTime endDate,
+            Dictionary<TimeSpan, int> peaks,
+            List<PhaseCycleAggregation> cycleAggregations)
+        {
+            var maxCycles = new Dictionary<TimeSpan, double>();
+            var amCycleCount = new List<int>();
+            var amMaxCycle = 0;
+            var pmMaxCycle = 0;
+            for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                var result = cycleAggregations.Where(c =>
+                c.SignalId == signalId
+                && c.PhaseNumber == phaseNumber
+                && c.BinStartTime >= tempDate.Add(peaks.First().Key)
+                && c.BinStartTime < tempDate.Add(peaks.First().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
+                //var result = _approachCycleAggregationRepository.GetCycleCountBySignalIdAndDateRange(signalId, phaseNumber, tempDate.Add(peaks.First().Key), tempDate.Add(peaks.First().Key).AddHours(1));
+                if (result > amMaxCycle)
+                    amMaxCycle = result;
+            }
+            maxCycles.Add(peaks.First().Key, amMaxCycle);
+            var pmCycleCount = new List<int>();
+            for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                var result = cycleAggregations.Where(c =>
+                c.SignalId == signalId
+                && c.PhaseNumber == phaseNumber
+                && c.BinStartTime >= tempDate.Add(peaks.Last().Key)
+                && c.BinStartTime < tempDate.Add(peaks.Last().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
+                //var result = _approachCycleAggregationRepository.GetCycleCountBySignalIdAndDateRange(signalId, phaseNumber, tempDate.Add(peaks.Last().Key), tempDate.Add(peaks.Last().Key).AddHours(1));
+                if (result > pmMaxCycle)
+                    pmMaxCycle = result;
+            }
+            maxCycles.Add(peaks.Last().Key, pmMaxCycle);
+            return maxCycles;
+        }
 
-//        public Approach GetLTPhaseNumberPhaseTypeByDirection(
-//            string signalId,
-//            DirectionTypes directionType)
-//        {
-//            var detectors = GetLeftTurnDetectors(signalId, directionType);
-//            if (!detectors.Any())
-//            {
-//                throw new NotSupportedException("Detectors not found");
-//            }
-//            return approachRepository.Lookup(detectors.First().ApproachId);
-           
-//        }
+        public static Dictionary<TimeSpan, double> GetPercentageOfGapOuts(
+            Dictionary<TimeSpan, double> maxCycles,
+            Dictionary<TimeSpan, double> averageGapOuts)
+        {
+            if (averageGapOuts is null)
+            {
+                throw new ArgumentNullException(nameof(averageGapOuts));
+            }
 
-//        public Dictionary<TimeSpan, int> GetAMPMPeakFlowRate(
-//            string signalId,
-//            DirectionTypes directionType,
-//            DateTime startDate,
-//            DateTime endDate,
-//            TimeSpan amStartTime,
-//            TimeSpan amEndTime,
-//            TimeSpan pmStartTime,
-//            TimeSpan pmEndTime)
-//        {
-//            if (!signalRepository.Exists(signalId))
-//            {
-//                throw new ArgumentException("Signal Not Found");
-//            }
-//            List<ATSPM.Data.Models.Detector> detectors = GetLeftTurnDetectors(signalId, directionType);
-//            if (!detectors.Any())
-//            {
-//                throw new NotSupportedException("No Detectors found");
-//            }
-//            List<DetectorEventCountAggregation> volumeAggregations = GetDetectorVolumebyDetector(
-//                detectors,
-//                startDate,
-//                endDate,
-//                amStartTime,
-//                amEndTime,
-//                pmStartTime,
-//                pmEndTime);
-//            if (!volumeAggregations.Any())
-//            {
-//                throw new NotSupportedException("No Detector Activation Aggregations found");
-//            }
-//            List<TimeSpan> distinctTimeSpans = volumeAggregations.Select(v => v.BinStartTime.TimeOfDay).Distinct().OrderBy(v => v).ToList();
+            if (maxCycles is null)
+            {
+                throw new ArgumentNullException(nameof(maxCycles));
+            }
 
-//            Dictionary<TimeSpan, int> averageByBin = GetAveragesForBins(volumeAggregations, distinctTimeSpans);
+            if (maxCycles.Values.Contains(0))
+            {
+                throw new ArithmeticException("Max Cycles cannot be zero");
+            }
 
-//            Dictionary<TimeSpan, int> hourlyFlowRates = GetHourlyFlowRates(distinctTimeSpans, averageByBin);
+            if (!averageGapOuts.Keys.Contains(maxCycles.Keys.Min()) ||
+                !averageGapOuts.Keys.Contains(maxCycles.Keys.Max()))
+            {
+                throw new IndexOutOfRangeException("Peak hours must be the same for Average Gap Outs and Max Cycles");
+            }
+            var amPeak = averageGapOuts.Keys.Min();
+            var pmPeak = averageGapOuts.Keys.Max();
+            Dictionary<TimeSpan, double> percentages = new Dictionary<TimeSpan, double>();
+            percentages.Add(amPeak, averageGapOuts[amPeak] / maxCycles[amPeak]);
+            percentages.Add(pmPeak, averageGapOuts[pmPeak] / maxCycles[pmPeak]);
 
-//            return GetAmPmPeaks(amStartTime, amEndTime, pmStartTime, pmEndTime, hourlyFlowRates);
-//        }
+            //TODO: Change from average terminations to max cycles sum cycles for all phases separately for an hour take the max volume
+            return percentages;
+        }
 
-//        public Dictionary<TimeSpan, int> GetAmPmPeaks(
-//            TimeSpan amStartTime,
-//            TimeSpan amEndTime,
-//            TimeSpan pmStartTime,
-//            TimeSpan pmEndTime,
-//            Dictionary<TimeSpan, int> hourlyFlowRates)
-//        {
-//            var amPeak = hourlyFlowRates.Where(h => h.Key >= amStartTime && h.Key < amEndTime)
-//                            .OrderByDescending(h => h.Value)
-//                            .First();
+        private Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(
+            string signalId,
+            int phaseNumber,
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            Dictionary<TimeSpan, int> peaks,
+            List<PhaseTerminationAggregation> phaseTerminationAggregations)
+        {
+            Dictionary<TimeSpan, double> averages = new Dictionary<TimeSpan, double>();
+            var amPeak = peaks.Min(p => p.Key);
+            List<double> amGapOutCount = new List<double>();
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                amGapOutCount.Add(phaseTerminationAggregations.Where(p => 
+                    p.BinStartTime >= tempDate.Date.Add(amPeak) 
+                    && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1))
+                    .Sum(g => g.GapOuts));
+                //amGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(g => g.GapOuts));
+            }
+            LoadGapOutAverages(averages, amPeak, amGapOutCount);
 
-//            var pmPeak = hourlyFlowRates.Where(h => h.Key >= pmStartTime && h.Key < pmEndTime)
-//                .OrderByDescending(h => h.Value)
-//                .First();
+            var pmPeak = peaks.Max(p => p.Key);
+            List<double> pmGapOutCount = new List<double>();
+            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
+            {
+                pmGapOutCount.Add(phaseTerminationAggregations.Where(p => 
+                    p.BinStartTime >= tempDate.Date.Add(pmPeak) 
+                    && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1))
+                    .Sum(g => g.GapOuts));
+                //pmGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(g => g.GapOuts));
+            }
+            LoadGapOutAverages(averages, pmPeak, pmGapOutCount);
 
-//            var returnPeaks = new Dictionary<TimeSpan, int>();
-//            returnPeaks.Add(amPeak.Key, amPeak.Value);
-//            returnPeaks.Add(pmPeak.Key, pmPeak.Value);
-//            return returnPeaks;
-//        }
+            return averages;
+        }
 
-//        public Dictionary<TimeSpan, int> GetHourlyFlowRates(
-//            List<TimeSpan> distinctTimeSpans,
-//            Dictionary<TimeSpan, int> averageByBin)
-//        {
-//            var hourlyFlowRates = new Dictionary<TimeSpan, int>();
-//            foreach (var timeSpan in distinctTimeSpans)
-//            {
-//                TimeSpan hourEnd = timeSpan.Add(TimeSpan.FromHours(1));
-//                hourlyFlowRates.Add(timeSpan, averageByBin.Where(d => d.Key >= timeSpan && d.Key < hourEnd).Sum(d => d.Value));
-//            }
+        public static void LoadGapOutAverages(
+            Dictionary<TimeSpan, double> averages,
+            TimeSpan peak,
+            List<double> aggregations)
+        {
+            if (aggregations.Count > 0)
+                averages.Add(peak, aggregations.Average(a => a));
+            else
+                averages.Add(peak, 0);
+        }
 
-//            return hourlyFlowRates;
-//        }
+        public Dictionary<TimeSpan, int> GetAMPMPeakFlowRate(
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            int[] daysOfWeek,
+            Approach approach,
+            List<DetectorEventCountAggregation> leftTurnDetectorEventCountAggregations,
+            List<DetectorEventCountAggregation> volumeAggregations)
+        {            
+            List<TimeSpan> distinctTimeSpans = volumeAggregations.Select(v => v.BinStartTime.TimeOfDay).Distinct().OrderBy(v => v).ToList();
 
-//        public Dictionary<TimeSpan, int> GetAveragesForBins(
-//            List<DetectorEventCountAggregation> volumeAggregations,
-//            List<TimeSpan> distinctTimeSpans)
-//        {
-//            Dictionary<TimeSpan, int> averageByBin = new Dictionary<TimeSpan, int>();
+            Dictionary<TimeSpan, int> averageByBin = GetAveragesForBinsByTimeSpan(volumeAggregations, distinctTimeSpans);
 
-//            foreach (TimeSpan time in distinctTimeSpans)
-//            {
-//                int average = Convert.ToInt32(
-//                    Math.Round(volumeAggregations
-//                    .Where(v => v.BinStartTime.TimeOfDay == time)
-//                    .Average(v => v.EventCount)
-//                    ));
-//                averageByBin.Add(time, average);
-//            }
+            Dictionary<TimeSpan, int> hourlyFlowRates = GetHourlyFlowRates(distinctTimeSpans, averageByBin);
 
-//            return averageByBin;
-//        }
+            var allDetectorsFlowRate = GetAmPmPeaks(
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                hourlyFlowRates);
 
-//        public List<DetectorEventCountAggregation> GetDetectorVolumebyDetector(
-//            List<ATSPM.Data.Models.Detector> detectors,
-//            DateTime startDate,
-//            DateTime endDate,
-//            TimeSpan amStartTime,
-//            TimeSpan amEndTime,
-//            TimeSpan pmStartTime,
-//            TimeSpan pmEndTime)
-//        {
-//            var detectorAggregations = new List<DetectorEventCountAggregation>();
-//            for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
-//            {
-//                foreach (var detector in detectors)
-//                {
-//                    detectorAggregations.AddRange(detectorEventCountAggregationRepository
-//                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(amStartTime), tempDate.Add(amEndTime)));
-//                    detectorAggregations.AddRange(detectorEventCountAggregationRepository
-//                        .GetDetectorEventCountAggregationByDetectorIdAndDateRange(detector.Id, tempDate.Add(pmStartTime), tempDate.Add(pmEndTime)));
-//                }
-//            }
-//            return detectorAggregations;
-//        }
+            return GetLeftTurnAMPMPeakFlowRates(
+                startDate,
+                endDate,
+                amStartTime,
+                amEndTime,
+                pmStartTime,
+                pmEndTime,
+                daysOfWeek,
+                distinctTimeSpans,
+                allDetectorsFlowRate,
+                approach,
+                leftTurnDetectorEventCountAggregations);
+        }
 
-//        public List<ATSPM.Data.Models.Detector> GetLeftTurnDetectors(string signalId, DirectionTypes directionType)
-//        {
-//            return detectorRepository.GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(signalId, directionType, new List<MovementTypes>() { MovementTypes.L, MovementTypes.TL}).ToList();
-//        }
-//    }
-//}
+        private Dictionary<TimeSpan, int> GetLeftTurnAMPMPeakFlowRates(
+            DateTime startDate,
+            DateTime endDate,
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            int[] daysOfWeek,
+            List<TimeSpan> distinctTimeSpans,
+            Dictionary<TimeSpan, int> allDetectorsFlowRate,
+            Approach approach,
+            List<DetectorEventCountAggregation> leftTurnVolumeAggregations)
+        {           
+            if (!leftTurnVolumeAggregations.Any())
+            {
+                throw new NotSupportedException("No Left Turn Detector Activation Aggregations found");
+            }
+            Dictionary<TimeSpan, int> leftTurnAverageByBin = GetAveragesForBinsByApproach(leftTurnVolumeAggregations, distinctTimeSpans, approach.Id); //add approach id
+            Dictionary<TimeSpan, int> leftTurnHourlyFlowRates = GetHourlyFlowRates(distinctTimeSpans, leftTurnAverageByBin);
+            Dictionary<TimeSpan, int> leftTurnAmPmPeaks = new Dictionary<TimeSpan, int>
+            {
+                {
+                    allDetectorsFlowRate.First().Key,
+                    leftTurnHourlyFlowRates.Where(a => a.Key == allDetectorsFlowRate.First().Key).First().Value
+                },
+                {
+                    allDetectorsFlowRate.Last().Key,
+                    leftTurnHourlyFlowRates.Where(a => a.Key == allDetectorsFlowRate.Last().Key).First().Value
+                }
+            };
+            return leftTurnAmPmPeaks;
+        }
+
+        public Dictionary<TimeSpan, int> GetAmPmPeaks(
+            TimeSpan amStartTime,
+            TimeSpan amEndTime,
+            TimeSpan pmStartTime,
+            TimeSpan pmEndTime,
+            Dictionary<TimeSpan, int> hourlyFlowRates)
+        {
+            var amPeak = hourlyFlowRates.Where(h => h.Key >= amStartTime && h.Key < amEndTime)
+                            .OrderByDescending(h => h.Value)
+                            .First();
+
+            var pmPeak = hourlyFlowRates.Where(h => h.Key >= pmStartTime && h.Key < pmEndTime)
+                .OrderByDescending(h => h.Value)
+                .First();
+
+            var returnPeaks = new Dictionary<TimeSpan, int>();
+            returnPeaks.Add(amPeak.Key, amPeak.Value);
+            returnPeaks.Add(pmPeak.Key, pmPeak.Value);
+            return returnPeaks;
+        }
+
+        public Dictionary<TimeSpan, int> GetHourlyFlowRates(
+            List<TimeSpan> distinctTimeSpans,
+            Dictionary<TimeSpan, int> averageByBin)
+        {
+            var hourlyFlowRates = new Dictionary<TimeSpan, int>();
+            foreach (var timeSpan in distinctTimeSpans)
+            {
+                TimeSpan hourEnd = timeSpan.Add(TimeSpan.FromHours(1));
+                hourlyFlowRates.Add(timeSpan, averageByBin.Where(d => d.Key >= timeSpan && d.Key < hourEnd).Sum(d => d.Value));
+            }
+
+            return hourlyFlowRates;
+        }
+
+        public Dictionary<TimeSpan, int> GetAveragesForBinsByTimeSpan(
+            List<DetectorEventCountAggregation> volumeAggregations,
+            List<TimeSpan> distinctTimeSpans)
+        {
+            Dictionary<TimeSpan, int> averageByBin = new Dictionary<TimeSpan, int>();
+            foreach (TimeSpan time in distinctTimeSpans)
+            {
+                var average = Convert.ToInt32(volumeAggregations
+                    .Where(v => v.BinStartTime.TimeOfDay == time)
+                    .GroupBy(v => v.BinStartTime.Day).Select(v => new
+                    {
+                        sum = v.Sum(a => a.EventCount)
+                    }).Average(v => v.sum)
+                );
+
+                averageByBin.Add(time, average);
+            };
+            return averageByBin;
+        }
+
+        public Dictionary<TimeSpan, int> GetAveragesForBinsByApproach(
+            List<DetectorEventCountAggregation> volumeAggregations,
+            List<TimeSpan> distinctTimeSpans,
+            int approachId)
+        {
+            Dictionary<TimeSpan, int> averageByBin = new Dictionary<TimeSpan, int>();
+
+            foreach (TimeSpan time in distinctTimeSpans)
+            {
+                int average = Convert.ToInt32(
+                    Math.Round(volumeAggregations
+                    .Where(v => v.BinStartTime.TimeOfDay == time)
+                    .Where(v => v.ApproachId == approachId)
+                    .Average(v => v.EventCount)
+                    ));
+                averageByBin.Add(time, average);
+            }
+
+            return averageByBin;
+        }
+
+        public List<Detector> GetLeftTurnDetectors(
+            Approach approach)
+        {
+            var movementTypes = new List<MovementTypes>() { MovementTypes.L };
+            //only return detector types of type 4
+            return approach.Detectors.Where(d =>
+            d.DetectionTypes.Select(t => t.Id).Contains(Data.Enums.DetectionTypes.LLC)
+            && movementTypes.Contains(d.MovementTypeId)).ToList();
+        }
+
+        
+
+        
+    }
+}
