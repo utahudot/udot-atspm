@@ -17,7 +17,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
 {
     public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
     {
-        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
+        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCyclesAndVehicles;
 
         internal GetDetectorEvents GetDetectorEvents { get; private set; }
 
@@ -26,7 +26,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        public CalculateApproachDelay CalculateDelayValues { get; private set; }
+        public AssignCyclesToVehicles CalculateDelayValues { get; private set; }
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         public override void InstantiateSteps()
@@ -35,7 +35,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             FilteredDetectorData = new();
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
-            mergeCalculateDelayValues = new();
+            mergeCyclesAndVehicles = new();
             CalculateDelayValues = new();
             GenerateApproachDelayResults = new();
 
@@ -48,7 +48,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             Steps.Add(FilteredDetectorData);
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
-            Steps.Add(mergeCalculateDelayValues);
+            Steps.Add(mergeCyclesAndVehicles);
             Steps.Add(CalculateDelayValues);
             Steps.Add(GenerateApproachDelayResults);
 
@@ -63,9 +63,9 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             FilteredPhaseIntervalChanges.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
             FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
             GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            IdentifyandAdjustVehicleActivations.LinkTo(mergeCalculateDelayValues.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CreateRedToRedCycles.LinkTo(mergeCalculateDelayValues.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            mergeCalculateDelayValues.LinkTo(CalculateDelayValues, new DataflowLinkOptions() { PropagateCompletion = true });
+            IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            CreateRedToRedCycles.LinkTo(mergeCyclesAndVehicles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            mergeCyclesAndVehicles.LinkTo(CalculateDelayValues, new DataflowLinkOptions() { PropagateCompletion = true });
             CalculateDelayValues.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }

@@ -24,9 +24,9 @@ using Microsoft.AspNetCore.Mvc;
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
 //var path2 = "C:\\temp\\TestData\\1001_Approach_Delay.csv";
 
-var path1 = "C:\\temp\\TestData\\7115_Approach_Volume.csv";
+var path1 = "C:\\temp\\TestData\\7191_Purdue_Coordination_Diagram.csv";
 
-var list =  File.ReadAllLines(path1)
+var list = File.ReadAllLines(path1)
                .Skip(1)
                .Select(x => x.Split(','))
                .Select(x => new ControllerEventLog
@@ -37,16 +37,41 @@ var list =  File.ReadAllLines(path1)
                    EventParam = int.Parse(x[3])
                }).ToList();
 
+//var list = new List<ControllerEventLog>();
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.5"), EventCode = 9, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.9"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:48.7"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:4.7"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:5.3"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:9.1"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:15.6"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:28.7"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:40.5"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:45.3"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:46.2"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:47.9"), EventCode = 1, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:50.5"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:52.6"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:55.2"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:56.1"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:3.7"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:25.1"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:32.9"), EventCode = 82, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:36.7"), EventCode = 8, EventParam = 2 });
+//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:41.5"), EventCode = 9, EventParam = 2 });
 
 
-var s = new Signal() { SignalId = "7115" };
+
+
+
+var s = new Signal() { SignalId = "7191" };
 
 
 var d1 = new Detector()
 {
     DetChannel = 2,
     DistanceFromStopBar = 340,
-    LatencyCorrection = 1.2,
+    LatencyCorrection = 0,
     Approach = new Approach()
     {
         ProtectedPhaseNumber = 2,
@@ -58,9 +83,9 @@ var d1 = new Detector()
 
 var d2 = new Detector()
 {
-    DetChannel = 6,
+    DetChannel = 4,
     DistanceFromStopBar = 340,
-    LatencyCorrection = 1.2,
+    LatencyCorrection = 0,
     Approach = new Approach()
     {
         ProtectedPhaseNumber = 6,
@@ -74,65 +99,17 @@ var d2 = new Detector()
 
 
 
+var createRedToRedCycles = new CreateRedToRedCycles();
 
+var redToRed = await createRedToRedCycles.ExecuteAsync(list);
 
-
-
-
-
-
-
-var approachVolumeWorkflow = new ApproachVolumeWorkflow();
-
-Console.WriteLine($"init?: {approachVolumeWorkflow.IsInitialized}");
-
-await foreach (var result in approachVolumeWorkflow.Execute(list, default))
+foreach (var r in redToRed)
 {
-    Console.WriteLine($"result: {result}");
+    Console.WriteLine($"red: {r}");
 }
 
+Console.WriteLine($"totals: {redToRed.Sum(s => s.TotalRedTime)} - {redToRed.Sum(s => s.TotalYellowTime)} - {redToRed.Sum(s => s.TotalGreenTime)}");
 
-
-
-
-
-
-
-
-
-
-//var _options = new TimelineOptions()
-//{
-//    Start = DateTime.Parse("4/17/2023 8:00:0.0"),
-//    End = DateTime.Parse("4/17/2023 10:00:0.0"),
-//    Size = 15
-//};
-
-//Console.WriteLine($"input count: {list.Count}");
-
-//var config = new List<Tuple<Detector, IEnumerable<ControllerEventLog>>>()
-//{
-//    Tuple.Create(d1, list.Where(l => l.EventParam == d1.DetChannel)),
-//    Tuple.Create(d2, list.Where(l => l.EventParam == d2.DetChannel))
-//};
-
-//var identifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
-
-//var correctedDetectorEvents = await identifyandAdjustVehicleActivations.ExecuteAsync(config);
-
-//Console.WriteLine($"corrected count: {correctedDetectorEvents.Count()}");
-
-
-//var calculateTotalVolumes = new CalculateTotalVolumes(_options);
-
-//var totalVolumes = await calculateTotalVolumes.ExecuteAsync(correctedDetectorEvents);
-
-//var generateApproachVolumeResults = new GenerateApproachVolumeResults();
-
-//foreach (var t in totalVolumes)
-//{
-//    var peakVolume = await generateApproachVolumeResults.ExecuteAsync(t);
-//}
 
 
 
