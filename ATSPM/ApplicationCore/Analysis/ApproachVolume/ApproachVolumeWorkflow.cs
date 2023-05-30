@@ -117,8 +117,6 @@ namespace ATSPM.Application.Analysis.ApproachVolume
 
         public TotalVolumes(Timeline<TotalVolume> collection) : base(collection) { }
 
-        //public TotalVolumes(TimelineOptions options, IEnumerable<TotalVolume> collection) : base(options, collection) { }
-
         public int DetectorCount => this.Sum(s => s.DetectorCount);
 
         public override bool InRange(DateTime time)
@@ -215,8 +213,6 @@ namespace ATSPM.Application.Analysis.ApproachVolume
 
     public class GenerateApproachVolumeResults : TransformProcessStepBase<TotalVolumes, ApproachVolumeResult>
     {
-        private readonly TimelineOptions _options;
-
         public GenerateApproachVolumeResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<ApproachVolumeResult> Process(TotalVolumes input, CancellationToken cancelToken = default)

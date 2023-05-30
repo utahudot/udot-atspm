@@ -54,10 +54,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare Signal Pass")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare Signal Pass")]
         public async void CalculateApproachDelayCompareSignalPassTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -72,10 +72,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare Signal Fail")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare Signal Fail")]
         public async void CalculateApproachDelayCompareSignalFailTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -90,10 +90,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare Start Pass")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare Start Pass")]
         public async void CalculateApproachDelayCompareStartPassTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -108,10 +108,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare Start Fail")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare Start Fail")]
         public async void CalculateApproachDelayCompareStartFailTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -126,10 +126,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare End Pass")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare End Pass")]
         public async void CalculateApproachDelayCompareEndPassTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -144,10 +144,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Compare End Fail")]
+        [Trait(nameof(AssignCyclesToVehicles), "Compare End Fail")]
         public async void CalculateApproachDelayCompareEndFailTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -162,10 +162,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Data Check")]
+        [Trait(nameof(AssignCyclesToVehicles), "Data Check")]
         public async void CalculateApproachDelayDataCheckTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -189,10 +189,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Red Delay")]
+        [Trait(nameof(AssignCyclesToVehicles), "Red Delay")]
         public async void CalculateApproachDelayRedDelayTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -211,10 +211,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red result should be 0
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Green Delay")]
+        [Trait(nameof(AssignCyclesToVehicles), "Green Delay")]
         public async void CalculateApproachDelayGreenDelayTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -235,10 +235,10 @@ namespace ApplicationCoreTests.Analysis
         /// Delay is only calculated for arrival on red result should be 0
         /// </summary>
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Yellow Delay")]
+        [Trait(nameof(AssignCyclesToVehicles), "Yellow Delay")]
         public async void CalculateApproachDelayYellowDelayTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -254,10 +254,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Arrival on Red")]
+        [Trait(nameof(AssignCyclesToVehicles), "Arrival on Red")]
         public async void CalculateApproachDelayArrivalOnRedTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -272,10 +272,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Arrival on Green")]
+        [Trait(nameof(AssignCyclesToVehicles), "Arrival on Green")]
         public async void CalculateApproachDelayArrivalOnGreenTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -290,10 +290,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Arrival on Yellow")]
+        [Trait(nameof(AssignCyclesToVehicles), "Arrival on Yellow")]
         public async void CalculateApproachDelayArrivalOnYellowTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
@@ -308,10 +308,10 @@ namespace ApplicationCoreTests.Analysis
         }
 
         [Fact]
-        [Trait(nameof(CalculateApproachDelay), "Null Cycles")]
+        [Trait(nameof(AssignCyclesToVehicles), "Null Cycles")]
         public async void CalculateApproachDelayNullCyclesTest()
         {
-            var sut = new CalculateApproachDelay();
+            var sut = new AssignCyclesToVehicles();
 
             var testEvents = new List<CorrectedDetectorEvent>
             {

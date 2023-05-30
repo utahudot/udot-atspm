@@ -31,7 +31,6 @@
     <Folder Include="Analysis\ApproachSpeed\" />
     <Folder Include="Analysis\TimingAndActuation\" />
     <Folder Include="Analysis\PurdueSplitFailure\" />
-    <Folder Include="Analysis\PurdueCoordination\" />
     <Folder Include="Analysis\PedestrianDelay\" />
     <Folder Include="Analysis\YellowAndRedActuations\" />
     <Folder Include="Analysis\TurningMovemen\" />
