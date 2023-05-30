@@ -1,5 +1,4 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,23 +7,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
 {
     public class LeftTurnPedestrianAnalysisService
     {
-        //private readonly ISignalRepository _signalRepository;
-        //private readonly IApproachRepository _approachRepository;
-        //private readonly IPhasePedAggregationRepository _phasePedAggregationRepository;
-        //private readonly IApproachCycleAggregationRepository _approachCycleAggregationRepository;
         private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
 
         public LeftTurnPedestrianAnalysisService(
-            //ISignalRepository signalRepository,
-            //IApproachRepository approachRepository,
-            //IPhasePedAggregationRepository phasePedAggregationRepository,
-            //IApproachCycleAggregationRepository approachCycleAggregationRepository,
             LeftTurnReportPreCheckService leftTurnReportPreCheckService)
         {
-            //_signalRepository = signalRepository;
-            //_approachRepository = approachRepository;
-            //_phasePedAggregationRepository = phasePedAggregationRepository;
-            //_approachCycleAggregationRepository = approachCycleAggregationRepository;
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
         public PedActuationResult GetPedestrianPercentage(
@@ -100,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapReport
                         && p.BinStartTime < tempDate.Date.Add(endTime))
                     .Sum(p => p.PedCycles));
             }
-            foreach(var aggregation in phasePedAggregations)
+            foreach (var aggregation in phasePedAggregations)
             {
                 aggregation.BinStartTime = aggregation.BinStartTime.AddMinutes(-aggregation.BinStartTime.Minute % 15);
             }

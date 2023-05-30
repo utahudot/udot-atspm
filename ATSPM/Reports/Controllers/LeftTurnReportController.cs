@@ -1,13 +1,13 @@
-﻿using ATSPM.Application.Reports.Business.LeftTurnGapReport;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.LeftTurnGapReport;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
-using ATSPM.Data.Enums;
-using ATSPM.Application.Extensions;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -39,7 +39,7 @@ namespace ATSPM.Application.Reports.Controllers
             ISignalRepository signalRepository,
             IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository, 
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
             LeftTurnVolumeAnalysisService leftTurnVolumeAnalysisService,
             LeftTurnReportPreCheckService leftTurnReportPreCheckService,
@@ -458,7 +458,7 @@ namespace ATSPM.Application.Reports.Controllers
             {
                 if (parameters.DaysOfWeek.Contains((int)tempDate.DayOfWeek))
                 {
-                    pedAggregations.AddRange( 
+                    pedAggregations.AddRange(
                         _phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
                             parameters.SignalId,
                             opposingPhase,
