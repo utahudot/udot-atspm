@@ -410,17 +410,44 @@ namespace ATSPM.Application.Reports.Controllers
         public GapDurationResult GetGapDurationAnalysis(ReportParameters parameters)
         {
             var signal = _signalRepository.GetLatestVersionOfSignal(parameters.SignalId, parameters.StartDate);
+            var approach = signal.Approaches.Where(a => a.Id == parameters.ApproachId).FirstOrDefault();
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
+            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+            var leftTurnGaps = new List<PhaseLeftTurnGapAggregation>();
+            int totalActivations = 0;
+            for (var tempDate = parameters.StartDate.Date; tempDate <= parameters.EndDate; tempDate = tempDate.AddDays(1))
+            {
+
+                if (parameters.DaysOfWeek.Contains((int)tempDate.DayOfWeek))
+                {
+                    foreach (var detector in detectors)
+                    {
+                        totalActivations += _detectorEventCountAggregationRepository.GetDetectorEventCountSumAggregationByDetectorIdAndDateRange(
+                            detector.Id,
+                            tempDate.Date.Add(startTime),
+                            tempDate.Date.Add(endTime));
+                    }
+                    leftTurnGaps.AddRange(_phaseLeftTurnGapAggregationRepository.GetPhaseLeftTurnGapAggregationBySignalIdPhaseNumberAndDateRange(
+                        parameters.SignalId,
+                        opposingPhase,
+                        tempDate.Date.Add(startTime),
+                        tempDate.Date.Add(endTime)));
+                }
+            }
+
             GapDurationResult gapDurationResult = leftTurnGapDurationAnalysis.GetPercentOfGapDuration(
-                parameters.SignalId,
-                parameters.ApproachId,
+                approach,
                 parameters.StartDate,
                 parameters.EndDate,
                 startTime,
                 endTime,
                 parameters.DaysOfWeek,
-                signal);
+                signal,
+                totalActivations,
+                leftTurnGaps,
+                opposingPhase);
 
             return gapDurationResult;
         }
