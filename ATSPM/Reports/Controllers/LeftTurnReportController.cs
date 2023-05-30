@@ -8,9 +8,6 @@ using System.Linq;
 using ATSPM.Data.Models;
 using ATSPM.Data.Enums;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Infrastructure.Repositories;
-using Microsoft.Extensions.Options;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -451,14 +448,42 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var startTime = new TimeSpan(parameters.StartHour, parameters.StartMinute, 0);
             var endTime = new TimeSpan(parameters.EndHour, parameters.EndMinute, 0);
+            var signal = _signalRepository.GetLatestVersionOfSignal(parameters.SignalId, parameters.StartDate);
+            var approach = signal.Approaches.Where(a => a.Id == parameters.ApproachId).FirstOrDefault();
+            int opposingPhase = leftTurnReportPreCheckService.GetOpposingPhase(approach);
+            var pedAggregations = new List<PhasePedAggregation>();
+            List<PhaseCycleAggregation> cycleAggregations = new List<PhaseCycleAggregation>();
+
+            for (var tempDate = parameters.StartDate.Date; tempDate <= parameters.EndDate; tempDate = tempDate.AddDays(1))
+            {
+                if (parameters.DaysOfWeek.Contains((int)tempDate.DayOfWeek))
+                {
+                    pedAggregations.AddRange( 
+                        _phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(
+                            parameters.SignalId,
+                            opposingPhase,
+                            tempDate.Date.Add(startTime),
+                            tempDate.Date.Add(endTime)));
+                    cycleAggregations.AddRange(
+                       _approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(
+                           parameters.SignalId,
+                           opposingPhase,
+                           tempDate.Date.Add(startTime),
+                           tempDate.Date.Add(endTime)));
+                }
+            }
+
             return leftTurnPedestrianAnalysisService.GetPedestrianPercentage(
-                parameters.SignalId,
-                parameters.ApproachId,
+                signal,
+                approach,
                 parameters.StartDate,
                 parameters.EndDate,
                 startTime,
                 endTime,
-                parameters.DaysOfWeek);
+                parameters.DaysOfWeek,
+                pedAggregations,
+                opposingPhase,
+                cycleAggregations);
 
         }
 
