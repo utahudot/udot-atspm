@@ -36,7 +36,6 @@ namespace ATSPM.Application.Reports.Controllers
             IApproachCycleAggregationRepository approachCycleAggregationRepository,
             IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository,
             ISignalRepository signalRepository,
-            IDetectorRepository detectorRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             IApproachSplitFailAggregationRepository approachSplitFailAggregationRepository,
