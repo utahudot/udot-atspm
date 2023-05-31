@@ -31,10 +31,10 @@ namespace ApplicationCoreTests.Analysis
                 SignalId = "1001",
                 Phase = 1,
                 DetChannel = 2,
-                StartTime = GetStaticDateTime(s),
+                Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
-                EndTime = GetStaticDateTime(s + 3),
+                End = GetStaticDateTime(s + 3),
                 CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
@@ -42,8 +42,8 @@ namespace ApplicationCoreTests.Analysis
 
             Assert.Equal("1001", result.SignalId);
             Assert.Equal(1, result.Phase);
-            Assert.Equal(testData.Min(m => m.StartTime), result.Start);
-            Assert.Equal(testData.Max(m => m.EndTime), result.End);
+            Assert.Equal(testData.Min(m => m.Start), result.Start);
+            Assert.Equal(testData.Max(m => m.End), result.End);
             Assert.Equal(testData.Average(a => a.Delay), result.AverageDelay);
             Assert.Equal(testData.Sum(s => s.Delay) / 3600, result.TotalDelay);
         }
@@ -59,10 +59,10 @@ namespace ApplicationCoreTests.Analysis
                 SignalId = (1000 + Random.Shared.Next(1, 4)).ToString(),
                 Phase = 1,
                 DetChannel = 2,
-                StartTime = GetStaticDateTime(s),
+                Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
-                EndTime = GetStaticDateTime(s + 3),
+                End = GetStaticDateTime(s + 3),
                 CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
@@ -85,10 +85,10 @@ namespace ApplicationCoreTests.Analysis
                 SignalId = "1001",
                 Phase = Random.Shared.Next(1, 4),
                 DetChannel = 2,
-                StartTime = GetStaticDateTime(s),
+                Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
-                EndTime = GetStaticDateTime(s + 3),
+                End = GetStaticDateTime(s + 3),
                 CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 
@@ -111,10 +111,10 @@ namespace ApplicationCoreTests.Analysis
                 SignalId = "1001",
                 Phase = 1,
                 DetChannel = Random.Shared.Next(1, 4),
-                StartTime = GetStaticDateTime(s),
+                Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
-                EndTime = GetStaticDateTime(s + 3),
+                End = GetStaticDateTime(s + 3),
                 CorrectedTimeStamp = GetStaticDateTime(s + Random.Shared.Next(0, 3))
             }).ToList();
 

@@ -57,8 +57,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                         .Select(s => items.Skip(s.i).Take(4))
                         .Select(s => new RedToRedCycle()
                         {
-                            StartTime = s.ElementAt(0).Timestamp,
-                            EndTime = s.ElementAt(3).Timestamp,
+                            Start = s.ElementAt(0).Timestamp,
+                            End = s.ElementAt(3).Timestamp,
                             GreenEvent = s.ElementAt(1).Timestamp,
                             YellowEvent = s.ElementAt(2).Timestamp,
                             Phase = phase.Key,
