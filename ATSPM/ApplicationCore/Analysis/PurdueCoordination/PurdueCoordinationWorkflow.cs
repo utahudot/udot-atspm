@@ -64,42 +64,187 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
     }
 
-    public class CyclePcd : RedToRedCycle
+    public class SignalPhase : StartEndRange
     {
-        public double TotalArrivalOnGreen => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnGreen);
-        public double TotalArrivalOnYellow => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnYellow);
-        public double TotalArrivalOnRed => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnRed);
-        public double TotalDelay => DetectorEvents.Sum(d => d.Delay);
-        public double TotalVolume => DetectorEvents.Count(d => d.TimeStamp >= StartTime && d.TimeStamp < EndTime);
+        //public SignalPhase(
+        //    VolumeCollection volume,
+        //    List<PerdueCoordinationPlan> plans,
+        //    List<CyclePcd> cycles,
+        //    List<ControllerEventLog> detectorEvents,
+        //    Approach approach,
+        //    DateTime startDate,
+        //    DateTime endDate
+        //    )
+        //{
+        //    Volume = volume;
+        //    Plans = plans;
+        //    Cycles = cycles;
+        //    DetectorEvents = detectorEvents;
+        //    Approach = approach;
+        //    StartDate = startDate;
+        //    EndDate = endDate;
+        //}
+
+        //public SignalPhase()
+        //{
+        //}
+
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+
+
+        //public VolumeCollection Volume { get; private set; }
+        //public List<PerdueCoordinationPlan> Plans { get; private set; }
+        public IReadOnlyList<CyclePcd> Cycles { get; set; }
+        //private List<ControllerEventLog> DetectorEvents { get; set; }
+        //public Approach Approach { get; }
+
+        public double AvgDelay => TotalDelay / TotalVolume;
+
+        public double PercentArrivalOnGreen => TotalVolume > 0 ? Math.Round(TotalArrivalOnGreen / TotalVolume * 100) : 0;
+        //    get
+        //    {
+        //        if (TotalVolume > 0)
+        //            return Math.Round(TotalArrivalOnGreen / TotalVolume * 100);
+        //        return 0;
+        //    }
+        //}
+
+        public double PercentGreen => TotalVolume > 0 ? Math.Round(TotalGreenTime / TotalTime * 100) : 0;
+        //{
+        //    get
+        //    {
+        //        if (TotalTime > 0)
+        //            return Math.Round(TotalGreenTime / TotalTime * 100);
+        //        return 0;
+        //    }
+        //}
+
+        public double PlatoonRatio => TotalVolume > 0 ? Math.Round(PercentArrivalOnGreen / PercentGreen, 2) : 0;
+        //{
+        //    get
+        //    {
+        //        if (TotalVolume > 0)
+        //            return Math.Round(PercentArrivalOnGreen / PercentGreen, 2);
+        //        return 0;
+        //    }
+        //}
+
+        public double TotalArrivalOnGreen => Cycles.Sum(d => d.TotalArrivalOnGreen);
+        public double TotalArrivalOnYellow => Cycles.Sum(d => d.TotalArrivalOnYellow);
+        public double TotalArrivalOnRed => Cycles.Sum(d => d.TotalArrivalOnRed);
+        public double TotalDelay => Cycles.Sum(d => d.TotalDelay);
+        public double TotalVolume => Cycles.Sum(d => d.TotalVolume);
+        public double TotalGreenTime => Cycles.Sum(d => d.TotalGreenTime);
+        public double TotalYellowTime => Cycles.Sum(d => d.TotalYellowTime);
+        public double TotalRedTime => Cycles.Sum(d => d.TotalRedTime);
+        public double TotalTime => Cycles.Sum(d => d.TotalTime);
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}: Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f}" +
+                $" - {TotalArrivalOnGreen} - {TotalArrivalOnYellow} - {TotalArrivalOnRed} - {TotalVolume}" +
+                $" - {TotalGreenTime} - {TotalYellowTime} - {TotalRedTime} - {TotalTime}" +
+                $" - {PercentArrivalOnGreen} - {PercentGreen} - {PlatoonRatio}";
+        }
+
+        //public void ResetVolume()
+        //{
+        //    Volume = null;
+        //}
     }
 
-    //public class CalculateApproachDelay : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
-    //{
-    //    public CalculateApproachDelay(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = new List<Vehicle>();
-
-    //        foreach (var v in input.Item1)
-    //        {
-    //            //TODO: Add phase validation here too!!!
-    //            var redCycle = input.Item2?.FirstOrDefault(w => w.SignalId == v.Detector.Approach?.Signal?.SignalId && v.CorrectedTimeStamp >= w.StartTime && v.CorrectedTimeStamp <= w.EndTime);
-
-    //            if (redCycle != null)
-    //            {
-    //                result.Add(new Vehicle(v, redCycle));
-    //            }
-    //        }
-
-    //        return Task.FromResult<IEnumerable<Vehicle>>(result);
-    //    }
-    //}
-
-
-    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachVolumeResult>
+    public class CyclePcd : RedToRedCycle
     {
-        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCyclesAndVehicles;
+        public CyclePcd() { }
+
+        public CyclePcd(RedToRedCycle redToRedCycle)
+        {
+            SignalId = redToRedCycle.SignalId;
+            Phase = redToRedCycle.Phase;
+            Start = redToRedCycle.Start;
+            End = redToRedCycle.End;
+            GreenEvent = redToRedCycle.GreenEvent;
+            YellowEvent = redToRedCycle.YellowEvent;
+        }
+
+        public double TotalArrivalOnGreen => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnGreen);
+        public double TotalArrivalOnYellow => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnYellow);
+        public double TotalArrivalOnRed => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnRed);
+        public double TotalDelay => Vehicles.Sum(d => d.Delay);
+        public double TotalVolume => Vehicles.Count(d => InRange(d.CorrectedTimeStamp));
+
+        //public double TotalArrivalOnGreen { get; set; }
+        //public double TotalArrivalOnYellow { get; set; }
+        //public double TotalArrivalOnRed { get; set; }
+        //public double TotalDelay { get; set; }
+        //public double TotalVolume { get; set; }
+
+        public IReadOnlyList<Vehicle> Vehicles { get; set; }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}: Signal: {SignalId} Phase: {Phase} Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f}" +
+                $" - {TotalRedTime} - {TotalYellowTime} - {TotalGreenTime}" +
+                $" - {TotalArrivalOnGreen} - {TotalArrivalOnYellow} - {TotalArrivalOnRed} - {TotalVolume}";
+        }
+    }
+
+    public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<CyclePcd>>
+    {
+        public CalculateVehicleArrivals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IReadOnlyList<CyclePcd>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
+        {
+            var result = input.Item2.Select(s => new CyclePcd(s)
+            {
+                Vehicles = input.Item1.Where(w => w.Detector.Approach?.Signal?.SignalId == s.SignalId && s.InRange(w.CorrectedTimeStamp))
+                .Select(v => new Vehicle(v, s))
+                .ToList()
+            }).ToList();
+
+            foreach (var r in result)
+            {
+                Console.WriteLine($"result: {r}");
+                //foreach (var v in r.Vehicles)
+                //{
+                //    Console.WriteLine($"vehicle: {v}");
+                //}
+            }
+
+            return Task.FromResult<IReadOnlyList<CyclePcd>>(result);
+        }
+    }
+
+    public class CaclulatePhaseTotals : TransformProcessStepBase<IReadOnlyList<CyclePcd>, IReadOnlyList<SignalPhase>>
+    {
+        public CaclulatePhaseTotals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IReadOnlyList<SignalPhase>> Process(IReadOnlyList<CyclePcd> input, CancellationToken cancelToken = default)
+        {
+            var result = input.GroupBy(g => g.Phase)
+                .Select(s => new SignalPhase()
+                {
+                    Cycles = s.ToList()
+                }).ToList();
+
+            foreach (var r in result)
+            {
+                Console.WriteLine($"result: {r}");
+                //foreach (var v in r.Vehicles)
+                //{
+                //    Console.WriteLine($"vehicle: {v}");
+                //}
+            }
+
+            return Task.FromResult<IReadOnlyList<SignalPhase>>(result);
+        }
+    }
+
+
+    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PerdueCoordinationDiagramResult>
+    {
+        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeVehicleArrivals;
 
         internal GetDetectorEvents GetDetectorEvents { get; private set; }
 
@@ -108,7 +253,8 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        public AssignCyclesToVehicles AssignCyclesToVehicles { get; private set; }
+        public CalculateVehicleArrivals CalculateVehicleArrivals { get; private set; }
+        public CaclulatePhaseTotals CaclulatePhaseTotals { get; private set; }
         //public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         public override void InstantiateSteps()
@@ -117,8 +263,9 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             FilteredDetectorData = new();
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
-            mergeCyclesAndVehicles = new();
-            AssignCyclesToVehicles = new();
+            mergeVehicleArrivals = new();
+            CalculateVehicleArrivals = new();
+            CaclulatePhaseTotals = new();
             //GenerateApproachDelayResults = new();
 
             GetDetectorEvents = new();
@@ -130,8 +277,9 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             Steps.Add(FilteredDetectorData);
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
-            Steps.Add(mergeCyclesAndVehicles);
-            Steps.Add(AssignCyclesToVehicles);
+            Steps.Add(mergeVehicleArrivals);
+            Steps.Add(CalculateVehicleArrivals);
+            Steps.Add(CaclulatePhaseTotals);
             //Steps.Add(GenerateApproachDelayResults);
 
             Steps.Add(GetDetectorEvents);
@@ -145,9 +293,10 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             FilteredPhaseIntervalChanges.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
             FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
             GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CreateRedToRedCycles.LinkTo(mergeCyclesAndVehicles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            mergeCyclesAndVehicles.LinkTo(AssignCyclesToVehicles, new DataflowLinkOptions() { PropagateCompletion = true });
+            IdentifyandAdjustVehicleActivations.LinkTo(mergeVehicleArrivals.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            CreateRedToRedCycles.LinkTo(mergeVehicleArrivals.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            mergeVehicleArrivals.LinkTo(CalculateVehicleArrivals, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateVehicleArrivals.LinkTo(CaclulatePhaseTotals, new DataflowLinkOptions() { PropagateCompletion = true });
             //AssignCyclesToVehicles.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
             //GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
