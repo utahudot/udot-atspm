@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ATSPM.Domain.Common;
+using System;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class RedToRedCycle
+    public class RedToRedCycle : StartEndRange
     {
         //public RedToRedCycle(DateTime firstRedEvent, DateTime greenEvent, DateTime yellowEvent, DateTime lastRedEvent)
         //{
@@ -16,8 +17,8 @@ namespace ATSPM.Application.Analysis.Common
         //    //PreemptCollection = new List<DetectorDataPoint>();
         //}
 
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         //public double GreenLineY { get; }
         //public double YellowLineY { get; }
         //public double RedLineY { get; }
@@ -31,17 +32,22 @@ namespace ATSPM.Application.Analysis.Common
 
 
         public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
-        public double TotalYellowTime => (EndTime - YellowEvent).TotalSeconds;
-        public double TotalRedTime => (GreenEvent - StartTime).TotalSeconds;
-        public double TotalTime => (EndTime - StartTime).TotalSeconds;
-        public double TotalGreenTimeMilliseconds => (YellowEvent - GreenEvent).TotalMilliseconds;
-        public double TotalYellowTimeMilliseconds => (EndTime - YellowEvent).TotalMilliseconds;
-        public double TotalRedTimeMilliseconds => (GreenEvent - StartTime).TotalMilliseconds;
-        public double TotalTimeMilliseconds => (EndTime - StartTime).TotalMilliseconds;
+        public double TotalYellowTime => (End - YellowEvent).TotalSeconds;
+        public double TotalRedTime => (GreenEvent - Start).TotalSeconds;
+        public double TotalTime => (End - Start).TotalSeconds;
+        //public double TotalGreenTimeMilliseconds => (YellowEvent - GreenEvent).TotalMilliseconds;
+        //public double TotalYellowTimeMilliseconds => (End - YellowEvent).TotalMilliseconds;
+        //public double TotalRedTimeMilliseconds => (GreenEvent - Start).TotalMilliseconds;
+        //public double TotalTimeMilliseconds => (End - Start).TotalMilliseconds;
+
+        public override bool InRange(DateTime time)
+        {
+            return time >= Start && time <= End;
+        }
 
         public override string ToString()
         {
-            return $"Signal: {SignalId} Phase: {Phase} Start: {StartTime:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {EndTime:yyyy-MM-dd'T'HH:mm:ss.f} " +
+            return $"Signal: {SignalId} Phase: {Phase} Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} Green: {GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} Yellow: {YellowEvent:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f} " +
                 $"- {TotalRedTime} - {TotalYellowTime} - {TotalGreenTime}";
         }
     }

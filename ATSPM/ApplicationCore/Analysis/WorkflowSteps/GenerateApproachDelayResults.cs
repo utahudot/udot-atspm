@@ -24,11 +24,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     {
                         result.Add(new ApproachDelayResult()
                         {
-                            Start = vehicles.Min(m => m.StartTime),
-                            End = vehicles.Max(m => m.EndTime),
+                            Start = vehicles.Min(m => m.Start),
+                            End = vehicles.Max(m => m.End),
                             SignalId = signal.Key,
                             Phase = phase.Key,
-                            Vehicles = vehicles.ToList()
+                            AverageDelay = vehicles.Average(a => a.Delay),
+                            TotalDelay = vehicles.Sum(s => s.Delay) / 3600
                         });
                     }
                 }

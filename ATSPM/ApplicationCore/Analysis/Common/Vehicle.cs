@@ -1,9 +1,10 @@
 ﻿using ATSPM.Application.Enums;
+using ATSPM.Domain.Common;
 using System;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class Vehicle
+    public class Vehicle : StartEndRange
     {
         public Vehicle() { }
 
@@ -13,8 +14,8 @@ namespace ATSPM.Application.Analysis.Common
             CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
             DetChannel = detectorEvent.Detector.DetChannel;
             Phase = redToRedCycle.Phase;
-            StartTime = redToRedCycle.StartTime;
-            EndTime = redToRedCycle.EndTime;
+            Start = redToRedCycle.Start;
+            End = redToRedCycle.End;
             YellowEvent = redToRedCycle.YellowEvent;
             GreenEvent = redToRedCycle.GreenEvent;
         }
@@ -26,8 +27,8 @@ namespace ATSPM.Application.Analysis.Common
         public int DetChannel { get; set; }
         public DateTime CorrectedTimeStamp { get; set; }
 
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
@@ -37,7 +38,7 @@ namespace ATSPM.Application.Analysis.Common
         {
             get
             {
-                if (CorrectedTimeStamp < GreenEvent && CorrectedTimeStamp >= StartTime)
+                if (CorrectedTimeStamp < GreenEvent && CorrectedTimeStamp >= Start)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
@@ -47,7 +48,7 @@ namespace ATSPM.Application.Analysis.Common
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (CorrectedTimeStamp >= YellowEvent && CorrectedTimeStamp <= EndTime)
+                else if (CorrectedTimeStamp >= YellowEvent && CorrectedTimeStamp <= End)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
