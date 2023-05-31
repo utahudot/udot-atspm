@@ -19,6 +19,7 @@ using ATSPM.Domain.Common;
 using System.CommandLine;
 using ATSPM.Application;
 using Microsoft.AspNetCore.Mvc;
+using ATSPM.Application.Analysis.PurdueCoordination;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -99,16 +100,19 @@ var d2 = new Detector()
 
 
 
-var createRedToRedCycles = new CreateRedToRedCycles();
+var purdueCoordinationWorkflow = new PurdueCoordinationWorkflow();
 
-var redToRed = await createRedToRedCycles.ExecuteAsync(list);
-
-foreach (var r in redToRed)
+await foreach (var r in purdueCoordinationWorkflow.Execute(list, default))
 {
-    Console.WriteLine($"red: {r}");
+    Console.WriteLine($"boo: {r}");
 }
 
-Console.WriteLine($"totals: {redToRed.Sum(s => s.TotalRedTime)} - {redToRed.Sum(s => s.TotalYellowTime)} - {redToRed.Sum(s => s.TotalGreenTime)}");
+//foreach (var r in redToRed)
+//{
+//    Console.WriteLine($"red: {r}");
+//}
+
+//Console.WriteLine($"totals: {redToRed.Sum(s => s.TotalRedTime)} - {redToRed.Sum(s => s.TotalYellowTime)} - {redToRed.Sum(s => s.TotalGreenTime)}");
 
 
 

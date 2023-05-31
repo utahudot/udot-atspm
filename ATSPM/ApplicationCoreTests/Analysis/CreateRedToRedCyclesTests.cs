@@ -37,16 +37,16 @@ namespace ApplicationCoreTests.Analysis
             var actual = result.First();
             var expected = new RedToRedCycle()
             {
-                StartTime = DateTime.Parse("4/17/2023 8:01:48.8"),
+                Start = DateTime.Parse("4/17/2023 8:01:48.8"),
                 GreenEvent = DateTime.Parse("4/17/2023 8:03:11.7"),
                 YellowEvent = DateTime.Parse("4/17/2023 8:04:13.7"),
-                EndTime = DateTime.Parse("4/17/2023 8:04:18.8")
+                End = DateTime.Parse("4/17/2023 8:04:18.8")
             };
 
-            Assert.Equal(expected.StartTime, actual.StartTime);
+            Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
             Assert.Equal(expected.YellowEvent, actual.YellowEvent);
-            Assert.Equal(expected.EndTime, actual.EndTime);
+            Assert.Equal(expected.End, actual.End);
         }
 
         [Fact]
@@ -70,16 +70,16 @@ namespace ApplicationCoreTests.Analysis
             var actual = result.First();
             var expected = new RedToRedCycle()
             {
-                StartTime = DateTime.Parse("4/17/2023 8:01:48.8"),
+                Start = DateTime.Parse("4/17/2023 8:01:48.8"),
                 GreenEvent = DateTime.Parse("4/17/2023 8:03:11.7"),
                 YellowEvent = DateTime.Parse("4/17/2023 8:04:13.7"),
-                EndTime = DateTime.Parse("4/17/2023 8:04:18.8")
+                End = DateTime.Parse("4/17/2023 8:04:18.8")
             };
 
-            Assert.Equal(expected.StartTime, actual.StartTime);
+            Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
             Assert.Equal(expected.YellowEvent, actual.YellowEvent);
-            Assert.Equal(expected.EndTime, actual.EndTime);
+            Assert.Equal(expected.End, actual.End);
         }
 
         [Fact]
@@ -187,7 +187,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
             var cycle = result.First();
 
-            var condition = cycle.StartTime < cycle.GreenEvent && cycle.GreenEvent < cycle.YellowEvent && cycle.YellowEvent < cycle.EndTime;
+            var condition = cycle.Start < cycle.GreenEvent && cycle.GreenEvent < cycle.YellowEvent && cycle.YellowEvent < cycle.End;
 
             Assert.True(condition);
         }
