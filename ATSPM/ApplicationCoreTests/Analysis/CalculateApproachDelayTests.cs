@@ -28,10 +28,10 @@ namespace ApplicationCoreTests.Analysis
                 {
                     SignalId = "1001",
                     Phase = 1,
-                    StartTime = DateTime.Parse("4/17/2023 8:00:0.1"),
+                    Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
                     YellowEvent = DateTime.Parse("4/17/2023 8:00:2.1"),
-                    EndTime = DateTime.Parse("4/17/2023 8:00:3.1")
+                    End = DateTime.Parse("4/17/2023 8:00:3.1")
                 }
             };
 
@@ -179,8 +179,8 @@ namespace ApplicationCoreTests.Analysis
 
             Assert.Equal(expected.SignalId, actual.SignalId);
             Assert.Equal(expected.Phase, actual.Phase);
-            Assert.Equal(expected.StartTime, actual.StartTime);
-            Assert.Equal(expected.EndTime, actual.EndTime);
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.End, actual.End);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
             Assert.Equal(expected.YellowEvent, actual.YellowEvent);
         }

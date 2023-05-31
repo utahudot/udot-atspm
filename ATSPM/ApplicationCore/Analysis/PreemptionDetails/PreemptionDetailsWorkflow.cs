@@ -23,7 +23,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
         public CalculateDwellTime CalculateDwellTime { get; private set; }
         public CalculateTrackClearTime CalculateTrackClearTime { get; private set; }
         public CalculateTimeToService CalculateTimeToService { get; private set; }
-        public AssignCyclesToVehicles CalculateDelay { get; private set; }
+        public CalculateDelay CalculateDelay { get; private set; }
         public CalculateTimeToGateDown CalculateTimeToGateDown { get; private set; }
         public CalculateTimeToCallMaxOut CalculateTimeToCallMaxOut { get; private set; }
         public GeneratePreemptDetailResults GeneratePreemptDetailResults { get; private set; }
@@ -53,7 +53,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             Steps.Add(CalculateDwellTime);
             Steps.Add(CalculateTrackClearTime);
             Steps.Add(CalculateTimeToService);
-            Steps.Add((IDataflowBlock)CalculateDelay);
+            Steps.Add(CalculateDelay);
             Steps.Add(CalculateTimeToGateDown);
             Steps.Add(CalculateTimeToCallMaxOut);
             Steps.Add(GeneratePreemptDetailResults);
