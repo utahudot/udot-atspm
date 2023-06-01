@@ -13,7 +13,7 @@ namespace ATSPM.Application.Analysis.Common
             SignalId = detectorEvent.Detector.Approach?.Signal?.SignalId;
             CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
             DetChannel = detectorEvent.Detector.DetChannel;
-            Phase = redToRedCycle.Phase;
+            Phase = redToRedCycle.PhaseNumber;
             Start = redToRedCycle.Start;
             End = redToRedCycle.End;
             YellowEvent = redToRedCycle.YellowEvent;
