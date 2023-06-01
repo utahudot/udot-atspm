@@ -8,35 +8,12 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    //public class GroupEventsBySignalId : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
-    //{
-    //    public GroupEventsBySignalId(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    protected override Task<IEnumerable<IEnumerable<ControllerEventLog>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = input.GroupBy(g => g.SignalId).Select(s => s.AsEnumerable());
-
-    //        return Task.FromResult(result);
-    //    }
-    //}
-
-    //public class GroupEventsByEventParam : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
-    //{
-    //    public GroupEventsByEventParam(ExecutionDataflowBlockOptions? dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    protected override Task<IEnumerable<IEnumerable<ControllerEventLog>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = input.GroupBy(g => g.EventParam).Select(s => s.AsEnumerable());
-
-    //        return Task.FromResult(result);
-    //    }
-    //}
-
-    public class CreateRedToRedCycles : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<RedToRedCycle>>
+    public class CreateRedToRedCycles : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<RedToRedCycle>>
     {
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        //TODO: update this with the selector on the grouping
+        protected override Task<IReadOnlyList<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = new List<RedToRedCycle>();
 
@@ -61,7 +38,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                             End = s.ElementAt(3).Timestamp,
                             GreenEvent = s.ElementAt(1).Timestamp,
                             YellowEvent = s.ElementAt(2).Timestamp,
-                            Phase = phase.Key,
+                            PhaseNumber = phase.Key,
                             SignalId = signal.Key
                         });
 
@@ -70,7 +47,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 }
             }
 
-            return Task.FromResult<IEnumerable<RedToRedCycle>>(result);
+            return Task.FromResult<IReadOnlyList<RedToRedCycle>>(result);
         }
     }
 }
