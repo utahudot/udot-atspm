@@ -104,3 +104,6 @@ dkms.conf
 /ATSPM/AnalysisReport.sarif
 /ATSPM/upgrade-assistant.clef
 /ATSPM/obj/Docker
+/ATSPM/Reports/obj/ReportAPI.csproj.nuget.dgspec.json
+/ATSPM/Reports/obj/ReportAPI.csproj.nuget.g.props
+/ATSPM/Reports/obj/ReportAPI.csproj.nuget.g.targets
