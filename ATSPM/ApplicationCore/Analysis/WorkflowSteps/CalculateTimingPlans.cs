@@ -14,22 +14,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class Plan : StartEndRange
-    {
-        public string SignalId { get; set; }
-        public int PlanNumber { get; set; }
-
-        public override string ToString()
-        {
-            return JsonSerializer.Serialize(this);
-        }
-    }
-
-    public class CalculateTimingPlans : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<Plan>>
+    public class CalculateTimingPlans<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<T>> where T : Plan, new()
     {
         public CalculateTimingPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IReadOnlyList<Plan>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<IReadOnlyList<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input
                 .Where(w => w.EventCode == (int)DataLoggerEnum.CoordPatternChange)
@@ -37,12 +26,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .GroupBy(g => g.SignalId, (k, i) => i
                 .GroupBy(p => p.EventParam, (n, c) => c
                 .Where((w, i) => i < c.Count() - 1)
-                .Select((s, i) => new Plan() { SignalId = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
+                .Select((s, i) => new T() { SignalId = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
                 .SelectMany(s => s).ToList());
                 //.SelectMany(s => s)
                 //.ToList();
 
-            return Task.FromResult<IEnumerable<IReadOnlyList<Plan>>>(result);
+            return Task.FromResult<IEnumerable<IReadOnlyList<T>>>(result);
         }
     }
 }
