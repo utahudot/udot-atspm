@@ -301,7 +301,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.Phase).Distinct();
+            var actual = result.Select(s => s.PhaseNumber).Distinct();
             var expected = new List<int>()
             {
                 1, 2, 3

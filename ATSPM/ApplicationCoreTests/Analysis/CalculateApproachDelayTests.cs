@@ -27,7 +27,7 @@ namespace ApplicationCoreTests.Analysis
                 new RedToRedCycle()
                 {
                     SignalId = "1001",
-                    Phase = 1,
+                    PhaseNumber = 1,
                     Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
                     YellowEvent = DateTime.Parse("4/17/2023 8:00:2.1"),
@@ -178,7 +178,7 @@ namespace ApplicationCoreTests.Analysis
             var expected = _redCycles.First();
 
             Assert.Equal(expected.SignalId, actual.SignalId);
-            Assert.Equal(expected.Phase, actual.Phase);
+            Assert.Equal(expected.PhaseNumber, actual.Phase);
             Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.End, actual.End);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
