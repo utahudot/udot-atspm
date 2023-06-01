@@ -9,62 +9,15 @@ using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.PurdueCoordination
 {
-    public class PerdueCoordinationDiagramResult
-    {
-        //public PerdueCoordinationDiagramResult(
-        //    string chartName,
-        //    string signalId,
-        //    string signalLocation,
-        //    int phaseNumber,
-        //    string phaseDescription,
-        //    DateTime start,
-        //    DateTime end,
-        //    int totalOnGreenEvents,
-        //    int totalDetectorHits,
-        //    double percentArrivalOnGreen,
-        //    ICollection<PerdueCoordinationPlan> plans,
-        //    ICollection<VolumePerHour> volumePerHour,
-        //    ICollection<CyclePcd> cycles)
-        //{
-        //    ChartName = chartName;
-        //    SignalId = signalId;
-        //    SignalLocation = signalLocation;
-        //    PhaseNumber = phaseNumber;
-        //    PhaseDescription = phaseDescription;
-        //    Start = start;
-        //    End = end;
-        //    TotalOnGreenEvents = totalOnGreenEvents;
-        //    TotalDetectorHits = totalDetectorHits;
-        //    PercentArrivalOnGreen = percentArrivalOnGreen;
-        //    Plans = plans;
-        //    VolumePerHour = volumePerHour;
-        //    Cycles = cycles;
-        //}
-
-        //public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        //public string SignalLocation { get; internal set; }
-        public int PhaseNumber { get; internal set; }
-        //public string PhaseDescription { get; internal set; }
-        public DateTime Start { get; internal set; }
-        public DateTime End { get; internal set; }
-        public int TotalOnGreenEvents { get; internal set; }
-        public int TotalDetectorHits { get; internal set; }
-        public double PercentArrivalOnGreen { get; internal set; }
-        //public ICollection<PerdueCoordinationPlan> Plans { get; internal set; }
-        //public ICollection<VolumePerHour> VolumePerHour { get; internal set; }
-        //public ICollection<CyclePcd> Cycles { get; set; }
-
-    }
-
-    public class SignalPhase : StartEndRange
+    public class PerdueCoordinationResult : StartEndRange
     {
         //public SignalPhase(
         //    VolumeCollection volume,
@@ -95,6 +48,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         //public VolumeCollection Volume { get; private set; }
         //public List<PerdueCoordinationPlan> Plans { get; private set; }
+        [JsonIgnore]
         public IReadOnlyList<CyclePcd> Cycles { get; set; }
         //private List<ControllerEventLog> DetectorEvents { get; set; }
         //public Approach Approach { get; }
@@ -102,33 +56,8 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         public double AvgDelay => TotalDelay / TotalVolume;
 
         public double PercentArrivalOnGreen => TotalVolume > 0 ? Math.Round(TotalArrivalOnGreen / TotalVolume * 100) : 0;
-        //    get
-        //    {
-        //        if (TotalVolume > 0)
-        //            return Math.Round(TotalArrivalOnGreen / TotalVolume * 100);
-        //        return 0;
-        //    }
-        //}
-
         public double PercentGreen => TotalVolume > 0 ? Math.Round(TotalGreenTime / TotalTime * 100) : 0;
-        //{
-        //    get
-        //    {
-        //        if (TotalTime > 0)
-        //            return Math.Round(TotalGreenTime / TotalTime * 100);
-        //        return 0;
-        //    }
-        //}
-
         public double PlatoonRatio => TotalVolume > 0 ? Math.Round(PercentArrivalOnGreen / PercentGreen, 2) : 0;
-        //{
-        //    get
-        //    {
-        //        if (TotalVolume > 0)
-        //            return Math.Round(PercentArrivalOnGreen / PercentGreen, 2);
-        //        return 0;
-        //    }
-        //}
 
         public double TotalArrivalOnGreen => Cycles.Sum(d => d.TotalArrivalOnGreen);
         public double TotalArrivalOnYellow => Cycles.Sum(d => d.TotalArrivalOnYellow);
@@ -142,16 +71,8 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         public override string ToString()
         {
-            return $"{this.GetType().Name}: Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f}" +
-                $" - {TotalArrivalOnGreen} - {TotalArrivalOnYellow} - {TotalArrivalOnRed} - {TotalVolume}" +
-                $" - {TotalGreenTime} - {TotalYellowTime} - {TotalRedTime} - {TotalTime}" +
-                $" - {PercentArrivalOnGreen} - {PercentGreen} - {PlatoonRatio}";
+            return JsonSerializer.Serialize(this);
         }
-
-        //public void ResetVolume()
-        //{
-        //    Volume = null;
-        //}
     }
 
     public class CyclePcd : RedToRedCycle
@@ -203,46 +124,28 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
                 .ToList()
             }).ToList();
 
-            foreach (var r in result)
-            {
-                Console.WriteLine($"result: {r}");
-                //foreach (var v in r.Vehicles)
-                //{
-                //    Console.WriteLine($"vehicle: {v}");
-                //}
-            }
-
             return Task.FromResult<IReadOnlyList<CyclePcd>>(result);
         }
     }
 
-    public class CaclulatePhaseTotals : TransformProcessStepBase<IReadOnlyList<CyclePcd>, IReadOnlyList<SignalPhase>>
+    public class CaclulatePhaseTotals : TransformManyProcessStepBase<IReadOnlyList<CyclePcd>, PerdueCoordinationResult>
     {
         public CaclulatePhaseTotals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IReadOnlyList<SignalPhase>> Process(IReadOnlyList<CyclePcd> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PerdueCoordinationResult>> Process(IReadOnlyList<CyclePcd> input, CancellationToken cancelToken = default)
         {
             var result = input.GroupBy(g => g.Phase)
-                .Select(s => new SignalPhase()
+                .Select(s => new PerdueCoordinationResult()
                 {
                     Cycles = s.ToList()
-                }).ToList();
+                });
 
-            foreach (var r in result)
-            {
-                Console.WriteLine($"result: {r}");
-                //foreach (var v in r.Vehicles)
-                //{
-                //    Console.WriteLine($"vehicle: {v}");
-                //}
-            }
-
-            return Task.FromResult<IReadOnlyList<SignalPhase>>(result);
+            return Task.FromResult(result);
         }
     }
 
 
-    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PerdueCoordinationDiagramResult>
+    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PerdueCoordinationResult>
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeVehicleArrivals;
 
@@ -255,7 +158,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
         public CalculateVehicleArrivals CalculateVehicleArrivals { get; private set; }
         public CaclulatePhaseTotals CaclulatePhaseTotals { get; private set; }
-        //public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         public override void InstantiateSteps()
         {
@@ -266,7 +168,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             mergeVehicleArrivals = new();
             CalculateVehicleArrivals = new();
             CaclulatePhaseTotals = new();
-            //GenerateApproachDelayResults = new();
 
             GetDetectorEvents = new();
         }
@@ -280,7 +181,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             Steps.Add(mergeVehicleArrivals);
             Steps.Add(CalculateVehicleArrivals);
             Steps.Add(CaclulatePhaseTotals);
-            //Steps.Add(GenerateApproachDelayResults);
 
             Steps.Add(GetDetectorEvents);
         }
@@ -297,8 +197,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             CreateRedToRedCycles.LinkTo(mergeVehicleArrivals.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
             mergeVehicleArrivals.LinkTo(CalculateVehicleArrivals, new DataflowLinkOptions() { PropagateCompletion = true });
             CalculateVehicleArrivals.LinkTo(CaclulatePhaseTotals, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AssignCyclesToVehicles.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            CaclulatePhaseTotals.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 
