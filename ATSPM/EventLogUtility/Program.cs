@@ -65,7 +65,7 @@ var list = File.ReadAllLines(path1)
 
 
 
-var calculateTimingPlans = new CalculateTimingPlans();
+var calculateTimingPlans = new CalculateTimingPlans<Plan>();
 
 var result = await calculateTimingPlans.ExecuteAsync(list);
 
