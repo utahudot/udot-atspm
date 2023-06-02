@@ -107,3 +107,12 @@ dkms.conf
 /ATSPM/Reports/obj/ReportAPI.csproj.nuget.dgspec.json
 /ATSPM/Reports/obj/ReportAPI.csproj.nuget.g.props
 /ATSPM/Reports/obj/ReportAPI.csproj.nuget.g.targets
+/ATSPM/bin/Debug/Reports.deps.json
+/ATSPM/bin/Debug/SignalControllerLogger.deps.json
+/ATSPM/Data/bin/Debug/net6.0/ATSPM.Data.deps.json
+/ATSPM/obj/Debug/docker-compose.dcproj.FileListAbsolute.txt
+/ATSPM/Reports/bin/Debug/net6.0/Reports.deps.json
+/ATSPM/Reports/obj/Debug/net6.0/Reports.csproj.FileListAbsolute.txt
+/ATSPM/Reports/obj/project.assets.json
+/ATSPM/Reports/obj/Reports.csproj.nuget.dgspec.json
+/ATSPM/Reports/obj/Reports.csproj.nuget.g.props

@@ -19,18 +19,20 @@ namespace ATSPM.Application.Reports.Controllers
     public class SplitFailController : ControllerBase
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
-        private readonly ISignalRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
+        private readonly ISignalRepository signalRepository;
 
         public SplitFailController(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            IApproachRepository approachRepository)
+            IApproachRepository approachRepository,
+            ISignalRepository signalRepository)
         {
             this.splitFailPhaseService = splitFailPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.approachRepository = approachRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>

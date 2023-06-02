@@ -59,8 +59,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <param name="cycleEvents"></param>
         /// <returns></returns>
-        public List<GreenToGreenCycle> GetGreenToGreenCycles(Approach approach, DateTime startTime, DateTime endTime,
-            bool getPermissivePhase, List<ControllerEventLog> cycleEvents)
+        public List<GreenToGreenCycle> GetGreenToGreenCycles( DateTime startTime, DateTime endTime,List<ControllerEventLog> cycleEvents)
         {
             //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
             //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
@@ -121,7 +120,6 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<CyclePcd> GetPcdCycles(
             DateTime startDate,
             DateTime endDate,
-            Approach approach,
             List<ControllerEventLog> detectorEvents,
             List<ControllerEventLog> cycleEvents,
             int? pcdCycleTime)
@@ -154,29 +152,19 @@ namespace ATSPM.Application.Reports.Business.Common
 
         private RedToRedCycle.EventType GetEventType(int eventCode)
         {
-            switch (eventCode)
+            return eventCode switch
             {
-                case 1:
-                    return RedToRedCycle.EventType.ChangeToGreen;
-                case 3:
-                    return RedToRedCycle.EventType.ChangeToEndMinGreen;
-                case 61:
-                    return RedToRedCycle.EventType.ChangeToGreen;
-                case 8:
-                    return RedToRedCycle.EventType.ChangeToYellow;
-                case 63:
-                    return RedToRedCycle.EventType.ChangeToYellow;
-                case 9:
-                    return RedToRedCycle.EventType.ChangeToRed;
-                case 11:
-                    return RedToRedCycle.EventType.ChangeToEndOfRedClearance;
-                case 64:
-                    return RedToRedCycle.EventType.ChangeToRed;
-                case 66:
-                    return RedToRedCycle.EventType.OverLapDark;
-                default:
-                    return RedToRedCycle.EventType.Unknown;
-            }
+                1 => RedToRedCycle.EventType.ChangeToGreen,
+                3 => RedToRedCycle.EventType.ChangeToEndMinGreen,
+                61 => RedToRedCycle.EventType.ChangeToGreen,
+                8 => RedToRedCycle.EventType.ChangeToYellow,
+                63 => RedToRedCycle.EventType.ChangeToYellow,
+                9 => RedToRedCycle.EventType.ChangeToRed,
+                11 => RedToRedCycle.EventType.ChangeToEndOfRedClearance,
+                64 => RedToRedCycle.EventType.ChangeToRed,
+                66 => RedToRedCycle.EventType.OverLapDark,
+                _ => RedToRedCycle.EventType.Unknown,
+            };
         }
 
         /// <summary>
@@ -187,8 +175,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <param name="detector"></param>
         /// <returns></returns>
-        public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, bool getPermissivePhase,
-            Detector detector, List<ControllerEventLog> cycleEvents)
+        public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, List<ControllerEventLog> cycleEvents)
         {
             var mainEvents = cycleEvents.Where(c => c.Timestamp<=endDate && c.Timestamp>=startDate).ToList();
             var previousEvents = cycleEvents.Where(c => c.Timestamp < startDate).ToList();
@@ -244,55 +231,34 @@ namespace ATSPM.Application.Reports.Business.Common
             var terminationType = CycleSplitFail.TerminationType.Unknown;
             var terminationEvent = terminationEvents.FirstOrDefault(t => t.Timestamp > start && t.Timestamp <= end);
             if (terminationEvent != null)
-                switch (terminationEvent.EventCode)
+                terminationType = terminationEvent.EventCode switch
                 {
-                    case 4:
-                        terminationType = CycleSplitFail.TerminationType.GapOut;
-                        break;
-                    case 5:
-                        terminationType = CycleSplitFail.TerminationType.MaxOut;
-                        break;
-                    case 6:
-                        terminationType = CycleSplitFail.TerminationType.ForceOff;
-                        break;
-                    default:
-                        terminationType = CycleSplitFail.TerminationType.Unknown;
-                        break;
-                }
+                    4 => CycleSplitFail.TerminationType.GapOut,
+                    5 => CycleSplitFail.TerminationType.MaxOut,
+                    6 => CycleSplitFail.TerminationType.ForceOff,
+                    _ => CycleSplitFail.TerminationType.Unknown,
+                };
             return terminationType;
         }
 
 
         private YellowRedEventType GetYellowToRedEventType(int EventCode)
         {
-            switch (EventCode)
+            return EventCode switch
             {
-                case 8:
-                    return YellowRedEventType.BeginYellowClearance;
+                8 => YellowRedEventType.BeginYellowClearance,
                 // overlap yellow
-                case 63:
-                    return YellowRedEventType.BeginYellowClearance;
-
-                case 9:
-                    return YellowRedEventType.BeginRedClearance;
+                63 => YellowRedEventType.BeginYellowClearance,
+                9 => YellowRedEventType.BeginRedClearance,
                 // overlap red
-                case 64:
-                    return YellowRedEventType.BeginRedClearance;
-
-                case 65:
-                    return YellowRedEventType.BeginRed;
-                case 11:
-                    return YellowRedEventType.BeginRed;
-
-                case 1:
-                    return YellowRedEventType.EndRed;
+                64 => YellowRedEventType.BeginRedClearance,
+                65 => YellowRedEventType.BeginRed,
+                11 => YellowRedEventType.BeginRed,
+                1 => YellowRedEventType.EndRed,
                 // overlap green
-                case 61:
-                    return YellowRedEventType.EndRed;
-
-                default:
-                    return YellowRedEventType.Unknown;
-            }
+                61 => YellowRedEventType.EndRed,
+                _ => YellowRedEventType.Unknown,
+            };
         }
 
         public enum YellowRedEventType
