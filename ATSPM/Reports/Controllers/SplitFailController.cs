@@ -116,22 +116,5 @@ namespace ATSPM.Application.Reports.Controllers
                 );
         }      
 
-
-
-        private bool EventsBeforeStart(
-            SplitFailOptions options,
-            Detector detector,
-            SplitFailPhaseData splitFailPhaseData)
-        {
-            var eventOnBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalId,
-                detector.DetChannel, 81, options.Start);
-            var eventOffBeforeStart = controllerEventLogRepository.GetFirstEventBeforeDateByEventCodeAndParameter(
-                options.SignalId,
-                detector.DetChannel, 82, options.Start);
-            return (eventOnBeforeStart != null && eventOffBeforeStart == null); 
-                
-        }
-
     }
 }

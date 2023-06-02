@@ -215,6 +215,8 @@ namespace ATSPM.Application.Extensions
             int eventParam,
             DateTime date)
         {
+
+
             throw new NotImplementedException();
 
             //_db.Database.CommandTimeout = 10;
