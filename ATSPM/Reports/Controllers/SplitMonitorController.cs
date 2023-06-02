@@ -41,7 +41,7 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public SplitMonitorResult GetChartData([FromBody] SplitMonitorOptions options)
         {
-            var signal = signalRepository.GetVersionOfSignalByDate(options.SignalId, options.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
             var phaseEvents = controllerEventLogRepository.GetSignalEventsByEventCodes(options.SignalId, options.Start, options.End,
                 new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
             var planEvents = controllerEventLogRepository.GetPlanEvents(
