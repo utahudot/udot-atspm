@@ -7,15 +7,9 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
     public class PerdueCoordinationDiagramService
     {
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly IApproachRepository approachRepository;
 
-        public PerdueCoordinationDiagramService(
-            SignalPhaseService signalPhaseService,
-            IApproachRepository approachRepository)
+        public PerdueCoordinationDiagramService()
         {
-            this.signalPhaseService = signalPhaseService;
-            this.approachRepository = approachRepository;
         }
 
         public PerdueCoordinationDiagramResult GetChartData(
