@@ -206,29 +206,7 @@ namespace ATSPM.Application.Extensions
                 approach.GetCycleEventCodes(getPermissivePhase),
                 getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
-        
-
-        public static ControllerEventLog GetFirstEventBeforeDateByEventCodeAndParameter(
-            this IControllerEventLogRepository repo,
-            string signalId,
-            int eventCode,
-            int eventParam,
-            DateTime date)
-        {
-
-
-            throw new NotImplementedException();
-
-            //_db.Database.CommandTimeout = 10;
-            //var tempDate = date.AddDays(-1);
-            //var lastEvent = _db.ControllerEventLogs.Where(c => c.signalId == signalId &&
-            //                                                    c.Timestamp >= tempDate &&
-            //                                                    c.Timestamp < date &&
-            //                                                    c.EventCode == eventCode &&
-            //                                                    c.EventParam == eventParam)
-            //    .OrderByDescending(c => c.Timestamp).FirstOrDefault();
-            //return lastEvent;
-        }
+       
 
         public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(
             this IControllerEventLogRepository repo,
@@ -265,6 +243,29 @@ namespace ATSPM.Application.Extensions
 
 
         #region Obsolete
+
+        [Obsolete("Use GetEventsByEventCodesParam overload", true)]
+        public static ControllerEventLog GetFirstEventBeforeDateByEventCodeAndParameter(
+           this IControllerEventLogRepository repo,
+           string signalId,
+           int eventCode,
+           int eventParam,
+           DateTime date)
+        {
+
+
+            throw new NotImplementedException();
+
+            //_db.Database.CommandTimeout = 10;
+            //var tempDate = date.AddDays(-1);
+            //var lastEvent = _db.ControllerEventLogs.Where(c => c.signalId == signalId &&
+            //                                                    c.Timestamp >= tempDate &&
+            //                                                    c.Timestamp < date &&
+            //                                                    c.EventCode == eventCode &&
+            //                                                    c.EventParam == eventParam)
+            //    .OrderByDescending(c => c.Timestamp).FirstOrDefault();
+            //return lastEvent;
+        }
 
         [Obsolete("Use GetEventsByEventCodesParam overload", true)]
         public static int GetRecordCountByParameterAndEvent(
