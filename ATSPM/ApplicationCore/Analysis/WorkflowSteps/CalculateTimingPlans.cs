@@ -14,7 +14,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculateTimingPlans<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<T>> where T : Plan, new()
+    public class CalculateTimingPlans<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<T>> where T : IPlan, new()
     {
         public CalculateTimingPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 

@@ -65,61 +65,47 @@ var list = File.ReadAllLines(path1)
 
 
 
-var calculateTimingPlans = new CalculateTimingPlans<Plan>();
+var s = new Signal() { SignalId = "7191" };
 
-var result = await calculateTimingPlans.ExecuteAsync(list);
 
-foreach (var r in result)
+var d1 = new Detector()
 {
-    Console.WriteLine($"----------------------------------------");
-    foreach (var s in r)
+    DetChannel = 2,
+    DistanceFromStopBar = 340,
+    LatencyCorrection = 0,
+    Approach = new Approach()
     {
-        Console.WriteLine($"result: {s}");
+        ProtectedPhaseNumber = 2,
+        DirectionTypeId = DirectionTypes.NB,
+        Mph = 45,
+        Signal = s
     }
+};
+
+var d2 = new Detector()
+{
+    DetChannel = 4,
+    DistanceFromStopBar = 340,
+    LatencyCorrection = 0,
+    Approach = new Approach()
+    {
+        ProtectedPhaseNumber = 6,
+        DirectionTypeId = DirectionTypes.SB,
+        Mph = 45,
+        Signal = s
+    }
+};
+
+
+
+
+
+var purdueCoordinationWorkflow = new PurdueCoordinationWorkflow();
+
+await foreach (var r in purdueCoordinationWorkflow.Execute(list, default))
+{
+    Console.WriteLine($"boo: {r}");
 }
-
-
-//var s = new Signal() { SignalId = "7191" };
-
-
-//var d1 = new Detector()
-//{
-//    DetChannel = 2,
-//    DistanceFromStopBar = 340,
-//    LatencyCorrection = 0,
-//    Approach = new Approach()
-//    {
-//        ProtectedPhaseNumber = 2,
-//        DirectionTypeId = DirectionTypes.NB,
-//        Mph = 45,
-//        Signal = s
-//    }
-//};
-
-//var d2 = new Detector()
-//{
-//    DetChannel = 4,
-//    DistanceFromStopBar = 340,
-//    LatencyCorrection = 0,
-//    Approach = new Approach()
-//    {
-//        ProtectedPhaseNumber = 6,
-//        DirectionTypeId = DirectionTypes.SB,
-//        Mph = 45,
-//        Signal = s
-//    }
-//};
-
-
-
-
-
-//var purdueCoordinationWorkflow = new PurdueCoordinationWorkflow();
-
-//await foreach (var r in purdueCoordinationWorkflow.Execute(list, default))
-//{
-//    Console.WriteLine($"boo: {r}");
-//}
 
 //foreach (var r in redToRed)
 //{
