@@ -13,12 +13,12 @@ namespace ATSPM.Application.Reports.Business.Common
     {
         private readonly PlanService planService;
         private readonly CycleService cycleService;
-        private readonly ILogger logger;
+        private readonly ILogger<SignalPhaseService> logger;
 
         public SignalPhaseService(
             PlanService planService,
             CycleService cycleService,
-            ILogger logger
+            ILogger<SignalPhaseService> logger
             )
         {
             this.planService = planService;
@@ -66,7 +66,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 throw new ReportsNullAgrumentException("Approach cannot be null");
             }
 
-            if (cycleEvents.IsNullOrEmpty())
+            if (!cycleEvents.Any())
                 return new SignalPhase();
             var cycles = cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);

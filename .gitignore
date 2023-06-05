@@ -118,3 +118,7 @@ dkms.conf
 /ATSPM/Reports/obj/Reports.csproj.nuget.g.props
 /ATSPM/bin/Debug/appsettings.Development.json
 /ATSPM/bin/Debug/appsettings.json
+/ATSPM/Reports/bin/Debug/net6.0/appsettings.Development.json
+/ATSPM/Reports/bin/Debug/net6.0/appsettings.json
+/ATSPM/Reports/obj/Debug/net6.0/Reports.csproj.BuildWithSkipAnalyzers
+/ATSPM/Reports/obj/Reports.csproj.nuget.g.targets

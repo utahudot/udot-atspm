@@ -69,7 +69,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
         public SpeedDetector GetSpeedDetector(Detector detector, DateTime start, DateTime end, int binSize,
            bool getPermissivePhase, List<ControllerEventLog> planEvents, List<ControllerEventLog> cycleEvents, List<SpeedEvent> speedEvents)
         {
-            var cycles = cycleService.GetSpeedCycles(start, end, getPermissivePhase, detector, cycleEvents);
+            var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);
             if (cycles.Any())
             {
                 foreach (var cycle in cycles)

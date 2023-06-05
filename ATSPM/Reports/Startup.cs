@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
 namespace ATSPM.Application.Reports
 {
@@ -36,12 +37,13 @@ namespace ATSPM.Application.Reports
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddLogging();
             //Contexts
-            //services.AddATSPMDbContext(h);
-            services.AddDbContext<ConfigContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
-            services.AddDbContext<EventLogContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
-            services.AddDbContext<SpeedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ConfigConnectionString")));
+            services.AddDbContext<ConfigContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
+            services.AddDbContext<EventLogContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
+            services.AddDbContext<SpeedContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
+            services.AddDbContext<IdentityContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
 
             //Repositories
             services.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -63,6 +65,8 @@ namespace ATSPM.Application.Reports
             services.AddScoped<ApproachVolumeService>();
             services.AddScoped<ArrivalOnRedService>();
             services.AddScoped<LeftTurnGapAnalysisService>();
+            services.AddScoped<LeftTurnReportPreCheckService>();
+            services.AddScoped<LeftTurnVolumeAnalysisService>();
             services.AddScoped<LeftTurnVolumeAnalysisService>();
             services.AddScoped<PerdueCoordinationDiagramService>();
             services.AddScoped<PreemptServiceService>();

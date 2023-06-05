@@ -234,7 +234,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             List<ControllerEventLog> controllerEventLogs)
         {
             var pedestrianEvents = new Dictionary<string, List<ControllerEventLog>>();
-            if (approach.PedestrianDetectors.IsNullOrEmpty() && (approach.Signal.Pedsare1to1 && approach.IsProtectedPhaseOverlap)
+            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && (approach.Signal.Pedsare1to1 && approach.IsProtectedPhaseOverlap)
                 || (!approach.Signal.Pedsare1to1 && approach.PedestrianPhaseNumber.HasValue))
                 return pedestrianEvents;
             var pedEventCodes = new List<int> { 89, 90 };
