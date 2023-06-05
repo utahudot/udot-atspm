@@ -116,3 +116,5 @@ dkms.conf
 /ATSPM/Reports/obj/project.assets.json
 /ATSPM/Reports/obj/Reports.csproj.nuget.dgspec.json
 /ATSPM/Reports/obj/Reports.csproj.nuget.g.props
+/ATSPM/bin/Debug/appsettings.Development.json
+/ATSPM/bin/Debug/appsettings.json
