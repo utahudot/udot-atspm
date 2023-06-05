@@ -15,10 +15,14 @@ namespace ATSPM.Application.Analysis.Common
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
+        #region ICycle
+
         public double TotalGreenTime => (YellowEvent - GreenEvent).TotalSeconds;
         public double TotalYellowTime => (End - YellowEvent).TotalSeconds;
         public double TotalRedTime => (GreenEvent - Start).TotalSeconds;
         public double TotalTime => (End - Start).TotalSeconds;
+
+        #endregion
 
         #endregion
 
