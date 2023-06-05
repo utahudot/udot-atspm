@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class RedToRedCycle : StartEndRange, ICycle
+    public class RedToRedCycle : StartEndRange, ICycle, ISignalPhase
     {
         #region ICycle
 
