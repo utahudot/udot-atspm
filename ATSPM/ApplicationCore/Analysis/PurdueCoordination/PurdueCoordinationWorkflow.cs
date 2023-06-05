@@ -28,6 +28,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
     {
         string SignalId { get; set; }
         int PlanNumber { get; set; }
+        bool TryAssignToPlan(IStartEndRange range);
     }
     
     public interface ICycle : IStartEndRange
@@ -71,10 +72,12 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         IReadOnlyList<ICycleArrivals> ArrivalCycles { get; }
     }
 
-    public class Plan : StartEndRange, IPlan
+    public abstract class Plan : StartEndRange, IPlan
     {
         public string SignalId { get; set; }
         public int PlanNumber { get; set; }
+
+        public abstract bool TryAssignToPlan(IStartEndRange range);
 
         public override string ToString()
         {
@@ -82,11 +85,11 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         }
     }
 
-    public class PerdueCoordinationPlan : Plan, ICycleRatios
+    public class PurdueCoordinationPlan : Plan, ICycleRatios
     {
         private readonly List<ICycleArrivals> _arrivalCycles = new(); 
         
-        public PerdueCoordinationPlan() {}
+        public PurdueCoordinationPlan() {}
 
         public IReadOnlyList<ICycleArrivals> ArrivalCycles => _arrivalCycles;
 
@@ -135,11 +138,13 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         #endregion
 
-        public bool TryAssignToPlan(ICycleArrivals arrivalCycle)
+        public override bool TryAssignToPlan(IStartEndRange range)
         {
-            if (InRange(arrivalCycle.Start) && InRange(arrivalCycle.End))
+            if (InRange(range.Start) && InRange(range.End))
             {
-                _arrivalCycles.Add(arrivalCycle);
+                if (range is ICycleArrivals cycle)
+                    _arrivalCycles.Add(cycle);
+
                 return true;
             }
 
@@ -152,16 +157,16 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         }
     }
 
-    public class PerdueCoordinationResult : StartEndRange, ICycleRatios
+    public class PurdueCoordinationResult : StartEndRange, ICycleRatios
     {
-        public PerdueCoordinationResult() {}
+        public PurdueCoordinationResult() {}
 
-        public PerdueCoordinationResult(IEnumerable<PerdueCoordinationPlan> plans)
+        public PurdueCoordinationResult(IEnumerable<PurdueCoordinationPlan> plans)
         {
             Plans = plans.ToList();
         }
 
-        public IReadOnlyList<PerdueCoordinationPlan> Plans { get; set; } = new List<PerdueCoordinationPlan>();
+        public IReadOnlyList<PurdueCoordinationPlan> Plans { get; set; } = new List<PurdueCoordinationPlan>();
 
         #region ICycleRatios
 
@@ -270,65 +275,103 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         }
     }
 
-    public class CaclulatePhaseTotals : TransformManyProcessStepBase<IReadOnlyList<CycleArrivals>, PerdueCoordinationResult>
+    public class AssignRangeToPlan<T> : TransformProcessStepBase<Tuple<IReadOnlyList<T>, IReadOnlyList<IStartEndRange>>, IReadOnlyList<T>> where T : IPlan, new()
     {
-        public CaclulatePhaseTotals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public AssignRangeToPlan(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<PerdueCoordinationResult>> Process(IReadOnlyList<CycleArrivals> input, CancellationToken cancelToken = default)
+        protected override Task<IReadOnlyList<T>> Process(Tuple<IReadOnlyList<T>, IReadOnlyList<IStartEndRange>> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => g.PhaseNumber)
-                .Select(s => new PerdueCoordinationResult()
+            foreach (var p in input.Item1)
+            {
+                foreach (var r in input.Item2)
                 {
-                    Cycles = s.ToList()
-                });
+                    p.TryAssignToPlan(r);
+                }
+            }
+
+            return Task.FromResult<IReadOnlyList<T>>(input.Item1);
+        }
+    }
+
+    public class GeneratePurdueCoordinationResult : TransformProcessStepBase<IReadOnlyList<PurdueCoordinationPlan>, PurdueCoordinationResult>
+    {
+        public GeneratePurdueCoordinationResult(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<PurdueCoordinationResult> Process(IReadOnlyList<PurdueCoordinationPlan> input, CancellationToken cancelToken = default)
+        {
+            //var result = input.GroupBy(g => g.PhaseNumber)
+            //    .Select(s => new PurdueCoordinationResult()
+            //    {
+            //        Plans = s.ToList()
+            //    });
+
+            var result = new PurdueCoordinationResult() { Plans = input };
+            //    {
+            //        Plans = s.ToList()
+            //    });
 
             return Task.FromResult(result);
         }
     }
 
 
-    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PerdueCoordinationResult>
+    public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PurdueCoordinationResult>
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeVehicleArrivals;
+        protected JoinBlock<IReadOnlyList<PurdueCoordinationPlan>, IReadOnlyList<IStartEndRange>> mergePlansAndCycles;
 
         internal GetDetectorEvents GetDetectorEvents { get; private set; }
 
+        public FilteredPlanData FilteredPlanData { get; private set; }
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
 
         public FilteredDetectorData FilteredDetectorData { get; private set; }
+        public CalculateTimingPlans<PurdueCoordinationPlan> CalculateTimingPlans { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
         public CalculateVehicleArrivals CalculateVehicleArrivals { get; private set; }
-        public CaclulatePhaseTotals CaclulatePhaseTotals { get; private set; }
+        public AssignRangeToPlan<PurdueCoordinationPlan> AssignRangeToPlan { get; private set; }
+        public GeneratePurdueCoordinationResult GeneratePurdueCoordinationResult { get; private set; }
 
         public override void InstantiateSteps()
         {
+            FilteredPlanData = new();
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
+            CalculateTimingPlans = new();
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
             mergeVehicleArrivals = new();
             CalculateVehicleArrivals = new();
-            CaclulatePhaseTotals = new();
+            mergePlansAndCycles = new();
+            AssignRangeToPlan = new();
+            GeneratePurdueCoordinationResult = new();
 
             GetDetectorEvents = new();
         }
 
         public override void AddStepsToTracker()
         {
+            Steps.Add(FilteredPlanData);
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
+            Steps.Add(CalculateTimingPlans);
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
             Steps.Add(mergeVehicleArrivals);
             Steps.Add(CalculateVehicleArrivals);
-            Steps.Add(CaclulatePhaseTotals);
+            Steps.Add(mergePlansAndCycles);
+            Steps.Add(AssignRangeToPlan);
+            Steps.Add(GeneratePurdueCoordinationResult);
 
             Steps.Add(GetDetectorEvents);
         }
 
         public override void LinkSteps()
         {
+            Input.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredPlanData.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+
             Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -338,8 +381,11 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             IdentifyandAdjustVehicleActivations.LinkTo(mergeVehicleArrivals.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
             CreateRedToRedCycles.LinkTo(mergeVehicleArrivals.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
             mergeVehicleArrivals.LinkTo(CalculateVehicleArrivals, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateVehicleArrivals.LinkTo(CaclulatePhaseTotals, new DataflowLinkOptions() { PropagateCompletion = true });
-            CaclulatePhaseTotals.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateTimingPlans.LinkTo(mergePlansAndCycles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateVehicleArrivals.LinkTo(mergePlansAndCycles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            mergePlansAndCycles.LinkTo(AssignRangeToPlan, new DataflowLinkOptions() { PropagateCompletion = true });
+            AssignRangeToPlan.LinkTo(GeneratePurdueCoordinationResult, new DataflowLinkOptions() { PropagateCompletion = true });
+            GeneratePurdueCoordinationResult.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 
