@@ -218,6 +218,8 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         public CycleArrivals(ICycle cycle)
         {
             _cycle = cycle;
+            Start = _cycle.Start;
+            End = _cycle.End;
 
             if (cycle is ISignalPhase sp)
             {
@@ -226,16 +228,10 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             }
         }
 
-        #region ICycle
+        #region ISignalPhase
 
         public string SignalId { get; set; }
-
         public int PhaseNumber { get; set; }
-
-        public double TotalGreenTime => _cycle.TotalGreenTime;
-        public double TotalYellowTime => _cycle.TotalYellowTime;
-        public double TotalRedTime => _cycle.TotalRedTime;
-        public double TotalTime => _cycle.TotalTime;
 
         #endregion
 
@@ -245,10 +241,23 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         public double TotalArrivalOnYellow => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnYellow);
         public double TotalArrivalOnRed => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnRed);
 
+        public IReadOnlyList<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+
+        #region ICycle
+
+        public double TotalGreenTime => _cycle.TotalGreenTime;
+        public double TotalYellowTime => _cycle.TotalYellowTime;
+        public double TotalRedTime => _cycle.TotalRedTime;
+        public double TotalTime => _cycle.TotalTime;
+
+        #endregion
+
+        #region ICycleVolume
+
         public double TotalDelay => Vehicles.Sum(d => d.Delay);
         public double TotalVolume => Vehicles.Count(d => InRange(d.CorrectedTimeStamp));
 
-        public IReadOnlyList<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+        #endregion
 
         #endregion
 
@@ -258,11 +267,11 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
         }
     }
 
-    public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<CycleArrivals>>
+    public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<ICycleArrivals>>
     {
         public CalculateVehicleArrivals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IReadOnlyList<CycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
+        protected override Task<IReadOnlyList<ICycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2.Select(s => new CycleArrivals(s)
             {
@@ -271,7 +280,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
                 .ToList()
             }).ToList();
 
-            return Task.FromResult<IReadOnlyList<CycleArrivals>>(result);
+            return Task.FromResult<IReadOnlyList<ICycleArrivals>>(result);
         }
     }
 
@@ -306,9 +315,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             //    });
 
             var result = new PurdueCoordinationResult() { Plans = input };
-            //    {
-            //        Plans = s.ToList()
-            //    });
 
             return Task.FromResult(result);
         }
