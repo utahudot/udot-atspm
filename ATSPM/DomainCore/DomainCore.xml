@@ -235,6 +235,40 @@
             Raise <see cref="E:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialized"/> when initialization is complete.
             </summary>
         </member>
+        <member name="T:ATSPM.Domain.Common.IStartEndRange">
+            <summary>
+            A date/time range object
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IStartEndRange.End">
+            <summary>
+            End of range
+            </summary>
+        </member>
+        <member name="P:ATSPM.Domain.Common.IStartEndRange.Start">
+            <summary>
+            Start of range
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IStartEndRange.InRange(System.DateTime)">
+            <summary>
+            Checks to see if <see cref="T:System.DateTime"/> is in range of <see cref="P:ATSPM.Domain.Common.IStartEndRange.Start"/> and <see cref="P:ATSPM.Domain.Common.IStartEndRange.End"/>
+            </summary>
+            <param name="time">Returns true if <see cref="T:System.DateTime"/> is in range</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Domain.Common.StartEndRange">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Common.StartEndRange.Start">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Domain.Common.StartEndRange.End">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Common.StartEndRange.InRange(System.DateTime)">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Domain.Common.IExecuteAsync">
             <summary>
             Defines an async command or process which can conditionally be executed.

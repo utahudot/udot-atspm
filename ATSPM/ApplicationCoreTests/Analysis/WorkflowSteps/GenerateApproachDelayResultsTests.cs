@@ -9,7 +9,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class GenerateApproachDelayResultsTests : IDisposable
     {
@@ -28,8 +28,8 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalId = "1001",
-                Phase = 1,
+                SignalIdentifier = "1001",
+                PhaseNumber = 1,
                 DetChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
@@ -56,8 +56,8 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalId = (1000 + Random.Shared.Next(1, 4)).ToString(),
-                Phase = 1,
+                SignalIdentifier = (1000 + Random.Shared.Next(1, 4)).ToString(),
+                PhaseNumber = 1,
                 DetChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
@@ -69,7 +69,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.GroupBy(g => g.SignalId).Select(s => s.Key);
-            var expected = testData.GroupBy(g => g.SignalId).Select(s => s.Key);
+            var expected = testData.GroupBy(g => g.SignalIdentifier).Select(s => s.Key);
 
             Assert.Equal(expected, actual);
         }
@@ -82,8 +82,8 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalId = "1001",
-                Phase = Random.Shared.Next(1, 4),
+                SignalIdentifier = "1001",
+                PhaseNumber = Random.Shared.Next(1, 4),
                 DetChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
@@ -95,7 +95,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.GroupBy(g => g.Phase).Select(s => s.Key);
-            var expected = testData.GroupBy(g => g.Phase).Select(s => s.Key);
+            var expected = testData.GroupBy(g => g.PhaseNumber).Select(s => s.Key);
 
             Assert.Equal(expected, actual);
         }
@@ -108,8 +108,8 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalId = "1001",
-                Phase = 1,
+                SignalIdentifier = "1001",
+                PhaseNumber = 1,
                 DetChannel = Random.Shared.Next(1, 4),
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),

@@ -1,29 +1,37 @@
 ﻿using ATSPM.Application.Enums;
+using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
 using System;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class Vehicle : StartEndRange
+    public class Vehicle : StartEndRange, ISignalPhaseLayer
     {
         public Vehicle() { }
 
         public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
         {
-            SignalId = detectorEvent.Detector.Approach?.Signal?.SignalId;
+            SignalIdentifier = detectorEvent.Detector.Approach?.Signal?.SignalId;
             CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
             DetChannel = detectorEvent.Detector.DetChannel;
-            Phase = redToRedCycle.PhaseNumber;
+            PhaseNumber = redToRedCycle.PhaseNumber;
             Start = redToRedCycle.Start;
             End = redToRedCycle.End;
             YellowEvent = redToRedCycle.YellowEvent;
             GreenEvent = redToRedCycle.GreenEvent;
         }
 
-        public string SignalId { get; set; }
+        #region ISignalPhaseLayer
 
-        //HACK: this could come from detectorEvent or Cycle! need to validate that they are the same!
-        public int Phase { get; set; }
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        /// <inheritdoc/>
+        public int PhaseNumber { get; set; }
+
+        #endregion
+
         public int DetChannel { get; set; }
         public DateTime CorrectedTimeStamp { get; set; }
 
@@ -57,13 +65,9 @@ namespace ATSPM.Application.Analysis.Common
             }
         }
 
-        //public Detector Detector { get; set; }
-
-        //public RedToRedCycle RedToRedCycle { get; set; }
-
         public override string ToString()
         {
-            return $"{SignalId}-{DetChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}-{ArrivalType}-{Delay}";
+            return JsonSerializer.Serialize(this);
         }
     }
 }

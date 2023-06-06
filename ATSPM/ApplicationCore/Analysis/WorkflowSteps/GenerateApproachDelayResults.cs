@@ -16,9 +16,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = new List<ApproachDelayResult>();
 
-            foreach (var signal in input.GroupBy(g => g.SignalId))
+            foreach (var signal in input.GroupBy(g => g.SignalIdentifier))
             {
-                foreach (var phase in signal.GroupBy(g => g.Phase))
+                foreach (var phase in signal.GroupBy(g => g.PhaseNumber))
                 {
                     foreach (var vehicles in phase.GroupBy(g => g.DetChannel))
                     {

@@ -17,13 +17,14 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.PurdueCoordination
 {
-
     public class GeneratePurdueCoordinationResult : TransformProcessStepBase<IReadOnlyList<PurdueCoordinationPlan>, PurdueCoordinationResult>
     {
         public GeneratePurdueCoordinationResult(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<PurdueCoordinationResult> Process(IReadOnlyList<PurdueCoordinationPlan> input, CancellationToken cancelToken = default)
         {
+            //var result = input.GroupBy(g => g.)
+
             //var result = input.GroupBy(g => g.PhaseNumber)
             //    .Select(s => new PurdueCoordinationResult()
             //    {
@@ -35,7 +36,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
             return Task.FromResult(result);
         }
     }
-
 
     public class PurdueCoordinationWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PurdueCoordinationResult>
     {
