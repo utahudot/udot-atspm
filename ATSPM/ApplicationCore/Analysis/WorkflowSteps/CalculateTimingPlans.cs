@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.PurdueCoordination;
+using ATSPM.Application.Analysis.Plans;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
