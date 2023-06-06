@@ -6,29 +6,39 @@ using System.Linq;
 
 namespace ATSPM.Domain.Common
 {
+    /// <summary>
+    /// A date/time range object
+    /// </summary>
     public interface IStartEndRange
     {
+        /// <summary>
+        /// End of range
+        /// </summary>
         DateTime End { get; set; }
+        
+        /// <summary>
+        /// Start of range
+        /// </summary>
         DateTime Start { get; set; }
 
+        /// <summary>
+        /// Checks to see if <see cref="DateTime"/> is in range of <see cref="Start"/> and <see cref="End"/>
+        /// </summary>
+        /// <param name="time">Returns true if <see cref="DateTime"/> is in range</param>
+        /// <returns></returns>
         bool InRange(DateTime time);
     }
 
-    //public interface IDateTimeRange
-    //{
-    //    DateTime StartTime { get; set; }
-
-    //    DateTime EndTime { get; set; }
-
-    //    bool InRange(DateTime time);
-    //}
-
+    /// <inheritdoc/>
     public class StartEndRange : IStartEndRange
     {
+        /// <inheritdoc/>
         public DateTime Start { get; set; }
 
+        /// <inheritdoc/>
         public DateTime End { get; set; }
 
+        /// <inheritdoc/>
         public virtual bool InRange(DateTime time)
         {
             return time >= Start && time < End;

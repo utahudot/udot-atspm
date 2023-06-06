@@ -62,7 +62,7 @@ var list = File.ReadAllLines(path1)
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:36.7"), EventCode = 8, EventParam = 2 });
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:41.5"), EventCode = 9, EventParam = 2 });
 
-
+var test = new RedToRedCycle();
 
 
 var s = new Signal() { SignalId = "7191" };

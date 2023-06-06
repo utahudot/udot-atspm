@@ -11,7 +11,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class CalculateVehicleArrivalsTests : IDisposable
     {
@@ -27,7 +27,7 @@ namespace ApplicationCoreTests.Analysis
             {
                 new RedToRedCycle()
                 {
-                    SignalId = "1001",
+                    SignalIdentifier = "1001",
                     PhaseNumber = 1,
                     Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
@@ -78,7 +78,7 @@ namespace ApplicationCoreTests.Analysis
         {
             var sut = new CalculateVehicleArrivals();
 
-            _redCycles[0].SignalId = "1002";
+            _redCycles[0].SignalIdentifier = "1002";
 
             var testEvents = new List<CorrectedDetectorEvent>
             {

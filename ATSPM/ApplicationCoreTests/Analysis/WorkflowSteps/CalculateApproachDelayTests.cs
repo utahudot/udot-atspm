@@ -10,7 +10,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class CalculateApproachDelayTests : IDisposable
     {
@@ -26,7 +26,7 @@ namespace ApplicationCoreTests.Analysis
             {
                 new RedToRedCycle()
                 {
-                    SignalId = "1001",
+                    SignalIdentifier = "1001",
                     PhaseNumber = 1,
                     Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
@@ -177,8 +177,8 @@ namespace ApplicationCoreTests.Analysis
             var actual = result.First();
             var expected = _redCycles.First();
 
-            Assert.Equal(expected.SignalId, actual.SignalId);
-            Assert.Equal(expected.PhaseNumber, actual.Phase);
+            Assert.Equal(expected.SignalIdentifier, actual.SignalIdentifier);
+            Assert.Equal(expected.PhaseNumber, actual.PhaseNumber);
             Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.End, actual.End);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
