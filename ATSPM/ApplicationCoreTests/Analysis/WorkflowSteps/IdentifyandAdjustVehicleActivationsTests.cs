@@ -13,7 +13,7 @@ using System.Threading.Channels;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class IdentifyandAdjustVehicleActivationsTests : IDisposable
     {
@@ -50,12 +50,12 @@ namespace ApplicationCoreTests.Analysis
 
             var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), detChannel, 10))
                 .Select(s => Tuple.Create(s.Item1, s.Item2.Select(l => new ControllerEventLog
-                 {
-                     SignalId = l.SignalId,
-                     EventCode = l.EventCode,
-                     EventParam = Random.Shared.Next(1, 5),
-                     Timestamp = l.Timestamp
-                 }).ToList().AsEnumerable())).ToList();
+                {
+                    SignalId = l.SignalId,
+                    EventCode = l.EventCode,
+                    EventParam = Random.Shared.Next(1, 5),
+                    Timestamp = l.Timestamp
+                }).ToList().AsEnumerable())).ToList();
 
             var result = await sut.ExecuteAsync(testData);
 
@@ -121,7 +121,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
-            var expected = testData.SelectMany(s => 
+            var expected = testData.SelectMany(s =>
             s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
                 .OrderBy(o => o);
 
@@ -142,7 +142,7 @@ namespace ApplicationCoreTests.Analysis
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
-            var expected = testData.SelectMany(s =>s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
+            var expected = testData.SelectMany(s => s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
             _output.WriteLine($"count2: {expected.Count()}");
