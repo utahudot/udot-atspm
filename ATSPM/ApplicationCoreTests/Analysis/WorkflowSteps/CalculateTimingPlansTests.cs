@@ -12,13 +12,11 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class CalculateTimingPlansTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly List<RedToRedCycle> _redCycles;
-        private readonly Detector _detector;
 
         public CalculateTimingPlansTests(ITestOutputHelper output)
         {
@@ -55,7 +53,7 @@ namespace ApplicationCoreTests.Analysis
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = (s % 2 == 0) ? "1001" : "1002",
+                SignalId = s % 2 == 0 ? "1001" : "1002",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
@@ -78,7 +76,7 @@ namespace ApplicationCoreTests.Analysis
             {
                 SignalId = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
-                EventParam = (s % 2 == 0) ? 1 : 2,
+                EventParam = s % 2 == 0 ? 1 : 2,
                 Timestamp = DateTime.Now.AddSeconds(s)
             });
 
@@ -98,7 +96,7 @@ namespace ApplicationCoreTests.Analysis
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
                 SignalId = "1001",
-                EventCode = (s % 2 == 0) ? s : (int)DataLoggerEnum.CoordPatternChange,
+                EventCode = s % 2 == 0 ? s : (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
 

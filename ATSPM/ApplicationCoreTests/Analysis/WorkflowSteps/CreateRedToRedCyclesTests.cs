@@ -7,7 +7,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ApplicationCoreTests.Analysis
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
     public class CreateRedToRedCyclesTests : IDisposable
     {
@@ -264,7 +264,7 @@ namespace ApplicationCoreTests.Analysis
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.SignalId).Distinct();
+            var actual = result.Select(s => s.SignalIdentifier).Distinct();
             var expected = new List<string>()
             {
                 "1001", "1002", "1003"
