@@ -28,8 +28,6 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Where((w, i) => i < c.Count() - 1)
                 .Select((s, i) => new T() { SignalId = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
                 .SelectMany(s => s).ToList());
-                //.SelectMany(s => s)
-                //.ToList();
 
             return Task.FromResult<IEnumerable<IReadOnlyList<T>>>(result);
         }
