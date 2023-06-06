@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Analysis.PurdueCoordination;
-using ATSPM.Domain.Common;
+﻿using ATSPM.Domain.Common;
 using System;
 using System.Text.Json;
 
