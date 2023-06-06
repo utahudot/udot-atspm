@@ -1,12 +1,17 @@
 ﻿using ATSPM.Application.Enums;
+using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class CycleArrivals : StartEndRange, ICycleArrivals, ISignalPhase
+    /// <summary>
+    /// A cycle with <see cref="DataLoggerEnum.DetectorOn"/> event arrivals
+    /// </summary>
+    public class CycleArrivals : StartEndRange, ICycleArrivals, ISignalPhaseLayer
     {
         private readonly ICycle _cycle = new RedToRedCycle();
 
@@ -18,40 +23,60 @@ namespace ATSPM.Application.Analysis.Common
             Start = _cycle.Start;
             End = _cycle.End;
 
-            if (cycle is ISignalPhase sp)
+            if (cycle is ISignalPhaseLayer sp)
             {
-                SignalId = sp.SignalId;
+                SignalIdentifier = sp.SignalIdentifier;
                 PhaseNumber = sp.PhaseNumber;
             }
         }
 
-        #region ISignalPhase
+        #region ISignalPhaseLayer
 
-        public string SignalId { get; set; }
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        /// <inheritdoc/>
         public int PhaseNumber { get; set; }
+
+        #endregion
+
+        #region ICycle
+
+        /// <inheritdoc/>
+        public double TotalGreenTime => _cycle.TotalGreenTime;
+
+        /// <inheritdoc/>
+        public double TotalYellowTime => _cycle.TotalYellowTime;
+
+        /// <inheritdoc/>
+        public double TotalRedTime => _cycle.TotalRedTime;
+
+        /// <inheritdoc/>
+        public double TotalTime => _cycle.TotalTime;
 
         #endregion
 
         #region ICycleArrivals
 
+        /// <inheritdoc/>
         public double TotalArrivalOnGreen => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnGreen);
+
+        /// <inheritdoc/>
         public double TotalArrivalOnYellow => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnYellow);
+
+        /// <inheritdoc/>
         public double TotalArrivalOnRed => Vehicles.Count(d => d.ArrivalType == ArrivalType.ArrivalOnRed);
 
+        /// <inheritdoc/>
+        [JsonIgnore]
         public IReadOnlyList<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
-
-        #region ICycle
-
-        public double TotalGreenTime => _cycle.TotalGreenTime;
-        public double TotalYellowTime => _cycle.TotalYellowTime;
-        public double TotalRedTime => _cycle.TotalRedTime;
-        public double TotalTime => _cycle.TotalTime;
-
-        #endregion
 
         #region ICycleVolume
 
+        /// <inheritdoc/>
         public double TotalDelay => Vehicles.Sum(d => d.Delay);
+
+        /// <inheritdoc/>
         public double TotalVolume => Vehicles.Count(d => InRange(d.CorrectedTimeStamp));
 
         #endregion

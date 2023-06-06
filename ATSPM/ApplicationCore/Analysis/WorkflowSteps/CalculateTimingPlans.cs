@@ -26,7 +26,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .GroupBy(g => g.SignalId, (k, i) => i
                 .GroupBy(p => p.EventParam, (n, c) => c
                 .Where((w, i) => i < c.Count() - 1)
-                .Select((s, i) => new T() { SignalId = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
+                .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
                 .SelectMany(s => s).ToList());
 
             return Task.FromResult<IEnumerable<IReadOnlyList<T>>>(result);
