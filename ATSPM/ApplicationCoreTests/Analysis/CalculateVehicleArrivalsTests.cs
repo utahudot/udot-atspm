@@ -370,38 +370,6 @@ namespace ApplicationCoreTests.Analysis
 
         #endregion
 
-
-
-        //private Tuple<Detector, IEnumerable<ControllerEventLog>> GenerateDetectorEvents(string signalId, int detChannel, int logCount)
-        //{
-        //    var d = new Detector()
-        //    {
-        //        DetChannel = detChannel,
-        //        DistanceFromStopBar = 340,
-        //        LatencyCorrection = 1.2,
-        //        Approach = new Approach()
-        //        {
-        //            ProtectedPhaseNumber = 2,
-        //            DirectionTypeId = DirectionTypes.NB,
-        //            Mph = 45,
-        //            Signal = new Signal()
-        //            {
-        //                SignalId = signalId
-        //            }
-        //        }
-        //    };
-
-        //    var logs = Enumerable.Range(1, logCount).Select(s => new ControllerEventLog()
-        //    {
-        //        SignalId = signalId,
-        //        Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-        //        EventCode = 82,
-        //        EventParam = detChannel
-        //    }).ToList();
-
-        //    return Tuple.Create<Detector, IEnumerable<ControllerEventLog>>(d, logs);
-        //}
-
         public void Dispose()
         {
         }
