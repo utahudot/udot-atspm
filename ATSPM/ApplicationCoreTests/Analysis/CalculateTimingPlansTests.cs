@@ -1,5 +1,5 @@
 using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.PurdueCoordination;
+using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Enums;
 using ATSPM.Data.Enums;
