@@ -11,7 +11,7 @@ namespace ATSPM.Data.Models
     {
         public int Id { get; set; }
         //public string SignalId { get; set; }
-        public String SignalId { get; set; }
+        public int SignalId { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
         public string Description { get; set; }
         public int? Mph { get; set; }

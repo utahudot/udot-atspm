@@ -30,7 +30,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             List<ControllerEventLog> events,
             List<ControllerEventLog> planEvents)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, approach.SignalId, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalId, planEvents);
             var movementTotals = new SortedDictionary<DateTime, int>();
             var laneTotals = new SortedDictionary<string, int>();
             var binSizeMultiplier = 60 / options.SelectedBinSize;

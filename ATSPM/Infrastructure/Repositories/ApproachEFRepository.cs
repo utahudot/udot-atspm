@@ -26,7 +26,9 @@ namespace ATSPM.Infrastructure.Repositories
             return base.GetList()
                 .Include(i => i.DirectionType)
                 .Include(i => i.Signal)
-                .Include(i => i.Detectors);
+                .Include(i => i.Detectors)
+                    .ThenInclude(d => d.DetectionTypes)
+                        .ThenInclude(dt => dt.MetricTypeMetrics);
         }
 
         #endregion

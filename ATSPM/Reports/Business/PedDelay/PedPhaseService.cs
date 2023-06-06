@@ -24,7 +24,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             var pedPhaseData = new PedPhaseData();
             pedPhaseData.StartDate = options.Start;
             pedPhaseData.EndDate = options.End;
-            pedPhaseData.SignalId = approach.SignalId;
+            pedPhaseData.SignalId = approach.Signal.SignalId;
             pedPhaseData.TimeBuffer = options.TimeBuffer;
             pedPhaseData.Approach = approach;
             pedPhaseData.PhaseNumber = approach.ProtectedPhaseNumber;

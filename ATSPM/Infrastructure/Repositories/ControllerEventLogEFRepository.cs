@@ -13,6 +13,7 @@ using ATSPM.Application.Specifications;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
 using ATSPM.Data;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -24,13 +25,18 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
         {
-            var result = table
+            var result = GetList()
                 .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
-                .SelectMany(s => s.LogData)
-                .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime))
-                .ToList();
+                .SelectMany(a => a.LogData.Select(s => new ControllerEventLog()
+                {
+                    SignalId = a.SignalId,
+                    EventCode = s.EventCode,
+                    EventParam = s.EventParam,
+                    Timestamp = s.Timestamp
+                }))
+                .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime)).ToList();
 
             return result;
         }

@@ -43,9 +43,9 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public ApproachDelayResult GetChartData([FromBody] ApproachDelayOptions options)
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
+            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
             var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.SignalId,
+                approach.Signal.SignalId,
                 options.Start,
                 options.End);
             var detectorEvents = new List<ControllerEventLog>();

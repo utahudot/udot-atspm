@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.Migrations
+namespace ATSPM.Infrastructure.Migrations.Config
 {
-    public partial class test : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -218,6 +218,22 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Menu Items");
 
             migrationBuilder.CreateTable(
+                name: "MetricComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SignalId = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetricComments", x => x.Id);
+                },
+                comment: "Metric Comments");
+
+            migrationBuilder.CreateTable(
                 name: "MetricTypes",
                 columns: table => new
                 {
@@ -389,6 +405,30 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MetricCommentMetricType",
+                columns: table => new
+                {
+                    MetricCommentsId = table.Column<int>(type: "int", nullable: false),
+                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetricCommentMetricType", x => new { x.MetricCommentsId, x.MetricTypesId });
+                    table.ForeignKey(
+                        name: "FK_MetricCommentMetricType_MetricComments_MetricCommentsId",
+                        column: x => x.MetricCommentsId,
+                        principalTable: "MetricComments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MetricCommentMetricType_MetricTypes_MetricTypesId",
+                        column: x => x.MetricTypesId,
+                        principalTable: "MetricTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RouteSignals",
                 columns: table => new
                 {
@@ -543,7 +583,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Approaches",
                 columns: table => new
                 {
-                    ApproachId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignalId = table.Column<int>(type: "int", nullable: false),
                     DirectionTypeId = table.Column<int>(type: "int", nullable: false),
@@ -559,7 +599,7 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Approaches", x => x.ApproachId);
+                    table.PrimaryKey("PK_Approaches", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Approaches_DirectionTypes_DirectionTypeId",
                         column: x => x.DirectionTypeId,
@@ -600,28 +640,6 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MetricComments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    SignalId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MetricComments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MetricComments_Signals_SignalId",
-                        column: x => x.SignalId,
-                        principalTable: "Signals",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "Metric Comments");
-
-            migrationBuilder.CreateTable(
                 name: "Detectors",
                 columns: table => new
                 {
@@ -649,7 +667,7 @@ namespace ATSPM.Infrastructure.Migrations
                         name: "FK_Detectors_Approaches_ApproachId",
                         column: x => x.ApproachId,
                         principalTable: "Approaches",
-                        principalColumn: "ApproachId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Detectors_DetectionHardwares_DetectionHardwareId",
@@ -671,30 +689,6 @@ namespace ATSPM.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Detectors");
-
-            migrationBuilder.CreateTable(
-                name: "MetricCommentMetricType",
-                columns: table => new
-                {
-                    MetricCommentsId = table.Column<int>(type: "int", nullable: false),
-                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MetricCommentMetricType", x => new { x.MetricCommentsId, x.MetricTypesId });
-                    table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricComments_MetricCommentsId",
-                        column: x => x.MetricCommentsId,
-                        principalTable: "MetricComments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricTypes_MetricTypesId",
-                        column: x => x.MetricTypesId,
-                        principalTable: "MetricTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
 
             migrationBuilder.CreateTable(
                 name: "DetectionTypeDetector",
@@ -807,7 +801,7 @@ namespace ATSPM.Infrastructure.Migrations
                     { 1, true, "ASC3", "//Set1", "ecpi2ecpi", 161L, "econolite" },
                     { 2, true, "Cobalt", "/set1", "ecpi2ecpi", 161L, "econolite" },
                     { 3, true, "ASC3 - 2070", "/set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 4, false, "MaxTime", "none", "none", 161L, "none" },
+                    { 4, false, "MaxTime", "v1/asclog/xml/full", "none", 161L, "none" },
                     { 5, true, "Trafficware", "none", "none", 161L, "none" },
                     { 6, false, "Siemens SEPAC", "/mnt/sd", "$adm*kon2", 161L, "admin" },
                     { 7, false, "McCain ATC EX", " /mnt/rd/hiResData", "root", 161L, "root" },
@@ -1135,11 +1129,6 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "IX_MetricCommentMetricType_MetricTypesId",
                 table: "MetricCommentMetricType",
                 column: "MetricTypesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MetricComments_SignalId",
-                table: "MetricComments",
-                column: "SignalId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoutePhaseDirections_DirectionTypeId",

@@ -9,17 +9,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.Migrations
+namespace ATSPM.Infrastructure.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20220822222314_test")]
-    partial class test
+    [Migration("20230605223641_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("ProductVersion", "6.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -445,11 +445,11 @@ namespace ATSPM.Infrastructure.Migrations
 
             modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
                 {
-                    b.Property<int>("ApproachId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApproachId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
                         .IsUnicode(false)
@@ -486,7 +486,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<int>("SignalId")
                         .HasColumnType("int");
 
-                    b.HasKey("ApproachId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DirectionTypeId");
 
@@ -603,7 +603,7 @@ namespace ATSPM.Infrastructure.Migrations
                             Id = 4,
                             ActiveFtp = false,
                             Description = "MaxTime",
-                            Ftpdirectory = "none",
+                            Ftpdirectory = "v1/asclog/xml/full",
                             Password = "none",
                             Snmpport = 161L,
                             UserName = "none"
@@ -1728,15 +1728,14 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<int>("SignalId")
-                        .HasColumnType("int");
+                    b.Property<string>("SignalId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SignalId");
 
                     b.ToTable("MetricComments");
 
@@ -2573,17 +2572,6 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Detector");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.MetricComment", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Signal", "Signal")
-                        .WithMany("MetricComments")
-                        .HasForeignKey("SignalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Signal");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
@@ -2764,8 +2752,6 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
                 {
                     b.Navigation("Approaches");
-
-                    b.Navigation("MetricComments");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>

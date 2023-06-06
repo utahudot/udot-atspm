@@ -36,7 +36,6 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 options.Start,
                 options.End,
                 options.SelectedBinSize,
-                false,
                 planEvents,
                 cycleEvents,
                 speedEvents);
@@ -50,7 +49,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 fifteenthSpeeds.Add(new FifteenthSpeeds(bucket.StartTime, bucket.FifteenthPercentile));
             }
             return new ApproachSpeedResult(
-                    detector.Approach.SignalId,
+                    detector.Approach.Signal.SignalId,
                     detector.ApproachId,
                     detector.Approach.ProtectedPhaseNumber,
                     detector.Approach.Description,
@@ -66,8 +65,14 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 );
         }
 
-        public SpeedDetector GetSpeedDetector(Detector detector, DateTime start, DateTime end, int binSize,
-           bool getPermissivePhase, List<ControllerEventLog> planEvents, List<ControllerEventLog> cycleEvents, List<SpeedEvent> speedEvents)
+        public SpeedDetector GetSpeedDetector(
+            Detector detector,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            List<ControllerEventLog> planEvents,
+            List<ControllerEventLog> cycleEvents,
+            List<SpeedEvent> speedEvents)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);
             if (cycles.Any())

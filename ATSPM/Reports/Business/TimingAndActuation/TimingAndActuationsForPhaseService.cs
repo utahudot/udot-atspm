@@ -32,11 +32,11 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             }
             if (options.ShowPedestrianActuation && !options.GetPermissivePhase)
             {
-                pedestrianEvents = GetPedestrianEvents(approach, options, controllerEventLogs);
+                pedestrianEvents = GetPedestrianEvents(approach, controllerEventLogs);
             }
             if (options.ShowPedestrianIntervals && !options.GetPermissivePhase)
             {
-                pedestrianIntervals = GetPedestrianIntervals(approach, options, controllerEventLogs);
+                pedestrianIntervals = GetPedestrianIntervals(approach, controllerEventLogs);
             }
             if (options.ShowLaneByLaneCount)
             {
@@ -58,7 +58,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             var phaseNumberSort = GetPhaseSort(options, approach);
             var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseResult(
                 options.ApproachId,
-                approach.SignalId,
+                approach.Signal.SignalId,
                 options.Start,
                 options.End,
                 options.PhaseNumber,
@@ -100,7 +100,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             List<int> cycleEventCodes = GetCycleCodes(getOverlapCodes);
             var overlapLabel = getOverlapCodes == true ? "Overlap" : "";
             string keyLabel = "Cycles Intervals " + options.PhaseNumber + " " + overlapLabel;
-            Dictionary<string, List<ControllerEventLog>> events = new Dictionary<string, List<ControllerEventLog>>();
+            var events = new Dictionary<string, List<ControllerEventLog>>();
             if (controllerEventLogs.Any())
             {
                 events.Add(keyLabel, controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode)).ToList());
@@ -143,7 +143,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         var forceEventsForAllLanes = new List<ControllerEventLog>();
                         var tempEvent1 = new ControllerEventLog()
                         {
-                            SignalId = approach.SignalId,
+                            SignalId = approach.Signal.SignalId,
                             EventCode = phaseEventCode,
                             EventParam = options.PhaseNumber,
                             Timestamp = options.Start.AddSeconds(-10)
@@ -151,7 +151,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new ControllerEventLog()
                         {
-                            SignalId = approach.SignalId,
+                            SignalId = approach.Signal.SignalId,
                             EventCode = phaseEventCode,
                             EventParam = options.PhaseNumber,
                             Timestamp = options.Start.AddSeconds(-9)
@@ -175,7 +175,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             DetectionTypes detectionType
             )
         {
-            Dictionary<string, List<ControllerEventLog>> stopBarEvents = new Dictionary<string, List<ControllerEventLog>>();
+            var stopBarEvents = new Dictionary<string, List<ControllerEventLog>>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.DisplayOrder)
                 .ThenByDescending(l => l.LaneNumber).ToList();
@@ -204,7 +204,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         var forceEventsForAllLanes = new List<ControllerEventLog>();
                         var event1 = new ControllerEventLog()
                         {
-                            SignalId = approach.SignalId,
+                            SignalId = approach.Signal.SignalId,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
                             Timestamp = options.Start.AddSeconds(-10)
@@ -212,7 +212,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         forceEventsForAllLanes.Add(event1);
                         var event2 = new ControllerEventLog()
                         {
-                            SignalId = approach.SignalId,
+                            SignalId = approach.Signal.SignalId,
                             EventParam = detector.DetChannel,
                             EventCode = 81,
                             Timestamp = options.Start.AddSeconds(-9)
@@ -230,7 +230,6 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
         public Dictionary<string, List<ControllerEventLog>> GetPedestrianEvents(
             Approach approach,
-            TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs)
         {
             var pedestrianEvents = new Dictionary<string, List<ControllerEventLog>>();
@@ -248,7 +247,6 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
         public List<ControllerEventLog> GetPedestrianIntervals(
             Approach approach,
-            TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs)
         {
             List<int> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);

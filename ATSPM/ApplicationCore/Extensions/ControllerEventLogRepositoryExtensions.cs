@@ -200,11 +200,11 @@ namespace ATSPM.Application.Extensions
            DateTime end)
         {
             return repo.GetEventsByEventCodesParam(
-                approach.SignalId,
+                approach.Signal.SignalId,
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 approach.GetCycleEventCodes(getPermissivePhase),
-                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+                getPermissivePhase  ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
        
 

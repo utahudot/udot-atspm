@@ -47,7 +47,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
                 approach.Id,
-                approach.SignalId,
+                approach.Signal.SignalId,
                 options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.Start,
