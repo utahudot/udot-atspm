@@ -1,6 +1,8 @@
 ﻿using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.Common;
+using ATSPM.Data.Models;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,11 +10,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GenerateApproachDelayResults : TransformProcessStepBase<IEnumerable<Vehicle>, IEnumerable<ApproachDelayResult>>
+    public class GenerateApproachDelayResults : TransformManyProcessStepBase<IReadOnlyList<Vehicle>, ApproachDelayResult>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<ApproachDelayResult>> Process(IEnumerable<Vehicle> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<ApproachDelayResult>> Process(IReadOnlyList<Vehicle> input, CancellationToken cancelToken = default)
         {
             var result = new List<ApproachDelayResult>();
 
@@ -34,6 +36,24 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     }
                 }
             }
+
+            //var result = input
+            //    .SelectMany(m => m.Vehicles)
+            //    .GroupBy(g => g.SignalIdentifier, (s, x) =>
+            //    x.GroupBy(g => g.PhaseNumber, (p, y) =>
+            //    y.GroupBy(g => g.DetChannel, (d, z) =>
+
+            //    new ApproachDelayResult()
+            //    {
+            //        Start = z.Min(m => m.Start),
+            //        End = z.Max(m => m.End),
+            //        SignalId = s,
+            //        Phase = p,
+            //        AverageDelay = z.Average(a => a.Delay),
+            //        TotalDelay = z.Sum(s => s.Delay) / 3600
+            //    }))
+            //    .SelectMany(m => m))
+            //    .SelectMany(m => m);
 
             return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
         }
