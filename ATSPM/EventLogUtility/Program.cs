@@ -21,12 +21,14 @@ using ATSPM.Application;
 using Microsoft.AspNetCore.Mvc;
 using ATSPM.Application.Analysis.PurdueCoordination;
 using System.Text.Json;
+using ATSPM.Application.Analysis.PreemptionDetails;
+using System.Collections.Generic;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
 //var path2 = "C:\\temp\\TestData\\1001_Approach_Delay.csv";
 
-var path1 = "C:\\temp\\TestData\\Plans.csv";
+var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
 
 var list = File.ReadAllLines(path1)
                .Skip(1)
@@ -62,57 +64,77 @@ var list = File.ReadAllLines(path1)
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:36.7"), EventCode = 8, EventParam = 2 });
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:41.5"), EventCode = 9, EventParam = 2 });
 
-var test = new RedToRedCycle();
+//var test = new RedToRedCycle();
 
 
-var s = new Signal() { SignalId = "7191" };
+//var s = new Signal() { SignalId = "7191" };
 
 
-var d1 = new Detector()
+//var d1 = new Detector()
+//{
+//    DetChannel = 2,
+//    DistanceFromStopBar = 340,
+//    LatencyCorrection = 0,
+//    Approach = new Approach()
+//    {
+//        ProtectedPhaseNumber = 2,
+//        DirectionTypeId = DirectionTypes.NB,
+//        Mph = 45,
+//        Signal = s
+//    }
+//};
+
+//var d2 = new Detector()
+//{
+//    DetChannel = 4,
+//    DistanceFromStopBar = 340,
+//    LatencyCorrection = 0,
+//    Approach = new Approach()
+//    {
+//        ProtectedPhaseNumber = 6,
+//        DirectionTypeId = DirectionTypes.SB,
+//        Mph = 45,
+//        Signal = s
+//    }
+//};
+
+
+var ApproachDelayWorkflow = new ApproachDelayWorkflow();
+
+await foreach (var r in ApproachDelayWorkflow.Execute(list, default))
 {
-    DetChannel = 2,
-    DistanceFromStopBar = 340,
-    LatencyCorrection = 0,
-    Approach = new Approach()
-    {
-        ProtectedPhaseNumber = 2,
-        DirectionTypeId = DirectionTypes.NB,
-        Mph = 45,
-        Signal = s
-    }
-};
-
-var d2 = new Detector()
-{
-    DetChannel = 4,
-    DistanceFromStopBar = 340,
-    LatencyCorrection = 0,
-    Approach = new Approach()
-    {
-        ProtectedPhaseNumber = 6,
-        DirectionTypeId = DirectionTypes.SB,
-        Mph = 45,
-        Signal = s
-    }
-};
-
-
-
-
-
-var purdueCoordinationWorkflow = new PurdueCoordinationWorkflow();
-
-await foreach (var r in purdueCoordinationWorkflow.Execute(list, default))
-{
-    Console.WriteLine($"boo: {r}");
+    Console.WriteLine($"result: {r}");
 }
 
-//foreach (var r in redToRed)
+//var CreateRedToRedCycles = new CreateRedToRedCycles();
+//var result = await CreateRedToRedCycles.ExecuteAsync(list);
+
+//foreach (var r in result)
 //{
-//    Console.WriteLine($"red: {r}");
+//    Console.WriteLine($"result: {r}");
 //}
 
-//Console.WriteLine($"totals: {redToRed.Sum(s => s.TotalRedTime)} - {redToRed.Sum(s => s.TotalYellowTime)} - {redToRed.Sum(s => s.TotalGreenTime)}");
+
+//var preemptionDetailsWorkflow = new PreemptionDetailsWorkflow();
+
+//await foreach (var r in preemptionDetailsWorkflow.Execute(list.Take(20), default))
+//{
+//    Console.WriteLine($"result: {r}");
+
+//    foreach (var delay in r.Delay)
+//        Console.WriteLine($"delay: {delay.Seconds}");
+
+//    foreach (var service in r.ServiceTimes)
+//        Console.WriteLine($"service: {service.Seconds}");
+
+//    foreach (var dwell in r.DwellTimes)
+//        Console.WriteLine($"dwell: {dwell.Seconds}");
+
+//    foreach (var max in r.CallMaxOutTimes)
+//        Console.WriteLine($"max: {max.Seconds}");
+
+//}
+
 
 
 

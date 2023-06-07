@@ -35,18 +35,14 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         #region ICycle
 
-
         /// <inheritdoc/>
         public double TotalGreenTime => Plans.Sum(d => d.TotalGreenTime);
-
 
         /// <inheritdoc/>
         public double TotalYellowTime => Plans.Sum(d => d.TotalYellowTime);
 
-
         /// <inheritdoc/>
         public double TotalRedTime => Plans.Sum(d => d.TotalRedTime);
-
 
         /// <inheritdoc/>
         public double TotalTime => Plans.Sum(d => d.TotalTime);

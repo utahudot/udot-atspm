@@ -3,6 +3,7 @@ using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.ApproachDelay
 {
@@ -28,7 +29,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
 
         public override string ToString()
         {
-            return $"Signal: {SignalId} Phase: {Phase} Start: {Start:yyyy-MM-dd'T'HH:mm:ss.f} End: {End:yyyy-MM-dd'T'HH:mm:ss.f} Avg: {AverageDelay:0.00} Total: {TotalDelay:0.0h}";
+            return JsonSerializer.Serialize(this);
         }
     }
 }

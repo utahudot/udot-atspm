@@ -15,7 +15,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.ApproachDelay
 {
-    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
+    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
     {
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCyclesAndVehicles;
 
