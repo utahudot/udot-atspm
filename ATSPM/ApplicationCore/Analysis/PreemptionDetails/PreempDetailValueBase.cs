@@ -1,15 +1,25 @@
-﻿using System;
+﻿using ATSPM.Data.Interfaces;
+using ATSPM.Domain.Common;
+using System;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.PreemptionDetails
 {
-    public abstract class PreempDetailValueBase
+    public abstract class PreempDetailValueBase : StartEndRange, ISignalLayer
     {
-        public string SignalId { get; set; }
+        #region ISignalPhaseLayer
+
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        #endregion
+
         public int PreemptNumber { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
         public TimeSpan Seconds { get; set; }
 
-        public override string ToString() => $"{GetType().Name}-{SignalId}-{PreemptNumber}-{Start}-{End}-{Seconds}";
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }
