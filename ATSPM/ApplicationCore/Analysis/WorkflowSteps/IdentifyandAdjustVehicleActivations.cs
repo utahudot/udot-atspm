@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
@@ -25,7 +26,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 {
                     CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
                 }))
-                .SelectMany(s => s);
+            .SelectMany(s => s);
+
+            Console.WriteLine($"vehicles: {result.Count()}");
 
             return Task.FromResult(result);
         }

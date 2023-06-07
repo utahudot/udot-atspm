@@ -15,22 +15,22 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = new List<PreemptDetailResult>();
 
-            foreach (var signal in input.GroupBy(g => g.SignalId))
+            foreach (var signal in input.GroupBy(g => g.SignalIdentifier))
             {
                 foreach (var item in signal.GroupBy(g => g.PreemptNumber))
                 {
                     result.Add(new PreemptDetailResult()
                     {
-                        SignalId = signal.Key,
+                        SignalIdentifier = signal.Key,
                         PreemptNumber = item.Key,
                         Start = item.Min(m => m.Start),
                         End = item.Max(m => m.End),
-                        DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>(),
-                        TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>(),
-                        ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>(),
-                        Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>(),
-                        GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>(),
-                        CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>()
+                        DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>().ToList(),
+                        TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>().ToList(),
+                        ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>().ToList(),
+                        Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>().ToList(),
+                        GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>().ToList(),
+                        CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>().ToList()
                     });
                 }
             }

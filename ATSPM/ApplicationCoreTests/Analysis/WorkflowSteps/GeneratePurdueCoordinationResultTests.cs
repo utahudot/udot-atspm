@@ -24,27 +24,27 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             _output = output;
         }
 
-        [Fact]
-        [Trait(nameof(GeneratePurdueCoordinationResultTests), "DurationCheck")]
-        public async void CalculateTimingPlansDurationCheckTest()
-        {
-            //var sut = new GeneratePurdueCoordinationResult();
+        //[Fact]
+        //[Trait(nameof(GeneratePurdueCoordinationResultTests), "DurationCheck")]
+        //public async void CalculateTimingPlansDurationCheckTest()
+        //{
+        //    //var sut = new GeneratePurdueCoordinationResult();
 
-            //var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
-            //{
-            //    SignalId = "1001",
-            //    EventCode = (int)DataLoggerEnum.CoordPatternChange,
-            //    EventParam = 1,
-            //    Timestamp = DateTime.Now.AddSeconds(s)
+        //    //var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
+        //    //{
+        //    //    SignalId = "1001",
+        //    //    EventCode = (int)DataLoggerEnum.CoordPatternChange,
+        //    //    EventParam = 1,
+        //    //    Timestamp = DateTime.Now.AddSeconds(s)
 
-            //});
+        //    //});
 
-            //var result = await sut.ExecuteAsync(testEvents);
+        //    //var result = await sut.ExecuteAsync(testEvents);
 
-            //var condition = result.SelectMany(s => s).All(a => Math.Round((a.End - a.Start).TotalSeconds, 0) == 1);
+        //    //var condition = result.SelectMany(s => s).All(a => Math.Round((a.End - a.Start).TotalSeconds, 0) == 1);
 
-            Assert.False(true);
-        }
+        //    Assert.False(true);
+        //}
 
 
 

@@ -8,11 +8,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AssignCyclesToVehicles : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IEnumerable<Vehicle>>
+    public class AssignCyclesToVehicles : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<Vehicle>>
     {
         public AssignCyclesToVehicles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<Vehicle>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
+        protected override Task<IReadOnlyList<Vehicle>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = new List<Vehicle>();
 
@@ -27,7 +27,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 }
             }
 
-            return Task.FromResult<IEnumerable<Vehicle>>(result);
+            return Task.FromResult<IReadOnlyList<Vehicle>>(result);
         }
     }
 }
