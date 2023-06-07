@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Common.EqualityComparers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

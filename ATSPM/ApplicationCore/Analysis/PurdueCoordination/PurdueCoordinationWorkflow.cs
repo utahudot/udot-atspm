@@ -23,14 +23,6 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         protected override Task<PurdueCoordinationResult> Process(IReadOnlyList<PurdueCoordinationPlan> input, CancellationToken cancelToken = default)
         {
-            //var result = input.GroupBy(g => g.)
-
-            //var result = input.GroupBy(g => g.PhaseNumber)
-            //    .Select(s => new PurdueCoordinationResult()
-            //    {
-            //        Plans = s.ToList()
-            //    });
-
             var result = new PurdueCoordinationResult() { Plans = input };
 
             return Task.FromResult(result);
