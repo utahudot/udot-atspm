@@ -24,7 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
                 {
-                    SignalId = s.Item1[0].SignalId == s.Item1[1].SignalId ? s.Item1[0].SignalId : string.Empty,
+                    SignalIdentifier = s.Item1[0].SignalId == s.Item1[1].SignalId ? s.Item1[0].SignalId : string.Empty,
                     PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
                     Start = s.Item1[0].Timestamp,
                     End = s.Item1[1].Timestamp,
