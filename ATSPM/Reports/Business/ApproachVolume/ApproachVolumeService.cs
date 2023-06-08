@@ -12,19 +12,10 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
 {
     public class ApproachVolumeService
     {
-        private readonly ISignalRepository signalRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly IDetectionTypeRepository detectionTypeRepository;
         public ApproachVolumeOptions Options { get; private set; }
 
-        public ApproachVolumeService(
-            ISignalRepository signalRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
-            IDetectionTypeRepository detectionTypeRepository)
+        public ApproachVolumeService()
         {
-            this.signalRepository = signalRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.detectionTypeRepository = detectionTypeRepository;
         }
 
         public static double GetPeakHourKFactor(double d, int digits)
@@ -35,14 +26,25 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
         }
 
         public ApproachVolumeResult GetChartData(
-            ApproachVolumeOptions options)
+            ApproachVolumeOptions options,
+            Signal signal,
+            List<ControllerEventLog> primaryDetectorEvents,
+            List<ControllerEventLog> opposingDetectorEvents
+            )
         {
             DirectionTypes opposingDirection = GetOpposingDirection(options);
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
             var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
             var opposingApproaches = signal.Approaches.Where(a => a.DirectionTypeId == opposingDirection).ToList();
-            var primaryDirectionVolume = GetVolumeByDetection(primaryApproaches, options);
-            var opposingDirectionVolume = GetVolumeByDetection(opposingApproaches, options);
+            var primaryDirectionVolume = new VolumeCollection(
+                options.Start,
+                options.End,
+                primaryDetectorEvents,
+                options.SelectedBinSize); 
+            var opposingDirectionVolume = new VolumeCollection(
+                options.Start,
+                options.End,
+                opposingDetectorEvents,
+                options.SelectedBinSize); 
             var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.SelectedBinSize);
             //ApproachVolume approachVolume = new ApproachVolume(
             //    primaryApproaches,
@@ -117,29 +119,23 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
                 );
         }
 
-        private VolumeCollection GetVolumeByDetection(
-           List<Approach> approaches,
-           ApproachVolumeOptions options)
-        {
-            var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(7))
-                .Where(d => d.LaneTypeId == LaneTypes.V).ToList();
+        //private VolumeCollection GetVolumeByDetection(
+        //   List<Approach> approaches,
+        //   ApproachVolumeOptions options,
+        //   List<ControllerEventLog> detectorEvents)
+        //{
+        //    var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(7))
+        //        .Where(d => d.LaneTypeId == LaneTypes.V).ToList();
 
-            var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
-                                d.Approach.Signal.SignalId,
-                                options.Start,
-                                options.End,
-                                new List<int> { 82 },
-                                d.DetChannel,
-                                d.GetOffset(),
-                                d.LatencyCorrection)).ToList();
-            return new VolumeCollection(
-                options.Start,
-                options.End,
-                detectorEvents,
-                options.SelectedBinSize);
-        }
+            
+        //    return new VolumeCollection(
+        //        options.Start,
+        //        options.End,
+        //        detectorEvents,
+        //        options.SelectedBinSize);
+        //}
 
-        private static DirectionTypes GetOpposingDirection(ApproachVolumeOptions options)
+        public static DirectionTypes GetOpposingDirection(ApproachVolumeOptions options)
         {
             var opposingDirection = options.Direction;
             switch (options.Direction)
@@ -217,12 +213,12 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return sortedDictionary;
         }
 
-        private static bool IsValidTimePeriodForKFactors(DateTime startTime, DateTime endTime)
-        {
-            TimeSpan timeDiff = endTime.Subtract(startTime);
-            bool validKfactors = timeDiff.TotalHours >= 23 && timeDiff.TotalHours < 25;
-            return validKfactors;
-        }
+        //private static bool IsValidTimePeriodForKFactors(DateTime startTime, DateTime endTime)
+        //{
+        //    TimeSpan timeDiff = endTime.Subtract(startTime);
+        //    bool validKfactors = timeDiff.TotalHours >= 23 && timeDiff.TotalHours < 25;
+        //    return validKfactors;
+        //}
 
         private static void SetStartTimeAndEndTime(VolumeCollection direction1Volumes, VolumeCollection direction2Volumes, out DateTime startTime, out DateTime endTime)
         {

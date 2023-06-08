@@ -1,13 +1,12 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
+using ATSPM.Application.Reports.Business.PreemptService;
+using ATSPM.Application.Reports.Business.SplitFail;
+using ATSPM.Application.Reports.Business.YellowRedActivations;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 //using System.IO;
 using System.Linq;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Reports.Business.SplitFail;
-using ATSPM.Application.Reports.Business.YellowRedActivations;
-using ATSPM.Application.Reports.Business.ApproachSpeed;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -47,7 +46,7 @@ namespace ATSPM.Application.Reports.Business.Common
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
-        
+
 
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <param name="cycleEvents"></param>
         /// <returns></returns>
-        public List<GreenToGreenCycle> GetGreenToGreenCycles( DateTime startTime, DateTime endTime,List<ControllerEventLog> cycleEvents)
+        public List<GreenToGreenCycle> GetGreenToGreenCycles(DateTime startTime, DateTime endTime, List<ControllerEventLog> cycleEvents)
         {
             //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
             //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
@@ -102,7 +101,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 .ToList();
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
 
-            
+
         }
 
 
@@ -177,7 +176,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <returns></returns>
         public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, List<ControllerEventLog> cycleEvents)
         {
-            var mainEvents = cycleEvents.Where(c => c.Timestamp<=endDate && c.Timestamp>=startDate).ToList();
+            var mainEvents = cycleEvents.Where(c => c.Timestamp <= endDate && c.Timestamp >= startDate).ToList();
             var previousEvents = cycleEvents.Where(c => c.Timestamp < startDate).ToList();
             var nextEvents = cycleEvents.Where(c => c.Timestamp > endDate).ToList();
             if (mainEvents.Any() && (GetEventType(mainEvents.Last().EventCode) !=
@@ -270,5 +269,324 @@ namespace ATSPM.Application.Reports.Business.Common
             Unknown
         }
 
+
+        public List<PreemptCycle> CreatePreemptCycle(List<ControllerEventLog> preemptEvents)
+        {
+            var CycleCollection = new List<PreemptCycle>();
+            PreemptCycle cycle = null;
+
+
+            //foreach (MOE.Common.Models.Controller_Event_Log row in DTTB.Events)
+            for (var x = 0; x < preemptEvents.Count; x++)
+            {
+                //It can happen that there is no defined terminaiton event.
+                if (x + 1 < preemptEvents.Count)
+                {
+                    var timeBetweenEvents = preemptEvents[x + 1].Timestamp - preemptEvents[x].Timestamp;
+                    if (cycle != null && timeBetweenEvents.TotalMinutes > 20 && preemptEvents[x].EventCode != 111 &&
+                        preemptEvents[x].EventCode != 105)
+                    {
+                        EndCycle(cycle, preemptEvents[x], CycleCollection);
+                        cycle = null;
+                        continue;
+                    }
+                }
+
+                switch (preemptEvents[x].EventCode)
+                {
+                    case 102:
+
+                        if (cycle != null)
+                            cycle.InputOn.Add(preemptEvents[x].Timestamp);
+
+                        if (cycle == null && preemptEvents[x].Timestamp != preemptEvents[x + 1].Timestamp &&
+                            preemptEvents[x + 1].EventCode == 105)
+                            cycle = StartCycle(preemptEvents[x]);
+
+                        break;
+
+                    case 103:
+
+                        if (cycle != null && cycle.GateDown == DateTime.MinValue)
+                            cycle.GateDown = preemptEvents[x].Timestamp;
+
+
+                        break;
+
+                    case 104:
+
+                        if (cycle != null)
+                            cycle.InputOff.Add(preemptEvents[x].Timestamp);
+
+                        break;
+
+                    case 105:
+
+
+                        ////If we run into an entry start after cycle start (event 102)
+                        if (cycle != null && cycle.HasDelay)
+                        {
+                            cycle.EntryStarted = preemptEvents[x].Timestamp;
+                            break;
+                        }
+
+                        if (cycle != null)
+                        {
+                            EndCycle(cycle, preemptEvents[x], CycleCollection);
+                            cycle = StartCycle(preemptEvents[x]);
+                            break;
+                        }
+
+                        if (cycle == null)
+                            cycle = StartCycle(preemptEvents[x]);
+                        break;
+
+                    case 106:
+                        if (cycle != null)
+                        {
+                            cycle.BeginTrackClearance = preemptEvents[x].Timestamp;
+
+                            if (x + 1 < preemptEvents.Count)
+                                if (!DoesTrackClearEndNormal(preemptEvents, x))
+                                    cycle.BeginDwellService = FindNext111Event(preemptEvents, x);
+                        }
+                        break;
+
+                    case 107:
+
+                        if (cycle != null)
+                        {
+                            cycle.BeginDwellService = preemptEvents[x].Timestamp;
+
+                            if (x + 1 < preemptEvents.Count)
+                                if (!DoesTheCycleEndNormal(preemptEvents, x))
+                                {
+                                    cycle.BeginExitInterval = preemptEvents[x + 1].Timestamp;
+
+                                    EndCycle(cycle, preemptEvents[x + 1], CycleCollection);
+
+                                    cycle = null;
+                                }
+                        }
+
+
+                        break;
+
+                    case 108:
+                        if (cycle != null)
+                            cycle.LinkActive = preemptEvents[x].Timestamp;
+                        break;
+
+                    case 109:
+                        if (cycle != null)
+                            cycle.LinkInactive = preemptEvents[x].Timestamp;
+
+                        break;
+
+                    case 110:
+                        if (cycle != null)
+                            cycle.MaxPresenceExceeded = preemptEvents[x].Timestamp;
+                        break;
+
+                    case 111:
+                        // 111 can usually be considered "cycle complete"
+                        if (cycle != null)
+                        {
+                            cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+
+                            EndCycle(cycle, preemptEvents[x], CycleCollection);
+
+
+                            cycle = null;
+                        }
+                        break;
+                }
+
+
+                if (x + 1 >= preemptEvents.Count && cycle != null)
+                {
+                    cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+                    EndCycle(cycle, preemptEvents[x], CycleCollection);
+                    break;
+                }
+            }
+
+            return CycleCollection;
+        }
+
+        private DateTime FindNext111Event(List<ControllerEventLog> DTTB, int counter)
+        {
+            var Next111Event = new DateTime();
+            for (var x = counter; x < DTTB.Count; x++)
+                if (DTTB[x].EventCode == 111)
+                {
+                    Next111Event = DTTB[x].Timestamp;
+                    x = DTTB.Count;
+                }
+            return Next111Event;
+        }
+
+        private bool DoesTheCycleEndNormal(List<ControllerEventLog> DTTB, int counter)
+        {
+            var foundEvent111 = false;
+
+            for (var x = counter; x < DTTB.Count; x++)
+                switch (DTTB[x].EventCode)
+                {
+                    case 102:
+                        foundEvent111 = false;
+                        x = DTTB.Count;
+                        break;
+                    case 105:
+                        foundEvent111 = false;
+                        x = DTTB.Count;
+                        break;
+
+                    case 111:
+                        foundEvent111 = true;
+                        x = DTTB.Count;
+                        break;
+                }
+
+            return foundEvent111;
+        }
+
+        private bool DoesTrackClearEndNormal(List<ControllerEventLog> DTTB, int counter)
+        {
+            var foundEvent107 = false;
+
+            for (var x = counter; x < DTTB.Count; x++)
+                switch (DTTB[x].EventCode)
+                {
+                    case 107:
+                        foundEvent107 = true;
+                        x = DTTB.Count;
+                        break;
+
+                    case 111:
+                        foundEvent107 = false;
+                        x = DTTB.Count;
+                        break;
+                }
+
+            return foundEvent107;
+        }
+
+        private void EndCycle(PreemptCycle cycle, ControllerEventLog controller_Event_Log,
+            List<PreemptCycle> CycleCollection)
+        {
+            cycle.CycleEnd = controller_Event_Log.Timestamp;
+            cycle.Delay = GetDelay(cycle.HasDelay, cycle.EntryStarted, cycle.CycleStart);
+            cycle.TimeToService = GetTimeToService(
+                cycle.HasDelay,
+                cycle.BeginTrackClearance,
+                cycle.CycleStart,
+                cycle.BeginDwellService,
+                cycle.EntryStarted);
+            cycle.DwellTime = GetDwellTime(cycle.CycleEnd, cycle.BeginDwellService);
+            cycle.TimeToCallMaxOut = GetTimeToCallMaxOut(cycle.CycleStart, cycle.MaxPresenceExceeded);
+            cycle.TimeToEndOfEntryDelay = GetTimeToEndOfEntryDelay(cycle.EntryStarted, cycle.CycleStart);
+            cycle.TimeToTrackClear = GetTimeToTrackClear(cycle.BeginDwellService, cycle.BeginTrackClearance);
+            cycle.TimeToGateDown = GetTimeToGateDown(cycle.CycleStart, cycle.GateDown);
+            CycleCollection.Add(cycle);
+        }
+
+        private double GetTimeToGateDown(DateTime cycleStart, DateTime gateDown)
+        {
+            if (cycleStart > DateTime.MinValue && gateDown > DateTime.MinValue && gateDown > cycleStart)
+                return (gateDown - cycleStart).TotalSeconds;
+            return 0;
+        }
+
+        private double GetTimeToTrackClear(DateTime beginDwellService, DateTime beginTrackClearance)
+        {
+            if (beginDwellService > DateTime.MinValue && beginTrackClearance > DateTime.MinValue &&
+                    beginDwellService > beginTrackClearance)
+                return (beginDwellService - beginTrackClearance).TotalSeconds;
+            return 0;
+        }
+
+        private double GetTimeToEndOfEntryDelay(DateTime entryStarted, DateTime cycleStart)
+        {
+            if (cycleStart > DateTime.MinValue && entryStarted > DateTime.MinValue && entryStarted > cycleStart)
+                return (entryStarted - cycleStart).TotalSeconds;
+            return 0;
+        }
+
+        private double GetTimeToCallMaxOut(DateTime CycleStart, DateTime MaxPresenceExceeded)
+        {
+            if (CycleStart > DateTime.MinValue && MaxPresenceExceeded > DateTime.MinValue &&
+                   MaxPresenceExceeded > CycleStart)
+                return (MaxPresenceExceeded - CycleStart).TotalSeconds;
+            return 0;
+        }
+
+        private double GetDwellTime(DateTime cycleEnd, DateTime beginDwellService)
+        {
+            if (cycleEnd > DateTime.MinValue && beginDwellService > DateTime.MinValue &&
+                    cycleEnd >= beginDwellService)
+                return (cycleEnd - beginDwellService).TotalSeconds;
+            return 0;
+        }
+
+        private double GetTimeToService(
+            bool hasDelay,
+            DateTime beginTrackClearance,
+            DateTime cycleStart,
+            DateTime beginDwellService,
+            DateTime entryStarted)
+        {
+            if (beginTrackClearance > DateTime.MinValue && cycleStart > DateTime.MinValue &&
+                   beginTrackClearance >= cycleStart)
+            {
+                if (hasDelay)
+                    return (beginTrackClearance - entryStarted).TotalSeconds;
+                return (beginTrackClearance - cycleStart).TotalSeconds;
+            }
+
+            if (beginDwellService > DateTime.MinValue && cycleStart > DateTime.MinValue &&
+                beginDwellService >= cycleStart)
+            {
+                if (hasDelay)
+                    return (beginDwellService - entryStarted).TotalSeconds;
+                return (beginDwellService - cycleStart).TotalSeconds;
+            }
+
+            return 0;
+        }
+
+        private double GetDelay(bool hasDelay, DateTime entryStarted, DateTime cycleStart)
+        {
+            if (hasDelay && entryStarted > DateTime.MinValue && cycleStart > DateTime.MinValue &&
+                        entryStarted > cycleStart)
+                return (entryStarted - cycleStart).TotalSeconds;
+
+            return 0;
+        }
+
+
+        private PreemptCycle StartCycle(ControllerEventLog controller_Event_Log)
+        {
+            var cycle = new PreemptCycle();
+
+
+            cycle.CycleStart = controller_Event_Log.Timestamp;
+
+            if (controller_Event_Log.EventCode == 105)
+            {
+                cycle.EntryStarted = controller_Event_Log.Timestamp;
+                cycle.HasDelay = false;
+            }
+
+            if (controller_Event_Log.EventCode == 102)
+            {
+                cycle.StartInputOn = controller_Event_Log.Timestamp;
+                cycle.HasDelay = true;
+            }
+
+            return cycle;
+        }
     }
 }
+
+

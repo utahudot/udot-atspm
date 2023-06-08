@@ -1,39 +1,76 @@
-﻿//using ATSPM.Application.Reports.Business.ApproachSpeed;
-//using ATSPM.Application.Reports.Business.ApproachVolume;
-//using AutoFixture;
-//using Microsoft.AspNetCore.Mvc;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.ApproachVolume;
+using ATSPM.Application.Reports.Business.PedDelay;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using AutoFixture;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
-////For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+//For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-//namespace ATSPM.Application.Reports.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class ApproachVolumeController : ControllerBase
-//    {
-//        private readonly ApproachVolumeService approachVolumeService;
+namespace ATSPM.Application.Reports.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ApproachVolumeController : ControllerBase
+    {
+        private readonly ISignalRepository signalRepository;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ApproachVolumeService approachVolumeService;
 
-//        public ApproachVolumeController(ApproachVolumeService approachVolumeService)
-//        {
-//            this.approachVolumeService = approachVolumeService;
-//        }
+        public ApproachVolumeController(
+            ISignalRepository signalRepository,
+            IControllerEventLogRepository controllerEventLogRepository,
+            ApproachVolumeService approachVolumeService)
+        {
+            this.signalRepository = signalRepository;
+            this.controllerEventLogRepository = controllerEventLogRepository;
+            this.approachVolumeService = approachVolumeService;
+        }
 
-//        //GET: api/<ApproachVolumeController>
-//        [HttpGet("test")]
-//        public ApproachVolumeResult Test()
-//        {
-//            Fixture fixture = new();
-//            ApproachVolumeResult approachVolumeViewModel = fixture.Create<ApproachVolumeResult>();
-//            return approachVolumeViewModel;
-//        }
+        //GET: api/<ApproachVolumeController>
+        [HttpGet("test")]
+        public ApproachVolumeResult Test()
+        {
+            Fixture fixture = new();
+            ApproachVolumeResult approachVolumeViewModel = fixture.Create<ApproachVolumeResult>();
+            return approachVolumeViewModel;
+        }
 
 
-//        [HttpPost("getChartData")]
-//        public ApproachVolumeResult GetChartData([FromBody] ApproachVolumeOptions options)
-//        {
-//            ApproachVolumeResult viewModel = approachVolumeService.GetChartData(options);
-//            return viewModel;
-//        }
+        [HttpPost("getChartData")]
+        public ApproachVolumeResult GetChartData([FromBody] ApproachVolumeOptions options)
+        {
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
+            DirectionTypes opposingDirection = ApproachVolumeService.GetOpposingDirection(options);
+            List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true);
+            List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false);
+            ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
+                options,
+                signal,
+                primaryDetectorEvents,
+                opposingDetectorEvents);
+            return viewModel;
+        }
 
-//    }
-//}
+        private List<ControllerEventLog> GetDetectorEvents(ApproachVolumeOptions options, Signal signal, bool usePrimaryDirection)
+        {
+            var approaches = signal.Approaches
+                .Where(a => a.DirectionTypeId == (usePrimaryDirection ? options.Direction : ApproachVolumeService.GetOpposingDirection(options)))
+                .ToList();
+            var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(10)).Where(d => d.LaneTypeId == LaneTypes.V).ToList();
+            var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
+                d.Approach.Signal.SignalId,
+                options.Start,
+                options.End,
+                new List<int> { 82 },
+                d.DetChannel,
+                d.GetOffset(),
+                d.LatencyCorrection)).ToList();
+            return detectorEvents;
+        }
+    }
+}

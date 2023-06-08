@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class Delay
+    public class PreemptDataPoint
     {
-        public Delay(DateTime startTime, double seconds)
+        public PreemptDataPoint(DateTime startTime, double seconds)
         {
             StartTime = startTime;
             Seconds = seconds;
