@@ -31,34 +31,22 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 switch (DTTB[x].EventCode)
                 {
                     case 102:
-
-                        if (cycle != null)
-                            cycle.InputOn.Add(DTTB[x].Timestamp);
-
+                        cycle?.InputOn.Add(DTTB[x].Timestamp);
                         if (cycle == null && DTTB[x].Timestamp != DTTB[x + 1].Timestamp &&
                             DTTB[x + 1].EventCode == 105)
                             cycle = StartCycle(DTTB[x]);
-
                         break;
 
                     case 103:
-
                         if (cycle != null && cycle.GateDown == DateTime.MinValue)
                             cycle.GateDown = DTTB[x].Timestamp;
-
-
                         break;
 
                     case 104:
-
-                        if (cycle != null)
-                            cycle.InputOff.Add(DTTB[x].Timestamp);
-
+                        cycle?.InputOff.Add(DTTB[x].Timestamp);
                         break;
 
                     case 105:
-
-
                         ////If we run into an entry start after cycle start (event 102)
                         if (cycle != null && cycle.HasDelay)
                         {
@@ -69,13 +57,11 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                         if (cycle != null)
                         {
                             EndCycle(cycle, DTTB[x], CycleCollection);
-                            cycle = null;
                             cycle = StartCycle(DTTB[x]);
                             break;
                         }
 
-                        if (cycle == null)
-                            cycle = StartCycle(DTTB[x]);
+                        cycle ??= StartCycle(DTTB[x]);
                         break;
 
                     case 106:
@@ -105,8 +91,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                                     cycle = null;
                                 }
                         }
-
-
                         break;
 
                     case 108:
@@ -117,7 +101,6 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                     case 109:
                         if (cycle != null)
                             cycle.LinkInactive = DTTB[x].Timestamp;
-
                         break;
 
                     case 110:
@@ -130,10 +113,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                         if (cycle != null)
                         {
                             cycle.BeginExitInterval = DTTB[x].Timestamp;
-
                             EndCycle(cycle, DTTB[x], CycleCollection);
-
-
                             cycle = null;
                         }
                         break;
@@ -219,10 +199,10 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
         private PreemptCycle StartCycle(ControllerEventLog controller_Event_Log)
         {
-            var cycle = new PreemptCycle();
-
-
-            cycle.CycleStart = controller_Event_Log.Timestamp;
+            var cycle = new PreemptCycle
+            {
+                CycleStart = controller_Event_Log.Timestamp
+            };
 
             if (controller_Event_Log.EventCode == 105)
             {

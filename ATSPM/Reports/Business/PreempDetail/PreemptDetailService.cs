@@ -1,8 +1,5 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,14 +19,14 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
             PreemptDetailOptions preemptDetailOptions,
             List<ControllerEventLog> preemptEvents)
         {
-            var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();   
+            var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();
             var preemptDetails = new List<PreemptDetail>();
-            foreach(var preemptNumber in uniquePreemptNumbers)
+            foreach (var preemptNumber in uniquePreemptNumbers)
             {
                 var tempEvents = preemptEvents
                     .Where(x => x.EventParam == preemptNumber).ToList();
                 var cycles = cycleService.CreatePreemptCycle(tempEvents);
-                preemptDetails.Add( new PreemptDetail(
+                preemptDetails.Add(new PreemptDetail(
                     preemptDetailOptions.SignalId,
                     preemptDetailOptions.StartDate,
                     preemptDetailOptions.EndDate,
@@ -44,6 +41,6 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
                 preemptDetails
                 );
         }
-        
+
     }
 }

@@ -1,4 +1,3 @@
-using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PreemptService;
 using Reports.Business.Common;
 using System;
@@ -9,20 +8,20 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
     /// <summary>
     /// Preempt Detail chart
     /// </summary>
-    public class PreemptDetailResult:SignalResult
+    public class PreemptDetailResult : SignalResult
     {
         public PreemptDetailResult(
             string signalId,
             DateTime start,
             DateTime end,
-            ICollection<PreemptDetail> preemptDetails):base(signalId, start, end)
+            ICollection<PreemptDetail> preemptDetails) : base(signalId, start, end)
         {
-            PreemptDetails = preemptDetails; 
+            PreemptDetails = preemptDetails;
         }
         public ICollection<PreemptDetail> PreemptDetails { get; set; }
     }
 
-    public class PreemptDetail:SignalResult
+    public class PreemptDetail : SignalResult
     {
         public PreemptDetail(
             string signalId,
