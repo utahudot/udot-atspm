@@ -41,6 +41,26 @@ var list = File.ReadAllLines(path1)
                    EventParam = int.Parse(x[3])
                }).ToList();
 
+
+var path2 = "C:\\temp\\TestData\\7115_4-17-2023_Plans.csv";
+
+var list2 = File.ReadAllLines(path2)
+               .Skip(1)
+               .Select(x => x.Split(','))
+               .Select(x => new ControllerEventLog
+               {
+                   SignalId = x[0],
+                   Timestamp = DateTime.Parse(x[1]),
+                   EventCode = int.Parse(x[2]),
+                   EventParam = int.Parse(x[3])
+               }).ToList();
+
+Console.WriteLine($"list2: {list2.Count}");
+
+list = list.Union(list2).ToList();
+
+Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
+
 //var list = new List<ControllerEventLog>();
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.5"), EventCode = 9, EventParam = 2 });
 //list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.9"), EventCode = 82, EventParam = 2 });

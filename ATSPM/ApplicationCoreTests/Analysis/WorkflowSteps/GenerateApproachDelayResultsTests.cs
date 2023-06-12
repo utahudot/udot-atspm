@@ -40,8 +40,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = sut.ExecuteAsync(testData).Result.First();
 
-            Assert.Equal("1001", result.SignalId);
-            Assert.Equal(1, result.Phase);
+            Assert.Equal("1001", result.SignalIdentifier);
+            Assert.Equal(1, result.PhaseNumber);
             Assert.Equal(testData.Min(m => m.Start), result.Start);
             Assert.Equal(testData.Max(m => m.End), result.End);
             Assert.Equal(testData.Average(a => a.Delay), result.AverageDelay);
@@ -68,7 +68,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.GroupBy(g => g.SignalId).Select(s => s.Key);
+            var actual = result.GroupBy(g => g.SignalIdentifier).Select(s => s.Key);
             var expected = testData.GroupBy(g => g.SignalIdentifier).Select(s => s.Key);
 
             Assert.Equal(expected, actual);
@@ -94,7 +94,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.GroupBy(g => g.Phase).Select(s => s.Key);
+            var actual = result.GroupBy(g => g.PhaseNumber).Select(s => s.Key);
             var expected = testData.GroupBy(g => g.PhaseNumber).Select(s => s.Key);
 
             Assert.Equal(expected, actual);

@@ -16,10 +16,10 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
     {
         public PurdueCoordinationResult() {}
 
-        public PurdueCoordinationResult(IEnumerable<PurdueCoordinationPlan> plans)
-        {
-            Plans = plans.ToList();
-        }
+        //public PurdueCoordinationResult(IEnumerable<PurdueCoordinationPlan> plans)
+        //{
+        //    Plans = plans.ToList();
+        //}
 
         public IReadOnlyList<PurdueCoordinationPlan> Plans { get; set; } = new List<PurdueCoordinationPlan>();
 
