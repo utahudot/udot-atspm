@@ -12,8 +12,18 @@ namespace ATSPM.Application.Analysis.ApproachDelay
 {
     public class ApproachDelayResult : StartEndRange, IApproachDelay, ISignalPhaseLayer
     {
+        public ApproachDelayResult()
+        {
+            Plans = new List<ApproachDelayPlan>() { new ApproachDelayPlan() 
+            { 
+                Start = this.Start,
+                End = this.End,
+                SignalIdentifier = this.SignalIdentifier
+            } };
+        }
+        
         [JsonIgnore]
-        public IReadOnlyList<ApproachDelayPlan> Plans { get; set; } = new List<ApproachDelayPlan>();
+        public IReadOnlyList<ApproachDelayPlan> Plans { get; set; }
 
         #region ISignalPhaseLayer
 
