@@ -1,6 +1,11 @@
 ﻿using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.Plans;
+using ATSPM.Application.Analysis.PurdueCoordination;
+using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
@@ -10,52 +15,48 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GenerateApproachDelayResults : TransformManyProcessStepBase<IReadOnlyList<Vehicle>, ApproachDelayResult>
+    public class GenerateApproachDelayResults : TransformProcessStepBase<Tuple<IReadOnlyList<Vehicle>, IReadOnlyList<ApproachDelayPlan>>, ApproachDelayResult>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<ApproachDelayResult>> Process(IReadOnlyList<Vehicle> input, CancellationToken cancelToken = default)
+        protected override Task<ApproachDelayResult> Process(Tuple<IReadOnlyList<Vehicle>, IReadOnlyList<ApproachDelayPlan>> input, CancellationToken cancelToken = default)
         {
-            var result = new List<ApproachDelayResult>();
+            List<ApproachDelayPlan> plans;
 
-            foreach (var signal in input.GroupBy(g => g.SignalIdentifier))
+            if (input.Item2.Count == 0)
             {
-                foreach (var phase in signal.GroupBy(g => g.PhaseNumber))
+                plans = input.Item1.GroupBy(g => g.SignalIdentifier, (s, i) => new ApproachDelayPlan()
                 {
-                    foreach (var vehicles in phase.GroupBy(g => g.DetChannel))
-                    {
-                        result.Add(new ApproachDelayResult()
-                        {
-                            Start = vehicles.Min(m => m.Start),
-                            End = vehicles.Max(m => m.End),
-                            SignalId = signal.Key,
-                            Phase = phase.Key,
-                            AverageDelay = vehicles.Average(a => a.Delay),
-                            TotalDelay = vehicles.Sum(s => s.Delay) / 3600
-                        });
-                    }
-                }
+                    SignalIdentifier = s,
+                    Start = i.Min(m => m.Start),
+                    End = i.Max(m => m.End)
+                }).ToList();
+            }
+            else
+            {
+                plans = input.Item2.ToList();
             }
 
-            //var result = input
-            //    .SelectMany(m => m.Vehicles)
-            //    .GroupBy(g => g.SignalIdentifier, (s, x) =>
-            //    x.GroupBy(g => g.PhaseNumber, (p, y) =>
-            //    y.GroupBy(g => g.DetChannel, (d, z) =>
+            foreach (var p in plans)
+            {
+                
+                
+                foreach (var r in input.Item1)
+                {
+                    p.TryAssignToPlan(r);
+                }
 
-            //    new ApproachDelayResult()
-            //    {
-            //        Start = z.Min(m => m.Start),
-            //        End = z.Max(m => m.End),
-            //        SignalId = s,
-            //        Phase = p,
-            //        AverageDelay = z.Average(a => a.Delay),
-            //        TotalDelay = z.Sum(s => s.Delay) / 3600
-            //    }))
-            //    .SelectMany(m => m))
-            //    .SelectMany(m => m);
+                Console.Write($"plan: {p} - {p.Vehicles?.Count}\n");
+            }
 
-            return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
+            var result = new ApproachDelayResult() 
+            { 
+                Start = plans.SelectMany(m => m.Vehicles).Min(m => m.Start),
+                End = plans.SelectMany(m => m.Vehicles).Max(m => m.End),
+                Plans = plans.Where(w => w.Vehicles.Count > 0).ToList() 
+            };
+
+            return Task.FromResult(result);
         }
     }
 }
