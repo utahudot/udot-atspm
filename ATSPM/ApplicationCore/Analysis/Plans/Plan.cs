@@ -3,6 +3,7 @@ using ATSPM.Data.Enums;
 using System.Text.Json;
 using ATSPM.Data.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace ATSPM.Application.Analysis.Plans
 {
@@ -24,7 +25,7 @@ namespace ATSPM.Application.Analysis.Plans
         public int PlanNumber { get; set; }
 
         /// <inheritdoc/>
-        public abstract bool TryAssignToPlan(IStartEndRange range);
+        public abstract void AssignToPlan<T>(IEnumerable<T> range) where T : IStartEndRange;
 
         #endregion
 

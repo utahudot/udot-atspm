@@ -27,30 +27,19 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             {
                 SignalIdentifier = signal,
                 PhaseNumber = phase,
-                Start = y.Min(m => m.Start),
-                End = y.Max(m => m.End),
+                Start = z.Min(m => m.Start),
+                End = z.Max(m => m.End),
                 Plans = new List<ApproachDelayPlan>() {
                     new ApproachDelayPlan()
                     {
                         SignalIdentifier = signal,
                         Start = z.Min(m => m.Start),
-                        End = z.Max(m => m.End)
+                        End = z.Max(m => m.End),
+                        Vehicles = z.ToList()
                     }
                 }})).SelectMany(m => m))
                 .SelectMany(m => m)
                 .ToList();
-
-            //HACK: this is temporary, try to assign above
-            foreach (var r in result)
-            {
-                foreach (var p in r.Plans)
-                {
-                    foreach (var v in input)
-                    {
-                        p.TryAssignToPlan(v);
-                    }
-                }
-            }
 
             return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
         }
