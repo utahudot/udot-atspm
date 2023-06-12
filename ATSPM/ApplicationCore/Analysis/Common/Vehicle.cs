@@ -35,8 +35,8 @@ namespace ATSPM.Application.Analysis.Common
         public int DetChannel { get; set; }
         public DateTime CorrectedTimeStamp { get; set; }
 
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+        //public DateTime Start { get; set; }
+        //public DateTime End { get; set; }
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
