@@ -28,8 +28,6 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 }))
             .SelectMany(s => s);
 
-            Console.WriteLine($"vehicles: {result.Count()}");
-
             return Task.FromResult(result);
         }
     }

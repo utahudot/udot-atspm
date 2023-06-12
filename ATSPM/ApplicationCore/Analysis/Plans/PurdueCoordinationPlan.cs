@@ -7,7 +7,7 @@ using System.Linq;
 namespace ATSPM.Application.Analysis.Plans
 {
     /// <summary>
-    /// Plan information specific to purdue coordination information
+    /// Plan specific to purdue coordination information
     /// </summary>
     public class PurdueCoordinationPlan : Plan, ICycleRatios
     {

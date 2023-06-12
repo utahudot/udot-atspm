@@ -1,31 +1,43 @@
 ﻿using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.Plans;
+using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ATSPM.Application.Analysis.ApproachDelay
 {
-    public class ApproachDelayResult : StartEndRange
+    public class ApproachDelayResult : StartEndRange, IApproachDelay, ISignalPhaseLayer
     {
-        //public string ChartName { get; }
-        public string SignalId { get; set; }
-        //public string SignalLocation { get; }
-        public int Phase { get; set; }
-        //public string PhaseDescription { get; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public double AverageDelay { get; set; }
-        public double TotalDelay { get; set; }
+        [JsonIgnore]
+        public IReadOnlyList<ApproachDelayPlan> Plans { get; set; } = new List<ApproachDelayPlan>();
 
-        //public double AverageDelay => Vehicles.Average(a => a.Delay);
-        //public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
-        //public List<ApproachDelayPlan> Plans { get; }
-        //public List<ApproachDelayDataPoint> ApproachDelayDataPoints { get; }
-        //public List<ApproachDelayPerVehicleDataPoint> ApproachDelayPerVehicleDataPoints { get; }
+        #region ISignalPhaseLayer
 
-        //public List<Vehicle> Vehicles { get; set; } = new();
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        /// <inheritdoc/>
+        public int PhaseNumber { get; set; }
+
+        #endregion
+
+        #region IApproachDelay
+
+        /// <inheritdoc/>
+        public double AverageDelay => Plans.Average(a => a.AverageDelay);
+
+        /// <inheritdoc/>
+        public double TotalDelay => Plans.Sum(s => s.TotalDelay);
+
+        /// <inheritdoc/>
+        [JsonIgnore]
+        public IReadOnlyList<Vehicle> Vehicles => Plans.SelectMany(m => m.Vehicles).ToList();
+
+        #endregion
 
         public override string ToString()
         {
