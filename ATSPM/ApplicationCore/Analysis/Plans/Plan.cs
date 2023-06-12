@@ -2,6 +2,7 @@
 using ATSPM.Data.Enums;
 using System.Text.Json;
 using ATSPM.Data.Interfaces;
+using System;
 
 namespace ATSPM.Application.Analysis.Plans
 {
@@ -26,6 +27,11 @@ namespace ATSPM.Application.Analysis.Plans
         public abstract bool TryAssignToPlan(IStartEndRange range);
 
         #endregion
+
+        public override bool InRange(DateTime time)
+        {
+            return time >= Start && time <= End;
+        }
 
         public override string ToString()
         {
