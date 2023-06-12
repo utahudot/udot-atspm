@@ -3,6 +3,7 @@ using ATSPM.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Google.Api.Distribution.Types;
 
 namespace ATSPM.Application.Analysis.Plans
 {
@@ -71,7 +72,11 @@ namespace ATSPM.Application.Analysis.Plans
         public double PlatoonRatio => TotalVolume > 0 ? Math.Round(PercentArrivalOnGreen / PercentGreen, 2) : 0;
 
         /// <inheritdoc/>
-        public IReadOnlyList<ICycleArrivals> ArrivalCycles => _arrivalCycles;
+        public IReadOnlyList<ICycleArrivals> ArrivalCycles
+        {
+            get { return _arrivalCycles; }
+            set { AssignToPlan(value); }
+        }
 
         #endregion
 
@@ -88,17 +93,9 @@ namespace ATSPM.Application.Analysis.Plans
         #region IPlan
 
         /// <inheritdoc/>
-        public override bool TryAssignToPlan(IStartEndRange range)
+        public override void AssignToPlan<T>(IEnumerable<T> range)
         {
-            if (InRange(range.Start) && InRange(range.End))
-            {
-                if (range is ICycleArrivals cycle)
-                    _arrivalCycles.Add(cycle);
-
-                return true;
-            }
-
-            return false;
+            _arrivalCycles.AddRange(range.Cast<ICycleArrivals>().Where(w => InRange(w.Start) && InRange(w.End)));
         }
 
         #endregion

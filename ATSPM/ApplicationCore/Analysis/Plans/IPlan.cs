@@ -1,6 +1,8 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace ATSPM.Application.Analysis.Plans
 {
@@ -19,6 +21,6 @@ namespace ATSPM.Application.Analysis.Plans
         /// </summary>
         /// <param name="range"></param>
         /// <returns>Returns true if successful</returns>
-        bool TryAssignToPlan(IStartEndRange range);
+        void AssignToPlan<T>(IEnumerable<T> range) where T : IStartEndRange;
     }
 }
