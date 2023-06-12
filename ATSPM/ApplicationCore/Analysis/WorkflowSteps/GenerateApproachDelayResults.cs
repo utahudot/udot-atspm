@@ -15,48 +15,44 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GenerateApproachDelayResults : TransformProcessStepBase<Tuple<IReadOnlyList<Vehicle>, IReadOnlyList<ApproachDelayPlan>>, ApproachDelayResult>
+    public class GenerateApproachDelayResults : TransformManyProcessStepBase<IReadOnlyList<Vehicle>, ApproachDelayResult>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<ApproachDelayResult> Process(Tuple<IReadOnlyList<Vehicle>, IReadOnlyList<ApproachDelayPlan>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<ApproachDelayResult>> Process(IReadOnlyList<Vehicle> input, CancellationToken cancelToken = default)
         {
-            List<ApproachDelayPlan> plans;
+            var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
+            x.GroupBy(g => g.PhaseNumber, (phase, y) => 
+            y.GroupBy(g => g.DetChannel, (det, z) =>new ApproachDelayResult()
+            {
+                SignalIdentifier = signal,
+                PhaseNumber = phase,
+                Start = y.Min(m => m.Start),
+                End = y.Max(m => m.End),
+                Plans = new List<ApproachDelayPlan>() {
+                    new ApproachDelayPlan()
+                    {
+                        SignalIdentifier = signal,
+                        Start = z.Min(m => m.Start),
+                        End = z.Max(m => m.End)
+                    }
+                }})).SelectMany(m => m))
+                .SelectMany(m => m)
+                .ToList();
 
-            if (input.Item2.Count == 0)
+            //HACK: this is temporary, try to assign above
+            foreach (var r in result)
             {
-                plans = input.Item1.GroupBy(g => g.SignalIdentifier, (s, i) => new ApproachDelayPlan()
+                foreach (var p in r.Plans)
                 {
-                    SignalIdentifier = s,
-                    Start = i.Min(m => m.Start),
-                    End = i.Max(m => m.End)
-                }).ToList();
-            }
-            else
-            {
-                plans = input.Item2.ToList();
-            }
-
-            foreach (var p in plans)
-            {
-                
-                
-                foreach (var r in input.Item1)
-                {
-                    p.TryAssignToPlan(r);
+                    foreach (var v in input)
+                    {
+                        p.TryAssignToPlan(v);
+                    }
                 }
-
-                Console.Write($"plan: {p} - {p.Vehicles?.Count}\n");
             }
 
-            var result = new ApproachDelayResult() 
-            { 
-                Start = plans.SelectMany(m => m.Vehicles).Min(m => m.Start),
-                End = plans.SelectMany(m => m.Vehicles).Max(m => m.End),
-                Plans = plans.Where(w => w.Vehicles.Count > 0).ToList() 
-            };
-
-            return Task.FromResult(result);
+            return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
         }
     }
 }
