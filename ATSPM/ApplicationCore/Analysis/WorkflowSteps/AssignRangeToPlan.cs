@@ -35,10 +35,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             foreach (var p in plans)
             {
-                foreach (var r in input.Item2)
-                {
-                    p.TryAssignToPlan(r);
-                }
+                p.AssignToPlan(input.Item2);
             }
 
             return Task.FromResult<IReadOnlyList<T>>(plans);
