@@ -26,29 +26,25 @@ namespace ATSPM.Application.Analysis.Plans
 
         /// <inheritdoc/>
         [JsonIgnore]
-        public IReadOnlyList<Vehicle> Vehicles => _vehicles;
+        public IReadOnlyList<Vehicle> Vehicles
+        {
+            get { return _vehicles; }
+            set { AssignToPlan(value); }
+        }
 
         #endregion
 
         #region IPlan
 
-        /// <inheritdoc/>
-        public override bool TryAssignToPlan(IStartEndRange range)
-        {
-            if (InRange(range.Start) && InRange(range.End))
-            {
-                if (range is Vehicle v && SignalIdentifier == v.SignalIdentifier)
-                {
-                    _vehicles.Add(v);
-                    return true;
-                }
-            }
 
-            return false;
+        /// <inheritdoc/>
+        public override void AssignToPlan<T>(IEnumerable<T> range)
+        {
+            _vehicles.AddRange(range.Cast<Vehicle>().Where(w => InRange(w.Start) && InRange(w.End) && SignalIdentifier == w.SignalIdentifier));
         }
 
         #endregion
 
-        
+
     }
 }
