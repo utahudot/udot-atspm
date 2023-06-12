@@ -17,17 +17,8 @@ namespace ATSPM.Application.Analysis.Plans
         #region IPlan
 
         /// <inheritdoc/>
-        public override bool TryAssignToPlan(IStartEndRange range)
+        public override void AssignToPlan<T>(IEnumerable<T> range)
         {
-            if (InRange(range.Start) && InRange(range.End))
-            {
-                //if (range is ICycleArrivals cycle)
-                //    _arrivalCycles.Add(cycle);
-
-                return true;
-            }
-
-            return false;
         }
 
         #endregion

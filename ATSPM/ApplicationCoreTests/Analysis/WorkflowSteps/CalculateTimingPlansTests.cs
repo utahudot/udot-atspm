@@ -138,7 +138,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
     public class TestPlan : Plan
     {
-        public override bool TryAssignToPlan(IStartEndRange range)
+        public override void AssignToPlan<T>(IEnumerable<T> range)
         {
             throw new NotImplementedException();
         }
