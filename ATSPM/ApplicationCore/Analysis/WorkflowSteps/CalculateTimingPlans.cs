@@ -29,6 +29,10 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
                 .SelectMany(s => s).ToList());
 
+            if (result.Count() == 0)
+                result = new List<List<T>>() { new List<T>() };
+
+
             return Task.FromResult<IEnumerable<IReadOnlyList<T>>>(result);
         }
     }
