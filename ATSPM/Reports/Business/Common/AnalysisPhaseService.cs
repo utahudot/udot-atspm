@@ -32,19 +32,23 @@ namespace ATSPM.Application.Reports.Business.Common
 
         public AnalysisPhaseData GetAnalysisPhaseData(
             int phasenumber,
-            IReadOnlyList<ControllerEventLog> terminationeventstable,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
+            IReadOnlyList<ControllerEventLog> pedestrianEvents,
+            IReadOnlyList<ControllerEventLog> cycleEvents,
             int consecutiveCount,
             Signal signal
             )
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.TerminationEvents = FindTerminationEvents(terminationeventstable, analysisPhaseData.PhaseNumber);
-            analysisPhaseData.PedestrianEvents = FindPedEvents(terminationeventstable, analysisPhaseData.PhaseNumber);
-            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount);
-            analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount);
-            analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount);
-            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(analysisPhaseData.TerminationEvents);
+            analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber).ToList();
+            analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();// FindPedEvents(pedestrianEvents, analysisPhaseData.PhaseNumber);
+            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
+            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount)?? new List<ControllerEventLog>();
+            analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
+            analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
+            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(analysisPhaseData.TerminationEvents) ?? new List<ControllerEventLog>();
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
@@ -82,9 +86,9 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in terminationeventstable
                           where row.EventParam == phasenumber && (row.EventCode == 4 ||
-                                                                  row.EventCode == 5 || row.EventCode == 6
-                                                                  || row.EventCode == 7
-                                )
+                                                                  row.EventCode == 5 || 
+                                                                  row.EventCode == 6 || 
+                                                                  row.EventCode == 7)
                           select row).ToList();
 
             var sortedEvents = events.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();

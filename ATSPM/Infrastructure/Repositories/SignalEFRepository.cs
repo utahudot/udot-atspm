@@ -28,6 +28,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.Region)
                 .Include(i => i.VersionAction)
                 .Include(i => i.Approaches)
+                .ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas);
                 //.Include(i => i.MetricComments);
         }
