@@ -1,13 +1,34 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ATSPM.Data.Models;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
+    /// <summary>
+    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// <list type="bullet">
+    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseMinComplete"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseMaxOut"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseEndYellowChange"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianBeginWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.OverlapBeginGreen"/></item>
+    /// <item><see cref="DataLoggerEnum.OverlapBeginTrailingGreenExtension"/></item>
+    /// <item><see cref="DataLoggerEnum.OverlapBeginYellow"/></item>
+    /// <item><see cref="DataLoggerEnum.OverlapBeginRedClearance"/></item>
+    /// <item><see cref="DataLoggerEnum.OverlapOffInactivewithredindication"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.DetectorOff"/></item>
+    /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
+    /// <item><see cref="DataLoggerEnum.PedDetectorOff"/></item>
+    /// <item><see cref="DataLoggerEnum.PedDetectorOn"/></item>
+    /// </list>
+    /// </summary>
     public class FilteredTimingActuationData : FilterStepBase
     {
         public FilteredTimingActuationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

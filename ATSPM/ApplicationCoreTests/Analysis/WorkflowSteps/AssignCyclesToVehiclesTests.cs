@@ -12,13 +12,13 @@ using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
-    public class CalculateApproachDelayTests : IDisposable
+    public class AssignCyclesToVehiclesTests : IDisposable
     {
         private readonly ITestOutputHelper _output;
         private readonly List<RedToRedCycle> _redCycles;
         private readonly Detector _detector;
 
-        public CalculateApproachDelayTests(ITestOutputHelper output)
+        public AssignCyclesToVehiclesTests(ITestOutputHelper output)
         {
             _output = output;
 
@@ -55,7 +55,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare Signal Pass")]
-        public async void CalculateApproachDelayCompareSignalPassTest()
+        public async void AssignCyclesToVehiclesCompareSignalPassTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -73,7 +73,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare Signal Fail")]
-        public async void CalculateApproachDelayCompareSignalFailTest()
+        public async void AssignCyclesToVehiclesCompareSignalFailTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -81,6 +81,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
             };
+
+            _redCycles.First().SignalIdentifier = "1002";
 
             var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
 
@@ -91,7 +93,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare Start Pass")]
-        public async void CalculateApproachDelayCompareStartPassTest()
+        public async void AssignCyclesToVehiclesCompareStartPassTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -109,7 +111,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare Start Fail")]
-        public async void CalculateApproachDelayCompareStartFailTest()
+        public async void AssignCyclesToVehiclesCompareStartFailTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -127,7 +129,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare End Pass")]
-        public async void CalculateApproachDelayCompareEndPassTest()
+        public async void AssignCyclesToVehiclesCompareEndPassTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -145,7 +147,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Compare End Fail")]
-        public async void CalculateApproachDelayCompareEndFailTest()
+        public async void AssignCyclesToVehiclesCompareEndFailTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -163,7 +165,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Data Check")]
-        public async void CalculateApproachDelayDataCheckTest()
+        public async void AssignCyclesToVehiclesDataCheckTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -190,7 +192,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         /// </summary>
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Red Delay")]
-        public async void CalculateApproachDelayRedDelayTest()
+        public async void AssignCyclesToVehiclesRedDelayTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -212,7 +214,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         /// </summary>
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Green Delay")]
-        public async void CalculateApproachDelayGreenDelayTest()
+        public async void AssignCyclesToVehiclesGreenDelayTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -236,7 +238,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         /// </summary>
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Yellow Delay")]
-        public async void CalculateApproachDelayYellowDelayTest()
+        public async void AssignCyclesToVehiclesYellowDelayTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -255,7 +257,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Arrival on Red")]
-        public async void CalculateApproachDelayArrivalOnRedTest()
+        public async void AssignCyclesToVehiclesArrivalOnRedTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -273,7 +275,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Arrival on Green")]
-        public async void CalculateApproachDelayArrivalOnGreenTest()
+        public async void AssignCyclesToVehiclesArrivalOnGreenTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -291,7 +293,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Arrival on Yellow")]
-        public async void CalculateApproachDelayArrivalOnYellowTest()
+        public async void AssignCyclesToVehiclesArrivalOnYellowTest()
         {
             var sut = new AssignCyclesToVehicles();
 
@@ -309,7 +311,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(AssignCyclesToVehicles), "Null Cycles")]
-        public async void CalculateApproachDelayNullCyclesTest()
+        public async void AssignCyclesToVehiclesNullCyclesTest()
         {
             var sut = new AssignCyclesToVehicles();
 

@@ -1,13 +1,18 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ATSPM.Data.Models;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
+    /// <summary>
+    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// <list type="bullet">
+    /// <item><see cref="DataLoggerEnum.PedestrianBeginWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
+    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
+    /// </list>
+    /// </summary>
     public class FilteredPedPhaseData : FilterStepBase
     {
         public FilteredPedPhaseData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
