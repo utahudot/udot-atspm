@@ -23,6 +23,8 @@ using ATSPM.Application.Analysis.PurdueCoordination;
 using System.Text.Json;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using System.Collections.Generic;
+using ATSPM.Application.Analysis.Plans;
+using ATSPM.Application.Analysis.WorkflowFilters;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
@@ -61,30 +63,6 @@ list = list.Union(list2).ToList();
 
 Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 
-//var list = new List<ControllerEventLog>();
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.5"), EventCode = 9, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:41.9"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 6:59:48.7"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:4.7"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:5.3"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:9.1"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:15.6"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:28.7"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:40.5"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:45.3"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:46.2"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:47.9"), EventCode = 1, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:50.5"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:52.6"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:55.2"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:00:56.1"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:3.7"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:25.1"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:32.9"), EventCode = 82, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:36.7"), EventCode = 8, EventParam = 2 });
-//list.Add(new ControllerEventLog() { SignalId = "7191", Timestamp = DateTime.Parse("12/1/2020 7:01:41.5"), EventCode = 9, EventParam = 2 });
-
-//var test = new RedToRedCycle();
 
 
 //var s = new Signal() { SignalId = "7191" };
@@ -118,13 +96,63 @@ Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 //    }
 //};
 
+var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
 
 var ApproachDelayWorkflow = new ApproachDelayWorkflow();
+ApproachDelayWorkflow.BeginInit();
 
-await foreach (var r in ApproachDelayWorkflow.Execute(list, default))
+//await foreach (var r in ApproachDelayWorkflow.Execute(list, default))
+//{
+//    Console.WriteLine($"result: {r}");
+//}
+
+var mergePlansAndDelayResults = new JoinBlock<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>();
+
+var ApproachDelayPlanResult = new ActionBlock<Tuple<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>>(a =>
 {
-    Console.WriteLine($"result: {r}");
-}
+
+
+    //foreach (var r in a.Item1)
+    //{
+        var plans = a.Item2.ToList();
+
+        foreach (var p in plans)
+        {
+            p.AssignToPlan(a.Item1.Vehicles);
+        }
+
+        a.Item1.Plans = plans.Where(w => w.Vehicles.Count > 0).ToList();
+
+        Console.WriteLine($"result: {a.Item1} - {a.Item1.Plans.FirstOrDefault().PlanNumber}");
+    //}
+
+
+});
+
+
+var FilteredPlanData = new FilteredPlanData();
+var CalculateTimingPlans = new CalculateTimingPlans<ApproachDelayPlan>();
+
+broadcast.LinkTo(ApproachDelayWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+broadcast.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
+FilteredPlanData.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+
+ApproachDelayWorkflow.Output.LinkTo(mergePlansAndDelayResults.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+CalculateTimingPlans.LinkTo(mergePlansAndDelayResults.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+mergePlansAndDelayResults.LinkTo(ApproachDelayPlanResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+broadcast.Post(list);
+broadcast.Complete();
+
+
+
+
+
+
+
+
+
+
 
 //var CreateRedToRedCycles = new CreateRedToRedCycles();
 //var result = await CreateRedToRedCycles.ExecuteAsync(list);

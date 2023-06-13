@@ -1,13 +1,20 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
+    /// <summary>
+    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// <list type="bullet">
+    /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item
+    /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
+    /// </list>
+    /// </summary>
     public class FilteredPreemptionData : FilterStepBase
     {
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

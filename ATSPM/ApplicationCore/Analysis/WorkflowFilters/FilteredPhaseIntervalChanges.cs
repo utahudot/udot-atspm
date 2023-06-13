@@ -1,13 +1,18 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ATSPM.Data.Models;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
+    /// <summary>
+    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// <list type="bullet">
+    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseBeginYellowChange"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseEndYellowChange"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
+    /// </list>
+    /// </summary>
     public class FilteredPhaseIntervalChanges : FilterStepBase
     {
         public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
