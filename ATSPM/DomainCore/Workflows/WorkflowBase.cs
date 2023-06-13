@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis
+namespace ATSPM.Domain.Workflows
 {
     /// <summary>
     /// Used as a base to create complex, inter-linkable, parallel workflows
@@ -32,7 +32,7 @@ namespace ATSPM.Application.Analysis
         /// Can be used to post or send data or link from other workflows
         /// </summary>
         public BroadcastBlock<T1> Input { get; set; }
-        
+
         /// <summary>
         /// Can be used to recieve data or link to other workflows
         /// </summary>
@@ -109,7 +109,7 @@ namespace ATSPM.Application.Analysis
                     Output.Completion.ContinueWith(t =>
                     {
                         Console.WriteLine($"Output is complete! {t.Status}");
-                        this.IsInitialized = false;
+                        IsInitialized = false;
                     }, cancelToken);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -142,7 +142,7 @@ namespace ATSPM.Application.Analysis
         /// <inheritdoc/>
         public virtual bool CanExecute(T1 parameter)
         {
-            return this.IsInitialized;
+            return IsInitialized;
         }
 
         /// <inheritdoc/>
