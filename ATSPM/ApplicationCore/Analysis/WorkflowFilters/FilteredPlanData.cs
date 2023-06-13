@@ -1,13 +1,15 @@
 ﻿using ATSPM.Data.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ATSPM.Data.Models;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
+    /// <summary>
+    /// Filters <see cref="ControllerEventLog"/> workflow events to
+    /// <list type="bullet">
+    /// <item><see cref="DataLoggerEnum.CoordPatternChange"/></item>
+    /// </list>
+    /// </summary>
     public class FilteredPlanData : FilterStepBase
     {
         public FilteredPlanData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
