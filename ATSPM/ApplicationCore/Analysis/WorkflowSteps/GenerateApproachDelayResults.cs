@@ -22,8 +22,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IEnumerable<ApproachDelayResult>> Process(IReadOnlyList<Vehicle> input, CancellationToken cancelToken = default)
         {
             var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
-            x.GroupBy(g => g.PhaseNumber, (phase, y) => 
-            y.GroupBy(g => g.DetChannel, (det, z) =>new ApproachDelayResult()
+            x.GroupBy(g => g.PhaseNumber, (phase, y) =>
+            y.GroupBy(g => g.DetChannel, (det, z) => new ApproachDelayResult()
             {
                 SignalIdentifier = signal,
                 PhaseNumber = phase,
@@ -37,9 +37,34 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                         End = z.Max(m => m.End),
                         Vehicles = z.ToList()
                     }
-                }})).SelectMany(m => m))
+                }
+            })).SelectMany(m => m))
                 .SelectMany(m => m)
                 .ToList();
+
+            //var plans = new List<ApproachDelayPlan>();
+
+            //var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
+            //x.GroupBy(g => g.PhaseNumber, (phase, y) =>
+            //y.GroupBy(g => g.DetChannel, (det, z) => new ApproachDelayResult()
+            //{
+            //    SignalIdentifier = signal,
+            //    PhaseNumber = phase,
+            //    Start = z.Min(m => m.Start),
+            //    End = z.Max(m => m.End),
+            //    Plans = plans.Where(w => w.SignalIdentifier == signal)
+            //    .Select(p => new ApproachDelayPlan()
+            //    {
+            //        SignalIdentifier = p.SignalIdentifier,
+            //        PlanNumber = p.PlanNumber,
+            //        Start = p.Start,
+            //        End = p.End,
+            //        Vehicles = z.ToList()
+            //    }).Where(w => w.Vehicles.Count > 0)
+            //    .ToList()
+            //})).SelectMany(m => m))
+            //    .SelectMany(m => m)
+            //    .ToList();
 
             return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
         }

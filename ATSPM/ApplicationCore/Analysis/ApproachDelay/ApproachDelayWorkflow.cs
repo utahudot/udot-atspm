@@ -20,6 +20,16 @@ namespace ATSPM.Application.Analysis.ApproachDelay
 {
     public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
     {
+        private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
+        private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
+        
+        public ApproachDelayWorkflow(int maxDegreeOfParallelism = 1, CancellationToken cancellationToken = default)
+        {
+            _filterOptions.CancellationToken = cancellationToken;
+            _stepOptions.CancellationToken = cancellationToken;
+            _stepOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
+        }
+        
         protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCyclesAndVehicles;
         //protected JoinBlock<IReadOnlyList<Vehicle>, IReadOnlyList<ApproachDelayPlan>> mergePlansAndDelayResults;
 
@@ -28,7 +38,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
         //public FilteredPlanData FilteredPlanData { get; private set; }
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
         public FilteredDetectorData FilteredDetectorData { get; private set; }
-        public CalculateTimingPlans<ApproachDelayPlan> CalculateTimingPlans { get; private set; }
+        //public CalculateTimingPlans<ApproachDelayPlan> CalculateTimingPlans { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
         public AssignCyclesToVehicles AssignCyclesToVehicles { get; private set; }
@@ -40,7 +50,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             //FilteredPlanData = new();
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
-            CalculateTimingPlans = new();
+            //CalculateTimingPlans = new();
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
             mergeCyclesAndVehicles = new();
@@ -57,7 +67,7 @@ namespace ATSPM.Application.Analysis.ApproachDelay
             //Steps.Add(FilteredPlanData);
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
-            Steps.Add(CalculateTimingPlans);
+            //Steps.Add(CalculateTimingPlans);
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
             Steps.Add(mergeCyclesAndVehicles);
