@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATSPM.Application.Analysis.ArrivalsOnRed
+namespace ATSPM.Application.Analysis.Workflows
 {
     public class ArrivalsOnRedWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
     {

@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Analysis\WorkflowFilterTests\" />
     <Folder Include="Analysis\Workflows\" />
   </ItemGroup>
 

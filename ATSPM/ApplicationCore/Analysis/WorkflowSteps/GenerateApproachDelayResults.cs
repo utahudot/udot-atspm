@@ -39,8 +39,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     }
                 }
             })).SelectMany(m => m))
-                .SelectMany(m => m)
-                .ToList();
+                .SelectMany(m => m);
 
             //var plans = new List<ApproachDelayPlan>();
 
@@ -66,7 +65,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             //    .SelectMany(m => m)
             //    .ToList();
 
-            return Task.FromResult<IEnumerable<ApproachDelayResult>>(result);
+            return Task.FromResult(result);
         }
     }
 }
