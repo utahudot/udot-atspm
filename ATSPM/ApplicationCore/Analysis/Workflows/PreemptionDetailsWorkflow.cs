@@ -1,23 +1,32 @@
-﻿using ATSPM.Application.Analysis.ApproachDelay;
+﻿using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Application.Analysis.PreemptionDetails
+namespace ATSPM.Application.Analysis.Workflows
 {
+    /// <summary>
+    /// Preemption is the interruption of normal operations to serve a preferred 
+    /// vehicle(e.g., train, emergency vehicle). This measure can be used to determine if 
+    /// preemption events are occurring as intended. “Preemption Details” refers to the
+    /// duration of preemption intervals for each preemption event. The type of interval
+    /// information available depends on the type of preempt (i.e., rail or emergency
+    /// vehicle) and the availability of certain inputs. Some potential intervals that can be
+    /// tracked include entry delay, track clearance, gate down, dwell, time to service, 
+    /// max-out, and preempt input on/off (1).
+    /// </summary>
     public class PreemptionDetailsWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, PreemptDetailResult>
     {
         protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinOne;
         protected JoinBlock<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>> joinTwo;
         protected JoinBlock<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> joinThree;
-        protected MergePreemptionTimes mergePreemptionTimes;
+        internal MergePreemptionTimes mergePreemptionTimes;
 
         public FilteredPreemptionData FilteredPreemptionData { get; private set; }
         public CalculateDwellTime CalculateDwellTime { get; private set; }
@@ -28,6 +37,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
         public CalculateTimeToCallMaxOut CalculateTimeToCallMaxOut { get; private set; }
         public GeneratePreemptDetailResults GeneratePreemptDetailResults { get; private set; }
 
+        /// <inheritdoc/>
         public override void InstantiateSteps()
         {
             FilteredPreemptionData = new();
@@ -47,6 +57,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             mergePreemptionTimes = new();
         }
 
+        /// <inheritdoc/>
         public override void AddStepsToTracker()
         {
             Steps.Add(FilteredPreemptionData);
@@ -63,6 +74,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
             Steps.Add(mergePreemptionTimes);
         }
 
+        /// <inheritdoc/>
         public override void LinkSteps()
         {
             Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -90,9 +102,9 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
         }
     }
 
-    public class MergePreemptionTimes : TransformProcessStepBase<Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>>, IEnumerable<PreempDetailValueBase>>
+    internal class MergePreemptionTimes : TransformProcessStepBase<Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>>, IEnumerable<PreempDetailValueBase>>
     {
-        public MergePreemptionTimes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        internal MergePreemptionTimes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<PreempDetailValueBase>> Process(Tuple<Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>, Tuple<IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>, IEnumerable<PreempDetailValueBase>>> input, CancellationToken cancelToken = default)
         {

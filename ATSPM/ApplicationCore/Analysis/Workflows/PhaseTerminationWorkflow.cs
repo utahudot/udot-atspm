@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ATSPM.Application.Analysis.PhaseTermination
+namespace ATSPM.Application.Analysis.Workflows
 {
     //HACK: clean this up
     public class PhaseCycle
@@ -105,7 +105,7 @@ namespace ATSPM.Application.Analysis.PhaseTermination
     }
 
     public class GapOut : PhaseTerminationValueBase { }
-    
+
     public class MaxOut : PhaseTerminationValueBase { }
 
     public class ForceOff : PhaseTerminationValueBase { }

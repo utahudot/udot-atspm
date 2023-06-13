@@ -27,8 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Analysis\ApproachVolume\" />
+    <Folder Include="Analysis\ArrivalsOnRed\" />
     <Folder Include="Analysis\LeftTurnGap\" />
     <Folder Include="Analysis\ApproachSpeed\" />
+    <Folder Include="Analysis\PhaseTermination\" />
     <Folder Include="Analysis\TimingAndActuation\" />
     <Folder Include="Analysis\PurdueSplitFailure\" />
     <Folder Include="Analysis\PedestrianDelay\" />
