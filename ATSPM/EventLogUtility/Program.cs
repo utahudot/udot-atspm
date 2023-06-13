@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks.Dataflow;
-using ATSPM.Application.Analysis.ApproachVolume;
 using ATSPM.Domain.Common;
 using System.CommandLine;
 using ATSPM.Application;
@@ -63,8 +62,6 @@ list = list.Union(list2).ToList();
 
 Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 
-
-
 //var s = new Signal() { SignalId = "7191" };
 
 
@@ -96,53 +93,49 @@ Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 //    }
 //};
 
-var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
+//var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
 
-var ApproachDelayWorkflow = new ApproachDelayWorkflow();
-ApproachDelayWorkflow.BeginInit();
+//var ApproachDelayWorkflow = new ApproachDelayWorkflow();
+//ApproachDelayWorkflow.BeginInit();
 
-//await foreach (var r in ApproachDelayWorkflow.Execute(list, default))
+
+//var mergePlansAndDelayResults = new JoinBlock<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>();
+
+//var ApproachDelayPlanResult = new ActionBlock<Tuple<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>>(a =>
 //{
-//    Console.WriteLine($"result: {r}");
-//}
-
-var mergePlansAndDelayResults = new JoinBlock<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>();
-
-var ApproachDelayPlanResult = new ActionBlock<Tuple<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>>(a =>
-{
 
 
-    //foreach (var r in a.Item1)
-    //{
-        var plans = a.Item2.ToList();
+//    //foreach (var r in a.Item1)
+//    //{
+//        var plans = a.Item2.ToList();
 
-        foreach (var p in plans)
-        {
-            p.AssignToPlan(a.Item1.Vehicles);
-        }
+//        foreach (var p in plans)
+//        {
+//            p.AssignToPlan(a.Item1.Vehicles);
+//        }
 
-        a.Item1.Plans = plans.Where(w => w.Vehicles.Count > 0).ToList();
+//        a.Item1.Plans = plans.Where(w => w.Vehicles.Count > 0).ToList();
 
-        Console.WriteLine($"result: {a.Item1} - {a.Item1.Plans.FirstOrDefault().PlanNumber}");
-    //}
-
-
-});
+//        Console.WriteLine($"result: {a.Item1} - {a.Item1.Plans.FirstOrDefault().PlanNumber}");
+//    //}
 
 
-var FilteredPlanData = new FilteredPlanData();
-var CalculateTimingPlans = new CalculateTimingPlans<ApproachDelayPlan>();
+//});
 
-broadcast.LinkTo(ApproachDelayWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
-broadcast.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
-FilteredPlanData.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
 
-ApproachDelayWorkflow.Output.LinkTo(mergePlansAndDelayResults.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-CalculateTimingPlans.LinkTo(mergePlansAndDelayResults.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-mergePlansAndDelayResults.LinkTo(ApproachDelayPlanResult, new DataflowLinkOptions() { PropagateCompletion = true });
+//var FilteredPlanData = new FilteredPlanData();
+//var CalculateTimingPlans = new CalculateTimingPlans<ApproachDelayPlan>();
 
-broadcast.Post(list);
-broadcast.Complete();
+//broadcast.LinkTo(ApproachDelayWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+//broadcast.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
+//FilteredPlanData.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+
+//ApproachDelayWorkflow.Output.LinkTo(mergePlansAndDelayResults.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+//CalculateTimingPlans.LinkTo(mergePlansAndDelayResults.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+//mergePlansAndDelayResults.LinkTo(ApproachDelayPlanResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+//broadcast.Post(list);
+//broadcast.Complete();
 
 
 
