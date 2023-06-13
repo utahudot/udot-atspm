@@ -1,11 +1,9 @@
-﻿using ATSPM.Application.Analysis.WorkflowSteps;
+﻿using ATSPM.Application.Analysis.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ATSPM.Application
 {
@@ -123,6 +121,13 @@ namespace ATSPM.Application
         public static DateTime AdjustTimeStamp(DateTime timestamp, int approachSpeed, int distanceFromStopBar, double latencyCorrection = 0)
         {
             return timestamp.AddSeconds(distanceFromStopBar / (approachSpeed * 1.467)).AddSeconds(latencyCorrection * -1);
+        }
+
+        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : VolumeBase
+        {
+            return volumes.Where((w, i) => i <= volumes.Count() - chunks)
+                .Select((s, i) => volumes.Skip(i).Take(chunks))
+                .Aggregate((a, b) => a.Sum(s => s.DetectorCount) >= b.Sum(s => s.DetectorCount) ? a : b).ToList();
         }
     }
 }

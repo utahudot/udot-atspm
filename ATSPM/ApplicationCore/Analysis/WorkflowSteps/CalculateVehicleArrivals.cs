@@ -10,11 +10,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<ICycleArrivals>>
+    public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<CycleArrivals>>
     {
         public CalculateVehicleArrivals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IReadOnlyList<ICycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
+        protected override Task<IReadOnlyList<CycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2.Select(s => new CycleArrivals(s)
             {
@@ -23,7 +23,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .ToList()
             }).ToList();
 
-            return Task.FromResult<IReadOnlyList<ICycleArrivals>>(result);
+            return Task.FromResult<IReadOnlyList<CycleArrivals>>(result);
         }
     }
 }
