@@ -1,10 +1,8 @@
-﻿using ATSPM.Application.Analysis.WorkflowSteps;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
+using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
@@ -19,6 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// </summary>
         protected List<int> filteredList = new();
 
+        /// <inheritdoc/>
         public FilterStepBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             workflowProcess = new BroadcastBlock<IEnumerable<ControllerEventLog>>(f => f.Where(l => filteredList.Contains(l.EventCode)), options);
