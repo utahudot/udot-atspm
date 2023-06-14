@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace ATSPM.Application.Reports.Business.ApproachVolume;
 
@@ -10,7 +11,8 @@ public class DFactors
         DFactor = dFactor;
     }
 
-    public DateTime StartTime { get; internal set; }
-    public double DFactor { get; internal set; }
+    public DateTime StartTime { get; set; }
+    [JsonProperty("dFactor")]
+    public double DFactor { get; set; }
 
 }

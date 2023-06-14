@@ -67,15 +67,15 @@ public class ApproachVolumeResult : ApproachResult
         OpposingTotalVolume = opposingTotalVolume;
     }
 
-    public DetectionTypes DetectorType { get; internal set; }
-    public int DistanceFromStopBar { get; internal set; }
-    public string PrimaryDirectionName { get; internal set; }
-    public ICollection<DirectionVolumes> PrimaryDirectionVolumes { get; internal set; }
+    public DetectionTypes DetectorType { get; set; }
+    public int DistanceFromStopBar { get; set; }
+    public string PrimaryDirectionName { get; set; }
+    public ICollection<DirectionVolumes> PrimaryDirectionVolumes { get; set; }
     public string OpposingDirectionName { get; set; }
-    public ICollection<DirectionVolumes> OpposingDirectionVolumes { get; internal set; }
-    public ICollection<DirectionVolumes> CombinedDirectionVolumes { get; internal set; }
+    public ICollection<DirectionVolumes> OpposingDirectionVolumes { get; set; }
+    public ICollection<DirectionVolumes> CombinedDirectionVolumes { get; set; }
     public ICollection<DFactors> PrimaryDFactors { get; internal set; }
-    public ICollection<DFactors> OpposingDFactors { get; internal set; }
+    public ICollection<DFactors> OpposingDFactors { get; set; }
     public string PeakHour { get; set; }
     public double KFactor { get; set; }
     public int PeakHourVolume { get; set; }

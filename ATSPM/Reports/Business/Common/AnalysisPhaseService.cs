@@ -42,7 +42,7 @@ namespace ATSPM.Application.Reports.Business.Common
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
             analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber).ToList();
-            analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();// FindPedEvents(pedestrianEvents, analysisPhaseData.PhaseNumber);
+            analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
             analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount)?? new List<ControllerEventLog>();

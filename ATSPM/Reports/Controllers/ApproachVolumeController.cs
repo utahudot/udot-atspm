@@ -45,7 +45,6 @@ namespace ATSPM.Application.Reports.Controllers
         public ApproachVolumeResult GetChartData([FromBody] ApproachVolumeOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
-            DirectionTypes opposingDirection = ApproachVolumeService.GetOpposingDirection(options);
             List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true);
             List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false);
             ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
@@ -61,7 +60,10 @@ namespace ATSPM.Application.Reports.Controllers
             var approaches = signal.Approaches
                 .Where(a => a.DirectionTypeId == (usePrimaryDirection ? options.Direction : ApproachVolumeService.GetOpposingDirection(options)))
                 .ToList();
-            var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(10)).Where(d => d.LaneTypeId == LaneTypes.V).ToList();
+            var detectors = approaches
+                .SelectMany(a => a.Detectors)
+                .Where(d => d.DetectionTypes.Any(dt => dt.Id == options.DetectionType) && (d.LaneTypeId == LaneTypes.V || d.LaneTypeId == LaneTypes.NA))
+                .ToList();
             var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
                 d.Approach.Signal.SignalId,
                 options.Start,

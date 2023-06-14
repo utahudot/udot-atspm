@@ -23,14 +23,28 @@ namespace ATSPM.Infrastructure.Repositories
         public override IQueryable<Signal> GetList()
         {
             return base.GetList()
-                .Include(i => i.ControllerType)
-                .Include(i => i.Jurisdiction)
-                .Include(i => i.Region)
-                .Include(i => i.VersionAction)
-                .Include(i => i.Approaches)
-                .ThenInclude(i => i.DirectionType)
-                .Include(i => i.Areas);
-                //.Include(i => i.MetricComments);
+                .Include(s => s.ControllerType)
+        .Include(s => s.Jurisdiction)
+        .Include(s => s.Region)
+        .Include(s => s.VersionAction)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.DirectionType)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.Detectors)
+                .ThenInclude(d => d.DetectionHardware)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.Detectors)
+                .ThenInclude(d => d.LaneType)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.Detectors)
+                .ThenInclude(d => d.MovementType)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.Detectors)
+                .ThenInclude(d => d.DetectorComments)
+        .Include(s => s.Approaches)
+            .ThenInclude(a => a.Detectors)
+                .ThenInclude(d => d.DetectionTypes)
+        .Include(s => s.Areas);
         }
 
         #endregion
