@@ -1,20 +1,24 @@
 ﻿using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.PurdueCoordination;
-using System;
+using ATSPM.Domain.Workflows;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
+    /// <summary>
+    /// Generates the <see cref="PurdueCoordinationResult"/> from a list of <see cref="CycleArrivals"/>
+    /// </summary>
     public class GeneratePurdueCoordinationResult : TransformManyProcessStepBase<IReadOnlyList<CycleArrivals>, PurdueCoordinationResult>
     {
+        /// <inheritdoc/>
         public GeneratePurdueCoordinationResult(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
+        /// <inheritdoc/>
         protected override Task<IEnumerable<PurdueCoordinationResult>> Process(IReadOnlyList<CycleArrivals> input, CancellationToken cancelToken = default)
         {
             var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>

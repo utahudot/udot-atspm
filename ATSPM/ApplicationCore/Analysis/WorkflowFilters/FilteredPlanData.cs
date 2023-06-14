@@ -12,6 +12,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredPlanData : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredPlanData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.CoordPatternChange);
