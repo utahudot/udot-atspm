@@ -83,7 +83,7 @@ namespace ATSPM.Application
                 .ToList();
 
             var result = preFilter.Where((x, y) =>
-                    (y < preFilter.Count() - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
+                    (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
                     (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
                         .Chunk(2)
                         .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));

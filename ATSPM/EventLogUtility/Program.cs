@@ -25,12 +25,13 @@ using System.Collections.Generic;
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.Workflows;
+using System.Security.Cryptography.X509Certificates;
 
 
 //var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
 //var path2 = "C:\\temp\\TestData\\1001_Approach_Delay.csv";
 
-var path1 = "C:\\temp\\TestData\\7115_Approach_Delay.csv";
+var path1 = "C:\\temp\\TestData\\4020_6-15-2023_PreemptionData.csv";
 
 var list = File.ReadAllLines(path1)
                .Skip(1)
@@ -44,24 +45,24 @@ var list = File.ReadAllLines(path1)
                }).ToList();
 
 
-var path2 = "C:\\temp\\TestData\\7115_4-17-2023_Plans.csv";
+//var path2 = "C:\\temp\\TestData\\7115_4-17-2023_Plans.csv";
 
-var list2 = File.ReadAllLines(path2)
-               .Skip(1)
-               .Select(x => x.Split(','))
-               .Select(x => new ControllerEventLog
-               {
-                   SignalId = x[0],
-                   Timestamp = DateTime.Parse(x[1]),
-                   EventCode = int.Parse(x[2]),
-                   EventParam = int.Parse(x[3])
-               }).ToList();
+//var list2 = File.ReadAllLines(path2)
+//               .Skip(1)
+//               .Select(x => x.Split(','))
+//               .Select(x => new ControllerEventLog
+//               {
+//                   SignalId = x[0],
+//                   Timestamp = DateTime.Parse(x[1]),
+//                   EventCode = int.Parse(x[2]),
+//                   EventParam = int.Parse(x[3])
+//               }).ToList();
 
-Console.WriteLine($"list2: {list2.Count}");
+//Console.WriteLine($"list2: {list2.Count}");
 
-list = list.Union(list2).ToList();
+//list = list.Union(list2).ToList();
 
-Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
+//Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 
 
 //var s = new Signal() { SignalId = "7191" };
@@ -94,95 +95,21 @@ Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 //    }
 //};
 
-//var broadcast = new BroadcastBlock<IEnumerable<ControllerEventLog>>(null);
 
-//var ApproachDelayWorkflow = new ApproachDelayWorkflow();
-//ApproachDelayWorkflow.BeginInit();
+var startend = TimeSpanFromConsecutiveCodes(list, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
 
+Console.WriteLine($"i: {startend.Count()}");
 
-//var mergePlansAndDelayResults = new JoinBlock<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>();
-
-//var ApproachDelayPlanResult = new ActionBlock<Tuple<ApproachDelayResult, IReadOnlyList<ApproachDelayPlan>>>(a =>
+//foreach (var i in startend)
 //{
-
-
-//    //foreach (var r in a.Item1)
-//    //{
-//        var plans = a.Item2.ToList();
-
-//        foreach (var p in plans)
-//        {
-//            p.AssignToPlan(a.Item1.Vehicles);
-//        }
-
-//        a.Item1.Plans = plans.Where(w => w.Vehicles.Count > 0).ToList();
-
-//        Console.WriteLine($"result: {a.Item1} - {a.Item1.Plans.FirstOrDefault().PlanNumber}");
-//    //}
-
-
-//});
-
-
-//var FilteredPlanData = new FilteredPlanData();
-//var CalculateTimingPlans = new CalculateTimingPlans<ApproachDelayPlan>();
-
-//broadcast.LinkTo(ApproachDelayWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
-//broadcast.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
-//FilteredPlanData.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-
-//ApproachDelayWorkflow.Output.LinkTo(mergePlansAndDelayResults.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-//CalculateTimingPlans.LinkTo(mergePlansAndDelayResults.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-//mergePlansAndDelayResults.LinkTo(ApproachDelayPlanResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-//broadcast.Post(list);
-//broadcast.Complete();
-
-
-
-
-
-
-
-
-
-
-
-//var CreateRedToRedCycles = new CreateRedToRedCycles();
-//var result = await CreateRedToRedCycles.ExecuteAsync(list);
-
-//foreach (var r in result)
-//{
-//    Console.WriteLine($"result: {r}");
+//    Console.WriteLine($"i: {i}");
 //}
 
-
-//var preemptionDetailsWorkflow = new PreemptionDetailsWorkflow();
-
-//await foreach (var r in preemptionDetailsWorkflow.Execute(list.Take(20), default))
-//{
-//    Console.WriteLine($"result: {r}");
-
-//    foreach (var delay in r.Delay)
-//        Console.WriteLine($"delay: {delay.Seconds}");
-
-//    foreach (var service in r.ServiceTimes)
-//        Console.WriteLine($"service: {service.Seconds}");
-
-//    foreach (var dwell in r.DwellTimes)
-//        Console.WriteLine($"dwell: {dwell.Seconds}");
-
-//    foreach (var max in r.CallMaxOutTimes)
-//        Console.WriteLine($"max: {max.Seconds}");
-
-//}
+var test1 = list.Where((w, i) => w.EventCode == 102);
+var test2 = list.OrderBy(o => o.Timestamp).Where((w, i) => i < list.Count - 1 && w.EventCode == 102 && list[i + 1].EventCode == 105);
 
 
-
-
-
-
-
+Console.WriteLine($"i: {test1.Count()} - {test2.Count()}");
 
 
 
@@ -191,6 +118,23 @@ Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 
 
 Console.ReadLine();
+
+
+IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable <ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        {
+    var preFilter = items.OrderBy(o => o.Timestamp)
+        .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
+        //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
+        .ToList();
+
+    var result = preFilter.Where((x, y) =>
+            (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
+            (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
+                .Chunk(2)
+                .Select(l => new StartEndRange() { Start = l[0].Timestamp, End = l[1].Timestamp });
+
+    return result;
+}
 
 
 //public class VolumeByHour : TotalVolume
