@@ -10,6 +10,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredSplitsData : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredSplitsData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             for (int i = (int)DataLoggerEnum.Split1Change; i <= (int)DataLoggerEnum.Split16Change; i++)
