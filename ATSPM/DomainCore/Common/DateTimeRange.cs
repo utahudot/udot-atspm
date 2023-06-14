@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text.Json;
 
 namespace ATSPM.Domain.Common
 {
@@ -46,7 +47,7 @@ namespace ATSPM.Domain.Common
 
         public override string ToString()
         {
-            return $"Start: {Start} End: {End}";
+            return JsonSerializer.Serialize(this);
         }
     }
 

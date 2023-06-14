@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
@@ -9,7 +10,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item
+    /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
