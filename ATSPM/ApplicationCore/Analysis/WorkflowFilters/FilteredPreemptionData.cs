@@ -17,6 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredPreemptionData : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PreemptCallInputOn);

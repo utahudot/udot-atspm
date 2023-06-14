@@ -14,6 +14,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
     /// </summary>
     public class PurdueCoordinationResult : StartEndRange, ICycleRatios, ISignalPhaseLayer
     {
+        /// <inheritdoc/>
         public PurdueCoordinationResult() {}
 
         //public PurdueCoordinationResult(IEnumerable<PurdueCoordinationPlan> plans)

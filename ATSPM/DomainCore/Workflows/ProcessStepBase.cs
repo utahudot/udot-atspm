@@ -1,32 +1,23 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Security;
-using System.Text;
-using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis.WorkflowSteps
+namespace ATSPM.Domain.Workflows
 {
     /// <summary>
-    /// Base class for ATSPM process steps
+    /// Base class for workflow process steps
     /// </summary>
     /// <typeparam name="T1">Input data type</typeparam>
     /// <typeparam name="T2">Output data type</typeparam>
     public abstract class ProcessStepBase<T1, T2> : IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
     {
+        /// <inheritdoc/>
         public event EventHandler CanExecuteChanged;
 
         protected IPropagatorBlock<T1, T2> workflowProcess;
         protected DataflowBlockOptions options;
 
+        /// <inheritdoc/>
         public ProcessStepBase(DataflowBlockOptions dataflowBlockOptions = default)
         {
             options = dataflowBlockOptions ?? new();

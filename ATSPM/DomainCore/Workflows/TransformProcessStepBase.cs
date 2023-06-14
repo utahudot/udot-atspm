@@ -1,29 +1,24 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
+﻿using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Security;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Application.Analysis.WorkflowSteps
+namespace ATSPM.Domain.Workflows
 {
     /// <summary>
-    /// Base class for ATSPM process steps using <see cref="TransformBlock{TInput, TOutput}"/>
+    /// Base class for workflow process steps using <see cref="TransformBlock{TInput, TOutput}"/>
     /// </summary>
     /// <typeparam name="T1">Input data type</typeparam>
     /// <typeparam name="T2">Output data type</typeparam>
     public abstract class TransformProcessStepBase<T1, T2> : ProcessStepBase<T1, T2>, IExecuteAsync<T1, T2>
     {
+        /// <inheritdoc/>
         public event EventHandler CanExecuteChanged;
 
+        /// <inheritdoc/>
         public TransformProcessStepBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions ?? new())
         {
             workflowProcess = new TransformBlock<T1, T2>(p => ExecuteAsync(p, options.CancellationToken), (ExecutionDataflowBlockOptions)options);

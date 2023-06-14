@@ -13,6 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredCallStatus : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredCallStatus(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PhaseCallRegistered);
