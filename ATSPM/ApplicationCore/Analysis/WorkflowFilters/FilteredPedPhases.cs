@@ -13,6 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredPedPhases : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredPedPhases(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PedestrianBeginWalk);

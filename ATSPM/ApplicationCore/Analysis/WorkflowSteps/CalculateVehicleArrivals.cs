@@ -1,19 +1,39 @@
 ﻿using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
+    /// <summary>
+    /// Creates a list of <see cref="CycleArrivals"/>
+    /// <list type="number">
+    /// <listheader>Steps to create the <see cref="CycleArrivals"/></listheader>
+    /// 
+    /// <item>
+    /// Identify <see cref="CorrectedDetectorEvent"/> arriving durring the green stage of <see cref="RedToRedCycle"/>
+    /// </item>
+    /// 
+    /// <item>
+    /// Identify <see cref="CorrectedDetectorEvent"/> arriving durring the yellow stage of <see cref="RedToRedCycle"/>
+    /// </item>
+    /// 
+    /// <item>
+    /// Identify <see cref="CorrectedDetectorEvent"/> arriving durring the red stage of <see cref="RedToRedCycle"/>
+    /// </item>
+    /// 
+    /// </list>
+    /// </summary>
     public class CalculateVehicleArrivals : TransformProcessStepBase<Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>, IReadOnlyList<CycleArrivals>>
     {
+        /// <inheritdoc/>
         public CalculateVehicleArrivals(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
+        /// <inheritdoc/>
         protected override Task<IReadOnlyList<CycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2.Select(s => new CycleArrivals(s)
