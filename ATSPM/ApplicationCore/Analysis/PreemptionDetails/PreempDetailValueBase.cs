@@ -17,6 +17,11 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
         public int PreemptNumber { get; set; }
         public TimeSpan Seconds { get; set; }
 
+        public override bool InRange(DateTime time)
+        {
+            return time >= Start && time <= End;
+        }
+
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
