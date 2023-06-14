@@ -13,6 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredDetectorData : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.DetectorOff);

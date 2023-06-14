@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Analysis\ApproachVolume\" />
     <Folder Include="Analysis\ArrivalsOnRed\" />
     <Folder Include="Analysis\LeftTurnGap\" />
     <Folder Include="Analysis\ApproachSpeed\" />

@@ -13,6 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// </summary>
     public class FilteredPedCalls : FilterStepBase
     {
+        /// <inheritdoc/>
         public FilteredPedCalls(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.PedestrianCallRegistered);
