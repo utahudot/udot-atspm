@@ -328,6 +328,48 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
+        [Trait(nameof(CreatePreemptiveCyclesTests), "Delay True")]
+        public async void CreatePreemptiveCyclesTestsDelayTrue()
+        {
+            var sut = new PreemptiveStuff();
+
+            var testData = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+            };
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var condition = result.First().HasDelay;
+
+            Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(CreatePreemptiveCyclesTests), "Delay False")]
+        public async void CreatePreemptiveCyclesTestsDelayFalse()
+        {
+            var sut = new PreemptiveStuff();
+
+            var testData = new List<ControllerEventLog>
+            {
+                //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+            };
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var condition = result.First().HasDelay;
+
+            Assert.False(condition);
+        }
+
+        [Fact]
         //[Trait(nameof(CreateRedToRedCycles), "Signal Grouping")]
         public async void TestTwo()
         {

@@ -95,46 +95,28 @@ var list = File.ReadAllLines(path1)
 //    }
 //};
 
+var testData = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
 
-var startend = TimeSpanFromConsecutiveCodes(list, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 7:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 7:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 7:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 7:04:01.1"), EventCode = 111, EventParam = 1},
 
-Console.WriteLine($"i: {startend.Count()}");
-
-//foreach (var i in startend)
-//{
-//    Console.WriteLine($"i: {i}");
-//}
-
-var test1 = list.Where((w, i) => w.EventCode == 102);
-var test2 = list.OrderBy(o => o.Timestamp).Where((w, i) => i < list.Count - 1 && w.EventCode == 102 && list[i + 1].EventCode == 105);
-
-
-Console.WriteLine($"i: {test1.Count()} - {test2.Count()}");
-
-
-
-
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 5:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 5:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 5:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 5:04:01.1"), EventCode = 111, EventParam = 1},
+            };
 
 
+PreemptiveStuff test = new PreemptiveStuff();
 
-Console.ReadLine();
-
-
-IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable <ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
-        {
-    var preFilter = items.OrderBy(o => o.Timestamp)
-        .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
-        //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
-        .ToList();
-
-    var result = preFilter.Where((x, y) =>
-            (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
-            (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
-                .Chunk(2)
-                .Select(l => new StartEndRange() { Start = l[0].Timestamp, End = l[1].Timestamp });
-
-    return result;
-}
+var result = await test.ExecuteAsync(testData);
 
 
 //public class VolumeByHour : TotalVolume
