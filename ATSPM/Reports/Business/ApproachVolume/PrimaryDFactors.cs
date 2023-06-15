@@ -12,7 +12,11 @@ public class DFactors
     }
 
     public DateTime StartTime { get; set; }
-    [JsonProperty("dFactor")]
     public double DFactor { get; set; }
+
+    public override string ToString()
+    {
+        return JsonConvert.SerializeObject(this);
+    }
 
 }

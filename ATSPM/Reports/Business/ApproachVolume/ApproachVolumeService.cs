@@ -84,8 +84,10 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             double opposingDirectionPeakHourKFactor = GetPeakHourKFactor(Convert.ToDouble(opposingDirectionPeakHourItem.Value) / Convert.ToDouble(opposingDirectionTotalVolume), 3);
             double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, primaryDirectionVolume, binSizeMultiplier);
             string opposingDirectionPeakHourString = opposingDirectionPeakHourItem.Key.ToShortTimeString() + " - " + opposingDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
-            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(options.DetectionType).First();
-            var distanceFromStopBar = detector.DistanceFromStopBar.HasValue ? detector.DistanceFromStopBar.Value : 0;
+            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(options.DetectionType).FirstOrDefault();
+            var distanceFromStopBar = 0;
+            if(detector != null)
+                distanceFromStopBar = detector.DistanceFromStopBar.HasValue ? detector.DistanceFromStopBar.Value : 0;
 
             return new ApproachVolumeResult(
                 options.SignalId,
@@ -173,7 +175,14 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             List<DFactors> result = new List<DFactors>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
             {
-                result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].HourlyVolume) / Convert.ToDouble(combinedVolume.Items[i].HourlyVolume)));
+                if (combinedVolume.Items[i].HourlyVolume == 0)
+                {
+                    result.Add(new DFactors(approachVolume.Items[i].StartTime, 0));
+                }
+                else
+                {
+                    result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].HourlyVolume) / Convert.ToDouble(combinedVolume.Items[i].HourlyVolume)));
+                }
             }
             return result;
         }       
@@ -271,7 +280,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             int binMultiplier)
         {
             int totalVolume = 0;
-            double PHDF = 0;
+            double PHDF = 0.0;
 
             for (int i = 0; i < binMultiplier; i++)
             {
@@ -285,7 +294,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             if (totalVolume > 0)
                 PHDF = GetPeakHourKFactor(Convert.ToDouble(Peakhourvolume) / Convert.ToDouble(totalVolume), 3);
             else
-                PHDF = 0;
+                PHDF = 0.0;
             return PHDF;
         }
     }

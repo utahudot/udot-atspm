@@ -45,8 +45,13 @@ namespace ATSPM.Application.Reports.Controllers
         public ApproachVolumeResult GetChartData([FromBody] ApproachVolumeOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
+            var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
             List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true);
             List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false);
+            if(primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
+            {
+                return new ApproachVolumeResult(primaryApproaches.FirstOrDefault().Id, signal.SignalId, options.Start, options.End);
+            }
             ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
                 options,
                 signal,

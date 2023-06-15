@@ -12,6 +12,15 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume;
 public class ApproachVolumeResult : ApproachResult
 {
     public ApproachVolumeResult(
+        int approachId,
+        string signalId,
+        DateTime start,
+        DateTime end) : base(approachId, signalId, start, end)
+    {
+        ApproachId = approachId;
+    }
+
+    public ApproachVolumeResult(
         string signalId,
         int approachId,
         DateTime start,
@@ -74,7 +83,7 @@ public class ApproachVolumeResult : ApproachResult
     public string OpposingDirectionName { get; set; }
     public ICollection<DirectionVolumes> OpposingDirectionVolumes { get; set; }
     public ICollection<DirectionVolumes> CombinedDirectionVolumes { get; set; }
-    public ICollection<DFactors> PrimaryDFactors { get; internal set; }
+    public ICollection<DFactors> PrimaryDFactors { get; set; }
     public ICollection<DFactors> OpposingDFactors { get; set; }
     public string PeakHour { get; set; }
     public double KFactor { get; set; }
@@ -91,5 +100,5 @@ public class ApproachVolumeResult : ApproachResult
     public int OpposingPeakHourVolume { get; set; }
     public double OpposingPeakHourFactor { get; set; }
     public int OpposingTotalVolume { get; set; }
-
+    public int ApproachId { get; }
 }
