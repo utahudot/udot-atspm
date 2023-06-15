@@ -78,24 +78,27 @@ namespace ATSPM.Application.Reports.Controllers
                 pedEvents,
                 signal,
                 options.SelectedConsecutiveCount);
+            var phases = new List<Phase>();
+            foreach (var phase in phaseCollectionData.AnalysisPhases)
+            {
+                phases.Add(new Phase(
+                    phase.PhaseNumber,
+                    phase.ConsecutiveGapOuts.Select(g => g.Timestamp).ToList(),
+                    phase.ConsecutiveMaxOut.Select(g => g.Timestamp).ToList(),
+                    phase.ConsecutiveForceOff.Select(g => g.Timestamp).ToList(),
+                    phase.PedestrianEvents.Select(g => g.Timestamp).ToList(),
+                    phase.UnknownTermination.Select(g => g.Timestamp).ToList()
+                    ));
+            }
 
-            var gapOuts = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveGapOuts)?.Select(p => new GapOut(p.Timestamp, p.EventParam)).ToList();
-            var maxOuts = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveMaxOut)?.Select(p => new MaxOut(p.Timestamp, p.EventParam)).ToList();
-            var forceOffs = phaseCollectionData.AnalysisPhases.SelectMany(p => p.ConsecutiveForceOff)?.Select(p => new ForceOff(p.Timestamp, p.EventParam)).ToList();
-            var pedWalkBegin = phaseCollectionData.AnalysisPhases.SelectMany(p => p.PedestrianEvents)?.Select(p => new PedWalkBegin(p.Timestamp, p.EventParam)).ToList();
-            var unknownEvents = phaseCollectionData.AnalysisPhases.SelectMany(p => p.UnknownTermination)?.Select(p => new UnknownTermination(p.Timestamp, p.EventParam)).ToList();
-            var plans = phaseCollectionData.Plans.Select(p => new Business.Common.Plan(p.PlanNumber.ToString(), p.StartTime, p.EndTime)).ToList();
+           var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.StartTime, p.EndTime)).ToList();
             return new PhaseTerminationResult(
                 phaseCollectionData.SignalId,
                 options.Start,
                 options.End,
                 options.SelectedConsecutiveCount,
                 plans,
-                gapOuts,
-                maxOuts,
-                forceOffs,
-                pedWalkBegin,
-                unknownEvents
+                phases
                 );
         }
     }
