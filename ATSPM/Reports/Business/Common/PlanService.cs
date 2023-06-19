@@ -13,11 +13,9 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlanService
     {
-        private readonly PlanSplitMonitorService planSplitMonitorService;
 
-        public PlanService(PlanSplitMonitorService planSplitMonitorService)
+        public PlanService()
         {
-            this.planSplitMonitorService = planSplitMonitorService;
         }
 
         public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
@@ -175,13 +173,13 @@ namespace ATSPM.Application.Reports.Business.Common
                 if (planEvents.Count - 1 == i)
                 {
                     if (planEvents[i].Timestamp != endDate)
-                        plans.Add(planSplitMonitorService.GetPlanSplitMonitor(planEvents[i].Timestamp, endDate, planEvents[i].EventParam));
+                        plans.Add(new PlanSplitMonitorData(planEvents[i].Timestamp, endDate, planEvents[i].EventParam.ToString()));
                 }
                 else
                 {
                     if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
-                        plans.Add(planSplitMonitorService.GetPlanSplitMonitor(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
-                            planEvents[i].EventParam));
+                        plans.Add(new PlanSplitMonitorData(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
+                            planEvents[i].EventParam.ToString()));
                 }
             return plans;
         }

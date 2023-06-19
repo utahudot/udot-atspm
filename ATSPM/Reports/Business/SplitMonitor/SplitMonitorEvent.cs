@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.Business.SplitMonitor;
 
-public class SplitMonitorGapOut
+public class SplitMonitorEvent
 {
-    public SplitMonitorGapOut(DateTime startTime, double seconds)
+    public SplitMonitorEvent(DateTime startTime, double seconds)
     {
         StartTime = startTime;
         Seconds = seconds;

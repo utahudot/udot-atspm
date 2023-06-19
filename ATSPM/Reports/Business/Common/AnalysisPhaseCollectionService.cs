@@ -5,6 +5,7 @@ using ATSPM.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit.Abstractions;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -27,17 +28,14 @@ namespace ATSPM.Application.Reports.Business.Common
     {
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
-        private readonly PlanSplitMonitorService planSplitMonitorService;
 
         public AnalysisPhaseCollectionService(
             PlanService planService,
-            AnalysisPhaseService analysisPhaseService,
-            PlanSplitMonitorService planSplitMonitorService
+            AnalysisPhaseService analysisPhaseService
             )
         {
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
-            this.planSplitMonitorService = planSplitMonitorService;
         }
 
         //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
@@ -79,7 +77,6 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
-            IReadOnlyList<ControllerEventLog> terminationEvents,
             IReadOnlyList<ControllerEventLog> pedestrianEvents,
             Signal signal,
             int consecutiveCount)
@@ -92,7 +89,6 @@ namespace ATSPM.Application.Reports.Business.Common
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(
                     phaseNumber,
-                    terminationEvents,
                     pedestrianEvents,
                     cycleEvents,
                     consecutiveCount,
@@ -114,6 +110,31 @@ namespace ATSPM.Application.Reports.Business.Common
             }
             return analysisPhaseCollectionData;
         }
+
+        //public AnalysisPhaseCollectionData GetAnalysisPhaseCollection(
+        //    string signalId,
+        //    DateTime startTime,
+        //    DateTime endTime,
+        //    IReadOnlyList<ControllerEventLog> terminationEvents,
+        //    IReadOnlyList<ControllerEventLog> planEvents,
+        //    IReadOnlyList<ControllerEventLog> phaseEvents,
+        //    IReadOnlyList<ControllerEventLog> pedEvents)
+        //{
+        //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
+        //    var cel = ControllerEventLogRepositoryFactory.Create();
+        //    var ptedt = cel.GetSignalEventsByEventCodes(signalId, startTime, endTime,
+        //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
+        //    var dapta = cel.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
+        //    var phasesInUse = dapta.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
+        //    Plans = PlanFactory.GetSplitMonitorPlans(startTime, endTime, signalId);
+        //    foreach (var row in phasesInUse)
+        //    {
+        //        var aPhase = new AnalysisPhase(row, signalId, ptedt);
+        //        Items.Add(aPhase);
+        //    }
+        //    OrderPhases();
+        //    return analysisPhaseCollectionData;
+        //}
 
         private int FindMaxPhase(List<AnalysisPhaseData> analysisPhases)
         {
@@ -254,7 +275,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 if (Cycles.Count() > HighCycleCount)
                     HighCycleCount = Cycles.Count();
             }
-            planSplitMonitorData.CycleCount = HighCycleCount;
+            planSplitMonitorData.HighCycleCount = HighCycleCount;
         }
     }
 }

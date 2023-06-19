@@ -74,7 +74,6 @@ namespace ATSPM.Application.Reports.Controllers
                 planEvents,
                 cycleEvents,
                 splitsEvents,
-                terminationEvents,
                 pedEvents,
                 signal,
                 options.SelectedConsecutiveCount);

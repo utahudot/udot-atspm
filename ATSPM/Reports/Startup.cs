@@ -10,6 +10,7 @@ using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 using ATSPM.Application.Reports.Business.PreempDetail;
 using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Reports.Business.SplitFail;
+using ATSPM.Application.Reports.Business.SplitMonitor;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
@@ -72,11 +73,11 @@ namespace ATSPM.Application.Reports
             services.AddScoped<PreemptServiceService>();
             services.AddScoped<PreemptServiceRequestService>();
             services.AddScoped<SplitFailPhaseService>();
+            services.AddScoped<SplitMonitorService>();
 
             //Common Services
             services.AddScoped<PlanService>();
             services.AddScoped<SignalPhaseService>();
-            services.AddScoped<PlanSplitMonitorService>();
             services.AddScoped<CycleService>();
             services.AddScoped<PedPhaseService>();
             services.AddScoped<AnalysisPhaseCollectionService>();

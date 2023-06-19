@@ -19,82 +19,145 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
     public class SplitMonitorService
     {
         private readonly AnalysisPhaseService analysisPhaseService;
-        private readonly PlanSplitMonitorService planSplitMonitorService;
+        private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly PlanService planService;
 
         public SplitMonitorService(
             AnalysisPhaseService analysisPhaseService,
-            PlanSplitMonitorService planSplitMonitorService,
+            AnalysisPhaseCollectionService analysisPhaseCollectionService,
             PlanService planService
             )
         {
             this.analysisPhaseService = analysisPhaseService;
-            this.planSplitMonitorService = planSplitMonitorService;
+            this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.planService = planService;
         }
 
 
-        public SplitMonitorResult GetChartData(
+        public List<SplitMonitorResult> GetChartData(
             SplitMonitorOptions options,
             IReadOnlyList<ControllerEventLog> planEvents,
-            IReadOnlyList<ControllerEventLog> phaseEvents,
+            IReadOnlyList<ControllerEventLog> cycleEvents,
+            IReadOnlyList<ControllerEventLog> pedEvents,
+            IReadOnlyList<ControllerEventLog> splitsEvents,
             Signal signal)
         {
-            var phase = analysisPhaseService.GetAnalysisPhaseData(options.PhaseNumber, signal, phaseEvents.ToList());
-            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.SignalId, planEvents.ToList());
-            var maxSplitLength = 0;
-            var programedSplits = new List<Split>();
-            var gapOuts = new List<SplitMonitorGapOut>();
-            var maxOuts = new List<SplitMonitorMaxOut>();
-            var forceOffs = new List<SplitMonitorForceOff>();
-            var unknowns = new List<SplitMonitorUnknown>();
-            var peds = new List<Peds>();
+            var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
+                signal.SignalId,
+                options.Start, 
+                options.End, 
+                planEvents,
+                cycleEvents,
+                splitsEvents,
+                pedEvents,
+                signal,
+                1
+                );
             
-            foreach (var plan in plans)
+            var result = new List<SplitMonitorResult>();
+            foreach (var phase in phaseCollection.AnalysisPhases)
             {
-                var highestSplit = planSplitMonitorService.FindHighestRecordedSplitPhase(plan);
-                planSplitMonitorService.FillMissingSplits(highestSplit, plan);
-                if (plan.Splits[phase.PhaseNumber] > maxSplitLength)
-                    maxSplitLength = plan.Splits[phase.PhaseNumber];
-                programedSplits.Add(new Split(plan.StartTime, plan.Splits[phase.PhaseNumber]));
-                programedSplits.Add(new Split(plan.EndTime, plan.Splits[phase.PhaseNumber]));
-            }
-            foreach (var cycle in phase.Cycles.Items)
-            {
-                if (cycle.TerminationEvent == 4)
-                    gapOuts.Add(new SplitMonitorGapOut(cycle.StartTime, cycle.Duration.TotalSeconds));
-                if (cycle.TerminationEvent == 5)
-                    maxOuts.Add(new SplitMonitorMaxOut(cycle.StartTime, cycle.Duration.TotalSeconds));
-                if (cycle.TerminationEvent == 6)
-                    forceOffs.Add(new SplitMonitorForceOff(cycle.StartTime, cycle.Duration.TotalSeconds));
-                if (cycle.TerminationEvent == 0)
-                    unknowns.Add(new SplitMonitorUnknown(cycle.StartTime, cycle.Duration.TotalSeconds));
-                if (cycle.HasPed && options.ShowPedActivity)
+                var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalId, options.Start, options.End)
                 {
-                    if (cycle.PedDuration == 0)
-                    {
-                        if (cycle.PedStartTime == DateTime.MinValue)
-                            cycle.SetPedStart(cycle.StartTime);
-                        if (cycle.PedEndTime == DateTime.MinValue)
-                            cycle.SetPedEnd(cycle.YellowEvent);
-                    }
-                    peds.Add(new Peds(cycle.PedStartTime, cycle.PedDuration));
-                }
-            }                    
+                    GapOuts = phase.Cycles.Items
+                    .Where(c => c.TerminationEvent == 4)
+                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                    .ToList(),
+                    MaxOuts = phase.Cycles.Items
+                    .Where(c => c.TerminationEvent == 5)
+                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                    .ToList(),
+                    ForceOffs = phase.Cycles.Items
+                    .Where(c => c.TerminationEvent == 6)
+                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                    .ToList(),
+                    Unknowns = phase.Cycles.Items
+                    .Where(c => c.TerminationEvent == 0)
+                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                    .ToList(),
+                    Peds = phase.Cycles.Items
+                    .Where(c => c.HasPed)
+                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                    .ToList(),
+                };                
+                splitMonitorResult.Plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
+                result.Add(splitMonitorResult);
+            }
 
-            return new SplitMonitorResult(
-                options.ApproachId,
-                options.SignalId,
-                options.Start,
-                options.End,
-                options.PhaseNumber,
-                plans.ToList(),
-                programedSplits,
-                gapOuts,
-                maxOuts,
-                forceOffs,
-                unknowns,
-                peds);
+            return result;
+        }
+
+        private List<PlanSplitMonitorData> GetSplitMonitorPlansWithStatistics(
+            SplitMonitorOptions options, 
+            AnalysisPhaseCollectionData phaseCollection, 
+            AnalysisPhaseData phase)
+        {
+            var phasePlans = new List<PlanSplitMonitorData>();
+            foreach (var plan in phaseCollection.Plans)
+            {
+                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.StartTime && x.StartTime < plan.EndTime).ToList();
+                if (cycles.Any())
+                {
+                    var planCycleCount = Convert.ToDouble(cycles.Count());
+                    var percentile = Convert.ToDouble(options.PercentileSplit) / 100;
+                    phasePlans.Add(new PlanSplitMonitorData(plan.StartTime, plan.EndTime, plan.PlanNumber)
+                    {
+                        StartTime = plan.StartTime,
+                        EndTime = plan.EndTime,
+                        PlanNumber = plan.PlanNumber,
+                        PercentSkips = planCycleCount > 0 ? Convert.ToDouble((plan.HighCycleCount) - planCycleCount) / plan.HighCycleCount : 0,
+                        PercentGapOuts = planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / planCycleCount : 0,
+                        PercentMaxOuts = GetPercentMaxOuts(cycles, planCycleCount, plan.PlanNumber),
+                        PercentForceOffs = GetPercentForceOffs(cycles, planCycleCount, plan.PlanNumber),
+                        AverageSplit = planCycleCount > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / planCycleCount : 0,
+                        PercentileSplit = GetPercentSplit(planCycleCount, percentile, cycles),
+                        Splits = plan.Splits
+                    });
+                }
+            }
+            return phasePlans;
+        }
+
+        private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        {
+            if(planNumber != "254")
+                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / planCycleCount : 0;
+            else
+                return 0;
+        }
+
+        private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        {
+            if (planNumber == "254")
+                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / planCycleCount : 0;
+            else
+                return 0;
+        }
+
+        private double GetPercentSplit(double planCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
+        {
+            if (cycles.Count <= 2)
+                return 0;
+
+            var percentilIndex = percentile * planCycleCount;
+            if (percentilIndex % 1 == 0)
+            {
+                return cycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
+                    .TotalSeconds;
+            }
+            else
+            {
+                var indexMod = percentilIndex % 1;
+                //subtracting .5 leaves just the integer after the convert.
+                //There was probably another way to do that, but this is easy.
+                int indexInt = Convert.ToInt16(percentilIndex - .5);
+
+                var step1 = cycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
+                var step2 = cycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
+                var stepDiff = step2 - step1;
+                var step3 = stepDiff * indexMod;
+                return step1 + step3;
+            }
         }
     }
 }
