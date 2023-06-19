@@ -1,11 +1,7 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
-using ATSPM.Application.Extensions;
-using System.Collections.Generic;
-using static Legacy.Common.Business.Bins.BinFactoryOptions;
 using System;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Infrastructure.Repositories;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
@@ -29,7 +25,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
             List<ControllerEventLog> cycleEvents,
             List<ControllerEventLog> planEvents,
             List<SpeedEvent> speedEvents,
-            Detector detector)        
+            Detector detector)
         {
             var speedDetector = GetSpeedDetector(
                 detector,
@@ -53,7 +49,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                     detector.ApproachId,
                     detector.Approach.ProtectedPhaseNumber,
                     detector.Approach.Description,
-                    options.Start, 
+                    options.Start,
                     options.End,
                     detector.DetectionTypes.ToString(),
                     detector.DistanceFromStopBar.Value,
