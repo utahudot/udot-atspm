@@ -5,7 +5,9 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -67,6 +69,8 @@ namespace ATSPM.Application.Reports.Controllers
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
             signalEvents = null;
+            GC.Collect();
+            
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 options.SignalId,
                 options.Start,

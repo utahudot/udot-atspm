@@ -47,8 +47,4 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Legacy\Business\" />
-  </ItemGroup>
-
 </Project>

@@ -136,12 +136,17 @@ namespace ATSPM.Application.Reports.Business.Common
             if (cycles.Any())
                 foreach (var cycle in cycles)
                 {
-                    var eventsForCycle = detectorEvents
-                        .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) &&
-                                    d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift)).ToList();
-                    foreach (var controllerEventLog in eventsForCycle)
-                        cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
-                            cycle.GreenEvent, cycle.YellowEvent));
+                    cycle.DetectorEvents.AddRange(detectorEvents
+                        .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) 
+                            && d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift))
+                        .Select(d => new DetectorDataPoint(cycle.StartTime, d.Timestamp, cycle.GreenEvent, cycle.YellowEvent)));
+                        
+                    //var eventsForCycle = detectorEvents
+                    //    .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) &&
+                    //                d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift)).ToList();
+                    //foreach (var controllerEventLog in eventsForCycle)
+                    //    cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
+                    //        cycle.GreenEvent, cycle.YellowEvent));
                 }
 
             //var totalSortedEvents = cycles.Sum(d => d.DetectorEvents.Count);

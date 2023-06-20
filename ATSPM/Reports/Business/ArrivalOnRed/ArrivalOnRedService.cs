@@ -40,11 +40,12 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                     double binDetectorHits = 0;
                     // Get cycles that start and end within the bin, and the cycle that starts before and ends
                     // within the bin, and the cycle that starts within and ends after the bin
-                    var cycles = signalPhase.Cycles.Where(c =>
-                        c.StartTime >= dt && c.EndTime < dt.AddMinutes(options.SelectedBinSize)
-                        || c.StartTime < dt && c.EndTime >= dt
-                        || c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
-                           && c.StartTime < dt.AddMinutes(options.SelectedBinSize));
+                    var cycles = signalPhase.Cycles
+                        .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize))
+                        .ToList();
+                        //|| c.StartTime < dt && c.EndTime >= dt
+                        //|| c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
+                           //&& c.StartTime < dt.AddMinutes(options.SelectedBinSize));
                     foreach (var cycle in cycles)
                     {
                         // Filter cycle events to only include timestamps within the bin

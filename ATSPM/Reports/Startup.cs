@@ -41,9 +41,9 @@ namespace ATSPM.Application.Reports
 
             services.AddLogging();
             //Contexts
-            services.AddDbContext<ConfigContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
-            services.AddDbContext<EventLogContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
-            services.AddDbContext<SpeedContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
+            services.AddDbContext<ConfigContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<EventLogContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<SpeedContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
             services.AddDbContext<IdentityContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
 
             //Repositories
