@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.CommandLine.NamingConventionBinder;
 using System.Linq;
@@ -7,8 +8,12 @@ using System.Threading.Tasks;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public interface ICommandOption<T>
+    public interface ICommandOption<T> : ICommandOption
     {
         ModelBinder<T> GetOptionsBinder();
+    }
+    public interface ICommandOption
+    {
+        void BindCommandOptions(IServiceCollection services);
     }
 }

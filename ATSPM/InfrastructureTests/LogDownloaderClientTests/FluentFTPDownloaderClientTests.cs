@@ -35,8 +35,8 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ConnectAsync")]
         public async void ConnectAsyncSuccess()
         {
-            var client = new Mock<IFtpClient>();
-            client.Setup(s => s.ConnectAsync(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true).Verifiable());
+            var client = new Mock<IAsyncFtpClient>();
+            client.Setup(s => s.Connect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(true).Verifiable());
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -64,8 +64,8 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "ConnectAsync")]
         public async void ConnectAsyncFailed()
         {
-            var client = new Mock<IFtpClient>();
-            client.Setup(s => s.ConnectAsync(default)).Throws<Exception>();
+            var client = new Mock<IAsyncFtpClient>();
+            client.Setup(s => s.Connect(default)).Throws<Exception>();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -107,8 +107,8 @@ namespace InfrastructureTests.LogDownloaderClientTests
                 var actual1 = sut.Client.Credentials.UserName;
                 var actual2 = sut.Client.Credentials.Password;
                 var actual3 = sut.Client.Credentials.Domain;
-                var actual4 = sut.Client.ConnectTimeout;
-                var actual5 = sut.Client.ReadTimeout;
+                var actual4 = sut.Client.Config.DataConnectionConnectTimeout;
+                var actual5 = sut.Client.Config.DataConnectionReadTimeout;
 
                 Assert.Equal(expected1, actual1);
                 Assert.Equal(expected2, actual2);
@@ -169,9 +169,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             _output.WriteLine($"expected: {expected}");
 
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
-            client.Setup(s => s.DeleteFileAsync(It.Is<string>(r => r == expected), default)).Verifiable();
+            client.Setup(s => s.DeleteFile(It.Is<string>(r => r == expected), default)).Verifiable();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -191,9 +191,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DeleteFileAsync")]
         public async void DeleteFileAsyncFailed()
         {
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
-            client.Setup(s => s.DeleteFileAsync(It.IsNotNull<string>(), default)).Throws<ArgumentNullException>();
+            client.Setup(s => s.DeleteFile(It.IsNotNull<string>(), default)).Throws<ArgumentNullException>();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -258,10 +258,10 @@ namespace InfrastructureTests.LogDownloaderClientTests
 
             _output.WriteLine($"expected: {expected}");
 
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
 
-            client.Setup(s => s.DownloadFileAsync(It.Is<string>(l => l == expected), It.Is<string>(r => r == remotePath), FtpLocalExists.Overwrite, FtpVerify.None, null, default))
+            client.Setup(s => s.DownloadFile(It.Is<string>(l => l == expected), It.Is<string>(r => r == remotePath), FtpLocalExists.Overwrite, FtpVerify.None, null, default))
                 .ReturnsAsync(FtpStatus.Success).Verifiable();
 
             if (_client is FluentFTPDownloaderClient sut)
@@ -286,9 +286,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DownloadFileAsync")]
         public async void DownloadFileAsyncFailed()
         {
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
-            client.Setup(s => s.DownloadFileAsync(It.IsNotNull<string>(), It.IsNotNull<string>(), FtpLocalExists.Overwrite, FtpVerify.None, null, default))
+            client.Setup(s => s.DownloadFile(It.IsNotNull<string>(), It.IsNotNull<string>(), FtpLocalExists.Overwrite, FtpVerify.None, null, default))
                 .Throws<ArgumentNullException>();
 
             if (_client is FluentFTPDownloaderClient sut)
@@ -358,9 +358,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
             mockItems.Add(new FtpListItem() { FullName = "a" });
             mockItems.Add(new FtpListItem() { FullName = "b" });
 
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
-            client.Setup(s => s.GetListingAsync(It.Is<string>(r => r == directory), FtpListOption.Auto, default))
+            client.Setup(s => s.GetListing(It.Is<string>(r => r == directory), FtpListOption.Auto, default))
                 .ReturnsAsync(mockItems.ToArray())
                 .Verifiable();
 
@@ -426,9 +426,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
         public async void DisconnectAsyncSuccess()
         {
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(s => s.IsConnected).Returns(true);
-            client.Setup(s => s.DisconnectAsync(default)).Callback(() => client.SetupGet(p => p.IsConnected)).Returns(Task.CompletedTask).Verifiable();
+            client.Setup(s => s.Disconnect(default)).Callback(() => client.SetupGet(p => p.IsConnected)).Returns(Task.CompletedTask).Verifiable();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -454,8 +454,8 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), "DisconnectAsync")]
         public async void DisconnectAsyncFailed()
         {
-            var client = new Mock<IFtpClient>();
-            client.Setup(s => s.DisconnectAsync(default)).Throws<Exception>();
+            var client = new Mock<IAsyncFtpClient>();
+            client.Setup(s => s.Disconnect(default)).Throws<Exception>();
 
             if (_client is FluentFTPDownloaderClient sut)
             {
@@ -512,9 +512,9 @@ namespace InfrastructureTests.LogDownloaderClientTests
         [Trait(nameof(IDownloaderClient), nameof(IDisposable))]
         public void IsDisposing()
         {
-            var client = new Mock<IFtpClient>();
+            var client = new Mock<IAsyncFtpClient>();
             client.SetupGet(p => p.IsConnected).Returns(true);
-            client.Setup(s => s.Disconnect()).Callback(() => client.SetupGet(p => p.IsConnected).Returns(false)).Verifiable();
+            client.Setup(s => s.Disconnect(default)).Callback(() => client.SetupGet(p => p.IsConnected).Returns(false).Verifiable());
 
             if (_client is FluentFTPDownloaderClient sut)
             {

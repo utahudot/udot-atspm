@@ -13,6 +13,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SignalControllerLogger;
 using System.Threading.Tasks;
+using System.Linq;
+using System.IO;
+using System;
+using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Data.Models;
+using ATSPM.Data;
+using EFCore.BulkExtensions;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -106,13 +115,70 @@ namespace ATSPM.SignalControllerLogger
                 .UseConsoleLifetime()
                 .Build();
 
-            await host.RunAsync();
+            //await host.RunAsync();
 
             //Console.Read();
 
             //Console.ReadKey();
 
-            //***REMOVED***
+            //var file = new FileInfo("C:\\temp\\4396\\ECON_10.208.24.203_2022_12_28_0030.dat");
+            //var file = new FileInfo("C:\\Sample Controller Logs\\1001\\ECON_10.203.7.155_2021_08_09_1711.dat");
+
+            //file.OpenRead();
+
+            int total = 0;
+
+            var root = new DirectoryInfo("\\\\srwtcmvweb2\\ControllerLogs2");
+
+            foreach (var dir in root.GetDirectories())
+            {
+                foreach (var file in dir.GetFiles())
+                {
+                    if (file.CreationTime < DateTime.Now.AddDays(-14))
+                    {
+                        using (var scope = host.Services.CreateScope())
+                        {
+                            var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
+
+                            var logs = await decoder.ExecuteAsync(file);
+
+                            Console.WriteLine($"Log Count: {logs.Count}");
+
+                            total += logs.Count;
+
+                            if (logs.Count == 0)
+                                file.Delete();
+
+                            //if (dir.GetFiles().Length == 0)
+                            //    dir.Delete();
+
+
+
+                            //if (logs.Count > 0)
+                            //{
+                            //    HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
+
+                            //    var db = scope.ServiceProvider.GetService<EventLogContext>();
+
+                            //    try
+                            //    {
+                            //        await db.BulkInsertOrUpdateAsync(result.ToList(),
+                            //        new BulkConfig()
+                            //        {
+                            //            SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
+                            //            OmitClauseExistsExcept = true
+                            //        });
+                            //    }
+                            //    catch (Exception)
+                            //    {
+                            //    }
+                            //}
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"Total Count: {total}");
         }
     }
 
