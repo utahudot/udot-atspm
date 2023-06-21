@@ -2,6 +2,7 @@
 using ATSPM.Application.Services.SignalControllerProtocols;
 using ATSPM.Domain.BaseClasses;
 using FluentFTP;
+using Google.Apis.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +15,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class FluentFTPDownloaderClient : ServiceObjectBase, IFTPDownloaderClient
     {
-        public IFtpClient Client;
+        public IAsyncFtpClient Client;
 
         #region IFTPDownloaderClient
 
@@ -29,15 +30,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
                     throw new ArgumentNullException("Network Credentials can't be null");
 
-                Client ??= new FtpClient(credentials.Domain, credentials);
-                Client.DataConnectionConnectTimeout = connectionTimeout;
-                Client.DataConnectionReadTimeout = operationTImeout;
-                Client.ConnectTimeout = connectionTimeout;
-                Client.ReadTimeout = operationTImeout;
-                Client.DataConnectionType = FtpDataConnectionType.AutoActive;
+                Client ??= new AsyncFtpClient(credentials.Domain, credentials);
+                Client.Config.DataConnectionConnectTimeout = connectionTimeout;
+                Client.Config.DataConnectionReadTimeout = operationTImeout;
+                Client.Config.ConnectTimeout = connectionTimeout;
+                Client.Config.ReadTimeout = operationTImeout;
+                Client.Config.DataConnectionType = FtpDataConnectionType.AutoActive;
 
-                var result = await Client.AutoConnectAsync(token);
-                //await Client.ConnectAsync(token);
+                var result = await Client.AutoConnect(token);
+                //await Client.Connect(token);
             }
             catch (Exception e)
             {
@@ -54,7 +55,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             try
             {
-                await Client.DeleteFileAsync(path, token);
+                await Client.DeleteFile(path, token);
             }
             catch (Exception e)
             {
@@ -71,7 +72,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             try
             {
-                await Client.DisconnectAsync(token);
+                await Client.Disconnect(token);
             }
             catch (Exception e)
             {
@@ -91,7 +92,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 var fileInfo = new FileInfo(localPath);
                 fileInfo.Directory.Create();
 
-                await Client.DownloadFileAsync(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
+                await Client.DownloadFile(localPath, remotePath, FtpLocalExists.Overwrite, FtpVerify.None, null, token);
 
                 return fileInfo;
             }
@@ -110,7 +111,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             try
             {
-                var results = await Client.GetListingAsync(directory, FtpListOption.Auto, token);
+                var results = await Client.GetListing(directory, FtpListOption.Auto, token);
 
                 return results.Select(s => s.FullName).Where(f => filters.Any(a => f.Contains(a))).ToList();
             }

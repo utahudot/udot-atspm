@@ -8,5 +8,6 @@ namespace ATSPM.Application.Configuration
     {
         public int SaveToDatabaseBatchSize { get; set; }
         public int MaxDegreeOfParallelism { get; set; }
+        public int BulkCopyTimeout { get; set; }
     }
 }
