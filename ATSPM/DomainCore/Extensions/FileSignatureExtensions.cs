@@ -6,22 +6,60 @@ using System.Text;
 
 namespace ATSPM.Domain.Extensions
 {
+    /// <summary>
+    /// Filesignature structure
+    /// <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+    /// </summary>
     public struct FileSignature
     {
+        /// <summary>
+        /// Filesignature
+        /// </summary>
+        /// <param name="magicHeader">File Magic Header</param>
+        /// <param name="offset">Offset from start byte</param>
+        /// <param name="extension">File extension</param>
+        /// <param name="description">File type description</param>
+        /// <param name="isCompressed">True if file type is compressed</param>
         public FileSignature(byte[] magicHeader, int offset, string extension, string description, bool isCompressed = false) =>
             (MagicHeader, Offset, Extension, Description, IsCompressed) = (magicHeader, offset, extension, description, isCompressed);
 
+        /// <summary>
+        /// File Magic Header
+        /// </summary>
         public byte[] MagicHeader { get; set; }
+
+        /// <summary>
+        /// Offset from start byte
+        /// </summary>
         public int Offset { get; set; }
+
+        /// <summary>
+        /// File extension
+        /// </summary>
         public string Extension { get; set; }
+
+        /// <summary>
+        /// File type description
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// True if file type is compressed
+        /// </summary>
         public bool IsCompressed { get; set; }
     }
 
-    //https://en.wikipedia.org/wiki/List_of_file_signatures
+    /// <summary>
+    /// FileSignature Extensions
+    /// <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+    /// </summary>
     public static class FileSignatureExtensions
     {
-        public static HashSet<FileSignature> FileSignatures = new HashSet<FileSignature>()
+        /// <summary>
+        /// <see cref="FileSignature"/> List
+        /// <see href="https://en.wikipedia.org/wiki/List_of_file_signatures"/>
+        /// </summary>
+        public static HashSet<FileSignature> FileSignatures => new()
         {
             { new FileSignature(new byte[] {0x4B, 0x57, 0x41, 0x4A }, 0, ".??_", "Windows 3.1x Compressed File", true)},
             { new FileSignature(new byte[] {0x53, 0x5A, 0x44, 0x44 }, 0, ".??_", "Windows 9x Compressed File", true)},
@@ -266,17 +304,32 @@ namespace ATSPM.Domain.Extensions
         };
 
         //TODO: this has not been tested
+        /// <summary>
+        /// Gets the <see cref="FileSignature"/> from <see cref="FileInfo"/>
+        /// </summary>
+        /// <param name="file"><see cref="FileInfo"/> to get info for</param>
+        /// <returns>List of <see cref="FileSignature"/> that match file type</returns>
         public static IEnumerable<FileSignature> GetFileSignatureFromExtension(this FileInfo file)
         {
             return GetFileSignatureFromExtension(file.Extension);
         }
 
         //TODO: this has not been tested
+        /// <summary>
+        /// Gets the <see cref="FileSignature"/> from string
+        /// </summary>
+        /// <param name="fileExtension">string to get info for</param>
+        /// <returns>List of <see cref="FileSignature"/> that match extension type</returns>
         public static IEnumerable<FileSignature> GetFileSignatureFromExtension(this string fileExtension)
         {
             return FileSignatures.Where(f => f.Extension == fileExtension);
         }
 
+        /// <summary>
+        /// Gets the <see cref="FileSignature"/> info from Magic Header byte array
+        /// </summary>
+        /// <param name="bytes">array representing Magic Header</param>
+        /// <returns><see cref="FileSignature"/> info that matches Magic Header bytes</returns>
         public static FileSignature GetFileSignatureFromMagicHeader(this byte[] bytes)
         {
             return FileSignatures.Where(f => f.MagicHeader.SequenceEqual(bytes.Skip(f.Offset).Take(f.MagicHeader.Length))).FirstOrDefault();

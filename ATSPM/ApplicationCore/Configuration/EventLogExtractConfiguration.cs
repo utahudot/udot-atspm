@@ -10,6 +10,7 @@ namespace ATSPM.Application.Configuration
     public class EventLogExtractConfiguration
     {
         public string FileFormat { get; set; }
+        public string DateTimeFormat { get; set; }
         public IEnumerable<DateTime> Dates { get; set; }
         public IEnumerable<string> Included { get; set; }
         public IEnumerable<string> Excluded { get; set; }

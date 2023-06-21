@@ -4,7 +4,6 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,62 +11,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20220822222314_test")]
-    partial class test
+    partial class ConfigContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ActionActionLog", b =>
-                {
-                    b.Property<int>("ActionLogsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ActionsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ActionLogsId", "ActionsId");
-
-                    b.HasIndex("ActionsId");
-
-                    b.ToTable("ActionActionLog");
-                });
-
-            modelBuilder.Entity("ActionLogMetricType", b =>
-                {
-                    b.Property<int>("ActionLogActionLogsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MetricTypesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ActionLogActionLogsId", "MetricTypesId");
-
-                    b.HasIndex("MetricTypesId");
-
-                    b.ToTable("ActionLogMetricType");
-                });
-
-            modelBuilder.Entity("AreaSignal", b =>
-                {
-                    b.Property<int>("AreasId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SignalsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AreasId", "SignalsId");
-
-                    b.HasIndex("SignalsId");
-
-                    b.ToTable("AreaSignal");
-                });
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("ATSPM.Data.Models.Action", b =>
                 {
@@ -82,9 +35,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actions");
-
-                    b.HasComment("Action Log Types");
+                    b.ToTable("Actions", t =>
+                        {
+                            t.HasComment("Action Log Types");
+                        });
 
                     b.HasData(
                         new
@@ -175,7 +129,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AgencyId")
                         .HasColumnType("int");
@@ -204,9 +158,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("AgencyId");
 
-                    b.ToTable("ActionLogs");
-
-                    b.HasComment("Action Logs");
+                    b.ToTable("ActionLogs", t =>
+                        {
+                            t.HasComment("Action Logs");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Agency", b =>
@@ -221,9 +176,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Agencies");
-
-                    b.HasComment("Agency Type for Action Logs");
+                    b.ToTable("Agencies", t =>
+                        {
+                            t.HasComment("Agency Type for Action Logs");
+                        });
 
                     b.HasData(
                         new
@@ -284,9 +240,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Applications");
-
-                    b.HasComment("Application Types");
+                    b.ToTable("Applications", t =>
+                        {
+                            t.HasComment("Application Types");
+                        });
 
                     b.HasData(
                         new
@@ -322,7 +279,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApplicationId")
                         .HasColumnType("int");
@@ -438,18 +395,19 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationId");
 
-                    b.ToTable("ApplicationSettings");
-
-                    b.HasComment("Application Settings");
+                    b.ToTable("ApplicationSettings", t =>
+                        {
+                            t.HasComment("Application Settings");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
                 {
-                    b.Property<int>("ApproachId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApproachId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsUnicode(false)
@@ -486,15 +444,16 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<int>("SignalId")
                         .HasColumnType("int");
 
-                    b.HasKey("ApproachId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DirectionTypeId");
 
                     b.HasIndex("SignalId");
 
-                    b.ToTable("Approaches");
-
-                    b.HasComment("Approaches");
+                    b.ToTable("Approaches", t =>
+                        {
+                            t.HasComment("Approaches");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
@@ -509,9 +468,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Areas");
-
-                    b.HasComment("Signal Area");
+                    b.ToTable("Areas", t =>
+                        {
+                            t.HasComment("Signal Area");
+                        });
 
                     b.HasData(
                         new
@@ -553,9 +513,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ControllerTypes");
-
-                    b.HasComment("Signal Controller Types");
+                    b.ToTable("ControllerTypes", t =>
+                        {
+                            t.HasComment("Signal Controller Types");
+                        });
 
                     b.HasData(
                         new
@@ -603,7 +564,7 @@ namespace ATSPM.Infrastructure.Migrations
                             Id = 4,
                             ActiveFtp = false,
                             Description = "MaxTime",
-                            Ftpdirectory = "none",
+                            Ftpdirectory = "v1/asclog/xml/full",
                             Password = "none",
                             Snmpport = 161L,
                             UserName = "none"
@@ -672,9 +633,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DetectionHardwares");
-
-                    b.HasComment("Dectector Hardware Types");
+                    b.ToTable("DetectionHardwares", t =>
+                        {
+                            t.HasComment("Dectector Hardware Types");
+                        });
 
                     b.HasData(
                         new
@@ -734,9 +696,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DetectionTypes");
-
-                    b.HasComment("Detector Types");
+                    b.ToTable("DetectionTypes", t =>
+                        {
+                            t.HasComment("Detector Types");
+                        });
 
                     b.HasData(
                         new
@@ -803,7 +766,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApproachId")
                         .HasColumnType("int");
@@ -860,9 +823,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("MovementTypeId");
 
-                    b.ToTable("Detectors");
-
-                    b.HasComment("Detectors");
+                    b.ToTable("Detectors", t =>
+                        {
+                            t.HasComment("Detectors");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DetectorComment", b =>
@@ -871,7 +835,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CommentText")
                         .IsUnicode(false)
@@ -889,9 +853,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("DetectorComments");
-
-                    b.HasComment("Detector Comments");
+                    b.ToTable("DetectorComments", t =>
+                        {
+                            t.HasComment("Detector Comments");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
@@ -914,9 +879,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DirectionTypes");
-
-                    b.HasComment("Direction Types");
+                    b.ToTable("DirectionTypes", t =>
+                        {
+                            t.HasComment("Direction Types");
+                        });
 
                     b.HasData(
                         new
@@ -990,7 +956,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
@@ -1007,9 +973,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExternalLinks");
-
-                    b.HasComment("External Links");
+                    b.ToTable("ExternalLinks", t =>
+                        {
+                            t.HasComment("External Links");
+                        });
 
                     b.HasData(
                         new
@@ -1097,7 +1064,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .IsRequired()
@@ -1114,9 +1081,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Faqs");
-
-                    b.HasComment("Frequently Asked Questions");
+                    b.ToTable("Faqs", t =>
+                        {
+                            t.HasComment("Frequently Asked Questions");
+                        });
 
                     b.HasData(
                         new
@@ -1295,9 +1263,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Jurisdictions");
-
-                    b.HasComment("Signal Jurisdictions");
+                    b.ToTable("Jurisdictions", t =>
+                        {
+                            t.HasComment("Signal Jurisdictions");
+                        });
 
                     b.HasData(
                         new
@@ -1328,9 +1297,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LaneTypes");
-
-                    b.HasComment("Lane Types");
+                    b.ToTable("LaneTypes", t =>
+                        {
+                            t.HasComment("Lane Types");
+                        });
 
                     b.HasData(
                         new
@@ -1389,7 +1359,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Measure")
                         .IsUnicode(false)
@@ -1449,9 +1419,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Menus");
-
-                    b.HasComment("Menu Items");
+                    b.ToTable("Menus", t =>
+                        {
+                            t.HasComment("Menu Items");
+                        });
 
                     b.HasData(
                         new
@@ -1722,25 +1693,25 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CommentText")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<int>("SignalId")
-                        .HasColumnType("int");
+                    b.Property<string>("SignalId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SignalId");
-
-                    b.ToTable("MetricComments");
-
-                    b.HasComment("Metric Comments");
+                    b.ToTable("MetricComments", t =>
+                        {
+                            t.HasComment("Metric Comments");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MetricType", b =>
@@ -1769,9 +1740,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MetricTypes");
-
-                    b.HasComment("Metric Types");
+                    b.ToTable("MetricTypes", t =>
+                        {
+                            t.HasComment("Metric Types");
+                        });
 
                     b.HasData(
                         new
@@ -2095,9 +2067,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MovementTypes");
-
-                    b.HasComment("Movement Types");
+                    b.ToTable("MovementTypes", t =>
+                        {
+                            t.HasComment("Movement Types");
+                        });
 
                     b.HasData(
                         new
@@ -2163,9 +2136,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Regions");
-
-                    b.HasComment("Regions");
+                    b.ToTable("Regions", t =>
+                        {
+                            t.HasComment("Regions");
+                        });
 
                     b.HasData(
                         new
@@ -2181,7 +2155,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsUnicode(false)
@@ -2189,9 +2163,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Routes");
-
-                    b.HasComment("Signal Routes");
+                    b.ToTable("Routes", t =>
+                        {
+                            t.HasComment("Signal Routes");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
@@ -2200,7 +2175,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DirectionTypeId")
                         .HasColumnType("int");
@@ -2223,9 +2198,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("RouteSignalId");
 
-                    b.ToTable("RoutePhaseDirections");
-
-                    b.HasComment("Route Phase Directions");
+                    b.ToTable("RoutePhaseDirections", t =>
+                        {
+                            t.HasComment("Route Phase Directions");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
@@ -2234,7 +2210,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -2252,9 +2228,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("RouteId");
 
-                    b.ToTable("RouteSignals");
-
-                    b.HasComment("Route Signals");
+                    b.ToTable("RouteSignals", t =>
+                        {
+                            t.HasComment("Route Signals");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
@@ -2263,7 +2240,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ControllerTypeId")
                         .HasColumnType("int");
@@ -2283,17 +2260,11 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("((0))");
 
-                    b.Property<string>("Latitude")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
 
-                    b.Property<string>("Longitude")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<string>("Note")
                         .IsRequired()
@@ -2345,9 +2316,10 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("VersionActionId");
 
-                    b.ToTable("Signals");
-
-                    b.HasComment("Signals");
+                    b.ToTable("Signals", t =>
+                        {
+                            t.HasComment("Signals");
+                        });
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>
@@ -2396,6 +2368,51 @@ namespace ATSPM.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ActionActionLog", b =>
+                {
+                    b.Property<int>("ActionLogsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActionLogsId", "ActionsId");
+
+                    b.HasIndex("ActionsId");
+
+                    b.ToTable("ActionActionLog");
+                });
+
+            modelBuilder.Entity("ActionLogMetricType", b =>
+                {
+                    b.Property<int>("ActionLogActionLogsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MetricTypesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActionLogActionLogsId", "MetricTypesId");
+
+                    b.HasIndex("MetricTypesId");
+
+                    b.ToTable("ActionLogMetricType");
+                });
+
+            modelBuilder.Entity("AreaSignal", b =>
+                {
+                    b.Property<int>("AreasId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SignalsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AreasId", "SignalsId");
+
+                    b.HasIndex("SignalsId");
+
+                    b.ToTable("AreaSignal");
+                });
+
             modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
                     b.Property<int>("DetectionTypesId")
@@ -2439,51 +2456,6 @@ namespace ATSPM.Infrastructure.Migrations
                     b.HasIndex("MetricTypesId");
 
                     b.ToTable("MetricCommentMetricType");
-                });
-
-            modelBuilder.Entity("ActionActionLog", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
-                        .WithMany()
-                        .HasForeignKey("ActionLogsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ATSPM.Data.Models.Action", null)
-                        .WithMany()
-                        .HasForeignKey("ActionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ActionLogMetricType", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
-                        .WithMany()
-                        .HasForeignKey("ActionLogActionLogsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ATSPM.Data.Models.MetricType", null)
-                        .WithMany()
-                        .HasForeignKey("MetricTypesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AreaSignal", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Area", null)
-                        .WithMany()
-                        .HasForeignKey("AreasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ATSPM.Data.Models.Signal", null)
-                        .WithMany()
-                        .HasForeignKey("SignalsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.ActionLog", b =>
@@ -2573,17 +2545,6 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Detector");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.MetricComment", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.Signal", "Signal")
-                        .WithMany("MetricComments")
-                        .HasForeignKey("SignalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Signal");
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.RoutePhaseDirection", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.DirectionType", "DirectionType")
@@ -2647,6 +2608,51 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Region");
 
                     b.Navigation("VersionAction");
+                });
+
+            modelBuilder.Entity("ActionActionLog", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
+                        .WithMany()
+                        .HasForeignKey("ActionLogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Action", null)
+                        .WithMany()
+                        .HasForeignKey("ActionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ActionLogMetricType", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.ActionLog", null)
+                        .WithMany()
+                        .HasForeignKey("ActionLogActionLogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.MetricType", null)
+                        .WithMany()
+                        .HasForeignKey("MetricTypesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AreaSignal", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", null)
+                        .WithMany()
+                        .HasForeignKey("AreasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Signal", null)
+                        .WithMany()
+                        .HasForeignKey("SignalsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DetectionTypeDetector", b =>
@@ -2764,8 +2770,6 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
                 {
                     b.Navigation("Approaches");
-
-                    b.Navigation("MetricComments");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>
