@@ -1,0 +1,15 @@
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+
+namespace ATSPM.ConfigApi.Controllers
+{
+    public class MenuController : AtspmConfigControllerBase<Menu, int>
+    {
+        private readonly IMenuRepository _repository;
+
+        public MenuController(IMenuRepository repository) : base(repository)
+        {
+            _repository = repository;
+        }
+    }
+}
