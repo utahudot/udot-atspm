@@ -164,7 +164,7 @@ namespace InfrastructureTests.RepositoryTests
                     .Without(w => w.VersionAction)
                     .Without(w => w.Approaches)
                     .Without(w => w.Areas)
-                    .Without(w => w.MetricComments)
+                    //.Without(w => w.MetricComments)
                 );
         }
     }

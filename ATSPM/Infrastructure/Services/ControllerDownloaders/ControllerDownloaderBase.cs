@@ -57,7 +57,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         public virtual bool CanExecute(Signal value)
         {
-            return value?.ControllerTypeId == ControllerType && value.Enabled;
+            return value?.ControllerTypeId == ControllerType && value.ChartEnabled;
         }
 
         public async IAsyncEnumerable<FileInfo> Execute(Signal parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)

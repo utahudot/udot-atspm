@@ -11,13 +11,15 @@ namespace ATSPM.EventLogUtility.Commands
     {
         public EventLogCommands()
         {
-            //var logCmd = new LogConsoleCommand();
-            var extractCmd = new ExtractConsoleCommand();
-
+            this.AddCommand(AggregationCommand);
             this.AddCommand(LogCommand);
-            this.AddCommand(extractCmd);
+            this.AddCommand(ExtractCommand);
+            this.AddCommand(SignalInfoCommand);
         }
 
+        public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();
         public LogConsoleCommand LogCommand { get; set; } = new LogConsoleCommand();
+        public ExtractConsoleCommand ExtractCommand { get; set; } = new ExtractConsoleCommand();
+        public SignalInfoCommand SignalInfoCommand { get; set; } = new SignalInfoCommand();
     }
 }

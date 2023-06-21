@@ -123,6 +123,16 @@ namespace ATSPM.Data.Configuration
                     ActiveFtp = true,
                     UserName = "econolite",
                     Password = "ecpi2ecpi"
+                },
+                new ControllerType
+                {
+                    Id = 10,
+                    Description = "New Cobalt",
+                    Snmpport = 161,
+                    Ftpdirectory = "/opt/econolite/set1",
+                    ActiveFtp = true,
+                    UserName = "econolite",
+                    Password = "ecpi2ecpi"
                 });
         }
     }
