@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ATSPM.Infrastructure.Migrations
 {
-    public partial class test : Migration
+    /// <inheritdoc />
+    public partial class EFCore6Upgrade : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -218,6 +222,22 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Menu Items");
 
             migrationBuilder.CreateTable(
+                name: "MetricComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SignalId = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetricComments", x => x.Id);
+                },
+                comment: "Metric Comments");
+
+            migrationBuilder.CreateTable(
                 name: "MetricTypes",
                 columns: table => new
                 {
@@ -389,6 +409,30 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MetricCommentMetricType",
+                columns: table => new
+                {
+                    MetricCommentsId = table.Column<int>(type: "int", nullable: false),
+                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetricCommentMetricType", x => new { x.MetricCommentsId, x.MetricTypesId });
+                    table.ForeignKey(
+                        name: "FK_MetricCommentMetricType_MetricComments_MetricCommentsId",
+                        column: x => x.MetricCommentsId,
+                        principalTable: "MetricComments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MetricCommentMetricType_MetricTypes_MetricTypesId",
+                        column: x => x.MetricTypesId,
+                        principalTable: "MetricTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RouteSignals",
                 columns: table => new
                 {
@@ -417,8 +461,8 @@ namespace ATSPM.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignalId = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    Latitude = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
-                    Longitude = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
                     PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
                     SecondaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
                     Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('127.0.0.1')"),
@@ -543,7 +587,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Approaches",
                 columns: table => new
                 {
-                    ApproachId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SignalId = table.Column<int>(type: "int", nullable: false),
                     DirectionTypeId = table.Column<int>(type: "int", nullable: false),
@@ -559,7 +603,7 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Approaches", x => x.ApproachId);
+                    table.PrimaryKey("PK_Approaches", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Approaches_DirectionTypes_DirectionTypeId",
                         column: x => x.DirectionTypeId,
@@ -600,28 +644,6 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MetricComments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    SignalId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MetricComments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MetricComments_Signals_SignalId",
-                        column: x => x.SignalId,
-                        principalTable: "Signals",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "Metric Comments");
-
-            migrationBuilder.CreateTable(
                 name: "Detectors",
                 columns: table => new
                 {
@@ -649,7 +671,7 @@ namespace ATSPM.Infrastructure.Migrations
                         name: "FK_Detectors_Approaches_ApproachId",
                         column: x => x.ApproachId,
                         principalTable: "Approaches",
-                        principalColumn: "ApproachId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Detectors_DetectionHardwares_DetectionHardwareId",
@@ -671,30 +693,6 @@ namespace ATSPM.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Detectors");
-
-            migrationBuilder.CreateTable(
-                name: "MetricCommentMetricType",
-                columns: table => new
-                {
-                    MetricCommentsId = table.Column<int>(type: "int", nullable: false),
-                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MetricCommentMetricType", x => new { x.MetricCommentsId, x.MetricTypesId });
-                    table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricComments_MetricCommentsId",
-                        column: x => x.MetricCommentsId,
-                        principalTable: "MetricComments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricTypes_MetricTypesId",
-                        column: x => x.MetricTypesId,
-                        principalTable: "MetricTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
 
             migrationBuilder.CreateTable(
                 name: "DetectionTypeDetector",
@@ -807,7 +805,7 @@ namespace ATSPM.Infrastructure.Migrations
                     { 1, true, "ASC3", "//Set1", "ecpi2ecpi", 161L, "econolite" },
                     { 2, true, "Cobalt", "/set1", "ecpi2ecpi", 161L, "econolite" },
                     { 3, true, "ASC3 - 2070", "/set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 4, false, "MaxTime", "none", "none", 161L, "none" },
+                    { 4, false, "MaxTime", "v1/asclog/xml/full", "none", 161L, "none" },
                     { 5, true, "Trafficware", "none", "none", 161L, "none" },
                     { 6, false, "Siemens SEPAC", "/mnt/sd", "$adm*kon2", 161L, "admin" },
                     { 7, false, "McCain ATC EX", " /mnt/rd/hiResData", "root", 161L, "root" },
@@ -818,13 +816,9 @@ namespace ATSPM.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "DetectionHardwares",
                 columns: new[] { "Id", "Name" },
-                values: new object[] { 0, "NA" });
-
-            migrationBuilder.InsertData(
-                table: "DetectionHardwares",
-                columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
+                    { 0, "NA" },
                     { 1, "WavetronixMatrix" },
                     { 2, "WavetronixAdvance" },
                     { 3, "InductiveLoops" },
@@ -894,14 +888,7 @@ namespace ATSPM.Infrastructure.Migrations
                     { 5, "In 2011, UDOT’s executive director assigned a Quality Improvement Team (QIT) to make recommendations that will result in UDOT providing “world-class traffic signal maintenance and operations”.  The QIT evaluated existing operations, national best practices, and NCHRP recommendations to better improve UDOT’s signal maintenance and operations practices.  One of the recommendations from the QIT was to “implement real-time monitoring of system health and quality of operations”.  The real-time Automated Signal Performance Measures allow us to greatly improve the quality of signal operations and to also know when equipment such as pedestrian detection or vehicle detection is not working properly.  We are simply able to do more with less and to manage traffic more effectively 24/7.  In addition, we are able to optimize intersections and corridors when they need to be re-optimized, instead of on a set schedule.", "<b>Why does Utah need Automated Traffic Signal Performance Measures?</b>", 5 },
                     { 6, "The UDOT Automated Traffic Signal Measures software was developed in-house at UDOT by the Department of Technology Services.  Purdue University and the Indiana Department of Transportation (INDOT) assisted in getting us started on this endeavor.", "<b>Where did you get the Automated Traffic Signal Performance Measure software?</b>", 6 },
                     { 7, "The Purdue coordination diagram concept was introduced in 2009 by Purdue University to visualize the temporal relationship between the coordinated phase indications and vehicle arrivals on a cycle-by-cycle basis.  The Indiana Traffic Signal HI Resolution Data Logger Enumerations (http://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1002&context=jtrpdata) was a joint transportation research program (updated in November 2012 but started earlier) that included people from Indiana DOT, Purdue University, Econolite, PEEK, and Siemens.  <br/><br/>After discussions with Dr. Darcy Bullock from Purdue University and INDOT’s James Sturdevant, UDOT started development of the UDOT Automated Signal Performance Measures website April of 2012.", "<b>How did the Automated Traffic Signal Performance Measures Begin?</b> ", 7 },
-                    { 8, "UDOT’s goal is transparency and unrestricted access to all who have a desire for traffic signal data.  Our goal in optimizing mobility, improving safety, preserving infrastructure and strengthening the economy means that all who have a desire to use the data should have access to the data without restrictions.  This includes all of UDOT (various divisions and groups), consultants, academia, MPO’s, other jurisdictions, FHWA, the public, and others.  It is also UDOT’s goal to be the most transparent Department of Transportation in the country.  Having a website where real-time Automated Signal Performance Measures can be obtained without special software, passwords or restricted firewalls will help UDOT in achieving the goal of transparency, and allows everyone access to the data without any silos.", "<b>Why are there no passwords or firewalls to access the website and see the measures?</b>", 8 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Faqs",
-                columns: new[] { "Id", "Body", "Header", "OrderNumber" },
-                values: new object[,]
-                {
+                    { 8, "UDOT’s goal is transparency and unrestricted access to all who have a desire for traffic signal data.  Our goal in optimizing mobility, improving safety, preserving infrastructure and strengthening the economy means that all who have a desire to use the data should have access to the data without restrictions.  This includes all of UDOT (various divisions and groups), consultants, academia, MPO’s, other jurisdictions, FHWA, the public, and others.  It is also UDOT’s goal to be the most transparent Department of Transportation in the country.  Having a website where real-time Automated Signal Performance Measures can be obtained without special software, passwords or restricted firewalls will help UDOT in achieving the goal of transparency, and allows everyone access to the data without any silos.", "<b>Why are there no passwords or firewalls to access the website and see the measures?</b>", 8 },
                     { 9, "There are many uses and benefits of the various measures.  Some of the key uses are:<br/><br/><u>Purdue Coordination Diagrams (PCD’s)</u> – Used to visualize the temporal relationship between the coordinated phase indications and vehicle arrivals on a cycle-by-cycle basis.  The PCD’s show the progression quality along the corridor and answer questions, such as “What percent of vehicles are arriving during the green?” or “What is the platoon ratio during various coordination patterns?” The PCD’s are instrumental in optimizing offsets, identifying oversaturated or under saturated splits for the coordinated phases, the effects of early return of green and coordinated phase actuations, impacts of queuing, adjacent signal synchronization, etc.<br/> <br/>In reading the PCD’s, between the green and yellow lines, the phase is green; between the yellow and red lines, the phase is yellow; and underneath the green line, the phase is red.  The long vertical red lines during the late night hours is showing the main street sitting in green as the side streets and left turns are being skipped.  The short vertical red lines show skipping of the side street / left turns or a late start of green for the side street or left turn.  AoG is the percent of vehicles arriving during the green phase.  GT is the percent of green split time for the phase and PR is the Platoon Ratio (Equation 15-4 from the 2000 Highway Capacity Manual).<br/><br/><u>Approach Volumes</u> – Counts the approach vehicle volumes as shown arriving upstream of the intersection about 350 ft – 400 ft.  The detection zones are in advance of the turning lanes, so the approach volumes don’t know if the vehicles are going straight through, turning left or right.  The accuracy of the approach volumes tends to undercount under heavy traffic and under multi-lane facilities.  Approach volumes are used in traffic models, as well as identifying directional splits in traffic. In addition, the measure is also used in evaluating the least disruptive time to allow lanes to be taken for maintenance and construction activities.<br/><br/><u/>Approach Speeds</u> – The speeds are obtained from the Wavetronix radar Advance Smartsensor.  As vehicles cross the 10-foot wide detector in advance of the intersection (350 ft – 400 ft upstream of the stop bar), the speed is captured, recorded, and time-stamped.  In graphing the results, a time filter is used that starts 15 seconds (user defined) after the initial green to the start of the yellow.  The time filter allows for free-flow speed conditions to be displayed that are independent of the traffic signal timings.  The approach speed measure is beneficial in knowing the approach speeds to use for modeling purposes – both for normal time-of-day coordination plans and for adverse weather or special event plans.  They are also beneficial in knowing when speed conditions degrade enough to warrant a change in time-of-day coordination plans to adverse weather or special event plans.  In addition, the speed data is used to set yellow and all-red intervals for signal timing, as well as for various speed studies.<br/><br/><u>Purdue Phase Termination Charts</u> – Shows how each phase terminates when it changes from green to red.  The measure will show if the termination occurred by a gapout, a maxout / forceoff, or skip.  A gapout means that not all of the programmed time was used.  A maxout occurs during fully actuated (free) operations, while forceoff’s occur during coordination.  Both a maxout and forceoff shows that all the programmed time was used. A skip means that the phase was not active and did not turn on.  In addition, the termination can be evaluated by consecutive occurrences in a approach.  For example, you can evaluate if three (range is between 1 and 5) gapouts or skips occurred in a approach.  This feature is helpful in areas where traffic volume fluctuations are high.  Also shown are the pedestrian activations for each phase.  What this measure does not show is the amount of gapout time remaining if a gapout occurred.  The Split Monitor measure is used to answer that question.<br/><br/>This measure is used to identify movements where split time may need to be taken from some phases and given to other phases.  Also, this measure is very useful in identifying problems with vehicle and pedestrian detection.  For example, if the phase is showing constant maxouts all night long, it is assumed that there is a detection problem.<br/><br/><u>Split Monitor</u> – This measure shows the amount of split time (green, yellow and all-red) used by the various phases at the intersection.  Greens show gapouts, reds show maxouts, blues show forceoffs and yellows show pedestrian activations.  This measure is useful to know the amount of split time each phase uses.Turning Movement Volume Counts – this measure shows the lane-by-lane vehicles per hour (vph) and total volume for each movement.  Three graphs are available for each approach (left, thru, right).  Also shown for each movement are the total volume, peak hour, peak hour factor and lane utilization factor.  The lane-by-lane volume counts are used for traffic models and traffic studies.<br/><br/><u>Approach Delay</u> – This measure shows a simplified approach delay by displaying the time between detector activations during the red phase and when the phase turns green for the coordinated movements.  This measure does not account for start-up delay, deceleration, or queue length that exceeds the detection zone.  This measure is beneficial in evaluating over time the delay per vehicle and delay per hour values for each coordinated approach.<br/><br/><u>Arrivals on Red</u> – This measure shows the percent of vehicles arriving on red (inverse of % vehicles arriving on green) and the percent red time for each coordination pattern.  The Y axis is graphing the volume (vph) and the secondary Y axis graphs the percent vehicles arriving on red.  This measure is useful in identifying areas where the progression quality is poor.<br/><br/><u>Yellow and Red Actuations</u> – This measure plots vehicle arrivals during the yellow and red portions of an intersection's movements where the speed of the vehicle is interpreted to be too fast to stop before entering the intersection. It provides users with a visual indication of occurrences, violations, and several related statistics. The purpose of this chart is to identify engineering countermeasures to deal with red light running.<br/><br/><u>Purdue Split Failure</u> – This measure calculates the percent of time that stop bar detectors are occupied during the green phase and then during the first five seconds of red. This measure is a good indication that at least one vehicle did not clear during the green.", "<b>How do you use the various Signal Performance Measures and what do they do?</b> ", 9 },
                     { 10, "The Automated Signal Performance Measures are an effective way to reduce congestion, save fuel costs and improve safety.  We are simply able to do more with less and are more effectively able to manage traffic every day of the week and at all times of the day, even when a traffic signal engineer is not available.  We have identified several detection problems, corrected time-of-day coordination errors in the traffic signal controller scheduler, corrected offsets, splits, among other things.  In addition, we have been able to use more accurate data in optimizing models and doing traffic studies, and have been able to more correctly set various signal timing parameters.", "<b>How effective are Automated Traffic Signal Performance Measures</b>", 10 },
                     { 11, "Although the UDOTAutomated Traffic Signal Performance Measures cannot guarantee you will only get green lights, the system does help make traveling through Utah more efficient.  UDOT Automatic Signal Performance Measures have already already helped to reduce the number of stops and delay at signalized intersections.  Continued benefits are anticipated.", "<b>Does this mean I never have to stop at a red light?</b>", 11 },
@@ -961,14 +948,7 @@ namespace ATSPM.Infrastructure.Migrations
                     { 49, "RawDataExport", "SignalPerformanceMetrics", "DataExport", 50, "Raw Data Export", 11 },
                     { 51, "Index", "SignalPerformanceMetrics", "SPMUsers", 90, "Users", 11 },
                     { 52, "Index", "SignalPerformanceMetrics", "FAQs", 70, "FAQs", 11 },
-                    { 54, "Edit", "SignalPerformanceMetrics", "WatchDogApplicationSettings", 60, "Watch Dog", 11 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Menus",
-                columns: new[] { "Id", "Action", "Application", "Controller", "DisplayOrder", "Name", "ParentId" },
-                values: new object[,]
-                {
+                    { 54, "Edit", "SignalPerformanceMetrics", "WatchDogApplicationSettings", 60, "Watch Dog", 11 },
                     { 56, "edit", "SignalPerformanceMetrics", "DatabaseArchiveSettings", 70, "Database Archive Settings", 11 },
                     { 57, "Edit", "SignalPerformanceMetrics", "GeneralSettings", 40, "General Settings", 11 },
                     { 58, "Index", "SignalPerformanceMetrics", "LeftTurnGapReport", 25, "Left Turn Gap Analysis", 2 },
@@ -1024,14 +1004,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     { 0, "NA", "Unknown", 6 },
                     { 1, "T", "Thru", 3 },
-                    { 2, "R", "Right", 5 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "MovementTypes",
-                columns: new[] { "Id", "Abbreviation", "Description", "DisplayOrder" },
-                values: new object[,]
-                {
+                    { 2, "R", "Right", 5 },
                     { 3, "L", "Left", 1 },
                     { 4, "TR", "Thru-Right", 4 },
                     { 5, "TL", "Thru-Left", 2 },
@@ -1137,11 +1110,6 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "MetricTypesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MetricComments_SignalId",
-                table: "MetricComments",
-                column: "SignalId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_RoutePhaseDirections_DirectionTypeId",
                 table: "RoutePhaseDirections",
                 column: "DirectionTypeId");
@@ -1177,6 +1145,7 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "VersionActionId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

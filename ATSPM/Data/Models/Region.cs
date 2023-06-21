@@ -12,5 +12,10 @@ namespace ATSPM.Data.Models
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+
+        public override string ToString()
+        {
+            return $"{Description}";
+        }
     }
 }
