@@ -22,73 +22,14 @@ namespace ATSPM.Application.Analysis.Workflows
     {
         public PreemptiveStuff(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        //protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-        //{
-        //    var result = CreatePreemptCycle(input.ToList());
-
-        //    return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
-        //}
-
         protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            //var test = input.ToList().ToLookup(k => k.EventCode, t => t.Timestamp);
+            var result = CreatePreemptCycle(input.ToList());
 
-            var list = input.Where(w => w.EventCode == 102 || w.EventCode == 105 || w.EventCode == 104 || w.EventCode == 111)
-                .OrderBy(o => o.Timestamp).ToList();
-
-
-            var boo = list.Take(list.Count() - 4).Select((s, i) => new { w = list[i], x = list[i + 1], y = list[i + 2], z = list[i + 3] }).ToArray();
-
-            
-
-            //int x = 0;
-            //while (x < list.Count)
-            //{
-            //    Console.WriteLine($"x: {x}");
-
-
-            //    //var a = list.FindIndex(x, p => p.EventCode == 102);
-            //    //Console.WriteLine($"102: {a}");
-
-            //    //var b = list.FindIndex(x, p => p.EventCode == 105);
-            //    //Console.WriteLine($"105: {b}");
-
-            //    //var c = list.FindIndex(x, p => p.EventCode == 104);
-            //    //Console.WriteLine($"104: {c}");
-
-            //    //var d = list.FindIndex(x, p => p.EventCode == 111);
-            //    //Console.WriteLine($"111: {d}");
-
-            //    //var boo = list.Skip(x).Take(4).ToList();
-
-            //    //if (boo.Count > 0 && (boo[0].EventCode == 102 || boo[0].EventCode == 105))
-            //    //{
-            //    //    Console.WriteLine($"stuff{boo.Count}: {boo[0]} - {boo[1]} - {boo[2]} - {boo[3]}");
-
-            //    //}
-
-
-
-
-            //    x++;
-            //}
-
-            //var result = input
-            //    .Select((s, i) => new { x = s, y = i })
-            //    //.Where(w => w.x.EventCode == 105)
-            //    .Take()
-            //    .Select((s, i) => new PreemptCycle()
-            //    {
-            //        Start = input.ElementAt(s.y - 1).EventCode == 102 ? input.ElementAt(s.y - 1).Timestamp : s.x.Timestamp,
-            //        StartInputOn = input.ElementAt(s.y - 1).EventCode == 102 ? input.ElementAt(s.y - 1).Timestamp : null,
-            //        EntryStarted = s.x.Timestamp,
-            //        BeginExitInterval = input.ToList().FindIndex(s.y + 1, p => p.EventCode == 111) < input.ToList().FindIndex(s.y + 1, p => p.EventCode == 105) ? input.ElementAt(input.ToList().FindIndex(s.y + 1, p => p.EventCode == 111)).Timestamp : null
-            //    });
-
-
-            return Task.FromResult<IReadOnlyList<PreemptCycle>>(new List<PreemptCycle>());
-
+            return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
         }
+
+
 
         //protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         //{
