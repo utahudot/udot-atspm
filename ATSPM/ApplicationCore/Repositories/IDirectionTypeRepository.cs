@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Repositories
 {
-    public interface IDirectionTypeRepository : IAsyncRepository<DetectorEventCountAggregation>
+    public interface IDirectionTypeRepository : IAsyncRepository<DirectionType>
     {
         [Obsolete("Use GetList instead")]
         IReadOnlyList<DirectionType> GetAllDirections();
