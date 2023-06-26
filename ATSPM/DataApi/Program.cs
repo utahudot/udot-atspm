@@ -1,14 +1,8 @@
 using ATSPM.Application.Repositories;
-using ATSPM.DataApi.Controllers;
-using ATSPM.DataApi.EntityDataModel;
 using ATSPM.DataApi.Formatters;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.OData;
-using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +20,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c => c.OperationFilter<CustomHeaderSwaggerAttribute>());
 
 builder.Host.ConfigureServices((h, s) =>
 {
@@ -45,6 +39,7 @@ if (app.Environment.IsDevelopment())
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("../swagger/v1/swagger.json", "ATSPM.Data v1"));
+
 }
 
 app.UseHttpsRedirection();

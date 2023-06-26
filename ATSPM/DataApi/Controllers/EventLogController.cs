@@ -1,18 +1,9 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Services;
-using Google.Api;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using ATSPM.Application.Extensions;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using System.Text;
-using System.Collections;
 
 namespace ATSPM.DataApi.Controllers
 {
@@ -66,5 +57,21 @@ namespace ATSPM.DataApi.Controllers
 
             return File(System.Text.Encoding.UTF8.GetBytes(string.Join(",", csv)), "text/csv", "data.csv");
         }
+
+        [HttpPost("testdata")]
+        //[EnableQuery]
+        public ActionResult<List<ControllerLogArchive>> GetSignalEventsBetweenDates(TestData testData)
+        {
+            var result = _repository.GetSignalEventsBetweenDates(testData.SignalIdentifier, testData.Start, testData.End);
+
+            return Ok(result);
+        }
+    }
+
+    public class TestData
+    {
+        public string SignalIdentifier { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
     }
 }
