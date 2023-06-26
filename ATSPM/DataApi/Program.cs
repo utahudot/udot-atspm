@@ -3,6 +3,8 @@ using ATSPM.DataApi.Controllers;
 using ATSPM.DataApi.EntityDataModel;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -14,20 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
+    //options.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+    //https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-5.0#special-case-formatters
+    options.OutputFormatters.RemoveType<StringOutputFormatter>();
 })
-.AddXmlDataContractSerializerFormatters()
+.AddXmlDataContractSerializerFormatters();
 
-//https://github.com/microsoft/OpenAPI.NET.OData
-.AddOData(opt => opt.AddRouteComponents("data", new DataEdm().GetEntityDataModel())
-.Select()
-.Count()
-.Expand()
-.OrderBy()
-.Filter()
-.SkipToken()
-.SetMaxTop(500));
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
@@ -36,9 +30,9 @@ builder.Host.ConfigureServices((h, s) =>
 {
     s.AddATSPMDbContext(h);
 
-    s.AddScoped<IApproachRepository, ApproachEFRepository>();
-    s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
-    s.AddScoped<ISignalRepository, SignalEFRepository>();
+    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+
+    s.AddScoped<IAreaRepository, AreaEFRepository>();
 });
 
 var app = builder.Build();
@@ -46,6 +40,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("../swagger/v1/swagger.json", "ATSPM.Data v1"));
 }
@@ -56,11 +51,6 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
-
-//app.MapControllers();
+app.MapControllers();
 
 app.Run();
