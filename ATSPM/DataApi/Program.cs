@@ -1,6 +1,7 @@
 using ATSPM.Application.Repositories;
 using ATSPM.DataApi.Controllers;
 using ATSPM.DataApi.EntityDataModel;
+using ATSPM.DataApi.Formatters;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ builder.Services.AddControllers(options =>
     options.ReturnHttpNotAcceptable = true;
     //options.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     //https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-5.0#special-case-formatters
+    options.OutputFormatters.Add(new EventLogCsvFormatter());
     options.OutputFormatters.RemoveType<StringOutputFormatter>();
 })
 .AddXmlDataContractSerializerFormatters();
