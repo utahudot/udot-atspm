@@ -1,77 +1,75 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
-using ATSPM.Data;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.DataApi.Controllers
 {
+    /// <summary>
+    /// Signal controller event log data
+    /// </summary>
     [ApiController]
-    [Route("[controller]")]
+
+    //[ApiVersion("1.0")]
+    //[ApiVersion("2.0")]
+    [Route("v{version:apiVersion}/[controller]")]
     public class EventLogController : ControllerBase
     {
         private readonly IControllerEventLogRepository _repository;
-        private readonly DbContext _db;
+        private readonly ILogger _log;
 
-        public EventLogController(IControllerEventLogRepository repository, EventLogContext db)
+        /// <inheritdoc/>
+        public EventLogController(IControllerEventLogRepository repository, ILogger<EventLogController> log)
         {
             _repository = repository;
-            _db = db;
-
-            //FileExtensionContentTypeProvider
+            _log = log;
         }
 
-        // GET /Entity
-        [HttpGet("GetSignalEventsBetweenDates")]
-        //[EnableQuery]
-        public ActionResult<List<ControllerLogArchive>> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
+        /// <summary>
+        /// Get signal events between dates
+        /// </summary>
+        /// <param name="signalIdentifier">Signal identifier</param>
+        /// <param name="start">date/time of first event</param>
+        /// <param name="end">date/time of last event</param>
+        /// <returns>List of ControllerEventLogs</returns>
+        /// <response code="200">Call completed successfully</response>
+        /// <response code="404">Resource not found</response>
+        [ApiVersion("1.0")]
+        [HttpGet("{signalIdentifier}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<List<ControllerEventLog>> GetSignalEventsBetweenDates(string signalIdentifier, DateTime start, DateTime end)
         {
-            var result = _repository.GetSignalEventsBetweenDates(signalId, startTime, endTime);
+            var result = _repository.GetSignalEventsBetweenDates(signalIdentifier, start, end);
+
+            if (result == null)
+                return NotFound();
 
             return Ok(result);
         }
 
-        [HttpGet("{signalId}")]
-        public ActionResult<List<ControllerLogArchive>> GetEventLogs(string signalId, DateTime startTime, DateTime endTime)
+        /// <summary>
+        /// Get signal events between dates with event code
+        /// </summary>
+        /// <param name="signalIdentifier">Signal identifier</param>
+        /// <param name="eventCode">Event code number</param>
+        /// <param name="start">date/time of first event</param>
+        /// <param name="end">date/time of last event</param>
+        /// <returns>List of ControllerEventLogs</returns>
+        /// <response code="200">Call completed successfully</response>
+        /// <response code="404">Resource not found</response>
+        [ApiVersion("1.0")]
+        [HttpGet("{signalIdentifier}/{eventCode}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<List<ControllerEventLog>> GetEventLogs(string signalIdentifier, int eventCode, DateTime start, DateTime end)
         {
-            var result = _repository.GetSignalEventsBetweenDates(signalId, startTime, endTime);
+            var result = _repository.GetSignalEventsByEventCode(signalIdentifier, start, end, eventCode);
+
+            if (result == null)
+                return NotFound();
 
             return Ok(result);
         }
-
-        //[HttpGet("{signalId}/{eventCode}")]
-        //public ActionResult<List<ControllerLogArchive>> GetEventLogs(string signalId, int eventCode, DateTime startTime, DateTime endTime)
-        //{
-        //    var result = _repository.GetSignalEventsByEventCode(signalId, startTime, endTime, eventCode);
-
-        //    return Ok(result);
-        //}
-
-        [HttpGet("{signalId}/{eventCode}")]
-        public ActionResult GetEventLogs(string signalId, int eventCode, DateTime startTime, DateTime endTime)
-        {
-            var result = _repository.GetSignalEventsByEventCode(signalId, startTime, endTime, eventCode);
-
-            var csv = result.Select(x => $"{x.SignalId},{x.Timestamp},{x.EventCode},{x.EventParam}");
-
-            return File(System.Text.Encoding.UTF8.GetBytes(string.Join(",", csv)), "text/csv", "data.csv");
-        }
-
-        [HttpPost("testdata")]
-        //[EnableQuery]
-        public ActionResult<List<ControllerLogArchive>> GetSignalEventsBetweenDates(TestData testData)
-        {
-            var result = _repository.GetSignalEventsBetweenDates(testData.SignalIdentifier, testData.Start, testData.End);
-
-            return Ok(result);
-        }
-    }
-
-    public class TestData
-    {
-        public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
     }
 }
