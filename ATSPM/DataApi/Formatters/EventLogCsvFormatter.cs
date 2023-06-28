@@ -1,8 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 namespace ATSPM.DataApi.Formatters
@@ -31,31 +29,10 @@ namespace ATSPM.DataApi.Formatters
 
             return context.HttpContext.Response.CompleteAsync();
         }
+
         protected override bool CanWriteType(Type type)
         {
             return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type);
         }
     }
-}
-
-public class CustomHeaderSwaggerAttribute : IOperationFilter
-{
-
-    public void Apply(OpenApiOperation operation, OperationFilterContext context)
-    {
-        if (operation.Parameters == null)
-            operation.Parameters = new List<OpenApiParameter>();
-
-        operation.Parameters.Add(new OpenApiParameter
-        {
-            Name = "X-Timestamp-Format",
-            In = ParameterLocation.Header,
-            Required = false,
-            Schema = new OpenApiSchema
-            {
-                Type = "string"
-            }
-        });
-    }
-
 }
