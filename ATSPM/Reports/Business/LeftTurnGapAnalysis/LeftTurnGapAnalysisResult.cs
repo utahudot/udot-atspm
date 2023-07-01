@@ -37,8 +37,6 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             ICollection<GapCount> gap9Count,
             double? gap10,
             ICollection<GapCount> gap10Count,
-            double? gap11,
-            ICollection<GapCount> gap11Count,
             ICollection<PercentTurnableSeries> percentTurnableSeries,
             double? sumDuration1,
             double? sumDuration2,
@@ -70,8 +68,6 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             Gap9Count = gap9Count;
             Gap10 = gap10;
             Gap10Count = gap10Count;
-            Gap11 = gap11;
-            Gap11Count = gap11Count;
             PercentTurnableSeries = percentTurnableSeries;
             SumDuration1 = sumDuration1;
             SumDuration2 = sumDuration2;

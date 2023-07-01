@@ -46,7 +46,15 @@ namespace ATSPM.Application.Reports.Business.Common
             }
         }
 
-        public double AvgDelay => TotalDelay / TotalVolume;
+        public double AvgDelay 
+        {
+            get
+            {
+                if (TotalVolume > 0)
+                    return TotalDelay / TotalVolume;
+                return 0;
+            }
+        }
 
         public double PercentArrivalOnGreen
         {

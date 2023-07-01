@@ -41,7 +41,7 @@
 //        [HttpPost("getChartData")]
 //        public LeftTurnGapAnalysisResult GetChartData([FromBody] LeftTurnGapAnalysisOptions options)
 //        {
-//            var approach = approachRepository.Lookup(options.ApproachId);
+//            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
 //            var eventLogs = controllerEventLogRepository.GetSignalEventsByEventCodes(
 //                options.SignalId,
 //                options.StartDate,

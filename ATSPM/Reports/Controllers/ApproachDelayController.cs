@@ -48,11 +48,7 @@ namespace ATSPM.Application.Reports.Controllers
                 approach.Signal.SignalId,
                 options.Start,
                 options.End);
-            var detectorEvents = new List<ControllerEventLog>();
-            if (options.GetVolume)
-            {
-                detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
-            }
+            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
             var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
                 approach,
                 options.GetPermissivePhase,

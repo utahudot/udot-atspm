@@ -28,7 +28,9 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.Signal)
                 .Include(i => i.Detectors)
                     .ThenInclude(d => d.DetectionTypes)
-                        .ThenInclude(dt => dt.MetricTypeMetrics);
+                        .ThenInclude(dt => dt.MetricTypeMetrics)
+                .Include(i => i.Detectors)
+                    .ThenInclude(d => d.MovementType);
         }
 
         #endregion

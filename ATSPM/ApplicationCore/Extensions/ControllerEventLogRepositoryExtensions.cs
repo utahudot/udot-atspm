@@ -24,10 +24,6 @@ namespace ATSPM.Application.Extensions
         {
             var result = repo.GetSignalEventsBetweenDates(signalId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, param))
-
-                //this orderby was in the original version but it's always the same param so ordering is pointless
-                //.OrderBy(o => o.EventCode)
-                
                 .ToList();
 
             return result;
@@ -89,6 +85,9 @@ namespace ATSPM.Application.Extensions
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var events = new List<ControllerEventLog>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
+            if(!detectorsForMetric.Any())
+                throw new Exception(
+                    $"No detectors found for metric type metric type {metricTypeId}");
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
                     approach.Signal.SignalId,
@@ -140,7 +139,7 @@ namespace ATSPM.Application.Extensions
             if (index >= 0)
             {
                 // If an event was found, remove all events after it
-                events.RemoveRange(index, events.Count - index);
+                events.RemoveRange(index+1, events.Count - (index+1));
 
                 // Change the timestamp of the found event to match the specified date
                 events[index].Timestamp = date;

@@ -6,8 +6,6 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
     public class ApproachDelayOptions
     {
-
-        public int MetricTypeId { get; set; } = 8;
         public int ApproachId { get; set; }
         public bool GetPermissivePhase { get; set; }
         public DateTime Start { get; set; }
