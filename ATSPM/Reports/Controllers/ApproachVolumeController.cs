@@ -6,6 +6,7 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,8 +47,10 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
             var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
-            List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true);
-            List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false);
+            int primaryDistanceFromStopBar = 0;
+            int opposingDistanceFromStopBar = 0;
+            List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true, out primaryDistanceFromStopBar);
+            List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false, out opposingDistanceFromStopBar);
             if(primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
             {
                 return new ApproachVolumeResult(primaryApproaches.FirstOrDefault().Id, signal.SignalId, options.Start, options.End);
@@ -56,11 +59,12 @@ namespace ATSPM.Application.Reports.Controllers
                 options,
                 signal,
                 primaryDetectorEvents,
-                opposingDetectorEvents);
+                opposingDetectorEvents,
+                primaryDistanceFromStopBar);
             return viewModel;
         }
 
-        private List<ControllerEventLog> GetDetectorEvents(ApproachVolumeOptions options, Signal signal, bool usePrimaryDirection)
+        private List<ControllerEventLog> GetDetectorEvents(ApproachVolumeOptions options, Signal signal, bool usePrimaryDirection, out int distanceFromStopBar)
         {
             var approaches = signal.Approaches
                 .Where(a => a.DirectionTypeId == (usePrimaryDirection ? options.Direction : ApproachVolumeService.GetOpposingDirection(options)))
@@ -69,6 +73,12 @@ namespace ATSPM.Application.Reports.Controllers
                 .SelectMany(a => a.Detectors)
                 .Where(d => d.DetectionTypes.Any(dt => dt.Id == options.DetectionType) && (d.LaneTypeId == LaneTypes.V || d.LaneTypeId == LaneTypes.NA))
                 .ToList();
+            distanceFromStopBar = 0;
+            if (detectors.Any())
+            {
+                distanceFromStopBar = detectors.First().DistanceFromStopBar ?? 0;
+            }
+
             var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
                 d.Approach.Signal.SignalId,
                 options.Start,

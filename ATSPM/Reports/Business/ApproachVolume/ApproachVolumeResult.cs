@@ -9,20 +9,18 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume;
 /// <summary>
 /// Approach Volume Chart
 /// </summary>
-public class ApproachVolumeResult : ApproachResult
+public class ApproachVolumeResult : SignalResult
 {
     public ApproachVolumeResult(
         int approachId,
         string signalId,
         DateTime start,
-        DateTime end) : base(approachId, signalId, start, end)
+        DateTime end) : base( signalId, start, end)
     {
-        ApproachId = approachId;
     }
 
     public ApproachVolumeResult(
         string signalId,
-        int approachId,
         DateTime start,
         DateTime end,
         DetectionTypes detectorType,
@@ -48,7 +46,7 @@ public class ApproachVolumeResult : ApproachResult
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume):base(approachId, signalId, start, end)
+        int opposingTotalVolume):base(signalId, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;
@@ -100,5 +98,4 @@ public class ApproachVolumeResult : ApproachResult
     public int OpposingPeakHourVolume { get; set; }
     public double OpposingPeakHourFactor { get; set; }
     public int OpposingTotalVolume { get; set; }
-    public int ApproachId { get; }
 }

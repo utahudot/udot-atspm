@@ -48,6 +48,7 @@ namespace ATSPM.Application.Reports.Controllers
                 approach.Signal.SignalId,
                 options.Start,
                 options.End);
+            int distanceFromStopBar = 0;
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
             var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
                 approach,

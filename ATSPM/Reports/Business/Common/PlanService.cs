@@ -21,7 +21,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalId, events);
+            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalId, events.OrderBy(e => e.Timestamp).ToList());
             var plans = new List<PerdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
