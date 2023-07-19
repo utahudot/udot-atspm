@@ -50,12 +50,12 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.SignalId,
+                approach.Signal.SignalId,
                 options.Start,
                 options.End);
 
             var pedEvents = controllerEventLogRepository.GetRecordsByParameterAndEvent(
-                approach.SignalId,
+                approach.Signal.SignalId,
                 options.Start.AddMinutes(-15),
                 options.End,
                 approach.GetPedDetectorsFromApproach(),
