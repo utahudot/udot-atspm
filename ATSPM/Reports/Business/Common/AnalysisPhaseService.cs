@@ -35,13 +35,14 @@ namespace ATSPM.Application.Reports.Business.Common
             int phasenumber,
             IReadOnlyList<ControllerEventLog> pedestrianEvents,
             IReadOnlyList<ControllerEventLog> cycleEvents,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
             int consecutiveCount,
             Signal signal
             )
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.TerminationEvents = cycleEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
+            analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
             analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);

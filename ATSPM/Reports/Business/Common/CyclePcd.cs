@@ -20,7 +20,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public double TotalArrivalOnGreen => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnGreen);
         public double TotalArrivalOnYellow => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnYellow);
         public double TotalArrivalOnRed => DetectorEvents.Count(d => d.ArrivalType == ArrivalType.ArrivalOnRed);
-        public double TotalDelay => DetectorEvents.Sum(d => d.Delay);
+        public double TotalDelaySeconds => DetectorEvents.Sum(d => d.DelaySeconds);
         public double TotalVolume => DetectorEvents.Count(d => d.TimeStamp >= StartTime && d.TimeStamp < EndTime);
 
         public void AddDetectorData(DetectorDataPoint ddp)

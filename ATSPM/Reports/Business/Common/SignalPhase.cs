@@ -36,7 +36,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public Approach Approach { get; }
-        public double AvgDelay => TotalDelay / TotalVolume;
+        public double AvgDelay => TotalDelaySeconds / TotalVolume;
 
         public double PercentArrivalOnGreen
         {
@@ -53,7 +53,7 @@ namespace ATSPM.Application.Reports.Business.Common
             get
             {
                 if (TotalTime > 0)
-                    return Math.Round(TotalGreenTime / TotalTime * 100);
+                    return Math.Round((TotalGreenTimeSeconds / TotalTime) * 100);
                 return 0;
             }
         }
@@ -71,12 +71,12 @@ namespace ATSPM.Application.Reports.Business.Common
         public double TotalArrivalOnGreen => Cycles.Sum(d => d.TotalArrivalOnGreen);
         public double TotalArrivalOnRed => Cycles.Sum(d => d.TotalArrivalOnRed);
         public double TotalArrivalOnYellow => Cycles.Sum(d => d.TotalArrivalOnYellow);
-        public double TotalDelay => Cycles.Sum(d => d.TotalDelay);
+        public double TotalDelaySeconds => Cycles.Sum(d => d.TotalDelaySeconds);
         public double TotalVolume => Cycles.Sum(d => d.TotalVolume);
-        public double TotalGreenTime => Cycles.Sum(d => d.TotalGreenTime);
-        public double TotalYellowTime => Cycles.Sum(d => d.TotalYellowTime);
-        public double TotalRedTime => Cycles.Sum(d => d.TotalRedTime);
-        public double TotalTime => Cycles.Sum(d => d.TotalTime);
+        public double TotalGreenTimeSeconds => Cycles.Sum(d => d.TotalGreenTimeSeconds);
+        public double TotalYellowTimeSeconds => Cycles.Sum(d => d.TotalYellowTimeSeconds);
+        public double TotalRedTimeSeconds => Cycles.Sum(d => d.TotalRedTimeSeconds);
+        public double TotalTime => Cycles.Sum(d => d.TotalTimeSeconds);
         public DateTime StartDate { get; }
         public DateTime EndDate { get; }
 

@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>\\SLC-ATSPM01\ATSPMReports</_PublishTargetUrl>
-    <History>True|2023-07-07T21:40:15.1398327Z;True|2023-06-21T16:05:38.2523437-06:00;</History>
+    <History>True|2023-07-11T22:03:38.0953224Z;True|2023-07-10T16:50:28.4759349-06:00;True|2023-07-07T15:40:15.1398327-06:00;True|2023-06-21T16:05:38.2523437-06:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

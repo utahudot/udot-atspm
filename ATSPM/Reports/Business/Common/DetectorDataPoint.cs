@@ -15,7 +15,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             TimeStamp = eventTime;
             StartOfCycle = startDate;
-            YPoint = (TimeStamp - StartOfCycle).TotalSeconds;
+            YPointSeconds = (TimeStamp - StartOfCycle).TotalSeconds;
             YellowEvent = yellowEvent;
             GreenEvent = greenEvent;
             SetDataPointProperties();
@@ -26,25 +26,26 @@ namespace ATSPM.Application.Reports.Business.Common
             //if the detector hit is before greenEvent
             if (TimeStamp < GreenEvent)
             {
-                Delay = (GreenEvent - TimeStamp).TotalSeconds;
+                var test = (GreenEvent - TimeStamp);
+                DelaySeconds = (GreenEvent - TimeStamp).TotalSeconds;
                 ArrivalType = ArrivalType.ArrivalOnRed;
             }
             //if the detector hit is After green, but before yellow
             else if (TimeStamp >= GreenEvent && TimeStamp < YellowEvent)
             {
-                Delay = 0;
+                DelaySeconds = 0;
                 ArrivalType = ArrivalType.ArrivalOnGreen;
             }
             //if the event time is after yellow
             else if (TimeStamp >= YellowEvent)
             {
-                Delay = 0;
+                DelaySeconds = 0;
                 ArrivalType = ArrivalType.ArrivalOnYellow;
             }
         }
 
         //Represents a time span from the start of the red to red cycle
-        public double YPoint { get; private set; }
+        public double YPointSeconds { get; private set; }
 
         public DateTime StartOfCycle { get; }
 
@@ -55,14 +56,14 @@ namespace ATSPM.Application.Reports.Business.Common
 
         public DateTime GreenEvent { get; }
 
-        public double Delay { get; set; }
+        public double DelaySeconds { get; set; }
 
         public ArrivalType ArrivalType { get; set; }
 
         public void AddSeconds(int seconds)
         {
             TimeStamp = TimeStamp.AddSeconds(seconds);
-            YPoint = (TimeStamp - StartOfCycle).TotalSeconds;
+            YPointSeconds = (TimeStamp - StartOfCycle).TotalSeconds;
             SetDataPointProperties();
         }
     }

@@ -11,12 +11,12 @@ namespace ATSPM.Application.Reports.Business.Common
         public PerdueCoordinationPlan(DateTime start, DateTime end, string planNumber, List<CyclePcd> cyclesForPlan) : base(planNumber, start, end
             )
         {
-            TotalTime = cyclesForPlan.Sum(d => d.TotalTime);
-            TotalRedTime = cyclesForPlan.Sum(d => d.TotalRedTime);
-            TotalYellowTime = cyclesForPlan.Sum(d => d.TotalYellowTime);
-            TotalGreenTime = cyclesForPlan.Sum(d => d.TotalGreenTime);
+            TotalTime = cyclesForPlan.Sum(d => d.TotalTimeSeconds);
+            TotalRedTime = cyclesForPlan.Sum(d => d.TotalRedTimeSeconds);
+            TotalYellowTime = cyclesForPlan.Sum(d => d.TotalYellowTimeSeconds);
+            TotalGreenTime = cyclesForPlan.Sum(d => d.TotalGreenTimeSeconds);
             TotalVolume = cyclesForPlan.Sum(d => d.TotalVolume);
-            TotalDelay = cyclesForPlan.Sum(d => d.TotalDelay);
+            TotalDelay = cyclesForPlan.Sum(d => d.TotalDelaySeconds);
             TotalArrivalOnRed = cyclesForPlan.Sum(d => d.TotalArrivalOnRed);
             TotalArrivalOnYellow = cyclesForPlan.Sum(d => d.TotalArrivalOnYellow);
             TotalArrivalOnGreen = cyclesForPlan.Sum(d => d.TotalArrivalOnGreen);

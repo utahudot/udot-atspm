@@ -123,6 +123,7 @@ namespace ATSPM.Application.Reports.Business.Common
             List<ControllerEventLog> cycleEvents,
             int? pcdCycleTime)
         {
+            cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
             double pcdCycleShift = pcdCycleTime ?? 0;
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -140,16 +141,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) 
                             && d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift))
                         .Select(d => new DetectorDataPoint(cycle.StartTime, d.Timestamp, cycle.GreenEvent, cycle.YellowEvent)));
-                        
-                    //var eventsForCycle = detectorEvents
-                    //    .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) &&
-                    //                d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift)).ToList();
-                    //foreach (var controllerEventLog in eventsForCycle)
-                    //    cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
-                    //        cycle.GreenEvent, cycle.YellowEvent));
                 }
-
-            //var totalSortedEvents = cycles.Sum(d => d.DetectorEvents.Count);
             return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
 

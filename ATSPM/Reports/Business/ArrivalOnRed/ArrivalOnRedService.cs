@@ -54,7 +54,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                         totalDetectorHits += binEvents.Count();
                         binDetectorHits += binEvents.Count();
                         foreach (var detectorPoint in binEvents)
-                            if (detectorPoint.YPoint < cycle.GreenLineY)
+                            if (detectorPoint.YPointSeconds < cycle.GreenLineY)
                             {
                                 binTotalStops++;
                                 totalAoR++;

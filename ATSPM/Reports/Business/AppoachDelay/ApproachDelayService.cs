@@ -28,16 +28,15 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             while (dt < signalPhase.EndDate)
             {
                 var endDt = dt.AddMinutes(options.BinSize);
-                var pcdsInBin = signalPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
-                var binDelay = pcdsInBin.Sum(d => d.TotalDelay);
-                var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
+                var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Where(d => d.TimeStamp >= dt && d.TimeStamp < endDt)).ToList();
+                //var pcdsInBin = signalPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
+                var binDelay = detectorEvents.Where(d => d.ArrivalType == ArrivalType.ArrivalOnRed).Sum(d => d.DelaySeconds);
+                //var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
                 double bindDelaypervehicle = 0;
                 double bindDelayperhour = 0;
 
-                if (binVolume > 0 && pcdsInBin.Any())
-                    bindDelaypervehicle = binDelay / binVolume;
-                else
-                    bindDelaypervehicle = 0;
+                if (detectorEvents.Any() && detectorEvents.Count > 0)
+                    bindDelaypervehicle = binDelay / detectorEvents.Count;
 
                 bindDelayperhour = binDelay * (60 / options.BinSize) / 60 / 60;
                 approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
@@ -52,8 +51,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                 approach.Description,
                 options.Start,
                 options.End,
-                approachDelayPerVehicleDataPoints.Average(d => d.DelayPerVehicle),
-                approachDelayPerVehicleDataPoints.Sum(d => d.DelayPerVehicle),
+                signalPhase.AvgDelay,
+                signalPhase.TotalDelaySeconds,
                 plans,
                 approachDelayDataPoints,
                 approachDelayPerVehicleDataPoints);

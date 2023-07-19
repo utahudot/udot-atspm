@@ -50,6 +50,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 cycleEvents,
                 splitsEvents,
                 pedEvents,
+                new List<ControllerEventLog>(),
                 signal,
                 1
                 );

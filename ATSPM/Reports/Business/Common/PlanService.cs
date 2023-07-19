@@ -51,31 +51,52 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime startDate,
             DateTime endDate,
             string signalId,
-            IList<ControllerEventLog> tempPlanEvents)
+            List<ControllerEventLog> tempPlanEvents)
         {
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
-                SetFirstPlan(startDate, signalId, tempPlanEvents.ToList());
+                SetFirstPlan(startDate, signalId, tempPlanEvents);
             }
             else if (!tempPlanEvents.Any())
             {
-                SetFirstPlan(startDate, signalId, tempPlanEvents.ToList());
+                SetFirstPlan(startDate, signalId, tempPlanEvents);
             }
-            tempPlanEvents.Add(new ControllerEventLog { SignalId = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+            SetLastPlan(startDate, endDate, tempPlanEvents);
+            if (!tempPlanEvents.Any())
+            {
+                tempPlanEvents.Add(new ControllerEventLog { SignalId = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+            }
 
-            var planEvents = tempPlanEvents
-                .Select((x, i) => new { Log = x, Index = i })
-                .Where(x => x.Index == 0 || x.Index + 1 == tempPlanEvents.Count || x.Log.EventParam != tempPlanEvents[x.Index + 1].EventParam)
-                .Select(x => x.Log)
-                .ToList();
+            //var planEvents = tempPlanEvents
+            //    .Select((x, i) => new { Log = x, Index = i })
+            //    .Where(x => x.Index == 0 || x.Index + 1 == tempPlanEvents.Count || x.Log.EventParam != tempPlanEvents[x.Index + 1].EventParam)
+            //    .Select(x => x.Log)
+            //    .ToList();
 
-            return planEvents;
+            return tempPlanEvents;
         }
 
+        private static void SetLastPlan(DateTime startDate, DateTime endDate, List<ControllerEventLog> tempPlanEvents)
+        {
+            // Find the index of the last event within the start and end dates
+            var lastPlan = tempPlanEvents.Where(log => log.Timestamp >= startDate && log.Timestamp <= endDate).OrderBy(e => e.Timestamp).Last();
+            int lastIndex = tempPlanEvents.IndexOf(lastPlan);
+
+            if (lastIndex >= 0)
+            {
+                // Remove events after the last event within the specified range
+                tempPlanEvents.RemoveRange(lastIndex + 1, tempPlanEvents.Count - lastIndex - 1);
+            }
+            else
+            {
+                // If no event is found within the specified range, clear the list
+                tempPlanEvents.Clear();
+            }
+        }
 
         private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
         {
-            var firstPlanEvent = planEvents.FirstOrDefault(e => e.Timestamp < startDate);
+            var firstPlanEvent = planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
 
             if (firstPlanEvent != null)
             {
@@ -167,7 +188,7 @@ namespace ATSPM.Application.Reports.Business.Common
             string signalId,
             IList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId, events);
+            var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
             var plans = new List<PlanSplitMonitorData>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)

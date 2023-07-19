@@ -79,6 +79,7 @@ namespace ATSPM.Application.Reports.Controllers
                 cycleEvents,
                 splitsEvents,
                 pedEvents,
+                terminationEvents,
                 signal,
                 options.SelectedConsecutiveCount);
             var phases = new List<Phase>();

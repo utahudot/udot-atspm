@@ -78,6 +78,7 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> pedestrianEvents,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
             Signal signal,
             int consecutiveCount)
         {            
@@ -91,6 +92,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     phaseNumber,
                     pedestrianEvents,
                     cycleEvents,
+                    terminationEvents,
                     consecutiveCount,
                     signal);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);

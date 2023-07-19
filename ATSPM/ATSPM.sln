@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.ReportsTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reports", "Reports\Reports.csproj", "{E4817D1C-700B-4C6F-8753-B6A41C6EBC15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportsTests", "ReportsTests\ReportsTests.csproj", "{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +191,18 @@ Global
 		{E4817D1C-700B-4C6F-8753-B6A41C6EBC15}.Release|x64.Build.0 = Release|Any CPU
 		{E4817D1C-700B-4C6F-8753-B6A41C6EBC15}.Release|x86.ActiveCfg = Release|Any CPU
 		{E4817D1C-700B-4C6F-8753-B6A41C6EBC15}.Release|x86.Build.0 = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|x64.Build.0 = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Debug|x86.Build.0 = Debug|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|x64.ActiveCfg = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|x64.Build.0 = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|x86.ActiveCfg = Release|Any CPU
+		{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
