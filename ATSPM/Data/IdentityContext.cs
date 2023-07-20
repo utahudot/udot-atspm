@@ -18,6 +18,7 @@ public class ApplicationUser : IdentityUser
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Agency { get; set; }
+    public string FullName { get { return $"{FirstName} {LastName}"; } }
 
     // Navigation property for user roles
     public ICollection<IdentityUserRole<string>> Roles { get; set; }
