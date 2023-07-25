@@ -1,4 +1,5 @@
-﻿using ATSPM.Data;
+﻿using Asp.Versioning;
+using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
 using Microsoft.AspNetCore.Http;
@@ -10,13 +11,13 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 namespace ATSPM.ConfigApi.Controllers
 {
     //[ApiController]
-    //[Route("/data/[controller]")]
+    //[Route("[controller]")]
     public class AtspmConfigControllerBase<T, TKey> : ODataController where T : ATSPMModelBase
     {
         //private readonly ConfigContext _configContext;
         private readonly IAsyncRepository<T> _repository;
 
-        public AtspmConfigControllerBase( IAsyncRepository<T> repository)
+        public AtspmConfigControllerBase(IAsyncRepository<T> repository)
         {
             //_configContext = configContext;
             _repository = repository;

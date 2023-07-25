@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "9N7bawexk8GP6dV4EGdt7LY4Yf0APKxdNP8scemRVQo=",
+  "Source": "ATSPM.ConfigApi",
+  "BasePath": "_content/ATSPM.ConfigApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
