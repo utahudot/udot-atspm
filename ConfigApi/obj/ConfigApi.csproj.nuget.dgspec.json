@@ -86,7 +86,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -169,7 +169,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -180,7 +180,7 @@
         "projectName": "DomainCore",
         "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\Source\\Repos\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -240,7 +240,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -339,7 +339,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -357,16 +357,16 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
+          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {
               "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
                 "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
@@ -381,9 +381,17 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
+            "Asp.Versioning.OData": {
+              "target": "Package",
+              "version": "[7.0.1, )"
+            },
+            "Asp.Versioning.OData.ApiExplorer": {
+              "target": "Package",
+              "version": "[7.0.3, )"
+            },
             "Microsoft.AspNetCore.OData": {
               "target": "Package",
               "version": "[8.2.0, )"
@@ -412,7 +420,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

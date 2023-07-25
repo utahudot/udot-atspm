@@ -1,9 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "vsPbaFKTSeUfNHnmDYq8GskH/1rTgYLCMM7PYCdWkjq6zi/FbM3CLHRuOLE4Onlj0/0cakThq6zMAft7rkQPbA==",
+  "dgSpecHash": "tTeiiTPV37DeIlIaJjf8UMovzfxuTb8767bIy4ECbmsAbo4Lm9OP4AgdaY0ZZj9B5RaD8l23YlRaeAwgnRzRvA==",
   "success": true,
   "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ConfigApi\\ConfigApi.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.abstractions\\7.0.0\\asp.versioning.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.http\\7.0.0\\asp.versioning.http.7.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.mvc\\7.0.0\\asp.versioning.mvc.7.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.mvc.apiexplorer\\7.0.0\\asp.versioning.mvc.apiexplorer.7.0.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.odata\\7.0.1\\asp.versioning.odata.7.0.1.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\asp.versioning.odata.apiexplorer\\7.0.3\\asp.versioning.odata.apiexplorer.7.0.3.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\dotmorten.microsoft.sqlserver.types\\1.4.0\\dotmorten.microsoft.sqlserver.types.1.4.0.nupkg.sha512",
@@ -172,7 +178,7 @@
       "message": "Detected package version outside of dependency constraint: Pomelo.EntityFrameworkCore.MySql 6.0.2 requires Microsoft.EntityFrameworkCore.Relational (>= 6.0.7 && < 7.0.0) but version Microsoft.EntityFrameworkCore.Relational 7.0.2 was resolved.",
       "libraryId": "Microsoft.EntityFrameworkCore.Relational",
       "targetGraphs": [
-        "net6.0"
+        "net7.0"
       ]
     }
   ]

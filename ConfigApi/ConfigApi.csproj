@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -11,6 +11,62 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\ActionLogController.cs" />
+    <Compile Remove="Controllers\ApplicationSettingController.cs" />
+    <Compile Remove="Controllers\ApproachController.cs" />
+    <Compile Remove="Controllers\AreaController.cs" />
+    <Compile Remove="Controllers\ControllerTypeController.cs" />
+    <Compile Remove="Controllers\DetectionHardwareController.cs" />
+    <Compile Remove="Controllers\DetectionTypeController.cs" />
+    <Compile Remove="Controllers\DetectorCommentController.cs" />
+    <Compile Remove="Controllers\DetectorController.cs" />
+    <Compile Remove="Controllers\DirectionTypeController.cs" />
+    <Compile Remove="Controllers\FaqController.cs" />
+    <Compile Remove="Controllers\JurisdictionController.cs" />
+    <Compile Remove="Controllers\LaneTypeController.cs" />
+    <Compile Remove="Controllers\MeasuresDefaultController.cs" />
+    <Compile Remove="Controllers\MenuController.cs" />
+    <Compile Remove="Controllers\MetricCommentController.cs" />
+    <Compile Remove="Controllers\MetricTypeController.cs" />
+    <Compile Remove="Controllers\MovementTypeController.cs" />
+    <Compile Remove="Controllers\RegionController.cs" />
+    <Compile Remove="Controllers\RouteController.cs" />
+    <Compile Remove="Controllers\RoutePhaseDirectionController.cs" />
+    <Compile Remove="Controllers\RouteSignalController.cs" />
+    <Compile Remove="Controllers\SignalController.cs" />
+    <Compile Remove="Controllers\TestController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Controllers\ActionLogController.cs" />
+    <None Include="Controllers\ApplicationSettingController.cs" />
+    <None Include="Controllers\ApproachController.cs" />
+    <None Include="Controllers\AreaController.cs" />
+    <None Include="Controllers\ControllerTypeController.cs" />
+    <None Include="Controllers\DetectionHardwareController.cs" />
+    <None Include="Controllers\DetectionTypeController.cs" />
+    <None Include="Controllers\DetectorCommentController.cs" />
+    <None Include="Controllers\DetectorController.cs" />
+    <None Include="Controllers\DirectionTypeController.cs" />
+    <None Include="Controllers\FaqController.cs" />
+    <None Include="Controllers\JurisdictionController.cs" />
+    <None Include="Controllers\LaneTypeController.cs" />
+    <None Include="Controllers\MeasuresDefaultController.cs" />
+    <None Include="Controllers\MenuController.cs" />
+    <None Include="Controllers\MetricCommentController.cs" />
+    <None Include="Controllers\MetricTypeController.cs" />
+    <None Include="Controllers\MovementTypeController.cs" />
+    <None Include="Controllers\RegionController.cs" />
+    <None Include="Controllers\RouteController.cs" />
+    <None Include="Controllers\RoutePhaseDirectionController.cs" />
+    <None Include="Controllers\RouteSignalController.cs" />
+    <None Include="Controllers\SignalController.cs" />
+    <None Include="Controllers\TestController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.OData" Version="7.0.1" />
+    <PackageReference Include="Asp.Versioning.OData.ApiExplorer" Version="7.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>

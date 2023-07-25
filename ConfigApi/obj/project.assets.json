@@ -1,7 +1,111 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {
+    "net7.0": {
+      "Asp.Versioning.Abstractions/7.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.Abstractions.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.Abstractions.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Asp.Versioning.Http/7.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Asp.Versioning.Abstractions": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.Http.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.Http.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "Asp.Versioning.Mvc/7.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Asp.Versioning.Http": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.Mvc.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.Mvc.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Asp.Versioning.Mvc.ApiExplorer/7.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.Mvc.ApiExplorer.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.Mvc.ApiExplorer.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Asp.Versioning.OData/7.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Asp.Versioning.Mvc": "7.0.0",
+          "Microsoft.AspNetCore.OData": "[8.0.2, 9.0.0)"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.OData.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.OData.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "Asp.Versioning.OData.ApiExplorer/7.0.3": {
+        "type": "package",
+        "dependencies": {
+          "Asp.Versioning.Mvc.ApiExplorer": "7.0.0",
+          "Asp.Versioning.OData": "7.0.1"
+        },
+        "compile": {
+          "lib/net7.0/Asp.Versioning.OData.ApiExplorer.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Asp.Versioning.OData.ApiExplorer.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Azure.Core/1.24.0": {
         "type": "package",
         "dependencies": {
@@ -945,12 +1049,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Caching.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -968,12 +1072,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {
+          "lib/net7.0/Microsoft.Extensions.Caching.Memory.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Caching.Memory.dll": {
+          "lib/net7.0/Microsoft.Extensions.Caching.Memory.dll": {
             "related": ".xml"
           }
         },
@@ -988,12 +1092,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.dll": {
             "related": ".xml"
           }
         },
@@ -1007,12 +1111,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1026,12 +1130,12 @@
           "Microsoft.Extensions.Configuration.Abstractions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Binder.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.Binder.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Configuration.Binder.dll": {
+          "lib/net7.0/Microsoft.Extensions.Configuration.Binder.dll": {
             "related": ".xml"
           }
         },
@@ -1045,12 +1149,12 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {
+          "lib/net7.0/Microsoft.Extensions.DependencyInjection.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.dll": {
+          "lib/net7.0/Microsoft.Extensions.DependencyInjection.dll": {
             "related": ".xml"
           }
         },
@@ -1061,12 +1165,12 @@
       "Microsoft.Extensions.DependencyInjection.Abstractions/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1100,12 +1204,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.FileProviders.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1121,12 +1225,12 @@
           "Microsoft.Extensions.FileProviders.Abstractions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Hosting.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1162,12 +1266,12 @@
           "Microsoft.Extensions.Options": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.dll": {
             "related": ".xml"
           }
         },
@@ -1178,12 +1282,12 @@
       "Microsoft.Extensions.Logging.Abstractions/7.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Abstractions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Abstractions.dll": {
             "related": ".xml"
           }
         },
@@ -1204,12 +1308,12 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Configuration.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Configuration.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Configuration.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Configuration.dll": {
             "related": ".xml"
           }
         },
@@ -1225,16 +1329,15 @@
           "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
           "Microsoft.Extensions.Logging.Configuration": "7.0.0",
           "Microsoft.Extensions.Options": "7.0.0",
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Json": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Console.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Console.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Logging.Console.dll": {
+          "lib/net7.0/Microsoft.Extensions.Logging.Console.dll": {
             "related": ".xml"
           }
         },
@@ -1262,12 +1365,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Options.dll": {
+          "lib/net7.0/Microsoft.Extensions.Options.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Options.dll": {
+          "lib/net7.0/Microsoft.Extensions.Options.dll": {
             "related": ".xml"
           }
         },
@@ -1285,12 +1388,12 @@
           "Microsoft.Extensions.Primitives": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll": {
+          "lib/net7.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll": {
             "related": ".xml"
           }
         },
@@ -1300,16 +1403,13 @@
       },
       "Microsoft.Extensions.Primitives/7.0.0": {
         "type": "package",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
         "compile": {
-          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {
+          "lib/net7.0/Microsoft.Extensions.Primitives.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Microsoft.Extensions.Primitives.dll": {
+          "lib/net7.0/Microsoft.Extensions.Primitives.dll": {
             "related": ".xml"
           }
         },
@@ -1876,12 +1976,12 @@
           "Microsoft.OpenApi": "1.2.3"
         },
         "compile": {
-          "lib/net6.0/Swashbuckle.AspNetCore.Swagger.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.Swagger.dll": {
             "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Swashbuckle.AspNetCore.Swagger.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.Swagger.dll": {
             "related": ".pdb;.xml"
           }
         },
@@ -1895,12 +1995,12 @@
           "Swashbuckle.AspNetCore.Swagger": "6.5.0"
         },
         "compile": {
-          "lib/net6.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
             "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
             "related": ".pdb;.xml"
           }
         }
@@ -1908,12 +2008,12 @@
       "Swashbuckle.AspNetCore.SwaggerUI/6.5.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
             "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/net6.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
+          "lib/net7.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
             "related": ".pdb;.xml"
           }
         },
@@ -2610,16 +2710,13 @@
       },
       "System.Text.Encodings.Web/7.0.0": {
         "type": "package",
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
         "compile": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
+          "lib/net7.0/System.Text.Encodings.Web.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Text.Encodings.Web.dll": {
+          "lib/net7.0/System.Text.Encodings.Web.dll": {
             "related": ".xml"
           }
         },
@@ -2627,7 +2724,7 @@
           "buildTransitive/net6.0/_._": {}
         },
         "runtimeTargets": {
-          "runtimes/browser/lib/net6.0/System.Text.Encodings.Web.dll": {
+          "runtimes/browser/lib/net7.0/System.Text.Encodings.Web.dll": {
             "assetType": "runtime",
             "rid": "browser"
           }
@@ -2636,16 +2733,15 @@
       "System.Text.Json/7.0.0": {
         "type": "package",
         "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "7.0.0"
         },
         "compile": {
-          "lib/net6.0/System.Text.Json.dll": {
+          "lib/net7.0/System.Text.Json.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Text.Json.dll": {
+          "lib/net7.0/System.Text.Json.dll": {
             "related": ".xml"
           }
         },
@@ -2785,6 +2881,114 @@
     }
   },
   "libraries": {
+    "Asp.Versioning.Abstractions/7.0.0": {
+      "sha512": "yujGpbGBCViHvYiBJD0S5XFgOI+f5bGvi8tnfMJV6EC0b8SAqBn1YC+yCnJjQo3D2XP9TmSuKIJ7ofVy58GcuQ==",
+      "type": "package",
+      "path": "asp.versioning.abstractions/7.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.abstractions.7.0.0.nupkg.sha512",
+        "asp.versioning.abstractions.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.Abstractions.dll",
+        "lib/net7.0/Asp.Versioning.Abstractions.pdb",
+        "lib/net7.0/Asp.Versioning.Abstractions.xml",
+        "lib/netstandard1.0/Asp.Versioning.Abstractions.dll",
+        "lib/netstandard1.0/Asp.Versioning.Abstractions.pdb",
+        "lib/netstandard1.0/Asp.Versioning.Abstractions.xml",
+        "lib/netstandard2.0/Asp.Versioning.Abstractions.dll",
+        "lib/netstandard2.0/Asp.Versioning.Abstractions.pdb",
+        "lib/netstandard2.0/Asp.Versioning.Abstractions.xml"
+      ]
+    },
+    "Asp.Versioning.Http/7.0.0": {
+      "sha512": "FG5grz29CYBT06xDWoM1hf+pfB7sPDYXuOOIYtVNIHduUQeWsxMfCITcDrMmZNXAf0TfcYRwCizJfOIJzWmaXA==",
+      "type": "package",
+      "path": "asp.versioning.http/7.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.http.7.0.0.nupkg.sha512",
+        "asp.versioning.http.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.Http.dll",
+        "lib/net7.0/Asp.Versioning.Http.pdb",
+        "lib/net7.0/Asp.Versioning.Http.xml"
+      ]
+    },
+    "Asp.Versioning.Mvc/7.0.0": {
+      "sha512": "wcaXjeBLbDcSXLXtEJrVPXd8amRuINd/7SNYwMRrwwzQi6QMeJXqFZrFM+Bs4Tmd1C5pXBT51wedFG+zbN7Mzw==",
+      "type": "package",
+      "path": "asp.versioning.mvc/7.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.mvc.7.0.0.nupkg.sha512",
+        "asp.versioning.mvc.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.Mvc.dll",
+        "lib/net7.0/Asp.Versioning.Mvc.pdb",
+        "lib/net7.0/Asp.Versioning.Mvc.xml"
+      ]
+    },
+    "Asp.Versioning.Mvc.ApiExplorer/7.0.0": {
+      "sha512": "eN3Htqa+CWtzTGuOQZsoMJtcTf85ng+5Fg1NJjrCcGfgTB2BA946b3F7eUuo0sPFAQNcKP1cO5VxcO9WiqbmCA==",
+      "type": "package",
+      "path": "asp.versioning.mvc.apiexplorer/7.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.mvc.apiexplorer.7.0.0.nupkg.sha512",
+        "asp.versioning.mvc.apiexplorer.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.Mvc.ApiExplorer.dll",
+        "lib/net7.0/Asp.Versioning.Mvc.ApiExplorer.pdb",
+        "lib/net7.0/Asp.Versioning.Mvc.ApiExplorer.xml"
+      ]
+    },
+    "Asp.Versioning.OData/7.0.1": {
+      "sha512": "y8pssJvD85vh0856rpUI5sGjPGAx08lpaGjWo0RlLanTpvjYECAk5ptSsF1t61F1Vy5i2MSMHpY4YbCjwljEPA==",
+      "type": "package",
+      "path": "asp.versioning.odata/7.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.odata.7.0.1.nupkg.sha512",
+        "asp.versioning.odata.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.OData.dll",
+        "lib/net7.0/Asp.Versioning.OData.pdb",
+        "lib/net7.0/Asp.Versioning.OData.xml"
+      ]
+    },
+    "Asp.Versioning.OData.ApiExplorer/7.0.3": {
+      "sha512": "XExvH+q7IYpfCLpvW0wckVQBw1YSQxUpgQz/FU8TZHarxm1PEQSVHn8G0vOuX/1E1b50qd1by1pIgNLABfD6PQ==",
+      "type": "package",
+      "path": "asp.versioning.odata.apiexplorer/7.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "asp.versioning.odata.apiexplorer.7.0.3.nupkg.sha512",
+        "asp.versioning.odata.apiexplorer.nuspec",
+        "icon.png",
+        "lib/net7.0/Asp.Versioning.OData.ApiExplorer.dll",
+        "lib/net7.0/Asp.Versioning.OData.ApiExplorer.pdb",
+        "lib/net7.0/Asp.Versioning.OData.ApiExplorer.xml"
+      ]
+    },
     "Azure.Core/1.24.0": {
       "sha512": "+/qI1j2oU1S4/nvxb2k/wDsol00iGf1AyJX5g3epV7eOpQEP/2xcgh/cxgKMeFgn3U2fmgSiBnQZdkV+l5y0Uw==",
       "type": "package",
@@ -7730,8 +7934,10 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0": [
+    "net7.0": [
       "ATSPM.Infrastructure >= 1.0.0",
+      "Asp.Versioning.OData >= 7.0.1",
+      "Asp.Versioning.OData.ApiExplorer >= 7.0.3",
       "Microsoft.AspNetCore.OData >= 8.2.0",
       "Swashbuckle.AspNetCore >= 6.5.0"
     ]
@@ -7753,16 +7959,16 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net6.0"
+        "net7.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "projectReferences": {
             "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
               "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
@@ -7777,9 +7983,17 @@
       }
     },
     "frameworks": {
-      "net6.0": {
-        "targetAlias": "net6.0",
+      "net7.0": {
+        "targetAlias": "net7.0",
         "dependencies": {
+          "Asp.Versioning.OData": {
+            "target": "Package",
+            "version": "[7.0.1, )"
+          },
+          "Asp.Versioning.OData.ApiExplorer": {
+            "target": "Package",
+            "version": "[7.0.3, )"
+          },
           "Microsoft.AspNetCore.OData": {
             "target": "Package",
             "version": "[8.2.0, )"
@@ -7808,7 +8022,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
       }
     }
   },
@@ -7820,7 +8034,7 @@
       "message": "Detected package version outside of dependency constraint: Pomelo.EntityFrameworkCore.MySql 6.0.2 requires Microsoft.EntityFrameworkCore.Relational (>= 6.0.7 && < 7.0.0) but version Microsoft.EntityFrameworkCore.Relational 7.0.2 was resolved.",
       "libraryId": "Microsoft.EntityFrameworkCore.Relational",
       "targetGraphs": [
-        "net6.0"
+        "net7.0"
       ]
     }
   ]
