@@ -35,7 +35,7 @@ namespace ATSPM.DataApi.Controllers
         /// <response code="200">Call completed successfully</response>
         /// <response code="400">Invalid request (start/end range)</response>
         /// <response code="404">Resource not found</response>
-        [ApiVersion("1.0")]
+        [ApiVersion("2.0")]
         [HttpGet("{signalIdentifier}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

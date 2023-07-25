@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -112,3 +116,32 @@ app.MapControllers();
 app.Run();
 
 //FileExtensionContentTypeProvider
+
+//public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+//{
+//    readonly IApiVersionDescriptionProvider provider;
+
+//    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) =>
+//      this.provider = provider;
+
+//    public void Configure(SwaggerGenOptions options)
+//    {
+//        foreach (var desc in provider.ApiVersionDescriptions)
+//        {
+//            Console.WriteLine($"v{desc.GroupName} - {desc.ApiVersion}");
+
+//            options.SwaggerDoc(desc.GroupName, new()
+//            {
+//                Title = "Controller Event Log API",
+//                Version = desc.ApiVersion.ToString(),
+//                Description = "API to interact with controller event log data",
+//                Contact = new()
+//                {
+//                    Name = "udotdevelopment",
+//                    Email = "udotdevelopment@gmail.com",
+//                    Url = new Uri("https://udottraffic.utah.gov/atspm/")
+//                }
+//            });
+//        }
+//    }
+//}
