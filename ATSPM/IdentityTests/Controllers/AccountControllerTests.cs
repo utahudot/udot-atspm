@@ -3,6 +3,7 @@ using Identity.Models.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using System.Security.Claims;
 using Xunit;
@@ -21,8 +22,14 @@ namespace YourProject.Tests.Controllers
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
             _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(_userManagerMock.Object, Mock.Of<IHttpContextAccessor>(), Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null, null, null);
+            var configurationMock = new Mock<IConfiguration>();
 
-            _accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object);
+            // Setup the configuration to return specific values for keys
+            configurationMock.Setup(x => x["Jwt:Secret"]).Returns("3936A97D8CD9E34B2E5E565F8226F");
+
+            // Use the configurationMock.Object in your controller tests
+            // For example, when creating the AccountController in the test:
+            _accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object, configurationMock.Object);
         }
 
         [Fact]
@@ -69,8 +76,30 @@ namespace YourProject.Tests.Controllers
                 RememberMe = false
             };
 
+            // Set up the mock SignInResult for a successful login
             _signInManagerMock.Setup(sm => sm.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+            // Set up the mock UserManager to return a valid user when GetUserAsync is called
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(user);
+
+            // Set up the mock UserManager to return a valid user when FindByEmailAsync is called
+            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user); // Return the same user as GetUserAsync
+
+            // Set up the HttpContext with a valid user principal
+            var httpContext = new DefaultHttpContext();
+            httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+        new Claim(ClaimTypes.Name, model.Email) // Use any relevant claims here
+            }));
+
+            _accountController.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            };
 
             // Act
             var result = await _accountController.Login(model);
