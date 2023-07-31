@@ -1,27 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj": {}
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ReportsTests\\ReportsTests.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
         "projectName": "ApplicationCore",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -34,11 +28,11 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj"
               },
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -82,8 +76,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -92,28 +85,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj",
         "projectName": "ATSPM.Data",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -126,8 +113,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -179,8 +166,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -189,28 +175,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj",
         "projectName": "DomainCore",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\DomainCore\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -256,8 +236,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -266,28 +245,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "projectName": "ATSPM.Infrastructure",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -300,11 +273,11 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
               },
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Data\\Data.csproj"
               }
             }
           }
@@ -374,8 +347,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -384,28 +356,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ReportsTests\\ReportsTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ReportsTests\\ReportsTests.csproj",
         "projectName": "ReportsTests",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ReportsTests\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ReportsTests\\ReportsTests.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ReportsTests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -418,8 +384,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\Reports.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\Reports.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\Reports.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\Reports.csproj"
               }
             }
           }
@@ -473,8 +439,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -483,46 +448,39 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\Reports.csproj": {
+    "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\Reports.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\Reports.csproj",
+        "projectUniqueName": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\Reports.csproj",
         "projectName": "Reports",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\Reports.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Reports\\obj\\",
+        "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\Reports.csproj",
+        "packagesPath": "C:\\Users\\nazra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Reports\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\nazra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
               },
-              "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
+              "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\nazra\\source\\repos\\UDOT-ATSPMtemp\\ATSPM\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -582,8 +540,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -595,7 +552,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

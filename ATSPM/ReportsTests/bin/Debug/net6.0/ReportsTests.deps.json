@@ -17,8 +17,6 @@
           "coverlet.collector": "3.2.0",
           "xunit": "2.4.2",
           "xunit.runner.visualstudio": "2.4.5",
-          "ATSPM.Data.Reference": "1.0.0.0",
-          "ATSPM.Infrastructure.Reference": "1.0.0.0",
           "Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions": "14.0.0.0"
         },
         "runtime": {
@@ -2509,22 +2507,6 @@
           "Reports.dll": {}
         }
       },
-      "ATSPM.Data.Reference/1.0.0.0": {
-        "runtime": {
-          "ATSPM.Data.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "ATSPM.Infrastructure.Reference/1.0.0.0": {
-        "runtime": {
-          "ATSPM.Infrastructure.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions/14.0.0.0": {
         "runtime": {
           "Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll": {
@@ -4145,16 +4127,6 @@
     },
     "Reports/1.0.0": {
       "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ATSPM.Data.Reference/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ATSPM.Infrastructure.Reference/1.0.0.0": {
-      "type": "reference",
       "serviceable": false,
       "sha512": ""
     },

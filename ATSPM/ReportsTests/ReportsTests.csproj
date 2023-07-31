@@ -45,6 +45,9 @@
     <None Update="TestFiles\ControllerEvents-ApproachDelay.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\PedDelayEventcodes.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

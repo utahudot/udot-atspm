@@ -10,10 +10,5 @@ namespace ATSPM.Application.Reports.Business.PedDelay.Tests
 {
     public class PedDelayServiceTests
     {
-        [Fact()]
-        public void GetChartDataTest()
-        {
-            Assert.True(false, "This test needs an implementation");
-        }
     }
 }

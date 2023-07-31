@@ -17,9 +17,7 @@
           "Newtonsoft.Json": "13.0.2",
           "Swashbuckle.AspNetCore": "6.5.0",
           "xunit": "2.4.2",
-          "xunit.runner.visualstudio": "2.4.5",
-          "ATSPM.Data.Reference": "1.0.0.0",
-          "ATSPM.Infrastructure.Reference": "1.0.0.0"
+          "xunit.runner.visualstudio": "2.4.5"
         },
         "runtime": {
           "Reports.dll": {}
@@ -2200,22 +2198,6 @@
         "runtime": {
           "DomainCore.dll": {}
         }
-      },
-      "ATSPM.Data.Reference/1.0.0.0": {
-        "runtime": {
-          "ATSPM.Data.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "ATSPM.Infrastructure.Reference/1.0.0.0": {
-        "runtime": {
-          "ATSPM.Infrastructure.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
       }
     }
   },
@@ -3747,16 +3729,6 @@
     },
     "DomainCore/1.0.0": {
       "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ATSPM.Data.Reference/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ATSPM.Infrastructure.Reference/1.0.0.0": {
-      "type": "reference",
       "serviceable": false,
       "sha512": ""
     }

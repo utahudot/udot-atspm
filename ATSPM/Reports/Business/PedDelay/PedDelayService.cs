@@ -9,11 +9,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
 {
     public class PedDelayService
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-
-        public PedDelayService(IControllerEventLogRepository controllerEventLogRepository)
+        
+        public PedDelayService()
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
+            
         }
 
 
