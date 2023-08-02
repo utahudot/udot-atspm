@@ -1,11 +1,7 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories;
-using ATSPM.Data;
-using ATSPM.Domain.Services;
+using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Deltas;
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace ATSPM.ConfigApi.Controllers
 {

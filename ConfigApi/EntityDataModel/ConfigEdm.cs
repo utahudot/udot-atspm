@@ -32,7 +32,7 @@ namespace ATSPM.ConfigApi.EntityDataModel
             //var detector = builder.EntityType<Detector>();
             //detector.HasKey(k => k.Id);
 
-            //var signal = builder.EntityType<Signal>();
+            var signal = builder.EntityType<Signal>();
             //signal.HasKey(k => k.Id);
             //signal.HasMany(m => m.Areas);
             //signal.Property(p => p.Latitude).MaxLength = 30;
@@ -55,7 +55,7 @@ namespace ATSPM.ConfigApi.EntityDataModel
             //var area = builder.EntityType<Area>();
             //area.HasKey(p => p.Id);
 
-            builder.EntitySet<Data.Models.Action>("Actions");
+            //builder.EntitySet<Data.Models.Action>("Actions");
             //builder.EntitySet<ActionLog>("ActionLogs");
             //builder.EntitySet<Agency>("Agencies");
             //builder.EntitySet<Data.Models.Application>("Applications");
