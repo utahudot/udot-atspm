@@ -5,19 +5,19 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class FaqsModelConfiguration : IModelConfiguration
+    public class ApplicationSettingsModelConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Faq>("Faq").EntityType.HasKey(p => p.Id);
+            var model = builder.EntitySet<ApplicationSetting>("ApplicationSetting").EntityType.HasKey(p => p.Id);
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        model.Property(p => p.Header).IsRequired();
-                        model.Property(p => p.Body).IsRequired();
+                        model.Property(p => p.Discriminator).IsRequired();
+                        model.Property(p => p.Discriminator).MaxLength = 128;
 
                         break;
                     }

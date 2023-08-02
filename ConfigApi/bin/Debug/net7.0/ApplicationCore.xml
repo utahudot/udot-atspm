@@ -1097,6 +1097,11 @@
             <param name="id">Signal controller id</param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.Application.Repositories.IExternalLinksRepository">
+            <summary>
+            External Links Repository
+            </summary>
+        </member>
         <member name="T:ATSPM.Application.Repositories.IFaqRepository">
             <summary>
             Frequently Asked Quesions Repository
