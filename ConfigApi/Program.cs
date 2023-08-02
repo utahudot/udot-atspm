@@ -36,7 +36,7 @@ builder.Services.AddControllers(options =>
 }).AddXmlDataContractSerializerFormatters()
 .AddOData(options =>
 {
-    options.Count().Select().OrderBy();
+    options.Count().Select().OrderBy().Expand().Filter();
     options.RouteOptions.EnableKeyInParenthesis = false;
     options.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
     options.RouteOptions.EnablePropertyNameCaseInsensitive = true;
@@ -76,11 +76,13 @@ options.Policies.Sunset(0.9)
 builder.Services.AddEndpointsApiExplorer();
 builder.Host.ConfigureServices((h, s) =>
 {
-s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
-s.AddScoped<IApproachRepository, ApproachEFRepository>();
-s.AddScoped<IAreaRepository, AreaEFRepository>();
-s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
-s.AddScoped<ISignalRepository, SignalEFRepository>();
+    s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+    s.AddScoped<IApproachRepository, ApproachEFRepository>();
+    s.AddScoped<IAreaRepository, AreaEFRepository>();
+    s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
+    s.AddScoped<IFaqRepository, FaqEFRepository>();
+    s.AddScoped<IRegionsRepository, RegionEFRepository>();
+    s.AddScoped<ISignalRepository, SignalEFRepository>();
 });
 
 
