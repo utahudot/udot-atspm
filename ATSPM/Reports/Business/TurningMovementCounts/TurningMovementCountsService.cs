@@ -11,14 +11,8 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
     public class TurningMovementCountsService
     {
         private readonly PlanService planService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-
-        public TurningMovementCountsService(
-            PlanService planService,
-            IControllerEventLogRepository controllerEventLogRepository)
+        public TurningMovementCountsService()
         {
-            this.planService = planService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
 
