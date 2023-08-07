@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ATSPM.ConfigApi</name>
+    </assembly>
+    <members>
+        <member name="M:ActionModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.ApplicationSettingsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.ExternalLinksModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.FaqsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.MeasureDefaultsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.MenuModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.SignalModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2">
+            <summary>
+            Base class for ATSPM Config oData Controllers
+            </summary>
+            <typeparam name="T">Type of ATSPM.Data.Model</typeparam>
+            <typeparam name="TKey">Model Key data type</typeparam>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.#ctor(ATSPM.Domain.Services.IAsyncRepository{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Get">
+            <summary>
+            Collection of type from oData query
+            </summary>
+            <returns>Action result of type</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Get(`1)">
+            <summary>
+            Key type from oData query
+            </summary>
+            <param name="key">Key value of object to get</param>
+            <returns>Action result of type</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Post(`0)">
+            <summary>
+            Add new object of specified type
+            </summary>
+            <param name="item">Properties of object to add</param>
+            <returns>Action result with created object</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Patch(`1,Microsoft.AspNetCore.OData.Deltas.Delta{`0})">
+            <summary>
+            Update object of specified type
+            </summary>
+            <param name="key">Key value of object to update</param>
+            <param name="item">Properites to update</param>
+            <returns>Action result confirming update</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Delete(`1)">
+            <summary>
+            Delete object of specified type
+            </summary>
+            <param name="key">Key value of object to delete</param>
+            <returns></returns>
+        </member>
+        <member name="T:ConfigureSwaggerOptions">
+            <summary>
+            Configures the Swagger generation options.
+            </summary>
+            <remarks>This allows API versioning to define a Swagger document per API version after the
+            <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>
+        </member>
+        <member name="M:ConfigureSwaggerOptions.#ctor(Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ConfigureSwaggerOptions"/> class.
+            </summary>
+            <param name="provider">The <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
+        </member>
+        <member name="M:ConfigureSwaggerOptions.Configure(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:SwaggerDefaultValues">
+            <summary>
+            Represents the OpenAPI/Swashbuckle operation filter used to document the implicit API version parameter.
+            </summary>
+            <remarks>This <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter"/> is only required due to bugs in the <see cref="T:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenerator"/>.
+            Once they are fixed and published, this class can be removed.</remarks>
+        </member>
+        <member name="M:SwaggerDefaultValues.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <summary>
+            Applies the filter to the specified operation using the given context.
+            </summary>
+            <param name="operation">The operation to apply the filter to.</param>
+            <param name="context">The current operation filter context.</param>
+        </member>
+    </members>
+</doc>
