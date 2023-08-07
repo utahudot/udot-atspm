@@ -2,100 +2,53 @@
 using Asp.Versioning.OData;
 using ATSPM.Data.Models;
 using Microsoft.OData.ModelBuilder;
+using System.Net;
 
-public class SignalModelConfiguration : IModelConfiguration
+namespace ATSPM.ConfigApi.Configuration
 {
-    /// <inheritdoc />
-    public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+    public class SignalModelConfiguration : IModelConfiguration
     {
-        //var actionLog = builder.EntitySet<ActionLog>("ActionLog").EntityType.HasKey(p => p.Id);
+        ///<inheritdoc/>
+        public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
+        {
+            var model = builder.EntitySet<Signal>("Signal").EntityType.HasKey(p => p.Id);
 
-        ////var agency = builder.EntitySet<Agency>("Agency").EntityType.HasKey(p => p.Id);
+            var ip = builder.ComplexType<IPAddress>();
+            ip.Property(i => i.Address);
+            ip.Ignore(i => i.AddressFamily);
+            ip.Ignore(i => i.IsIPv4MappedToIPv6);
+            ip.Ignore(i => i.IsIPv6LinkLocal);
+            ip.Ignore(i => i.IsIPv6Multicast);
+            ip.Ignore(i => i.IsIPv6Teredo);
+            ip.Ignore(i => i.IsIPv6UniqueLocal);
+            ip.Ignore(i => i.ScopeId);
 
-        //var area = builder.EntitySet<Area>("Area").EntityType.HasKey(p => p.Id);
+            switch (apiVersion.MajorVersion)
+            {
+                case 1:
+                    {
+                        model.ComplexProperty(p => p.Ipaddress).IsRequired();
+                        model.Property(p => p.Latitude).IsRequired();
+                        model.Property(p => p.Longitude).IsRequired();
+                        model.Property(p => p.Note).IsRequired();
+                        model.Property(p => p.PrimaryName).IsRequired();
+                        model.Property(p => p.SignalId).IsRequired();
 
-        //var approach = builder.EntitySet<Approach>("Approach").EntityType.HasKey(p => p.Id);
+                        model.Property(p => p.PrimaryName).MaxLength = 100;
+                        model.Property(p => p.SecondaryName).MaxLength = 100;
+                        model.Property(p => p.SignalId).MaxLength = 10;
 
-        //var region = builder.EntitySet<Region>("Region").EntityType;
-        //region.HasKey(p => p.Id);
-        //region.Property(p => p.Description);
-        //region.Ignore(p => p.Signals);
+                        model.Property(p => p.JurisdictionId).DefaultValueString = "0";
+                        model.EnumProperty(p => p.VersionActionId).DefaultValueString = "10";
+                        model.Property(p => p.Note).DefaultValueString = "Initial";
 
+                        model.Collection.Function("GetLatestVersionOfAllSignals").ReturnsFromEntitySet<Signal>("Signal");
 
-        //Console.WriteLine($"-------------------signal: {apiVersion}");
+                        model.Collection.Function("GetLatestVersionOfSignal").ReturnsFromEntitySet<Signal>("Signal");
 
-        //var signal = builder.EntitySet<Signal>("Signal").EntityType;
-        //signal.HasKey(p => p.Id);
-
-        //signal.Action("Promote").Parameter<string>("title");
-
-        ////var func = signal.Function("Test");
-        ////func.Parameter<string>("hello");
-        ////func.ReturnsCollectionFromEntitySet<Signal>("Signal");
-
-        //signal.Function("Test").ReturnsFromEntitySet<Signal>("Signal");
-
-        ////var function = signal.Collection.Function("NewHires");
-
-        ////function.Parameter<DateTime>("Since");
-        ////function.ReturnsFromEntitySet<Signal>("Signal");
-
-        ////signal.HasOptional(p => p.ControllerType);
-        ////signal.HasOptional(p => p.Jurisdiction);
-        ////signal.HasOptional(p => p.Region);
-        ////signal.HasOptional(p => p.VersionAction);
-
-        ////signal.Property(p => p.Latitude).IsRequired();
-        ////signal.Property(p => p.Longitude).IsRequired();
-        ////signal.Property(p => p.Note).IsRequired();
-        ////signal.Property(p => p.PrimaryName).MaxLength = 100;
-        ////signal.Property(p => p.PrimaryName).IsRequired();
-        ////signal.Property(p => p.SecondaryName).MaxLength = 100;
-        ////signal.Property(p => p.SecondaryName).IsRequired();
-        ////signal.ComplexProperty(p => p.Ipaddress);
-        ////signal.Property(p => p.SignalId).MaxLength = 10;
-        ////signal.Property(p => p.SignalId).IsRequired();
-        ////signal.Property(p => p.RegionId);
-        ////signal.Property(p => p.ControllerTypeId);
-        ////signal.Property(p => p.ChartEnabled);
-        ////signal.Property(p => p.LoggingEnabled);
-        ////signal.Property(p => p.VersionActionId);
-        ////signal.Property(p => p.Note);
-        ////signal.Property(p => p.Start);
-        ////signal.Property(p => p.JurisdictionId);
-        ////signal.Property(p => p.Pedsare1to1);
-
-        ////signal.Ignore(p => p.Latitude);
-        ////signal.Ignore(p => p.Longitude);
-        ////signal.Ignore(p => p.Note);
-        ////signal.Ignore(p => p.PrimaryName);
-        ////signal.Ignore(p => p.SecondaryName);
-        ////signal.Ignore(p => p.Ipaddress);
-        ////signal.Ignore(p => p.SignalId);
-        ////signal.Ignore(p => p.RegionId);
-        ////signal.Ignore(p => p.ControllerTypeId);
-        ////signal.Ignore(p => p.ChartEnabled);
-        ////signal.Ignore(p => p.LoggingEnabled);
-        ////signal.Ignore(p => p.VersionActionId);
-        ////signal.Ignore(p => p.Note);
-        ////signal.Ignore(p => p.Start);
-        ////signal.Ignore(p => p.JurisdictionId);
-        ////signal.Ignore(p => p.Pedsare1to1);
-
-
-
-        ////signal.HasMany(p => p.Areas);
-
-
-        ////signal.Ignore(p => p.ControllerType);
-        ////signal.Ignore(p => p.Jurisdiction);
-        ////signal.Ignore(p => p.Region);
-        ////signal.Ignore(p => p.VersionAction);
-
-        ////signal.Ignore(p => p.Approaches);
-        ////signal.Ignore(p => p.Areas);
-
-        ////var movementType = builder.EntitySet<MovementType>("MovementType").EntityType;
-        ////movementType.HasKey(p => p.Id);
+                        break;
+                    }
+            }
+        }
     }
 }
