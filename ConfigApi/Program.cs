@@ -24,6 +24,8 @@ using System.Text;
 using System.Text.Json;
 //using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
+//[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -103,7 +105,7 @@ builder.Services.AddSwaggerGen(
         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
         // integrate xml comments
-        //options.IncludeXmlComments(filePath);
+        options.IncludeXmlComments(filePath);
     });
 
 var app = builder.Build();
