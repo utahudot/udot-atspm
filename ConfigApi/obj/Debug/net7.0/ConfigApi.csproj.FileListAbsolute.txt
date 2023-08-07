@@ -134,3 +134,5 @@ C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\refin
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ATSPM.ConfigApi.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ConfigApi.genruntimeconfig.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ref\ATSPM.ConfigApi.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\ATSPM.ConfigApi.xml
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ATSPM.ConfigApi.xml
