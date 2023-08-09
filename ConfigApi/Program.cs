@@ -1,25 +1,15 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Asp.Versioning.Conventions;
 using ATSPM.Application.Repositories;
-using ATSPM.ConfigApi.Controllers;
-using ATSPM.ConfigApi.EntityDataModel;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using Google.Api;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using OData.Swagger.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 //using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -191,12 +181,12 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
-        var text = new StringBuilder("An example application with OData, OpenAPI, Swashbuckle, and API versioning.");
+        var text = new StringBuilder("ATSPM Configuration with OData, OpenAPI, Swashbuckle, and API versioning.");
         var info = new OpenApiInfo()
         {
-            Title = "Sample API",
+            Title = "ATSPM Configuration Api",
             Version = description.ApiVersion.ToString(),
-            Contact = new OpenApiContact() { Name = "Bill Mei", Email = "bill.mei@somewhere.com" },
+            Contact = new OpenApiContact() { Name = "Christian Baker", Email = "christianbaker@utah.gov" },
             License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
         };
 
