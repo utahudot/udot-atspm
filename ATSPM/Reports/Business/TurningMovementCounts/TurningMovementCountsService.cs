@@ -11,8 +11,9 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
     public class TurningMovementCountsService
     {
         private readonly PlanService planService;
-        public TurningMovementCountsService()
+        public TurningMovementCountsService(PlanService planService )
         {
+            this.planService = planService;
         }
 
 
@@ -44,7 +45,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 approach.Description,
                 options.Start,
                 options.End,
-                approach.DirectionType.Description,
+                approach.DirectionTypeId.ToString(),
                 plans,
                 lanes,
                 totalVolumes,
