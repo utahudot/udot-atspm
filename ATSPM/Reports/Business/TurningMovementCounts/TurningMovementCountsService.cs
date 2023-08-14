@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +9,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
     public class TurningMovementCountsService
     {
         private readonly PlanService planService;
-        public TurningMovementCountsService(PlanService planService )
+        public TurningMovementCountsService(PlanService planService)
         {
             this.planService = planService;
         }
@@ -27,7 +25,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalId, planEvents);
             var movementTotals = new SortedDictionary<DateTime, int>();
             var laneTotals = new SortedDictionary<string, int>();
-            var binSizeMultiplier = 60 / options.SelectedBinSize;
+            //var binSizeMultiplier = 60 / options.SelectedBinSize;
             var lanes = GetLaneVolumes(options, detectors, movementTotals, laneTotals, events);
             var totalVolumes = movementTotals.Select(m => new TotalVolume(m.Key, m.Value)).ToList();
             var totalVolume = movementTotals.Sum(m => m.Value);
@@ -37,7 +35,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             var laneUtilizationFactor = GetLaneUtilizationFactor(totalVolume, detectors.Count(), highLaneVolume);
             var peakHourMaxVolume = movementTotals.Max(m => m.Value);// GetPeakHourMaxVolume(options, MovementTotals, binMultiplier, peakHourValue.Key);
             var peakHourFactor = GetPeakHourFactor(peakHourValue.Value, peakHourMaxVolume, binMultiplier);
-            
+
 
             return new TurningMovementCountsResult(
                 "Turning Movement Counts",
@@ -96,16 +94,16 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                         //One of the calculations requires total volume by lane.  This if statment keeps a 
                         //running total of that volume and stores it in a dictonary with the lane number.
                         if (laneTotals.ContainsKey("L" + detector.LaneNumber))
-                            laneTotals["L" + detector.LaneNumber] += volume.HourlyVolume;
+                            laneTotals["L" + detector.LaneNumber] += volume.DetectorCount;// .HourlyVolume;
                         else
-                            laneTotals.Add("L" + detector.LaneNumber, volume.HourlyVolume);
+                            laneTotals.Add("L" + detector.LaneNumber, volume.DetectorCount);//.HourlyVolume) ;
                         //we need ot track the total number of cars (volume) for this movement.
                         //this uses a time/int dictionary.  The volume record for a given time is contibuted to by each lane.
                         //Then the movement total can be plotted on the graph
                         if (MovementTotals.ContainsKey(volume.StartTime))
-                            MovementTotals[volume.StartTime] += volume.HourlyVolume;
+                            MovementTotals[volume.StartTime] += volume.DetectorCount;//.HourlyVolume;
                         else
-                            MovementTotals.Add(volume.StartTime, volume.HourlyVolume);
+                            MovementTotals.Add(volume.StartTime, volume.DetectorCount);//.HourlyVolume);
                     }
                     laneVolumes.Add(lane);
                 }
