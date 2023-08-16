@@ -22,6 +22,8 @@ using ATSPM.Data;
 using EFCore.BulkExtensions;
 using System.Collections.Generic;
 using System.Threading;
+using static Google.Cloud.Logging.V2.TailLogEntriesResponse.Types.SuppressionInfo.Types;
+using Microsoft.OData.Edm.Csdl;
 
 namespace ATSPM.SignalControllerLogger
 {
@@ -29,6 +31,7 @@ namespace ATSPM.SignalControllerLogger
     {
         static async Task Main(string[] args)
         {
+
             var host = Host.CreateDefaultBuilder()
                 .ConfigureLogging((h, l) =>
                 {
