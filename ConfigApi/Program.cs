@@ -1,73 +1,80 @@
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Text;
 using System.Text.Json;
-//using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
-
-//[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-//https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
-
-builder.Services.AddControllers(options =>
-{
-    options.ReturnHttpNotAcceptable = true;
-}).AddXmlDataContractSerializerFormatters()
-.AddOData(options =>
-{
-    options.Count().Select().OrderBy().Expand().Filter();
-    options.RouteOptions.EnableKeyInParenthesis = false;
-    options.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
-    options.RouteOptions.EnablePropertyNameCaseInsensitive = true;
-    options.RouteOptions.EnableQualifiedOperationCall = false;
-    options.RouteOptions.EnableUnqualifiedOperationCall = true;
-});
-builder.Services.AddProblemDetails();
-builder.Services.AddApiVersioning(options =>
-{
-    // reporting api versions will return the headers
-    // "api-supported-versions" and "api-deprecated-versions"
-options.ReportApiVersions = true;
-
-options.Policies.Sunset(0.9)
-    .Effective(DateTimeOffset.Now.AddDays(60))
-    .Link("policy.html")
-    .Title("Versioning Policy")
-    .Type("text/html");
-})
-    .AddOData(options => options.AddRouteComponents("api/v{version:apiVersion}"))
-    .AddODataApiExplorer(
-    options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-        options.SubstituteApiVersionInUrl = true;
-
-                    // configure query options (which cannot otherwise be configured by OData conventions)
-                    //options.QueryOptions.Controller<ActionsController>()
-                    //                    .Action(c => c.Get(default))
-                    //                        .Allow(Skip | Count)
-                    //                        .AllowTop(100);
-                    });
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-builder.Services.AddEndpointsApiExplorer();
 builder.Host.ConfigureServices((h, s) =>
 {
+    s.AddControllers(o =>
+    {
+        o.ReturnHttpNotAcceptable = true;
+        o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+        o.OutputFormatters.RemoveType<StringOutputFormatter>();
+    }).AddXmlDataContractSerializerFormatters()
+    .AddOData(o =>
+    {
+        o.Count().Select().OrderBy().Expand().Filter();
+        o.RouteOptions.EnableKeyInParenthesis = false;
+        o.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
+        o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
+        o.RouteOptions.EnableQualifiedOperationCall = false;
+        o.RouteOptions.EnableUnqualifiedOperationCall = true;
+    });
+
+    s.AddProblemDetails();
+
+    //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
+    s.AddApiVersioning(o =>
+    {
+        o.ReportApiVersions = true;
+        o.DefaultApiVersion = new ApiVersion(1, 0);
+        o.AssumeDefaultVersionWhenUnspecified = true;
+        o.Policies.Sunset(0.9)
+        .Effective(DateTimeOffset.Now.AddDays(60))
+        .Link("policy.html")
+        .Title("Versioning Policy")
+        .Type("text/html");
+    })
+    .AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
+    .AddODataApiExplorer(o =>
+    {
+        o.GroupNameFormat = "'v'VVV";
+        o.SubstituteApiVersionInUrl = true;
+
+        // configure query options (which cannot otherwise be configured by OData conventions)
+        //options.QueryOptions.Controller<ActionsController>()
+        //                    .Action(c => c.Get(default))
+        //                        .Allow(Skip | Count)
+        //                        .AllowTop(100);
+    });
+
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+    builder.Services.AddSwaggerGen(o =>
+        {
+            // add a custom operation filter which sets default values
+            o.OperationFilter<SwaggerDefaultValues>();
+
+            var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+            var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+
+            // integrate xml comments
+            o.IncludeXmlComments(filePath);
+        });
+
     s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
     s.AddScoped<IApplicationSettingsRepository, ApplicationSettingsEFRepository>();
     s.AddScoped<IApproachRepository, ApproachEFRepository>();
@@ -79,24 +86,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IMenuRepository, MenuEFRepository>();
     s.AddScoped<IRegionsRepository, RegionEFRepository>();
     s.AddScoped<ISignalRepository, SignalEFRepository>();
+
 });
-
-
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(
-    options =>
-    {
-        // add a custom operation filter which sets default values
-        options.OperationFilter<SwaggerDefaultValues>();
-
-        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
-
-        // integrate xml comments
-        options.IncludeXmlComments(filePath);
-    });
 
 var app = builder.Build();
 
@@ -107,8 +98,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseSwagger();
-app.UseSwaggerUI(
-    options =>
+app.UseSwaggerUI(o =>
     {
         var descriptions = app.DescribeApiVersions();
 
@@ -117,7 +107,7 @@ app.UseSwaggerUI(
         {
             var url = $"/swagger/{description.GroupName}/swagger.json";
             var name = description.GroupName.ToUpperInvariant();
-            options.SwaggerEndpoint(url, name);
+            o.SwaggerEndpoint(url, name);
         }
     });
 
@@ -125,113 +115,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        /// <summary>
-                        /// Configures the Swagger generation options.
-                        /// </summary>
-                        /// <remarks>This allows API versioning to define a Swagger document per API version after the
-                        /// <see cref="IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>
-public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
-{
-    private readonly IApiVersionDescriptionProvider provider;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigureSwaggerOptions"/> class.
-    /// </summary>
-    /// <param name="provider">The <see cref="IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
-    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => this.provider = provider;
-
-    /// <inheritdoc />
-    public void Configure(SwaggerGenOptions options)
-    {
-        // add a swagger document for each discovered API version
-        // note: you might choose to skip or document deprecated API versions differently
-        foreach (var description in provider.ApiVersionDescriptions)
-        {
-            options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
-        }
-    }
-
-    private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
-    {
-        var text = new StringBuilder("ATSPM Configuration with OData, OpenAPI, Swashbuckle, and API versioning.");
-        var info = new OpenApiInfo()
-        {
-            Title = "ATSPM Configuration Api",
-            Version = description.ApiVersion.ToString(),
-            Contact = new OpenApiContact() { Name = "Christian Baker", Email = "christianbaker@utah.gov" },
-            License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
-        };
-
-        if (description.IsDeprecated)
-        {
-            text.Append(" This API version has been deprecated.");
-        }
-
-        if (description.SunsetPolicy is SunsetPolicy policy)
-        {
-            if (policy.Date is DateTimeOffset when)
-            {
-                text.Append(" The API will be sunset on ")
-                    .Append(when.Date.ToShortDateString())
-                    .Append('.');
-            }
-
-            if (policy.HasLinks)
-            {
-                text.AppendLine();
-
-                for (var i = 0; i < policy.Links.Count; i++)
-                {
-                    var link = policy.Links[i];
-
-                    if (link.Type == "text/html")
-                    {
-                        text.AppendLine();
-
-                        if (link.Title.HasValue)
-                        {
-                            text.Append(link.Title.Value).Append(": ");
-                        }
-
-                        text.Append(link.LinkTarget.OriginalString);
-                    }
-                }
-            }
-        }
-
-        info.Description = text.ToString();
-
-        return info;
-    }
-}
 
 
 
@@ -267,10 +150,20 @@ public class SwaggerDefaultValues : IOperationFilter
 
             foreach (var contentType in response.Content.Keys)
             {
-                if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
-                {
+                //Console.WriteLine($"contentType: {contentType}");
+
+                if (contentType != "application/json" && contentType != "application/xml")
                     response.Content.Remove(contentType);
-                }
+
+                //if (!contentType.Contains("json") && !contentType.Contains("xml"))
+                //    response.Content.Remove(contentType);
+
+                //if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
+                //{
+                //    Console.WriteLine($"remove: {contentType}");
+
+                //    response.Content.Remove(contentType);
+                //}
             }
         }
 

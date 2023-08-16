@@ -75,7 +75,7 @@
             Configures the Swagger generation options.
             </summary>
             <remarks>This allows API versioning to define a Swagger document per API version after the
-            <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>
+            <see cref="T:Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider"/> service has been resolved from the service container.</remarks>                        
         </member>
         <member name="M:ConfigureSwaggerOptions.#ctor(Asp.Versioning.ApiExplorer.IApiVersionDescriptionProvider)">
             <summary>
