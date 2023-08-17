@@ -113,8 +113,6 @@ public class SwaggerDefaultValues : IOperationFilter
 
             foreach (var contentType in response.Content.Keys)
             {
-                Console.WriteLine($"contentType: {contentType}");
-                
                 if (!responseType.ApiResponseFormats.Any(x => x.MediaType == contentType))
                 {
                     response.Content.Remove(contentType);

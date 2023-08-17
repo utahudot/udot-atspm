@@ -10,10 +10,16 @@
         <member name="M:ATSPM.ConfigApi.Configuration.ApplicationSettingsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.ControllerTypeModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:ATSPM.ConfigApi.Configuration.ExternalLinksModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ConfigApi.Configuration.FaqsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.JurisdictionModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ConfigApi.Configuration.MeasureDefaultsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
@@ -32,10 +38,15 @@
             <typeparam name="T">Type of ATSPM.Data.Model</typeparam>
             <typeparam name="TKey">Model Key data type</typeparam>
         </member>
+        <member name="P:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.QueryValidation">
+            <summary>
+            Validation settings for oData query
+            </summary>
+        </member>
         <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.#ctor(ATSPM.Domain.Services.IAsyncRepository{`0})">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Get">
+        <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Get(Microsoft.AspNetCore.OData.Query.ODataQueryOptions{`0})">
             <summary>
             Collection of type from oData query
             </summary>
