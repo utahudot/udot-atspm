@@ -1,5 +1,7 @@
 using Asp.Versioning;
+using Asp.Versioning.Conventions;
 using ATSPM.Application.Repositories;
+using ATSPM.ConfigApi.Controllers;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
@@ -8,10 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Net.Mime;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +30,7 @@ builder.Host.ConfigureServices((h, s) =>
     }).AddXmlDataContractSerializerFormatters()
     .AddOData(o =>
     {
-        o.Count().Select().OrderBy().Expand().Filter();
+        o.Count().Select().OrderBy().Expand().Filter().SetMaxTop(null);
         o.RouteOptions.EnableKeyInParenthesis = false;
         o.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
         o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
@@ -54,10 +58,10 @@ builder.Host.ConfigureServices((h, s) =>
         o.GroupNameFormat = "'v'VVV";
         o.SubstituteApiVersionInUrl = true;
 
-        // configure query options (which cannot otherwise be configured by OData conventions)
-        //options.QueryOptions.Controller<ActionsController>()
+        //configure query options(which cannot otherwise be configured by OData conventions)
+        //o.QueryOptions.Controller<JurisdictionController>()
         //                    .Action(c => c.Get(default))
-        //                        .Allow(Skip | Count)
+        //                        .Allow(AllowedQueryOptions.Skip | AllowedQueryOptions.Count)
         //                        .AllowTop(100);
     });
 
@@ -82,6 +86,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
     s.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
     s.AddScoped<IFaqRepository, FaqEFRepository>();
+    s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
     s.AddScoped<IMeasuresDefaultsRepository, MeasureDefaultEFRepository>();
     s.AddScoped<IMenuRepository, MenuEFRepository>();
     s.AddScoped<IRegionsRepository, RegionEFRepository>();
