@@ -5,12 +5,12 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class ExternalLinksModelConfiguration : IModelConfiguration
+    public class ControllerTypeModelConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<ExternalLink>("ExternalLink")
+            var model = builder.EntitySet<ControllerType>("ControllerType")
                 .EntityType
                 .HasKey(p => p.Id)
                 .Page(default, default);
@@ -19,8 +19,9 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Name).IsRequired();
-                        model.Property(p => p.Url).IsRequired();
+                        model.Property(p => p.Description).MaxLength = 50;
+                        model.Property(p => p.UserName).MaxLength = 50;
+                        model.Property(p => p.Password).MaxLength = 50;
 
                         break;
                     }
