@@ -22,11 +22,11 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region Overrides
 
-        public override IQueryable<ControllerType> GetList()
-        {
-            return base.GetList()
-                .Include(i => i.Signals);
-        }
+        //public override IQueryable<ControllerType> GetList()
+        //{
+        //    return base.GetList()
+        //        .Include(i => i.Signals);
+        //}
 
         #endregion
 
