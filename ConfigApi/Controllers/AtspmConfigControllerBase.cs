@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Asp.Versioning.OData;
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
@@ -6,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.OData;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -23,11 +26,27 @@ namespace ATSPM.ConfigApi.Controllers
     {
         private readonly IAsyncRepository<T> _repository;
 
+        /// <summary>
+        /// Validation settings for oData query
+        /// </summary>
+        protected ODataValidationSettings QueryValidation { get; set; }
+
         /// <inheritdoc/>
         public AtspmConfigControllerBase(IAsyncRepository<T> repository)
         {
             //_configContext = configContext;
             _repository = repository;
+
+            QueryValidation = new ODataValidationSettings()
+            {
+                AllowedQueryOptions = AllowedQueryOptions.All,
+                AllowedArithmeticOperators = AllowedArithmeticOperators.All,
+                AllowedFunctions = AllowedFunctions.All,
+                AllowedLogicalOperators = AllowedLogicalOperators.All,
+                //AllowedOrderByProperties = { "firstName", "lastName" },
+                //MaxOrderByNodeCount = 2,
+                //MaxTop = 1000,
+            };
         }
 
         /// <summary>
@@ -36,13 +55,26 @@ namespace ATSPM.ConfigApi.Controllers
         /// <returns>Action result of type</returns>
         // GET /Entity
         //[HttpGet()]
-        [EnableQuery]
+        //[EnableQuery]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<IQueryable<T>> Get()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public ActionResult<IQueryable<T>> Get()
+        //{
+        //    return Ok(_repository.GetList());
+        //}
+        public ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
-            return Ok(_repository.GetList());
+            try
+            {
+                options.Validate(QueryValidation);
+            }
+            catch (ODataException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            return Ok(options.ApplyTo(_repository.GetList()));
         }
 
         /// <summary>
@@ -52,7 +84,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <returns>Action result of type</returns>
         // GET /Entity(1)
         //[HttpGet("{key}")]
-        [EnableQuery]
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -62,7 +94,7 @@ namespace ATSPM.ConfigApi.Controllers
 
             if (i == null)
             {
-                return NotFound();
+                return NotFound(key);
             }
 
             return Ok(i);

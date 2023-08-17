@@ -11,7 +11,11 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Signal>("Signal").EntityType.HasKey(p => p.Id);
+            var model = builder.EntitySet<Signal>("Signal")
+                .EntityType
+                .HasKey(p => p.Id);
+            model.Page(default, default);
+
 
             var ip = builder.ComplexType<IPAddress>();
             ip.Property(i => i.Address);

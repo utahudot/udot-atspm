@@ -10,7 +10,10 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MeasuresDefault>("MeasuresDefault").EntityType.HasKey(p => p.Id);
+            var model = builder.EntitySet<MeasuresDefault>("MeasuresDefault")
+                .EntityType
+                .HasKey(p => p.Id)
+                .Page(default, default);
 
             switch (apiVersion.MajorVersion)
             {
