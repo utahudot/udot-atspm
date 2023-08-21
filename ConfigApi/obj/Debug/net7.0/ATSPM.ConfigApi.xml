@@ -10,6 +10,12 @@
         <member name="M:ATSPM.ConfigApi.Configuration.ApplicationSettingsModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.ApproachModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.AreaModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:ATSPM.ConfigApi.Configuration.ControllerTypeModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
