@@ -21,13 +21,13 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region Overrides
 
-        public override IQueryable<Approach> GetList()
-        {
-            return base.GetList()
-                .Include(i => i.DirectionType)
-                .Include(i => i.Signal)
-                .Include(i => i.Detectors);
-        }
+        //public override IQueryable<Approach> GetList()
+        //{
+        //    return base.GetList()
+        //        .Include(i => i.DirectionType)
+        //        .Include(i => i.Signal)
+        //        .Include(i => i.Detectors);
+        //}
 
         #endregion
 
