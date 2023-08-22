@@ -179,7 +179,7 @@ namespace ATSPM.ConfigApi.Controllers
 
             await _repository.UpdateAsync(i);
 
-            return NoContent();
+            return Updated(item);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace ATSPM.ConfigApi.Controllers
         // DELETE /Entity(1)
         //[HttpDelete("{key}")]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Delete))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public virtual async Task<IActionResult> Delete(TKey key)
