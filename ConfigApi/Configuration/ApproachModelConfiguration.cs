@@ -14,7 +14,6 @@ namespace ATSPM.ConfigApi.Configuration
                 .EntityType
                 .HasKey(p => p.Id)
                 .Page(default, default);
-            model.HasDescription();
 
             switch (apiVersion.MajorVersion)
             {
