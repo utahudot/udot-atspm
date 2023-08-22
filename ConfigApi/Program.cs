@@ -1,21 +1,16 @@
 using Asp.Versioning;
-using Asp.Versioning.Conventions;
 using ATSPM.Application.Repositories;
-using ATSPM.ConfigApi.Controllers;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Net.Mime;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
