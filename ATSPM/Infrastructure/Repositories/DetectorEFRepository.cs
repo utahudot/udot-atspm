@@ -20,9 +20,7 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public DetectorEFRepository(ConfigContext db, ILogger<DetectorEFRepository> log) : base(db, log) { }
 
-        #region Overrides
-
-        public override IQueryable<Detector> GetList()
+        private IQueryable<Detector> BaseQuery()
         {
             return base.GetList()
                 .Include(i => i.Approach)
@@ -32,6 +30,19 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.DetectorComments)
                 .Include(i => i.DetectionTypes);
         }
+
+        #region Overrides
+
+        //public override IQueryable<Detector> GetList()
+        //{
+        //    return base.GetList()
+        //        .Include(i => i.Approach)
+        //        .Include(i => i.DetectionHardware)
+        //        .Include(i => i.LaneType)
+        //        .Include(i => i.MovementType)
+        //        .Include(i => i.DetectorComments)
+        //        .Include(i => i.DetectionTypes);
+        //}
 
         #endregion
 
