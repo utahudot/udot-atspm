@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Jurisdiction : ATSPMModelBase, IRelatedSignals
+    public partial class Jurisdiction : AtspmConfigModelBase<int>, IRelatedSignals
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Name { get; set; }
         public string Mpo { get; set; }
         public string CountyParish { get; set; }

@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class LaneType : ATSPMModelBase, IRelatedDetectors
+    public partial class LaneType : AtspmConfigModelBase<LaneTypes>, IRelatedDetectors
     {
-        public LaneTypes Id { get; set; }
+        //public LaneTypes Id { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
 

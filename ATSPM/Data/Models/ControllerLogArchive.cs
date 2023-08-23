@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ControllerLogArchive : ATSPMModelBase
+    public partial class ControllerLogArchive// : ATSPMModelBase
     {
         public string SignalId { get; set; }
         public DateTime ArchiveDate { get; set; }

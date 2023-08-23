@@ -1,9 +1,10 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 
 namespace ATSPM.ConfigApi.Controllers
 {
-    public class LaneTypeController : AtspmConfigControllerBase<LaneType, int>
+    public class LaneTypeController : AtspmConfigControllerBase<LaneType, LaneTypes>
     {
         private readonly ILaneTypeRepository _repository;
 
