@@ -64,7 +64,7 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var result = BaseQuery()
                 .FromSpecification(new ActiveSignalSpecification())
-                .GroupBy(r => r.SignalId)
+                .GroupBy(r => r.SignalIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
@@ -76,7 +76,7 @@ namespace ATSPM.Infrastructure.Repositories
             var result = BaseQuery()
                 .Where(w => w.ControllerTypeId == controllerTypeId)
                 .FromSpecification(new ActiveSignalSpecification())
-                .GroupBy(r => r.SignalId)
+                .GroupBy(r => r.SignalIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 

@@ -31,10 +31,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = "1001",
+                SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                Timestamp = DateTime.Now.AddSeconds(s)
+                TimeStamp = DateTime.Now.AddSeconds(s)
 
             });
 
@@ -53,10 +53,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = s % 2 == 0 ? "1001" : "1002",
+                SignalIdentifier = s % 2 == 0 ? "1001" : "1002",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                Timestamp = DateTime.Now.AddSeconds(s)
+                TimeStamp = DateTime.Now.AddSeconds(s)
             });
 
             var result = await sut.ExecuteAsync(testEvents);
@@ -74,10 +74,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = "1001",
+                SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = s % 2 == 0 ? 1 : 2,
-                Timestamp = DateTime.Now.AddSeconds(s)
+                TimeStamp = DateTime.Now.AddSeconds(s)
             });
 
             var result = await sut.ExecuteAsync(testEvents);
@@ -95,10 +95,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = "1001",
+                SignalIdentifier = "1001",
                 EventCode = s % 2 == 0 ? s : (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                Timestamp = DateTime.Now.AddSeconds(s)
+                TimeStamp = DateTime.Now.AddSeconds(s)
 
             });
 
@@ -117,12 +117,12 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalId = "1001",
+                SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                Timestamp = DateTime.Now.AddSeconds(s)
+                TimeStamp = DateTime.Now.AddSeconds(s)
 
-            }).OrderByDescending(o => o.Timestamp);
+            }).OrderByDescending(o => o.TimeStamp);
 
             var result = await sut.ExecuteAsync(testEvents);
 

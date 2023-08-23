@@ -18,6 +18,6 @@ namespace ATSPM.Application.Specifications
 
     public class SignalIdSpecification : BaseSpecification<Signal>
     {
-        public SignalIdSpecification(string signalId) : base(s => s.SignalId == signalId) { }
+        public SignalIdSpecification(string signalId) : base(s => s.SignalIdentifier == signalId) { }
     }
 }

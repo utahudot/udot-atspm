@@ -47,10 +47,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -58,11 +58,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
-                BeginExitInterval = testData[3].Timestamp,
-                End = testData[3].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
+                BeginExitInterval = testData[3].TimeStamp,
+                End = testData[3].TimeStamp,
                 HasDelay = true
             };
 
@@ -80,10 +80,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
                 
             };
 
@@ -92,11 +92,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[1].Timestamp,
-                StartInputOn = testData[1].Timestamp,
-                EntryStarted = testData[0].Timestamp,
-                BeginExitInterval = testData[2].Timestamp,
-                End = testData[2].Timestamp,
+                Start = testData[1].TimeStamp,
+                StartInputOn = testData[1].TimeStamp,
+                EntryStarted = testData[0].TimeStamp,
+                BeginExitInterval = testData[2].TimeStamp,
+                End = testData[2].TimeStamp,
                 HasDelay = true
             };
 
@@ -114,11 +114,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:30.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:30.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -126,11 +126,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[1].Timestamp,
-                StartInputOn = testData[1].Timestamp,
-                EntryStarted = testData[2].Timestamp,
-                BeginExitInterval = testData[4].Timestamp,
-                End = testData[4].Timestamp,
+                Start = testData[1].TimeStamp,
+                StartInputOn = testData[1].TimeStamp,
+                EntryStarted = testData[2].TimeStamp,
+                BeginExitInterval = testData[4].TimeStamp,
+                End = testData[4].TimeStamp,
                 HasDelay = true
             };
 
@@ -148,11 +148,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:30.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:30.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -160,11 +160,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
-                BeginExitInterval = testData[4].Timestamp,
-                End = testData[4].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
+                BeginExitInterval = testData[4].TimeStamp,
+                End = testData[4].TimeStamp,
                 HasDelay = true
             };
 
@@ -183,9 +183,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testData = new List<ControllerEventLog>
             {
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -193,11 +193,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
+                Start = testData[0].TimeStamp,
                 StartInputOn = null,
-                EntryStarted = testData[0].Timestamp,
-                BeginExitInterval = testData[2].Timestamp,
-                End = testData[2].Timestamp,
+                EntryStarted = testData[0].TimeStamp,
+                BeginExitInterval = testData[2].TimeStamp,
+                End = testData[2].TimeStamp,
                 HasDelay = false
             };
 
@@ -215,10 +215,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -236,10 +236,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -247,11 +247,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
-                BeginExitInterval = testData[2].Timestamp,
-                End = testData[2].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
+                BeginExitInterval = testData[2].TimeStamp,
+                End = testData[2].TimeStamp,
                 HasDelay = true
             };
 
@@ -269,9 +269,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
@@ -280,11 +280,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
-                BeginExitInterval = testData[2].Timestamp,
-                End = testData[2].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
+                BeginExitInterval = testData[2].TimeStamp,
+                End = testData[2].TimeStamp,
                 HasDelay = true
             };
 
@@ -302,10 +302,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -313,11 +313,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
                 BeginExitInterval = null,
-                End = testData[2].Timestamp,
+                End = testData[2].TimeStamp,
                 HasDelay = true
             };
 
@@ -335,10 +335,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -357,9 +357,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testData = new List<ControllerEventLog>
             {
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 111, EventParam = 1},
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -377,14 +377,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 103, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 106, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:05:01.1"), EventCode = 107, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:06:01.1"), EventCode = 110, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:07:01.1"), EventCode = 104, EventParam = 1},
-                new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 12:08:01.1"), EventCode = 111, EventParam = 1}
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 103, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:04:01.1"), EventCode = 106, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:05:01.1"), EventCode = 107, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:06:01.1"), EventCode = 110, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:07:01.1"), EventCode = 104, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 12:08:01.1"), EventCode = 111, EventParam = 1}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -397,15 +397,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.First();
             var expected = new PreemptCycle()
             {
-                Start = testData[0].Timestamp,
-                StartInputOn = testData[0].Timestamp,
-                EntryStarted = testData[1].Timestamp,
-                GateDown = testData[2].Timestamp,
-                BeginTrackClearance = testData[3].Timestamp,
-                BeginDwellService = testData[4].Timestamp,
-                MaxPresenceExceeded = testData[5].Timestamp,
-                BeginExitInterval = testData[7].Timestamp,
-                End = testData[7].Timestamp,
+                Start = testData[0].TimeStamp,
+                StartInputOn = testData[0].TimeStamp,
+                EntryStarted = testData[1].TimeStamp,
+                GateDown = testData[2].TimeStamp,
+                BeginTrackClearance = testData[3].TimeStamp,
+                BeginDwellService = testData[4].TimeStamp,
+                MaxPresenceExceeded = testData[5].TimeStamp,
+                BeginExitInterval = testData[7].TimeStamp,
+                End = testData[7].TimeStamp,
                 HasDelay = true
             };
 

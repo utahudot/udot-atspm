@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.RouteId);
 
-            builder.Property(e => e.SignalId)
+            builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
         }

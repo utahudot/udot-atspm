@@ -34,8 +34,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Select(s => s.Detector.Approach.Signal.SignalId).Distinct().OrderBy(o => o);
-            var expected = testData.SelectMany(s => s.Item2).Select(s => s.SignalId).Distinct().OrderBy(o => o);
+            var actual = result.Select(s => s.Detector.Approach.Signal.SignalIdentifier).Distinct().OrderBy(o => o);
+            var expected = testData.SelectMany(s => s.Item2).Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
 
             Assert.Equal(expected, actual);
         }
@@ -51,10 +51,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), detChannel, 10))
                 .Select(s => Tuple.Create(s.Item1, s.Item2.Select(l => new ControllerEventLog
                 {
-                    SignalId = l.SignalId,
+                    SignalIdentifier = l.SignalIdentifier,
                     EventCode = l.EventCode,
                     EventParam = Random.Shared.Next(1, 5),
-                    Timestamp = l.Timestamp
+                    TimeStamp = l.TimeStamp
                 }).ToList().AsEnumerable())).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -74,10 +74,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testData = Enumerable.Range(1, 1).Select(s => GenerateDetectorEvents(Random.Shared.Next(1, 5).ToString(), 1, 10))
                 .Select(s => Tuple.Create(s.Item1, s.Item2.Select(l => new ControllerEventLog
                 {
-                    SignalId = l.SignalId,
+                    SignalIdentifier = l.SignalIdentifier,
                     EventCode = Random.Shared.Next(82, 85),
                     EventParam = l.EventParam,
-                    Timestamp = l.Timestamp
+                    TimeStamp = l.TimeStamp
                 }).ToList().AsEnumerable())).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -102,7 +102,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.First().CorrectedTimeStamp;
-            var expected = AtspmMath.AdjustTimeStamp(testData.First().Item2.First().Timestamp,
+            var expected = AtspmMath.AdjustTimeStamp(testData.First().Item2.First().TimeStamp,
                 testData.First().Item1.Approach?.Mph ?? 0,
                 testData.First().Item1.DistanceFromStopBar ?? 0,
                 testData.First().Item1.LatencyCorrection);
@@ -122,7 +122,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
             var expected = testData.SelectMany(s =>
-            s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
+            s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.TimeStamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
                 .OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
@@ -142,7 +142,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
-            var expected = testData.SelectMany(s => s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
+            var expected = testData.SelectMany(s => s.Item2.Select(t => t.TimeStamp)).OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
             _output.WriteLine($"count2: {expected.Count()}");
@@ -164,15 +164,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     Mph = 45,
                     Signal = new Signal()
                     {
-                        SignalId = signalId
+                        SignalIdentifier = signalId
                     }
                 }
             };
 
             var logs = Enumerable.Range(1, logCount).Select(s => new ControllerEventLog()
             {
-                SignalId = signalId,
-                Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+                SignalIdentifier = signalId,
+                TimeStamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = 82,
                 EventParam = detChannel
             }).ToList();

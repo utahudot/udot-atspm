@@ -48,7 +48,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     Mph = 45,
                     Signal = new Signal()
                     {
-                        SignalId = "1001"
+                        SignalIdentifier = "1001"
                     }
                 }
             };
