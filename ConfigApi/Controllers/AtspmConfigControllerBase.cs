@@ -22,7 +22,7 @@ namespace ATSPM.ConfigApi.Controllers
     //[ApiController]
     //[Route("[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    public class AtspmConfigControllerBase<T, TKey> : ODataController where T : ATSPMModelBase
+    public class AtspmConfigControllerBase<T, TKey> : ODataController where T : AtspmConfigModelBase<TKey>
     {
         private readonly IAsyncRepository<T> _repository;
 

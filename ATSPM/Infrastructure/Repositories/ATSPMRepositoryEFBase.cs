@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public abstract class ATSPMRepositoryEFBase<T> : IAsyncRepository<T> where T : ATSPMModelBase
+    public abstract class ATSPMRepositoryEFBase<T> : IAsyncRepository<T> where T : class
     {
         protected readonly ILogger _log;
         protected readonly DbContext _db;

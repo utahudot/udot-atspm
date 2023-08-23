@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DetectorComment : ATSPMModelBase, IRelatedDetector
+    public partial class DetectorComment : AtspmConfigModelBase<int>, IRelatedDetector
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int DetectorId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }
