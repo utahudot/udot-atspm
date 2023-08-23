@@ -54,7 +54,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                             _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
+                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
                     }
 
                     if (_options.Value.Excluded != null)
@@ -64,7 +64,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                             _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
+                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
                     }
 
                     var signals = signalQuery.ToList();

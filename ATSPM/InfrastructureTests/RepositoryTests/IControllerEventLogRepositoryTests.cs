@@ -36,15 +36,15 @@ namespace InfrastructureTests.RepositoryTests
                 for (int x = 1; x <= ItemCount; x++)
                 {
                     var f = ModelFixture.Build<ControllerLogArchive>()
-                        .With(w => w.SignalId, $"{x + 1000}")
+                        .With(w => w.SignalIdentifier, $"{x + 1000}")
                         .With(w => w.ArchiveDate, DateTime.Today.AddDays((x - (x * 2)) - 1))
                         .Without(w => w.LogData).Create();
 
                     for (int y = 1; y <= Logount; y++)
                     {
                         f.LogData.Add(ModelFixture.Build<ControllerEventLog>()
-                        .With(w => w.SignalId, f.SignalId)
-                        .With(w => w.Timestamp, f.ArchiveDate.AddMinutes(y * 10))
+                        .With(w => w.SignalIdentifier, f.SignalIdentifier)
+                        .With(w => w.TimeStamp, f.ArchiveDate.AddMinutes(y * 10))
                         .Create());
                     }
 
@@ -55,11 +55,11 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _list)
             {
-                _output.WriteLine($"Seed Data: {s.SignalId} - {s.ArchiveDate} - {s.LogData.Count}");
+                _output.WriteLine($"Seed Data: {s.SignalIdentifier} - {s.ArchiveDate} - {s.LogData.Count}");
 
                 foreach (var l in s.LogData)
                 {
-                    _output.WriteLine($"LogData: {l.SignalId} - {l.Timestamp} - {l.EventCode} - {l.EventParam}");
+                    _output.WriteLine($"LogData: {l.SignalIdentifier} - {l.TimeStamp} - {l.EventCode} - {l.EventParam}");
 
                 }
 
@@ -81,14 +81,14 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.SignalId} - {r.Timestamp} - {r.EventCode} - {r.EventParam}");
+                _output.WriteLine($"result: {r.SignalIdentifier} - {r.TimeStamp} - {r.EventCode} - {r.EventParam}");
             }
 
             //SignalId should equal signalId
-            Assert.True(result.All(a => a.SignalId == signalId));
+            Assert.True(result.All(a => a.SignalIdentifier == signalId));
 
             //timestamp should be between start/end dates
-            Assert.True(result.All(a => a.Timestamp >= start && a.Timestamp <= end));
+            Assert.True(result.All(a => a.TimeStamp >= start && a.TimeStamp <= end));
         }
 
         #endregion

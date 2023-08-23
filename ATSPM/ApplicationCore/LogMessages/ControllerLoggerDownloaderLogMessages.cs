@@ -16,7 +16,7 @@ namespace ATSPM.Application.LogMessages
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
-                { "SignalId", signal?.SignalId },
+                { "SignalId", signal?.SignalIdentifier },
                 { "SignalName", signal?.PrimaryName },
                 { "SignalTypeID", signal?.ControllerType?.Id.ToString() },
                 { "IPAddress", signal?.Ipaddress.ToString() },
