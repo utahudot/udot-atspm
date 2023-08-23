@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Agency : ATSPMModelBase, IRelatedActionLogs
+    public partial class Agency : AtspmConfigModelBase<AgencyTypes>, IRelatedActionLogs
     {
-        public AgencyTypes Id { get; set; }
+        //public AgencyTypes Id { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<ActionLog> ActionLogs { get; set; } = new HashSet<ActionLog>();

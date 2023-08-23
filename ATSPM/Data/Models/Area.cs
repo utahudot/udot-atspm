@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Area : ATSPMModelBase, IRelatedSignals
+    public partial class Area : AtspmConfigModelBase<int>, IRelatedSignals
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();

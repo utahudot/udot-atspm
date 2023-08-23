@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MetricComment : ATSPMModelBase, IRelatedMetricTypes
+    public partial class MetricComment : AtspmConfigModelBase<int>, IRelatedMetricTypes
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string SignalId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string CommentText { get; set; }

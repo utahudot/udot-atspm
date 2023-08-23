@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Application : ATSPMModelBase, IRelatedApplicationSettings
+    public partial class Application : AtspmConfigModelBase<ApplicationTypes>, IRelatedApplicationSettings
     {
-        public ApplicationTypes Id { get; set; }
+        //public ApplicationTypes Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<ApplicationSetting> ApplicationSettings { get; set; } = new HashSet<ApplicationSetting>();

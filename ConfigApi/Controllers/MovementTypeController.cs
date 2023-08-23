@@ -1,9 +1,10 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 
 namespace ATSPM.ConfigApi.Controllers
 {
-    public class MovementTypeController : AtspmConfigControllerBase<MovementType, int>
+    public class MovementTypeController : AtspmConfigControllerBase<MovementType, MovementTypes>
     {
         private readonly IMovementTypeRepository _repository;
 

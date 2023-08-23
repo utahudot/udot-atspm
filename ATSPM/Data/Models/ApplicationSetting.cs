@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApplicationSetting : ATSPMModelBase, IRelatedApplication
+    public partial class ApplicationSetting : AtspmConfigModelBase<int>, IRelatedApplication
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public ApplicationTypes ApplicationId { get; set; }
         public int? ConsecutiveCount { get; set; }
         public int? MinPhaseTerminations { get; set; }
