@@ -13,7 +13,7 @@ namespace ATSPM.Data.Models
     {
         public override string? ToString()
         {
-            return $"{SignalId} - {PrimaryName} {SecondaryName}";
+            return $"{SignalIdentifier} - {PrimaryName} {SecondaryName}";
         }
 
         #region obsolete

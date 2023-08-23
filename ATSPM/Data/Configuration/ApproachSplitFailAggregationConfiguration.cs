@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Approach Split Fail Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID, e.PhaseNumber, e.IsProtectedPhase });
+            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.ApproachId, e.PhaseNumber, e.IsProtectedPhase });
 
-            builder.Property(e => e.SignalId).HasMaxLength(10);
+            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
         }
     }
 }

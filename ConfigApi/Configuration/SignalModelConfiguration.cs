@@ -36,11 +36,11 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.Longitude).IsRequired();
                         model.Property(p => p.Note).IsRequired();
                         model.Property(p => p.PrimaryName).IsRequired();
-                        model.Property(p => p.SignalId).IsRequired();
+                        model.Property(p => p.SignalIdentifier).IsRequired();
 
                         model.Property(p => p.PrimaryName).MaxLength = 100;
                         model.Property(p => p.SecondaryName).MaxLength = 100;
-                        model.Property(p => p.SignalId).MaxLength = 10;
+                        model.Property(p => p.SignalIdentifier).MaxLength = 10;
 
                         model.Property(p => p.JurisdictionId).DefaultValueString = "0";
                         model.EnumProperty(p => p.VersionActionId).DefaultValueString = "10";

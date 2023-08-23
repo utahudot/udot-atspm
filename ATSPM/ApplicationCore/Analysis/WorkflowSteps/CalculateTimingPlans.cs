@@ -23,11 +23,11 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input
                 .Where(w => w.EventCode == (int)DataLoggerEnum.CoordPatternChange)
-                .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalId, (k, i) => i
+                .OrderBy(o => o.TimeStamp)
+                .GroupBy(g => g.SignalIdentifier, (k, i) => i
                 .GroupBy(p => p.EventParam, (n, c) => c
                 .Where((w, i) => i < c.Count() - 1)
-                .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
+                .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).TimeStamp, End = c.ElementAt(i + 1).TimeStamp }))
                 .SelectMany(s => s).ToList());
 
             if (result.Count() == 0)

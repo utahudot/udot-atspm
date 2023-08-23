@@ -43,7 +43,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.SecondaryName)
                 .HasMaxLength(100);
 
-            builder.Property(e => e.SignalId)
+            builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
 
