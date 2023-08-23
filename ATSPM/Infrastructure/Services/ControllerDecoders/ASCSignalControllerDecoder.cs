@@ -78,7 +78,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalId = SignalId };
+                        var log = new ControllerEventLog() { SignalIdentifier = SignalId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {
@@ -97,7 +97,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                                 Array.Reverse(rawoffset);
                                 int offset = BitConverter.ToInt16(rawoffset, 0);
                                 var tenths = Convert.ToDouble(offset) / 10;
-                                log.Timestamp = startTime.AddSeconds(tenths);
+                                log.TimeStamp = startTime.AddSeconds(tenths);
                             }
                         }
 

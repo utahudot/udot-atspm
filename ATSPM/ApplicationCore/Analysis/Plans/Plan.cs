@@ -12,14 +12,10 @@ namespace ATSPM.Application.Analysis.Plans
     /// </summary>
     public abstract class Plan : StartEndRange, IPlan
     {
-        #region ISignalLayer
+        #region IPlan
 
         /// <inheritdoc/>
         public string SignalIdentifier { get; set; }
-
-        #endregion
-
-        #region IPlan
 
         /// <inheritdoc/>
         public int PlanNumber { get; set; }

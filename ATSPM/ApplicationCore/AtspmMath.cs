@@ -77,7 +77,7 @@ namespace ATSPM.Application
         /// <returns><see cref="TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
         public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
         {
-            var preFilter = items.OrderBy(o => o.Timestamp)
+            var preFilter = items.OrderBy(o => o.TimeStamp)
                 .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
                 //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
                 .ToList();
@@ -86,7 +86,7 @@ namespace ATSPM.Application
                     (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
                     (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
                         .Chunk(2)
-                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
+                        .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].TimeStamp - l[0].TimeStamp));
 
             return result;
         }
