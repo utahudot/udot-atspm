@@ -75,10 +75,12 @@ builder.Host.ConfigureServices((h, s) =>
         });
 
     s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+    s.AddScoped<IActionLogRepository, ActionLogEFRepository>();
     s.AddScoped<IApplicationSettingsRepository, ApplicationSettingsEFRepository>();
     s.AddScoped<IApproachRepository, ApproachEFRepository>();
     s.AddScoped<IAreaRepository, AreaEFRepository>();
     s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
+    s.AddScoped<IDetectorRepository, DetectorEFRepository>();
     s.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
     s.AddScoped<IFaqRepository, FaqEFRepository>();
     s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();

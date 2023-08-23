@@ -19,6 +19,9 @@
         <member name="M:ATSPM.ConfigApi.Configuration.ControllerTypeModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.DetectorModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
         <member name="M:ATSPM.ConfigApi.Configuration.ExternalLinksModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
@@ -32,6 +35,9 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ConfigApi.Configuration.MenuModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Configuration.RegionModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ConfigApi.Configuration.SignalModelConfiguration.Apply(Microsoft.OData.ModelBuilder.ODataModelBuilder,Asp.Versioning.ApiVersion,System.String)">
