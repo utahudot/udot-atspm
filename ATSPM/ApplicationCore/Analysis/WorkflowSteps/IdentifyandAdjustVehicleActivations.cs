@@ -29,12 +29,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input
                 .Select(s =>
-                Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalId == w.SignalId && w.EventParam == s.Item1.DetChannel)))
+                Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalIdentifier == w.SignalIdentifier && w.EventParam == s.Item1.DetChannel)))
                 .Select(s => s
                 .Item2.Select(c =>
                 new CorrectedDetectorEvent(s.Item1)
                 {
-                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
+                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.TimeStamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
                 }))
             .SelectMany(s => s)
             .ToList();

@@ -105,7 +105,7 @@ namespace ATSPM.EventLogUtility.Commands
                             _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
+                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
                     }
 
                     if (_options.Value.Excluded != null)
@@ -115,7 +115,7 @@ namespace ATSPM.EventLogUtility.Commands
                             _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
+                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
                     }
 
                     var signals = signalQuery.ToList();
@@ -149,7 +149,7 @@ namespace ATSPM.EventLogUtility.Commands
             Console.WriteLine($"-------------------------------------------------------------");
 
             Console.WriteLine($"key: {signal.Id}");
-            Console.WriteLine($"id: {signal.SignalId}");
+            Console.WriteLine($"id: {signal.SignalIdentifier}");
             Console.WriteLine($"primary name: {signal.PrimaryName}");
             Console.WriteLine($"secondary name: {signal.SecondaryName}");
             Console.WriteLine($"ip address: {signal.Ipaddress}");

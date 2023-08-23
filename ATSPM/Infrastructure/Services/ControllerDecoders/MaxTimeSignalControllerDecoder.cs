@@ -72,10 +72,10 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 {
                     log = new ControllerEventLog()
                     {
-                        SignalId = SignalId,
+                        SignalIdentifier = SignalId,
                         EventCode = Convert.ToInt32(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToInt32(l.Attribute("Parameter").Value),
-                        Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
+                        TimeStamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                     };
                 }
                 catch (Exception e)

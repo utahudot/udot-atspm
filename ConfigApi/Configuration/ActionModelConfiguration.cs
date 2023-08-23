@@ -22,7 +22,7 @@ public class ActionModelConfiguration : IModelConfiguration
                 {
                     model.Property(p => p.Comment).MaxLength = 255;
                     model.Property(p => p.Name).MaxLength = 100;
-                    model.Property(p => p.SignalId).MaxLength = 10;
+                    model.Property(p => p.SignalIdentifier).MaxLength = 10;
                     //model.EnumProperty(p => p.AgencyId);
 
                     break;

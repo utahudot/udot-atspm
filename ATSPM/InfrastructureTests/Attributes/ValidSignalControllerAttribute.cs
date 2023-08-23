@@ -19,7 +19,7 @@ namespace InfrastructureTests.Attributes
                     Ipaddress = new IPAddress(new byte[] { 10,209,2,120 }),
                     ChartEnabled = true,
                     PrimaryName = "Maxtime Test",
-                    SignalId = "0",
+                    SignalIdentifier = "0",
                     ControllerTypeId = 4,
                     ControllerType = new ControllerType() { Id = 4 }
                 }
@@ -32,7 +32,7 @@ namespace InfrastructureTests.Attributes
                     Ipaddress = new IPAddress(new byte[] { 10,209,2,108 }),
                     ChartEnabled = true,
                     PrimaryName = "Cobalt Test",
-                    SignalId = "9731",
+                    SignalIdentifier = "9731",
                     ControllerTypeId = 2,
                     ControllerType = new ControllerType() { Id = 2 }
                 }
