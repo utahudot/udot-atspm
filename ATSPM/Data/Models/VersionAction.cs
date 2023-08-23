@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class VersionAction : ATSPMModelBase, IRelatedSignals
+    public partial class VersionAction : AtspmConfigModelBase<SignaVersionActions>, IRelatedSignals
     {
-        public SignaVersionActions Id { get; set; }
+        //public SignaVersionActions Id { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();

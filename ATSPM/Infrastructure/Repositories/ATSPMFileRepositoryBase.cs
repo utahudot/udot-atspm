@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : ATSPMModelBase, new()
+    public abstract class ATSPMFileRepositoryBase<T> : IAsyncRepository<T> where T : class, new()
     {
         protected readonly IFileTranscoder _fileTranscoder;
         protected readonly IOptions<FileRepositoryConfiguration> _options;

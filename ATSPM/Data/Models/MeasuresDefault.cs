@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MeasuresDefault : ATSPMModelBase
+    public partial class MeasuresDefault : AtspmConfigModelBase<int>
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Measure { get; set; }
         public string OptionName { get; set; }
         public string Value { get; set; }

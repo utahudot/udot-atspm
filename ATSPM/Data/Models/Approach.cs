@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Approach : ATSPMModelBase, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
+    public partial class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         //public string SignalId { get; set; }
         public int SignalId { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
