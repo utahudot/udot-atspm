@@ -9,7 +9,7 @@ using System.Net;
 namespace ATSPM.Data.Models
 {
     public partial class Signal :
-        ATSPMModelBase, 
+        AtspmConfigModelBase<int>, 
         IRelatedControllerType, 
         IRelatedJurisdiction, 
         IRelatedRegion, 
@@ -17,7 +17,7 @@ namespace ATSPM.Data.Models
         IRelatedApproaches
         //IRelatedMetricComments
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string SignalId { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }

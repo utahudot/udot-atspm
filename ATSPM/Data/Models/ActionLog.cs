@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ActionLog : ATSPMModelBase, IRelatedAgency, IRelatedActions, IRelatedMetricTypes
+    public partial class ActionLog : AtspmConfigModelBase<int>, IRelatedAgency, IRelatedActions, IRelatedMetricTypes
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public DateTime Date { get; set; }
         public AgencyTypes AgencyId { get; set; }
         public string Comment { get; set; }

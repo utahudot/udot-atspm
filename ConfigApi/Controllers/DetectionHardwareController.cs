@@ -1,9 +1,10 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 
 namespace ATSPM.ConfigApi.Controllers
 {
-    public class DetectionHardwareController : AtspmConfigControllerBase<DetectionHardware, int>
+    public class DetectionHardwareController : AtspmConfigControllerBase<DetectionHardware, DetectionHardwareTypes>
     {
         private readonly IDetectionHardwareRepository _repository;
 

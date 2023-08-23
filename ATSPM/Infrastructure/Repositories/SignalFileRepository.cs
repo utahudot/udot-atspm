@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public class SignalFileRepository : ATSPMFileRepositoryBase<Signal>, ISignalRepository
+    public class SignalFileRepository : ATSPMFileRepositoryBase<Signal, int>, ISignalRepository
     {
         public SignalFileRepository(IFileTranscoder fileTranscoder, IOptions<FileRepositoryConfiguration> options, ILogger<ATSPMFileRepositoryBase<Signal>> log) : base(fileTranscoder, options, log) { }
 

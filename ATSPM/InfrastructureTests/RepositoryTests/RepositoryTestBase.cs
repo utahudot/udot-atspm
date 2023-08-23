@@ -24,7 +24,7 @@ namespace InfrastructureTests.RepositoryTests
     /// <typeparam name="T2"></typeparam>
     /// <typeparam name="T3"></typeparam>
     public abstract class RepositoryTestBase<T1, T2, T3> : IClassFixture<EFContextFixture<T3>> 
-        where T1 : ATSPMModelBase, new()
+        where T1 : AtspmConfigModelBase, new()
         where T3 : DbContext, new()
     {
         protected EFContextFixture<T3> _db;

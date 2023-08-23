@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DirectionType : ATSPMModelBase, IRelatedRoutePhaseDirections, IRelatedApproaches
+    public partial class DirectionType : AtspmConfigModelBase<DirectionTypes>, IRelatedRoutePhaseDirections, IRelatedApproaches
     {
-        public DirectionTypes Id { get; set; }
+        //public DirectionTypes Id { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
         public int DisplayOrder { get; set; }

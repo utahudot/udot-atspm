@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class RoutePhaseDirection : ATSPMModelBase
+    public partial class RoutePhaseDirection : AtspmConfigModelBase<int>
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int RouteSignalId { get; set; }
         public int Phase { get; set; }
         public DirectionTypes DirectionTypeId { get; set; }
