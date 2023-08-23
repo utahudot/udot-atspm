@@ -38,7 +38,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input.Item2.Select(s => new CycleArrivals(s)
             {
-                Vehicles = input.Item1.Where(w => w.Detector.Approach?.Signal?.SignalId == s.SignalIdentifier && s.InRange(w.CorrectedTimeStamp))
+                Vehicles = input.Item1.Where(w => w.Detector.Approach?.Signal?.SignalIdentifier == s.SignalIdentifier && s.InRange(w.CorrectedTimeStamp))
                 .Select(v => new Vehicle(v, s))
                 .ToList()
             }).ToList();

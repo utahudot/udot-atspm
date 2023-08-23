@@ -27,7 +27,7 @@ namespace ATSPM.Application.Extensions
                 detector.DetChannel = detChannel;
                 if (item is IRelatedSignal s)
                 {
-                    detector.DetectorId = $"{s.Signal.SignalId} {detector.DetChannel}";
+                    detector.DetectorId = $"{s.Signal.SignalIdentifier} {detector.DetChannel}";
                 }
             }
 

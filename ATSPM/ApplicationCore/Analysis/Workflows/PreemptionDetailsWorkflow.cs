@@ -101,7 +101,7 @@ namespace ATSPM.Application.Analysis.Workflows
                 //It can happen that there is no defined terminaiton event.
                 if (x + 1 < preemptEvents.Count)
                 {
-                    var timeBetweenEvents = preemptEvents[x + 1].Timestamp - preemptEvents[x].Timestamp;
+                    var timeBetweenEvents = preemptEvents[x + 1].TimeStamp - preemptEvents[x].TimeStamp;
                     if (cycle != null && timeBetweenEvents.TotalMinutes > 20 && preemptEvents[x].EventCode != 111 &&
                         preemptEvents[x].EventCode != 105)
                     {
@@ -118,7 +118,7 @@ namespace ATSPM.Application.Analysis.Workflows
                         //if (cycle != null)
                             //cycle.InputOn.Add(preemptEvents[x].Timestamp);
 
-                        if (cycle == null && preemptEvents[x].Timestamp != preemptEvents[x + 1].Timestamp &&
+                        if (cycle == null && preemptEvents[x].TimeStamp != preemptEvents[x + 1].TimeStamp &&
                             preemptEvents[x + 1].EventCode == 105)
                             cycle = StartCycle(preemptEvents[x]);
 
@@ -127,7 +127,7 @@ namespace ATSPM.Application.Analysis.Workflows
                     case 103:
 
                         if (cycle != null)
-                            cycle.GateDown = preemptEvents[x].Timestamp;
+                            cycle.GateDown = preemptEvents[x].TimeStamp;
 
 
                         break;
@@ -145,7 +145,7 @@ namespace ATSPM.Application.Analysis.Workflows
                         ////If we run into an entry start after cycle start (event 102)
                         if (cycle != null && cycle.HasDelay)
                         {
-                            cycle.EntryStarted = preemptEvents[x].Timestamp;
+                            cycle.EntryStarted = preemptEvents[x].TimeStamp;
                             break;
                         }
 
@@ -163,7 +163,7 @@ namespace ATSPM.Application.Analysis.Workflows
                     case 106:
                         if (cycle != null)
                         {
-                            cycle.BeginTrackClearance = preemptEvents[x].Timestamp;
+                            cycle.BeginTrackClearance = preemptEvents[x].TimeStamp;
 
                             if (x + 1 < preemptEvents.Count)
                                 if (!DoesTrackClearEndNormal(preemptEvents, x))
@@ -175,12 +175,12 @@ namespace ATSPM.Application.Analysis.Workflows
 
                         if (cycle != null)
                         {
-                            cycle.BeginDwellService = preemptEvents[x].Timestamp;
+                            cycle.BeginDwellService = preemptEvents[x].TimeStamp;
 
                             if (x + 1 < preemptEvents.Count)
                                 if (!DoesTheCycleEndNormal(preemptEvents, x))
                                 {
-                                    cycle.BeginExitInterval = preemptEvents[x + 1].Timestamp;
+                                    cycle.BeginExitInterval = preemptEvents[x + 1].TimeStamp;
 
                                     EndCycle(cycle, preemptEvents[x + 1], CycleCollection);
 
@@ -193,25 +193,25 @@ namespace ATSPM.Application.Analysis.Workflows
 
                     case 108:
                         if (cycle != null)
-                            cycle.LinkActive = preemptEvents[x].Timestamp;
+                            cycle.LinkActive = preemptEvents[x].TimeStamp;
                         break;
 
                     case 109:
                         if (cycle != null)
-                            cycle.LinkInactive = preemptEvents[x].Timestamp;
+                            cycle.LinkInactive = preemptEvents[x].TimeStamp;
 
                         break;
 
                     case 110:
                         if (cycle != null)
-                            cycle.MaxPresenceExceeded = preemptEvents[x].Timestamp;
+                            cycle.MaxPresenceExceeded = preemptEvents[x].TimeStamp;
                         break;
 
                     case 111:
                         // 111 can usually be considered "cycle complete"
                         if (cycle != null)
                         {
-                            cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+                            cycle.BeginExitInterval = preemptEvents[x].TimeStamp;
 
                             EndCycle(cycle, preemptEvents[x], CycleCollection);
 
@@ -224,7 +224,7 @@ namespace ATSPM.Application.Analysis.Workflows
 
                 if (x + 1 >= preemptEvents.Count && cycle != null)
                 {
-                    cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+                    cycle.BeginExitInterval = preemptEvents[x].TimeStamp;
                     EndCycle(cycle, preemptEvents[x], CycleCollection);
                     break;
                 }
@@ -239,7 +239,7 @@ namespace ATSPM.Application.Analysis.Workflows
             for (var x = counter; x < DTTB.Count; x++)
                 if (DTTB[x].EventCode == 111)
                 {
-                    Next111Event = DTTB[x].Timestamp;
+                    Next111Event = DTTB[x].TimeStamp;
                     x = DTTB.Count;
                 }
             return Next111Event;
@@ -294,7 +294,7 @@ namespace ATSPM.Application.Analysis.Workflows
         private void EndCycle(PreemptCycle cycle, ControllerEventLog controller_Event_Log,
             List<PreemptCycle> CycleCollection)
         {
-            cycle.End = controller_Event_Log.Timestamp;
+            cycle.End = controller_Event_Log.TimeStamp;
             //cycle.Delay = GetDelay(cycle.HasDelay, cycle.EntryStarted, cycle.Start);
             //cycle.TimeToService = GetTimeToService(
             //    cycle.HasDelay,
@@ -389,17 +389,17 @@ namespace ATSPM.Application.Analysis.Workflows
             var cycle = new PreemptCycle();
 
 
-            cycle.Start = controller_Event_Log.Timestamp;
+            cycle.Start = controller_Event_Log.TimeStamp;
 
             if (controller_Event_Log.EventCode == 105)
             {
-                cycle.EntryStarted = controller_Event_Log.Timestamp;
+                cycle.EntryStarted = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = false;
             }
 
             if (controller_Event_Log.EventCode == 102)
             {
-                cycle.StartInputOn = controller_Event_Log.Timestamp;
+                cycle.StartInputOn = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = true;
             }
 
@@ -408,7 +408,7 @@ namespace ATSPM.Application.Analysis.Workflows
 
         private IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
         {
-            var preFilter = items.OrderBy(o => o.Timestamp)
+            var preFilter = items.OrderBy(o => o.TimeStamp)
                 .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
                 //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
                 .ToList();
@@ -417,7 +417,7 @@ namespace ATSPM.Application.Analysis.Workflows
                     (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
                     (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
                         .Chunk(2)
-                        .Select(l => new StartEndRange() { Start = l[0].Timestamp, End = l[1].Timestamp });
+                        .Select(l => new StartEndRange() { Start = l[0].TimeStamp, End = l[1].TimeStamp });
 
             return result;
         }

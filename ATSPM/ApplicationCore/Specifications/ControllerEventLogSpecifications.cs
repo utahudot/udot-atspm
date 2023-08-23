@@ -12,7 +12,7 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalId == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.SignalIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -24,35 +24,35 @@ namespace ATSPM.Application.Specifications
         {
             base.Criteria = c => c.EventCode == eventCode;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogCodeAndParamSpecification(int eventCode, int param) : base()
         {
             base.Criteria = c => c.EventCode == eventCode && c.EventParam == param;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode);
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes, int param) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && c.EventParam == param;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogCodeAndParamSpecification(IEnumerable<int> eventCodes, IEnumerable<int> paramCodes) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && paramCodes != null && paramCodes.Contains(c.EventParam);
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
     }
 
@@ -60,29 +60,29 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogDateTimeRangeSpecification(DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.TimeStamp >= startDate && c.TimeStamp <= endDate;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalId == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.SignalIdentifier == signalId && c.TimeStamp >= startDate && c.TimeStamp <= endDate;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
 
         public ControllerLogDateTimeRangeSpecification(int startHour, int startMinute, int endHour, int endMinute) : base()
         {
-            base.Criteria = l => l.Timestamp.Hour > startHour && l.Timestamp.Hour < endHour
-            || l.Timestamp.Hour == startHour && l.Timestamp.Hour == endHour
-            && l.Timestamp.Minute >= startMinute && l.Timestamp.Minute <= endMinute
-            || l.Timestamp.Hour == startHour && l.Timestamp.Hour < endHour
-            && l.Timestamp.Minute >= startMinute
-            || l.Timestamp.Hour < startHour && l.Timestamp.Hour == endHour
-            && l.Timestamp.Minute <= endMinute;
+            base.Criteria = l => l.TimeStamp.Hour > startHour && l.TimeStamp.Hour < endHour
+            || l.TimeStamp.Hour == startHour && l.TimeStamp.Hour == endHour
+            && l.TimeStamp.Minute >= startMinute && l.TimeStamp.Minute <= endMinute
+            || l.TimeStamp.Hour == startHour && l.TimeStamp.Hour < endHour
+            && l.TimeStamp.Minute >= startMinute
+            || l.TimeStamp.Hour < startHour && l.TimeStamp.Hour == endHour
+            && l.TimeStamp.Minute <= endMinute;
 
-            ApplyOrderBy(o => o.Timestamp);
+            ApplyOrderBy(o => o.TimeStamp);
         }
     }
 }

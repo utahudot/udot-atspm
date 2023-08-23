@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace ATSPM.Data.Interfaces
 {
     /// <summary>
-    /// For objects in the signal layer
+    /// For objects in the plan layer
     /// </summary>
-    public interface ISignalLayer
+    public interface IPlanLayer : ISignalLayer
     {
         /// <summary>
-        /// Identifier of signal controller
+        /// Plan number as derrived from the event parameter on <see cref="DataLoggerEnum.CoordPatternChange"/> event
         /// </summary>
-        string SignalIdentifier { get; set; }
+        int PlanNumber { get; set; }
     }
 }

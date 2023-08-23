@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Data.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,16 +8,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATSPM.Data.Models
 {
-    public class ControllerEventLog
+    public class ControllerEventLog : ISignalLayer
     {
-        public string SignalId { get; set; }
-        public DateTime Timestamp { get; set; }
+        public string SignalIdentifier { get; set; }
+        public DateTime TimeStamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
 
         public override string ToString()
         {
-            return $"{SignalId}-{EventCode}-{EventParam}-{Timestamp}";
+            return $"{SignalIdentifier}-{EventCode}-{EventParam}-{TimeStamp}";
         }
     }
 }

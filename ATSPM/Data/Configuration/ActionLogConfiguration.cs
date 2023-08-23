@@ -22,7 +22,7 @@ namespace ATSPM.Data.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(e => e.SignalId)
+            builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
         }
