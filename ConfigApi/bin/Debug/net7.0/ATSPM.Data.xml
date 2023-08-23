@@ -818,5 +818,16 @@
             Phase number assigned to <see cref="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier"/>
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Models.AtspmConfigModelBase`1">
+            <summary>
+            Base class for configuration context models.
+            This base includes interfaces for working with user interfaces.
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AtspmConfigModelBase`1.Id">
+            <summary>
+            Primary key
+            </summary>
+        </member>
     </members>
 </doc>

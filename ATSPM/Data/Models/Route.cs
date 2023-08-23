@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Route : ATSPMModelBase, IRelatedRouteSignals
+    public partial class Route : AtspmConfigModelBase<int>, IRelatedRouteSignals
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<RouteSignal> RouteSignals { get; set; } = new HashSet<RouteSignal>();
