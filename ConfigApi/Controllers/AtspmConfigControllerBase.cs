@@ -53,6 +53,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// Collection of type from oData query
         /// </summary>
         /// <returns>Action result of type</returns>
+        /// <response code="200">Items successfully retrieved.</response>
         // GET /Entity
         //[HttpGet()]
         //[EnableQuery]
@@ -82,6 +83,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Key value of object to get</param>
         /// <returns>Action result of type</returns>
+        /// <response code="200">Item was successfully retrieved.</response>
+        /// <response code="404">Item does not exist.</response>
         // GET /Entity(1)
         //[HttpGet("{key}")]
         [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand)]

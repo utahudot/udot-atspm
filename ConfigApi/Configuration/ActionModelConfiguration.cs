@@ -11,7 +11,6 @@ public class ActionModelConfiguration : IModelConfiguration
     {
         var model = builder.EntitySet<ActionLog>("ActionLog")
             .EntityType
-            .HasKey(p => p.Id)
             .Page(default, default);
 
         //var test = builder.EnumType<AgencyTypes>().Member(AgencyTypes.MPO);

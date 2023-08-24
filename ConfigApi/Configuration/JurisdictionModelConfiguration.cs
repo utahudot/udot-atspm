@@ -12,7 +12,6 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Jurisdiction>("Jurisdiction")
                 .EntityType
-                .HasKey(p => p.Id)
                 .Page(default, default);
 
             switch (apiVersion.MajorVersion)

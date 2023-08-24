@@ -18,7 +18,7 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.MovementTypeId);
 
-            builder.Property(e => e.DetectorId)
+            builder.Property(e => e.DectectorIdentifier)
                 .IsRequired()
                 .HasMaxLength(50);
         }
