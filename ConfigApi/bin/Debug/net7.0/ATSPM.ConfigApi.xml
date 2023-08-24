@@ -63,6 +63,7 @@
             Collection of type from oData query
             </summary>
             <returns>Action result of type</returns>
+            <response code="200">Items successfully retrieved.</response>
         </member>
         <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Get(`1)">
             <summary>
@@ -70,6 +71,8 @@
             </summary>
             <param name="key">Key value of object to get</param>
             <returns>Action result of type</returns>
+            <response code="200">Item was successfully retrieved.</response>
+            <response code="404">Item does not exist.</response>
         </member>
         <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Post(`0)">
             <summary>

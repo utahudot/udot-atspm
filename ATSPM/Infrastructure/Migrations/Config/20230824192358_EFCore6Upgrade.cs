@@ -227,7 +227,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SignalId = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    SignalIdentifier = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
                     CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
                 },
@@ -317,7 +317,7 @@ namespace ATSPM.Infrastructure.Migrations
                     Date = table.Column<DateTime>(type: "datetime", nullable: false),
                     AgencyId = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    SignalId = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     Name = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -440,7 +440,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RouteId = table.Column<int>(type: "int", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: false),
-                    SignalId = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
+                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -460,7 +460,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SignalId = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     Latitude = table.Column<double>(type: "float", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
                     PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
@@ -468,7 +468,8 @@ namespace ATSPM.Infrastructure.Migrations
                     Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('127.0.0.1')"),
                     RegionId = table.Column<int>(type: "int", nullable: false),
                     ControllerTypeId = table.Column<int>(type: "int", nullable: false),
-                    Enabled = table.Column<bool>(type: "bit", nullable: false),
+                    ChartEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
                     VersionActionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false, defaultValueSql: "('Initial')"),
                     Start = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -649,7 +650,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DetectorId = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    DectectorIdentifier = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     DetChannel = table.Column<int>(type: "int", nullable: false),
                     DistanceFromStopBar = table.Column<int>(type: "int", nullable: true),
                     MinSpeedFilter = table.Column<int>(type: "int", nullable: true),
@@ -810,7 +811,8 @@ namespace ATSPM.Infrastructure.Migrations
                     { 6, false, "Siemens SEPAC", "/mnt/sd", "$adm*kon2", 161L, "admin" },
                     { 7, false, "McCain ATC EX", " /mnt/rd/hiResData", "root", 161L, "root" },
                     { 8, false, "Peek", "mnt/sram/cuLogging", "PeekAtc", 161L, "atc" },
-                    { 9, true, "EOS", "/set1", "ecpi2ecpi", 161L, "econolite" }
+                    { 9, true, "EOS", "/set1", "ecpi2ecpi", 161L, "econolite" },
+                    { 10, true, "New Cobalt", "/opt/econolite/set1", "ecpi2ecpi", 161L, "econolite" }
                 });
 
             migrationBuilder.InsertData(

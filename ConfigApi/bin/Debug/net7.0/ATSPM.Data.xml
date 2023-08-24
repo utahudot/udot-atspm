@@ -798,9 +798,19 @@
             Split 32 Change
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Interfaces.IPlanLayer">
+            <summary>
+            For objects in the plan layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.IPlanLayer.PlanNumber">
+            <summary>
+            Plan number as derrived from the event parameter on <see cref="!:DataLoggerEnum.CoordPatternChange"/> event
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Interfaces.ISignalLayer">
             <summary>
-            For object in the signal layer
+            For objects in the signal layer
             </summary>
         </member>
         <member name="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier">
