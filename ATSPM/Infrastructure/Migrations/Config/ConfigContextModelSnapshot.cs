@@ -17,7 +17,7 @@ namespace ATSPM.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -148,7 +148,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("SignalId")
+                    b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
@@ -618,6 +618,16 @@ namespace ATSPM.Infrastructure.Migrations
                             Password = "ecpi2ecpi",
                             Snmpport = 161L,
                             UserName = "econolite"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ActiveFtp = true,
+                            Description = "New Cobalt",
+                            Ftpdirectory = "/opt/econolite/set1",
+                            Password = "ecpi2ecpi",
+                            Snmpport = 161L,
+                            UserName = "econolite"
                         });
                 });
 
@@ -780,17 +790,17 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("int");
 
+                    b.Property<string>("DectectorIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<int>("DetChannel")
                         .HasColumnType("int");
 
                     b.Property<int>("DetectionHardwareId")
                         .HasColumnType("int");
-
-                    b.Property<string>("DetectorId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("DistanceFromStopBar")
                         .HasColumnType("int");
@@ -1699,7 +1709,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<string>("SignalId")
+                    b.Property<string>("SignalIdentifier")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
@@ -2218,7 +2228,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<int>("RouteId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SignalId")
+                    b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
@@ -2242,11 +2252,11 @@ namespace ATSPM.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("ChartEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ControllerTypeId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Ipaddress")
                         .IsRequired()
@@ -2262,6 +2272,9 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
+
+                    b.Property<bool>("LoggingEnabled")
+                        .HasColumnType("bit");
 
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
@@ -2292,7 +2305,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("SignalId")
+                    b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)

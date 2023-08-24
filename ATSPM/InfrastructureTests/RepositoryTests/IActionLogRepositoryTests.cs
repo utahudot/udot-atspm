@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class IActionLogRepositoryTests : RepositoryTestBase<ActionLog, IActionLogRepository, ConfigContext>
+    public class IActionLogRepositoryTests : RepositoryTestBase<ActionLog, IActionLogRepository, ConfigContext, int>
     {
         private List<ActionLog> _list = new List<ActionLog>();
 

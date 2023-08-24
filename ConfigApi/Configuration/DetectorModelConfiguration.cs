@@ -12,14 +12,13 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Detector>("Detector")
                 .EntityType
-                .HasKey(p => p.Id)
                 .Page(default, default);
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        model.Property(p => p.DetectorId).MaxLength = 50;
+                        model.Property(p => p.DectectorIdentifier).MaxLength = 50;
                         model.HasOptional(p => p.Approach);
                         model.HasOptional(p => p.DetectionHardware);
                         model.HasOptional(p => p.LaneType);

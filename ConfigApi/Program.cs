@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
+using ATSPM.Data.Models;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,10 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
         o.OutputFormatters.RemoveType<StringOutputFormatter>();
     }).AddXmlDataContractSerializerFormatters()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    })
     .AddOData(o =>
     {
         o.Count().Select().OrderBy().Expand().Filter().SetMaxTop(null);

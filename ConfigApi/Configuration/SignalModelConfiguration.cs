@@ -11,9 +11,7 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Signal>("Signal")
-                .EntityType
-                .HasKey(p => p.Id);
+            var model = builder.EntitySet<Signal>("Signal").EntityType;
             model.Page(default, default);
 
 
