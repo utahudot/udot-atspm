@@ -12,7 +12,6 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Approach>("Approach")
                 .EntityType
-                .HasKey(p => p.Id)
                 .Page(default, default);
 
             switch (apiVersion.MajorVersion)

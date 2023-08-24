@@ -12,7 +12,6 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<ExternalLink>("ExternalLink")
                 .EntityType
-                .HasKey(p => p.Id)
                 .Page(default, default);
 
             switch (apiVersion.MajorVersion)

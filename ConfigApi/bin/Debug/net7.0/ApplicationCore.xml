@@ -259,11 +259,6 @@
             Definition for signal controller plans which are derrived from <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> events
             </summary>
         </member>
-        <member name="P:ATSPM.Application.Analysis.Plans.IPlan.PlanNumber">
-            <summary>
-            Plan number as derrived from the event parameter on <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> event
-            </summary>
-        </member>
         <member name="M:ATSPM.Application.Analysis.Plans.IPlan.AssignToPlan``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Tries to assign an <see cref="T:ATSPM.Domain.Common.IStartEndRange"/> object to the plan
