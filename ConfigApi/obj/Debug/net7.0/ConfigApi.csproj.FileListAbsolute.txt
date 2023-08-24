@@ -136,3 +136,7 @@ C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\Confi
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ref\ATSPM.ConfigApi.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\ATSPM.ConfigApi.xml
 C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\obj\Debug\net7.0\ATSPM.ConfigApi.xml
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\Humanizer.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\Mono.TextTemplating.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ConfigApi\bin\Debug\net7.0\System.CodeDom.dll
