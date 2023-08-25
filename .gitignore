@@ -127,3 +127,9 @@ dkms.conf
 /ATSPM/Reports/obj/Debug/net6.0/Reports.GeneratedMSBuildEditorConfig.editorconfig
 /ATSPM/ReportsTests/bin/Debug/net6.0/CoverletSourceRootsMapping
 /ATSPM/ReportsTests/obj/Debug/net6.0/ReportsTests.GeneratedMSBuildEditorConfig.editorconfig
+/ATSPM/ReportsTests/bin/Debug/net6.0/Reports.deps.json
+/ATSPM/ReportsTests/bin/Debug/net6.0/ReportsTests.deps.json
+/ATSPM/ReportsTests/obj/Debug/net6.0/ReportsTests.csproj.FileListAbsolute.txt
+/ATSPM/ReportsTests/obj/project.assets.json
+/ATSPM/ReportsTests/obj/ReportsTests.csproj.nuget.dgspec.json
+/ATSPM/ReportsTests/obj/ReportsTests.csproj.nuget.g.props
