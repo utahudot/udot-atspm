@@ -1,18 +1,12 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.TurningMovementCounts;
-using ATSPM.Data.Models;
-using Moq;
-using System.Net;
 using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using CsvHelper;
+using Moq;
 using System.Globalization;
-using ATSPM.Application.Reports.Business.Common;
+using System.Net;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -77,12 +71,13 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            var options = new TurningMovementCountsOptions() { 
-                ApproachId = 14239, 
-                LaneType = LaneTypes.V, 
-                MovementTypes = new() {MovementTypes.T, MovementTypes.R, MovementTypes.L, MovementTypes.TR, MovementTypes.TL}, 
-                SelectedBinSize = 15, 
-                Start = new System.DateTime(2023, 6, 14, 12, 0, 0), 
+            var options = new TurningMovementCountsOptions()
+            {
+                ApproachId = 14239,
+                LaneType = LaneTypes.V,
+                MovementTypes = new() { MovementTypes.T, MovementTypes.R, MovementTypes.L, MovementTypes.TR, MovementTypes.TL },
+                SelectedBinSize = 15,
+                Start = new System.DateTime(2023, 6, 14, 12, 0, 0),
                 End = new System.DateTime(2023, 6, 14, 23, 59, 0)
             };
 
@@ -97,6 +92,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockDetector1.Object.DateDisabled = null;
             mockDetector1.Object.DecisionPoint = null;
             mockDetector1.Object.DetChannel = 22;
+            mockDetector1.Object.MovementType = new MovementType { Abbreviation = "T", Id = MovementTypes.T };
+            mockDetector1.Object.LaneType = new LaneType { Id = LaneTypes.V };
             //mockDetector.Object.DetectionHardware = ?;
             mockDetector1.Object.DetectionHardwareId = DetectionHardwareTypes.WavetronixMatrix;
             //mockDetector.Object.DetectionIDs = ?;
@@ -117,6 +114,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //mockDetector.Object.MovementType = ?;
             mockDetector1.Object.MovementTypeId = MovementTypes.T;
 
+            mockDetector1.Setup(a => a.Approach).Returns(approach.Object);
+
             var mockDetector2 = new Mock<Detector>();
 
             // Set the properties of the mock Detector object
@@ -130,6 +129,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockDetector2.Object.DetChannel = 23;
             //mockDetector.Object.DetectionHardware = ?;
             mockDetector2.Object.DetectionHardwareId = DetectionHardwareTypes.WavetronixMatrix;
+            mockDetector2.Object.MovementType = new MovementType { Abbreviation = "TR", Id = MovementTypes.TR, };
+            mockDetector2.Object.LaneType = new LaneType { Id = LaneTypes.V };
             //mockDetector.Object.DetectionIDs = ?;
             //mockDetector.Object.DetectionTypes = ?;
             //mockDetector.Object.DetectorComments = ?;
@@ -139,7 +140,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockDetector2.Object.Id = 47743;
             //mockDetector.Object.Index = ?;
             //mockDetector.Object.IsChanged = ?;
-            mockDetector2.Object.LaneNumber = 1;
+            mockDetector2.Object.LaneNumber = 2;
             //mockDetector.Object.LaneType = ?;
             mockDetector2.Object.LaneTypeId = LaneTypes.V;
             mockDetector2.Object.LatencyCorrection = 0;
@@ -148,22 +149,33 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //mockDetector.Object.MovementType = ?;
             mockDetector2.Object.MovementTypeId = MovementTypes.TR;
 
+            mockDetector2.Setup(a => a.Approach).Returns(approach.Object);
 
             //var detectors = approach.GetDetectorsForMetricType(5);
             var detectors = new List<Detector> { mockDetector1.Object, mockDetector2.Object };
 
+            //TurningMovementCountsResult viewModel = turningMovementCountsService.GetChartData(
+            //    options,
+            //    approach.Object,
+            //    detectors,
+            //    events,
+            //    planEvents
+            //    );
+
             TurningMovementCountsResult viewModel = turningMovementCountsService.GetChartData(
-                options,
-                approach.Object,
                 detectors,
+                LaneTypes.V,
+                MovementTypes.T,
+                options,
                 events,
-                planEvents
+                planEvents,
+                approach.Object
                 );
 
             // Assert
             //Assert.Equal(2190, events.Count);
             //Assert.Equal(13, planEvents.Count);
-            Assert.Equal(0.83635144, viewModel.LaneUtilizationFactor);
+            Assert.Equal(0.8363514419852448, viewModel.LaneUtilizationFactor);
             Assert.Equal("2:30 PM - 3:30 PM", viewModel.PeakHour);
             Assert.Equal(0.89, viewModel.PeakHourFactor);
             Assert.Equal(341, viewModel.PeakHourVolume);
