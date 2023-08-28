@@ -40,6 +40,16 @@ namespace ATSPM.Application.Reports
         {
 
             services.AddLogging();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
             //Contexts
             services.AddDbContext<ConfigContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
             services.AddDbContext<EventLogContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
@@ -105,6 +115,7 @@ namespace ATSPM.Application.Reports
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("AllowAll");
             }
 
             app.UseSwagger();
