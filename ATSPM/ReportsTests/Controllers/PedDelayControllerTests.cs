@@ -1,12 +1,5 @@
-﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using CsvHelper;
-using Moq;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
-using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -21,11 +14,13 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             CycleService cycleService = new CycleService();
 
 
-            System.DateTime start = new System.DateTime(2023, 5, 16, 8, 56, 0);
-            System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
+            System.DateTime start = new(2023, 5, 16, 8, 59, 0);
+            System.DateTime end = new(2023, 5, 16, 12, 0, 5);
+
             List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+
+            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
+            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
@@ -67,7 +62,19 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            var options = new PedDelayOptions() { ApproachId = 1120, PedRecallThreshold = 75, ShowCycleLength = true, ShowPedBeginWalk = false, ShowPedRecall = false, ShowPercentDelay = false, TimeBuffer = 15, UsePermissivePhase = false, Start = new System.DateTime(2023, 5, 16, 8, 56, 0), End = new System.DateTime(2023, 5, 16, 12, 1, 0) };
+            var options = new PedDelayOptions()
+            {
+                ApproachId = 1120,
+                PedRecallThreshold = 75,
+                ShowCycleLength = true,
+                ShowPedBeginWalk = false,
+                ShowPedRecall = false,
+                ShowPercentDelay = false,
+                TimeBuffer = 15,
+                UsePermissivePhase = false,
+                Start = start,
+                End = end
+            };
 
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
@@ -93,8 +100,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             Assert.Equal(13, planEvents.Count);
 
             Assert.Equal(0, pedPhaseData.MinDelay);
-            Assert.Equal(57.19999967, pedPhaseData.MaxDelay);
-            Assert.Equal(26.6714284, viewModel.AverageDelay);
+            Assert.Equal(57.2, pedPhaseData.MaxDelay);
+            Assert.Equal(26.671428571428571, viewModel.AverageDelay);
 
 
             //Assert.Equal(2, result.PhaseNumber);
