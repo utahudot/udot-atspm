@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ControllerType : ATSPMModelBase, IRelatedSignals
+    public partial class ControllerType : AtspmConfigModelBase<int>, IRelatedSignals
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Description { get; set; }
         public long Snmpport { get; set; }
         public string Ftpdirectory { get; set; }
@@ -17,5 +17,10 @@ namespace ATSPM.Data.Models
         public string Password { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+
+        public override string ToString()
+        {
+            return $"{Id} - {Description}";
+        }
     }
 }

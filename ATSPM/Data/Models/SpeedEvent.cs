@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class SpeedEvent : ATSPMModelBase
+    public partial class SpeedEvent
     {
         public string DetectorId { get; set; }
         public int Mph { get; set; }
         public int Kph { get; set; }
-        public DateTime Timestamp { get; set; }
+        public DateTime TimeStamp { get; set; }
     }
 }

@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Phase Left Turn Gap Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.PhaseNumber });
+            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.PhaseNumber });
 
-            builder.Property(e => e.SignalId).HasMaxLength(10);
+            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
         }
     }
 }

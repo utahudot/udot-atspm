@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

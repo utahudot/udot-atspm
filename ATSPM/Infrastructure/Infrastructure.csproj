@@ -13,18 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentFTP" Version="39.0.1" />
+    <PackageReference Include="FluentFTP" Version="44.0.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="OData.Swagger" Version="1.0.0" />
@@ -44,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Identity\" />
     <Folder Include="Migrations\Speed\" />

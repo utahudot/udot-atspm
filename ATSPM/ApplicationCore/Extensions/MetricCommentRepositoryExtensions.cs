@@ -17,7 +17,7 @@ namespace ATSPM.Application.Extensions
         public static MetricComment GetLatestCommentForReport(this IMetricCommentRepository repo, string signalId, int metricId)
         {
             return repo.GetList()
-                .Where(w => w.SignalId == signalId && (w.MetricTypes.Where(i => i.Id == metricId).Count() > 0))
+                .Where(w => w.SignalIdentifier == signalId && (w.MetricTypes.Where(i => i.Id == metricId).Count() > 0))
                 .OrderByDescending(o => o.TimeStamp)
                 .FirstOrDefault();
         }

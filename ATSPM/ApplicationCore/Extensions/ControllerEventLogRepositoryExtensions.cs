@@ -1,14 +1,6 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Channels;
 
 namespace ATSPM.Application.Extensions
 {
@@ -65,7 +57,7 @@ namespace ATSPM.Application.Extensions
 
             return result;
         }
-        
+
 
         public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
             this IControllerEventLogRepository repo,
@@ -77,15 +69,15 @@ namespace ATSPM.Application.Extensions
             bool detectorOff)
         {
             var eventCodes = new List<int>();
-            if(detectorOn)
+            if (detectorOn)
                 eventCodes.Add(82);
-            if(detectorOff)
+            if (detectorOff)
                 eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var events = new List<ControllerEventLog>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
-            if(!detectorsForMetric.Any())
+            if (!detectorsForMetric.Any())
                 throw new Exception(
                     $"No detectors found for metric type metric type {metricTypeId}");
             foreach (var d in detectorsForMetric)
@@ -139,7 +131,7 @@ namespace ATSPM.Application.Extensions
             if (index >= 0)
             {
                 // If an event was found, remove all events after it
-                events.RemoveRange(index+1, events.Count - (index+1));
+                events.RemoveRange(index + 1, events.Count - (index + 1));
 
                 // Change the timestamp of the found event to match the specified date
                 events[index].Timestamp = date;
@@ -203,9 +195,9 @@ namespace ATSPM.Application.Extensions
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 approach.GetCycleEventCodes(getPermissivePhase),
-                getPermissivePhase  ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
-       
+
 
         public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(
             this IControllerEventLogRepository repo,

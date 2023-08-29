@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MovementType : ATSPMModelBase, IRelatedDetectors
+    public partial class MovementType : AtspmConfigModelBase<MovementTypes>, IRelatedDetectors
     {
-        public MovementTypes Id { get; set; }
+        //public MovementTypes Id { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
         public int DisplayOrder { get; set; }
