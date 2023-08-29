@@ -11,14 +11,14 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
     public class TurningMovementCountsOptions
     {
 
-        public TurningMovementCountsOptions(int approachId, DateTime startDate, DateTime endDate, 
-            int binSize)
-        {
-            ApproachId = approachId;
-            Start = startDate;
-            End = endDate;
-            SelectedBinSize = binSize;
-        }
+        //public TurningMovementCountsOptions(int approachId, DateTime startDate, DateTime endDate, 
+        //    int binSize)
+        //{
+        //    ApproachId = approachId;
+        //    Start = startDate;
+        //    End = endDate;
+        //    SelectedBinSize = binSize;
+        //}
         public int SelectedBinSize { get; set; }
         public int ApproachId { get; set; }
         public DateTime Start { get; set; }
