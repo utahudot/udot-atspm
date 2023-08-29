@@ -1,11 +1,9 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Enums;
-using Microsoft.Extensions.Options;
-using ATSPM.Application.Repositories;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
@@ -53,7 +51,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
         }
 
         public LeftTurnGapAnalysisResult GetAnalysisForPhase(Approach approach, List<ControllerEventLog> eventLogs, LeftTurnGapAnalysisOptions options)
-        { 
+        {
             var phaseEvents = new List<ControllerEventLog>();
 
             phaseEvents.AddRange(eventLogs.Where(x =>
@@ -122,34 +120,34 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             Approach approach)
         {
             var percentTurnableSeries = new List<PercentTurnableSeries>();
-            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
-                .OrderBy(x => x.Timestamp).ToList();
-            var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
-                .OrderBy(x => x.Timestamp).ToList();
-            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
-                .OrderBy(x => x.Timestamp).ToList();
+            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.TimeStamp >= options.StartDate && x.TimeStamp < options.EndDate)
+                .OrderBy(x => x.TimeStamp).ToList();
+            var redList = events.Where(x => x.EventCode == EVENT_RED && x.TimeStamp >= options.StartDate && x.TimeStamp < options.EndDate)
+                .OrderBy(x => x.TimeStamp).ToList();
+            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.TimeStamp >= options.StartDate && x.TimeStamp < options.EndDate)
+                .OrderBy(x => x.TimeStamp).ToList();
 
-            var eventBeforeStart = events.Where(e => e.Timestamp < options.StartDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
+            var eventBeforeStart = events.Where(e => e.TimeStamp < options.StartDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.TimeStamp).FirstOrDefault();
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_GREEN)
             {
-                eventBeforeStart.Timestamp = options.StartDate;
+                eventBeforeStart.TimeStamp = options.StartDate;
                 greenList.Insert(0, eventBeforeStart);
             }
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_RED)
             {
-                eventBeforeStart.Timestamp = options.StartDate;
+                eventBeforeStart.TimeStamp = options.StartDate;
                 redList.Insert(0, eventBeforeStart);
             }
 
-            var eventAfterEnd = events.Where(e => e.Timestamp > options.EndDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
+            var eventAfterEnd = events.Where(e => e.TimeStamp > options.EndDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.TimeStamp).FirstOrDefault();
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_GREEN)
             {
-                eventAfterEnd.Timestamp = options.EndDate;
+                eventAfterEnd.TimeStamp = options.EndDate;
                 greenList.Add(eventAfterEnd);
             }
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_RED)
             {
-                eventAfterEnd.Timestamp = options.EndDate;
+                eventAfterEnd.TimeStamp = options.EndDate;
                 redList.Add(eventAfterEnd);
             }
 
@@ -237,7 +235,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             }
 
             return new LeftTurnGapAnalysisResult(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
@@ -380,7 +378,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                 foreach (var green in greenList)
                 {
                     //Find the corresponding red
-                    var red = redList.Where(x => x.Timestamp > green.Timestamp).OrderBy(x => x.Timestamp)
+                    var red = redList.Where(x => x.TimeStamp > green.TimeStamp).OrderBy(x => x.TimeStamp)
                         .FirstOrDefault();
                     if (red == null)
                         continue;
@@ -388,17 +386,17 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                     double trendLineGapTimeCounter = 0;
 
                     var phaseTracker = new PhaseLeftTurnGapTracker
-                    { GreenTime = green.Timestamp };
+                    { GreenTime = green.TimeStamp };
 
                     var gapsList = new List<ControllerEventLog>();
                     gapsList.Add(green);
                     gapsList.AddRange(orderedDetectorCallList.Where(x =>
-                        x.Timestamp > green.Timestamp && x.Timestamp < red.Timestamp));
+                        x.TimeStamp > green.TimeStamp && x.TimeStamp < red.TimeStamp));
                     gapsList.Add(red);
                     for (var i = 1; i < gapsList.Count; i++)
                     {
-                        var gap = gapsList[i].Timestamp.TimeOfDay.TotalSeconds -
-                                  gapsList[i - 1].Timestamp.TimeOfDay.TotalSeconds;
+                        var gap = gapsList[i].TimeStamp.TimeOfDay.TotalSeconds -
+                                  gapsList[i - 1].TimeStamp.TimeOfDay.TotalSeconds;
 
                         if (gap < 0) continue;
 
@@ -430,8 +428,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 
                     //Decimal rounding errors can cause the number to be > 100
                     var percentTurnable =
-                        Math.Min(trendLineGapTimeCounter / (red.Timestamp - green.Timestamp).TotalSeconds, 100);
-                    sumGreenTime += (red.Timestamp - green.Timestamp).TotalSeconds;
+                        Math.Min(trendLineGapTimeCounter / (red.TimeStamp - green.TimeStamp).TotalSeconds, 100);
+                    sumGreenTime += (red.TimeStamp - green.TimeStamp).TotalSeconds;
                     phaseTracker.PercentPhaseTurnable = percentTurnable;
                     phaseTrackerList.Add(phaseTracker);
                 }

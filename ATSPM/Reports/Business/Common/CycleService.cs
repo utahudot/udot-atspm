@@ -37,10 +37,10 @@ namespace ATSPM.Application.Reports.Business.Common
                     && GetEventType(cycleEvents[item.Index + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
                     && GetEventType(cycleEvents[item.Index + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
                 .Select(item => new RedToRedCycle(
-                    cycleEvents[item.Index].Timestamp,
-                    cycleEvents[item.Index + 1].Timestamp,
-                    cycleEvents[item.Index + 2].Timestamp,
-                    cycleEvents[item.Index + 3].Timestamp))
+                    cycleEvents[item.Index].TimeStamp,
+                    cycleEvents[item.Index + 1].TimeStamp,
+                    cycleEvents[item.Index + 2].TimeStamp,
+                    cycleEvents[item.Index + 3].TimeStamp))
                 .ToList();
 
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
@@ -61,7 +61,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<GreenToGreenCycle> GetGreenToGreenCycles(DateTime startTime, DateTime endTime, List<ControllerEventLog> cycleEvents)
         {
             //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
+            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().TimeStamp < endTime))
             //        GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
             var cycles = new List<GreenToGreenCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -70,8 +70,8 @@ namespace ATSPM.Application.Reports.Business.Common
                     && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow
                     && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed
                     && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToGreen)
-                    cycles.Add(new GreenToGreenCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                        cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
+                    cycles.Add(new GreenToGreenCycle(cycleEvents[i].TimeStamp, cycleEvents[i + 1].TimeStamp,
+                        cycleEvents[i + 2].TimeStamp, cycleEvents[i + 3].TimeStamp));
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
         }
 
@@ -91,10 +91,10 @@ namespace ATSPM.Application.Reports.Business.Common
                     && GetYellowToRedEventType(cycleEvents[item.Index + 2].EventCode) == YellowRedEventType.BeginRed
                     && GetYellowToRedEventType(cycleEvents[item.Index + 3].EventCode) == YellowRedEventType.EndRed)
                 .Select(item => new YellowRedActivationsCycle(
-                    cycleEvents[item.Index].Timestamp,
-                    cycleEvents[item.Index + 1].Timestamp,
-                    cycleEvents[item.Index + 2].Timestamp,
-                    cycleEvents[item.Index + 3].Timestamp,
+                    cycleEvents[item.Index].TimeStamp,
+                    cycleEvents[item.Index + 1].TimeStamp,
+                    cycleEvents[item.Index + 2].TimeStamp,
+                    cycleEvents[item.Index + 3].TimeStamp,
                     severeViolationSeconds,
                     detectorEvents
                     ))
@@ -123,7 +123,7 @@ namespace ATSPM.Application.Reports.Business.Common
             List<ControllerEventLog> cycleEvents,
             int? pcdCycleTime)
         {
-            cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
+            cycleEvents = cycleEvents.OrderBy(c => c.TimeStamp).ToList();
             double pcdCycleShift = pcdCycleTime ?? 0;
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -132,15 +132,15 @@ namespace ATSPM.Application.Reports.Business.Common
                     && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
                     && GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
                     && GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
-                    cycles.Add(new CyclePcd(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
-                        cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
+                    cycles.Add(new CyclePcd(cycleEvents[i].TimeStamp, cycleEvents[i + 1].TimeStamp,
+                        cycleEvents[i + 2].TimeStamp, cycleEvents[i + 3].TimeStamp));
             if (cycles.Any())
                 foreach (var cycle in cycles)
                 {
                     cycle.DetectorEvents.AddRange(detectorEvents
-                        .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) 
-                            && d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift))
-                        .Select(d => new DetectorDataPoint(cycle.StartTime, d.Timestamp, cycle.GreenEvent, cycle.YellowEvent)));
+                        .Where(d => d.TimeStamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) 
+                            && d.TimeStamp < cycle.EndTime.AddSeconds(pcdCycleShift))
+                        .Select(d => new DetectorDataPoint(cycle.StartTime, d.TimeStamp, cycle.GreenEvent, cycle.YellowEvent)));
                 }
             return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
@@ -173,17 +173,17 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <returns></returns>
         public List<CycleSpeed> GetSpeedCycles(DateTime startDate, DateTime endDate, List<ControllerEventLog> cycleEvents)
         {
-            var mainEvents = cycleEvents.Where(c => c.Timestamp <= endDate && c.Timestamp >= startDate).ToList();
-            var previousEvents = cycleEvents.Where(c => c.Timestamp < startDate).ToList();
-            var nextEvents = cycleEvents.Where(c => c.Timestamp > endDate).ToList();
+            var mainEvents = cycleEvents.Where(c => c.TimeStamp <= endDate && c.TimeStamp >= startDate).ToList();
+            var previousEvents = cycleEvents.Where(c => c.TimeStamp < startDate).ToList();
+            var nextEvents = cycleEvents.Where(c => c.TimeStamp > endDate).ToList();
             if (mainEvents.Any() && (GetEventType(mainEvents.Last().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp < endDate))
+                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().TimeStamp < endDate))
                 //Get events to complete cycles
-                mainEvents.AddRange(nextEvents.OrderBy(e => e.Timestamp).Take(3));
+                mainEvents.AddRange(nextEvents.OrderBy(e => e.TimeStamp).Take(3));
             if (mainEvents.Any() && (GetEventType(mainEvents.First().EventCode) !=
-                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().Timestamp > startDate))
+                RedToRedCycle.EventType.ChangeToRed || mainEvents.LastOrDefault().TimeStamp > startDate))
                 //Get events to start cycles
-                mainEvents.InsertRange(0, nextEvents.OrderByDescending(e => e.Timestamp).Take(3).OrderBy(e => e.Timestamp));
+                mainEvents.InsertRange(0, nextEvents.OrderByDescending(e => e.TimeStamp).Take(3).OrderBy(e => e.TimeStamp));
             var cycles = new List<CycleSpeed>();
             if (mainEvents != null)
                 for (var i = 0; i < mainEvents.Count; i++)
@@ -192,8 +192,8 @@ namespace ATSPM.Application.Reports.Business.Common
                         && GetEventType(mainEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen
                         && GetEventType(mainEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToYellow
                         && GetEventType(mainEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToRed)
-                        cycles.Add(new CycleSpeed(mainEvents[i].Timestamp, mainEvents[i + 1].Timestamp,
-                            mainEvents[i + 2].Timestamp, mainEvents[i + 3].Timestamp));
+                        cycles.Add(new CycleSpeed(mainEvents[i].TimeStamp, mainEvents[i + 1].TimeStamp,
+                            mainEvents[i + 2].TimeStamp, mainEvents[i + 3].TimeStamp));
 
 
             return cycles;
@@ -211,9 +211,9 @@ namespace ATSPM.Application.Reports.Business.Common
                             cycleEvents[i + 3].EventCode == 66))
                 .Select(i =>
                 {
-                    var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].Timestamp, cycleEvents[i + 3].Timestamp, terminationEvents);
-                    return new CycleSplitFail(cycleEvents[i].Timestamp, cycleEvents[i + 2].Timestamp, cycleEvents[i + 1].Timestamp,
-                                              cycleEvents[i + 3].Timestamp, termEvent, options.FirstSecondsOfRed);
+                    var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].TimeStamp, cycleEvents[i + 3].TimeStamp, terminationEvents);
+                    return new CycleSplitFail(cycleEvents[i].TimeStamp, cycleEvents[i + 2].TimeStamp, cycleEvents[i + 1].TimeStamp,
+                                              cycleEvents[i + 3].TimeStamp, termEvent, options.FirstSecondsOfRed);
                 })
                 .Where(c => c.EndTime >= options.Start && c.EndTime <= options.End || c.StartTime <= options.End && c.StartTime >= options.Start)
                 .ToList();
@@ -225,7 +225,7 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime end, IReadOnlyList<ControllerEventLog> terminationEvents)
         {
             var terminationType = CycleSplitFail.TerminationType.Unknown;
-            var terminationEvent = terminationEvents.FirstOrDefault(t => t.Timestamp > start && t.Timestamp <= end);
+            var terminationEvent = terminationEvents.FirstOrDefault(t => t.TimeStamp > start && t.TimeStamp <= end);
             if (terminationEvent != null)
                 terminationType = terminationEvent.EventCode switch
                 {
@@ -279,7 +279,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 //It can happen that there is no defined terminaiton event.
                 if (x + 1 < preemptEvents.Count)
                 {
-                    var timeBetweenEvents = preemptEvents[x + 1].Timestamp - preemptEvents[x].Timestamp;
+                    var timeBetweenEvents = preemptEvents[x + 1].TimeStamp - preemptEvents[x].TimeStamp;
                     if (cycle != null && timeBetweenEvents.TotalMinutes > 20 && preemptEvents[x].EventCode != 111 &&
                         preemptEvents[x].EventCode != 105)
                     {
@@ -294,9 +294,9 @@ namespace ATSPM.Application.Reports.Business.Common
                     case 102:
 
                         if (cycle != null)
-                            cycle.InputOn.Add(preemptEvents[x].Timestamp);
+                            cycle.InputOn.Add(preemptEvents[x].TimeStamp);
 
-                        if (cycle == null && preemptEvents[x].Timestamp != preemptEvents[x + 1].Timestamp &&
+                        if (cycle == null && preemptEvents[x].TimeStamp != preemptEvents[x + 1].TimeStamp &&
                             preemptEvents[x + 1].EventCode == 105)
                             cycle = StartCycle(preemptEvents[x]);
 
@@ -305,7 +305,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     case 103:
 
                         if (cycle != null && cycle.GateDown == DateTime.MinValue)
-                            cycle.GateDown = preemptEvents[x].Timestamp;
+                            cycle.GateDown = preemptEvents[x].TimeStamp;
 
 
                         break;
@@ -313,7 +313,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     case 104:
 
                         if (cycle != null)
-                            cycle.InputOff.Add(preemptEvents[x].Timestamp);
+                            cycle.InputOff.Add(preemptEvents[x].TimeStamp);
 
                         break;
 
@@ -323,7 +323,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         ////If we run into an entry start after cycle start (event 102)
                         if (cycle != null && cycle.HasDelay)
                         {
-                            cycle.EntryStarted = preemptEvents[x].Timestamp;
+                            cycle.EntryStarted = preemptEvents[x].TimeStamp;
                             break;
                         }
 
@@ -341,7 +341,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     case 106:
                         if (cycle != null)
                         {
-                            cycle.BeginTrackClearance = preemptEvents[x].Timestamp;
+                            cycle.BeginTrackClearance = preemptEvents[x].TimeStamp;
 
                             if (x + 1 < preemptEvents.Count)
                                 if (!DoesTrackClearEndNormal(preemptEvents, x))
@@ -353,12 +353,12 @@ namespace ATSPM.Application.Reports.Business.Common
 
                         if (cycle != null)
                         {
-                            cycle.BeginDwellService = preemptEvents[x].Timestamp;
+                            cycle.BeginDwellService = preemptEvents[x].TimeStamp;
 
                             if (x + 1 < preemptEvents.Count)
                                 if (!DoesTheCycleEndNormal(preemptEvents, x))
                                 {
-                                    cycle.BeginExitInterval = preemptEvents[x + 1].Timestamp;
+                                    cycle.BeginExitInterval = preemptEvents[x + 1].TimeStamp;
 
                                     EndCycle(cycle, preemptEvents[x + 1], CycleCollection);
 
@@ -371,25 +371,25 @@ namespace ATSPM.Application.Reports.Business.Common
 
                     case 108:
                         if (cycle != null)
-                            cycle.LinkActive = preemptEvents[x].Timestamp;
+                            cycle.LinkActive = preemptEvents[x].TimeStamp;
                         break;
 
                     case 109:
                         if (cycle != null)
-                            cycle.LinkInactive = preemptEvents[x].Timestamp;
+                            cycle.LinkInactive = preemptEvents[x].TimeStamp;
 
                         break;
 
                     case 110:
                         if (cycle != null)
-                            cycle.MaxPresenceExceeded = preemptEvents[x].Timestamp;
+                            cycle.MaxPresenceExceeded = preemptEvents[x].TimeStamp;
                         break;
 
                     case 111:
                         // 111 can usually be considered "cycle complete"
                         if (cycle != null)
                         {
-                            cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+                            cycle.BeginExitInterval = preemptEvents[x].TimeStamp;
 
                             EndCycle(cycle, preemptEvents[x], CycleCollection);
 
@@ -402,7 +402,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
                 if (x + 1 >= preemptEvents.Count && cycle != null)
                 {
-                    cycle.BeginExitInterval = preemptEvents[x].Timestamp;
+                    cycle.BeginExitInterval = preemptEvents[x].TimeStamp;
                     EndCycle(cycle, preemptEvents[x], CycleCollection);
                     break;
                 }
@@ -417,7 +417,7 @@ namespace ATSPM.Application.Reports.Business.Common
             for (var x = counter; x < DTTB.Count; x++)
                 if (DTTB[x].EventCode == 111)
                 {
-                    Next111Event = DTTB[x].Timestamp;
+                    Next111Event = DTTB[x].TimeStamp;
                     x = DTTB.Count;
                 }
             return Next111Event;
@@ -472,7 +472,7 @@ namespace ATSPM.Application.Reports.Business.Common
         private void EndCycle(PreemptCycle cycle, ControllerEventLog controller_Event_Log,
             List<PreemptCycle> CycleCollection)
         {
-            cycle.CycleEnd = controller_Event_Log.Timestamp;
+            cycle.CycleEnd = controller_Event_Log.TimeStamp;
             cycle.Delay = GetDelay(cycle.HasDelay, cycle.EntryStarted, cycle.CycleStart);
             cycle.TimeToService = GetTimeToService(
                 cycle.HasDelay,
@@ -567,17 +567,17 @@ namespace ATSPM.Application.Reports.Business.Common
             var cycle = new PreemptCycle();
 
 
-            cycle.CycleStart = controller_Event_Log.Timestamp;
+            cycle.CycleStart = controller_Event_Log.TimeStamp;
 
             if (controller_Event_Log.EventCode == 105)
             {
-                cycle.EntryStarted = controller_Event_Log.Timestamp;
+                cycle.EntryStarted = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = false;
             }
 
             if (controller_Event_Log.EventCode == 102)
             {
-                cycle.StartInputOn = controller_Event_Log.Timestamp;
+                cycle.StartInputOn = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = true;
             }
 

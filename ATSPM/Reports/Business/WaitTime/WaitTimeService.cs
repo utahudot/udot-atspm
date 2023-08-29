@@ -55,9 +55,9 @@ namespace ATSPM.Application.Reports.Business.WaitTime
             string detectionTypesForApproach;
             GetDetectionTypes(approach, out useDroppingAlgorithm, out detectionTypesForApproach);
             var redList = controllerEventLogs.Where(x => x.EventCode == WaitTimeOptions.PHASE_END_RED_CLEARANCE)
-                .OrderBy(x => x.Timestamp);
+                .OrderBy(x => x.TimeStamp);
             var greenList = controllerEventLogs.Where(x => x.EventCode == WaitTimeOptions.PHASE_BEGIN_GREEN)
-                .OrderBy(x => x.Timestamp);
+                .OrderBy(x => x.TimeStamp);
             var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
                 x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED ||
                 x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED);
@@ -71,15 +71,15 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                 foreach (var red in redList)
                 {
                     //Find the corresponding green
-                    var green = greenList.Where(x => x.Timestamp > red.Timestamp).OrderBy(x => x.Timestamp)
+                    var green = greenList.Where(x => x.TimeStamp > red.TimeStamp).OrderBy(x => x.TimeStamp)
                         .FirstOrDefault();
                     if (green == null)
                         continue;
 
                     //Find all events between the red and green
                     var phaseCallList = orderedPhaseRegisterList
-                        .Where(x => x.Timestamp >= red.Timestamp && x.Timestamp < green.Timestamp)
-                        .OrderBy(x => x.Timestamp).ToList();
+                        .Where(x => x.TimeStamp >= red.TimeStamp && x.TimeStamp < green.TimeStamp)
+                        .OrderBy(x => x.TimeStamp).ToList();
 
                     if (!phaseCallList.Any())
                         continue;
@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     var exportList = new List<string>();
                     foreach (var row in phaseCallList)
                     {
-                        exportList.Add($"{row.SignalId}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
+                        exportList.Add($"{row.SignalIdentifier}, {row.TimeStamp}, {row.EventCode}, {row.EventParam}");
                     }
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
@@ -105,19 +105,19 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 
                             waitTimeTrackerToFill = new WaitTimeTracker
                             {
-                                Time = green.Timestamp,
-                                WaitTimeSeconds = (green.Timestamp - nextPhaseCall.Timestamp).TotalSeconds
+                                Time = green.TimeStamp,
+                                WaitTimeSeconds = (green.TimeStamp - nextPhaseCall.TimeStamp).TotalSeconds
                             };
                         }
                     }
                     else if (phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED))
                     {
                         var firstPhaseCall = phaseCallList.First(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED);
-                        //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.Timestamp, WaitTimeSeconds = (green.Timestamp - firstPhaseCall.Timestamp).TotalSeconds });
+                        //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
-                            Time = green.Timestamp,
-                            WaitTimeSeconds = (green.Timestamp - firstPhaseCall.Timestamp).TotalSeconds
+                            Time = green.TimeStamp,
+                            WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds
                         };
                     }
                     else
@@ -128,7 +128,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     //Toss anything longer than 6 minutes - usually a bad value as a result of missing data
                     if (waitTimeTrackerToFill.WaitTimeSeconds > 360)
                         continue;
-                    var priorPhase = analysisPhaseData.Cycles.Items.FirstOrDefault(x => x.EndTime == red.Timestamp);
+                    var priorPhase = analysisPhaseData.Cycles.Items.FirstOrDefault(x => x.EndTime == red.TimeStamp);
                     if (priorPhase != null)
                     {
                         waitTimeTrackerList.Add(waitTimeTrackerToFill);

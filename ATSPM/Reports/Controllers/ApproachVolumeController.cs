@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.ApproachVolume;
-using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -51,9 +49,9 @@ namespace ATSPM.Application.Reports.Controllers
             int opposingDistanceFromStopBar = 0;
             List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, signal, true, out primaryDistanceFromStopBar);
             List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, signal, false, out opposingDistanceFromStopBar);
-            if(primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
+            if (primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
             {
-                return new ApproachVolumeResult(primaryApproaches.FirstOrDefault().Id, signal.SignalId, options.Start, options.End);
+                return new ApproachVolumeResult(primaryApproaches.FirstOrDefault().Id, signal.SignalIdentifier, options.Start, options.End);
             }
             ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
                 options,
@@ -80,7 +78,7 @@ namespace ATSPM.Application.Reports.Controllers
             }
 
             var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
-                d.Approach.Signal.SignalId,
+                d.Approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End,
                 new List<int> { 82 },

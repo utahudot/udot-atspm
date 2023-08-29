@@ -1015,14 +1015,6 @@
             <param name="message">The error message that explains the reason for the exception.</param>
             <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
         </member>
-        <member name="M:ATSPM.Application.Extensions.DetectorExtensions.CheckReportAvialbility(ATSPM.Data.Models.Detector,System.Int32)">
-            <summary>
-            Checks to see if <see cref="T:ATSPM.Data.Models.Detector"/>.<see cref="T:ATSPM.Data.Models.DetectionType"/> metrics contains <paramref name="metricId"/>
-            </summary>
-            <param name="detector"><see cref="T:ATSPM.Data.Models.Detector"/> whos <see cref="T:ATSPM.Data.Models.DetectionType"/> collection to check</param>
-            <param name="metricId"><see cref="T:ATSPM.Data.Models.MetricType"/> id to match within <see cref="T:ATSPM.Data.Models.DetectionType"/> collection</param>
-            <returns></returns>
-        </member>
         <member name="T:ATSPM.Application.LogMessages.ControllerLoggerDecoderLogMessages.__DecodedLogsMessageStruct">
             <summary> This API supports the logging infrastructure and is not intended to be used directly from your code. It is subject to change in the future. </summary>
         </member>

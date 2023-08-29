@@ -1,7 +1,7 @@
-﻿using ATSPM.Application.Reports.Business.ArrivalOnRed;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +47,7 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
             var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End);
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(9, approach, options.Start, options.End, true, false);

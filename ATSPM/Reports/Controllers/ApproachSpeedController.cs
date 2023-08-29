@@ -1,13 +1,10 @@
-﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.ApproachSpeed;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System;
 using System.Linq;
-using ATSPM.Infrastructure.Repositories;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -55,7 +52,7 @@ namespace ATSPM.Application.Reports.Controllers
                 options.UsePermissivePhase,
                 options.Start,
                 options.End).ToList();
-            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.Signal.SignalId, options.Start, options.End).ToList();
+            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.Signal.SignalIdentifier, options.Start, options.End).ToList();
             ApproachSpeedResult viewModel = approachSpeedService.GetChartData(
                 options,
                 cycleEvents,

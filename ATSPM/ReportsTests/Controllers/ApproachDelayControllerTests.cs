@@ -3,7 +3,6 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using CsvHelper;
-using Google.Type;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Globalization;
@@ -55,15 +54,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 1680; // Updated Id
-            mockSignal.Object.SignalId = "7115"; // Updated SignalId
-            mockSignal.Object.Latitude = "40.62398502";
-            mockSignal.Object.Longitude = "-111.9387819";
+            mockSignal.Object.SignalIdentifier = "7115"; // Updated SignalId
+            mockSignal.Object.Latitude = 40.62398502;
+            mockSignal.Object.Longitude = -111.9387819;
             mockSignal.Object.PrimaryName = "Redwood Road";
             mockSignal.Object.SecondaryName = "7000 South";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
             mockSignal.Object.RegionId = 2;
             mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "10";
             mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
@@ -80,7 +79,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Assert
             Assert.Equal(approach.Object.Id, result.ApproachId);
-            Assert.Equal(approach.Object.Signal.SignalId, result.SignalId);
+            Assert.Equal(approach.Object.Signal.SignalIdentifier, result.SignalId);
             Assert.Equal(2, result.PhaseNumber);
             Assert.Equal("NBT Ph2", result.PhaseDescription);
             Assert.Equal(start, result.Start);

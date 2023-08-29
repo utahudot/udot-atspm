@@ -18,7 +18,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
         public void FindSpeedEventsForCycle(List<SpeedEvent> speeds)
         {
             SpeedEvents = speeds.Where(s =>
-                s.Timestamp >= GreenEvent.AddSeconds(15) && s.Timestamp < YellowEvent && s.Mph >= 5).ToList();
+                s.TimeStamp >= GreenEvent.AddSeconds(15) && s.TimeStamp < YellowEvent && s.Mph >= 5).ToList();
         }
     }
 }

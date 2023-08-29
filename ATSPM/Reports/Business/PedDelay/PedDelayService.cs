@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +7,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
 {
     public class PedDelayService
     {
-        
+
         public PedDelayService()
         {
-            
+
         }
 
 
@@ -63,7 +61,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             {
                 foreach (var e in pedPhase.PedBeginWalkEvents)
                 {
-                    startOfWalk.Add(new StartBeginWalk(e.Timestamp, 0));
+                    startOfWalk.Add(new StartBeginWalk(e.TimeStamp, 0));
                 }
             }
 
@@ -78,7 +76,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 }
             }
             return new PedDelayResult(
-                pedPhase.Approach.Signal.SignalId,
+                pedPhase.Approach.Signal.SignalIdentifier,
                 pedPhase.Approach.Id,
                 pedPhase.Approach.ProtectedPhaseNumber,
                 pedPhase.Approach.Description,

@@ -26,14 +26,14 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 pl.PlanNumber.ToString(),
                 pl.StartTime,
                 pl.EndTime,
-                preemptEvents.Count(p => p.EventCode == 105 && p.Timestamp >= pl.StartTime && p.Timestamp < pl.EndTime))).ToList();
+                preemptEvents.Count(p => p.EventCode == 105 && p.TimeStamp >= pl.StartTime && p.TimeStamp < pl.EndTime))).ToList();
 
             return new PreemptServiceResult(
                 options.SignalId,
                 options.Start,
                 options.End,
                 preemptPlans,
-                preemptEvents.Select(p => new PreemptServiceEvent(p.Timestamp, p.EventParam)).ToList()  
+                preemptEvents.Select(p => new PreemptServiceEvent(p.TimeStamp, p.EventParam)).ToList()  
                 );
         }
     }

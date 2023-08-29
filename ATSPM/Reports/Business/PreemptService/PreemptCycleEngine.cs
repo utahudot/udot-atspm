@@ -18,7 +18,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 //It can happen that there is no defined terminaiton event.
                 if (x + 1 < DTTB.Count)
                 {
-                    var t = DTTB[x + 1].Timestamp - DTTB[x].Timestamp;
+                    var t = DTTB[x + 1].TimeStamp - DTTB[x].TimeStamp;
                     if (cycle != null && t.TotalMinutes > 20 && DTTB[x].EventCode != 111 &&
                         DTTB[x].EventCode != 105)
                     {
@@ -31,26 +31,26 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 switch (DTTB[x].EventCode)
                 {
                     case 102:
-                        cycle?.InputOn.Add(DTTB[x].Timestamp);
-                        if (cycle == null && DTTB[x].Timestamp != DTTB[x + 1].Timestamp &&
+                        cycle?.InputOn.Add(DTTB[x].TimeStamp);
+                        if (cycle == null && DTTB[x].TimeStamp != DTTB[x + 1].TimeStamp &&
                             DTTB[x + 1].EventCode == 105)
                             cycle = StartCycle(DTTB[x]);
                         break;
 
                     case 103:
                         if (cycle != null && cycle.GateDown == DateTime.MinValue)
-                            cycle.GateDown = DTTB[x].Timestamp;
+                            cycle.GateDown = DTTB[x].TimeStamp;
                         break;
 
                     case 104:
-                        cycle?.InputOff.Add(DTTB[x].Timestamp);
+                        cycle?.InputOff.Add(DTTB[x].TimeStamp);
                         break;
 
                     case 105:
                         ////If we run into an entry start after cycle start (event 102)
                         if (cycle != null && cycle.HasDelay)
                         {
-                            cycle.EntryStarted = DTTB[x].Timestamp;
+                            cycle.EntryStarted = DTTB[x].TimeStamp;
                             break;
                         }
 
@@ -67,7 +67,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                     case 106:
                         if (cycle != null)
                         {
-                            cycle.BeginTrackClearance = DTTB[x].Timestamp;
+                            cycle.BeginTrackClearance = DTTB[x].TimeStamp;
 
                             if (x + 1 < DTTB.Count)
                                 if (!DoesTrackClearEndNormal(DTTB, x))
@@ -79,12 +79,12 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
                         if (cycle != null)
                         {
-                            cycle.BeginDwellService = DTTB[x].Timestamp;
+                            cycle.BeginDwellService = DTTB[x].TimeStamp;
 
                             if (x + 1 < DTTB.Count)
                                 if (!DoesTheCycleEndNormal(DTTB, x))
                                 {
-                                    cycle.BeginExitInterval = DTTB[x + 1].Timestamp;
+                                    cycle.BeginExitInterval = DTTB[x + 1].TimeStamp;
 
                                     EndCycle(cycle, DTTB[x + 1], CycleCollection);
 
@@ -95,24 +95,24 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
                     case 108:
                         if (cycle != null)
-                            cycle.LinkActive = DTTB[x].Timestamp;
+                            cycle.LinkActive = DTTB[x].TimeStamp;
                         break;
 
                     case 109:
                         if (cycle != null)
-                            cycle.LinkInactive = DTTB[x].Timestamp;
+                            cycle.LinkInactive = DTTB[x].TimeStamp;
                         break;
 
                     case 110:
                         if (cycle != null)
-                            cycle.MaxPresenceExceeded = DTTB[x].Timestamp;
+                            cycle.MaxPresenceExceeded = DTTB[x].TimeStamp;
                         break;
 
                     case 111:
                         // 111 can usually be considered "cycle complete"
                         if (cycle != null)
                         {
-                            cycle.BeginExitInterval = DTTB[x].Timestamp;
+                            cycle.BeginExitInterval = DTTB[x].TimeStamp;
                             EndCycle(cycle, DTTB[x], CycleCollection);
                             cycle = null;
                         }
@@ -122,7 +122,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
 
                 if (x + 1 >= DTTB.Count && cycle != null)
                 {
-                    cycle.BeginExitInterval = DTTB[x].Timestamp;
+                    cycle.BeginExitInterval = DTTB[x].TimeStamp;
                     EndCycle(cycle, DTTB[x], CycleCollection);
                     break;
                 }
@@ -137,7 +137,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             for (var x = counter; x < DTTB.Count; x++)
                 if (DTTB[x].EventCode == 111)
                 {
-                    Next111Event = DTTB[x].Timestamp;
+                    Next111Event = DTTB[x].TimeStamp;
                     x = DTTB.Count;
                 }
             return Next111Event;
@@ -192,7 +192,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
         private void EndCycle(PreemptCycle cycle, ControllerEventLog controller_Event_Log,
             List<PreemptCycle> CycleCollection)
         {
-            cycle.CycleEnd = controller_Event_Log.Timestamp;
+            cycle.CycleEnd = controller_Event_Log.TimeStamp;
             CycleCollection.Add(cycle);
         }
 
@@ -201,18 +201,18 @@ namespace ATSPM.Application.Reports.Business.PreemptService
         {
             var cycle = new PreemptCycle
             {
-                CycleStart = controller_Event_Log.Timestamp
+                CycleStart = controller_Event_Log.TimeStamp
             };
 
             if (controller_Event_Log.EventCode == 105)
             {
-                cycle.EntryStarted = controller_Event_Log.Timestamp;
+                cycle.EntryStarted = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = false;
             }
 
             if (controller_Event_Log.EventCode == 102)
             {
-                cycle.StartInputOn = controller_Event_Log.Timestamp;
+                cycle.StartInputOn = controller_Event_Log.TimeStamp;
                 cycle.HasDelay = true;
             }
 

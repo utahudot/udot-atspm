@@ -1,7 +1,5 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Parquet.Data.Rows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +41,9 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
             Signal signal)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.SignalId,
-                options.Start, 
-                options.End, 
+                signal.SignalIdentifier,
+                options.Start,
+                options.End,
                 planEvents,
                 cycleEvents,
                 splitsEvents,
@@ -54,7 +52,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 signal,
                 1
                 );
-            
+
             var result = new List<SplitMonitorResult>();
             foreach (var phase in phaseCollection.AnalysisPhases)
             {
@@ -80,7 +78,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                     .Where(c => c.HasPed)
                     .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
                     .ToList(),
-                };                
+                };
                 splitMonitorResult.Plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
                 result.Add(splitMonitorResult);
             }
@@ -89,8 +87,8 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         }
 
         private List<PlanSplitMonitorData> GetSplitMonitorPlansWithStatistics(
-            SplitMonitorOptions options, 
-            AnalysisPhaseCollectionData phaseCollection, 
+            SplitMonitorOptions options,
+            AnalysisPhaseCollectionData phaseCollection,
             AnalysisPhaseData phase)
         {
             var phasePlans = new List<PlanSplitMonitorData>();
@@ -121,7 +119,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
 
         private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
         {
-            if(planNumber != "254")
+            if (planNumber != "254")
                 return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / planCycleCount : 0;
             else
                 return 0;

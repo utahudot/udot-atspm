@@ -1,12 +1,11 @@
-﻿using ATSPM.Application.Reports.Business.AppoachDelay;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.AppoachDelay;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -45,17 +44,17 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
             var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End);
             int distanceFromStopBar = 0;
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
+            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList();
             var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
                 approach,
                 options.GetPermissivePhase,
                 options.Start,
                 options.End);
-                
+
             var signalPhase = signalPhaseService.GetSignalPhaseData(
                 options.Start,
                 options.End,
@@ -65,7 +64,7 @@ namespace ATSPM.Application.Reports.Controllers
                 approach,
                 cycleEvents.ToList(),
                 planEvents.ToList(),
-                detectorEvents); 
+                detectorEvents);
             ApproachDelayResult viewModel = approachDelayService.GetChartData(
                 options,
                 approach,

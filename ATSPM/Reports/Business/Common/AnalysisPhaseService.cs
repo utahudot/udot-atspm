@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
-using Parquet.Data.Rows;
+﻿using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -46,7 +44,7 @@ namespace ATSPM.Application.Reports.Business.Common
             analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
-            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount)?? new List<ControllerEventLog>();
+            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(analysisPhaseData.TerminationEvents) ?? new List<ControllerEventLog>();
@@ -71,7 +69,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.SignalId = signal.SignalId;
+            analysisPhaseData.SignalId = signal.SignalIdentifier;
             analysisPhaseData.IsOverlap = false;
             var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
             var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
@@ -87,18 +85,18 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in terminationeventstable
                           where row.EventParam == phasenumber && (row.EventCode == 4 ||
-                                                                  row.EventCode == 5 || 
-                                                                  row.EventCode == 6 || 
+                                                                  row.EventCode == 5 ||
+                                                                  row.EventCode == 6 ||
                                                                   row.EventCode == 7)
                           select row).ToList();
 
-            var sortedEvents = events.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
+            var sortedEvents = events.OrderBy(x => x.TimeStamp).ThenBy(y => y.EventCode).ToList();
             var duplicateList = new List<ControllerEventLog>();
             for (int i = 0; i < sortedEvents.Count - 1; i++)
             {
                 var event1 = sortedEvents[i];
                 var event2 = sortedEvents[i + 1];
-                if (event1.Timestamp == event2.Timestamp)
+                if (event1.TimeStamp == event2.TimeStamp)
                 {
                     if (event1.EventCode == 7)
                         duplicateList.Add(event1);
@@ -119,7 +117,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in terminationeventstable
                           where row.EventParam == phasenumber && (row.EventCode == 21 || row.EventCode == 23)
-                          orderby row.Timestamp
+                          orderby row.TimeStamp
                           select row).ToList();
 
             return events;
@@ -129,7 +127,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in PhaseEventsTable
                           where row.EventParam == PhaseNumber
-                          orderby row.Timestamp
+                          orderby row.TimeStamp
                           select row).ToList();
 
             return events;
@@ -141,7 +139,7 @@ namespace ATSPM.Application.Reports.Business.Common
             var ConsecutiveEvents = new List<ControllerEventLog>();
             var runningConsecCount = 0;
             // Order the events by datestamp
-            var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.Timestamp);
+            var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.TimeStamp);
             foreach (var termEvent in eventsInOrder)
                 if (termEvent.EventCode != 7)
                 {

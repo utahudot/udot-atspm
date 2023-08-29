@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,7 +144,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void SetDetectorActivations(
             SplitFailOptions options,
-            SplitFailPhaseData splitFailPhaseData, 
+            SplitFailPhaseData splitFailPhaseData,
             IReadOnlyList<ControllerEventLog> detectorEvents)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
@@ -161,9 +160,9 @@ namespace ATSPM.Application.Reports.Business.SplitFail
                 //}
                 //else
                 //{
-                    AddDetectorOnToBeginningIfNecessary(options, detector, events);
-                    AddDetectorOffToEndIfNecessary(options, detector, events);
-                    AddDetectorActivationsFromList(events, splitFailPhaseData);
+                AddDetectorOnToBeginningIfNecessary(options, detector, events);
+                AddDetectorOffToEndIfNecessary(options, detector, events);
+                AddDetectorActivationsFromList(events, splitFailPhaseData);
                 //}
             }
             CombineDetectorActivations(splitFailPhaseData);
@@ -171,13 +170,13 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void AddDetectorActivationsFromList(List<ControllerEventLog> events, SplitFailPhaseData splitFailPhaseData)
         {
-            events = events.OrderBy(e => e.Timestamp).ToList();
+            events = events.OrderBy(e => e.TimeStamp).ToList();
             for (var i = 0; i < events.Count - 1; i++)
                 if (events[i].EventCode == 82 && events[i + 1].EventCode == 81)
                     splitFailPhaseData.DetectorActivations.Add(new SplitFailDetectorActivation
                     {
-                        DetectorOn = events[i].Timestamp,
-                        DetectorOff = events[i + 1].Timestamp
+                        DetectorOn = events[i].TimeStamp,
+                        DetectorOff = events[i + 1].TimeStamp
                     });
         }
 
@@ -187,10 +186,10 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.LastOrDefault()?.EventCode == 82)
                 events.Insert(events.Count, new ControllerEventLog
                 {
-                    Timestamp = options.End,
+                    TimeStamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetChannel,
-                    SignalId = options.SignalId
+                    SignalIdentifier = options.SignalId
                 });
         }
 
@@ -200,10 +199,10 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.FirstOrDefault()?.EventCode == 81)
                 events.Insert(0, new ControllerEventLog
                 {
-                    Timestamp = options.Start,
+                    TimeStamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetChannel,
-                    SignalId = options.SignalId
+                    SignalIdentifier = options.SignalId
                 });
         }
     }

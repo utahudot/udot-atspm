@@ -1,15 +1,12 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
-    public class ApproachDelayService 
+    public class ApproachDelayService
     {
 
         public ApproachDelayService()
@@ -21,7 +18,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             ApproachDelayOptions options,
             Approach approach,
             SignalPhase signalPhase)
-        {            
+        {
             var dt = signalPhase.StartDate;
             var approachDelayDataPoints = new List<ApproachDelayDataPoint>();
             var approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
@@ -46,7 +43,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
                 approach.Id,
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.Start,

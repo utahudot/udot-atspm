@@ -1,16 +1,10 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Business.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {
-        public class VolumeCollectionTests
-        {
+    public class VolumeCollectionTests
+    {
         [Fact]
         public void VolumeCollection_Constructor_WithPrimaryAndOpposingDirection_ShouldCombineVolumes()
         {
@@ -29,7 +23,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             Assert.Equal(10, volumeCollection.Items[1].DetectorCount);
             Assert.Equal(10, volumeCollection.Items[2].DetectorCount);
             Assert.Equal(10, volumeCollection.Items[3].DetectorCount);
-            Assert.Equal(10 * 60/binSize, volumeCollection.Items[0].HourlyVolume);
+            Assert.Equal(10 * 60 / binSize, volumeCollection.Items[0].HourlyVolume);
             Assert.Equal(10 * 60 / binSize, volumeCollection.Items[1].HourlyVolume);
             Assert.Equal(10 * 60 / binSize, volumeCollection.Items[2].HourlyVolume);
             Assert.Equal(10 * 60 / binSize, volumeCollection.Items[3].HourlyVolume);
@@ -64,7 +58,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    detectorEvents.Add(new ControllerEventLog { Timestamp = time.AddMinutes(i) });
+                    detectorEvents.Add(new ControllerEventLog { TimeStamp = time.AddMinutes(i) });
                 }
             }
 
@@ -96,6 +90,6 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
         }
     }
 }
-    
+
 
 

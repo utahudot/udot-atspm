@@ -1,20 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
-<<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/Config/20230605223641_init.cs
-namespace ATSPM.Infrastructure.Migrations.Config
-{
-    public partial class init : Migration
-========
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 
 namespace ATSPM.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class EFCore6Upgrade : Migration
->>>>>>>> EventLogUtility:ATSPM/Infrastructure/Migrations/Config/20230824192358_EFCore6Upgrade.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -233,11 +227,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-<<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/Config/20230605223641_init.cs
-                    SignalId = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-========
                     SignalIdentifier = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
->>>>>>>> EventLogUtility:ATSPM/Infrastructure/Migrations/Config/20230824192358_EFCore6Upgrade.cs
                     TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
                     CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
                 },

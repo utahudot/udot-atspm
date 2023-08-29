@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System;
@@ -29,7 +28,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             List<ControllerEventLog> events,
             List<ControllerEventLog> planEvents)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalId, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalIdentifier, planEvents);
             var movementTotals = new SortedDictionary<DateTime, int>();
             var laneTotals = new SortedDictionary<string, int>();
             var binSizeMultiplier = 60 / options.SelectedBinSize;
@@ -42,7 +41,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             var laneUtilizationFactor = GetLaneUtilizationFactor(totalVolume, detectors.Count(), highLaneVolume);
             var peakHourMaxVolume = movementTotals.Max(m => m.Value);// GetPeakHourMaxVolume(options, MovementTotals, binMultiplier, peakHourValue.Key);
             var peakHourFactor = GetPeakHourFactor(peakHourValue.Value, peakHourMaxVolume, binMultiplier);
-            
+
 
             return new TurningMovementCountsResult(
                 "Turning Movement Counts",

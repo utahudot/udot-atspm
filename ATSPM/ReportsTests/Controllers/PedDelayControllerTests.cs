@@ -1,18 +1,12 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Data.Models;
-using Moq;
-using ATSPM.Data.Enums;
-using System.Net;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using CsvHelper;
+using Moq;
 using System.Globalization;
+using System.Net;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -31,7 +25,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
             List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
             List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21,22,45,90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
@@ -55,15 +49,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 4080; // Updated Id
-            mockSignal.Object.SignalId = "5306"; // Updated SignalId
-            mockSignal.Object.Latitude = "41.73907982";
-            mockSignal.Object.Longitude = "-111.8347528";
+            mockSignal.Object.SignalIdentifier = "5306"; // Updated SignalId
+            mockSignal.Object.Latitude = 41.73907982;
+            mockSignal.Object.Longitude = -111.8347528;
             mockSignal.Object.PrimaryName = "Main St.";
             mockSignal.Object.SecondaryName = "400 North";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.239.5.15");
             mockSignal.Object.RegionId = 1;
             mockSignal.Object.ControllerTypeId = 9; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "10";
             mockSignal.Object.Start = new System.DateTime(2011, 1, 1);

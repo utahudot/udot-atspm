@@ -798,5 +798,46 @@
             Split 32 Change
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Interfaces.IPlanLayer">
+            <summary>
+            For objects in the plan layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.IPlanLayer.PlanNumber">
+            <summary>
+            Plan number as derrived from the event parameter on <see cref="!:DataLoggerEnum.CoordPatternChange"/> event
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Interfaces.ISignalLayer">
+            <summary>
+            For objects in the signal layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier">
+            <summary>
+            Identifier of signal controller
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Interfaces.ISignalPhaseLayer">
+            <summary>
+            For objects in the signal and phase layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ISignalPhaseLayer.PhaseNumber">
+            <summary>
+            Phase number assigned to <see cref="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier"/>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Models.AtspmConfigModelBase`1">
+            <summary>
+            Base class for configuration context models.
+            This base includes interfaces for working with user interfaces.
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AtspmConfigModelBase`1.Id">
+            <summary>
+            Primary key
+            </summary>
+        </member>
     </members>
 </doc>

@@ -1,19 +1,13 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.ValueObjects;
-using ATSPM.Domain.Common;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Specifications;
+using ATSPM.Data;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using ATSPM.Application.Specifications;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Specifications;
-using ATSPM.Data;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -31,10 +25,10 @@ namespace ATSPM.Infrastructure.Repositories
                 .AsEnumerable()
                 .SelectMany(a => a.LogData.Select(s => new ControllerEventLog()
                 {
-                    SignalId = a.SignalId,
+                    SignalIdentifier = a.SignalIdentifier,
                     EventCode = s.EventCode,
                     EventParam = s.EventParam,
-                    Timestamp = s.Timestamp
+                    TimeStamp = s.TimeStamp
                 }))
                 .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime)).ToList();
 

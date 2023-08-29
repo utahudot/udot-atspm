@@ -94,8 +94,8 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             this.redEndEvent = redEnd;
             this.endTime= redEnd;
             DetectorActivations = detectorEvents
-                .Where(d => d.Timestamp >= yellowClearance && d.Timestamp < redEnd)
-                .Select(d => new YellowRedActivation(yellowClearance, d.Timestamp)).ToList();
+                .Where(d => d.TimeStamp >= yellowClearance && d.TimeStamp < redEnd)
+                .Select(d => new YellowRedActivation(yellowClearance, d.TimeStamp)).ToList();
         }
 
         public DateTime StartTime => startTime;

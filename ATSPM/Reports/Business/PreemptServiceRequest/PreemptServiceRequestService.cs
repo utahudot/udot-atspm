@@ -22,7 +22,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new PreemptRequest(row.Timestamp, row.EventParam));
+            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new PreemptRequest(row.TimeStamp, row.EventParam));
 
             var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
             IReadOnlyList<Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
