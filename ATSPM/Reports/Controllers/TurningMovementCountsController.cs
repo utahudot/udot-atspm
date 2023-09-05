@@ -1,10 +1,7 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.TurningMovementCounts;
+﻿using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Repositories;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,28 +36,32 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
 
-        [HttpPost("getChartData")]
-        public TurningMovementCountsResult GetChartData([FromBody] TurningMovementCountsOptions options)
-        {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var movementTypes = options.MovementTypes.Select(m => (int)m);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
-                options.Start,
-                options.End);
-            var detectors = approach.GetDetectorsForMetricType(5)
-                .Where(d => d.LaneType.Id == options.LaneType && movementTypes.Contains((int)d.MovementType.Id)).ToList();
-            var detectorChannels = detectors.Select(d => d.DetChannel).ToList();
-            var events = controllerEventLogRepository.GetRecordsByParameterAndEvent(approach.Signal.SignalId, options.Start,
-                        options.End, new List<int> { 82 }, detectorChannels).ToList();
-            var result = turningMovementCountsService.GetChartData(
-                options,
-                approach,
-                detectors,
-                events,
-                planEvents.ToList());
-            return result;
-        }
+        //[HttpPost("getChartData")]
+        //public TurningMovementCountsResult GetChartData([FromBody] TurningMovementCountsOptions options)
+        //{
+        //    var approach = approachRepository.Lookup(options.ApproachId);
+        //    var movementTypes = approach.Detectors.Select(d => d.LaneType).Distinct().ToList();
+        //    //var movementTypes = options.MovementTypes.Select(m => (int)m);
+        //    var planEvents = controllerEventLogRepository.GetPlanEvents(
+        //        approach.Signal.SignalId,
+        //        options.Start,
+        //        options.End);
+        //    var detectors = approach.GetDetectorsForMetricType(5).ToList();
+        //        //.Where(d => d.LaneType.Id == options.LaneType && movementTypes.Contains((int)d.MovementType.Id)).ToList();
+        //    var detectorChannels = detectors.Select(d => d.DetChannel).ToList();
+        //    var events = controllerEventLogRepository.GetRecordsByParameterAndEvent(approach.Signal.SignalId, options.Start,
+        //                options.End, new List<int> { 82 }, detectorChannels).ToList();
+        //    var laneTypes = approach.Detectors.Select(d => d.LaneType).Distinct().ToList();
+
+        //    var result = turningMovementCountsService.GetChartData(
+        //        detectors
+        //        ,
+        //        options,
+        //        events,
+        //        planEvents.ToList(),
+        //        approach);
+        //    return result;
+        //}
 
     }
 }

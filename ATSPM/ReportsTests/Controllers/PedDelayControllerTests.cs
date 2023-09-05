@@ -1,18 +1,12 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Data.Models;
-using Moq;
-using ATSPM.Data.Enums;
-using System.Net;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using CsvHelper;
+using Moq;
 using System.Globalization;
+using System.Net;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -31,7 +25,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
             List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
             List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21,22,45,90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
@@ -73,7 +67,19 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            var options = new PedDelayOptions() { ApproachId = 1120, PedRecallThreshold = 75, ShowCycleLength = true, ShowPedBeginWalk = false, ShowPedRecall = false, ShowPercentDelay = false, TimeBuffer = 15, UsePermissivePhase = false, Start = new System.DateTime(2023, 5, 16, 8, 56, 0), End = new System.DateTime(2023, 5, 16, 12, 1, 0) };
+            var options = new PedDelayOptions()
+            {
+                ApproachId = 1120,
+                PedRecallThreshold = 75,
+                ShowCycleLength = true,
+                ShowPedBeginWalk = false,
+                ShowPedRecall = false,
+                ShowPercentDelay = false,
+                TimeBuffer = 15,
+                UsePermissivePhase = false,
+                Start = new System.DateTime(2023, 5, 16, 8, 56, 0),
+                End = new System.DateTime(2023, 5, 16, 12, 1, 0)
+            };
 
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
