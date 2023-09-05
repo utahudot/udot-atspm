@@ -10,7 +10,11 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             Gaps = gaps;
         }
 
-        public DateTime StartTime { get; internal set; }
-        public int Gaps { get; internal set; }
+        public GapCount()
+        {
+        }
+
+        public DateTime StartTime { get; set; }
+        public int Gaps { get; set; }
     }
 }
