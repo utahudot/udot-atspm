@@ -14,7 +14,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
 
         [Fact()]
-        public void GetSignalPhaseDataTest()
+        public async void GetSignalPhaseDataTest()
         {
             // Arrange
             PlanService planService = new PlanService(); // Replace with your PlanService instance
@@ -71,7 +71,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            SignalPhase result = signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
+            SignalPhase result = await signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
 
             // Assert
             Assert.NotNull(result);

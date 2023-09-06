@@ -10,6 +10,8 @@ namespace ATSPM.Application.Extensions
 {
     public static class ControllerEventLogRepositoryExtensions
     {
+
+
         public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
             this IControllerEventLogRepository repo,
             string signalId,

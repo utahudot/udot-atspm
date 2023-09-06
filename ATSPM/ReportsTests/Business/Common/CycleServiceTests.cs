@@ -9,7 +9,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
     {
         CycleService cycleService = new CycleService();
         [Fact]
-        public void GetPcdCyclesWithEmptyListsReturnsEmptyList()
+        public async void GetPcdCyclesWithEmptyListsReturnsEmptyList()
         {
             // Arrange
             DateTime startDate = new DateTime(2023, 1, 1);
@@ -20,14 +20,14 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             var cycleService = new CycleService();
 
             // Act
-            var result = cycleService.GetPcdCycles(startDate, endDate, detectorEvents, cycleEvents, pcdCycleTime);
+            var result = await cycleService.GetPcdCycles(startDate, endDate, detectorEvents, cycleEvents, pcdCycleTime);
 
             // Assert
             Assert.Empty(result);
         }
 
         [Fact]
-        public void GetPcdCycles_WithLargeDetectorEvents_ReturnsExpectedResult()
+        public async void GetPcdCycles_WithLargeDetectorEvents_ReturnsExpectedResult()
         {
             // Arrange
             DateTime startDate = new DateTime(2023, 4, 17, 8, 0, 0);
@@ -38,7 +38,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             int? pcdCycleTime = 10;
 
             // Act
-            var result = cycleService.GetPcdCycles(startDate, endDate, detectorEvents, cycleEvents, pcdCycleTime);
+            var result = await cycleService.GetPcdCycles(startDate, endDate, detectorEvents, cycleEvents, pcdCycleTime);
 
             // Assert
             Assert.True(result != null);

@@ -1,18 +1,16 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
     public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     {
-        public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateRangeSpecification(string signalIdentifier, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.SignalIdentifier == signalIdentifier && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -65,9 +63,9 @@ namespace ATSPM.Application.Specifications
             ApplyOrderBy(o => o.TimeStamp);
         }
 
-        public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateTimeRangeSpecification(string signalIdentifier, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.TimeStamp >= startDate && c.TimeStamp <= endDate;
+            base.Criteria = c => c.SignalIdentifier == signalIdentifier && c.TimeStamp >= startDate && c.TimeStamp <= endDate;
 
             ApplyOrderBy(o => o.TimeStamp);
         }

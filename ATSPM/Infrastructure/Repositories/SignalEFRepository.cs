@@ -39,6 +39,7 @@ namespace ATSPM.Infrastructure.Repositories
         .Include(s => s.Approaches)
             .ThenInclude(a => a.Detectors)
                 .ThenInclude(d => d.DetectionTypes)
+                    .ThenInclude(d => d.MetricTypeMetrics)
         .Include(s => s.Areas);
         }
 

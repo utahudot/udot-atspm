@@ -1,11 +1,10 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Exceptions;
+﻿using ATSPM.Application.Exceptions;
 using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -49,7 +48,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="approach"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        public SignalPhase GetSignalPhaseData(
+        public async Task<SignalPhase> GetSignalPhaseData(
             DateTime start,
             DateTime end,
             bool showVolume,
@@ -68,7 +67,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
             if (!cycleEvents.Any())
                 return new SignalPhase();
-            var cycles = cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
+            var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
             return new SignalPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,

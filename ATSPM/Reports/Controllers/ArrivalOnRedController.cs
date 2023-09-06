@@ -6,6 +6,7 @@ using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,7 +44,7 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public ArrivalOnRedResult GetChartData([FromBody] ArrivalOnRedOptions options)
+        public async Task<ArrivalOnRedResult> GetChartData([FromBody] ArrivalOnRedOptions options)
         {
             var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
             var planEvents = controllerEventLogRepository.GetPlanEvents(
@@ -56,7 +57,7 @@ namespace ATSPM.Application.Reports.Controllers
                 options.UsePermissivePhase,
                 options.Start,
                 options.End);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
                 options.Start,
                 options.End,
                 false,
