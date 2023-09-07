@@ -51,21 +51,11 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End.AddHours(12)).ToList();
 
             var approachDelayResults = new List<ApproachDelayResult>();
-            //foreach (var approach in signal.Approaches)
-            //{
-            //    approachDelayResults.Add(GetChartDataByApproach(options, approach, controllerEventLogs, planEvents));
-            //}
-            //Parallel.ForEach(signal.Approaches, approach =>
-            //{
-            //    approachDelayResults.Add(GetChartDataByApproach(options, approach, controllerEventLogs, planEvents));
-
-            //});
-            //return approachDelayResults;
             var tasks = new List<Task<ApproachDelayResult>>();
             foreach (var approach in signal.Approaches)
             {
                 tasks.Add(
-                    GetChartDataByApproach(options, approach, controllerEventLogs, planEvents)
+                    GetChartDataByApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription())
                 );
             }
 
@@ -74,7 +64,12 @@ namespace ATSPM.Application.Reports.Controllers
             return results.Where(result => result != null);
         }
 
-        private async Task<ApproachDelayResult> GetChartDataByApproach(ApproachDelayOptions options, Approach approach, List<ControllerEventLog> controllerEventLogs, List<ControllerEventLog> planEvents)
+        private async Task<ApproachDelayResult> GetChartDataByApproach(
+            ApproachDelayOptions options,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            string signalDescription)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(8, approach, options.Start, options.End, true, false);
             if (detectorEvents == null)
@@ -101,6 +96,8 @@ namespace ATSPM.Application.Reports.Controllers
                 options,
                 approach,
                 signalPhase);
+            viewModel.SignalDescription = signalDescription;
+            viewModel.ApproachDescription = approach.Description;
             return viewModel;
         }
 

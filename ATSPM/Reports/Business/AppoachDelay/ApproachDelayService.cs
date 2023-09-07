@@ -48,7 +48,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                 approach.Description,
                 options.Start,
                 options.End,
-                signalPhase.AvgDelay,
+                signalPhase.AvgDelaySeconds,
                 signalPhase.TotalDelaySeconds,
                 plans,
                 approachDelayDataPoints,

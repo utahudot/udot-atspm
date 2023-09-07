@@ -89,7 +89,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             Assert.Equal(1662.2999999999997, result.TotalGreenTimeSeconds);
             Assert.Equal(158.40000000000003, result.TotalYellowTimeSeconds);
             Assert.Equal(1908.1999999999998, result.TotalRedTimeSeconds);
-            Assert.Equal(11.97565445026178, result.AvgDelay);
+            Assert.Equal(11.97565445026178, result.AvgDelaySeconds);
             Assert.Equal(52, result.PercentArrivalOnGreen);
             Assert.Equal(45, result.PercentGreen);
             Assert.Equal(1.16, result.PlatoonRatio);

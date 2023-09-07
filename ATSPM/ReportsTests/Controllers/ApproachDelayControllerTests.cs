@@ -84,8 +84,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             Assert.Equal("NBT Ph2", result.PhaseDescription);
             Assert.Equal(start, result.Start);
             Assert.Equal(end, result.End);
-            Assert.Equal(0, result.AverageDelayPerVehicle);
-            Assert.Equal(0, result.TotalDelay);
+            Assert.Equal(23.15599626691554, result.AverageDelayPerVehicle);
+            Assert.Equal(49623.3, result.TotalDelay);
             Assert.NotEmpty(result.Plans);
             Assert.NotEmpty(result.ApproachDelayDataPoints);
             Assert.NotEmpty(result.ApproachDelayPerVehicleDataPoints);
