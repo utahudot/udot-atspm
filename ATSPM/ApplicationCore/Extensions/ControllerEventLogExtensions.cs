@@ -99,6 +99,38 @@ namespace ATSPM.Application.Extensions
             DateTime start,
             DateTime end,
             bool detectorOn,
+            bool detectorOff,
+            DetectionType detectionType)
+        {
+            var eventCodes = new List<int>();
+            if (detectorOn)
+                eventCodes.Add(82);
+            if (detectorOff)
+                eventCodes.Add(81);
+            if (!detectorOn && !detectorOff)
+                throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
+            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId).Where(d => d.DetectionTypes.Select(d => d.Id).Contains(detectionType.Id));
+            if (!detectorsForMetric.Any())
+                return null;
+            var detectorEvents = new List<ControllerEventLog>();
+            foreach (var d in detectorsForMetric)
+                detectorEvents.AddRange(events.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
+                    start,
+                    end,
+                    eventCodes,
+                    d.DetChannel,
+                    d.GetOffset(),
+                    d.LatencyCorrection));
+            return detectorEvents.OrderBy(e => e.TimeStamp).ToList();
+        }
+
+        public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
+            this IEnumerable<ControllerEventLog> events,
+            int metricTypeId,
+            Approach approach,
+            DateTime start,
+            DateTime end,
+            bool detectorOn,
             bool detectorOff)
         {
             var eventCodes = new List<int>();

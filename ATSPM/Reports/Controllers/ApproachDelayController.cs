@@ -49,8 +49,6 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
-
-            var approachDelayResults = new List<ApproachDelayResult>();
             var tasks = new List<Task<ApproachDelayResult>>();
             foreach (var approach in signal.Approaches)
             {

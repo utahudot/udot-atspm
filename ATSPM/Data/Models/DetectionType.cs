@@ -16,5 +16,18 @@ namespace ATSPM.Data.Models
 
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();
         public virtual ICollection<MetricType> MetricTypeMetrics { get; set; } = new HashSet<MetricType>();
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            return this.Id == ((DetectionType)obj).Id;
+        }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
+
 }
