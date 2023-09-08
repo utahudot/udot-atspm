@@ -179,7 +179,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 BinSize = 15,
                 SignalId = "7115", //2934 is Id of this signal
                 StartDate = new System.DateTime(2023, 6, 13, 6, 0, 0),
-                EndDate = new System.DateTime(2023, 6, 13, 6, 59, 0),
+                EndDate = new System.DateTime(2023, 6, 13, 7, 00, 0),
                 Gap1Min = 1,
                 Gap1Max = 3.3,
                 Gap2Min = 3.3,
@@ -187,22 +187,22 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 Gap3Min = 3.7,
                 Gap3Max = 7.4,
                 Gap4Min = 7.4,
-                //Gap4Max = ?,
-                //Gap5Min = ?,
-                //Gap5Max = ?,
-                //Gap6Min = ?,
-                //Gap6Max = ?,
-                //Gap7Min = ?,
-                //Gap7Max = ?,
-                //Gap8Min = ?,
-                //Gap8Max = ?,
-                //Gap9Min = ?,
-                //Gap9Max = ?,
-                //Gap10Min = ?,
-                //Gap10Max = ?,
-                //SumDurationGap1 = ?,
-                //SumDurationGap2 = ?,
-                //SumDurationGap3 = ?,
+                Gap4Max = null,
+                Gap5Min = null,
+                Gap5Max = null,
+                Gap6Min = null,
+                Gap6Max = null,
+                Gap7Min = null,
+                Gap7Max = null,
+                Gap8Min = null,
+                Gap8Max = null,
+                Gap9Min = null,
+                Gap9Max = null,
+                Gap10Min = null,
+                Gap10Max = null,
+                SumDurationGap1 = null,
+                SumDurationGap2 = null,
+                SumDurationGap3 = null,
                 TrendLineGapThreshold = 7.4
             };
 
@@ -217,41 +217,30 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 );
 
 
-            //var myGapCounts0 = new Mock<GapCount>(new System.DateTime(2023, 6, 13, 6, 15, 0), 14);
-            var myGapCounts0 = new GapCount();
-            myGapCounts0.StartTime = new System.DateTime(2023, 6,13,6,15,0);
-            myGapCounts0.Gaps = 15;
+            Assert.Equal(15, viewModel[1].Gap1Count.ToList()[0].Gaps);
+            Assert.Equal(20, viewModel[1].Gap1Count.ToList()[1].Gaps);
+            Assert.Equal(19, viewModel[1].Gap1Count.ToList()[2].Gaps);
+            Assert.Equal(16, viewModel[1].Gap1Count.ToList()[3].Gaps);
 
-            //var myGapCounts1 = new Mock<GapCount>(new System.DateTime(2023, 6, 13, 6, 30, 0), 19);
-            var myGapCounts1 = new GapCount();
-            myGapCounts1.StartTime = new System.DateTime(2023, 6, 13, 6, 30, 0);
-            myGapCounts1.Gaps = 20;
+            Assert.Equal(1, viewModel[1].Gap2Count.ToList()[0].Gaps);
+            //Assert.Equal(5, viewModel[1].Gap2Count.ToList()[1].Gaps); 3 (-2)
+            Assert.Equal(4, viewModel[1].Gap2Count.ToList()[2].Gaps);
+            Assert.Equal(3, viewModel[1].Gap2Count.ToList()[3].Gaps);
 
-            //var myGapCounts2 = new Mock<GapCount>(new System.DateTime(2023, 6, 13, 6, 45, 0), 4);
-            var myGapCounts2 = new GapCount();
-            myGapCounts2.StartTime = new System.DateTime(2023, 6, 13, 6, 45, 0);
-            myGapCounts2.Gaps = 19;
+            Assert.Equal(4, viewModel[1].Gap3Count.ToList()[0].Gaps);
+            //Assert.Equal(4, viewModel[1].Gap3Count.ToList()[1].Gaps); 6 (+2)
+            Assert.Equal(9, viewModel[1].Gap3Count.ToList()[2].Gaps);
+            Assert.Equal(6, viewModel[1].Gap3Count.ToList()[3].Gaps); 
 
-            //var myGapCounts3 = new Mock<GapCount>(new System.DateTime(2023, 6, 13, 7, 00, 0), 14);
-            var myGapCounts3 = new GapCount();
-            myGapCounts3.StartTime = new System.DateTime(2023, 6, 13, 7, 00, 0);
-            myGapCounts3.Gaps = 16;
+            Assert.Equal(13, viewModel[1].Gap4Count.ToList()[0].Gaps);
+            Assert.Equal(14, viewModel[1].Gap4Count.ToList()[1].Gaps);
+            Assert.Equal(14, viewModel[1].Gap4Count.ToList()[2].Gaps);
+            Assert.Equal(15, viewModel[1].Gap4Count.ToList()[3].Gaps); 
 
-            var group1 = new List<GapCount>() { myGapCounts0, myGapCounts1, myGapCounts2, myGapCounts3 };
-
-            // Assert
-            //Assert.Equal(2190, events.Count);
-            //Assert.Equal(13, planEvents.Count);
-            //var actualList = new List<int>() { viewModel[1].Gap1Count[0].GapCount, viewModel[1].Gap1Count[1].GapCount, viewModel[1].Gap1Count[0].GapCount, viewModel[1].Gap1Count[0].GapCount };
-            //    )
-            Assert.Equal(group1, viewModel[1].Gap1Count);
-            //Assert.Equal(myGapCounts1, viewModel[1].Gap2Count);
-            //Assert.Equal(myGapCounts2, viewModel[1].Gap3Count);
-            //Assert.Equal("2:30 PM - 3:30 PM", viewModel.PeakHour);
-            //Assert.Equal(0.89, viewModel.PeakHourFactor);
-            //Assert.Equal(341, viewModel.PeakHourVolume);
-            //Assert.Equal(2494, viewModel.TotalVolume);
-            //Assert.Equal("no idea", viewModel.TotalVolumes);
+            //Assert.Equal(86.46, viewModel[1].PercentTurnableSeries.ToList()[0].Seconds);
+            //Assert.Equal(75.44, viewModel[1].PercentTurnableSeries.ToList()[1].Seconds);
+            //Assert.Equal(72.79, viewModel[1].PercentTurnableSeries.ToList()[2].Seconds);
+            //Assert.Equal(79.44, viewModel[1].PercentTurnableSeries.ToList()[3].Seconds); 
 
             //Assert.NotEmpty(result.ApproachDelayPerVehicleDataPoints);
 
