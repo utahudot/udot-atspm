@@ -45,6 +45,9 @@
     <None Update="TestFiles\ControllerEvents-ApproachDelay.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\ControllerEvents-Preempt.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\LTGap_EventLogs.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
