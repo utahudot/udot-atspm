@@ -69,27 +69,19 @@ namespace ATSPM.Application.Reports.Controllers
             List<ControllerEventLog> planEvents,
             string signalDescription)
         {
-            var detectorEvents = controllerEventLogs.GetDetectorEvents(8, approach, options.Start, options.End, true, false);
-            if (detectorEvents == null)
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+                options.GetPermissivePhase,
+                options.Start,
+                options.End,
+                options.BinSize,
+                null,
+                approach,
+                controllerEventLogs,
+                planEvents);
+            if (signalPhase == null)
             {
                 return null;
             }
-
-            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
-                approach,
-                options.GetPermissivePhase,
-                options.Start,
-                options.End);
-            var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                options.Start,
-                options.End,
-                false,
-                null,
-                options.BinSize,
-                approach,
-                cycleEvents.ToList(),
-                planEvents.ToList(),
-                detectorEvents.ToList());
             ApproachDelayResult viewModel = approachDelayService.GetChartData(
                 options,
                 approach,

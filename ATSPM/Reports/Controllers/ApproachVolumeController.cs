@@ -46,7 +46,6 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-            //var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
             var tasks = new List<Task<ApproachVolumeResult>>();
             var nbSbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();
             GetApproachVolume(options, signal, controllerEventLogs, tasks, nbSbApproaches);

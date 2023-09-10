@@ -109,7 +109,9 @@ namespace ATSPM.Application.Extensions
                 eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
-            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId).Where(d => d.DetectionTypes.Select(d => d.Id).Contains(detectionType.Id));
+            var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
+            if (detectionType != null)
+                detectorsForMetric = detectorsForMetric.Where(d => d.DetectionTypes.Select(d => d.Id).Contains(detectionType.Id)).ToList();
             if (!detectorsForMetric.Any())
                 return null;
             var detectorEvents = new List<ControllerEventLog>();

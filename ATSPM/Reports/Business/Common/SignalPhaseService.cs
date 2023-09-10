@@ -1,6 +1,8 @@
 ﻿using ATSPM.Application.Exceptions;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +80,49 @@ namespace ATSPM.Application.Reports.Business.Common
                 start,
                 end
                 );
+        }
+
+        public async Task<SignalPhase> GetSignalPhaseData(
+            bool usePermissivePhase,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            DetectionType detectionType,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                8,
+                approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                approach,
+                usePermissivePhase,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var signalPhase = await GetSignalPhaseData(
+                start,
+                end,
+                false,
+                null,
+                binSize,
+                approach,
+                cycleEvents.ToList(),
+                planEvents.ToList(),
+                detectorEvents.ToList());
+            return signalPhase;
         }
     }
 }
