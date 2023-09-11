@@ -167,3 +167,14 @@ dkms.conf
 /ATSPM/ReportsTests/obj/Debug/net6.0
 /ATSPM/ReportsTests/obj
 /InsertArchiveLogs/obj
+/ConfigApi/bin/Debug/net7.0/ATSPM.ConfigApi.deps.json
+/ConfigApi/obj/Debug/net7.0/ConfigApi.assets.cache
+/ConfigApi/obj/Debug/net7.0/ConfigApi.csproj.AssemblyReference.cache
+/ConfigApi/obj/ConfigApi.csproj.nuget.dgspec.json
+/ConfigApi/obj/ConfigApi.csproj.nuget.g.props
+/ConfigApi/obj/ConfigApi.csproj.nuget.g.targets
+/ConfigApi/obj/project.assets.json
+/ConfigApi/obj/project.nuget.cache
+/ATSPM/ReportsTests/obj/ReportsTests.csproj.nuget.g.targets
+/ATSPM/ReportsTests/bin/Debug/net6.0/appsettings.Development.json
+/ATSPM/ReportsTests/bin/Debug/net6.0/appsettings.json
