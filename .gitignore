@@ -53,6 +53,8 @@ dkms.conf
 /ATSPMf/.vs/ATSPMf/v16
 /.vs
 /ATSPM/.vs
+/ATSPM/obj
+/ATSPM/bin
 /ATSPM/ApplicationCore/obj
 /ATSPM/ApplicationCore/bin
 /ATSPM/ApplicationCoreTests/obj
@@ -77,5 +79,5 @@ dkms.conf
 /ATSPM/Data/bin
 /ATSPM/EventLogUtility/obj
 /ATSPM/EventLogUtility/bin
-/ATSPM/obj
-/ATSPM/bin
+/ATSPM/ConfigApi/obj
+/ATSPM/ConfigApi/bin
