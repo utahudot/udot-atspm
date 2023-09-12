@@ -7,8 +7,8 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Detector : 
-        ATSPMModelBase, 
+    public class Detector : 
+        AtspmConfigModelBase<int>, 
         IRelatedApproach, 
         IRelatedLaneType,
         IRelatedMovementType,
@@ -16,8 +16,8 @@ namespace ATSPM.Data.Models
         IRelatedDetectorComments,
         IRelatedDetectionTypes
     {
-        public int Id { get; set; }
-        public string DetectorId { get; set; }
+        //public int Id { get; set; }
+        public string DectectorIdentifier { get; set; }
         public int DetChannel { get; set; }
         public int? DistanceFromStopBar { get; set; }
         public int? MinSpeedFilter { get; set; }

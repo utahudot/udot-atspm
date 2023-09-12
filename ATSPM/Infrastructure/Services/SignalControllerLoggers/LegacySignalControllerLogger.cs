@@ -20,7 +20,6 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 {
     public class LegacySignalControllerLogger : SignalControllerLoggerBase
     {
-        //private readonly ILogger _log;
         private readonly IOptions<SignalControllerLoggerConfiguration> _options;
         private readonly IServiceProvider _serviceProvider;
 
@@ -38,6 +37,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
                 //NameFormat = blockName,
                 MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism,
                 //BoundedCapacity = capcity,
+                //MaxMessagesPerTask = ?,
                 SingleProducerConstrained = true,
                 EnsureOrdered = false
             };
@@ -68,7 +68,6 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             {
                 var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(signal));
 
-                //await foreach (var file in downloader.Execute(s, progress, cancellationToken))
                 await foreach (var file in downloader.Execute(signal, cancellationToken))
                 {
                     fileList.Add(file);
@@ -106,16 +105,14 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var db = scope.ServiceProvider.GetService<EventLogContext>();
-
-                //await db.ControllerEventLogs.AddRangeAsync(result);
-                //var count = await db.SaveChangesAsync();
+                var db = scope.ServiceProvider.GetService<LegacyEventLogContext>();
 
                 await db.BulkInsertOrUpdateAsync(result.ToList(),
                     new BulkConfig()
                     {
                         SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
-                        OmitClauseExistsExcept = true
+                        OmitClauseExistsExcept = true,
+                        BulkCopyTimeout = _options.Value.BulkCopyTimeout
                     },
                     null,
                     null,

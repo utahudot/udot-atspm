@@ -1,10 +1,11 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
+﻿using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,15 +18,18 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly LeftTurnGapAnalysisService leftTurnGapAnalysisService;
         private readonly IApproachRepository approachRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
 
         public LeftTurnGapAnalysisController(
             LeftTurnGapAnalysisService leftTurnGapAnalysisService,
             IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository)
         {
             this.leftTurnGapAnalysisService = leftTurnGapAnalysisService;
             this.approachRepository = approachRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -38,17 +42,48 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public List<LeftTurnGapAnalysisResult> GetChartData([FromBody] LeftTurnGapAnalysisOptions options)
+        public async Task<IEnumerable<LeftTurnGapAnalysisResult>> GetChartData([FromBody] LeftTurnGapAnalysisOptions options)
         {
-            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
-            var eventLogs = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                options.SignalId,
-                options.StartDate,
-                options.EndDate,
-                new List<int> { 1, 10, 81 });
-            var viewModel = leftTurnGapAnalysisService.GetChartData(options, approach.Signal, eventLogs.ToList());
-            return viewModel;
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var eventCodes = new List<int> { 1, 10, 81 };
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(
+                signal.SignalIdentifier,
+                options.Start,
+                options.End)
+                .ToList();
+
+
+            var tasks = new List<Task<LeftTurnGapAnalysisResult>>();
+            var leftTurnGapData = new List<LeftTurnGapAnalysisResult>();
+            //Get phase + check for opposing phase before creating chart
+            var ebPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 6);
+            if (ebPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 2))
+            {
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(ebPhase, controllerEventLogs, options));
+            }
+
+            var nbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 8);
+            if (nbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 4))
+            {
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(nbPhase, controllerEventLogs, options));
+            }
+
+            var wbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 2);
+            if (wbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 6))
+            {
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(wbPhase, controllerEventLogs, options));
+            }
+
+            var sbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 4);
+            if (sbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 8))
+            {
+                tasks.Add(leftTurnGapAnalysisService.GetAnalysisForPhase(sbPhase, controllerEventLogs, options));
+            }
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
         }
+
 
     }
 }

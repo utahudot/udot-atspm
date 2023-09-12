@@ -6,11 +6,16 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Region : ATSPMModelBase, IRelatedSignals
+    public partial class Region : AtspmConfigModelBase<int>, IRelatedSignals
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+
+        public override string ToString()
+        {
+            return $"{Description}";
+        }
     }
 }

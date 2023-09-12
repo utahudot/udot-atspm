@@ -38,8 +38,8 @@ namespace SignalControllerLogger
                     var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
                     var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
-                    signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.Enabled && w.ControllerTypeId == 4).ToList();
-                    await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
+                    //signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.ChartEnabled && w.ControllerTypeId == 4).ToList();
+                    //await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
                 }
             }
             catch (Exception e)

@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class IDetectorRepositoryTests : RepositoryTestBase<Detector, IDetectorRepository, ConfigContext>
+    public class IDetectorRepositoryTests : RepositoryTestBase<Detector, IDetectorRepository, ConfigContext, int>
     {
         private const int ItemCount = 1;
 

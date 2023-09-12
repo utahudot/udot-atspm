@@ -4,25 +4,15 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.TurningMovementCounts
 {
     public class TMCData
     {
-        [DataMember]
         public string Direction { get; set; }
-
-        [DataMember]
         public string MovementType { get; set; }
-
-        [DataMember]
         public string LaneType { get; set; }
-
-        [DataMember]
         public DateTime Timestamp { get; set; }
-
-        [DataMember]
         public int Count { get; set; }
     }
     public class TurningMovementCountsService
@@ -42,7 +32,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             List<ControllerEventLog> planEvents,
             Approach approach)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalId, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalIdentifier, planEvents);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 

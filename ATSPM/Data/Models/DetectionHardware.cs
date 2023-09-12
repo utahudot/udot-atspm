@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DetectionHardware : ATSPMModelBase, IRelatedDetectors
+    public partial class DetectionHardware : AtspmConfigModelBase<DetectionHardwareTypes>, IRelatedDetectors
     {
-        public DetectionHardwareTypes Id { get; set; }
+        //public DetectionHardwareTypes Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();

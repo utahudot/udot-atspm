@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,9 +41,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                     var cycles = signalPhase.Cycles
                         .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize))
                         .ToList();
-                        //|| c.StartTime < dt && c.EndTime >= dt
-                        //|| c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
-                           //&& c.StartTime < dt.AddMinutes(options.SelectedBinSize));
+                    //|| c.StartTime < dt && c.EndTime >= dt
+                    //|| c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
+                    //&& c.StartTime < dt.AddMinutes(options.SelectedBinSize));
                     foreach (var cycle in cycles)
                     {
                         // Filter cycle events to only include timestamps within the bin
@@ -75,7 +73,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 
             var plans = GetArrivalOnRedPlans(signalPhase.Plans, options.ShowPlanStatistics);
             return new ArrivalOnRedResult(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,

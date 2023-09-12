@@ -21,11 +21,13 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             CycleService cycleService = new CycleService();
 
 
-            System.DateTime start = new System.DateTime(2023, 5, 16, 8, 56, 0);
-            System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
+            System.DateTime start = new(2023, 5, 16, 8, 59, 0);
+            System.DateTime end = new(2023, 5, 16, 12, 0, 5);
+
             List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+
+            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
+            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
@@ -49,15 +51,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 4080; // Updated Id
-            mockSignal.Object.SignalId = "5306"; // Updated SignalId
-            mockSignal.Object.Latitude = "41.73907982";
-            mockSignal.Object.Longitude = "-111.8347528";
+            mockSignal.Object.SignalIdentifier = "5306"; // Updated SignalId
+            mockSignal.Object.Latitude = 41.73907982;
+            mockSignal.Object.Longitude = -111.8347528;
             mockSignal.Object.PrimaryName = "Main St.";
             mockSignal.Object.SecondaryName = "400 North";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.239.5.15");
             mockSignal.Object.RegionId = 1;
             mockSignal.Object.ControllerTypeId = 9; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "10";
             mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
@@ -77,8 +79,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 ShowPercentDelay = false,
                 TimeBuffer = 15,
                 UsePermissivePhase = false,
-                Start = new System.DateTime(2023, 5, 16, 8, 56, 0),
-                End = new System.DateTime(2023, 5, 16, 12, 1, 0)
+                Start = start,
+                End = end
             };
 
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
@@ -105,8 +107,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             Assert.Equal(13, planEvents.Count);
 
             Assert.Equal(0, pedPhaseData.MinDelay);
-            Assert.Equal(57.19999967, pedPhaseData.MaxDelay);
-            Assert.Equal(26.6714284, viewModel.AverageDelay);
+            Assert.Equal(57.2, pedPhaseData.MaxDelay);
+            Assert.Equal(26.671428571428571, viewModel.AverageDelay);
 
 
             //Assert.Equal(2, result.PhaseNumber);

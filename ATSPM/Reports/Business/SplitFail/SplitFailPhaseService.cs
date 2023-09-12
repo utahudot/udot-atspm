@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,7 +144,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void SetDetectorActivations(
             SplitFailOptions options,
-            SplitFailPhaseData splitFailPhaseData, 
+            SplitFailPhaseData splitFailPhaseData,
             IReadOnlyList<ControllerEventLog> detectorEvents)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
@@ -161,9 +160,9 @@ namespace ATSPM.Application.Reports.Business.SplitFail
                 //}
                 //else
                 //{
-                    AddDetectorOnToBeginningIfNecessary(options, detector, events);
-                    AddDetectorOffToEndIfNecessary(options, detector, events);
-                    AddDetectorActivationsFromList(events, splitFailPhaseData);
+                AddDetectorOnToBeginningIfNecessary(options, detector, events);
+                AddDetectorOffToEndIfNecessary(options, detector, events);
+                AddDetectorActivationsFromList(events, splitFailPhaseData);
                 //}
             }
             CombineDetectorActivations(splitFailPhaseData);
@@ -190,7 +189,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
                     Timestamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetChannel,
-                    SignalId = options.SignalId
+                    SignalIdentifier = options.SignalId
                 });
         }
 
@@ -203,7 +202,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
                     Timestamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetChannel,
-                    SignalId = options.SignalId
+                    SignalIdentifier = options.SignalId
                 });
         }
     }

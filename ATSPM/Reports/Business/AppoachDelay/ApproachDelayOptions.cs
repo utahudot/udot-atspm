@@ -1,12 +1,10 @@
-﻿using ATSPM.Data.Models;
-using System;
-using System.Runtime.Serialization;
+﻿using System;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
     public class ApproachDelayOptions
     {
-        public int ApproachId { get; set; }
+        public string SignalIdentifier { get; set; }
         public bool GetPermissivePhase { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class MetricType : ATSPMModelBase, IRelatedDetectionType, IRelatedMetricComments
+    public partial class MetricType : AtspmConfigModelBase<int>, IRelatedDetectionType, IRelatedMetricComments
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string ChartName { get; set; }
         public string Abbreviation { get; set; }
         public bool ShowOnWebsite { get; set; }

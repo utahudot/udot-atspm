@@ -17,7 +17,7 @@ namespace ATSPM.Application.Extensions
         public static IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(this ISpeedEventRepository repo, Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5)
         {
             return repo.GetList()
-                .Where(w => w.Timestamp > startDate && w.Timestamp < endDate && w.Mph > minSpeedFilter)
+                .Where(w => w.TimeStamp > startDate && w.TimeStamp < endDate && w.Mph > minSpeedFilter)
                 .ToList();
         }
 

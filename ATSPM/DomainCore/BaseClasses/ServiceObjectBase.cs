@@ -82,13 +82,14 @@ namespace ATSPM.Domain.BaseClasses
         public event EventHandler Initialized;
 
         private bool _isInitialized;
-        
+
 
         //[Newtonsoft.Json.JsonIgnore]
+        ///<inheritdoc/>
         public bool IsInitialized
         {
             get { return _isInitialized; }
-            private set
+            protected set
             {
                 _isInitialized = value;
                 RaisePropertyChanged(nameof(IsInitialized));
@@ -96,12 +97,14 @@ namespace ATSPM.Domain.BaseClasses
             }
         }
 
+        ///<inheritdoc/>
         public void BeginInit()
         {
             if (IsInitialized) { IsInitialized = false; }
             else { Initialize(); }
         }
 
+        ///<inheritdoc/>
         public void EndInit()
         {
             //clear changes
@@ -117,6 +120,7 @@ namespace ATSPM.Domain.BaseClasses
 
         private bool disposedValue;
 
+        ///<inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -124,6 +128,10 @@ namespace ATSPM.Domain.BaseClasses
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Used for IDisposable Pattern
+        /// </summary>
+        /// <param name="disposing">Flag for keeping track of disposed state</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

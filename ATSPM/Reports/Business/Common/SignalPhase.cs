@@ -36,7 +36,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public Approach Approach { get; }
-        public double AvgDelay => TotalDelaySeconds / TotalVolume;
+        public double AvgDelaySeconds => TotalDelaySeconds / TotalVolume;
 
         public double PercentArrivalOnGreen
         {

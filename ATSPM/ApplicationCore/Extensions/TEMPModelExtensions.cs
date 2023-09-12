@@ -27,7 +27,7 @@ namespace ATSPM.Application.Extensions
                 detector.DetChannel = detChannel;
                 if (item is IRelatedSignal s)
                 {
-                    detector.DetectorId = $"{s.Signal.SignalId} {detector.DetChannel}";
+                    detector.DectectorIdentifier = $"{s.Signal.SignalIdentifier} {detector.DetChannel}";
                 }
             }
 
@@ -99,7 +99,7 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<Detector> GetDetectors(this IRelatedApproaches item)
         {
-            return item.Approaches.SelectMany(s => s.Detectors).OrderBy(o => o.DetectorId).ToList();
+            return item.Approaches.SelectMany(s => s.Detectors).OrderBy(o => o.DectectorIdentifier).ToList();
         }
 
         public static IReadOnlyList<Detector> GetDetectors(this IRelatedApproaches item, int metricTypeId, DirectionTypes direction)

@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Approach Speed Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalId, e.ApproachID });
+            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.ApproachId });
 
-            builder.Property(e => e.SignalId).HasMaxLength(10);
+            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
         }
     }
 }

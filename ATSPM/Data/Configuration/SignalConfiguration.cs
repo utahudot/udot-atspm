@@ -26,12 +26,10 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.JurisdictionId).HasDefaultValueSql("((0))");
 
             builder.Property(e => e.Latitude)
-                .IsRequired()
-                .HasMaxLength(30);
+                .IsRequired();
 
             builder.Property(e => e.Longitude)
-                .IsRequired()
-                .HasMaxLength(30);
+                .IsRequired();
 
             builder.Property(e => e.Note)
                 .IsRequired()
@@ -45,7 +43,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.SecondaryName)
                 .HasMaxLength(100);
 
-            builder.Property(e => e.SignalId)
+            builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
 

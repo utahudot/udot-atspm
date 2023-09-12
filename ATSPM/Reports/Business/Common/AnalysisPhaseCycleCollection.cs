@@ -81,7 +81,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         if (i == 0 && current.EventCode == 23)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.Timestamp);
+                            //Cycle.SetPedEnd(current.TimeStamp);
                             Cycle.SetPedEnd(Cycle.StartTime);
                         }
 
@@ -119,7 +119,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         case 23:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.Timestamp);
+                            //Cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on

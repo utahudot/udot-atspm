@@ -1,11 +1,13 @@
-﻿using ATSPM.Application.Reports.Business.ArrivalOnRed;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.ArrivalOnRed;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,20 +19,20 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly ArrivalOnRedService arrivalOnRedService;
         private readonly SignalPhaseService signalPhaseService;
-        private readonly IApproachRepository approachRepository;
+        private readonly ISignalRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         public ArrivalOnRedController(
             ArrivalOnRedService arrivalOnRedService,
             SignalPhaseService signalPhaseService,
-            IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository
             )
         {
             this.arrivalOnRedService = arrivalOnRedService;
             this.signalPhaseService = signalPhaseService;
-            this.approachRepository = approachRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -43,34 +45,50 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public ArrivalOnRedResult GetChartData([FromBody] ArrivalOnRedOptions options)
+        public async Task<IEnumerable<ArrivalOnRedResult>> GetChartData([FromBody] ArrivalOnRedOptions options)
         {
-            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
-            var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
-                options.Start,
-                options.End);
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(9, approach, options.Start, options.End, true, false);
-            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
-                approach,
-                options.UsePermissivePhase,
-                options.Start,
-                options.End);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
-                options.Start,
-                options.End,
-                false,
-                null,
-                options.SelectedBinSize,
-                //9,
-                approach,
-                cycleEvents.ToList(),
-                planEvents.ToList(),
-                detectorEvents.ToList()
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
+            var tasks = new List<Task<ArrivalOnRedResult>>();
+            foreach (var approach in signal.Approaches)
+            {
+                tasks.Add(
+                   GetChartDataByApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription())
                 );
-            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase, approach);
-            return viewModel;
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
         }
 
+        private async Task<ArrivalOnRedResult> GetChartDataByApproach(
+            ArrivalOnRedOptions options,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            string signalDescription)
+        {
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+                options.UsePermissivePhase,
+                options.Start,
+                options.End,
+                options.SelectedBinSize,
+                null,
+                approach,
+                controllerEventLogs,
+                planEvents
+                );
+            if (signalPhase == null)
+            {
+                return null;
+            }
+            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase, approach);
+            viewModel.SignalDescription = signalDescription;
+            return viewModel;
+        }
     }
 }

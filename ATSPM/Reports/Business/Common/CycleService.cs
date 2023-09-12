@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 //using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -61,7 +62,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<GreenToGreenCycle> GetGreenToGreenCycles(DateTime startTime, DateTime endTime, List<ControllerEventLog> cycleEvents)
         {
             //    if (cycleEvents != null && cycleEvents.Count > 0 && (GetEventType(cycleEvents.LastOrDefault().EventCode) !=
-            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().Timestamp < endTime))
+            //        RedToRedCycle.EventType.ChangeToGreen || cycleEvents.LastOrDefault().TimeStamp < endTime))
             //        GetEventsToCompleteCycle(getPermissivePhase, endTime, approach, cycleEvents);
             var cycles = new List<GreenToGreenCycle>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -116,7 +117,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="getPermissivePhase"></param>
         /// <param name="pcdCycleTime"></param>
         /// <returns></returns>
-        public List<CyclePcd> GetPcdCycles(
+        public async Task<List<CyclePcd>> GetPcdCycles(
             DateTime startDate,
             DateTime endDate,
             List<ControllerEventLog> detectorEvents,
@@ -124,6 +125,8 @@ namespace ATSPM.Application.Reports.Business.Common
             int? pcdCycleTime)
         {
             cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
+            var min = cycleEvents.Min(c => c.Timestamp);
+            var max = cycleEvents.Max(c => c.Timestamp);
             double pcdCycleShift = pcdCycleTime ?? 0;
             var cycles = new List<CyclePcd>();
             for (var i = 0; i < cycleEvents.Count; i++)
@@ -135,16 +138,33 @@ namespace ATSPM.Application.Reports.Business.Common
                     cycles.Add(new CyclePcd(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp,
                         cycleEvents[i + 2].Timestamp, cycleEvents[i + 3].Timestamp));
             if (cycles.Any())
+            {
+                //Parallel.ForEach(cycles, cycle =>
+                //{
+                //    AddDetectorEventsToCycles(detectorEvents, cycle, pcdCycleShift);
+                //});
+                var tasks = new List<Task>();
                 foreach (var cycle in cycles)
                 {
-                    cycle.DetectorEvents.AddRange(detectorEvents
-                        .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) 
-                            && d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift))
-                        .Select(d => new DetectorDataPoint(cycle.StartTime, d.Timestamp, cycle.GreenEvent, cycle.YellowEvent)));
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        AddDetectorEventsToCycles(detectorEvents, cycle, pcdCycleShift);
+                    }));
                 }
+                await Task.WhenAll(tasks);
+            }
             return cycles.Where(c => c.EndTime >= startDate && c.EndTime <= endDate || c.StartTime <= endDate && c.StartTime >= startDate).ToList();
         }
 
+        private async void AddDetectorEventsToCycles(List<ControllerEventLog> detectorEvents, CyclePcd cycle, double pcdCycleShift)
+        {
+            var eventsForCycle = detectorEvents
+                                    .Where(d => d.Timestamp >= cycle.StartTime.AddSeconds(-pcdCycleShift) &&
+                                                                       d.Timestamp < cycle.EndTime.AddSeconds(pcdCycleShift)).ToList();
+            foreach (var controllerEventLog in eventsForCycle)
+                cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
+                                               cycle.GreenEvent, cycle.YellowEvent));
+        }
 
         private RedToRedCycle.EventType GetEventType(int eventCode)
         {

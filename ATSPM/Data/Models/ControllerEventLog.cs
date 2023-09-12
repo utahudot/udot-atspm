@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using ATSPM.Data.Interfaces;
 
 #nullable disable
 
 namespace ATSPM.Data.Models
 {
-    public class ControllerEventLog
+    public class ControllerEventLog : ISignalLayer
     {
-        public string SignalId { get; set; }
+        public string SignalIdentifier { get; set; }
         public DateTime Timestamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
 
         public override string ToString()
         {
-            return $"{SignalId}-{EventCode}-{EventParam}-{Timestamp}";
+            return $"{SignalIdentifier}-{EventCode}-{EventParam}-{Timestamp}";
         }
     }
 }

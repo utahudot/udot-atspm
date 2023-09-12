@@ -15,6 +15,7 @@ using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Reflection.Metadata;
+using ATSPM.Infrastructure.Services.HostedServices;
 
 namespace ATSPM.EventLogUtility.Commands
 {
@@ -82,6 +83,13 @@ namespace ATSPM.EventLogUtility.Commands
             binder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
             return binder;
+        }
+
+        public void BindCommandOptions(IServiceCollection services)
+        {
+            services.AddSingleton(GetOptionsBinder());
+            services.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
+            services.AddHostedService<SignalLoggerUtilityHostedService>();
         }
     }
 }

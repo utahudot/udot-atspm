@@ -1,10 +1,9 @@
-﻿using ATSPM.Application.Reports.Business.Common;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -50,12 +49,12 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End);
 
             var pedEvents = controllerEventLogRepository.GetRecordsByParameterAndEvent(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 options.Start.AddMinutes(-15),
                 options.End,
                 approach.GetPedDetectorsFromApproach(),

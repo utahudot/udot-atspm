@@ -1,11 +1,12 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Exceptions;
+﻿using ATSPM.Application.Exceptions;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -49,7 +50,7 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="approach"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        public SignalPhase GetSignalPhaseData(
+        public async Task<SignalPhase> GetSignalPhaseData(
             DateTime start,
             DateTime end,
             bool showVolume,
@@ -68,7 +69,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
             if (!cycleEvents.Any())
                 return new SignalPhase();
-            var cycles = cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
+            var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
             return new SignalPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
@@ -79,6 +80,49 @@ namespace ATSPM.Application.Reports.Business.Common
                 start,
                 end
                 );
+        }
+
+        public async Task<SignalPhase> GetSignalPhaseData(
+            bool usePermissivePhase,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            DetectionType detectionType,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                8,
+                approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                approach,
+                usePermissivePhase,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var signalPhase = await GetSignalPhaseData(
+                start,
+                end,
+                false,
+                null,
+                binSize,
+                approach,
+                cycleEvents.ToList(),
+                planEvents.ToList(),
+                detectorEvents.ToList());
+            return signalPhase;
         }
     }
 }
