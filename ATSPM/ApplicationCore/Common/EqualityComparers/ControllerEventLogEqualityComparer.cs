@@ -11,15 +11,15 @@ namespace ATSPM.Application.Common.EqualityComparers
     {
         public override bool Equals([AllowNull] ControllerEventLog x, [AllowNull] ControllerEventLog y)
         {
-            DateTime.TryParse(x?.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeX);
-            DateTime.TryParse(y?.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeY);
+            DateTime.TryParse(x?.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeX);
+            DateTime.TryParse(y?.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeY);
 
             return x.SignalIdentifier == y.SignalIdentifier && timeX.Ticks == timeY.Ticks && x.EventCode == y.EventCode && x.EventParam == y.EventParam;
         }
 
         public override int GetHashCode([DisallowNull] ControllerEventLog obj)
         {
-            DateTime.TryParse(obj.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime time);
+            DateTime.TryParse(obj.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime time);
 
             var h = obj.SignalIdentifier.GetHashCode() + time.Ticks + obj.EventCode + obj.EventParam;
 

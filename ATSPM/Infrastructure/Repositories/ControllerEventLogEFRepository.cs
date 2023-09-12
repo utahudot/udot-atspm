@@ -28,7 +28,7 @@ namespace ATSPM.Infrastructure.Repositories
                     SignalIdentifier = a.SignalIdentifier,
                     EventCode = s.EventCode,
                     EventParam = s.EventParam,
-                    TimeStamp = s.TimeStamp
+                    Timestamp = s.Timestamp
                 }))
                 .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime)).ToList();
 

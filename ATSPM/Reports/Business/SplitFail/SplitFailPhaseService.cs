@@ -170,13 +170,13 @@ namespace ATSPM.Application.Reports.Business.SplitFail
 
         private void AddDetectorActivationsFromList(List<ControllerEventLog> events, SplitFailPhaseData splitFailPhaseData)
         {
-            events = events.OrderBy(e => e.TimeStamp).ToList();
+            events = events.OrderBy(e => e.Timestamp).ToList();
             for (var i = 0; i < events.Count - 1; i++)
                 if (events[i].EventCode == 82 && events[i + 1].EventCode == 81)
                     splitFailPhaseData.DetectorActivations.Add(new SplitFailDetectorActivation
                     {
-                        DetectorOn = events[i].TimeStamp,
-                        DetectorOff = events[i + 1].TimeStamp
+                        DetectorOn = events[i].Timestamp,
+                        DetectorOff = events[i + 1].Timestamp
                     });
         }
 
@@ -186,7 +186,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.LastOrDefault()?.EventCode == 82)
                 events.Insert(events.Count, new ControllerEventLog
                 {
-                    TimeStamp = options.End,
+                    Timestamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetChannel,
                     SignalIdentifier = options.SignalId
@@ -199,7 +199,7 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             if (events.FirstOrDefault()?.EventCode == 81)
                 events.Insert(0, new ControllerEventLog
                 {
-                    TimeStamp = options.Start,
+                    Timestamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetChannel,
                     SignalIdentifier = options.SignalId

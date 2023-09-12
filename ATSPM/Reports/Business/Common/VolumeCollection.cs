@@ -32,7 +32,7 @@ namespace ATSPM.Application.Reports.Business.Common
             for (DateTime start = startTime; start < endTime; start = start.AddMinutes(binSize))
             {
                 var v = new Volume(start, start.AddMinutes(binSize), binSize);
-                v.DetectorCount = detectorEvents.Count(d => d.TimeStamp >= v.StartTime && d.TimeStamp < v.EndTime);
+                v.DetectorCount = detectorEvents.Count(d => d.Timestamp >= v.StartTime && d.Timestamp < v.EndTime);
                 Items.Add(v);
             }
         }

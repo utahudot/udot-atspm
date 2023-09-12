@@ -75,7 +75,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                         SignalIdentifier = SignalId,
                         EventCode = Convert.ToInt32(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToInt32(l.Attribute("Parameter").Value),
-                        TimeStamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
+                        Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                     };
                 }
                 catch (Exception e)

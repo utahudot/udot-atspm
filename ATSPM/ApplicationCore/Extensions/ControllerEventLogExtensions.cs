@@ -13,7 +13,7 @@ namespace ATSPM.Application.Extensions
            DateTime end)
         {
             var planEvents = events.Where(e => e.EventCode == 131)
-                .OrderBy(e => e.TimeStamp)
+                .OrderBy(e => e.Timestamp)
                 .ToList();
 
             var uniqueEvents = new List<ControllerEventLog>();
@@ -36,7 +36,7 @@ namespace ATSPM.Application.Extensions
         public static void UpdateEventsAfterDateForPlans(List<ControllerEventLog> events, DateTime date)
         {
             // Find the first event that occurred after the specified date
-            var index = events.FindIndex(e => e.TimeStamp > date);
+            var index = events.FindIndex(e => e.Timestamp > date);
 
             if (index >= 0)
             {
@@ -44,7 +44,7 @@ namespace ATSPM.Application.Extensions
                 events.RemoveRange(index + 1, events.Count - (index + 1));
 
                 // Change the timestamp of the found event to match the specified date
-                events[index].TimeStamp = date;
+                events[index].Timestamp = date;
             }
             else
             {
@@ -52,7 +52,7 @@ namespace ATSPM.Application.Extensions
                 var newEvent = new ControllerEventLog
                 {
                     SignalIdentifier = "0",
-                    TimeStamp = date,
+                    Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
                 };
@@ -66,12 +66,12 @@ namespace ATSPM.Application.Extensions
         public static void UpdateEventsBeforeDateForPlans(List<ControllerEventLog> events, DateTime date)
         {
             // Find the first event that occurred before the specified date
-            var index = events.FindIndex(e => e.TimeStamp < date);
+            var index = events.FindIndex(e => e.Timestamp < date);
 
             if (index >= 0)
             {
                 // If an event was found, change its timestamp to match the specified date
-                events[index].TimeStamp = date;
+                events[index].Timestamp = date;
 
                 // Remove all events before the found event
                 events.RemoveRange(0, index);
@@ -82,7 +82,7 @@ namespace ATSPM.Application.Extensions
                 var newEvent = new ControllerEventLog
                 {
                     SignalIdentifier = "0",
-                    TimeStamp = date,
+                    Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
                 };
@@ -123,7 +123,7 @@ namespace ATSPM.Application.Extensions
                     d.DetChannel,
                     d.GetOffset(),
                     d.LatencyCorrection));
-            return detectorEvents.OrderBy(e => e.TimeStamp).ToList();
+            return detectorEvents.OrderBy(e => e.Timestamp).ToList();
         }
 
         public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
@@ -154,7 +154,7 @@ namespace ATSPM.Application.Extensions
                     d.DetChannel,
                     d.GetOffset(),
                     d.LatencyCorrection));
-            return detectorEvents.OrderBy(e => e.TimeStamp).ToList();
+            return detectorEvents.OrderBy(e => e.Timestamp).ToList();
         }
 
         public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
@@ -169,13 +169,13 @@ namespace ATSPM.Application.Extensions
             var result = events.Where(e =>
             eventCodes.Contains(e.EventCode)
             && e.EventParam == param
-            && e.TimeStamp >= startTime
-            && e.TimeStamp < endTime);
+            && e.Timestamp >= startTime
+            && e.Timestamp < endTime);
 
             foreach (var item in result)
             {
-                item.TimeStamp = item.TimeStamp.AddMilliseconds(offset);
-                item.TimeStamp = item.TimeStamp.AddSeconds(0 - latencyCorrection);
+                item.Timestamp = item.Timestamp.AddMilliseconds(offset);
+                item.Timestamp = item.Timestamp.AddSeconds(0 - latencyCorrection);
             }
 
             return result.ToList();
@@ -191,8 +191,8 @@ namespace ATSPM.Application.Extensions
             var result = events.Where(e =>
             eventCodes.Contains(e.EventCode)
             && e.EventParam == param
-            && e.TimeStamp >= startTime
-            && e.TimeStamp < endTime);
+            && e.Timestamp >= startTime
+            && e.Timestamp < endTime);
 
             return result.ToList();
         }
@@ -208,7 +208,7 @@ namespace ATSPM.Application.Extensions
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 approach.GetCycleEventCodes(getPermissivePhase),
-                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.TimeStamp).ToList();
+                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
     }
 }

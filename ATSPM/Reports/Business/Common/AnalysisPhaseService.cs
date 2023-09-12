@@ -90,13 +90,13 @@ namespace ATSPM.Application.Reports.Business.Common
                                                                   row.EventCode == 7)
                           select row).ToList();
 
-            var sortedEvents = events.OrderBy(x => x.TimeStamp).ThenBy(y => y.EventCode).ToList();
+            var sortedEvents = events.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
             var duplicateList = new List<ControllerEventLog>();
             for (int i = 0; i < sortedEvents.Count - 1; i++)
             {
                 var event1 = sortedEvents[i];
                 var event2 = sortedEvents[i + 1];
-                if (event1.TimeStamp == event2.TimeStamp)
+                if (event1.Timestamp == event2.Timestamp)
                 {
                     if (event1.EventCode == 7)
                         duplicateList.Add(event1);
@@ -117,7 +117,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in terminationeventstable
                           where row.EventParam == phasenumber && (row.EventCode == 21 || row.EventCode == 23)
-                          orderby row.TimeStamp
+                          orderby row.Timestamp
                           select row).ToList();
 
             return events;
@@ -127,7 +127,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in PhaseEventsTable
                           where row.EventParam == PhaseNumber
-                          orderby row.TimeStamp
+                          orderby row.Timestamp
                           select row).ToList();
 
             return events;
@@ -139,7 +139,7 @@ namespace ATSPM.Application.Reports.Business.Common
             var ConsecutiveEvents = new List<ControllerEventLog>();
             var runningConsecCount = 0;
             // Order the events by datestamp
-            var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.TimeStamp);
+            var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.Timestamp);
             foreach (var termEvent in eventsInOrder)
                 if (termEvent.EventCode != 7)
                 {

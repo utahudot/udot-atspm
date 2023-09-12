@@ -47,14 +47,14 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             for (int i = 0; i < result.Count; i++)
             {
                 var cyclePcd = result[i];
-                var startOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i].TimeStamp;
-                var endOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i + 1].TimeStamp;
+                var startOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i].Timestamp;
+                var endOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i + 1].Timestamp;
                 var greenEvents = cycleEvents.Where(c => c.EventCode == 1).ToList();
                 greenEvents.RemoveAt(0);
-                var greenEvent = greenEvents[i].TimeStamp;
+                var greenEvent = greenEvents[i].Timestamp;
                 var yellowEvents = cycleEvents.Where(c => c.EventCode == 8).ToList();
                 yellowEvents.RemoveAt(0);
-                var yellowEvent = yellowEvents[i].TimeStamp;
+                var yellowEvent = yellowEvents[i].Timestamp;
                 Assert.True(cyclePcd != null);
                 Assert.True(cyclePcd.DetectorEvents != null);
                 Assert.True(cyclePcd.DetectorEvents.Count > 0);

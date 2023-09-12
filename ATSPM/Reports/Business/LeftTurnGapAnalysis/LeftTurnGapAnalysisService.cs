@@ -88,34 +88,34 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             Approach approach)
         {
             var percentTurnableSeries = new List<PercentTurnableSeries>();
-            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.TimeStamp >= options.Start && x.TimeStamp < options.End)
-                .OrderBy(x => x.TimeStamp).ToList();
-            var redList = events.Where(x => x.EventCode == EVENT_RED && x.TimeStamp >= options.Start && x.TimeStamp < options.End)
-                .OrderBy(x => x.TimeStamp).ToList();
-            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.TimeStamp >= options.Start && x.TimeStamp < options.End)
-                .OrderBy(x => x.TimeStamp).ToList();
+            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.Start && x.Timestamp < options.End)
+                .OrderBy(x => x.Timestamp).ToList();
+            var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.Start && x.Timestamp < options.End)
+                .OrderBy(x => x.Timestamp).ToList();
+            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.Start && x.Timestamp < options.End)
+                .OrderBy(x => x.Timestamp).ToList();
 
-            var eventBeforeStart = events.Where(e => e.TimeStamp < options.Start && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.TimeStamp).FirstOrDefault();
+            var eventBeforeStart = events.Where(e => e.Timestamp < options.Start && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_GREEN)
             {
-                eventBeforeStart.TimeStamp = options.Start;
+                eventBeforeStart.Timestamp = options.Start;
                 greenList.Insert(0, eventBeforeStart);
             }
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_RED)
             {
-                eventBeforeStart.TimeStamp = options.Start;
+                eventBeforeStart.Timestamp = options.Start;
                 redList.Insert(0, eventBeforeStart);
             }
 
-            var eventAfterEnd = events.Where(e => e.TimeStamp > options.End && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.TimeStamp).FirstOrDefault();
+            var eventAfterEnd = events.Where(e => e.Timestamp > options.End && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_GREEN)
             {
-                eventAfterEnd.TimeStamp = options.End;
+                eventAfterEnd.Timestamp = options.End;
                 greenList.Add(eventAfterEnd);
             }
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_RED)
             {
-                eventAfterEnd.TimeStamp = options.End;
+                eventAfterEnd.Timestamp = options.End;
                 redList.Add(eventAfterEnd);
             }
 
@@ -346,7 +346,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                 foreach (var green in greenList)
                 {
                     //Find the corresponding red
-                    var red = redList.Where(x => x.TimeStamp > green.TimeStamp).OrderBy(x => x.TimeStamp)
+                    var red = redList.Where(x => x.Timestamp > green.Timestamp).OrderBy(x => x.Timestamp)
                         .FirstOrDefault();
                     if (red == null)
                         continue;
@@ -354,17 +354,17 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                     double trendLineGapTimeCounter = 0;
 
                     var phaseTracker = new PhaseLeftTurnGapTracker
-                    { GreenTime = green.TimeStamp };
+                    { GreenTime = green.Timestamp };
 
                     var gapsList = new List<ControllerEventLog>();
                     gapsList.Add(green);
                     gapsList.AddRange(orderedDetectorCallList.Where(x =>
-                        x.TimeStamp > green.TimeStamp && x.TimeStamp < red.TimeStamp));
+                        x.Timestamp > green.Timestamp && x.Timestamp < red.Timestamp));
                     gapsList.Add(red);
                     for (var i = 1; i < gapsList.Count; i++)
                     {
-                        var gap = gapsList[i].TimeStamp.TimeOfDay.TotalSeconds -
-                                  gapsList[i - 1].TimeStamp.TimeOfDay.TotalSeconds;
+                        var gap = gapsList[i].Timestamp.TimeOfDay.TotalSeconds -
+                                  gapsList[i - 1].Timestamp.TimeOfDay.TotalSeconds;
 
                         if (gap < 0) continue;
 
@@ -396,8 +396,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 
                     //Decimal rounding errors can cause the number to be > 100
                     var percentTurnable =
-                        Math.Min(trendLineGapTimeCounter / (red.TimeStamp - green.TimeStamp).TotalSeconds, 100);
-                    sumGreenTime += (red.TimeStamp - green.TimeStamp).TotalSeconds;
+                        Math.Min(trendLineGapTimeCounter / (red.Timestamp - green.Timestamp).TotalSeconds, 100);
+                    sumGreenTime += (red.Timestamp - green.Timestamp).TotalSeconds;
                     phaseTracker.PercentPhaseTurnable = percentTurnable;
                     phaseTrackerList.Add(phaseTracker);
                 }

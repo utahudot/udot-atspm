@@ -26,18 +26,18 @@ namespace ATSPM.Application.Reports.Business.Common
             foreach (var row in CycleEventsTable)
             {
                 if (row.EventCode == 1 && row.EventParam == phasenumber)
-                    Cycle = new AnalysisPhaseCycle(signalId, phasenumber, row.TimeStamp);
+                    Cycle = new AnalysisPhaseCycle(signalId, phasenumber, row.Timestamp);
 
                 if (Cycle != null && row.EventParam == phasenumber &&
                     (row.EventCode == 4 || row.EventCode == 5 || row.EventCode == 6))
                     Cycle.SetTerminationEvent(row.EventCode);
 
                 if (Cycle != null && row.EventParam == phasenumber && row.EventCode == 8)
-                    Cycle.YellowEvent = row.TimeStamp;
+                    Cycle.YellowEvent = row.Timestamp;
 
                 if (Cycle != null && row.EventParam == phasenumber && row.EventCode == 11)
                 {
-                    Cycle.SetEndTime(row.TimeStamp);
+                    Cycle.SetEndTime(row.Timestamp);
                     Items.Add(Cycle);
                 }
             }
@@ -45,8 +45,8 @@ namespace ATSPM.Application.Reports.Business.Common
             foreach (var c in Items)
             {
                 var PedEventsForCycle = (from r in PedEvents
-                                         where r.TimeStamp >=
-                                               c.StartTime && r.TimeStamp <= c.EndTime
+                                         where r.Timestamp >=
+                                               c.StartTime && r.Timestamp <= c.EndTime
                                          select r).ToList();
 
                 if ((c.EndTime - c.StartTime).Seconds > PedEventsForCycle.Count)
@@ -64,7 +64,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             if (PedEventsForCycle.Count > 0)
             {
-                var eventsInOrder = PedEventsForCycle.OrderBy(r => r.TimeStamp);
+                var eventsInOrder = PedEventsForCycle.OrderBy(r => r.Timestamp);
                 if (eventsInOrder.Count() > 1)
                 {
                     for (var i = 0; i < eventsInOrder.Count() - 1; i++)
@@ -74,7 +74,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         var next = eventsInOrder.ElementAt(i + 1);
 
 
-                        if (current.TimeStamp.Ticks == next.TimeStamp.Ticks)
+                        if (current.Timestamp.Ticks == next.Timestamp.Ticks)
                             continue;
 
                         //If the first event is 'Off', then set duration to 0
@@ -89,14 +89,14 @@ namespace ATSPM.Application.Reports.Business.Common
                         if (current.EventCode == 21 && next.EventCode == 23)
                         {
                             if (Cycle.PedStartTime == DateTime.MinValue)
-                                Cycle.SetPedStart(current.TimeStamp);
-                            else if (Cycle.PedStartTime > current.TimeStamp)
-                                Cycle.SetPedStart(current.TimeStamp);
+                                Cycle.SetPedStart(current.Timestamp);
+                            else if (Cycle.PedStartTime > current.Timestamp)
+                                Cycle.SetPedStart(current.Timestamp);
 
                             if (Cycle.PedEndTime == DateTime.MinValue)
-                                Cycle.SetPedEnd(next.TimeStamp);
-                            else if (Cycle.PedEndTime < next.TimeStamp)
-                                Cycle.SetPedEnd(next.TimeStamp);
+                                Cycle.SetPedEnd(next.Timestamp);
+                            else if (Cycle.PedEndTime < next.Timestamp)
+                                Cycle.SetPedEnd(next.Timestamp);
 
                             continue;
                         }
@@ -125,8 +125,8 @@ namespace ATSPM.Application.Reports.Business.Common
                         //if the only event is on
                         case 21:
 
-                            Cycle.SetPedStart(current.TimeStamp);
-                            Cycle.SetPedEnd(current.TimeStamp);
+                            Cycle.SetPedStart(current.Timestamp);
+                            Cycle.SetPedEnd(current.Timestamp);
                             //Cycle.SetPedEnd(Cycle.YellowEvent);
 
                             break;

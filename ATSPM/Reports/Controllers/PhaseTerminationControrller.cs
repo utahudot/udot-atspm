@@ -51,23 +51,23 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = signalEvents.Where(e => e.EventCode == 131).ToList();
             var terminationEvents = signalEvents.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start 
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start 
+                && e.Timestamp <= options.End).ToList();
             var pedEvents = signalEvents.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             var cycleEvents = signalEvents.Where(e =>
                 new List<int> { 1, 11 }.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             var splitsEventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 splitsEventCodes.Add(i);
             var splitsEvents = signalEvents.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             signalEvents = null;
             GC.Collect();
             
@@ -87,11 +87,11 @@ namespace ATSPM.Application.Reports.Controllers
             {
                 phases.Add(new Phase(
                     phase.PhaseNumber,
-                    phase.ConsecutiveGapOuts.Select(g => g.TimeStamp).ToList(),
-                    phase.ConsecutiveMaxOut.Select(g => g.TimeStamp).ToList(),
-                    phase.ConsecutiveForceOff.Select(g => g.TimeStamp).ToList(),
-                    phase.PedestrianEvents.Select(g => g.TimeStamp).ToList(),
-                    phase.UnknownTermination.Select(g => g.TimeStamp).ToList()
+                    phase.ConsecutiveGapOuts.Select(g => g.Timestamp).ToList(),
+                    phase.ConsecutiveMaxOut.Select(g => g.Timestamp).ToList(),
+                    phase.ConsecutiveForceOff.Select(g => g.Timestamp).ToList(),
+                    phase.PedestrianEvents.Select(g => g.Timestamp).ToList(),
+                    phase.UnknownTermination.Select(g => g.Timestamp).ToList()
                     ));
             }
 

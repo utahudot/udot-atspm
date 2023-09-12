@@ -61,7 +61,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             {
                 foreach (var e in pedPhase.PedBeginWalkEvents)
                 {
-                    startOfWalk.Add(new StartBeginWalk(e.TimeStamp, 0));
+                    startOfWalk.Add(new StartBeginWalk(e.Timestamp, 0));
                 }
             }
 

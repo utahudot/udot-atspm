@@ -58,7 +58,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    detectorEvents.Add(new ControllerEventLog { TimeStamp = time.AddMinutes(i) });
+                    detectorEvents.Add(new ControllerEventLog { Timestamp = time.AddMinutes(i) });
                 }
             }
 

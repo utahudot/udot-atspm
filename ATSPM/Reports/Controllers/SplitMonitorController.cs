@@ -46,19 +46,19 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = signalEvents.Where(e => e.EventCode == 131).ToList();
             var pedEvents = signalEvents.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             var cycleEvents = signalEvents.Where(e =>
                 new List<int> { 1, 4, 5, 6, 7, 8, 11 }.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             var splitsEventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 splitsEventCodes.Add(i);
             var splitsEvents = signalEvents.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
-                && e.TimeStamp >= options.Start
-                && e.TimeStamp <= options.End).ToList();
+                && e.Timestamp >= options.Start
+                && e.Timestamp <= options.End).ToList();
             signalEvents = null;
 
             List<SplitMonitorResult> viewModel = splitMonitorService.GetChartData(

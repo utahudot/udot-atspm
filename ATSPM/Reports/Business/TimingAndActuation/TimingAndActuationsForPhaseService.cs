@@ -145,7 +145,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                             SignalIdentifier = approach.Signal.SignalIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = options.PhaseNumber,
-                            TimeStamp = options.Start.AddSeconds(-10)
+                            Timestamp = options.Start.AddSeconds(-10)
                         };
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new ControllerEventLog()
@@ -153,7 +153,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                             SignalIdentifier = approach.Signal.SignalIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = options.PhaseNumber,
-                            TimeStamp = options.Start.AddSeconds(-9)
+                            Timestamp = options.Start.AddSeconds(-9)
                         };
                         forceEventsForAllLanes.Add(tempEvent2);
                         phaseCustomEvents.Add(
@@ -206,7 +206,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                             SignalIdentifier = approach.Signal.SignalIdentifier,
                             EventCode = 82,
                             EventParam = detector.DetChannel,
-                            TimeStamp = options.Start.AddSeconds(-10)
+                            Timestamp = options.Start.AddSeconds(-10)
                         };
                         forceEventsForAllLanes.Add(event1);
                         var event2 = new ControllerEventLog()
@@ -214,7 +214,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                             SignalIdentifier = approach.Signal.SignalIdentifier,
                             EventParam = detector.DetChannel,
                             EventCode = 81,
-                            TimeStamp = options.Start.AddSeconds(-9)
+                            Timestamp = options.Start.AddSeconds(-9)
                         };
                         forceEventsForAllLanes.Add(event2);
                         stopBarEvents.Add(detectionType.GetDisplayName() + ", ch " + detector.DetChannel + " " +
