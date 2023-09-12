@@ -1,28 +1,20 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Business.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using CsvHelper;
-using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using Microsoft.Extensions.Logging;
-using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Data.Enums;
 using Moq;
+using System.Globalization;
 using System.Net;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {
     public class SignalPhaseServiceTests
     {
-        
+
 
         [Fact()]
-        public void GetSignalPhaseDataTest()
+        public async void GetSignalPhaseDataTest()
         {
             // Arrange
             PlanService planService = new PlanService(); // Replace with your PlanService instance
@@ -61,15 +53,15 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 1933;
-            mockSignal.Object.SignalId = "7191";
-            mockSignal.Object.Latitude = "40.69988569";
-            mockSignal.Object.Longitude = "-111.8713268";
+            mockSignal.Object.SignalIdentifier = "7191";
+            mockSignal.Object.Latitude = 40.69988569;
+            mockSignal.Object.Longitude = -111.8713268;
             mockSignal.Object.PrimaryName = "700 East";
             mockSignal.Object.SecondaryName = "3300 South";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.202.6.75");
             mockSignal.Object.RegionId = 2;
             mockSignal.Object.ControllerTypeId = 4;
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "10";
             mockSignal.Object.Start = new DateTime(2011, 1, 1);
@@ -79,7 +71,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            SignalPhase result = signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
+            SignalPhase result = await signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
 
             // Assert
             Assert.NotNull(result);
@@ -97,7 +89,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             Assert.Equal(1662.2999999999997, result.TotalGreenTimeSeconds);
             Assert.Equal(158.40000000000003, result.TotalYellowTimeSeconds);
             Assert.Equal(1908.1999999999998, result.TotalRedTimeSeconds);
-            Assert.Equal(11.97565445026178, result.AvgDelay);
+            Assert.Equal(11.97565445026178, result.AvgDelaySeconds);
             Assert.Equal(52, result.PercentArrivalOnGreen);
             Assert.Equal(45, result.PercentGreen);
             Assert.Equal(1.16, result.PlatoonRatio);

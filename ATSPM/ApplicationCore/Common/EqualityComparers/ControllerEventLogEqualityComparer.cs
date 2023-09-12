@@ -14,14 +14,14 @@ namespace ATSPM.Application.Common.EqualityComparers
             DateTime.TryParse(x?.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeX);
             DateTime.TryParse(y?.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime timeY);
 
-            return x.SignalId == y.SignalId && timeX.Ticks == timeY.Ticks && x.EventCode == y.EventCode && x.EventParam == y.EventParam;
+            return x.SignalIdentifier == y.SignalIdentifier && timeX.Ticks == timeY.Ticks && x.EventCode == y.EventCode && x.EventParam == y.EventParam;
         }
 
         public override int GetHashCode([DisallowNull] ControllerEventLog obj)
         {
             DateTime.TryParse(obj.Timestamp.ToString("MM-dd-yyyy HH:mm:ss.f"), out DateTime time);
 
-            var h = obj.SignalId.GetHashCode() + time.Ticks + obj.EventCode + obj.EventParam;
+            var h = obj.SignalIdentifier.GetHashCode() + time.Ticks + obj.EventCode + obj.EventParam;
 
             return h.GetHashCode();
         }

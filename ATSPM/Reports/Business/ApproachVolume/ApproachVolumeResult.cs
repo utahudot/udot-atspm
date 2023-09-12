@@ -2,7 +2,6 @@ using ATSPM.Data.Enums;
 using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
-using System.Transactions;
 
 namespace ATSPM.Application.Reports.Business.ApproachVolume;
 
@@ -12,11 +11,12 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume;
 public class ApproachVolumeResult : SignalResult
 {
     public ApproachVolumeResult(
-        int approachId,
         string signalId,
         DateTime start,
-        DateTime end) : base( signalId, start, end)
+        DateTime end,
+        DirectionTypes directionType) : base(signalId, start, end)
     {
+        this.PrimaryDirectionName = directionType.ToString();
     }
 
     public ApproachVolumeResult(
@@ -46,7 +46,7 @@ public class ApproachVolumeResult : SignalResult
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume):base(signalId, start, end)
+        int opposingTotalVolume) : base(signalId, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;

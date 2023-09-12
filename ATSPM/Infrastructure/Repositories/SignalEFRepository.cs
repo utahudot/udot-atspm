@@ -1,8 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.Specifications;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Data;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -18,9 +15,7 @@ namespace ATSPM.Infrastructure.Repositories
     {
         public SignalEFRepository(ConfigContext db, ILogger<SignalEFRepository> log) : base(db, log) { }
 
-        #region Overrides
-
-        public override IQueryable<Signal> GetList()
+        private IQueryable<Signal> BaseQuery()
         {
             return base.GetList()
                 .Include(s => s.ControllerType)
@@ -44,8 +39,24 @@ namespace ATSPM.Infrastructure.Repositories
         .Include(s => s.Approaches)
             .ThenInclude(a => a.Detectors)
                 .ThenInclude(d => d.DetectionTypes)
+                    .ThenInclude(d => d.MetricTypeMetrics)
         .Include(s => s.Areas);
         }
+
+        #region Overrides
+
+        //public override IQueryable<Signal> GetList()
+        //{
+        //    return base.GetList()
+        //        .Include(i => i.ControllerType)
+        //        .Include(i => i.Jurisdiction)
+        //        .Include(i => i.Region)
+        //        .Include(i => i.VersionAction)
+        //        .Include(i => i.Approaches)
+        //        .ThenInclude(i => i.Detectors)
+        //        .Include(i => i.Areas);
+        //    //.Include(i => i.MetricComments);
+        //}
 
         #endregion
 
@@ -53,7 +64,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId)
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .FromSpecification(new SignalIdSpecification(signalId))
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
@@ -63,9 +74,9 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .FromSpecification(new ActiveSignalSpecification())
-                .GroupBy(r => r.SignalId)
+                .GroupBy(r => r.SignalIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
@@ -74,10 +85,10 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId)
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .Where(w => w.ControllerTypeId == controllerTypeId)
                 .FromSpecification(new ActiveSignalSpecification())
-                .GroupBy(r => r.SignalId)
+                .GroupBy(r => r.SignalIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 
@@ -86,7 +97,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public Signal GetLatestVersionOfSignal(string signalId)
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .FromSpecification(new SignalIdSpecification(signalId))
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
@@ -96,7 +107,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public Signal GetLatestVersionOfSignal(string signalId, DateTime startDate)
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .FromSpecification(new SignalIdSpecification(signalId))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
@@ -107,7 +118,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate)
         {
-            var result = GetDefaultQuery()
+            var result = BaseQuery()
                 .FromSpecification(new SignalIdSpecification(signalId))
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
@@ -117,20 +128,5 @@ namespace ATSPM.Infrastructure.Repositories
         }
 
         #endregion
-
-        private IQueryable<Signal> GetDefaultQuery()
-        {
-            var result = GetList()
-                .Include(i => i.ControllerType)
-                .Include(i => i.Jurisdiction)
-                .Include(i => i.Region)
-                .Include(i => i.VersionAction)
-
-                .Include(s => s.Approaches)
-                .ThenInclude(d => d.Detectors)
-                .Include(s => s.Areas);
-
-            return result;
-        }
     }
 }

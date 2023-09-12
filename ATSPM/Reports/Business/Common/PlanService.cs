@@ -1,13 +1,10 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Data.Enums;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.ApproachSpeed;
+using ATSPM.Application.Reports.Business.SplitFail;
+using ATSPM.Application.Reports.Business.YellowRedActivations;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.SplitFail;
-using ATSPM.Application.Reports.Business.ApproachSpeed;
-using ATSPM.Application.Reports.Business.YellowRedActivations;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -21,7 +18,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalId, events.OrderBy(e => e.Timestamp).ToList());
+            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events.OrderBy(e => e.Timestamp).ToList());
             var plans = new List<PerdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -64,7 +61,7 @@ namespace ATSPM.Application.Reports.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new ControllerEventLog { SignalId = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new ControllerEventLog { SignalIdentifier = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -118,7 +115,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     Timestamp = startDate,
                     EventCode = 131,
                     EventParam = 0,
-                    SignalId = signalId
+                    SignalIdentifier = signalId
                 };
                 planEvents.Insert(0, firstPlanEvent);
             }
@@ -128,7 +125,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(signalId, 131, startDate);
         //    if (firstPlanEvent != null)
         //    {
-        //        firstPlanEvent.Timestamp = startDate;
+        //        firstPlanEvent.TimeStamp = startDate;
         //        planEvents.Add(firstPlanEvent);
         //    }
         //    else
@@ -169,7 +166,7 @@ namespace ATSPM.Application.Reports.Business.Common
             var plans = GetBasicPlans(
                 startDate,
                 endDate,
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 planEvents).ToList();
             if (plans.Count == 0)
                 plans.Add(new Plan("0", startDate, endDate));
@@ -217,7 +214,7 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<SpeedPlan> GetSpeedPlans(List<CycleSpeed> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalId, events);
+            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events);
             var plans = new List<SpeedPlan>();
             for (var i = 0; i < planEvents.Count; i++)
             {
@@ -317,7 +314,7 @@ namespace ATSPM.Application.Reports.Business.Common
             Approach approach,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(options.Start, options.End, approach.Signal.SignalId, events.ToList());
+            var planEvents = GetPlanEvents(options.Start, options.End, approach.Signal.SignalIdentifier, events.ToList());
             var plans = planEvents.Select((x, i) =>
             {
                 var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.End)).ToList();

@@ -1,11 +1,10 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Enums;
-using Microsoft.Extensions.Options;
-using ATSPM.Application.Repositories;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 {
@@ -19,41 +18,8 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
         {
         }
 
-        public List<LeftTurnGapAnalysisResult> GetChartData(
-            LeftTurnGapAnalysisOptions options,
-            Signal signal,
-            List<ControllerEventLog> eventLogs)
+        public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<ControllerEventLog> eventLogs, LeftTurnGapAnalysisOptions options)
         {
-            var leftTurnGapData = new List<LeftTurnGapAnalysisResult>();
-            //Get phase + check for opposing phase before creating chart
-            var ebPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 6);
-            if (ebPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 2))
-            {
-                leftTurnGapData.Add(GetAnalysisForPhase(ebPhase, eventLogs, options));
-            }
-
-            var nbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 8);
-            if (nbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 4))
-            {
-                leftTurnGapData.Add(GetAnalysisForPhase(nbPhase, eventLogs, options));
-            }
-
-            var wbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 2);
-            if (wbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 6))
-            {
-                leftTurnGapData.Add(GetAnalysisForPhase(wbPhase, eventLogs, options));
-            }
-
-            var sbPhase = signal.Approaches.FirstOrDefault(x => x.ProtectedPhaseNumber == 4);
-            if (sbPhase != null && signal.Approaches.Any(x => x.ProtectedPhaseNumber == 8))
-            {
-                leftTurnGapData.Add(GetAnalysisForPhase(sbPhase, eventLogs, options));
-            }
-            return leftTurnGapData;
-        }
-
-        public LeftTurnGapAnalysisResult GetAnalysisForPhase(Approach approach, List<ControllerEventLog> eventLogs, LeftTurnGapAnalysisOptions options)
-        { 
             var phaseEvents = new List<ControllerEventLog>();
 
             phaseEvents.AddRange(eventLogs.Where(x =>
@@ -122,34 +88,34 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             Approach approach)
         {
             var percentTurnableSeries = new List<PercentTurnableSeries>();
-            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
+            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
-            var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
+            var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
-            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.StartDate && x.Timestamp < options.EndDate)
+            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
 
-            var eventBeforeStart = events.Where(e => e.Timestamp < options.StartDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
+            var eventBeforeStart = events.Where(e => e.Timestamp < options.Start && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_GREEN)
             {
-                eventBeforeStart.Timestamp = options.StartDate;
+                eventBeforeStart.Timestamp = options.Start;
                 greenList.Insert(0, eventBeforeStart);
             }
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_RED)
             {
-                eventBeforeStart.Timestamp = options.StartDate;
+                eventBeforeStart.Timestamp = options.Start;
                 redList.Insert(0, eventBeforeStart);
             }
 
-            var eventAfterEnd = events.Where(e => e.Timestamp > options.EndDate && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
+            var eventAfterEnd = events.Where(e => e.Timestamp > options.End && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_GREEN)
             {
-                eventAfterEnd.Timestamp = options.EndDate;
+                eventAfterEnd.Timestamp = options.End;
                 greenList.Add(eventAfterEnd);
             }
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_RED)
             {
-                eventAfterEnd.Timestamp = options.EndDate;
+                eventAfterEnd.Timestamp = options.End;
                 redList.Add(eventAfterEnd);
             }
 
@@ -180,7 +146,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             var gaps9 = new List<GapCount>();
             var gaps10 = new List<GapCount>();
 
-            for (var lowerTimeLimit = options.StartDate; lowerTimeLimit < options.EndDate; lowerTimeLimit = lowerTimeLimit.AddMinutes(options.BinSize))
+            for (var lowerTimeLimit = options.Start; lowerTimeLimit < options.End; lowerTimeLimit = lowerTimeLimit.AddMinutes(options.BinSize))
             {
                 var upperTimeLimit = lowerTimeLimit.AddMinutes(options.BinSize);
                 var items = phaseTrackerList.Where(x => x.GreenTime >= lowerTimeLimit && x.GreenTime < upperTimeLimit).ToList();
@@ -237,12 +203,12 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             }
 
             return new LeftTurnGapAnalysisResult(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
-                options.StartDate,
-                options.EndDate,
+                options.Start,
+                options.End,
                 detectionTypeStr,
                 options.Gap1Max,
                 gaps1,

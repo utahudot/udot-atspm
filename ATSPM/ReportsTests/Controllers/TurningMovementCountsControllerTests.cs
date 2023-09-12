@@ -53,15 +53,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 2840; // Updated Id
-            mockSignal.Object.SignalId = "6387"; // Updated SignalId
-            mockSignal.Object.Latitude = "40.326352";
-            mockSignal.Object.Longitude = "-111.724889";
+            mockSignal.Object.SignalIdentifier = "6387"; // Updated SignalId
+            mockSignal.Object.Latitude = 40.326352;
+            mockSignal.Object.Longitude = -111.724889;
             mockSignal.Object.PrimaryName = "1600 N (SR-241)";
             mockSignal.Object.SecondaryName = "1200 W";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
             mockSignal.Object.RegionId = 3;
             mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "Initial - WAS #6500";
             mockSignal.Object.Start = new System.DateTime(1900, 1, 1);
@@ -99,7 +99,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //mockDetector.Object.DetectionIDs = ?;
             //mockDetector.Object.DetectionTypes = ?;
             //mockDetector.Object.DetectorComments = ?;
-            mockDetector1.Object.DetectorId = "638722";
+            mockDetector1.Object.DectectorIdentifier = "638722";
             mockDetector1.Object.DistanceFromStopBar = null;
             //mockDetector.Object.HasErrors = ?;
             mockDetector1.Object.Id = 47742;
@@ -134,7 +134,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //mockDetector.Object.DetectionIDs = ?;
             //mockDetector.Object.DetectionTypes = ?;
             //mockDetector.Object.DetectorComments = ?;
-            mockDetector2.Object.DetectorId = "638723";
+            mockDetector2.Object.DectectorIdentifier = "638723";
             mockDetector2.Object.DistanceFromStopBar = null;
             //mockDetector.Object.HasErrors = ?;
             mockDetector2.Object.Id = 47743;

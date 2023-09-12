@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     var exportList = new List<string>();
                     foreach (var row in phaseCallList)
                     {
-                        exportList.Add($"{row.SignalId}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
+                        exportList.Add($"{row.SignalIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
                     }
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
@@ -113,7 +113,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     else if (phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED))
                     {
                         var firstPhaseCall = phaseCallList.First(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED);
-                        //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.Timestamp, WaitTimeSeconds = (green.Timestamp - firstPhaseCall.Timestamp).TotalSeconds });
+                        //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
                             Time = green.Timestamp,

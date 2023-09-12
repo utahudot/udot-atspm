@@ -1,4 +1,4 @@
-﻿SignalId,EventParam,Timestamp,EventCode
+﻿SignalIdentifier,EventParam,TimeStamp,EventCode
 7191,2,12/1/2020 6:00:03.3,82
 7191,2,12/1/2020 6:00:10.7,82
 7191,2,12/1/2020 6:00:19.8,82

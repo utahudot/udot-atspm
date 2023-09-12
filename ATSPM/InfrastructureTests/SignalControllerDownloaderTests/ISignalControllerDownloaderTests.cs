@@ -48,7 +48,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
 
             var signal = new Signal()
             {
-                Enabled = true,
+                ChartEnabled = true,
                 ControllerType = new ControllerType() { Id = d.ControllerType }
             };
 
@@ -67,7 +67,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
 
             var signal = new Signal()
             {
-                Enabled = false,
+                ChartEnabled = false,
                 ControllerType = new ControllerType() { Id = d.ControllerType }
             };
 
@@ -88,7 +88,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
 
             var signal = new Signal()
             {
-                Enabled = true,
+                ChartEnabled = true,
                 ControllerType = new ControllerType() { Id = d.ControllerType + 1 }
             };
 
@@ -124,9 +124,9 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             var signal = new Signal()
             {
                 Ipaddress = null,
-                Enabled = true,
+                ChartEnabled = true,
                 PrimaryName = "Controller",
-                SignalId = "999",
+                SignalIdentifier = "999",
                 ControllerType = new ControllerType() { Id = d.ControllerType }
             };
 
@@ -146,9 +146,9 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
 
             var signal = new Signal()
             {
-                Enabled = true,
+                ChartEnabled = true,
                 PrimaryName = "Controller",
-                SignalId = "999",
+                SignalIdentifier = "999",
                 ControllerType = new ControllerType() { Id = 0 }
             };
 
@@ -165,7 +165,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             var signal = new Signal()
             {
                 Ipaddress = new IPAddress(new byte[] { 127, 0, 0, 1 }),
-                Enabled = true
+                ChartEnabled = true
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
@@ -216,9 +216,9 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             var signal = new Signal()
             {
                 Ipaddress = new IPAddress(new byte[] { 127, 0, 0, 1 }),
-                Enabled = true,
+                ChartEnabled = true,
                 PrimaryName = "Controller",
-                SignalId = "999"
+                SignalIdentifier = "999"
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
@@ -227,7 +227,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
                 PingControllerToVerify = false
             });
 
-            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalId);
+            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalIdentifier);
             var ftpDirectory = "\\dir";
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();
@@ -269,9 +269,9 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             var signal = new Signal()
             {
                 Ipaddress = new IPAddress(new byte[] { 127, 0, 0, 1 }),
-                Enabled = true,
+                ChartEnabled = true,
                 PrimaryName = "Controller",
-                SignalId = "999"
+                SignalIdentifier = "999"
             };
 
             Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
@@ -280,7 +280,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
                 PingControllerToVerify = false
             });
 
-            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalId);
+            var verifyPath = Path.Combine(mockConfig.Value.LocalPath, signal.SignalIdentifier);
             var ftpDirectory = "\\dir";
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default)).Returns(Task.CompletedTask).Verifiable();

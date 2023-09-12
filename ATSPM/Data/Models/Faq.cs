@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Faq : ATSPMModelBase
+    public partial class Faq : AtspmConfigModelBase<int>
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string Header { get; set; }
         public string Body { get; set; }
         public int OrderNumber { get; set; }

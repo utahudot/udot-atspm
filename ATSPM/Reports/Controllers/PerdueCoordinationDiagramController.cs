@@ -6,6 +6,7 @@ using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -42,13 +43,13 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public PerdueCoordinationDiagramResult GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
+        public async Task<PerdueCoordinationDiagramResult> GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
         {
             var approach = approachRepository.Lookup(options.ApproachId);
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(6, approach, options.StartDate, options.EndDate, true, false);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.Signal.SignalId, options.StartDate, options.EndDate);
+            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.Signal.SignalIdentifier, options.StartDate, options.EndDate);
             var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.StartDate, options.EndDate);
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
                 options.StartDate,
                 options.EndDate,
                 options.ShowVolumes,

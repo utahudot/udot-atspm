@@ -57,7 +57,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //        startTime,
         //        endTime,
         //        new List<int> { 1 });
-        //    ptedt = ptedt.OrderByDescending(i => i.Timestamp).ToList();
+        //    ptedt = ptedt.OrderByDescending(i => i.TimeStamp).ToList();
         //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
         //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
         //    foreach (var row in phasesInUse)
