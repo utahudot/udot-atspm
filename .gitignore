@@ -136,3 +136,8 @@ dkms.conf
 /ATSPM/Reports/bin/Debug/net6.0/ATSPM.Application.Reports.deps.json
 /ATSPM/Reports/bin/Debug/net6.0/ATSPM.Application.Reports.runtimeconfig.json
 /ATSPM
+/ConfigApi/bin/Debug/net7.0/ATSPM.ConfigApi.deps.json
+/ConfigApi/obj/ConfigApi.csproj.nuget.dgspec.json
+/ConfigApi/obj/ConfigApi.csproj.nuget.g.props
+/ConfigApi/obj/ConfigApi.csproj.nuget.g.targets
+/ConfigApi/obj/project.assets.json
