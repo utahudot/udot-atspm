@@ -6,11 +6,8 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
     [DataContract]
     public class PreemptServiceRequestOptions
     {
-        public PreemptServiceRequestOptions(string signalId, DateTime startDate, DateTime endDate)
+        public PreemptServiceRequestOptions()
         {
-            SignalId = signalId;
-            Start = startDate;
-            End = endDate;
         }
 
         public string SignalId { get;  set; }

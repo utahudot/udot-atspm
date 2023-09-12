@@ -7,11 +7,9 @@ namespace ATSPM.Application.Reports.Business.PreemptService
     [DataContract]
     public class PreemptServiceMetricOptions
     {
-        public PreemptServiceMetricOptions(string signalId, DateTime startDate, DateTime endDate, double yAxisMax)
+        public PreemptServiceMetricOptions()
         {
-            SignalId = signalId;
-            Start = startDate;
-            End = endDate;
+            
         }
 
         public string SignalId { get; set; }
