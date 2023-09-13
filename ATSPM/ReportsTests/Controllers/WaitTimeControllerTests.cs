@@ -1,15 +1,11 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.WaitTime;
-using ATSPM.Data.Models;
-using Moq;
-using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using CsvHelper;
+using Moq;
+using System.Globalization;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -40,7 +36,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN1.Object.ApproachId = 15255;
             mockDetectorN1.Object.DetChannel = 19;
-            mockDetectorN1.Object.DetectorId = "711519";
+            //mockDetectorN1.Object.DetectorId = "711519";
             mockDetectorN1.Object.Id = 50747;
             mockDetectorN1.Object.LaneNumber = 1;
             mockDetectorN1.Object.LaneTypeId = LaneTypes.V;
@@ -53,7 +49,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN2.Object.ApproachId = 15255;
             mockDetectorN2.Object.DetChannel = 20;
-            mockDetectorN2.Object.DetectorId = "711520";
+            //mockDetectorN2.Object.DetectorId = "711520";
             mockDetectorN2.Object.Id = 50748;
             mockDetectorN2.Object.LaneNumber = 2;
             mockDetectorN2.Object.LaneTypeId = LaneTypes.V;
@@ -66,7 +62,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN3.Object.ApproachId = 15255;
             mockDetectorN3.Object.DetChannel = 21;
-            mockDetectorN3.Object.DetectorId = "711521";
+            //mockDetectorN3.Object.DetectorId = "711521";
             mockDetectorN3.Object.Id = 50749;
             mockDetectorN3.Object.LaneNumber = 3;
             mockDetectorN3.Object.LaneTypeId = LaneTypes.V;
@@ -79,17 +75,17 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN4.Object.ApproachId = 15255;
             mockDetectorN4.Object.DetChannel = 02;
-            mockDetectorN4.Object.DetectorId = "711502";
-            mockDetectorN4.Object.Id = ??;
+            //mockDetectorN4.Object.DetectorId = "711502";
+            //mockDetectorN4.Object.Id = ??;
             mockDetectorN4.Object.LaneNumber = 1;
             mockDetectorN4.Object.LaneTypeId = LaneTypes.V;
             mockDetectorN4.Object.LatencyCorrection = 0;
-            mockDetectorN4.Object.MovementTypeId = ??;
+            //mockDetectorN4.Object.MovementTypeId = ??;
             mockDetectorN4.Object.DetectionTypes = new List<DetectionType>() { detectionTypeAC.Object };
             mockDetectorN4.Setup(t => t.DetectionTypes).Returns(new List<DetectionType>() { detectionTypeAC.Object });
 
 
-            var detectorsN = new List<Detector>() { mockDetectorN1.Object, mockDetectorN2.Object, mockDetectorN3.Object, mockDetectorN4.Object};
+            var detectorsN = new List<Detector>() { mockDetectorN1.Object, mockDetectorN2.Object, mockDetectorN3.Object, mockDetectorN4.Object };
 
             // Create the mock DirectionType object
             var directionType = new Mock<DirectionType>();
@@ -140,7 +136,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //approach6.Setup(a => a.Signal).Returns(mockSignal.Object);
             //mockSignal.Setup(a => a.Approaches).Returns(approaches);
             AnalysisPhaseData partialAnalysisPhaseData = new AnalysisPhaseData();
-            partialAnalysisPhaseData.TerminationEvents = terminationEvents;
+            //partialAnalysisPhaseData.TerminationEvents = terminationEvents;
 
             var options = new WaitTimeOptions()
             {
@@ -154,14 +150,14 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //var detectors = approach.GetDetectorsForMetricType(5);
             //var detectors = new List<Detector> { mockDetector1.Object, mockDetector2.Object };
 
-            List<WaitTimeResult> viewModel = waitTimeService.GetChartData(
-                options,
-                approach2,
-                allEvents,
-                partialAnalysisPhaseData,
-                planEvents,
-                volumeCollection
-                );
+            //List<WaitTimeResult> viewModel = waitTimeService.GetChartData(
+            //    options,
+            //    approach2,
+            //    allEvents,
+            //    partialAnalysisPhaseData,
+            //    planEvents,
+            //    volumeCollection
+            //    );
 
 
             //Assert.Equal(86.46, viewModel[1].PercentTurnableSeries.ToList()[0].Seconds);

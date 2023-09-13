@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.PedDelay
@@ -21,7 +20,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
         //    PedRecallThreshold = pedRecallThreshold;
         //}
 
-        public int ApproachId { get; set; }
+        public string SignalIdentifier { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public int TimeBuffer { get; set; }

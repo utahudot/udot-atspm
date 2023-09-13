@@ -3,7 +3,6 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -80,11 +79,11 @@ namespace ATSPM.Application.Reports.Controllers
                 //add an EC 82 at the beginning if the first EC code is 81
                 var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).FirstOrDefault();
                 var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).LastOrDefault();
-                
+
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalId = options.SignalId;
+                    newDetectorOn.SignalIdentifier = options.SignalId;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetChannel;
@@ -95,7 +94,7 @@ namespace ATSPM.Application.Reports.Controllers
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalId = options.SignalId;
+                    newDetectorOn.SignalIdentifier = options.SignalId;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetChannel;

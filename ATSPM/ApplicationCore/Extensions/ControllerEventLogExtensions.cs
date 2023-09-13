@@ -210,5 +210,40 @@ namespace ATSPM.Application.Extensions
                 approach.GetCycleEventCodes(getPermissivePhase),
                 getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
+
+        public static IReadOnlyList<ControllerEventLog> GetPedEvents(
+            this IEnumerable<ControllerEventLog> events,
+            DateTime startTime,
+            DateTime endTime,
+            Approach approach)
+        {
+            return events.GetEvents(
+                approach.Signal.SignalIdentifier,
+                startTime,
+                endTime,
+                approach.GetPedDetectorsFromApproach(),
+                approach.GetPedestrianCycleEventCodes());
+        }
+
+        public static IReadOnlyList<ControllerEventLog> GetEvents(
+            this IEnumerable<ControllerEventLog> events,
+            string signalIdentifier,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventParameters,
+            IEnumerable<int> eventCodes)
+        {
+            var result = events
+                .Where(e => e.SignalIdentifier == signalIdentifier
+                && e.Timestamp >= startTime
+                && e.Timestamp < endTime
+                && eventCodes.Contains(e.EventCode)
+                && eventParameters.Contains(e.EventParam)
+                )
+                .OrderBy(o => o.Timestamp)
+                .ToList();
+
+            return result;
+        }
     }
 }
