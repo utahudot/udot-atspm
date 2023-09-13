@@ -21,7 +21,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> preemptEvents)
         {
-            IReadOnlyList<Plan> plans = planService.GetBasicPlans(options.Start, options.End, options.SignalId, planEvents);
+            IReadOnlyList<Plan> plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
             var preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
                 pl.StartTime,
@@ -29,7 +29,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 preemptEvents.Count(p => p.EventCode == 105 && p.Timestamp >= pl.StartTime && p.Timestamp < pl.EndTime))).ToList();
 
             return new PreemptServiceResult(
-                options.SignalId,
+                options.SignalIdentifier,
                 options.Start,
                 options.End,
                 preemptPlans,

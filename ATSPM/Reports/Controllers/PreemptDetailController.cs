@@ -45,11 +45,11 @@ namespace ATSPM.Application.Reports.Controllers
                 codes.Add(i);
 
             var events = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                options.SignalId,
+                options.SignalIdentifier,
                 options.StartDate,
                 options.EndDate,
                 codes).ToList();
-            
+
 
             PreemptDetailResult viewModel = preemptDetailService.GetChartData(options, events);
             return viewModel;

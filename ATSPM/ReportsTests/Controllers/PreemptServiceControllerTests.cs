@@ -29,7 +29,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
             List<ControllerEventLog> preemptEvents = events.Where(e => new List<int> { 105 }.Contains(e.EventCode)).ToList(); // Load preempt events from CSV
 
-            var options = new PreemptServiceMetricOptions() { SignalId = "7573", Start = start, End = end};
+            var options = new PreemptServiceMetricOptions() { SignalIdentifier = "7573", Start = start, End = end};
 
             //SignalPhase signalPhase = signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
             var viewModel = preemptServiceService.GetChartData(options, planEvents, preemptEvents);

@@ -197,6 +197,20 @@ namespace ATSPM.Application.Extensions
             return result.ToList();
         }
 
+        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodes(
+            this IEnumerable<ControllerEventLog> events,
+            DateTime startTime,
+            DateTime endTime,
+            IEnumerable<int> eventCodes)
+        {
+            var result = events.Where(e =>
+            eventCodes.Contains(e.EventCode)
+            && e.Timestamp >= startTime
+            && e.Timestamp < endTime);
+
+            return result.ToList();
+        }
+
         public static IReadOnlyList<ControllerEventLog> GetCycleEventsWithTimeExtension(
            this IEnumerable<ControllerEventLog> events,
            Approach approach,
