@@ -84,7 +84,7 @@ namespace ATSPM.Application.Reports.Controllers
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalId = options.SignalId;
+                    newDetectorOn.SignalIdentifier = options.SignalId;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetChannel;
@@ -95,7 +95,7 @@ namespace ATSPM.Application.Reports.Controllers
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalId = options.SignalId;
+                    newDetectorOn.SignalIdentifier = options.SignalId;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetChannel;
