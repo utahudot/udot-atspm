@@ -11,6 +11,7 @@ using ATSPM.Application.Reports.Business.PreempDetail;
 using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Reports.Business.SplitMonitor;
+using ATSPM.Application.Reports.Business.TimingAndActuation;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
@@ -86,12 +87,13 @@ namespace ATSPM.Application.Reports
             services.AddScoped<LeftTurnGapAnalysisService>();
             services.AddScoped<LeftTurnReportPreCheckService>();
             services.AddScoped<LeftTurnVolumeAnalysisService>();
-            services.AddScoped<LeftTurnVolumeAnalysisService>();
+            services.AddScoped<PedDelayService>();
             services.AddScoped<PerdueCoordinationDiagramService>();
             services.AddScoped<PreemptServiceService>();
             services.AddScoped<PreemptServiceRequestService>();
             services.AddScoped<SplitFailPhaseService>();
             services.AddScoped<SplitMonitorService>();
+            services.AddScoped<TimingAndActuationsForPhaseService>();
 
             //Common Services
             services.AddScoped<PlanService>();

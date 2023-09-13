@@ -71,7 +71,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             var options = new PedDelayOptions()
             {
-                ApproachId = 1120,
+                SignalIdentifier = "7115",
                 PedRecallThreshold = 75,
                 ShowCycleLength = true,
                 ShowPedBeginWalk = false,

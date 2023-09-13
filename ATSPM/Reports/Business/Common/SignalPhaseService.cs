@@ -90,7 +90,8 @@ namespace ATSPM.Application.Reports.Business.Common
             DetectionType detectionType,
             Approach approach,
             List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents)
+            List<ControllerEventLog> planEvents,
+            bool getVolume)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(
                 8,
@@ -115,7 +116,7 @@ namespace ATSPM.Application.Reports.Business.Common
             var signalPhase = await GetSignalPhaseData(
                 start,
                 end,
-                false,
+                getVolume,
                 null,
                 binSize,
                 approach,

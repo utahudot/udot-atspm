@@ -1,12 +1,8 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.WaitTime;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using CsvHelper;
 using Moq;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
@@ -91,7 +87,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockDetectorN4.Setup(t => t.DetectionTypes).Returns(new List<DetectionType>() { detectionTypeAC.Object });
 
 
-            var detectorsN = new List<Detector>() { mockDetectorN1.Object, mockDetectorN2.Object, mockDetectorN3.Object, mockDetectorN4.Object};
+            var detectorsN = new List<Detector>() { mockDetectorN1.Object, mockDetectorN2.Object, mockDetectorN3.Object, mockDetectorN4.Object };
 
             // Create the mock DirectionType object
             var directionType = new Mock<DirectionType>();

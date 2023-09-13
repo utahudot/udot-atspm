@@ -3,12 +3,13 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,18 +21,15 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly IApproachRepository approachRepository;
         private readonly ISignalRepository signalRepository;
 
         public SplitFailController(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            IApproachRepository approachRepository,
             ISignalRepository signalRepository)
         {
             this.splitFailPhaseService = splitFailPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.approachRepository = approachRepository;
             this.signalRepository = signalRepository;
         }
 
@@ -46,63 +44,77 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public SplitFailsResult GetChartData([FromBody] SplitFailOptions options)
+        public async Task<IEnumerable<SplitFailsResult>> GetChartData([FromBody] SplitFailOptions options)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
-
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
-            var cycleEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
-                approach.SignalId.ToString(),
-                options.Start,
-                options.End,
-                cycleEventCodes,
-                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.SignalId.ToString(), options.Start, options.End);
-            var terminationEvents = controllerEventLogRepository.GetEventsByEventCodesParam(
-                approach.SignalId.ToString(),
-                options.Start,
-                options.End,
-                new List<int> { 4, 5, 6 },
-                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
-                12,
-                approach,
-                options.Start,
-                options.End,
-                true,
-                true).ToList();
-            var detectors = approach.Detectors;
-
-            foreach (Detector channel in detectors)
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+               options.Start.AddHours(-12),
+               options.End.AddHours(12)).ToList();
+            var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
+            foreach (var approach in signal.Approaches)
             {
-
-                //add an EC 82 at the beginning if the first EC code is 81
-                var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).FirstOrDefault();
-                var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).LastOrDefault();
-                
-                if (firstEvent != null && firstEvent.EventCode == 81)
-                {
-                    var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.SignalId;
-                    newDetectorOn.Timestamp = options.Start;
-                    newDetectorOn.EventCode = 82;
-                    newDetectorOn.EventParam = channel.DetChannel;
-                    detectorEvents.Add(newDetectorOn);
-                }
-
-                //add an EC 81 at the end if the last EC code is 82
-                if (lastEvent != null && lastEvent.EventCode == 82)
-                {
-                    var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.SignalId;
-                    newDetectorOn.Timestamp = options.End;
-                    newDetectorOn.EventCode = 81;
-                    newDetectorOn.EventParam = channel.DetChannel;
-                    detectorEvents.Add(newDetectorOn);
-                }
+                tasks.Add(GetChartDataForApproach(options, approach, controllerEventLogs, planEvents, false));
             }
 
+            var results = await Task.WhenAll(tasks);
+            return results.Where(result => result != null).SelectMany(r => r);
+        }
+
+        private async Task<IEnumerable<SplitFailsResult>> GetChartDataForApproach(
+            SplitFailOptions options,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            bool usePermissivePhase)
+        {
+            var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                approach,
+                options.UsePermissivePhase,
+                options.Start,
+                options.End);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var terminationEvents = controllerEventLogs.GetEventsByEventCodes(
+                 options.Start,
+                 options.End,
+                 new List<int> { 4, 5, 6 },
+                 usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
+            var detectors = approach.GetDetectorsForMetricType(options.MetricTypeId);
+            var tasks = new List<Task<SplitFailsResult>>();
+            foreach (var detectionType in detectors.SelectMany(d => d.DetectionTypes).Distinct())
+            {
+                tasks.Add(GetChartDataByDetectionType(options, approach, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
+            }
+            var results = await Task.WhenAll(tasks);
+            return results.Where(result => result != null);
+        }
+
+        private async Task<SplitFailsResult> GetChartDataByDetectionType(
+            SplitFailOptions options,
+            Approach approach,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            IReadOnlyList<ControllerEventLog> cycleEvents,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
+            List<Detector> detectors,
+            DetectionType detectionType)
+        {
+            var tempDetectorEvents = controllerEventLogs.GetDetectorEvents(
+               options.MetricTypeId,
+               approach,
+               options.Start,
+               options.End,
+               true,
+               true,
+               detectionType);
+            if (tempDetectorEvents == null)
+            {
+                return null;
+            }
+            var detectorEvents = tempDetectorEvents.ToList();
+            AddBeginEndEventsByDetector(options, detectors, detectionType, detectorEvents);
             var splitFailData = splitFailPhaseService.GetSplitFailPhaseData(
                 options,
                 cycleEvents,
@@ -111,8 +123,8 @@ namespace ATSPM.Application.Reports.Controllers
                 detectorEvents,
                 approach);
             return new SplitFailsResult(
-                options.SignalId,
-                options.ApproachId,
+                options.SignalIdentifier,
+                approach.Id,
                 options.UsePermissivePhase ? splitFailData.Approach.PermissivePhaseNumber.Value : splitFailData.Approach.ProtectedPhaseNumber,
                 options.Start,
                 options.End,
@@ -137,5 +149,35 @@ namespace ATSPM.Application.Reports.Controllers
                 );
         }
 
+        private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<ControllerEventLog> detectorEvents)
+        {
+            foreach (Detector channel in detectors.Where(d => d.DetectionTypes.Contains(detectionType)))
+            {
+                //add an EC 82 at the beginning if the first EC code is 81
+                var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).FirstOrDefault();
+                var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).LastOrDefault();
+
+                if (firstEvent != null && firstEvent.EventCode == 81)
+                {
+                    var newDetectorOn = new ControllerEventLog();
+                    newDetectorOn.SignalIdentifier = options.SignalIdentifier;
+                    newDetectorOn.Timestamp = options.Start;
+                    newDetectorOn.EventCode = 82;
+                    newDetectorOn.EventParam = channel.DetChannel;
+                    detectorEvents.Add(newDetectorOn);
+                }
+
+                //add an EC 81 at the end if the last EC code is 82
+                if (lastEvent != null && lastEvent.EventCode == 82)
+                {
+                    var newDetectorOn = new ControllerEventLog();
+                    newDetectorOn.SignalIdentifier = options.SignalIdentifier;
+                    newDetectorOn.Timestamp = options.End;
+                    newDetectorOn.EventCode = 81;
+                    newDetectorOn.EventParam = channel.DetChannel;
+                    detectorEvents.Add(newDetectorOn);
+                }
+            }
+        }
     }
 }

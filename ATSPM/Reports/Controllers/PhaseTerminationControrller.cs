@@ -7,7 +7,6 @@ using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -47,11 +46,13 @@ namespace ATSPM.Application.Reports.Controllers
         public PhaseTerminationResult GetChartData([FromBody] PhaseTerminationOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
-            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.Start.AddHours(-12), options.End.AddHours(12));
-            var planEvents = signalEvents.Where(e => e.EventCode == 131).ToList();
+            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = signalEvents.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
             var terminationEvents = signalEvents.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
-                && e.Timestamp >= options.Start 
+                && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
             var pedEvents = signalEvents.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
@@ -70,7 +71,7 @@ namespace ATSPM.Application.Reports.Controllers
                 && e.Timestamp <= options.End).ToList();
             signalEvents = null;
             GC.Collect();
-            
+
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 options.SignalId,
                 options.Start,
@@ -95,7 +96,7 @@ namespace ATSPM.Application.Reports.Controllers
                     ));
             }
 
-           var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.StartTime, p.EndTime)).ToList();
+            var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.StartTime, p.EndTime)).ToList();
             return new PhaseTerminationResult(
                 phaseCollectionData.SignalId,
                 options.Start,

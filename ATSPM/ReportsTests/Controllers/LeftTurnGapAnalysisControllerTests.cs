@@ -1,25 +1,18 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
-using ATSPM.Data.Models;
-using Moq;
+﻿using ATSPM.Application.Reports.Business.LeftTurnGapAnalysis;
 using ATSPM.Data.Enums;
-using ATSPM.Application.Reports.Business.Common;
-using System.Net;
+using ATSPM.Data.Models;
 using CsvHelper;
+using Moq;
 using System.Globalization;
+using System.Net;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
     public class LeftTurnGapAnalysisControllerTests
     {
         [Fact()]
-        public void GetChartDataTest()
+        public async void GetChartDataTest()
         {
             // Arrange
             //PlanService planService = new PlanService();
@@ -42,7 +35,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN1.Object.ApproachId = 15255;
             mockDetectorN1.Object.DetChannel = 19;
-            mockDetectorN1.Object.DetectorId = "711519";
+            mockDetectorN1.Object.DectectorIdentifier = "711519";
             mockDetectorN1.Object.Id = 50747;
             mockDetectorN1.Object.LaneNumber = 1;
             mockDetectorN1.Object.LaneTypeId = LaneTypes.V;
@@ -55,7 +48,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN2.Object.ApproachId = 15255;
             mockDetectorN2.Object.DetChannel = 25;
-            mockDetectorN2.Object.DetectorId = "711525";
+            mockDetectorN2.Object.DectectorIdentifier = "711525";
             mockDetectorN2.Object.Id = 50750;
             mockDetectorN2.Object.LaneNumber = 1;
             mockDetectorN2.Object.LaneTypeId = LaneTypes.V;
@@ -68,7 +61,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN3.Object.ApproachId = 15255;
             mockDetectorN3.Object.DetChannel = 26;
-            mockDetectorN3.Object.DetectorId = "711526";
+            mockDetectorN3.Object.DectectorIdentifier = "711526";
             mockDetectorN3.Object.Id = 50751;
             mockDetectorN3.Object.LaneNumber = 2;
             mockDetectorN3.Object.LaneTypeId = LaneTypes.V;
@@ -81,7 +74,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN4.Object.ApproachId = 15255;
             mockDetectorN4.Object.DetChannel = 27;
-            mockDetectorN4.Object.DetectorId = "711527";
+            mockDetectorN4.Object.DectectorIdentifier = "711527";
             mockDetectorN4.Object.Id = 50752;
             mockDetectorN4.Object.LaneNumber = 3;
             mockDetectorN4.Object.LaneTypeId = LaneTypes.V;
@@ -94,7 +87,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Set the properties of the mock Detector object
             mockDetectorN5.Object.ApproachId = 15255;
             mockDetectorN5.Object.DetChannel = 28;
-            mockDetectorN5.Object.DetectorId = "711528";
+            mockDetectorN5.Object.DectectorIdentifier = "711528";
             mockDetectorN5.Object.Id = 50753;
             mockDetectorN5.Object.LaneNumber = 1;
             mockDetectorN5.Object.LaneTypeId = LaneTypes.V;
@@ -153,15 +146,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 2840; // Updated Id
-            mockSignal.Object.SignalId = "6387"; // Updated SignalId
-            mockSignal.Object.Latitude = "40.62398502";
-            mockSignal.Object.Longitude = "-111.9387819";
+            mockSignal.Object.SignalIdentifier = "6387"; // Updated SignalId
+            mockSignal.Object.Latitude = 40.62398502;
+            mockSignal.Object.Longitude = -111.9387819;
             mockSignal.Object.PrimaryName = "Redwood Road";
             mockSignal.Object.SecondaryName = "7000 South";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
             mockSignal.Object.RegionId = 2;
             mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Delete;
             mockSignal.Object.Note = "Updated missing zones";
             mockSignal.Object.Start = new System.DateTime(1900, 1, 1);
@@ -172,14 +165,14 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             approach2.Setup(a => a.Signal).Returns(mockSignal.Object);
             approach6.Setup(a => a.Signal).Returns(mockSignal.Object);
             mockSignal.Setup(a => a.Approaches).Returns(approaches);
-            
 
-            var options = new LeftTurnGapAnalysisOptions() { 
-                ApproachId = 15255, 
+
+            var options = new LeftTurnGapAnalysisOptions()
+            {
                 BinSize = 15,
-                SignalId = "7115", //2934 is Id of this signal
-                StartDate = new System.DateTime(2023, 6, 13, 6, 0, 0),
-                EndDate = new System.DateTime(2023, 6, 13, 7, 00, 0),
+                SignalIdentifier = "7115", //2934 is Id of this signal
+                Start = new System.DateTime(2023, 6, 13, 6, 0, 0),
+                End = new System.DateTime(2023, 6, 13, 7, 00, 0),
                 Gap1Min = 1,
                 Gap1Max = 3.3,
                 Gap2Min = 3.3,
@@ -206,36 +199,36 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 TrendLineGapThreshold = 7.4
             };
 
-            
+
             //var detectors = approach.GetDetectorsForMetricType(5);
             //var detectors = new List<Detector> { mockDetector1.Object, mockDetector2.Object };
 
-            List<LeftTurnGapAnalysisResult> viewModel = leftTurnGapAnalysisService.GetChartData(
-                options,
-                mockSignal.Object,
-                allEvents
+            var viewModel = await leftTurnGapAnalysisService.GetAnalysisForPhase(
+                approach2.Object,
+                allEvents,
+                options
                 );
 
 
-            Assert.Equal(15, viewModel[1].Gap1Count.ToList()[0].Gaps);
-            Assert.Equal(20, viewModel[1].Gap1Count.ToList()[1].Gaps);
-            Assert.Equal(19, viewModel[1].Gap1Count.ToList()[2].Gaps);
-            Assert.Equal(16, viewModel[1].Gap1Count.ToList()[3].Gaps);
+            Assert.Equal(15, viewModel.Gap1Count.ToList()[0].Gaps);
+            Assert.Equal(20, viewModel.Gap1Count.ToList()[1].Gaps);
+            Assert.Equal(19, viewModel.Gap1Count.ToList()[2].Gaps);
+            Assert.Equal(16, viewModel.Gap1Count.ToList()[3].Gaps);
 
-            Assert.Equal(1, viewModel[1].Gap2Count.ToList()[0].Gaps);
+            Assert.Equal(1, viewModel.Gap2Count.ToList()[0].Gaps);
             //Assert.Equal(5, viewModel[1].Gap2Count.ToList()[1].Gaps); 3 (-2)
-            Assert.Equal(4, viewModel[1].Gap2Count.ToList()[2].Gaps);
-            Assert.Equal(3, viewModel[1].Gap2Count.ToList()[3].Gaps);
+            Assert.Equal(4, viewModel.Gap2Count.ToList()[2].Gaps);
+            Assert.Equal(3, viewModel.Gap2Count.ToList()[3].Gaps);
 
-            Assert.Equal(4, viewModel[1].Gap3Count.ToList()[0].Gaps);
+            Assert.Equal(4, viewModel.Gap3Count.ToList()[0].Gaps);
             //Assert.Equal(4, viewModel[1].Gap3Count.ToList()[1].Gaps); 6 (+2)
-            Assert.Equal(9, viewModel[1].Gap3Count.ToList()[2].Gaps);
-            Assert.Equal(6, viewModel[1].Gap3Count.ToList()[3].Gaps); 
+            Assert.Equal(9, viewModel.Gap3Count.ToList()[2].Gaps);
+            Assert.Equal(6, viewModel.Gap3Count.ToList()[3].Gaps);
 
-            Assert.Equal(13, viewModel[1].Gap4Count.ToList()[0].Gaps);
-            Assert.Equal(14, viewModel[1].Gap4Count.ToList()[1].Gaps);
-            Assert.Equal(14, viewModel[1].Gap4Count.ToList()[2].Gaps);
-            Assert.Equal(15, viewModel[1].Gap4Count.ToList()[3].Gaps); 
+            Assert.Equal(13, viewModel.Gap4Count.ToList()[0].Gaps);
+            Assert.Equal(14, viewModel.Gap4Count.ToList()[1].Gaps);
+            Assert.Equal(14, viewModel.Gap4Count.ToList()[2].Gaps);
+            Assert.Equal(15, viewModel.Gap4Count.ToList()[3].Gaps);
 
             //Assert.Equal(86.46, viewModel[1].PercentTurnableSeries.ToList()[0].Seconds);
             //Assert.Equal(75.44, viewModel[1].PercentTurnableSeries.ToList()[1].Seconds);

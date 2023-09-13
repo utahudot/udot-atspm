@@ -8,7 +8,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 /// <summary>
 /// Perdue Coordination Diagram chart
 /// </summary>
-public class PerdueCoordinationDiagramResult:ApproachResult
+public class PerdueCoordinationDiagramResult : ApproachResult
 {
     public PerdueCoordinationDiagramResult(
         string signalId,
@@ -22,7 +22,7 @@ public class PerdueCoordinationDiagramResult:ApproachResult
         double percentArrivalOnGreen,
         ICollection<PerdueCoordinationPlan> plans,
         ICollection<VolumePerHour> volumePerHour,
-        ICollection<CyclePcd> cycles):base(approachId, signalId,  start, end)
+        ICollection<CyclePcd> cycles) : base(approachId, signalId, start, end)
     {
         PhaseNumber = phaseNumber;
         PhaseDescription = phaseDescription;
@@ -33,13 +33,13 @@ public class PerdueCoordinationDiagramResult:ApproachResult
         VolumePerHour = volumePerHour;
         Cycles = cycles;
     }
-    public int PhaseNumber { get; internal set; }
-    public string PhaseDescription { get; internal set; }
-    public int TotalOnGreenEvents { get; internal set; }
-    public int TotalDetectorHits { get; internal set; }
-    public double PercentArrivalOnGreen { get; internal set; }
-    public ICollection<PerdueCoordinationPlan> Plans { get; internal set; }
-    public ICollection<VolumePerHour> VolumePerHour { get; internal set; }
-    public ICollection<CyclePcd> Cycles { get; set; }
+    public int PhaseNumber { get; }
+    public string PhaseDescription { get; }
+    public int TotalOnGreenEvents { get; }
+    public int TotalDetectorHits { get; }
+    public double PercentArrivalOnGreen { get; }
+    public ICollection<PerdueCoordinationPlan> Plans { get; }
+    public ICollection<VolumePerHour> VolumePerHour { get; }
+    public ICollection<CyclePcd> Cycles { get; }
 
 }

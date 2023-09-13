@@ -80,7 +80,8 @@ namespace ATSPM.Application.Reports.Controllers
                 null,
                 approach,
                 controllerEventLogs,
-                planEvents
+                planEvents,
+                false
                 );
             if (signalPhase == null)
             {

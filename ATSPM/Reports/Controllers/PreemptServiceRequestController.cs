@@ -1,12 +1,12 @@
-﻿using ATSPM.Application.Reports.Business.PreemptService;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Reports.Business.PreemptServiceRequest;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Infrastructure.Repositories;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,11 +39,11 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PreemptServiceRequestResult GetChartData([FromBody] PreemptServiceRequestOptions options)
         {
-            var events = controllerEventLogRepository.GetSignalEventsByEventCode(options.SignalId, options.Start, options.End, 102);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(
-                options.SignalId,
-                options.Start,
-                options.End);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
+            var events = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<int>() { 102 });
             PreemptServiceRequestResult viewModel = preemptServiceRequestService.GetChartData(options, planEvents, events);
             return viewModel;
         }

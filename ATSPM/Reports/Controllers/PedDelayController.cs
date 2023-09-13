@@ -2,9 +2,12 @@
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,21 +20,21 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly PedDelayService pedDelayService;
         private readonly PedPhaseService pedPhaseService;
         private readonly CycleService cycleService;
-        private readonly IApproachRepository approachRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
 
         public PedDelayController(
             PedDelayService pedDelayService,
             PedPhaseService pedPhaseService,
             CycleService cycleService,
-            IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository)
         {
             this.pedDelayService = pedDelayService;
             this.pedPhaseService = pedPhaseService;
             this.cycleService = cycleService;
-            this.approachRepository = approachRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -43,29 +46,30 @@ namespace ATSPM.Application.Reports.Controllers
             return viewModel;
         }
 
-        [HttpGet("GetChartData")]
-        public PedDelayResult GetChartData(
+        [HttpPost("GetChartData")]
+        public async Task<IEnumerable<PedDelayResult>> GetChartData(
             PedDelayOptions options)
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalIdentifier,
-                options.Start,
-                options.End);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
+            var tasks = new List<Task<PedDelayResult>>();
+            foreach (var approach in signal.Approaches)
+            {
+                tasks.Add(GetChartDataForApproach(options, approach, planEvents, controllerEventLogs));
+            }
 
-            var pedEvents = controllerEventLogRepository.GetRecordsByParameterAndEvent(
-                approach.Signal.SignalIdentifier,
-                options.Start.AddMinutes(-15),
-                options.End,
-                approach.GetPedDetectorsFromApproach(),
-                approach.GetPedestrianCycleEventCodes());
+            var results = await Task.WhenAll(tasks);
 
-            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
-                approach,
-                options.UsePermissivePhase,
-                options.Start,
-                options.End);
+            return results.Where(result => result != null);
+        }
 
+        private async Task<PedDelayResult> GetChartDataForApproach(PedDelayOptions options, Approach approach, IReadOnlyList<ControllerEventLog> planEvents, IReadOnlyList<ControllerEventLog> events)
+        {
+            var cycleEvents = events.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End);
+            var pedEvents = events.GetPedEvents(options.Start, options.End, approach);
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
                 approach,
@@ -82,8 +86,9 @@ namespace ATSPM.Application.Reports.Controllers
                 pedPhaseData,
                 cycles
                 );
+            viewModel.SignalDescription = approach.Signal.SignalDescription();
+            viewModel.ApproachDescription = approach.Description;
             return viewModel;
         }
-
     }
 }

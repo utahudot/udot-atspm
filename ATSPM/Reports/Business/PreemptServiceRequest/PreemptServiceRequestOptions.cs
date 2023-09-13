@@ -10,7 +10,7 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
         {
         }
 
-        public string SignalId { get;  set; }
+        public string SignalIdentifier { get;  set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
     }
