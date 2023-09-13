@@ -7,7 +7,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
     {
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public String SignalId { get; set; }
+        public String SignalIdentifier { get; set; }
         public int PercentileSplit { get; set; }
 
 

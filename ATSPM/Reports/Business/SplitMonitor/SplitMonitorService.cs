@@ -3,6 +3,7 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.SplitMonitor
 {
@@ -32,7 +33,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         }
 
 
-        public List<SplitMonitorResult> GetChartData(
+        public async Task<IEnumerable<SplitMonitorResult>> GetChartData(
             SplitMonitorOptions options,
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> cycleEvents,
@@ -53,37 +54,44 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 1
                 );
 
-            var result = new List<SplitMonitorResult>();
+            var tasks = new List<Task<SplitMonitorResult>>();
             foreach (var phase in phaseCollection.AnalysisPhases)
             {
-                var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalId, options.Start, options.End)
-                {
-                    GapOuts = phase.Cycles.Items
-                    .Where(c => c.TerminationEvent == 4)
-                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
-                    .ToList(),
-                    MaxOuts = phase.Cycles.Items
-                    .Where(c => c.TerminationEvent == 5)
-                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
-                    .ToList(),
-                    ForceOffs = phase.Cycles.Items
-                    .Where(c => c.TerminationEvent == 6)
-                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
-                    .ToList(),
-                    Unknowns = phase.Cycles.Items
-                    .Where(c => c.TerminationEvent == 0)
-                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
-                    .ToList(),
-                    Peds = phase.Cycles.Items
-                    .Where(c => c.HasPed)
-                    .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
-                    .ToList(),
-                };
-                splitMonitorResult.Plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
-                result.Add(splitMonitorResult);
+                tasks.Add(GetChartDataForPhase(options, phaseCollection, phase));
             }
 
-            return result;
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
+        }
+
+        private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
+        {
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalIdentifier, options.Start, options.End)
+            {
+                GapOuts = phase.Cycles.Items
+                                .Where(c => c.TerminationEvent == 4)
+                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .ToList(),
+                MaxOuts = phase.Cycles.Items
+                                .Where(c => c.TerminationEvent == 5)
+                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .ToList(),
+                ForceOffs = phase.Cycles.Items
+                                .Where(c => c.TerminationEvent == 6)
+                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .ToList(),
+                Unknowns = phase.Cycles.Items
+                                .Where(c => c.TerminationEvent == 0)
+                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .ToList(),
+                Peds = phase.Cycles.Items
+                                .Where(c => c.HasPed)
+                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .ToList(),
+            };
+            splitMonitorResult.Plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
+            return splitMonitorResult;
         }
 
         private List<PlanSplitMonitorData> GetSplitMonitorPlansWithStatistics(

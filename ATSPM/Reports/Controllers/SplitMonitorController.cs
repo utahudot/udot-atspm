@@ -1,11 +1,12 @@
-﻿using ATSPM.Application.Reports.Business.SplitMonitor;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.SplitMonitor;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,11 +40,13 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public List<SplitMonitorResult> GetChartData([FromBody] SplitMonitorOptions options)
+        public async Task<IEnumerable<SplitMonitorResult>> GetChartData([FromBody] SplitMonitorOptions options)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
-            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalId, options.Start.AddHours(-12), options.End.AddHours(12));
-            var planEvents = signalEvents.Where(e => e.EventCode == 131).ToList();
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12));
+            var planEvents = signalEvents.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
             var pedEvents = signalEvents.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
@@ -61,14 +64,13 @@ namespace ATSPM.Application.Reports.Controllers
                 && e.Timestamp <= options.End).ToList();
             signalEvents = null;
 
-            List<SplitMonitorResult> viewModel = splitMonitorService.GetChartData(
+            return await splitMonitorService.GetChartData(
                options,
                planEvents,
                cycleEvents,
                pedEvents,
                splitsEvents,
                signal);
-            return viewModel;
         }
 
     }
