@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.SplitFail
 {
@@ -22,10 +21,9 @@ namespace ATSPM.Application.Reports.Business.SplitFail
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public int MetricTypeId { get; set; } = 12;
-        public string SignalId { get; set; }
-        public int ApproachId { get; set; }
+        public string SignalIdentifier { get; set; }
         public bool UsePermissivePhase { get; set; }
 
-        
+
     }
 }
