@@ -52,9 +52,7 @@ namespace ATSPM.Application.Reports.Controllers
             var tasks = new List<Task<ApproachDelayResult>>();
             foreach (var approach in signal.Approaches)
             {
-                tasks.Add(
-                    GetChartDataByApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription())
-                );
+                tasks.Add(GetChartDataByApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -77,7 +75,8 @@ namespace ATSPM.Application.Reports.Controllers
                 null,
                 approach,
                 controllerEventLogs,
-                planEvents);
+                planEvents,
+                false);
             if (signalPhase == null)
             {
                 return null;

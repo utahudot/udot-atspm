@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,19 +19,19 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly PerdueCoordinationDiagramService perdueCoordinationDiagramService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly IApproachRepository approachRepository;
         private readonly SignalPhaseService signalPhaseService;
+        private readonly ISignalRepository signalRepository;
 
         public PerdueCoordinationDiagramController(
             PerdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
-            IApproachRepository approachRepository,
-            SignalPhaseService signalPhaseService)
+            SignalPhaseService signalPhaseService,
+            ISignalRepository signalRepository)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.approachRepository = approachRepository;
             this.signalPhaseService = signalPhaseService;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -43,27 +44,44 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<PerdueCoordinationDiagramResult> GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
+        public async Task<IEnumerable<PerdueCoordinationDiagramResult>> GetChartData([FromBody] PerdueCoordinationDiagramOptions options)
         {
-            var approach = approachRepository.Lookup(options.ApproachId);
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(6, approach, options.StartDate, options.EndDate, true, false);
-            var planEvents = controllerEventLogRepository.GetPlanEvents(approach.Signal.SignalIdentifier, options.StartDate, options.EndDate);
-            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.StartDate, options.EndDate);
-            var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                options.StartDate,
-                options.EndDate,
-                options.ShowVolumes,
-                0,
-                options.SelectedBinSize,
-                approach,
-                cycleEvents.ToList(),
-                planEvents.ToList(),
-                detectorEvents.ToList());
-            PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, approach, signalPhase);
-            return viewModel;
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
+            var tasks = new List<Task<PerdueCoordinationDiagramResult>>();
+            foreach (var approach in signal.Approaches)
+            {
+                tasks.Add(GetChartDataForApproach(options, approach, controllerEventLogs, planEvents));
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
         }
 
-
-
+        private async Task<PerdueCoordinationDiagramResult> GetChartDataForApproach(PerdueCoordinationDiagramOptions options, Approach approach, IReadOnlyList<ControllerEventLog> controllerEventLogs, IReadOnlyList<ControllerEventLog> planEvents)
+        {
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+                options.UsePermissivePhase,
+                options.Start,
+                options.End,
+                options.SelectedBinSize,
+                null,
+                approach,
+                controllerEventLogs.ToList(),
+                planEvents.ToList(),
+                options.ShowVolumes);
+            if (signalPhase == null)
+            {
+                return null;
+            }
+            PerdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, approach, signalPhase);
+            viewModel.SignalDescription = approach.Signal.SignalDescription();
+            viewModel.ApproachDescription = approach.Description;
+            return viewModel;
+        }
     }
 }
