@@ -76,7 +76,7 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End);
             if (cycleEvents.IsNullOrEmpty())
                 return null;
-            var terminationEvents = controllerEventLogs.GetEventsByEventCodesParam(
+            var terminationEvents = controllerEventLogs.GetEventsByEventCodes(
                  options.Start,
                  options.End,
                  new List<int> { 4, 5, 6 },

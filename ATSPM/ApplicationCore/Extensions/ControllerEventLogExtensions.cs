@@ -181,7 +181,7 @@ namespace ATSPM.Application.Extensions
             return result.ToList();
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
+        public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodes(
             this IEnumerable<ControllerEventLog> events,
             DateTime startTime,
             DateTime endTime,
@@ -218,7 +218,7 @@ namespace ATSPM.Application.Extensions
            DateTime start,
            DateTime end)
         {
-            return events.GetEventsByEventCodesParam(
+            return events.GetEventsByEventCodes(
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 approach.GetCycleEventCodes(getPermissivePhase),
