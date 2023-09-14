@@ -51,7 +51,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         private bool IsAcceptableDateRange(ControllerEventLog log)
         {
-            return log.TimeStamp <= DateTime.Now && log.TimeStamp > _options.EarliestAcceptableDate;
+            return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         public abstract bool CanExecute(FileInfo parameter);
