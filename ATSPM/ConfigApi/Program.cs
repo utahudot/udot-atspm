@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Net;
 using System.Text.Json;
+using ATSPM.Domain.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,9 +98,10 @@ builder.Host.ConfigureServices((h, s) =>
 
 });
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-var url = $"http://0.0.0.0:{port}";
-var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
+//TODO: remove this after testing GCP Cloud Run
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//var url = $"http://0.0.0.0:{port}";
+//var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 
 var app = builder.Build();
 
@@ -107,6 +109,7 @@ if (app.Environment.IsDevelopment())
 {
     // navigate to ~/$odata to determine whether any endpoints did not match an odata route template
     app.UseODataRouteDebug();
+    app.Services.PrintHostInformation();
 }
 
 app.UseSwagger();
