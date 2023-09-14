@@ -11,23 +11,32 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
+using ATSPM.Domain.Extensions;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
     {
         o.ReturnHttpNotAcceptable = true;
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-
-        //options.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
-        //https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/formatting?view=aspnetcore-5.0#special-case-formatters
+        //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
         o.OutputFormatters.Add(new EventLogCsvFormatter());
         o.OutputFormatters.RemoveType<StringOutputFormatter>();
-    }).AddXmlDataContractSerializerFormatters();
-
+    })
+    .AddXmlDataContractSerializerFormatters();
     s.AddProblemDetails();
+
+    s.AddResponseCompression(o =>
+    {
+        o.EnableForHttps = true; // Enable compression for HTTPS requests
+        //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
+        //o.Providers.Add<BrotliCompressionProvider>();
+
+        o.MimeTypes = new[] { "application/json", "application/xml", "text/csv" };
+    });
 
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
     s.AddApiVersioning(o =>
@@ -67,6 +76,13 @@ builder.Host.ConfigureServices((h, s) =>
 });
 
 var app = builder.Build();
+
+app.UseResponseCompression();
+
+if (app.Environment.IsDevelopment())
+{
+    app.Services.PrintHostInformation();
+}
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

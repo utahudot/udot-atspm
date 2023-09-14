@@ -28,7 +28,14 @@ namespace ATSPM.Infrastructure.Repositories
                 .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
-                .SelectMany(s => s.LogData)
+                .SelectMany(m => m.LogData)
+                .Select(s => new ControllerEventLog()
+                {
+                    SignalIdentifier = signalId,
+                    Timestamp = s.Timestamp,
+                    EventCode = s.EventCode,
+                    EventParam = s.EventParam
+                })
                 .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime))
                 .ToList();
 
