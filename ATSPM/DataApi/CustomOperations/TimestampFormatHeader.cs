@@ -12,7 +12,7 @@ public class TimestampFormatHeader : IOperationFilter
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = "X-Timestamp-Format",
-            Description = "Change timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
+            Description = "Change CSV timestamp format https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings",
             In = ParameterLocation.Header,
             Required = false,
             Schema = new OpenApiSchema

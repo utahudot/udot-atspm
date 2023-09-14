@@ -26,10 +26,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2 }
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2 },
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2 },
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2 },
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2 }
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -57,12 +57,12 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:12.5"), EventCode = 101, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:14.2"), EventCode = 102, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:12.5"), EventCode = 101, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:14.2"), EventCode = 102, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -91,9 +91,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testData = new List<ControllerEventLog>
             {
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -112,9 +112,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2}
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
@@ -134,10 +134,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -156,10 +156,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
                 //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -178,10 +178,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -200,10 +200,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1004", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1004", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -222,10 +222,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 4}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 4}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -244,22 +244,22 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", TimeStamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 2}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 2}
             };
 
             var result = await sut.ExecuteAsync(testData);
@@ -281,22 +281,22 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", TimeStamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 3}
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 3},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 3}
             };
 
             var result = await sut.ExecuteAsync(testData);

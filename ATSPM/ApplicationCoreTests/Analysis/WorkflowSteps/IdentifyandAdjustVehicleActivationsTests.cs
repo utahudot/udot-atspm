@@ -54,7 +54,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     SignalIdentifier = l.SignalIdentifier,
                     EventCode = l.EventCode,
                     EventParam = Random.Shared.Next(1, 5),
-                    TimeStamp = l.TimeStamp
+                    Timestamp = l.Timestamp
                 }).ToList().AsEnumerable())).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -77,7 +77,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     SignalIdentifier = l.SignalIdentifier,
                     EventCode = Random.Shared.Next(82, 85),
                     EventParam = l.EventParam,
-                    TimeStamp = l.TimeStamp
+                    Timestamp = l.Timestamp
                 }).ToList().AsEnumerable())).ToList();
 
             var result = await sut.ExecuteAsync(testData);
@@ -102,7 +102,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.First().CorrectedTimeStamp;
-            var expected = AtspmMath.AdjustTimeStamp(testData.First().Item2.First().TimeStamp,
+            var expected = AtspmMath.AdjustTimeStamp(testData.First().Item2.First().Timestamp,
                 testData.First().Item1.Approach?.Mph ?? 0,
                 testData.First().Item1.DistanceFromStopBar ?? 0,
                 testData.First().Item1.LatencyCorrection);
@@ -122,7 +122,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
             var expected = testData.SelectMany(s =>
-            s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.TimeStamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
+            s.Item2.Select(t => AtspmMath.AdjustTimeStamp(t.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)))
                 .OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
@@ -142,7 +142,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Select(s => s.CorrectedTimeStamp).OrderBy(o => o);
-            var expected = testData.SelectMany(s => s.Item2.Select(t => t.TimeStamp)).OrderBy(o => o);
+            var expected = testData.SelectMany(s => s.Item2.Select(t => t.Timestamp)).OrderBy(o => o);
 
             _output.WriteLine($"count1: {actual.Count()}");
             _output.WriteLine($"count2: {expected.Count()}");
@@ -172,7 +172,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var logs = Enumerable.Range(1, logCount).Select(s => new ControllerEventLog()
             {
                 SignalIdentifier = signalId,
-                TimeStamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+                Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = 82,
                 EventParam = detChannel
             }).ToList();
