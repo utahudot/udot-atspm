@@ -117,7 +117,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
 
-                var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.TimeStamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
+                var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
 
                 await File.AppendAllLinesAsync(path, csv);
 
