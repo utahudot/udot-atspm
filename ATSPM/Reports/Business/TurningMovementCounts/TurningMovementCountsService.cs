@@ -4,6 +4,7 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.TurningMovementCounts
 {
@@ -23,16 +24,18 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             this.planService = planService;
         }
 
-        public TurningMovementCountsResult GetChartData(
+        public async Task<TurningMovementCountsResult> GetChartData(
             List<Detector> detectorsByDirection,
             LaneTypes laneType,
             MovementTypes movementType,
+            DirectionTypes directionType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> detectorEvents,
             List<ControllerEventLog> planEvents,
-            Approach approach)
+            string signalIdentifier,
+            string signalDescription)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, approach.Signal.SignalIdentifier, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, planEvents);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
@@ -80,12 +83,13 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 .Sum(i => i.DetectorCount);
 
             return new TurningMovementCountsResult(
-                "Turning Movement Counts",
-                options.ApproachId,
-                approach.Description,
+                signalIdentifier,
+                signalDescription,
                 options.Start,
                 options.End,
-                approach.DirectionTypeId.ToString(),
+                directionType.ToString(),
+                laneType.ToString(),
+                movementType.ToString(),
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new TotalVolume(i.StartTime, i.HourlyVolume)).ToList(),

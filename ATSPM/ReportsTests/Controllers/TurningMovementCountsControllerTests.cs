@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Reports.Business.Common;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
@@ -13,7 +14,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
     public class TurningMovementCountsControllerTests
     {
         [Fact()]
-        public void GetChartDataTest()
+        public async void GetChartDataTest()
         {
             // Arrange
             PlanService planService = new PlanService();
@@ -73,9 +74,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             var options = new TurningMovementCountsOptions()
             {
-                ApproachId = 14239,
-                LaneType = LaneTypes.V,
-                MovementTypes = new() { MovementTypes.T, MovementTypes.R, MovementTypes.L, MovementTypes.TR, MovementTypes.TL },
+                SignalIdentifier = "6387",
                 SelectedBinSize = 15,
                 Start = new System.DateTime(2023, 6, 14, 12, 0, 0),
                 End = new System.DateTime(2023, 6, 14, 23, 59, 0)
@@ -162,14 +161,16 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //    planEvents
             //    );
 
-            TurningMovementCountsResult viewModel = turningMovementCountsService.GetChartData(
+            TurningMovementCountsResult viewModel = await turningMovementCountsService.GetChartData(
                 detectors,
                 LaneTypes.V,
                 MovementTypes.T,
+                DirectionTypes.WB,
                 options,
                 events,
                 planEvents,
-                approach.Object
+                mockSignal.Object.SignalIdentifier,
+                mockSignal.Object.SignalDescription()
                 );
 
             // Assert

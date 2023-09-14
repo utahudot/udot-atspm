@@ -1,7 +1,15 @@
-﻿using ATSPM.Application.Reports.Business.TurningMovementCounts;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,19 +19,19 @@ namespace ATSPM.Application.Reports.Controllers
     [ApiController]
     public class TurningMovementCountsController : ControllerBase
     {
-        private readonly IApproachRepository approachRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
+        private readonly ISignalRepository signalRepository;
 
         public TurningMovementCountsController(
-            IApproachRepository approachRepository,
             IControllerEventLogRepository controllerEventLogRepository,
-            TurningMovementCountsService turningMovementCountsService
+            TurningMovementCountsService turningMovementCountsService,
+            ISignalRepository signalRepository
             )
         {
-            this.approachRepository = approachRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.turningMovementCountsService = turningMovementCountsService;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -36,32 +44,115 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
 
-        //[HttpPost("getChartData")]
-        //public TurningMovementCountsResult GetChartData([FromBody] TurningMovementCountsOptions options)
-        //{
-        //    var approach = approachRepository.Lookup(options.ApproachId);
-        //    var movementTypes = approach.Detectors.Select(d => d.LaneType).Distinct().ToList();
-        //    //var movementTypes = options.MovementTypes.Select(m => (int)m);
-        //    var planEvents = controllerEventLogRepository.GetPlanEvents(
-        //        approach.Signal.SignalId,
-        //        options.Start,
-        //        options.End);
-        //    var detectors = approach.GetDetectorsForMetricType(5).ToList();
-        //        //.Where(d => d.LaneType.Id == options.LaneType && movementTypes.Contains((int)d.MovementType.Id)).ToList();
-        //    var detectorChannels = detectors.Select(d => d.DetChannel).ToList();
-        //    var events = controllerEventLogRepository.GetRecordsByParameterAndEvent(approach.Signal.SignalId, options.Start,
-        //                options.End, new List<int> { 82 }, detectorChannels).ToList();
-        //    var laneTypes = approach.Detectors.Select(d => d.LaneType).Distinct().ToList();
+        [HttpPost("getChartData")]
+        public async Task<IEnumerable<TurningMovementCountsResult>> GetChartData([FromBody] TurningMovementCountsOptions options)
+        {
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
 
-        //    var result = turningMovementCountsService.GetChartData(
-        //        detectors
-        //        ,
-        //        options,
-        //        events,
-        //        planEvents.ToList(),
-        //        approach);
-        //    return result;
-        //}
+            var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
+            foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
+            {
+                tasks.Add(
+                    GetChartDataForLaneType(
+                    signal,
+                    (LaneTypes)laneType,
+                    options,
+                    controllerEventLogs,
+                    planEvents)
+                    );
+            }
+            var results = await Task.WhenAll(tasks);
 
+            return results.Where(result => result != null).SelectMany(r => r);
+        }
+
+        private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
+            Signal signal,
+            LaneTypes laneType,
+            TurningMovementCountsOptions options,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents)
+        {
+            var directions = signal.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
+            var tasks = new List<Task<TurningMovementCountsResult>>();
+            foreach (var direction in directions)
+            {
+                var detectorsForDirection = signal.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
+
+                var movementTypesSorted = new List<MovementTypes> { MovementTypes.L, MovementTypes.T, MovementTypes.R };
+                foreach (var movementType in movementTypesSorted)
+                {
+                    var movementTypeDetectors = new List<Detector>();
+                    if (movementType == MovementTypes.T)
+                    {
+                        movementTypeDetectors = detectorsForDirection.Where(d =>
+                        d.MovementTypeId == MovementTypes.T
+                        || d.MovementTypeId == MovementTypes.TL
+                        || d.MovementTypeId == MovementTypes.TR).ToList();
+                    }
+                    else
+                    {
+                        movementTypeDetectors = detectorsForDirection.Where(d => d.MovementTypeId == movementType).ToList();
+                    }
+                    if (!movementTypeDetectors.IsNullOrEmpty())
+                    {
+                        tasks.Add(GetChartDataByMovementType(
+                            options,
+                            planEvents,
+                            controllerEventLogs,
+                            movementTypeDetectors,
+                            movementType,
+                            laneType,
+                            signal.SignalIdentifier,
+                            signal.SignalDescription(),
+                            direction));
+                    }
+                }
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
+        }
+
+        private async Task<TurningMovementCountsResult> GetChartDataByMovementType(
+            TurningMovementCountsOptions options,
+            List<ControllerEventLog> planEvents,
+            List<ControllerEventLog> controllerEventLogs,
+            List<Detector> detectors,
+            MovementTypes movementType,
+            LaneTypes laneType,
+            string signalIdentifier,
+            string signalDescription,
+            DirectionTypes directionType)
+        {
+            var detectorEvents = new List<ControllerEventLog>();
+            foreach (var detector in detectors)
+            {
+                detectorEvents.AddRange(controllerEventLogs.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
+                    options.Start,
+                    options.End,
+                    new List<int>() { 82 },
+                    detector.DetChannel,
+                    detector.GetOffset(),
+                    detector.LatencyCorrection).ToList());
+            }
+            var result = turningMovementCountsService.GetChartData(
+                detectors,
+                laneType,
+                movementType,
+                directionType,
+                options,
+                detectorEvents,
+                planEvents.ToList(),
+                signalIdentifier,
+                signalDescription);
+
+            return await result;
+        }
     }
 }

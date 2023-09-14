@@ -4,10 +4,8 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using CsvHelper;
 using Moq;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Data.Enums;
-using CsvHelper;
 using System.Globalization;
+using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
