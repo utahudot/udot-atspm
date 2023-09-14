@@ -32,10 +32,10 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 
     private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
     {
-        var text = new StringBuilder("ATSPM Configuration with OData, OpenAPI, Swashbuckle, and API versioning.");
+        var text = new StringBuilder("ATSPM Log Data with OpenAPI, Swashbuckle, and API versioning.");
         var info = new OpenApiInfo()
         {
-            Title = "ATSPM Configuration Api",
+            Title = "ATSPM Log Data Api",
             Version = description.ApiVersion.ToString(),
             Contact = new OpenApiContact() { Name = "udotdevelopment", Email = "udotdevelopment@gmail.com", Url = new Uri("https://udottraffic.utah.gov/atspm/") },
             License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
