@@ -4,6 +4,7 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.WaitTime
 {
@@ -42,25 +43,31 @@ namespace ATSPM.Application.Reports.Business.WaitTime
         }
 
 
-        public WaitTimeResult GetChartData(
+        public async Task<WaitTimeResult> GetChartData(
             WaitTimeOptions options,
             Approach approach,
             IReadOnlyList<ControllerEventLog> controllerEventLogs,
             AnalysisPhaseData analysisPhaseData,
             IReadOnlyList<PlanSplitMonitorData> plans,
-            VolumeCollection volumeCollection
+            VolumeCollection volumeCollection,
+            int phaseNumber
             )
         {
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(approach, out useDroppingAlgorithm, out detectionTypesForApproach);
-            var redList = controllerEventLogs.Where(x => x.EventCode == WaitTimeOptions.PHASE_END_RED_CLEARANCE)
+            var redList = controllerEventLogs.Where(x =>
+                x.EventCode == WaitTimeOptions.PHASE_END_RED_CLEARANCE
+                && x.EventParam == phaseNumber)
                 .OrderBy(x => x.Timestamp);
-            var greenList = controllerEventLogs.Where(x => x.EventCode == WaitTimeOptions.PHASE_BEGIN_GREEN)
+            var greenList = controllerEventLogs.Where(x =>
+            x.EventCode == WaitTimeOptions.PHASE_BEGIN_GREEN
+            && x.EventParam == phaseNumber)
                 .OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
-                x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED ||
-                x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED);
+                (x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED ||
+                x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED)
+                && x.EventParam == phaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
             var gapOuts = new List<WaitTimePoint>();
             var maxOuts = new List<WaitTimePoint>();

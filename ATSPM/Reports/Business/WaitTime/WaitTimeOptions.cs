@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.WaitTime
 {
@@ -16,7 +14,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
         }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public int ApproachId { get; set; }
+        public string SignalIdentifier { get; set; }
         public int BinSize { get; set; }
 
 

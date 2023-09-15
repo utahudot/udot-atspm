@@ -1,11 +1,8 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
+﻿using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit.Abstractions;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -81,7 +78,7 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> terminationEvents,
             Signal signal,
             int consecutiveCount)
-        {            
+        {
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.SignalId = signalId;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
@@ -104,10 +101,16 @@ namespace ATSPM.Application.Reports.Business.Common
             {
                 foreach (var plan in analysisPhaseCollectionData.Plans)
                 {
-                    SetProgrammedSplits(plan, splitsEvents.ToList());
-                    SetHighCycleCount(analysisPhaseCollectionData, plan);
-                    var highestSplit = FindHighestRecordedSplitPhase(plan);
-                    FillMissingSplits(highestSplit, plan);
+                    if (!splitsEvents.IsNullOrEmpty())
+                    {
+                        SetProgrammedSplits(plan, splitsEvents.ToList());
+                        var highestSplit = FindHighestRecordedSplitPhase(plan);
+                        FillMissingSplits(highestSplit, plan);
+                    }
+                    if (analysisPhaseCollectionData != null)
+                    {
+                        SetHighCycleCount(analysisPhaseCollectionData, plan);
+                    }
                 }
             }
             return analysisPhaseCollectionData;

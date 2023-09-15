@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,10 +41,24 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
-            analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
+            if (!pedestrianEvents.IsNullOrEmpty())
+            {
+                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
+            }
+            else
+            {
+                analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
+            }
             analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
+            if (!terminationEvents.IsNullOrEmpty())
+            {
+                analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
+            }
+            else
+            {
+                analysisPhaseData.TerminationEvents = new List<ControllerEventLog>();
+            }
             analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
