@@ -83,23 +83,42 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> detectorEvents,
             double severeViolationSeconds)
         {
-            var cycles = cycleEvents
-                .Select((eventLog, index) => new { EventLog = eventLog, Index = index })
-                .Where(item =>
-                    item.Index < cycleEvents.Count - 3
-                    && GetYellowToRedEventType(cycleEvents[item.Index].EventCode) == YellowRedEventType.BeginYellowClearance
-                    && GetYellowToRedEventType(cycleEvents[item.Index + 1].EventCode) == YellowRedEventType.BeginRedClearance
-                    && GetYellowToRedEventType(cycleEvents[item.Index + 2].EventCode) == YellowRedEventType.BeginRed
-                    && GetYellowToRedEventType(cycleEvents[item.Index + 3].EventCode) == YellowRedEventType.EndRed)
-                .Select(item => new YellowRedActivationsCycle(
-                    cycleEvents[item.Index].Timestamp,
-                    cycleEvents[item.Index + 1].Timestamp,
-                    cycleEvents[item.Index + 2].Timestamp,
-                    cycleEvents[item.Index + 3].Timestamp,
+            var cycles = new List<YellowRedActivationsCycle>();
+            for (var item = 0; item < cycleEvents.Count; item++)
+                if (item < cycleEvents.Count - 3
+                    && GetYellowToRedEventType(cycleEvents[item].EventCode) == YellowRedEventType.BeginYellowClearance
+                    && GetYellowToRedEventType(cycleEvents[item + 1].EventCode) == YellowRedEventType.BeginRedClearance
+                    && GetYellowToRedEventType(cycleEvents[item + 2].EventCode) == YellowRedEventType.BeginRed
+                    && GetYellowToRedEventType(cycleEvents[item + 3].EventCode) == YellowRedEventType.EndRed)
+                {
+                    cycles.Add(new YellowRedActivationsCycle(
+                    cycleEvents[item].Timestamp,
+                    cycleEvents[item + 1].Timestamp,
+                    cycleEvents[item + 2].Timestamp,
+                    cycleEvents[item + 3].Timestamp,
                     severeViolationSeconds,
                     detectorEvents
-                    ))
-                .ToList();
+                    ));
+                }
+
+
+            //var cycles = cycleEvents
+            //    .Select((eventLog, index) => new { EventLog = eventLog, Index = index })
+            //    .Where(item =>
+            //        item.Index < cycleEvents.Count - 3
+            //        && GetYellowToRedEventType(cycleEvents[item.Index].EventCode) == YellowRedEventType.BeginYellowClearance
+            //        && GetYellowToRedEventType(cycleEvents[item.Index + 1].EventCode) == YellowRedEventType.BeginRedClearance
+            //        && GetYellowToRedEventType(cycleEvents[item.Index + 2].EventCode) == YellowRedEventType.BeginRed
+            //        && GetYellowToRedEventType(cycleEvents[item.Index + 3].EventCode) == YellowRedEventType.EndRed)
+            //    .Select(item => new YellowRedActivationsCycle(
+            //        cycleEvents[item.Index].Timestamp,
+            //        cycleEvents[item.Index + 1].Timestamp,
+            //        cycleEvents[item.Index + 2].Timestamp,
+            //        cycleEvents[item.Index + 3].Timestamp,
+            //        severeViolationSeconds,
+            //        detectorEvents
+            //        ))
+            //    .ToList();
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
 
 

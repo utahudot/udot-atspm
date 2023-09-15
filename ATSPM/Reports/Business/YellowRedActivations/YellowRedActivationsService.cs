@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -23,20 +21,20 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
 
         public YellowRedActivationsResult GetChartData(
-            YellowRedActivationsOptions options,   
+            YellowRedActivationsOptions options,
             Approach approach,
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> detectorEvents,
             IReadOnlyList<ControllerEventLog> planEvents)
         {
-           
+
             var cycles = cycleService.GetYellowRedActivationsCycles(
                 options.Start,
                 options.End,
                 cycleEvents,
                 detectorEvents,
                 options.SevereLevelSeconds
-                );           
+                );
 
             var plans = planService.GetYellowRedActivationPlans(
                 options.Start,
@@ -45,14 +43,14 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
                 approach,
                 options.SevereLevelSeconds,
                 planEvents).ToList();
-            
+
             var detectorActivations = cycles.SelectMany(c => c.DetectorActivations).ToList();
 
             return new YellowRedActivationsResult(
-                "Yellow and Red Activations",
+                approach.Signal.SignalIdentifier,
                 approach.Id,
                 approach.Description,
-                options.UsePermissivePhase? approach.PermissivePhaseNumber.Value: approach.ProtectedPhaseNumber,
+                options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
                 options.Start,
                 options.End,
                 Convert.ToInt32(plans.Sum(p => p.Violations)),

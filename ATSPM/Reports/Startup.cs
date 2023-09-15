@@ -14,6 +14,7 @@ using ATSPM.Application.Reports.Business.SplitMonitor;
 using ATSPM.Application.Reports.Business.TimingAndActuation;
 using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Reports.Business.WaitTime;
+using ATSPM.Application.Reports.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Extensions;
@@ -98,6 +99,7 @@ namespace ATSPM.Application.Reports
             services.AddScoped<TimingAndActuationsForPhaseService>();
             services.AddScoped<TurningMovementCountsService>();
             services.AddScoped<WaitTimeService>();
+            services.AddScoped<YellowRedActivationsService>();
 
             //Common Services
             services.AddScoped<PlanService>();

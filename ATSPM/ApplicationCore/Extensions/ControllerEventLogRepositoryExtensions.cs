@@ -84,8 +84,7 @@ namespace ATSPM.Application.Extensions
             var events = new List<ControllerEventLog>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
             if (!detectorsForMetric.Any())
-                throw new Exception(
-                    $"No detectors found for metric type metric type {metricTypeId}");
+                return new List<ControllerEventLog>();
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
                     approach.Signal.SignalIdentifier,
