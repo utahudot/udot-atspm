@@ -79,7 +79,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Assert
             Assert.Equal(approach.Object.Id, result.ApproachId);
-            Assert.Equal(approach.Object.Signal.SignalIdentifier, result.SignalId);
+            Assert.Equal(approach.Object.Signal.SignalIdentifier, result.SignalIdentifier);
             Assert.Equal(2, result.PhaseNumber);
             Assert.Equal("NBT Ph2", result.PhaseDescription);
             Assert.Equal(start, result.Start);

@@ -91,7 +91,7 @@ namespace ATSPM.Application.Reports
             services.AddScoped<LeftTurnReportPreCheckService>();
             services.AddScoped<LeftTurnVolumeAnalysisService>();
             services.AddScoped<PedDelayService>();
-            services.AddScoped<PerdueCoordinationDiagramService>();
+            services.AddScoped<GreenTimeUtilizationService>();
             services.AddScoped<PreemptServiceService>();
             services.AddScoped<PreemptServiceRequestService>();
             services.AddScoped<SplitFailPhaseService>();
