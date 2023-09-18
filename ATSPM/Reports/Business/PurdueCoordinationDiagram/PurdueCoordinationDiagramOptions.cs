@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
     [DataContract]
-    public class PerdueCoordinationDiagramOptions
+    public class PurdueCoordinationDiagramOptions
     {
         public int SelectedBinSize { get; set; }
         public bool ShowPlanStatistics { get; set; }

@@ -10,7 +10,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
         public SignalPhase(
             VolumeCollection volume,
-            List<PerdueCoordinationPlan> plans,
+            List<PurdueCoordinationPlan> plans,
             List<CyclePcd> cycles,
             List<ControllerEventLog> detectorEvents,
             Approach approach,
@@ -32,7 +32,7 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
         public VolumeCollection Volume { get; private set; }
-        public List<PerdueCoordinationPlan> Plans { get; private set; }
+        public List<PurdueCoordinationPlan> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }
         private List<ControllerEventLog> DetectorEvents { get; set; }
         public Approach Approach { get; }

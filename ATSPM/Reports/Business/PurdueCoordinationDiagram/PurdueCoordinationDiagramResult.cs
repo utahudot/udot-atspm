@@ -8,9 +8,9 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
 /// <summary>
 /// Perdue Coordination Diagram chart
 /// </summary>
-public class PerdueCoordinationDiagramResult : ApproachResult
+public class PurdueCoordinationDiagramResult : ApproachResult
 {
-    public PerdueCoordinationDiagramResult(
+    public PurdueCoordinationDiagramResult(
         string signalId,
         int approachId,
         int phaseNumber,
@@ -20,9 +20,12 @@ public class PerdueCoordinationDiagramResult : ApproachResult
         int totalOnGreenEvents,
         int totalDetectorHits,
         double percentArrivalOnGreen,
-        ICollection<PerdueCoordinationPlan> plans,
+        ICollection<PerdueCoordinationPlanViewModel> plans,
         ICollection<VolumePerHour> volumePerHour,
-        ICollection<CyclePcd> cycles) : base(approachId, signalId, start, end)
+        ICollection<CycleDataPoint> redSeries,
+        ICollection<CycleDataPoint> yellowSeries,
+        ICollection<CycleDataPoint> greenSeries,
+        ICollection<CycleDataPoint> detectorEvents) : base(approachId, signalId, start, end)
     {
         PhaseNumber = phaseNumber;
         PhaseDescription = phaseDescription;
@@ -31,15 +34,21 @@ public class PerdueCoordinationDiagramResult : ApproachResult
         PercentArrivalOnGreen = percentArrivalOnGreen;
         Plans = plans;
         VolumePerHour = volumePerHour;
-        Cycles = cycles;
+        RedSeries = redSeries;
+        YellowSeries = yellowSeries;
+        GreenSeries = greenSeries;
+        DetectorEvents = detectorEvents;
     }
     public int PhaseNumber { get; }
     public string PhaseDescription { get; }
     public int TotalOnGreenEvents { get; }
     public int TotalDetectorHits { get; }
     public double PercentArrivalOnGreen { get; }
-    public ICollection<PerdueCoordinationPlan> Plans { get; }
+    public ICollection<PerdueCoordinationPlanViewModel> Plans { get; }
     public ICollection<VolumePerHour> VolumePerHour { get; }
-    public ICollection<CyclePcd> Cycles { get; }
+    public ICollection<CycleDataPoint> RedSeries { get; }
+    public ICollection<CycleDataPoint> YellowSeries { get; }
+    public ICollection<CycleDataPoint> GreenSeries { get; }
+    public ICollection<CycleDataPoint> DetectorEvents { get; }
 
 }

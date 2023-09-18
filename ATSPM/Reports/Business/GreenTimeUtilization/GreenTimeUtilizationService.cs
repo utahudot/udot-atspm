@@ -1,11 +1,10 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Google.Type;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DateTime = System.DateTime;
 
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
@@ -16,33 +15,29 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         private const int PHASE_BEGIN_YELLOW = 8;
         private const int PHASE_END_RED_CLEAR = 11;
         private const int DETECTOR_ON = 82;
-
-        private readonly ISignalRepository signalRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly PlanService planService;
 
         public GreenTimeUtilizationService(
-            ISignalRepository signalRepository,
-            IControllerEventLogRepository controllerEventLogRepository)
+            PlanService planService)
         {
-            this.signalRepository = signalRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
+            this.planService = planService;
         }
 
-        public GreenTimeUtilizationResult GreenTimeUtilizationService(
+        public GreenTimeUtilizationResult GetChartData(
             Approach approach,
             GreenTimeUtilizationOptions options,
-            bool getPermissivePhase) // the plans/splits input is still TBD
+            bool getPermissivePhase,
+            List<ControllerEventLog> detectorEvents, //DetectorType 4
+            List<ControllerEventLog> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
+            List<ControllerEventLog> planEvents,
+            List<ControllerEventLog> checkAgainstEvents,
+            List<ControllerEventLog> controllerEventLogs
+            ) // the plans/splits input is still TBD
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            //var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            //var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
-            GreenTimeUtilizationResult result = new GreenTimeUtilizationResult(
-                approach.Id,
-                approach.Signal.SignalIdentifier,
-                options.Start,
-                options.End,
-                //
-                );
+
 
             //define properties
             var phaseNumberSort = getPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
@@ -61,52 +56,54 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             }
 
             //get a list of cycle events
-            var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
-            var phaseEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End)
-            var checkAgainstEvents = new List<ControllerEventLog>();
-            if (getPermissivePhase == true && approach.ProtectedPhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
-            {
-                checkAgainstEvents = cel.GetEventsByEventCodesParam(options.SignalID, options.StartDate, options.EndDate.AddMinutes(options.SelectedAggSize), phaseEventNumbers, approach.ProtectedPhaseNumber);
-            }
+            //var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
+            //var phaseEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End)
+            //var checkAgainstEvents = new List<ControllerEventLog>();
+            //if (getPermissivePhase == true && approach.ProtectedPhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
+            //{
+            //    checkAgainstEvents = cel.GetEventsByEventCodesParam(options.SignalIdentifier, options.StartDate, options.EndDate.AddMinutes(options.SelectedAggSize), phaseEventNumbers, approach.ProtectedPhaseNumber);
+            //}
 
             //get a list of detections for that phase
-            var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
-            var allDetectionEvents = cel.GetSignalEventsByEventCode(options.SignalID, options.StartDate, options.EndDate.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
-            var detectionEvents = new List<Controller_Event_Log>();
-            foreach (var detector in detectorsToUse)
-            {
-                detectionEvents.AddRange(allDetectionEvents.Where(x =>
-                    x.EventCode == DETECTOR_ON && x.EventParam == detector.DetChannel));
-            }
+            //var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
+            //var allDetectionEvents = cel.GetSignalEventsByEventCode(options.SignalIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
+            //var detectionEvents = new List<ControllerEventLog>();
+            //foreach (var detector in detectorsToUse)
+            //{
+            //    detectionEvents.AddRange(allDetectionEvents.Where(x =>
+            //        x.EventCode == DETECTOR_ON && x.EventParam == detector.DetChannel));
+            //}
 
+            var stacks = new List<BarStack>();
+            var averageSplits = new List<AverageSplit>();
             //loop for each Agg bin
-            for (DateTime StartAggTime = options.StartDate; StartAggTime < options.EndDate; StartAggTime = StartAggTime.AddMinutes(options.SelectedAggSize))
+            for (var StartBinTime = options.Start; StartBinTime < options.End; StartBinTime = StartBinTime.AddMinutes(options.SelectedBinSize))
             {
-                DateTime endAggTime = StartAggTime.AddMinutes(options.SelectedAggSize) <= options.EndDate ? StartAggTime.AddMinutes(options.SelectedAggSize) : options.EndDate; //make the enddate the end of the bin or the end of the ananlysis period, whichever is sooner
+                DateTime endAggTime = StartBinTime.AddMinutes(options.SelectedBinSize) <= options.End ? StartBinTime.AddMinutes(options.SelectedBinSize) : options.End; //make the enddate the end of the bin or the end of the ananlysis period, whichever is sooner
                 List<double> greenDurationList = new List<double>();
                 List<int> BinValueList = new List<int>(new int[99]);
                 int cycleCount = 0;
 
                 //determine timestamps of the first green and last yellow
-                var firstGreen = phaseEvents.Where(x => x.Timestamp > StartAggTime && x.EventCode == PHASE_BEGIN_GREEN).OrderBy(x => x.Timestamp).FirstOrDefault();
+                var firstGreen = cycleEvents.Where(x => x.Timestamp > StartBinTime && x.EventCode == PHASE_BEGIN_GREEN).OrderBy(x => x.Timestamp).FirstOrDefault();
                 if (firstGreen is null || firstGreen.Timestamp > endAggTime)
                 {
                     continue; //skip this agg and go to the next if there is no green at all or if there isw no green in the agg period
                 }
-                var lastGreen = phaseEvents.Where(x => x.Timestamp < endAggTime && x.EventCode == PHASE_BEGIN_GREEN).OrderByDescending(x => x.Timestamp).FirstOrDefault();
-                var lastYellow = phaseEvents.Where(x => x.Timestamp > lastGreen.Timestamp && x.EventCode == PHASE_BEGIN_YELLOW).OrderBy(x => x.Timestamp).FirstOrDefault();
+                var lastGreen = cycleEvents.Where(x => x.Timestamp < endAggTime && x.EventCode == PHASE_BEGIN_GREEN).OrderByDescending(x => x.Timestamp).FirstOrDefault();
+                var lastYellow = cycleEvents.Where(x => x.Timestamp > lastGreen.Timestamp && x.EventCode == PHASE_BEGIN_YELLOW).OrderBy(x => x.Timestamp).FirstOrDefault();
 
                 //get the event lists for the agg bin
-                var aggDetections = detectionEvents
+                var aggDetections = detectorEvents
                     .Where(x => x.Timestamp >= firstGreen.Timestamp &&
                                 x.Timestamp <= lastYellow.Timestamp)
                     .OrderBy(x => x.Timestamp);
-                var greenList = phaseEvents
+                var greenList = cycleEvents
                         .Where(x => x.EventCode == PHASE_BEGIN_GREEN &&
                                     x.Timestamp >= firstGreen.Timestamp &&
                                     x.Timestamp <= lastGreen.Timestamp)
                         .OrderBy(x => x.Timestamp);
-                var yellowList = phaseEvents
+                var yellowList = cycleEvents
                     .Where(x => x.EventCode == PHASE_BEGIN_YELLOW &&
                                 x.Timestamp >= firstGreen.Timestamp &&
                                 x.Timestamp <= lastYellow.Timestamp)
@@ -115,7 +112,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 {
                     var yProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_YELLOW);
                     var gProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_GREEN);
-                    greenList = (IOrderedEnumerable<Controller_Event_Log>)CheckProtectedGreens(greenList, yellowList, gProtectedEvents, yProtectedEvents); //redefine the greenList after editng the green values to start at the beginning of the protected yellow phases if there is overlapping green time between the protected nad permissive phases (only happens with doghouses)
+                    greenList = (IOrderedEnumerable<ControllerEventLog>)CheckProtectedGreens(greenList, yellowList, gProtectedEvents, yProtectedEvents); //redefine the greenList after editng the green values to start at the beginning of the protected yellow phases if there is overlapping green time between the protected nad permissive phases (only happens with doghouses)
                 }
 
                 //pair each green with a yellow
@@ -163,150 +160,137 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 }
 
                 //create new classes
-                Stacks.Add(new BarStack(StartAggTime, BinValueList, cycleCount, options.SelectedBinSize));
-                AvgSplits.Add(new AverageSplit(StartAggTime, greenDurationList));
+                stacks.Add(new BarStack(StartBinTime, BinValueList, cycleCount, options.SelectedBinSize));
+                averageSplits.Add(new AverageSplit(StartBinTime, greenDurationList));
             }
 
             //get plans
-            var plans = PlanFactory.GetSplitMonitorPlans(options.StartDate, options.EndDate, SignalID);
-            GetYellowRedTime(approach, options, phaseNumber);
+            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
+            var durYellowRed = GetYellowRedTimeSeconds(options, phaseNumber, cycleEvents);
+            var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)
             {
                 //GetProgrammedSplitTimesInAnalysisPeriod(approach.ProtectedPhaseNumber, analysisplan, options.EndDate);
-                GetProgrammedSplitTime(phaseNumber, analysisplan.StartTime, analysisplan.EndTime.AddMinutes(-1));
-                ProgSplits.Add(new ProgrammedSplit(analysisplan, options.StartDate, splitLength, durYellowRed));
+                var splitTime = GetProgrammedSplitTime(phaseNumber, analysisplan.StartTime, analysisplan.EndTime.AddMinutes(-1), controllerEventLogs);
+                programmedSplits.Add(new ProgrammedSplit(analysisplan, options.Start, splitTime, durYellowRed));
             }
 
-
+            GreenTimeUtilizationResult result = new GreenTimeUtilizationResult(
+                approach.Id,
+                approach.Signal.SignalIdentifier,
+                options.Start,
+                options.End,
+                stacks,
+                averageSplits,
+                programmedSplits,
+                phaseNumber,
+                phaseNumberSort
+                );
+            result.ApproachDescription = approach.Description;
+            result.SignalDescription = approach.Signal.SignalDescription();
+            return result;
         }
 
 
-        void GetProgrammedSplitTime(int phaseNumber, DateTime startDate, DateTime endDate)
+        private int GetProgrammedSplitTime(
+            int phaseNumber,
+            DateTime startDate,
+            DateTime endDate,
+            List<ControllerEventLog> controllerEventLogs)
         {
-            SPM db = new SPM();
-            var cel = ControllerEventLogRepositoryFactory.Create(db);
-            GetEventCodeForPhase(phaseNumber);
-            var tempSplitTimes = cel.GetSignalEventsByEventCode(SignalID, startDate.Date, endDate, splitLengthEventCode)
-                .OrderByDescending(e => e.Timestamp).ToList();
-            foreach (var tempSplitTime in tempSplitTimes)
-            {
-                if (tempSplitTime.Timestamp <= startDate)
-                {
-                    splitLength = tempSplitTime.EventParam;
-                    break;
-                }
-            }
+            var eventCode = GetEventCodeForPhase(phaseNumber);
+            return controllerEventLogs.GetEventsByEventCodes(startDate, endDate, new List<int> { eventCode })
+                .OrderByDescending(e => e.Timestamp)
+                .Where(e => e.Timestamp <= startDate)
+                .Select(e => e.EventParam)
+                .FirstOrDefault();
         }
 
 
 
-        void GetProgrammedSplitTimesInAnalysisPeriod(int phaseNumber, Plan analysisplan, DateTime analysisEnd)
-        {
-            SPM db = new SPM();
-            var cel = ControllerEventLogRepositoryFactory.Create(db);
-            GetEventCodeForPhase(phaseNumber);
-            var tempSplitTimes = cel.GetSignalEventsByEventCode(SignalID, analysisplan.StartTime, analysisEnd, splitLengthEventCode)
-                .OrderByDescending(e => e.Timestamp).ToList();
-            int i = 0;
-            for (i = 0; tempSplitTimes[i].Timestamp < analysisplan.StartTime; i++)
-            {
-                splitLength = tempSplitTimes[i].EventParam;
-                break;
+        //void GetProgrammedSplitTimesInAnalysisPeriod(int phaseNumber, Plan analysisplan, DateTime analysisEnd)
+        //{
+        //    SPM db = new SPM();
+        //    var cel = ControllerEventLogRepositoryFactory.Create(db);
+        //    GetEventCodeForPhase(phaseNumber);
+        //    var tempSplitTimes = cel.GetSignalEventsByEventCode(SignalID, analysisplan.StartTime, analysisEnd, splitLengthEventCode)
+        //        .OrderByDescending(e => e.Timestamp).ToList();
+        //    int i = 0;
+        //    for (i = 0; tempSplitTimes[i].Timestamp < analysisplan.StartTime; i++)
+        //    {
+        //        splitLength = tempSplitTimes[i].EventParam;
+        //        break;
 
-            }
-            i++;
+        //    }
+        //    i++;
 
-        }
+        //}
 
 
-        void GetEventCodeForPhase(int PhaseNumber)
+        private int GetEventCodeForPhase(int PhaseNumber)
         {
             switch (PhaseNumber)
             {
                 case 1:
-                    splitLengthEventCode = 134;
-                    break;
+                    return 134;
                 case 2:
-                    splitLengthEventCode = 135;
-                    break;
+                    return 135;
                 case 3:
-                    splitLengthEventCode = 136;
-                    break;
+                    return 136;
                 case 4:
-                    splitLengthEventCode = 137;
-                    break;
+                    return 137;
                 case 5:
-                    splitLengthEventCode = 138;
-                    break;
+                    return 138;
                 case 6:
-                    splitLengthEventCode = 139;
-                    break;
+                    return 139;
                 case 7:
-                    splitLengthEventCode = 140;
-                    break;
+                    return 140;
                 case 8:
-                    splitLengthEventCode = 141;
-                    break;
+                    return 141;
                 case 17:
-                    splitLengthEventCode = 203;
-                    break;
+                    return 203;
                 case 18:
-                    splitLengthEventCode = 204;
-                    break;
+                    return 204;
                 case 19:
-                    splitLengthEventCode = 205;
-                    break;
+                    return 205;
                 case 20:
-                    splitLengthEventCode = 206;
-                    break;
+                    return 206;
                 case 21:
-                    splitLengthEventCode = 207;
-                    break;
+                    return 207;
                 case 22:
-                    splitLengthEventCode = 208;
-                    break;
+                    return 208;
                 case 23:
-                    splitLengthEventCode = 209;
-                    break;
+                    return 209;
                 case 24:
-                    splitLengthEventCode = 210;
-                    break;
+                    return 210;
                 case 25:
-                    splitLengthEventCode = 211;
-                    break;
+                    return 211;
                 case 26:
-                    splitLengthEventCode = 212;
-                    break;
+                    return 212;
                 case 27:
-                    splitLengthEventCode = 213;
-                    break;
+                    return 213;
                 case 28:
-                    splitLengthEventCode = 214;
-                    break;
+                    return 214;
                 case 29:
-                    splitLengthEventCode = 215;
-                    break;
+                    return 215;
                 case 30:
-                    splitLengthEventCode = 216;
-                    break;
+                    return 216;
                 case 31:
-                    splitLengthEventCode = 217;
-                    break;
+                    return 217;
                 case 32:
-                    splitLengthEventCode = 218;
-                    break;
+                    return 218;
                 default:
-                    splitLengthEventCode = 219;
-                    break;
+                    return 219;
             }
         }
 
-        void GetYellowRedTime(Approach approach, GreenTimeUtilizationOptions options, int phaseNumber)
+        private double GetYellowRedTimeSeconds(
+            GreenTimeUtilizationOptions options,
+            int phaseNumber,
+            List<ControllerEventLog> cycleEvents)
         {
-            SPM db = new SPM();
-            var cel = ControllerEventLogRepositoryFactory.Create(db);
             var yrEventNumbers = new List<int> { PHASE_BEGIN_YELLOW, PHASE_END_RED_CLEAR };
-            var yrEvents = cel.GetEventsByEventCodesParam(options.SignalID, options.StartDate, options.EndDate, yrEventNumbers, phaseNumber);
+            var yrEvents = cycleEvents.GetEventsByEventCodes(options.Start, options.End, yrEventNumbers, phaseNumber);
             var yellowList = yrEvents.Where(x => x.EventCode == PHASE_BEGIN_YELLOW)
                 .OrderBy(x => x.Timestamp);
             var redList = yrEvents.Where(x => x.EventCode == PHASE_END_RED_CLEAR)
@@ -316,15 +300,15 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                     .FirstOrDefault();
             if (startyellow is null || endRedClear is null)
             {
-                durYellowRed = 0;
+                return 0;
             }
             else
             {
                 TimeSpan spanYellowRed = endRedClear.Timestamp - startyellow.Timestamp;
-                durYellowRed = spanYellowRed.TotalSeconds;
+                return spanYellowRed.TotalSeconds;
             }
         }
-        IEnumerable<Controller_Event_Log> CheckProtectedGreens(IEnumerable<Controller_Event_Log> gPermissiveEvents, IEnumerable<Controller_Event_Log> yPermissiveEvents, IEnumerable<Controller_Event_Log> gProtectedEvents, IEnumerable<Controller_Event_Log> yProtectedEvents)
+        IEnumerable<ControllerEventLog> CheckProtectedGreens(IEnumerable<ControllerEventLog> gPermissiveEvents, IEnumerable<ControllerEventLog> yPermissiveEvents, IEnumerable<ControllerEventLog> gProtectedEvents, IEnumerable<ControllerEventLog> yProtectedEvents)
         {
             foreach (var gPermissive in gPermissiveEvents)
             {
@@ -358,4 +342,4 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 
     }
 }
-}
+

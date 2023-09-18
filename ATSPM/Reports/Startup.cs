@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Reports.Business.PurdueCoordinationDiagram;
 using GzipCompressionProvider = Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider;
 
 namespace ATSPM.Application.Reports
@@ -94,6 +95,7 @@ namespace ATSPM.Application.Reports
             services.AddScoped<GreenTimeUtilizationService>();
             services.AddScoped<PreemptServiceService>();
             services.AddScoped<PreemptServiceRequestService>();
+            services.AddScoped<PurdueCoordinationDiagramService>();
             services.AddScoped<SplitFailPhaseService>();
             services.AddScoped<SplitMonitorService>();
             services.AddScoped<TimingAndActuationsForPhaseService>();

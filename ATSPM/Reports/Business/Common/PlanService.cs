@@ -15,11 +15,11 @@ namespace ATSPM.Application.Reports.Business.Common
         {
         }
 
-        public List<PerdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
+        public List<PurdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events.OrderBy(e => e.Timestamp).ToList());
-            var plans = new List<PerdueCoordinationPlan>();
+            var plans = new List<PurdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
                 {
@@ -27,7 +27,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     {
                         var planCycles = cycles
                             .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
-                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam.ToString(), planCycles));
+                        plans.Add(new PurdueCoordinationPlan(planEvents[i].Timestamp, endDate, planEvents[i].EventParam.ToString(), planCycles));
                     }
                 }
                 else
@@ -37,7 +37,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         var planCycles = cycles.Where(c =>
                                 c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
                             .ToList();
-                        plans.Add(new PerdueCoordinationPlan(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
+                        plans.Add(new PurdueCoordinationPlan(planEvents[i].Timestamp, planEvents[i + 1].Timestamp,
                             planEvents[i].EventParam.ToString(), planCycles));
                     }
                 }

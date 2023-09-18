@@ -91,11 +91,11 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
 
 
         protected ReadOnlyCollection<ArrivalOnRedPlan> GetArrivalOnRedPlans(
-            List<PerdueCoordinationPlan> planCollection,
+            List<PurdueCoordinationPlan> planCollection,
             bool showPlanStatistics)
         {
             List<ArrivalOnRedPlan> arrivals = new List<ArrivalOnRedPlan>();
-            foreach (PerdueCoordinationPlan planPcd in planCollection)
+            foreach (PurdueCoordinationPlan planPcd in planCollection)
             {
                 arrivals.Add(new ArrivalOnRedPlan(
                     planPcd.PlanNumber.ToString(),
