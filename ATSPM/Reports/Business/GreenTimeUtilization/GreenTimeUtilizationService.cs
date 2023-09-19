@@ -14,7 +14,6 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         private const int PHASE_BEGIN_GREEN = 1;
         private const int PHASE_BEGIN_YELLOW = 8;
         private const int PHASE_END_RED_CLEAR = 11;
-        private const int DETECTOR_ON = 82;
         private readonly PlanService planService;
 
         public GreenTimeUtilizationService(
@@ -30,7 +29,6 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             List<ControllerEventLog> detectorEvents, //DetectorType 4
             List<ControllerEventLog> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
             List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> checkAgainstEvents,
             List<ControllerEventLog> controllerEventLogs
             ) // the plans/splits input is still TBD
         {
@@ -56,13 +54,13 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             }
 
             //get a list of cycle events
-            //var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
+            var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
             //var phaseEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End)
-            //var checkAgainstEvents = new List<ControllerEventLog>();
-            //if (getPermissivePhase == true && approach.ProtectedPhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
-            //{
-            //    checkAgainstEvents = cel.GetEventsByEventCodesParam(options.SignalIdentifier, options.StartDate, options.EndDate.AddMinutes(options.SelectedAggSize), phaseEventNumbers, approach.ProtectedPhaseNumber);
-            //}
+            var checkAgainstEvents = new List<ControllerEventLog>();
+            if (getPermissivePhase == true && approach.ProtectedPhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
+            {
+                checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.SelectedBinSize), phaseEventNumbers, approach.ProtectedPhaseNumber).ToList();
+            }
 
             //get a list of detections for that phase
             //var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
@@ -92,8 +90,13 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 }
                 var lastGreen = cycleEvents.Where(x => x.Timestamp < endAggTime && x.EventCode == PHASE_BEGIN_GREEN).OrderByDescending(x => x.Timestamp).FirstOrDefault();
                 var lastYellow = cycleEvents.Where(x => x.Timestamp > lastGreen.Timestamp && x.EventCode == PHASE_BEGIN_YELLOW).OrderBy(x => x.Timestamp).FirstOrDefault();
+                if (lastGreen is null || lastYellow is null)
+                {
+                    continue; //skip this agg and go to the next if there is no green at all or if there isw no green in the agg period
+                }
 
                 //get the event lists for the agg bin
+
                 var aggDetections = detectorEvents
                     .Where(x => x.Timestamp >= firstGreen.Timestamp &&
                                 x.Timestamp <= lastYellow.Timestamp)
