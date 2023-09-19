@@ -13,14 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\TestController.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Controllers\TestController.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Asp.Versioning.OData" Version="7.0.2" />
     <PackageReference Include="Asp.Versioning.OData.ApiExplorer" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.1" />

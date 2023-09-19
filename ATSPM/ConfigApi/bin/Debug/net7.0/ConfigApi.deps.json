@@ -8,7 +8,7 @@
     ".NETCoreApp,Version=v7.0": {
       "ConfigApi/1.0.0": {
         "dependencies": {
-          ".Infrastructure": "1.0.0",
+          "ATSPM.Infrastructure": "1.0.0",
           "Asp.Versioning.OData": "7.0.2",
           "Asp.Versioning.OData.ApiExplorer": "7.0.4",
           "Microsoft.AspNetCore.OData": "8.2.1",
@@ -16,8 +16,8 @@
           "Microsoft.EntityFrameworkCore.Tools": "7.0.10",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.18.1",
           "Swashbuckle.AspNetCore": "6.5.0",
-          ".Data.Reference": "1.0.0.0",
-          ".Infrastructure.Reference": "1.0.0.0"
+          "ATSPM.Data.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.Reference": "1.0.0.0"
         },
         "runtime": {
           "ConfigApi.dll": {}
@@ -1625,7 +1625,20 @@
           }
         }
       },
-      ".Data/1.0.0": {
+      "ApplicationCore/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0",
+          "DomainCore": "1.0.0",
+          "Google.Cloud.Diagnostics.Common": "5.0.0",
+          "Microsoft.Extensions.Logging": "7.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
+          "Microsoft.Extensions.Logging.Console": "7.0.0"
+        },
+        "runtime": {
+          "ApplicationCore.dll": {}
+        }
+      },
+      "ATSPM.Data/1.0.0": {
         "dependencies": {
           "DomainCore": "1.0.0",
           "EFCore.BulkExtensions": "6.5.6",
@@ -1634,10 +1647,10 @@
           "Newtonsoft.Json": "13.0.1"
         },
         "runtime": {
-          ".Data.dll": {}
+          "ATSPM.Data.dll": {}
         }
       },
-      ".Infrastructure/1.0.0": {
+      "ATSPM.Infrastructure/1.0.0": {
         "dependencies": {
           "ApplicationCore": "1.0.0",
           "FluentFTP": "44.0.1",
@@ -1650,20 +1663,7 @@
           "SSH.NET": "2020.0.2"
         },
         "runtime": {
-          ".Infrastructure.dll": {}
-        }
-      },
-      "ApplicationCore/1.0.0": {
-        "dependencies": {
-          ".Data": "1.0.0",
-          "DomainCore": "1.0.0",
-          "Google.Cloud.Diagnostics.Common": "5.0.0",
-          "Microsoft.Extensions.Logging": "7.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
-          "Microsoft.Extensions.Logging.Console": "7.0.0"
-        },
-        "runtime": {
-          "ApplicationCore.dll": {}
+          "ATSPM.Infrastructure.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -1675,17 +1675,17 @@
           "DomainCore.dll": {}
         }
       },
-      ".Data.Reference/1.0.0.0": {
+      "ATSPM.Data.Reference/1.0.0.0": {
         "runtime": {
-          ".Data.dll": {
+          "ATSPM.Data.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
       },
-      ".Infrastructure.Reference/1.0.0.0": {
+      "ATSPM.Infrastructure.Reference/1.0.0.0": {
         "runtime": {
-          ".Infrastructure.dll": {
+          "ATSPM.Infrastructure.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2896,17 +2896,17 @@
       "path": "system.windows.extensions/5.0.0",
       "hashPath": "system.windows.extensions.5.0.0.nupkg.sha512"
     },
-    ".Data/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    ".Infrastructure/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "ApplicationCore/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -2916,12 +2916,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    ".Data.Reference/1.0.0.0": {
+    "ATSPM.Data.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    ".Infrastructure.Reference/1.0.0.0": {
+    "ATSPM.Infrastructure.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
