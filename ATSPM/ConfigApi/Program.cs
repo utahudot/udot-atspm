@@ -15,6 +15,11 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Net;
 using System.Text.Json;
 using ATSPM.Domain.Extensions;
+using Microsoft.AspNetCore.OData.Formatter.Serialization;
+using Microsoft.OData;
+using System.Reflection.Metadata;
+using Microsoft.OData.Edm;
+using ATSPM.ConfigApi.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +31,14 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
         o.OutputFormatters.RemoveType<StringOutputFormatter>();
     }).AddXmlDataContractSerializerFormatters()
-    .AddJsonOptions(options =>
+    .AddJsonOptions(o =>
     {
-        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     })
     .AddOData(o =>
     {
         o.Count().Select().OrderBy().Expand().Filter().SetMaxTop(null);
+        //o.Count();
         o.RouteOptions.EnableKeyInParenthesis = false;
         o.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
         o.RouteOptions.EnablePropertyNameCaseInsensitive = true;
@@ -134,12 +140,6 @@ app.UseHttpsRedirection();
 
 app.Run();
 //app.Run(url);
-
-
-
-
-
-
 
 
 /// <summary>
