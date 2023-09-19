@@ -3,8 +3,6 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 using System.Net;
 
 namespace ATSPM.Data.Models
