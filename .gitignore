@@ -123,6 +123,10 @@ dkms.conf
 /ATSPM/Reports/obj/Debug/net6.0/Reports.csproj.BuildWithSkipAnalyzers
 /ATSPM/Reports/obj/Reports.csproj.nuget.g.targets
 /ATSPM/Reports/bin/Debug/net6.0/win-x64
+/ATSPM/Reports/.config/
+/ATSPM/Reports/.config/*
+/ATSPM/Reports/obj/
+/ATSPM/Reports/bin/
 /ATSPM/Reports/obj/*
 /ATSPM/Reports/bin/*
 /ATSPM/Reports/obj/Debug/net6.0/Reports.GeneratedMSBuildEditorConfig.editorconfig
