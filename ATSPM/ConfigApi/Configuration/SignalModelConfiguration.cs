@@ -16,13 +16,13 @@ namespace ATSPM.ConfigApi.Configuration
 
 
             var ip = builder.ComplexType<IPAddress>();
-            ip.Property(i => i.Address);
-            ip.Ignore(i => i.AddressFamily);
-            ip.Ignore(i => i.IsIPv4MappedToIPv6);
-            ip.Ignore(i => i.IsIPv6LinkLocal);
-            ip.Ignore(i => i.IsIPv6Multicast);
-            ip.Ignore(i => i.IsIPv6Teredo);
-            ip.Ignore(i => i.IsIPv6UniqueLocal);
+            //ip.Property(i => i.Address);
+            //ip.Ignore(i => i.AddressFamily);
+            //ip.Ignore(i => i.IsIPv4MappedToIPv6);
+            //ip.Ignore(i => i.IsIPv6LinkLocal);
+            //ip.Ignore(i => i.IsIPv6Multicast);
+            //ip.Ignore(i => i.IsIPv6Teredo);
+            //ip.Ignore(i => i.IsIPv6UniqueLocal);
             ip.Ignore(i => i.ScopeId);
 
             switch (apiVersion.MajorVersion)
@@ -30,6 +30,7 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.ComplexProperty(p => p.Ipaddress).IsRequired();
+
                         model.Property(p => p.Latitude).IsRequired();
                         model.Property(p => p.Longitude).IsRequired();
                         model.Property(p => p.Note).IsRequired();
@@ -44,9 +45,11 @@ namespace ATSPM.ConfigApi.Configuration
                         model.EnumProperty(p => p.VersionActionId).DefaultValueString = "10";
                         model.Property(p => p.Note).DefaultValueString = "Initial";
 
-                        model.Collection.Function("GetLatestVersionOfAllSignals").ReturnsFromEntitySet<Signal>("Signal");
+                        model.Collection.Function("GetLatestVersionOfAllSignals").ReturnsCollectionFromEntitySet<Signal>("Signals");
 
-                        model.Collection.Function("GetLatestVersionOfSignal").ReturnsFromEntitySet<Signal>("Signal");
+                        var func = model.Collection.Function("GetLatestVersionOfSignal");
+                        func.Parameter<string>("identifier");
+                        func.ReturnsFromEntitySet<Signal>("Signal");
 
                         break;
                     }

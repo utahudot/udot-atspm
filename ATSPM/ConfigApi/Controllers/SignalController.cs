@@ -4,9 +4,16 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Formatter.Serialization;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
+using Microsoft.OData.UriParser;
+using System;
+using System.Net;
+using System.Reflection.Metadata;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -19,7 +26,7 @@ namespace ATSPM.ConfigApi.Controllers
 
         public SignalController(ISignalRepository repository) : base(repository)
         {
-            _repository = repository; 
+            _repository = repository;
 
         }
 
@@ -33,20 +40,20 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(Status400BadRequest)]
+        //[ProducesResponseType(Status400BadRequest)]
         [ProducesResponseType(typeof(Signal), Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        //[EnableQuery]
-        public SingleResult<Signal> GetLatestVersionOfSignal()
+        [EnableQuery]
+        public IActionResult GetLatestVersionOfSignal(string identifier, ODataQueryOptions<Signal> options)
         {
-            var i = _repository.GetLatestVersionOfSignal("1001");
+            var i = _repository.GetLatestVersionOfSignal(identifier);
 
-            //if (i == null)
-            //{
-            //    return NotFound();
-            //}
+            if (i == null)
+            {
+                return NotFound(identifier);
+            }
 
-            return SingleResult.Create(new[] { i }.AsQueryable());
+            return Ok(i);
         }
     }
 }
