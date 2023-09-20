@@ -6,7 +6,7 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
 {
     public class PreemptDetailOptions
     {
-        public string SignalId { get; set; }
+        public string SignalIdentifier { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 

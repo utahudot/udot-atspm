@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
@@ -14,7 +11,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
         public const int EVENT_RED = 10;
         public const int EVENT_DET = 81;
 
-        
+
 
         public LeftTurnGapAnalysisOptions()
         {
@@ -114,11 +111,10 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 
         [DataMember]
         public double BinSize { get; set; }
-        public string SignalId { get;  set; }
-        public DateTime StartDate { get;  set; }
-        public DateTime EndDate { get;  set; }
-        public int ApproachId { get;  set; }
+        public string SignalIdentifier { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
 
-        
+
     }
 }

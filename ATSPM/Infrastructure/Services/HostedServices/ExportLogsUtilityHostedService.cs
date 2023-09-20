@@ -52,7 +52,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                             _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
                         }
 
-                        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalId == d));
+                        archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
                     }
 
                     if (_options.Value.Excluded != null)
@@ -62,12 +62,12 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                             _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
                         }
 
-                        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalId));
+                        archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
                     }
 
                     int processedCount = 0;
 
-                    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalId = s.SignalId, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
+                    var archives = await archiveQuery.Select(s => new ControllerLogArchive() { SignalIdentifier = s.SignalIdentifier, ArchiveDate = s.ArchiveDate }).ToListAsync(cancellationToken);
 
                     _log.LogInformation("Number of Event Log Archives to Process: {count}", archives.Count);
 
@@ -75,7 +75,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     {
                         if (cancellationToken.IsCancellationRequested) break;
 
-                        Console.Write($"Writing... {archive.SignalId} ({archives.IndexOf(archive) + 1} of {archives.Count})");
+                        Console.Write($"Writing... {archive.SignalIdentifier} ({archives.IndexOf(archive) + 1} of {archives.Count})");
 
                         var log = await eventRepository.LookupAsync(archive);
 
@@ -113,11 +113,11 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 dir.Create();
 
-                var path = Path.Combine(dir.FullName, $"{archive.SignalId}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
+                var path = Path.Combine(dir.FullName, $"{archive.SignalIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
 
                 await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
 
-                var csv = archive.LogData.Select(x => $"{archive.SignalId},{x.Timestamp:s},{x.EventCode},{x.EventParam}");
+                var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
 
                 await File.AppendAllLinesAsync(path, csv);
 

@@ -1,11 +1,8 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
+﻿using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit.Abstractions;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -57,7 +54,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //        startTime,
         //        endTime,
         //        new List<int> { 1 });
-        //    ptedt = ptedt.OrderByDescending(i => i.Timestamp).ToList();
+        //    ptedt = ptedt.OrderByDescending(i => i.TimeStamp).ToList();
         //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
         //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
         //    foreach (var row in phasesInUse)
@@ -81,7 +78,7 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> terminationEvents,
             Signal signal,
             int consecutiveCount)
-        {            
+        {
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.SignalId = signalId;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
@@ -104,10 +101,16 @@ namespace ATSPM.Application.Reports.Business.Common
             {
                 foreach (var plan in analysisPhaseCollectionData.Plans)
                 {
-                    SetProgrammedSplits(plan, splitsEvents.ToList());
-                    SetHighCycleCount(analysisPhaseCollectionData, plan);
-                    var highestSplit = FindHighestRecordedSplitPhase(plan);
-                    FillMissingSplits(highestSplit, plan);
+                    if (!splitsEvents.IsNullOrEmpty())
+                    {
+                        SetProgrammedSplits(plan, splitsEvents.ToList());
+                        var highestSplit = FindHighestRecordedSplitPhase(plan);
+                        FillMissingSplits(highestSplit, plan);
+                    }
+                    if (analysisPhaseCollectionData != null)
+                    {
+                        SetHighCycleCount(analysisPhaseCollectionData, plan);
+                    }
                 }
             }
             return analysisPhaseCollectionData;

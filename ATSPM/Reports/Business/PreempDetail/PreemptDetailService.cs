@@ -27,7 +27,7 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
                     .Where(x => x.EventParam == preemptNumber).ToList();
                 var cycles = cycleService.CreatePreemptCycle(tempEvents);
                 preemptDetails.Add(new PreemptDetail(
-                    preemptDetailOptions.SignalId,
+                    preemptDetailOptions.SignalIdentifier,
                     preemptDetailOptions.StartDate,
                     preemptDetailOptions.EndDate,
                     preemptNumber,
@@ -35,7 +35,7 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
             }
 
             return new PreemptDetailResult(
-                preemptDetailOptions.SignalId,
+                preemptDetailOptions.SignalIdentifier,
                 preemptDetailOptions.StartDate,
                 preemptDetailOptions.EndDate,
                 preemptDetails

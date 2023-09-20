@@ -1,11 +1,13 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Exceptions;
+﻿using ATSPM.Application.Exceptions;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -49,18 +51,18 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="approach"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        public SignalPhase GetSignalPhaseData(
+        public async Task<SignalPhase> GetSignalPhaseData(
+            PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
             bool showVolume,
             int? pcdCycleTime,
             int binSize,
-            Approach approach,
             List<ControllerEventLog> cycleEvents,
             List<ControllerEventLog> planEvents,
             List<ControllerEventLog> detectorEvents)
         {
-            if (approach == null)
+            if (phaseDetail.Approach == null)
             {
                 logger.LogError("Approach cannot be null");
                 throw new ReportsNullAgrumentException("Approach cannot be null");
@@ -68,17 +70,60 @@ namespace ATSPM.Application.Reports.Business.Common
 
             if (!cycleEvents.Any())
                 return new SignalPhase();
-            var cycles = cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
-            var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
+            var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
+            var plans = planService.GetPcdPlans(cycles, start, end, phaseDetail.Approach, planEvents);
             return new SignalPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
                 plans,
                 cycles,
                 detectorEvents,
-                approach,
+                phaseDetail.Approach,
                 start,
                 end
                 );
+        }
+
+        public async Task<SignalPhase> GetSignalPhaseData(
+            PhaseDetail phaseDetail,
+            DateTime start,
+            DateTime end,
+            int binSize,
+            DetectionType detectionType,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            bool getVolume)
+        {
+            var detectorEvents = controllerEventLogs.GetDetectorEvents(
+                8,
+                phaseDetail.Approach,
+                start,
+                end,
+                true,
+                false,
+                detectionType);
+            if (detectorEvents == null)
+            {
+                return null;
+            }
+
+            var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
+                start,
+                end);
+            if (cycleEvents.IsNullOrEmpty())
+                return null;
+            var signalPhase = await GetSignalPhaseData(
+                phaseDetail,
+                start,
+                end,
+                getVolume,
+                null,
+                binSize,
+                cycleEvents.ToList(),
+                planEvents.ToList(),
+                detectorEvents.ToList());
+            return signalPhase;
         }
     }
 }

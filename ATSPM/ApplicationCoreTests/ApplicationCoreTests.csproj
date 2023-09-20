@@ -24,4 +24,8 @@
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Analysis\WorkflowFilterTests\" />
+  </ItemGroup>
+
 </Project>

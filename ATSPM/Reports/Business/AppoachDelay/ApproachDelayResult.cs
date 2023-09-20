@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.AppoachDelay
 {
-    public class ApproachDelayResult: ApproachResult
+    public class ApproachDelayResult : ApproachResult
     {
         public ApproachDelayResult(
             int approachId,
@@ -16,8 +16,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             double averageDelayPerVehicle,
             double totalDelay,
             List<ApproachDelayPlan> plans,
-            List<ApproachDelayDataPoint> approachDelayDataPoints,
-            List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints):base(approachId, signalId, start, end)
+            List<CycleDataPoint> approachDelayDataPoints,
+            List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -33,7 +33,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         public double AverageDelayPerVehicle { get; }
         public double TotalDelay { get; }
         public List<ApproachDelayPlan> Plans { get; }
-        public List<ApproachDelayDataPoint> ApproachDelayDataPoints { get; }
+        public List<CycleDataPoint> ApproachDelayDataPoints { get; }
         public List<ApproachDelayPerVehicleDataPoint> ApproachDelayPerVehicleDataPoints { get; }
     }
 

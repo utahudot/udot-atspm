@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class IActionLogRepositoryTests : RepositoryTestBase<ActionLog, IActionLogRepository, ConfigContext>
+    public class IActionLogRepositoryTests : RepositoryTestBase<ActionLog, IActionLogRepository, ConfigContext, int>
     {
         private List<ActionLog> _list = new List<ActionLog>();
 
@@ -40,7 +40,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _list)
             {
-                _output.WriteLine($"Seed Data: {s.Id} - {s.Name} - {s.Date} - {s.AgencyId} - {s.SignalId} - {s.Comment}");
+                _output.WriteLine($"Seed Data: {s.Id} - {s.Name} - {s.Date} - {s.AgencyId} - {s.SignalIdentifier} - {s.Comment}");
             }
         }
 
@@ -60,7 +60,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.Id} - {r.Name} - {r.Date} - {r.AgencyId} - {r.SignalId} - {r.Comment}");
+                _output.WriteLine($"result: {r.Id} - {r.Name} - {r.Date} - {r.AgencyId} - {r.SignalIdentifier} - {r.Comment}");
             }
 
             //assert date range

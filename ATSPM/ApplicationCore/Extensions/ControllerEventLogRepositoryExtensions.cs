@@ -2,18 +2,16 @@
 using ATSPM.Application.Specifications;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Channels;
 
 namespace ATSPM.Application.Extensions
 {
     public static class ControllerEventLogRepositoryExtensions
     {
+
+
         public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(
             this IControllerEventLogRepository repo,
             string signalId,
@@ -65,7 +63,7 @@ namespace ATSPM.Application.Extensions
 
             return result;
         }
-        
+
 
         public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
             this IControllerEventLogRepository repo,
@@ -77,20 +75,19 @@ namespace ATSPM.Application.Extensions
             bool detectorOff)
         {
             var eventCodes = new List<int>();
-            if(detectorOn)
+            if (detectorOn)
                 eventCodes.Add(82);
-            if(detectorOff)
+            if (detectorOff)
                 eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var events = new List<ControllerEventLog>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
-            if(!detectorsForMetric.Any())
-                throw new Exception(
-                    $"No detectors found for metric type metric type {metricTypeId}");
+            if (!detectorsForMetric.Any())
+                return new List<ControllerEventLog>();
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
-                    approach.Signal.SignalId,
+                    approach.Signal.SignalIdentifier,
                     start,
                     end,
                     eventCodes,
@@ -139,7 +136,7 @@ namespace ATSPM.Application.Extensions
             if (index >= 0)
             {
                 // If an event was found, remove all events after it
-                events.RemoveRange(index+1, events.Count - (index+1));
+                events.RemoveRange(index + 1, events.Count - (index + 1));
 
                 // Change the timestamp of the found event to match the specified date
                 events[index].Timestamp = date;
@@ -149,7 +146,7 @@ namespace ATSPM.Application.Extensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalId = "0",
+                    SignalIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -179,7 +176,7 @@ namespace ATSPM.Application.Extensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalId = "0",
+                    SignalIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -199,13 +196,13 @@ namespace ATSPM.Application.Extensions
            DateTime end)
         {
             return repo.GetEventsByEventCodesParam(
-                approach.Signal.SignalId,
+                approach.Signal.SignalIdentifier,
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
                 approach.GetCycleEventCodes(getPermissivePhase),
-                getPermissivePhase  ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
-       
+
 
         public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(
             this IControllerEventLogRepository repo,

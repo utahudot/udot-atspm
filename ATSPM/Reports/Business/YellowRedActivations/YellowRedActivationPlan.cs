@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
 
 namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
@@ -23,10 +19,8 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DateTime end,
             string planNumber,
             List<YellowRedActivationsCycle> cycles,
-            double srlvSeconds,
-            Approach approach)
+            double srlvSeconds)
         {
-            Approach = approach;
             startTime = start;
             endTime = end;
             this.planNumber = planNumber;
@@ -42,14 +36,12 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DateTime start,
             DateTime end,
             string plan,
-            double srlvSeconds,
-            Approach approach)
+            double srlvSeconds)
         {
             SRLVSeconds = srlvSeconds;
             startTime = start;
             endTime = end;
             planNumber = plan;
-            Approach = approach;
         }
 
         public DateTime StartTime => startTime;
@@ -104,7 +96,17 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             get { return RLMCycleCollection.Sum(d => d.TotalYellowTime); }
         }
 
-        public double AverageTRLV => Math.Round(TotalViolationTime / Violations, 1);
+        public double AverageTRLV
+        {
+            get
+            {
+                if (Violations <= 0)
+                {
+                    return 0;
+                }
+                return Math.Round(TotalViolationTime / Violations, 1);
+            }
+        }
 
         public double AverageTYLO => Math.Round(TotalYellowTime / YellowOccurrences, 1);
 
@@ -138,16 +140,15 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             }
         }
 
-        public Approach Approach { get; set; }
         public double ViolationTime
         {
             get { return rlmCycleCollection.Sum(c => c.TotalViolationTime); }
         }
 
-        
 
-        
 
-       
+
+
+
     }
 }

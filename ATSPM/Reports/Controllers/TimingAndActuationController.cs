@@ -1,71 +1,94 @@
-﻿//using ATSPM.Application.Extensions;
-//using ATSPM.Application.Reports.Business.TimingAndActuation;
-//using ATSPM.Application.Repositories;
-//using AutoFixture;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Collections.Generic;
-//using System.Linq;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.TimingAndActuation;
+using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using AutoFixture;
+using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-//// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-//namespace ATSPM.Application.Reports.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class TimingAndActuationController : ControllerBase
-//    {
-//        private readonly TimingAndActuationsForPhaseService timingAndActuationsForPhaseService;
-//        private readonly IApproachRepository approachRepository;
-//        private readonly IControllerEventLogRepository controllerEventLogRepository;
+namespace ATSPM.Application.Reports.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TimingAndActuationController : ControllerBase
+    {
+        private readonly TimingAndActuationsForPhaseService timingAndActuationsForPhaseService;
+        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
-//        public TimingAndActuationController(
-//            TimingAndActuationsForPhaseService timingAndActuationsForPhaseService,
-//            IApproachRepository approachRepository,
-//            IControllerEventLogRepository controllerEventLogRepository
-//            )
-//        {
-//            this.timingAndActuationsForPhaseService = timingAndActuationsForPhaseService;
-//            this.approachRepository = approachRepository;
-//            this.controllerEventLogRepository = controllerEventLogRepository;
-//        }
+        public TimingAndActuationController(
+            TimingAndActuationsForPhaseService timingAndActuationsForPhaseService,
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository,
+            PhaseService phaseService
+            )
+        {
+            this.timingAndActuationsForPhaseService = timingAndActuationsForPhaseService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
+        }
 
-//        // GET: api/<ApproachVolumeController>
-//        [HttpGet("test")]
-//        public TimingAndActuationsForPhaseResult Test()
-//        {
-//            Fixture fixture = new();
-//            TimingAndActuationsForPhaseResult viewModel = fixture.Create<TimingAndActuationsForPhaseResult>();
-//            return viewModel;
-//        }
+        // GET: api/<ApproachVolumeController>
+        [HttpGet("test")]
+        public TimingAndActuationsForPhaseResult Test()
+        {
+            Fixture fixture = new();
+            TimingAndActuationsForPhaseResult viewModel = fixture.Create<TimingAndActuationsForPhaseResult>();
+            return viewModel;
+        }
 
 
 
-//        [HttpPost("getChartData")]
-//        public TimingAndActuationsForPhaseResult GetChartData([FromBody] TimingAndActuationsOptions options)
-//        {
-//            var approach = approachRepository.Lookup(options.ApproachId);
-//            var eventCodes = new List<int> { };
-//            if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
-//                eventCodes.AddRange(new List<int> { 81, 82 });
-//            if (options.ShowPedestrianActuation)
-//                eventCodes.AddRange(new List<int> { 89, 90 });
-//            if (options.ShowPedestrianIntervals)
-//                eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap));
-//            if (options.PhaseEventCodesList != null)
-//                eventCodes.AddRange(options.PhaseEventCodesList);
-//            eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(
-//                (options.GetPermissivePhase && approach.IsPermissivePhaseOverlap) ||
-//                (!options.GetPermissivePhase && approach.IsPermissivePhaseOverlap))
-//                );
-//            var controllerEventLogs = controllerEventLogRepository.GetEventsByEventCodesParam(
-//                approach.SignalId,
-//                options.Start,
-//                options.End,
-//                eventCodes,
-//                options.PhaseNumber).ToList();
-//            var result = timingAndActuationsForPhaseService.GetChartData(options, approach, controllerEventLogs);
-//            return result;
-//        }
+        [HttpPost("getChartData")]
+        public async Task<IEnumerable<TimingAndActuationsForPhaseResult>> GetChartData([FromBody] TimingAndActuationsOptions options)
+        {
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
+            var tasks = new List<Task<TimingAndActuationsForPhaseResult>>();
 
-//    }
-//}
+            foreach (var phase in phaseDetails)
+            {
+                var eventCodes = new List<int> { };
+                if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
+                    eventCodes.AddRange(new List<int> { 81, 82 });
+                if (options.ShowPedestrianActuation)
+                    eventCodes.AddRange(new List<int> { 89, 90 });
+                if (options.ShowPedestrianIntervals)
+                    eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
+                if (options.PhaseEventCodesList != null)
+                    eventCodes.AddRange(options.PhaseEventCodesList);
+                tasks.Add(GetChartDataForPhase(options, controllerEventLogs, phase, eventCodes, false));
+            }
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
+        }
+
+        private async Task<TimingAndActuationsForPhaseResult> GetChartDataForPhase(
+            TimingAndActuationsOptions options,
+            List<ControllerEventLog> controllerEventLogs,
+            PhaseDetail phaseDetail,
+            List<int> eventCodes,
+            bool usePermissivePhase)
+        {
+            eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
+            var approachevents = controllerEventLogs.GetEventsByEventCodes(
+                options.Start,
+                options.End,
+                eventCodes,
+                phaseDetail.PhaseNumber).ToList();
+            var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
+            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
+            return viewModel;
+        }
+    }
+}

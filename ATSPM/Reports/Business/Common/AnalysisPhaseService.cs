@@ -1,6 +1,5 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
-using Parquet.Data.Rows;
+﻿using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,11 +41,25 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
-            analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
+            if (!pedestrianEvents.IsNullOrEmpty())
+            {
+                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
+            }
+            else
+            {
+                analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
+            }
             analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
-            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount)?? new List<ControllerEventLog>();
+            if (!terminationEvents.IsNullOrEmpty())
+            {
+                analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
+            }
+            else
+            {
+                analysisPhaseData.TerminationEvents = new List<ControllerEventLog>();
+            }
+            analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(analysisPhaseData.TerminationEvents) ?? new List<ControllerEventLog>();
@@ -71,7 +84,7 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.SignalId = signal.SignalId;
+            analysisPhaseData.SignalId = signal.SignalIdentifier;
             analysisPhaseData.IsOverlap = false;
             var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
             var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
@@ -87,8 +100,8 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var events = (from row in terminationeventstable
                           where row.EventParam == phasenumber && (row.EventCode == 4 ||
-                                                                  row.EventCode == 5 || 
-                                                                  row.EventCode == 6 || 
+                                                                  row.EventCode == 5 ||
+                                                                  row.EventCode == 6 ||
                                                                   row.EventCode == 7)
                           select row).ToList();
 

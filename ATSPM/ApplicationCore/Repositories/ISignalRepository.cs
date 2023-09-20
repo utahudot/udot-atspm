@@ -14,11 +14,11 @@ namespace ATSPM.Application.Repositories
     public interface ISignalRepository : IAsyncRepository<Signal>
     {
         /// <summary>
-        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
         /// </summary>
-        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Signal controller identifier</param>
         /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
-        IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId);
+        IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalIdentifier);
 
         /// <summary>
         /// Get latest version of all <see cref="Signal"/> and related entities
@@ -35,34 +35,34 @@ namespace ATSPM.Application.Repositories
 
 
         /// <summary>
-        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
         /// </summary>
-        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Signal controller identifier</param>
         /// <returns>Lastest <see cref="Signal"/> version</returns>
-        Signal GetLatestVersionOfSignal(string signalId);
+        Signal GetLatestVersionOfSignal(string signalIdentifier);
 
         /// <summary>
-        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
         /// and begin at or before <paramref name="startDate"/>
         /// </summary>
-        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Signal controller identifier</param>
         /// <param name="startDate">Starting date of Signal controllers</param>
         /// <returns>Lastest <see cref="Signal"/> version</returns>
-        Signal GetLatestVersionOfSignal(string signalId, DateTime startDate);
+        Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate);
 
         /// <summary>
-        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalId"/>
+        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
         /// and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
         /// </summary>
-        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Signal controller identifier</param>
         /// <param name="startDate">Date controllers are older than</param>
         /// <param name="endDate">Date controllers are newer than</param>
         /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
-        IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate);
+        IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate);
 
         #region ExtensionMethods
 
-        //Signal CopySignalToNewVersion(Signal originalVersion);
+        //Signal CopySignalToNewVersion(int id);
 
         //void SetSignalToDeleted(int id);
 

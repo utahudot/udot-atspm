@@ -3,7 +3,6 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using InfrastructureTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +15,7 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class ISignalRepositoryTests : RepositoryTestBase<Signal, ISignalRepository, ConfigContext>
+    public class ISignalRepositoryTests : RepositoryTestBase<Signal, ISignalRepository, ConfigContext, int>
     {
         private const int ItemCount = 4;
         private const int ControllerTypeId = 1;
@@ -36,7 +35,7 @@ namespace InfrastructureTests.RepositoryTests
                     for (int i = 0; i <= Enum.GetValues(typeof(SignaVersionActions)).Length - 2; i++)
                     {
                         var s = ModelFixture.Create<Signal>();
-                        s.SignalId = signalId;
+                        s.SignalIdentifier = signalId;
                         s.VersionActionId = (SignaVersionActions)i;
                         s.PrimaryName = s.VersionActionId.ToString();
                         s.VersionAction = _db.Context.Set<VersionAction>().Find(s.VersionActionId);
@@ -51,7 +50,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _signalList)
             {
-                _output.WriteLine($"Seed Data: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start} - {s.ControllerTypeId}");
+                _output.WriteLine($"Seed Data: {s.Id} - {s.SignalIdentifier} - {s.PrimaryName} - {s.VersionActionId} - {s.Start} - {s.ControllerTypeId}");
             }
         }
 
@@ -68,14 +67,14 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in result)
             {
-                _output.WriteLine($"result: {s.Id} - {s.SignalId} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
+                _output.WriteLine($"result: {s.Id} - {s.SignalIdentifier} - {s.PrimaryName} - {s.VersionActionId} - {s.Start}");
             }
 
             //should not return deleted signals
             Assert.True(!result.Select(s => s.VersionActionId).Contains(SignaVersionActions.Delete));
 
             //all values should be signalId
-            Assert.True(result.All(a => a.SignalId == signalId));
+            Assert.True(result.All(a => a.SignalIdentifier == signalId));
 
             //values should be sorted by start date
             Assert.Equal(result.Select(s => s.Start).OrderByDescending(o => o), result.Select(s => s.Start));
@@ -90,16 +89,16 @@ namespace InfrastructureTests.RepositoryTests
         {
             var result = _repo.GetLatestVersionOfSignal(signalId);
 
-            _output.WriteLine($"result: {result.Id} - {result.SignalId} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
+            _output.WriteLine($"result: {result.Id} - {result.SignalIdentifier} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
 
             //should not return deleted signals
             Assert.True(result.VersionActionId != SignaVersionActions.Delete);
 
             //all values should be signalId
-            Assert.True(result.SignalId == signalId);
+            Assert.True(result.SignalIdentifier == signalId);
 
             //value should be newest date
-            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalId == signalId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalIdentifier == signalId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
         }
 
         [Theory]
@@ -110,22 +109,22 @@ namespace InfrastructureTests.RepositoryTests
         public void ISignalRepositoryGetLatestVersionOfSignalWithDate(string signalId)
         {
             var start = DateTime.Today.AddDays(-2);
-            
+
             var result = _repo.GetLatestVersionOfSignal(signalId, start);
 
-            _output.WriteLine($"result: {result.Id} - {result.SignalId} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
+            _output.WriteLine($"result: {result.Id} - {result.SignalIdentifier} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
 
             //should not return deleted signals
             Assert.True(result.VersionActionId != SignaVersionActions.Delete);
 
             //all values should be signalId
-            Assert.True(result.SignalId == signalId);
+            Assert.True(result.SignalIdentifier == signalId);
 
             //should all be <= start date
             Assert.True(result.Start <= start);
 
             //value should be newest date
-            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalId == signalId && w.Start <= start).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+            Assert.Equal(_signalList.Where(w => w.VersionActionId != SignaVersionActions.Delete && w.SignalIdentifier == signalId && w.Start <= start).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
         }
 
         [Fact]
@@ -135,7 +134,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
+                _output.WriteLine($"result: {r.Id} - {r.SignalIdentifier} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
             }
 
             //should not return deleted signals
@@ -146,10 +145,10 @@ namespace InfrastructureTests.RepositoryTests
 
             //value should be newest date
             Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
         }
 
         [Fact]
@@ -159,7 +158,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start} - {r.ControllerTypeId}");
+                _output.WriteLine($"result: {r.Id} - {r.SignalIdentifier} - {r.PrimaryName} - {r.VersionActionId} - {r.Start} - {r.ControllerTypeId}");
             }
 
             //controller type should all equal controllerTypeId
@@ -173,10 +172,10 @@ namespace InfrastructureTests.RepositoryTests
 
             //value should be newest date
             Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.SignalId == i.SignalId && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_signalList.Where(w => w.SignalIdentifier == i.SignalIdentifier && w.VersionActionId != SignaVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
         }
 
         [Theory]
@@ -193,20 +192,20 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
+                _output.WriteLine($"result: {r.Id} - {r.SignalIdentifier} - {r.PrimaryName} - {r.VersionActionId} - {r.Start}");
             }
 
             //should not return deleted signals
             Assert.True(result.All(a => a.VersionActionId != SignaVersionActions.Delete));
 
             //should all be signalId
-            Assert.True(result.All(a => a.SignalId == signalId));
+            Assert.True(result.All(a => a.SignalIdentifier == signalId));
 
             //should all be between start and end dates
             Assert.True(result.All(a => a.Start > start && a.Start < end));
 
             //compare to initial collection
-            Assert.Equal(_signalList.Where(w => w.SignalId == signalId && w.VersionActionId != SignaVersionActions.Delete && w.Start > start && w.Start < end), result);
+            Assert.Equal(_signalList.Where(w => w.SignalIdentifier == signalId && w.VersionActionId != SignaVersionActions.Delete && w.Start > start && w.Start < end), result);
         }
 
         #endregion
@@ -224,10 +223,10 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = _repo.GetLatestVersionOfSignal(signalId);
 
-            var actual = await _repo.CopySignalToNewVersion(signal);
+            var actual = await _repo.CopySignalToNewVersion(signal.Id);
 
             _output.WriteLine($"Compare: {signal.Id} - {actual.Id}");
-            _output.WriteLine($"Compare: {signal.SignalId} - {actual.SignalId}");
+            _output.WriteLine($"Compare: {signal.SignalIdentifier} - {actual.SignalIdentifier}");
             _output.WriteLine($"Compare: {signal.Latitude} - {actual.Latitude}");
             _output.WriteLine($"Compare: {signal.Longitude} - {actual.Longitude}");
             _output.WriteLine($"Compare: {signal.PrimaryName} - {actual.PrimaryName}");
@@ -235,7 +234,7 @@ namespace InfrastructureTests.RepositoryTests
             _output.WriteLine($"Compare: {signal.Ipaddress} - {actual.Ipaddress}");
             _output.WriteLine($"Compare: {signal.RegionId} - {actual.RegionId}");
             _output.WriteLine($"Compare: {signal.ControllerTypeId} - {actual.ControllerTypeId}");
-            _output.WriteLine($"Compare: {signal.Enabled} - {actual.Enabled}");
+            _output.WriteLine($"Compare: {signal.ChartEnabled} - {actual.ChartEnabled}");
             _output.WriteLine($"Compare: {signal.VersionActionId} - {actual.VersionActionId}");
             _output.WriteLine($"Compare: {signal.Note} - {actual.Note}");
             _output.WriteLine($"Compare: {signal.Start} - {actual.Start}");
@@ -243,7 +242,7 @@ namespace InfrastructureTests.RepositoryTests
             _output.WriteLine($"Compare: {signal.Pedsare1to1} - {actual.Pedsare1to1}");
 
             Assert.NotEqual(expected: signal.Id, actual: actual.Id);
-            Assert.Equal(expected: signal.SignalId, actual: actual.SignalId);
+            Assert.Equal(expected: signal.SignalIdentifier, actual: actual.SignalIdentifier);
             Assert.Equal(expected: signal.Latitude, actual: actual.Latitude);
             Assert.Equal(expected: signal.Longitude, actual: actual.Longitude);
             Assert.Equal(expected: signal.PrimaryName, actual: actual.PrimaryName);
@@ -251,7 +250,7 @@ namespace InfrastructureTests.RepositoryTests
             Assert.Equal(expected: signal.Ipaddress.ToString(), actual: actual.Ipaddress.ToString());
             Assert.Equal(expected: signal.RegionId, actual: actual.RegionId);
             Assert.Equal(expected: signal.ControllerTypeId, actual: actual.ControllerTypeId);
-            Assert.Equal(expected: signal.Enabled, actual: actual.Enabled);
+            Assert.Equal(expected: signal.ChartEnabled, actual: actual.ChartEnabled);
             Assert.Equal(expected: SignaVersionActions.NewVersion, actual: actual.VersionActionId);
             Assert.Contains("Copy of", actual.Note);
             Assert.Equal(expected: DateTime.Today, actual: actual.Start);

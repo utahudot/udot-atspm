@@ -1,12 +1,14 @@
-﻿using ATSPM.Application.Reports.Business.AppoachDelay;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.AppoachDelay;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Reports.Controllers
 {
@@ -16,20 +18,23 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly ApproachDelayService approachDelayService;
         private readonly SignalPhaseService signalPhaseService;
-        private readonly IApproachRepository approachRepository;
+        private readonly ISignalRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly PhaseService phaseService;
 
         public ApproachDelayController(
             ApproachDelayService approachDelayService,
             SignalPhaseService signalPhaseService,
-            IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository
+            ISignalRepository signalRepository,
+            IControllerEventLogRepository controllerEventLogRepository,
+            PhaseService phaseService
             )
         {
             this.approachDelayService = approachDelayService;
             this.signalPhaseService = signalPhaseService;
-            this.approachRepository = approachRepository;
+            this.signalRepository = signalRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.phaseService = phaseService;
         }
 
         [HttpGet("test")]
@@ -41,38 +46,53 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public ApproachDelayResult GetChartData([FromBody] ApproachDelayOptions options)
+        public async Task<IEnumerable<ApproachDelayResult>> GetChartData([FromBody] ApproachDelayOptions options)
         {
-            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
-            var planEvents = controllerEventLogRepository.GetPlanEvents(
-                approach.Signal.SignalId,
-                options.Start,
-                options.End);
-            int distanceFromStopBar = 0;
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(8, approach, options.Start, options.End, true, false).ToList(); 
-            var cycleEvents = controllerEventLogRepository.GetCycleEventsWithTimeExtension(
-                approach,
-                options.GetPermissivePhase,
-                options.Start,
-                options.End);
-                
-            var signalPhase = signalPhaseService.GetSignalPhaseData(
-                options.Start,
-                options.End,
-                false,
-                null,
-                options.BinSize,
-                approach,
-                cycleEvents.ToList(),
-                planEvents.ToList(),
-                detectorEvents); 
-            ApproachDelayResult viewModel = approachDelayService.GetChartData(
-                options,
-                approach,
-                signalPhase);
-            return viewModel;
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(
+                options.Start.AddHours(-12),
+                options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
+            var tasks = new List<Task<ApproachDelayResult>>();
+            foreach (var phase in phaseDetails)
+            {
+                tasks.Add(GetChartDataByApproach(options, phase, controllerEventLogs, planEvents, signal.SignalDescription()));
+            }
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.Where(result => result != null);
         }
 
+        private async Task<ApproachDelayResult> GetChartDataByApproach(
+            ApproachDelayOptions options,
+            PhaseDetail phaseDetail,
+            List<ControllerEventLog> controllerEventLogs,
+            List<ControllerEventLog> planEvents,
+            string signalDescription)
+        {
+            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+                phaseDetail,
+                options.Start,
+                options.End,
+                options.BinSize,
+                null,
+                controllerEventLogs,
+                planEvents,
+                false);
+            if (signalPhase == null)
+            {
+                return null;
+            }
+            ApproachDelayResult viewModel = approachDelayService.GetChartData(
+                options,
+                phaseDetail,
+                signalPhase);
+            viewModel.SignalDescription = signalDescription;
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
+            return viewModel;
+        }
 
 
     }

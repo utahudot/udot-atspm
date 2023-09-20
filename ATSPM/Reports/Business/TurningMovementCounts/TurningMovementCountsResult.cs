@@ -1,5 +1,4 @@
 using ATSPM.Application.Reports.Business.Common;
-using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -8,15 +7,16 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
     /// <summary>
     /// Turning Movement Count chart
     /// </summary>
-    public class TurningMovementCountsResult:ApproachResult
+    public class TurningMovementCountsResult
     {
         public TurningMovementCountsResult(
-            string signalId,
-            int approachId,
-            string approachDescription,
+            string signalIdentifier,
+            string signalDescription,
             DateTime start,
             DateTime end,
             string direction,
+            string laneType,
+            string movementType,
             IReadOnlyList<Plan> plans,
             IReadOnlyList<Lane> lanes,
             IReadOnlyList<TotalVolume> totalVolumes,
@@ -25,11 +25,15 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             double? peakHourVolume,
             double? peakHourFactor,
             double? laneUtilizationFactor
-            ):base(approachId, signalId, start, end)
+            )
         {
-            ApproachId = approachId;
-            ApproachDescription = approachDescription;
+            SignalIdentifier = signalIdentifier;
+            SignalDescription = signalDescription;
+            Start = start;
+            End = end;
             Direction = direction;
+            LaneType = laneType;
+            MovementType = movementType;
             Plans = plans;
             Lanes = lanes;
             TotalVolumes = totalVolumes;
@@ -40,8 +44,13 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             LaneUtilizationFactor = laneUtilizationFactor;
         }
 
-        public string ApproachDescription { get; set; }
+        public string SignalIdentifier { get; set; }
+        public string SignalDescription { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public string Direction { get; set; }
+        public string LaneType { get; }
+        public string MovementType { get; }
         public IReadOnlyList<Plan> Plans { get; set; }
         public IReadOnlyList<Lane> Lanes { get; set; }
         public IReadOnlyList<TotalVolume> TotalVolumes { get; set; }

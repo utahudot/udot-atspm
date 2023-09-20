@@ -1,6 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +7,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
 {
     public class PedDelayService
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
 
-        public PedDelayService(IControllerEventLogRepository controllerEventLogRepository)
+        public PedDelayService()
         {
-            this.controllerEventLogRepository = controllerEventLogRepository;
+
         }
 
 
@@ -79,7 +76,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 }
             }
             return new PedDelayResult(
-                pedPhase.Approach.Signal.SignalId,
+                pedPhase.Approach.Signal.SignalIdentifier,
                 pedPhase.Approach.Id,
                 pedPhase.Approach.ProtectedPhaseNumber,
                 pedPhase.Approach.Description,

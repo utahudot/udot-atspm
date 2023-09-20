@@ -3,9 +3,9 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using CsvHelper;
-using Google.Type;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Reports.Business.Common;
 using System.Globalization;
 using System.Net;
 using Xunit;
@@ -16,13 +16,14 @@ namespace ATSPM.Application.Reports.Controllers.Tests
     public class ApproachDelayControllerTests
     {
         [Fact()]
-        public void GetChartDataTest()
+        public async void GetChartDataTest()
         {
             // Arrange
             ApproachDelayService approachDelayService = new ApproachDelayService();
             PlanService planService = new PlanService();
             CycleService cycleService = new CycleService();
             ILoggerFactory loggerFactory = new LoggerFactory();
+            PhaseService phaseService = new PhaseService();
             ILogger<SignalPhaseService> logger = loggerFactory.CreateLogger<SignalPhaseService>();
 
             SignalPhaseService signalPhaseService = new SignalPhaseService(planService, cycleService, logger);
@@ -55,15 +56,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 1680; // Updated Id
-            mockSignal.Object.SignalId = "7115"; // Updated SignalId
-            mockSignal.Object.Latitude = "40.62398502";
-            mockSignal.Object.Longitude = "-111.9387819";
+            mockSignal.Object.SignalIdentifier = "7115"; // Updated SignalId
+            mockSignal.Object.Latitude = 40.62398502;
+            mockSignal.Object.Longitude = -111.9387819;
             mockSignal.Object.PrimaryName = "Redwood Road";
             mockSignal.Object.SecondaryName = "7000 South";
             mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
             mockSignal.Object.RegionId = 2;
             mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.Enabled = true;
+            mockSignal.Object.ChartEnabled = true;
             mockSignal.Object.VersionActionId = SignaVersionActions.Initial;
             mockSignal.Object.Note = "10";
             mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
@@ -73,20 +74,22 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            var options = new ApproachDelayOptions() { ApproachId = 2880, BinSize = 15, Start = start, End = end, GetPermissivePhase = false, GetVolume = true };
+            var phaseDetail = phaseService.GetPhases(mockSignal.Object);
 
-            SignalPhase signalPhase = signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
-            var result = approachDelayService.GetChartData(options, approach.Object, signalPhase);
+            var options = new ApproachDelayOptions() { SignalIdentifier = "7115", BinSize = 15, Start = start, End = end, GetVolume = true };
+
+            SignalPhase signalPhase = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
+            var result = approachDelayService.GetChartData(options, phaseDetail.FirstOrDefault(), signalPhase);
 
             // Assert
             Assert.Equal(approach.Object.Id, result.ApproachId);
-            Assert.Equal(approach.Object.Signal.SignalId, result.SignalId);
+            Assert.Equal(approach.Object.Signal.SignalIdentifier, result.SignalIdentifier);
             Assert.Equal(2, result.PhaseNumber);
             Assert.Equal("NBT Ph2", result.PhaseDescription);
             Assert.Equal(start, result.Start);
             Assert.Equal(end, result.End);
-            Assert.Equal(0, result.AverageDelayPerVehicle);
-            Assert.Equal(0, result.TotalDelay);
+            Assert.Equal(23.15599626691554, result.AverageDelayPerVehicle);
+            Assert.Equal(49623.3, result.TotalDelay);
             Assert.NotEmpty(result.Plans);
             Assert.NotEmpty(result.ApproachDelayDataPoints);
             Assert.NotEmpty(result.ApproachDelayPerVehicleDataPoints);

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using ATSPM.Infrastructure.Services.HostedServices;
 
 namespace ATSPM.EventLogUtility.Commands
 {
@@ -33,8 +34,9 @@ namespace ATSPM.EventLogUtility.Commands
                 if (r.GetValueForOption(IncludeOption)?.Count() > 0)
                     r.ErrorMessage = "Can't use exclude option when also using include option";
             });
-            
+
             AddOption(FileCommandOption);
+            AddOption(DateTimeFormatOption);
             AddOption(DateOption);
             AddOption(IncludeOption);
             AddOption(ExcludeOption);
@@ -66,7 +68,9 @@ namespace ATSPM.EventLogUtility.Commands
             //}, FileCommandOption, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
-        public Option<string> FileCommandOption { get; set; } = new("--format", () => ".csv", "File type format to export to");
+        public Option<string> FileCommandOption { get; set; } = new("--filetype", () => ".csv", "File type format to export to");
+
+        public Option<string> DateTimeFormatOption { get; set; } = new("--datetimeformat", () => "yyyy-MM-dd'T'HH:mm:ss.f", "Date/Time format string to use");
 
         public DateCommandOption DateOption { get; set; } = new();
 
@@ -81,12 +85,20 @@ namespace ATSPM.EventLogUtility.Commands
             var binder = new ModelBinder<EventLogExtractConfiguration>();
 
             binder.BindMemberFromValue(b => b.FileFormat, FileCommandOption);
+            binder.BindMemberFromValue(b => b.DateTimeFormat, DateTimeFormatOption);
             binder.BindMemberFromValue(b => b.Dates, DateOption);
             binder.BindMemberFromValue(b => b.Included, IncludeOption);
             binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
             binder.BindMemberFromValue(b => b.Path, PathCommandOption);
 
             return binder;
+        }
+
+        public void BindCommandOptions(IServiceCollection services)
+        {
+            services.AddSingleton(GetOptionsBinder());
+            services.AddOptions<EventLogExtractConfiguration>().BindCommandLine();
+            services.AddHostedService<ExportUtilityService>();
         }
     }
 }

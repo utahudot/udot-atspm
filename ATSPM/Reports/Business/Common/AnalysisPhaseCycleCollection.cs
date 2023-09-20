@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.Data.Models;
 
 namespace ATSPM.Application.Reports.Business.Common
 {
@@ -41,17 +42,19 @@ namespace ATSPM.Application.Reports.Business.Common
                     Items.Add(Cycle);
                 }
             }
-
-            foreach (var c in Items)
+            if (!PedEvents.IsNullOrEmpty())
             {
-                var PedEventsForCycle = (from r in PedEvents
-                                         where r.Timestamp >=
-                                               c.StartTime && r.Timestamp <= c.EndTime
-                                         select r).ToList();
-
-                if ((c.EndTime - c.StartTime).Seconds > PedEventsForCycle.Count)
+                foreach (var c in Items)
                 {
-                    SetPedTimesForCycle(PedEventsForCycle, c);
+                    var PedEventsForCycle = (from r in PedEvents
+                                             where r.Timestamp >=
+                                                   c.StartTime && r.Timestamp <= c.EndTime
+                                             select r).ToList();
+
+                    if ((c.EndTime - c.StartTime).Seconds > PedEventsForCycle.Count)
+                    {
+                        SetPedTimesForCycle(PedEventsForCycle, c);
+                    }
                 }
             }
         }
@@ -81,7 +84,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         if (i == 0 && current.EventCode == 23)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.Timestamp);
+                            //Cycle.SetPedEnd(current.TimeStamp);
                             Cycle.SetPedEnd(Cycle.StartTime);
                         }
 
@@ -119,7 +122,7 @@ namespace ATSPM.Application.Reports.Business.Common
                         case 23:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.Timestamp);
+                            //Cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on

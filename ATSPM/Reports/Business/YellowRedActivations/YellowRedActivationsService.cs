@@ -1,7 +1,6 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,36 +22,36 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
 
         public YellowRedActivationsResult GetChartData(
-            YellowRedActivationsOptions options,   
-            Approach approach,
+            YellowRedActivationsOptions options,
+            PhaseDetail phaseDetail,
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> detectorEvents,
             IReadOnlyList<ControllerEventLog> planEvents)
         {
-           
+
             var cycles = cycleService.GetYellowRedActivationsCycles(
                 options.Start,
                 options.End,
                 cycleEvents,
                 detectorEvents,
                 options.SevereLevelSeconds
-                );           
+                );
 
             var plans = planService.GetYellowRedActivationPlans(
                 options.Start,
                 options.End,
                 cycles,
-                approach,
+                phaseDetail.Approach.Signal.SignalIdentifier,
                 options.SevereLevelSeconds,
                 planEvents).ToList();
-            
+
             var detectorActivations = cycles.SelectMany(c => c.DetectorActivations).ToList();
 
             return new YellowRedActivationsResult(
-                "Yellow and Red Activations",
-                approach.Id,
-                approach.Description,
-                options.UsePermissivePhase? approach.PermissivePhaseNumber.Value: approach.ProtectedPhaseNumber,
+                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Id,
+                phaseDetail.Approach.Description,
+                phaseDetail.PhaseNumber,
                 options.Start,
                 options.End,
                 Convert.ToInt32(plans.Sum(p => p.Violations)),
