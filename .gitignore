@@ -119,3 +119,7 @@ dkms.conf
 /ConfigApi/obj/Debug/net7.0/ConfigApi.assets.cache
 /ATSPM/ConfigApi/obj
 /ATSPM/ConfigApi/bin
+/ConfigApi/obj/project.nuget.cache
+/ConfigApi/obj/project.assets.json
+/ConfigApi/obj/ConfigApi.csproj.nuget.g.props
+/ConfigApi/obj/ConfigApi.csproj.nuget.dgspec.json
