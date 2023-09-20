@@ -11,6 +11,11 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 {
     public class WaitTimeService
     {
+
+        public const int PHASE_BEGIN_GREEN = 1;
+        public const int PHASE_END_RED_CLEARANCE = 11;
+        public const int PHASE_CALL_REGISTERED = 43;
+        public const int PHASE_CALL_DROPPED = 44;
         public class WaitTimeTracker
         {
             public DateTime Time;
@@ -57,16 +62,16 @@ namespace ATSPM.Application.Reports.Business.WaitTime
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
             var redList = controllerEventLogs.Where(x =>
-                x.EventCode == WaitTimeOptions.PHASE_END_RED_CLEARANCE
+                x.EventCode == PHASE_END_RED_CLEARANCE
                 && x.EventParam == phaseDetail.PhaseNumber)
                 .OrderBy(x => x.Timestamp);
             var greenList = controllerEventLogs.Where(x =>
-            x.EventCode == WaitTimeOptions.PHASE_BEGIN_GREEN
+            x.EventCode == PHASE_BEGIN_GREEN
             && x.EventParam == phaseDetail.PhaseNumber)
                 .OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
-                (x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED ||
-                x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED)
+                (x.EventCode == PHASE_CALL_REGISTERED ||
+                x.EventCode == PHASE_CALL_DROPPED)
                 && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
             var gapOuts = new List<WaitTimePoint>();
@@ -99,10 +104,10 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
                     if (useDroppingAlgorithm &&
-                        phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED))
+                        phaseCallList.Any(x => x.EventCode == PHASE_CALL_DROPPED))
                     {
                         var lastDroppedPhaseCall =
-                            phaseCallList.LastOrDefault(x => x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED);
+                            phaseCallList.LastOrDefault(x => x.EventCode == PHASE_CALL_DROPPED);
                         if (lastDroppedPhaseCall != null)
                         {
                             var lastIndex = phaseCallList.IndexOf(lastDroppedPhaseCall);
@@ -117,9 +122,9 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                             };
                         }
                     }
-                    else if (phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED))
+                    else if (phaseCallList.Any(x => x.EventCode == PHASE_CALL_REGISTERED))
                     {
-                        var firstPhaseCall = phaseCallList.First(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED);
+                        var firstPhaseCall = phaseCallList.First(x => x.EventCode == PHASE_CALL_REGISTERED);
                         //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {

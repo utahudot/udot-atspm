@@ -62,10 +62,10 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 new List<int>() {
                     82,
-                    WaitTimeOptions.PHASE_BEGIN_GREEN,
-                    WaitTimeOptions.PHASE_CALL_DROPPED,
-                    WaitTimeOptions.PHASE_END_RED_CLEARANCE,
-                    WaitTimeOptions.PHASE_CALL_REGISTERED}
+                    WaitTimeService.PHASE_BEGIN_GREEN,
+                    WaitTimeService.PHASE_CALL_DROPPED,
+                    WaitTimeService.PHASE_END_RED_CLEARANCE,
+                    WaitTimeService.PHASE_CALL_REGISTERED}
                 );
             var terminationEvents = controllerEventLogs.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
