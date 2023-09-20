@@ -173,6 +173,7 @@ dkms.conf
 /ATSPM/ReportsTests/bin/Debug/net6.0
 /ATSPM/ReportsTests/obj/Debug/net6.0
 /ATSPM/ReportsTests/obj
+/ATSPM/ReportsTests/bin
 /InsertArchiveLogs/obj
 /ConfigApi/obj/Debug/net7.0/ConfigApi.assets.cache
 /ConfigApi/obj/Debug/net7.0/ConfigApi.csproj.AssemblyReference.cache
@@ -200,3 +201,5 @@ dkms.conf
 /ConfigApi/obj/ConfigApi.csproj.nuget.g.props
 /ConfigApi/obj/ConfigApi.csproj.nuget.dgspec.json
 /ConfigApi/obj/ConfigApi.csproj.nuget.g.targets
+/ATSPM/ReportsTests/bin/Debug/net6.0/ApplicationCore.xml
+/ATSPM/bin/Debug/ApplicationCore.xml
