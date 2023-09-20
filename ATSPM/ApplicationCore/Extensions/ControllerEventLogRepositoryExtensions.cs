@@ -1,8 +1,4 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 

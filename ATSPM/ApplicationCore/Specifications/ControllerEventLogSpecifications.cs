@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Domain.Specifications;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 

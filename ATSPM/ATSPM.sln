@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventLogUtility", "EventLog
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ATSPM.Application.ReportsTests", "ATSPM.Application.ReportsTests\ATSPM.Application.ReportsTests.csproj", "{73DE7276-BA9A-483D-B09F-ACE8C6CF9ABB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "..\ConfigApi\ConfigApi.csproj", "{5D4EEF5A-0CF7-42FC-A35F-55C333DE39C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "ConfigApi\ConfigApi.csproj", "{FD186967-DF60-4707-B2BF-CADC17384974}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reports", "Reports\Reports.csproj", "{E4817D1C-700B-4C6F-8753-B6A41C6EBC15}"
 EndProject

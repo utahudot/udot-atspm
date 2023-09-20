@@ -62,10 +62,10 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region ISignalRepository
 
-        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalId)
+        public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
-                .FromSpecification(new SignalIdSpecification(signalId))
+                .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
 
@@ -95,20 +95,20 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public Signal GetLatestVersionOfSignal(string signalId)
+        public Signal GetLatestVersionOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
-                .FromSpecification(new SignalIdSpecification(signalId))
+                .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
 
             return result;
         }
 
-        public Signal GetLatestVersionOfSignal(string signalId, DateTime startDate)
+        public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
-                .FromSpecification(new SignalIdSpecification(signalId))
+                .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
@@ -116,10 +116,10 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalId, DateTime startDate, DateTime endDate)
+        public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate)
         {
             var result = BaseQuery()
-                .FromSpecification(new SignalIdSpecification(signalId))
+                .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();

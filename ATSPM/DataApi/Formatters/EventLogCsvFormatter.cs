@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using System.Text;
 
 namespace ATSPM.DataApi.Formatters
