@@ -29,7 +29,7 @@ namespace ATSPM.Application.Extensions
 
             foreach (var item in result)
             {
-                item.TimeStamp = item.TimeStamp.AddSeconds(0 - latencyCorrection);
+                item.Timestamp = item.Timestamp.AddSeconds(0 - latencyCorrection);
             }
 
             return result;
@@ -41,8 +41,8 @@ namespace ATSPM.Application.Extensions
 
             foreach (var item in result)
             {
-                item.TimeStamp = item.TimeStamp.AddMilliseconds(offset);
-                item.TimeStamp = item.TimeStamp.AddSeconds(0 - latencyCorrection);
+                item.Timestamp = item.Timestamp.AddMilliseconds(offset);
+                item.Timestamp = item.Timestamp.AddSeconds(0 - latencyCorrection);
             }
 
             return result;
