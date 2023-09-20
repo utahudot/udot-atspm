@@ -38,7 +38,6 @@ builder.Host.ConfigureServices((h, s) =>
     .AddOData(o =>
     {
         o.Count().Select().OrderBy().Expand().Filter().SetMaxTop(null);
-        //o.Count();
         o.RouteOptions.EnableKeyInParenthesis = false;
         o.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
         o.RouteOptions.EnablePropertyNameCaseInsensitive = true;

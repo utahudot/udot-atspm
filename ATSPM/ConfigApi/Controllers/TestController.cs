@@ -31,28 +31,5 @@ namespace ATSPM.ConfigApi.Controllers
         {
             return Ok("Now server time is: " + DateTime.Now.ToString());
         }
-
-        [HttpGet("api/v{version:apiVersion}/[Controller]/[action](signalIdentifier={identifier})")]
-        //[ProducesResponseType(Status400BadRequest)]
-        [ProducesResponseType(Status200OK)]
-        [ProducesResponseType(Status404NotFound)]
-        [EnableQuery]
-        public IActionResult GetLatestVersionOfSignal(string identifier)
-        {
-            var i = _repository.GetLatestVersionOfSignal(identifier);
-
-            Console.WriteLine($"-----------------------------------------------{i.Id} - {i.Ipaddress}");
-
-            //var i = identifier;
-
-            if (i == null)
-            {
-                return NotFound(identifier);
-            }
-
-            i.Ipaddress = IPAddress.Parse(i.Ipaddress.ToString());
-
-            return Ok(new Signal() { Ipaddress = i.Ipaddress});
-        }
     }
 }

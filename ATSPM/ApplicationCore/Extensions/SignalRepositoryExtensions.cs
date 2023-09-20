@@ -14,26 +14,49 @@ namespace ATSPM.Application.Extensions
 {
     public static class SignalRepositoryExtensions
     {
-        public static async Task<Signal> CopySignalToNewVersion(this ISignalRepository repo, Signal originalVersion)
+        /// <summary>
+        /// Copies <see cref="Signal"/> and associated <see cref="Approach"/> to new version
+        /// and archives old version
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="id">Signal version to copy</param>
+        /// <returns>New version of copied <see cref="Signal"/></returns>
+        public static async Task<Signal> CopySignalToNewVersion(this ISignalRepository repo, int id)
         {
-            var newVersion = (Signal)originalVersion.Clone();
+            Signal signal = await repo.LookupAsync(id);
 
-            newVersion.VersionActionId = SignaVersionActions.NewVersion;
-            newVersion.Start = DateTime.Today;
-            newVersion.Note = $"Copy of {originalVersion.Note}";
+            if (signal != null)
+            {
+                var newVersion = (Signal)signal.Clone();
 
-            newVersion.Id = 0;
+                newVersion.VersionActionId = SignaVersionActions.NewVersion;
+                newVersion.Start = DateTime.Today;
+                newVersion.Note = $"Copy of {signal.Note}";
 
-            newVersion.ControllerType = null;
-            newVersion.Jurisdiction = null;
-            newVersion.Region = null;
-            newVersion.VersionAction = null;
+                newVersion.Id = 0;
 
-            await repo.AddAsync(newVersion);
+                newVersion.ControllerType = null;
+                newVersion.Jurisdiction = null;
+                newVersion.Region = null;
+                newVersion.VersionAction = null;
 
-            return newVersion;
+                await repo.AddAsync(newVersion);
+
+                return newVersion;
+            }
+            else
+            {
+                throw new ArgumentException($"{id} is not a valid signal");
+            }
         }
 
+        /// <summary>
+        /// Marks <see cref="Signal"/> to deleted
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="id">Id of <see cref="Signal"/> to mark as deleted</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">id is not a valid signal</exception>
         public static async Task SetSignalToDeleted(this ISignalRepository repo, int id)
         {
             Signal signal = await repo.LookupAsync(id);
@@ -42,6 +65,10 @@ namespace ATSPM.Application.Extensions
             {
                 signal.VersionActionId = SignaVersionActions.Delete;
                 await repo.UpdateAsync(signal);
+            }
+            else
+            {
+                throw new ArgumentException($"{id} is not a valid signal");
             }
         }
 
