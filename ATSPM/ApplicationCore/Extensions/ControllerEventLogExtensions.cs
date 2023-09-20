@@ -216,8 +216,7 @@ namespace ATSPM.Application.Extensions
            int phaseNumber,
            bool useOverlap,
            DateTime start,
-           DateTime end,
-           Approach approach)
+           DateTime end)
         {
             return events.GetEventsByEventCodes(
                 start.AddSeconds(-900),

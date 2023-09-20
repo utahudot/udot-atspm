@@ -57,9 +57,9 @@ namespace ATSPM.Application.Reports.Controllers
 
             var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<ApproachSpeedResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(options, controllerEventLogs, planEvents, approach, signal.SignalDescription()));
+                tasks.Add(GetChartDataByApproach(options, controllerEventLogs, planEvents, phaseDetail, signal.SignalDescription()));
             }
             var results = await Task.WhenAll(tasks);
             return results;
@@ -73,15 +73,15 @@ namespace ATSPM.Application.Reports.Controllers
             PhaseDetail phaseDetail,
             string signalDescription)
         {
-            var detector = approach.GetDetectorsForMetricType(options.MetricTypeId).First();
+            var detector = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId).First();
             var speedEvents = speedEventRepository.GetSpeedEventsByDetector(
                 detector,
                 options.Start,
                 options.End,
                 detector.MinSpeedFilter ?? 5).ToList();
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
-                approach,
-                options.GetPermissivePhase,
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
                 options.Start,
                 options.End);
             ApproachSpeedResult viewModel = approachSpeedService.GetChartData(
@@ -91,7 +91,7 @@ namespace ATSPM.Application.Reports.Controllers
                 speedEvents,
                 detector);
             viewModel.SignalDescription = signalDescription;
-            viewModel.ApproachDescription = approach.Description;
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }
     }

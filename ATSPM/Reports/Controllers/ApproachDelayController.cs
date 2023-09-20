@@ -73,12 +73,11 @@ namespace ATSPM.Application.Reports.Controllers
             string signalDescription)
         {
             var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                phaseDetail.UseOverlap,
+                phaseDetail,
                 options.Start,
                 options.End,
                 options.BinSize,
                 null,
-                phaseDetail.Approach,
                 controllerEventLogs,
                 planEvents,
                 false);
