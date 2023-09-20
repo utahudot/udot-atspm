@@ -45,11 +45,22 @@ namespace ATSPM.ConfigApi.Configuration
                         model.EnumProperty(p => p.VersionActionId).DefaultValueString = "10";
                         model.Property(p => p.Note).DefaultValueString = "Initial";
 
-                        model.Collection.Function("GetLatestVersionOfAllSignals").ReturnsCollectionFromEntitySet<Signal>("Signals");
 
-                        var func = model.Collection.Function("GetLatestVersionOfSignal");
-                        func.Parameter<string>("identifier");
-                        func.ReturnsFromEntitySet<Signal>("Signal");
+                        var a = model.Collection.Function("GetAllVersionsOfSignal");
+                        a.Parameter<string>("identifier");
+                        a.ReturnsCollectionFromEntitySet<Signal>("Signals");
+
+                        var b = model.Collection.Function("GetLatestVersionOfAllSignals");
+                        b.ReturnsCollectionFromEntitySet<Signal>("Signals");
+
+                        var c = model.Collection.Function("GetLatestVersionOfSignal");
+                        c.Parameter<string>("identifier");
+                        c.ReturnsFromEntitySet<Signal>("Signal");
+
+                        var d = model.Action("CopySignalToNewVersion");
+                        d.ReturnsFromEntitySet<Signal>("Signal");
+
+                        var e = model.Action("SetSignalToDeleted");
 
                         break;
                     }
