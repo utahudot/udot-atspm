@@ -76,7 +76,7 @@
         </member>
         <member name="M:ATSPM.ConfigApi.Controllers.AtspmConfigControllerBase`2.Post(`0)">
             <summary>
-            Add new object of specified type
+            Insert/update object of specified type
             </summary>
             <param name="item">Properties of object to add</param>
             <returns>Action result with created object</returns>
@@ -94,6 +94,43 @@
             Delete object of specified type
             </summary>
             <param name="key">Key value of object to delete</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.SignalController.GetAllVersionsOfSignal(System.String,Microsoft.AspNetCore.OData.Query.ODataQueryOptions{ATSPM.Data.Models.Signal})">
+            <summary>
+            Get all active <see cref="T:ATSPM.Data.Models.Signal"/> that match <paramref name="identifier"/>
+            </summary>
+            <param name="identifier">Signal controller identifier</param>
+            <param name="options">oData query options</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> in decescing order of start date</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.SignalController.GetLatestVersionOfAllSignals">
+            <summary>
+            Get latest version of all <see cref="T:ATSPM.Data.Models.Signal"/>
+            </summary>
+            <param name="options">oData query options</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> with newest start date</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.SignalController.GetLatestVersionOfSignal(System.String,Microsoft.AspNetCore.OData.Query.ODataQueryOptions{ATSPM.Data.Models.Signal})">
+            <summary>
+            Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="identifier"/>
+            </summary>
+            <param name="identifier">Signal controller identifier</param>
+            <param name="options">oData query options</param>
+            <returns>Lastest <see cref="T:ATSPM.Data.Models.Signal"/> version</returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.SignalController.CopySignalToNewVersion(System.Int32)">
+            <summary>
+            Copies <see cref="T:ATSPM.Data.Models.Signal"/> and associated <see cref="T:ATSPM.Data.Models.Approach"/> to new version
+            </summary>
+            <param name="key">Signal version to copy</param>
+            <returns>New version of copied <see cref="T:ATSPM.Data.Models.Signal"/></returns>
+        </member>
+        <member name="M:ATSPM.ConfigApi.Controllers.SignalController.SetSignalToDeleted(System.Int32)">
+            <summary>
+            Marks <see cref="T:ATSPM.Data.Models.Signal"/> to deleted
+            </summary>
+            <param name="key">Key of <see cref="T:ATSPM.Data.Models.Signal"/> to mark as deleted</param>
             <returns></returns>
         </member>
         <member name="T:ConfigureSwaggerOptions">
