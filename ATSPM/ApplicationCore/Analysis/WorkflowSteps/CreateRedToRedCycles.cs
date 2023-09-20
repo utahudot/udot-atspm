@@ -65,7 +65,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IReadOnlyList<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
-                .OrderBy(o => o.TimeStamp)
+                .OrderBy(o => o.Timestamp)
                 .GroupBy(g => g.SignalIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y    
                 .Where((w, i) => y.Count() > 3 && i <= y.Count() - 3)
@@ -73,10 +73,10 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Select((s, i) => y.Skip(y.ToList().IndexOf(s)).Take(4))
                 .Select(m => new RedToRedCycle()
                 {
-                    Start = m.ElementAt(0).TimeStamp,
-                    End = m.ElementAt(3).TimeStamp,
-                    GreenEvent = m.ElementAt(1).TimeStamp,
-                    YellowEvent = m.ElementAt(2).TimeStamp,
+                    Start = m.ElementAt(0).Timestamp,
+                    End = m.ElementAt(3).Timestamp,
+                    GreenEvent = m.ElementAt(1).Timestamp,
+                    YellowEvent = m.ElementAt(2).Timestamp,
                     PhaseNumber = p,
                     SignalIdentifier = s
                 }))

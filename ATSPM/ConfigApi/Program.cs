@@ -12,7 +12,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Net;
 using System.Text.Json;
+using ATSPM.Domain.Extensions;
+using Microsoft.AspNetCore.OData.Formatter.Serialization;
+using Microsoft.OData;
+using System.Reflection.Metadata;
+using Microsoft.OData.Edm;
+using ATSPM.ConfigApi.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +31,9 @@ builder.Host.ConfigureServices((h, s) =>
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
         o.OutputFormatters.RemoveType<StringOutputFormatter>();
     }).AddXmlDataContractSerializerFormatters()
-    .AddJsonOptions(options =>
+    .AddJsonOptions(o =>
     {
-        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
     })
     .AddOData(o =>
     {
@@ -96,12 +103,18 @@ builder.Host.ConfigureServices((h, s) =>
 
 });
 
+//TODO: remove this after testing GCP Cloud Run
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//var url = $"http://0.0.0.0:{port}";
+//var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     // navigate to ~/$odata to determine whether any endpoints did not match an odata route template
     app.UseODataRouteDebug();
+    app.Services.PrintHostInformation();
 }
 
 app.UseSwagger();
@@ -121,13 +134,11 @@ app.UseSwaggerUI(o =>
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseHttpsRedirection();
+
 app.Run();
-
-
-
-
-
-
+//app.Run(url);
 
 
 /// <summary>

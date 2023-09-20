@@ -53,6 +53,8 @@ dkms.conf
 /ATSPMf/.vs/ATSPMf/v16
 /.vs
 /ATSPM/.vs
+/ATSPM/obj
+/ATSPM/bin
 /ATSPM/ApplicationCore/obj
 /ATSPM/ApplicationCore/bin
 /ATSPM/ApplicationCoreTests/obj
@@ -115,3 +117,5 @@ dkms.conf
 /ConfigApi/obj/Debug/net7.0/ConfigApi.GeneratedMSBuildEditorConfig.editorconfig
 /ConfigApi/obj/Debug/net7.0/ConfigApi.csproj.AssemblyReference.cache
 /ConfigApi/obj/Debug/net7.0/ConfigApi.assets.cache
+/ATSPM/ConfigApi/obj
+/ATSPM/ConfigApi/bin

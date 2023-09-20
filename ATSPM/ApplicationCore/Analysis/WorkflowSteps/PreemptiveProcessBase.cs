@@ -27,8 +27,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 {
                     SignalIdentifier = s.Item1[0].SignalIdentifier == s.Item1[1].SignalIdentifier ? s.Item1[0].SignalIdentifier : string.Empty,
                     PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
-                    Start = s.Item1[0].TimeStamp,
-                    End = s.Item1[1].TimeStamp,
+                    Start = s.Item1[0].Timestamp,
+                    End = s.Item1[1].Timestamp,
                     Seconds = s.Item2
                 })));
 

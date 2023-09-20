@@ -44,7 +44,7 @@ namespace ATSPM.ConfigApi.Controllers
                 AllowedFunctions = AllowedFunctions.All,
                 AllowedLogicalOperators = AllowedLogicalOperators.All,
                 //AllowedOrderByProperties = { "firstName", "lastName" },
-                //MaxOrderByNodeCount = 2,
+                //MaxOrderByNodeCount = 2,v  
                 //MaxTop = 1000,
             };
         }
@@ -76,6 +76,8 @@ namespace ATSPM.ConfigApi.Controllers
             }
 
             return Ok(options.ApplyTo(_repository.GetList()));
+
+            //return Ok(_repository.GetList());
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Add new object of specified type
+        /// Insert/update object of specified type
         /// </summary>
         /// <param name="item">Properties of object to add</param>
         /// <returns>Action result with created object</returns>
