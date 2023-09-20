@@ -97,7 +97,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                                 Array.Reverse(rawoffset);
                                 int offset = BitConverter.ToInt16(rawoffset, 0);
                                 var tenths = Convert.ToDouble(offset) / 10;
-                                log.TimeStamp = startTime.AddSeconds(tenths);
+                                log.Timestamp = startTime.AddSeconds(tenths);
                             }
                         }
 

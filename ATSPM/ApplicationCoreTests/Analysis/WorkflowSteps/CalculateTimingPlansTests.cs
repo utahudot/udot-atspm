@@ -34,7 +34,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                TimeStamp = DateTime.Now.AddSeconds(s)
+                Timestamp = DateTime.Now.AddSeconds(s)
 
             });
 
@@ -56,7 +56,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = s % 2 == 0 ? "1001" : "1002",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                TimeStamp = DateTime.Now.AddSeconds(s)
+                Timestamp = DateTime.Now.AddSeconds(s)
             });
 
             var result = await sut.ExecuteAsync(testEvents);
@@ -77,7 +77,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = s % 2 == 0 ? 1 : 2,
-                TimeStamp = DateTime.Now.AddSeconds(s)
+                Timestamp = DateTime.Now.AddSeconds(s)
             });
 
             var result = await sut.ExecuteAsync(testEvents);
@@ -98,7 +98,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = "1001",
                 EventCode = s % 2 == 0 ? s : (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                TimeStamp = DateTime.Now.AddSeconds(s)
+                Timestamp = DateTime.Now.AddSeconds(s)
 
             });
 
@@ -120,9 +120,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
-                TimeStamp = DateTime.Now.AddSeconds(s)
+                Timestamp = DateTime.Now.AddSeconds(s)
 
-            }).OrderByDescending(o => o.TimeStamp);
+            }).OrderByDescending(o => o.Timestamp);
 
             var result = await sut.ExecuteAsync(testEvents);
 
