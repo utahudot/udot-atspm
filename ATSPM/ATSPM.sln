@@ -37,9 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reports", "Reports\Reports.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportsTests", "ReportsTests\ReportsTests.csproj", "{D05FA75C-E890-4FA3-9D29-3BB88F3F9415}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity", "Identity\Identity.csproj", "{5B17D87D-81DB-48E5-9EF1-F219D8342764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{5B17D87D-81DB-48E5-9EF1-F219D8342764}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityTests", "IdentityTests\IdentityTests.csproj", "{67A0CF1F-01F6-45D6-AB53-7A5D76156A0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityTests", "IdentityTests\IdentityTests.csproj", "{67A0CF1F-01F6-45D6-AB53-7A5D76156A0B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "ConfigApi\ConfigApi.csproj", "{50F215FC-F873-41B0-969D-A4805BA43CD3}"
 EndProject
@@ -233,6 +233,18 @@ Global
 		{67A0CF1F-01F6-45D6-AB53-7A5D76156A0B}.Release|x64.Build.0 = Release|Any CPU
 		{67A0CF1F-01F6-45D6-AB53-7A5D76156A0B}.Release|x86.ActiveCfg = Release|Any CPU
 		{67A0CF1F-01F6-45D6-AB53-7A5D76156A0B}.Release|x86.Build.0 = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|x64.Build.0 = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Debug|x86.Build.0 = Debug|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|x64.ActiveCfg = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|x64.Build.0 = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|x86.ActiveCfg = Release|Any CPU
+		{50F215FC-F873-41B0-969D-A4805BA43CD3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

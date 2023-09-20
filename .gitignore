@@ -203,3 +203,9 @@ dkms.conf
 /ConfigApi/obj/ConfigApi.csproj.nuget.g.targets
 /ATSPM/ReportsTests/bin/Debug/net6.0/ApplicationCore.xml
 /ATSPM/bin/Debug/ApplicationCore.xml
+/ATSPM/IdentityTests/obj/IdentityTests.csproj.nuget.dgspec.json
+/ATSPM/Identity/bin
+/ATSPM/Identity/obj
+/ATSPM/IdentityTests/bin
+/ATSPM/IdentityTests/bin
+
