@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories;
 using AutoFixture;
 //using Legacy.Common.Business;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,18 +22,21 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly WaitTimeService waitTimeService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public WaitTimeController(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             WaitTimeService waitTimeService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository
+            ISignalRepository signalRepository,
+            PhaseService phaseService
             )
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.waitTimeService = waitTimeService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -90,17 +94,17 @@ namespace ATSPM.Application.Reports.Controllers
                 terminationEvents,
                 signal,
                 1);
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<WaitTimeResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phaseDetail in phaseDetails)
             {
                 tasks.Add(waitTimeService.GetChartData(
                 options,
-                approach,
+                phaseDetail,
                 phaseEvents,
-                analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).First(),
+                analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == phaseDetail.PhaseNumber).First(),
                 analysisPhaseDataCollection.Plans,
-                volume,
-                approach.ProtectedPhaseNumber
+                volume
                 ));
             }
             var results = await Task.WhenAll(tasks);

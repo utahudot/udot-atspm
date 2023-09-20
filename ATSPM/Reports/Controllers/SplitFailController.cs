@@ -6,6 +6,7 @@ using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,15 +23,19 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly SplitFailPhaseService splitFailPhaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public SplitFailController(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository)
+            ISignalRepository signalRepository,
+            PhaseService phaseService
+            )
         {
             this.splitFailPhaseService = splitFailPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -51,10 +56,11 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                options.Start.AddHours(-12),
                options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(options, approach, controllerEventLogs, planEvents, false));
+                tasks.Add(GetChartDataForApproach(options, phase, controllerEventLogs, planEvents, false));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -63,14 +69,14 @@ namespace ATSPM.Application.Reports.Controllers
 
         private async Task<IEnumerable<SplitFailsResult>> GetChartDataForApproach(
             SplitFailOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             bool usePermissivePhase)
         {
-            var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
+            //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
-                approach,
+                phaseDetail.PhaseNumber,
                 options.UsePermissivePhase,
                 options.Start,
                 options.End);
@@ -80,12 +86,12 @@ namespace ATSPM.Application.Reports.Controllers
                  options.Start,
                  options.End,
                  new List<int> { 4, 5, 6 },
-                 usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber);
-            var detectors = approach.GetDetectorsForMetricType(options.MetricTypeId);
+                 phaseDetail.PhaseNumber);
+            var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
             var tasks = new List<Task<SplitFailsResult>>();
             foreach (var detectionType in detectors.SelectMany(d => d.DetectionTypes).Distinct())
             {
-                tasks.Add(GetChartDataByDetectionType(options, approach, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
+                tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
             }
             var results = await Task.WhenAll(tasks);
             return results.Where(result => result != null);
@@ -93,7 +99,7 @@ namespace ATSPM.Application.Reports.Controllers
 
         private async Task<SplitFailsResult> GetChartDataByDetectionType(
             SplitFailOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> cycleEvents,
@@ -103,7 +109,7 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var tempDetectorEvents = controllerEventLogs.GetDetectorEvents(
                options.MetricTypeId,
-               approach,
+               phaseDetail.Approach,
                options.Start,
                options.End,
                true,
@@ -121,11 +127,11 @@ namespace ATSPM.Application.Reports.Controllers
                 planEvents,
                 terminationEvents,
                 detectorEvents,
-                approach);
+                phaseDetail.Approach);
             return new SplitFailsResult(
                 options.SignalIdentifier,
-                approach.Id,
-                options.UsePermissivePhase ? splitFailData.Approach.PermissivePhaseNumber.Value : splitFailData.Approach.ProtectedPhaseNumber,
+                phaseDetail.Approach.Id,
+                phaseDetail.PhaseNumber,
                 options.Start,
                 options.End,
                 splitFailData.TotalFails,

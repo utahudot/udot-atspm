@@ -2,6 +2,7 @@ using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.OpenApi.Extensions;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
         public TimingAndActuationsForPhaseResult GetChartData(
             TimingAndActuationsOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             bool usePermissivePhase
             )
@@ -28,41 +29,41 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
             if (options.ShowStopBarPresence)
             {
-                stopBarEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.SBP);
+                stopBarEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
             }
             if (options.ShowPedestrianActuation && !usePermissivePhase)
             {
-                pedestrianEvents = GetPedestrianEvents(approach, controllerEventLogs);
+                pedestrianEvents = GetPedestrianEvents(phaseDetail.Approach, controllerEventLogs);
             }
             if (options.ShowPedestrianIntervals && !usePermissivePhase)
             {
-                pedestrianIntervals = GetPedestrianIntervals(approach, controllerEventLogs);
+                pedestrianIntervals = GetPedestrianIntervals(phaseDetail.Approach, controllerEventLogs);
             }
             if (options.ShowLaneByLaneCount)
             {
-                laneByLanes = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.LLC);
+                laneByLanes = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
             }
             if (options.ShowAdvancedDilemmaZone)
             {
-                advancePresenceEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AP);
+                advancePresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AP);
             }
             if (options.ShowAdvancedCount)
             {
-                advanceCountEvents = GetDetectionEvents(approach, options, controllerEventLogs, DetectionTypes.AC);
+                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
             }
             if (options.PhaseEventCodesList != null)
             {
-                phaseCustomEvents = GetPhaseCustomEvents(approach.Signal.SignalIdentifier, usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber, options, controllerEventLogs);
+                phaseCustomEvents = GetPhaseCustomEvents(phaseDetail.Approach.Signal.SignalIdentifier, phaseDetail.PhaseNumber, options, controllerEventLogs);
             }
-            var cycleAllEvents = GetCycleEvents(options, approach, controllerEventLogs, usePermissivePhase);
-            var phaseNumberSort = GetPhaseSort(options, approach, usePermissivePhase);
+            var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs);
+            var phaseNumberSort = GetPhaseSort(phaseDetail);
             var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseResult(
-                approach.Id,
-                approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Id,
+                phaseDetail.Approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End,
-                usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
-                usePermissivePhase ? approach.IsPermissivePhaseOverlap : approach.IsProtectedPhaseOverlap,
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
                 phaseNumberSort,
                 usePermissivePhase,
                 pedestrianIntervals,
@@ -77,31 +78,26 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             return timingAndActuationsForPhaseData;
         }
 
-        private string GetPhaseSort(TimingAndActuationsOptions options, Approach approach, bool usePermissivePhase)
+        private string GetPhaseSort(PhaseDetail phaseDetail)
         {
-            return usePermissivePhase ?  // Check if the 'GetPermissivePhase' property of 'options' is true
-                approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
-                    : "Phase - " + approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
+            return phaseDetail.isPermissivePhase ?  // Check if the 'GetPermissivePhase' property of 'options' is true
+                phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
+                    "zOverlap - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    : "Phase - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
                 :  // If 'GetPermissivePhase' is false
-                approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
-                    : "Phase = " + approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
+                    "zOverlap - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    : "Phase = " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
         }
 
         public Dictionary<string, List<ControllerEventLog>> GetCycleEvents(
-            TimingAndActuationsOptions options,
-            Approach approach,
-            List<ControllerEventLog> controllerEventLogs,
-            bool usePermissivePhase)
+            PhaseDetail phaseDetail,
+            List<ControllerEventLog> controllerEventLogs)
         {
-            var getOverlapCodes = (usePermissivePhase && approach.IsPermissivePhaseOverlap) ||
-                (!usePermissivePhase && approach.IsPermissivePhaseOverlap);
 
-            List<int> cycleEventCodes = GetCycleCodes(getOverlapCodes);
-            var overlapLabel = getOverlapCodes == true ? "Overlap" : "";
-            var phaseNumber = usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
-            string keyLabel = $"Cycles Intervals {phaseNumber} {overlapLabel}";
+            List<int> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
+            string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new Dictionary<string, List<ControllerEventLog>>();
             if (controllerEventLogs.Any())
             {

@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Controllers
             }
             ApproachDelayResult viewModel = approachDelayService.GetChartData(
                 options,
-                phaseDetail.Approach,
+                phaseDetail,
                 signalPhase);
             viewModel.SignalDescription = signalDescription;
             viewModel.ApproachDescription = phaseDetail.Approach.Description;

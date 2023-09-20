@@ -5,6 +5,7 @@ using ATSPM.Data.Models;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Reports.Business.Common;
 using System.Globalization;
 using System.Net;
 using Xunit;
@@ -22,6 +23,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             PlanService planService = new PlanService();
             CycleService cycleService = new CycleService();
             ILoggerFactory loggerFactory = new LoggerFactory();
+            PhaseService phaseService = new PhaseService();
             ILogger<SignalPhaseService> logger = loggerFactory.CreateLogger<SignalPhaseService>();
 
             SignalPhaseService signalPhaseService = new SignalPhaseService(planService, cycleService, logger);
@@ -72,10 +74,12 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
-            var options = new ApproachDelayOptions() { SignalIdentifier = "7115", BinSize = 15, Start = start, End = end, GetPermissivePhase = false, GetVolume = true };
+            var phaseDetail = phaseService.GetPhases(mockSignal.Object);
 
-            SignalPhase signalPhase = await signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
-            var result = approachDelayService.GetChartData(options, approach.Object, signalPhase);
+            var options = new ApproachDelayOptions() { SignalIdentifier = "7115", BinSize = 15, Start = start, End = end, GetVolume = true };
+
+            SignalPhase signalPhase = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
+            var result = approachDelayService.GetChartData(options, phaseDetail.FirstOrDefault(), signalPhase);
 
             // Assert
             Assert.Equal(approach.Object.Id, result.ApproachId);

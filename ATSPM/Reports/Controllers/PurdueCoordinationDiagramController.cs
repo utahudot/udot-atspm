@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using Reports.Business.PurdueCoordinationDiagram;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,17 +23,20 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly SignalPhaseService signalPhaseService;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public PurdueCoordinationDiagramController(
             PurdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
             SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository)
+            ISignalRepository signalRepository,
+            PhaseService phaseService)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.signalPhaseService = signalPhaseService;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -52,10 +56,11 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<PurdueCoordinationDiagramResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(options, approach, controllerEventLogs, planEvents));
+                tasks.Add(GetChartDataForApproach(options, phase, controllerEventLogs, planEvents));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -63,15 +68,18 @@ namespace ATSPM.Application.Reports.Controllers
             return results.Where(result => result != null);
         }
 
-        private async Task<PurdueCoordinationDiagramResult> GetChartDataForApproach(PurdueCoordinationDiagramOptions options, Approach approach, IReadOnlyList<ControllerEventLog> controllerEventLogs, IReadOnlyList<ControllerEventLog> planEvents)
+        private async Task<PurdueCoordinationDiagramResult> GetChartDataForApproach(
+            PurdueCoordinationDiagramOptions options,
+            PhaseDetail phaseDetail,
+            IReadOnlyList<ControllerEventLog> controllerEventLogs,
+            IReadOnlyList<ControllerEventLog> planEvents)
         {
             var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                options.UsePermissivePhase,
+                phaseDetail,
                 options.Start,
                 options.End,
                 options.SelectedBinSize,
                 null,
-                approach,
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
                 options.ShowVolumes);
@@ -79,9 +87,9 @@ namespace ATSPM.Application.Reports.Controllers
             {
                 return null;
             }
-            PurdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, approach, signalPhase);
-            viewModel.SignalDescription = approach.Signal.SignalDescription();
-            viewModel.ApproachDescription = approach.Description;
+            PurdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, phaseDetail.Approach, signalPhase);
+            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }
     }

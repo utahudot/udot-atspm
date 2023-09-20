@@ -159,14 +159,14 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime startDate,
             DateTime endDate,
             List<YellowRedActivationsCycle> cycles,
-            Approach approach,
+            string signalIdentifier,
             double severeRedLightViolationSeconds,
             IReadOnlyList<ControllerEventLog> planEvents)
         {
             var plans = GetBasicPlans(
                 startDate,
                 endDate,
-                approach.Signal.SignalIdentifier,
+                signalIdentifier,
                 planEvents).ToList();
             if (plans.Count == 0)
                 plans.Add(new Plan("0", startDate, endDate));
@@ -175,8 +175,7 @@ namespace ATSPM.Application.Reports.Business.Common
                 plan.EndTime,
                 plan.PlanNumber,
                 cycles.Where(c => c.StartTime >= plan.StartTime && c.StartTime < plan.EndTime).ToList(),
-                severeRedLightViolationSeconds,
-                approach)).ToList();
+                severeRedLightViolationSeconds)).ToList();
         }
 
         public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(

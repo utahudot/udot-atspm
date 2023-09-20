@@ -8,7 +8,6 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
         public string SignalIdentifier { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public bool UsePermissivePhase { get; set; }
         public int MetricTypeId { get; set; } = 11;
     }
 }

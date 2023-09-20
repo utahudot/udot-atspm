@@ -9,6 +9,5 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public int SelectedBinSize { get; set; }
-        public bool UsePermissivePhase { get; internal set; }
     }
 }

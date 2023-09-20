@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Data.Models;
 using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
@@ -17,7 +16,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
 
         public ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             SignalPhase signalPhase)
         {
             var dt = signalPhase.StartDate;
@@ -43,10 +42,10 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             }
             var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
-                approach.Id,
-                approach.Signal.SignalIdentifier,
-                options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
-                approach.Description,
+                phaseDetail.Approach.Id,
+                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.PhaseNumber,
+                phaseDetail.Approach.Description,
                 options.Start,
                 options.End,
                 signalPhase.AvgDelaySeconds,
