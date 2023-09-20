@@ -83,7 +83,7 @@ namespace ATSPM.Application.Reports.Business.Common
         }
 
         public async Task<SignalPhase> GetSignalPhaseData(
-            bool usePermissivePhase,
+            bool useOverlap,
             DateTime start,
             DateTime end,
             int binSize,
@@ -108,7 +108,7 @@ namespace ATSPM.Application.Reports.Business.Common
 
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 approach,
-                usePermissivePhase,
+                useOverlap,
                 start,
                 end);
             if (cycleEvents.IsNullOrEmpty())

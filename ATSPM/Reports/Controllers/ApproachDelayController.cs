@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,18 +20,21 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly SignalPhaseService signalPhaseService;
         private readonly ISignalRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly PhaseService phaseService;
 
         public ApproachDelayController(
             ApproachDelayService approachDelayService,
             SignalPhaseService signalPhaseService,
             ISignalRepository signalRepository,
-            IControllerEventLogRepository controllerEventLogRepository
+            IControllerEventLogRepository controllerEventLogRepository,
+            PhaseService phaseService
             )
         {
             this.approachDelayService = approachDelayService;
             this.signalPhaseService = signalPhaseService;
             this.signalRepository = signalRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.phaseService = phaseService;
         }
 
         [HttpGet("test")]
@@ -49,10 +53,11 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<ApproachDelayResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription()));
+                tasks.Add(GetChartDataByApproach(options, phase, controllerEventLogs, planEvents, signal.SignalDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -62,18 +67,18 @@ namespace ATSPM.Application.Reports.Controllers
 
         private async Task<ApproachDelayResult> GetChartDataByApproach(
             ApproachDelayOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             string signalDescription)
         {
             var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                options.GetPermissivePhase,
+                phaseDetail.UseOverlap,
                 options.Start,
                 options.End,
                 options.BinSize,
                 null,
-                approach,
+                phaseDetail.Approach,
                 controllerEventLogs,
                 planEvents,
                 false);
@@ -83,10 +88,10 @@ namespace ATSPM.Application.Reports.Controllers
             }
             ApproachDelayResult viewModel = approachDelayService.GetChartData(
                 options,
-                approach,
+                phaseDetail.Approach,
                 signalPhase);
             viewModel.SignalDescription = signalDescription;
-            viewModel.ApproachDescription = approach.Description;
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }
 

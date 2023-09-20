@@ -4,6 +4,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,19 +20,22 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IApproachRepository approachRepository;
         private readonly ISpeedEventRepository speedEventRepository;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public ApproachSpeedController(
             ApproachSpeedService approachSpeedService,
             IControllerEventLogRepository controllerEventLogRepository,
             IApproachRepository approachRepository,
             ISpeedEventRepository speedEventRepository,
-            ISignalRepository signalRepository)
+            ISignalRepository signalRepository,
+            PhaseService phaseService)
         {
             this.approachSpeedService = approachSpeedService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.approachRepository = approachRepository;
             this.speedEventRepository = speedEventRepository;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         [HttpGet("test")]
@@ -50,6 +54,8 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<ApproachSpeedResult>>();
             foreach (var approach in signal.Approaches)
             {
@@ -64,7 +70,7 @@ namespace ATSPM.Application.Reports.Controllers
             ApproachSpeedOptions options,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
-            Approach approach,
+            PhaseDetail phaseDetail,
             string signalDescription)
         {
             var detector = approach.GetDetectorsForMetricType(options.MetricTypeId).First();
