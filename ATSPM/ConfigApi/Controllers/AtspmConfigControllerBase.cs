@@ -44,7 +44,7 @@ namespace ATSPM.ConfigApi.Controllers
                 AllowedFunctions = AllowedFunctions.All,
                 AllowedLogicalOperators = AllowedLogicalOperators.All,
                 //AllowedOrderByProperties = { "firstName", "lastName" },
-                //MaxOrderByNodeCount = 2,
+                //MaxOrderByNodeCount = 2,v  
                 //MaxTop = 1000,
             };
         }
@@ -56,7 +56,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="200">Items successfully retrieved.</response>
         // GET /Entity
         //[HttpGet()]
-        [EnableQuery]
+        //[EnableQuery]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,18 +66,18 @@ namespace ATSPM.ConfigApi.Controllers
         //}
         public ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
-            //try
-            //{
-            //    options.Validate(QueryValidation);
-            //}
-            //catch (ODataException e)
-            //{
-            //    return BadRequest(e.Message);
-            //}
+            try
+            {
+                options.Validate(QueryValidation);
+            }
+            catch (ODataException e)
+            {
+                return BadRequest(e.Message);
+            }
 
-            //return Ok(options.ApplyTo(_repository.GetList()));
+            return Ok(options.ApplyTo(_repository.GetList()));
 
-            return Ok(_repository.GetList());
+            //return Ok(_repository.GetList());
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Add new object of specified type
+        /// Insert/update object of specified type
         /// </summary>
         /// <param name="item">Properties of object to add</param>
         /// <returns>Action result with created object</returns>

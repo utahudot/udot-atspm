@@ -1015,6 +1015,24 @@
             <param name="message">The error message that explains the reason for the exception.</param>
             <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
         </member>
+        <member name="M:ATSPM.Application.Extensions.SignalRepositoryExtensions.CopySignalToNewVersion(ATSPM.Application.Repositories.ISignalRepository,System.Int32)">
+            <summary>
+            Copies <see cref="T:ATSPM.Data.Models.Signal"/> and associated <see cref="T:ATSPM.Data.Models.Approach"/> to new version
+            and archives old version
+            </summary>
+            <param name="repo"></param>
+            <param name="id">Signal version to copy</param>
+            <returns>New version of copied <see cref="T:ATSPM.Data.Models.Signal"/></returns>
+        </member>
+        <member name="M:ATSPM.Application.Extensions.SignalRepositoryExtensions.SetSignalToDeleted(ATSPM.Application.Repositories.ISignalRepository,System.Int32)">
+            <summary>
+            Marks <see cref="T:ATSPM.Data.Models.Signal"/> to deleted
+            </summary>
+            <param name="repo"></param>
+            <param name="id">Id of <see cref="T:ATSPM.Data.Models.Signal"/> to mark as deleted</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">id is not a valid signal</exception>
+        </member>
         <member name="M:ATSPM.Application.Extensions.DetectorExtensions.CheckReportAvialbility(ATSPM.Data.Models.Detector,System.Int32)">
             <summary>
             Checks to see if <see cref="T:ATSPM.Data.Models.Detector"/>.<see cref="T:ATSPM.Data.Models.DetectionType"/> metrics contains <paramref name="metricId"/>
@@ -1145,9 +1163,9 @@
         </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetAllVersionsOfSignal(System.String)">
             <summary>
-            Get all active <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalId"/>
+            Get all active <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalIdentifier"/>
             </summary>
-            <param name="signalId">Signal controller identifier</param>
+            <param name="signalIdentifier">Signal controller identifier</param>
             <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> in decescing order of start date</returns>
         </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetLatestVersionOfAllSignals">
@@ -1165,26 +1183,26 @@
         </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetLatestVersionOfSignal(System.String)">
             <summary>
-            Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalId"/>
+            Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalIdentifier"/>
             </summary>
-            <param name="signalId">Signal controller identifier</param>
+            <param name="signalIdentifier">Signal controller identifier</param>
             <returns>Lastest <see cref="T:ATSPM.Data.Models.Signal"/> version</returns>
         </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetLatestVersionOfSignal(System.String,System.DateTime)">
             <summary>
-            Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalId"/>
+            Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalIdentifier"/>
             and begin at or before <paramref name="startDate"/>
             </summary>
-            <param name="signalId">Signal controller identifier</param>
+            <param name="signalIdentifier">Signal controller identifier</param>
             <param name="startDate">Starting date of Signal controllers</param>
             <returns>Lastest <see cref="T:ATSPM.Data.Models.Signal"/> version</returns>
         </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetSignalsBetweenDates(System.String,System.DateTime,System.DateTime)">
             <summary>
-            Get all active <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalId"/>
+            Get all active <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalIdentifier"/>
             and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
             </summary>
-            <param name="signalId">Signal controller identifier</param>
+            <param name="signalIdentifier">Signal controller identifier</param>
             <param name="startDate">Date controllers are older than</param>
             <param name="endDate">Date controllers are newer than</param>
             <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> in decescing order of start date</returns>
