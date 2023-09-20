@@ -34,7 +34,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Item2.Select(c =>
                 new CorrectedDetectorEvent(s.Item1)
                 {
-                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.TimeStamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
+                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
                 }))
             .SelectMany(s => s)
             .ToList();
