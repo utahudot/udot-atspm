@@ -80,7 +80,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
         private string GetPhaseSort(PhaseDetail phaseDetail)
         {
-            return phaseDetail.isPermissivePhase ?  // Check if the 'GetPermissivePhase' property of 'options' is true
+            return phaseDetail.IsPermissivePhase ?  // Check if the 'GetPermissivePhase' property of 'options' is true
                 phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
                     "zOverlap - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
                     : "Phase - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string

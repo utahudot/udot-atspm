@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Reports.Business.Common;
 using Reports.Business.PurdueCoordinationDiagram;
 using GzipCompressionProvider = Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider;
 
@@ -111,6 +112,7 @@ namespace ATSPM.Application.Reports
             services.AddScoped<AnalysisPhaseCollectionService>();
             services.AddScoped<AnalysisPhaseService>();
             services.AddScoped<PreemptDetailService>();
+            services.AddScoped<PhaseService>();
 
             //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
             //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();
