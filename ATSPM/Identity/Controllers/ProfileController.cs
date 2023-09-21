@@ -2,11 +2,10 @@ using Identity.Models.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace Identity.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "AdminActionsPolicy")]
     [ApiController]
     [Route("api/profile")]
     public class ProfileController : ControllerBase

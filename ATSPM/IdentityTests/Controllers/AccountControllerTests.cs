@@ -22,15 +22,24 @@ namespace YourProject.Tests.Controllers
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
 
             _signInManagerMock = new Mock<SignInManager<ApplicationUser>>(_userManagerMock.Object, Mock.Of<IHttpContextAccessor>(), Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null, null, null);
+
             var configurationMock = new Mock<IConfiguration>();
 
             // Setup the configuration to return specific values for keys
             configurationMock.Setup(x => x["Jwt:Secret"]).Returns("3936A97D8CD9E34B2E5E565F8226F");
+            // Add more configuration values if needed
+            // configurationMock.Setup(x => x["IdentityServer:Endpoint"]).Returns("...");
 
-            // Use the configurationMock.Object in your controller tests
-            // For example, when creating the AccountController in the test:
-            _accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object, configurationMock.Object);
+            // Mock any new services or dependencies you've added to the AccountController
+            // var newServiceMock = new Mock<INewService>();
+
+            // Consider using a mock HTTP client if you're making external HTTP requests
+            // var httpClientMock = new Mock<IHttpClientFactory>();
+
+            // Use the configurationMock.Object in your controller tests and any new mocks
+            _accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object, configurationMock.Object /*, newServiceMock.Object, httpClientMock.Object*/);
         }
+
 
         [Fact]
         public async Task Register_ValidModel_ReturnsOk()
@@ -194,7 +203,7 @@ namespace YourProject.Tests.Controllers
             var result = await _accountController.ForgotPassword(model);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkObjectResult>(result);
         }
 
         [Fact]

@@ -2,11 +2,10 @@ using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace Identity.Controllers
 {
-    [Authorize(Roles = "Admin")] // Requires "Admin" role for accessing this controller
+    [Authorize(Policy = "AdminActionsPolicy")]
     [ApiController]
     [Route("api/roles")]
     public class RolesController : ControllerBase
@@ -71,7 +70,7 @@ namespace Identity.Controllers
         [HttpPost("assign")]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
-            if (model.UserId == null || model.RoleName == null ||!ModelState.IsValid)
+            if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -83,7 +82,7 @@ namespace Identity.Controllers
             }
 
             var result = await _userManager.AddToRoleAsync(user, model.RoleName);
-            if (result !=null && result.Succeeded)
+            if (result != null && result.Succeeded)
             {
                 return Ok();
             }

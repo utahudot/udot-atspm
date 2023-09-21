@@ -1,16 +1,17 @@
 using ATSPM.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddDbContext<IdentityContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-
+    services.AddDbContext<IdentityContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
+    .AddEntityFrameworkStores<IdentityContext>()
+    .AddDefaultTokenProviders();
     services.AddIdentityServer()
     //For production
     //(options =>
@@ -34,6 +35,15 @@ builder.Host.ConfigureServices((host, services) =>
         // other configurations, like adding a signing credential...
         .AddDeveloperSigningCredential();
 
+    services.AddAuthentication("Bearer")
+       .AddJwtBearer("Bearer", options =>
+       {
+           options.Authority = "https://localhost:44357"; // assuming your IdentityServer is running on this URL
+           options.RequireHttpsMetadata = false; // set to true in production!
+
+           options.Audience = "Identity"; // replace with your API resource name
+       });
+
     //This is for the production certificate
     //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)
     //.Certificates
@@ -41,8 +51,20 @@ builder.Host.ConfigureServices((host, services) =>
     //.OfType<X509Certificate2>()
     //.Single();
 
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    //IdentityClient Settings
+    services.AddAuthorization(options =>
+    {
+        options.AddPolicy("AdminActionsPolicy", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                (c.Type == "scope" && c.Value == "config.admin") ||
+                (c.Type == "scope" && c.Value == "config.public")));
+
+        });
+    });
+
 
     services.AddControllers();
 
@@ -81,11 +103,11 @@ if (app.Environment.IsDevelopment())
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1"));
     }
 }
-app.UseIdentityServer();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseIdentityServer();
 
 app.MapControllers();
 

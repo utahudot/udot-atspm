@@ -54,39 +54,13 @@ namespace Identity.Controllers
 
             if (result != null && result.Succeeded)
             {
-                // Build the return URL after successful token issuance
-                var returnUrl = Url.Action("Index", "Home"); // adjust based on your needs
-
-                // Redirect the user to IdentityServer for token issuance
-                return Redirect($"[Your_IdentityServer_Endpoint]/connect/authorize?client_id=[Your_Client_Id]&response_type=code&redirect_uri={returnUrl}");
-
-                // Note: The above URL is a simplification. In reality, you'd likely use an OIDC client library to help with creating this URL.
-
+                return Ok();
             }
-
             return Unauthorized();
+
         }
 
-        //private string GenerateJwtToken(ApplicationUser user)
-        //{
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"]); // Replace "Secret" with your own secret key
-        //    var tokenDescriptor = new SecurityTokenDescriptor
-        //    {
-        //        Subject = new ClaimsIdentity(new[]
-        //        {
-        //            new Claim(ClaimTypes.NameIdentifier, user.Id),
-        //            new Claim(ClaimTypes.Email, user.Email),
-        //            // Add other claims as needed (e.g., roles, custom claims, etc.)
-        //        }),
-        //        Expires = DateTime.UtcNow.AddMinutes(30), // Set token expiration time
-        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        //    };
-
-        //    var token = tokenHandler.CreateToken(tokenDescriptor);
-        //    return tokenHandler.WriteToken(token);
-        //}
-
+        [Authorize(Policy = "AdminActionsPolicy")]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -95,7 +69,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("changepassword")]
-        [Authorize]
+        [Authorize(Policy = "AdminActionsPolicy")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
