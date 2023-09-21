@@ -155,6 +155,7 @@ namespace ATSPM.Application.Reports.Controllers
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            return result;
         }
 
         private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<ControllerEventLog> detectorEvents)
