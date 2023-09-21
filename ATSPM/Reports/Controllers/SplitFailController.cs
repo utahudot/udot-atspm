@@ -7,7 +7,6 @@ using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Reports.Business.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -136,7 +135,7 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 splitFailData.TotalFails,
                 splitFailData.Plans,
-                splitFailData.Bins.Select(b => new FailLine(b.StartTime, Convert.ToInt32(b.SplitFails))).ToList(),
+                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new FailLine(c.StartTime)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
                     .Select(b => new GapOutGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
