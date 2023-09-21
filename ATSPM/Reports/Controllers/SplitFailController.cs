@@ -128,7 +128,7 @@ namespace ATSPM.Application.Reports.Controllers
                 terminationEvents,
                 detectorEvents,
                 phaseDetail.Approach);
-            return new SplitFailsResult(
+            var result = new SplitFailsResult(
                 options.SignalIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.PhaseNumber,
@@ -153,6 +153,8 @@ namespace ATSPM.Application.Reports.Controllers
                 splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
                 );
+            result.ApproachDescription = phaseDetail.Approach.Description;
+            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
         }
 
         private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<ControllerEventLog> detectorEvents)
