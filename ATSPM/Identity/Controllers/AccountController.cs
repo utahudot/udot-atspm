@@ -2,11 +2,6 @@ using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Identity.Controllers
 {
@@ -36,7 +31,7 @@ namespace Identity.Controllers
             var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result !=null && result.Succeeded)
+            if (result != null && result.Succeeded)
             {
                 // Optionally, you can sign the user in after successful registration.
                 // await _signInManager.SignInAsync(user, isPersistent: false);
@@ -59,40 +54,38 @@ namespace Identity.Controllers
 
             if (result != null && result.Succeeded)
             {
-                // User is authenticated, generate a JWT token
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null)
-                {
-                    return Unauthorized();
-                }
-                var token = GenerateJwtToken(user);
+                // Build the return URL after successful token issuance
+                var returnUrl = Url.Action("Index", "Home"); // adjust based on your needs
 
-                // Return the token in the response
-                return Ok(new { Token = token });
+                // Redirect the user to IdentityServer for token issuance
+                return Redirect($"[Your_IdentityServer_Endpoint]/connect/authorize?client_id=[Your_Client_Id]&response_type=code&redirect_uri={returnUrl}");
+
+                // Note: The above URL is a simplification. In reality, you'd likely use an OIDC client library to help with creating this URL.
+
             }
 
             return Unauthorized();
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"]); // Replace "Secret" with your own secret key
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    // Add other claims as needed (e.g., roles, custom claims, etc.)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(30), // Set token expiration time
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+        //private string GenerateJwtToken(ApplicationUser user)
+        //{
+        //    var tokenHandler = new JwtSecurityTokenHandler();
+        //    var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"]); // Replace "Secret" with your own secret key
+        //    var tokenDescriptor = new SecurityTokenDescriptor
+        //    {
+        //        Subject = new ClaimsIdentity(new[]
+        //        {
+        //            new Claim(ClaimTypes.NameIdentifier, user.Id),
+        //            new Claim(ClaimTypes.Email, user.Email),
+        //            // Add other claims as needed (e.g., roles, custom claims, etc.)
+        //        }),
+        //        Expires = DateTime.UtcNow.AddMinutes(30), // Set token expiration time
+        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        //    };
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
+        //    var token = tokenHandler.CreateToken(tokenDescriptor);
+        //    return tokenHandler.WriteToken(token);
+        //}
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

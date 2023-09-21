@@ -209,3 +209,4 @@ dkms.conf
 /ATSPM/IdentityTests/bin
 /ATSPM/IdentityTests/bin
 
+/ATSPM/bin/Debug/SignalControllerLogger.runtimeconfig.json
