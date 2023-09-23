@@ -28,7 +28,14 @@ namespace Identity.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                Agency = model.Agency,
+                FirstName = model.FirstName,
+                LastName = model.LastName
+            };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result != null && result.Succeeded)
@@ -60,16 +67,16 @@ namespace Identity.Controllers
 
         }
 
-        [Authorize(Policy = "AdminActionsPolicy")]
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok();
+            return Ok(new { Message = "Successfully logged out." });
         }
 
         [HttpPost("changepassword")]
-        [Authorize(Policy = "AdminActionsPolicy")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)

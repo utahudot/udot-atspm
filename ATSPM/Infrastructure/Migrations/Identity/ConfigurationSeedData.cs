@@ -71,7 +71,10 @@ public static class ConfigurationSeedData
          new Client
         {
             ClientId = "ATSPMWeb",
-            // ... other settings ...
+            ClientSecrets =
+            {
+                new Secret("ATSPMWebTest".Sha256())
+            },
             AllowedScopes = {
                 "reports.public",
                 "reports.private",
@@ -83,14 +86,33 @@ public static class ConfigurationSeedData
         new Client
         {
             ClientId = "EventLogUtility",
-            // ... other settings ...
+            ClientSecrets =
+            {
+                new Secret("ATSPMEventLogUtilityTest".Sha256())
+            },
             AllowedScopes = { "admin.utility" }
+        },
+        new Client
+        {
+            ClientId = "PostmanTest",
+            ClientSecrets =
+            {
+                new Secret("PostmanTest".Sha256())
+            },
+            RedirectUris = { "https://127.0.0.1:44357" },
+            AllowedGrantTypes = GrantTypes.ClientCredentials,
+            AllowedScopes = { "reports.public","reports.private","config.admin","config.public","admin.utility" },
+            RequireConsent = false,
+            RequirePkce = false,
         },
             new Client
         {
             ClientId = "Identity",
-            // ... other settings ...
-            AllowedScopes = { "config.admin" }
+            ClientSecrets =
+            {
+                new Secret("IdentityTest".Sha256())
+            },
+            AllowedScopes = { "config.admin", "config.public" }
         },
     };
     }

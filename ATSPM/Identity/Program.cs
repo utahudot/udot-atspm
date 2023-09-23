@@ -1,4 +1,5 @@
 using ATSPM.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -6,9 +7,9 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddDbContext<IdentityContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddDbContext<IdentityContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
@@ -35,14 +36,36 @@ builder.Host.ConfigureServices((host, services) =>
         // other configurations, like adding a signing credential...
         .AddDeveloperSigningCredential();
 
-    services.AddAuthentication("Bearer")
-       .AddJwtBearer("Bearer", options =>
-       {
-           options.Authority = "https://localhost:44357"; // assuming your IdentityServer is running on this URL
-           options.RequireHttpsMetadata = false; // set to true in production!
+    //services.AddAuthentication("Bearer")
+    //   .AddJwtBearer("Bearer", options =>
+    //   {
+    //       options.Authority = "https://localhost:5001"; // assuming your IdentityServer is running on this URL
+    //       options.RequireHttpsMetadata = false; // set to true in production!
 
-           options.Audience = "Identity"; // replace with your API resource name
-       });
+    //       options.Audience = "Identity"; // replace with your API resource name
+    //   });
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+    services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = "Cookies";
+        options.DefaultChallengeScheme = "oidc";
+    })
+        .AddCookie("Cookie")
+        .AddJwtBearer(options =>
+        {
+            options.Authority = "https://localhost:44357";
+            options.Audience = "Identity";
+        })
+        .AddOpenIdConnect("oidc", options =>
+        {
+            options.Authority = "https://localhost:44357";
+            options.ClientId = "PostmanTest";
+            options.ResponseType = "code";
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.SaveTokens = true;
+        });
+
 
     //This is for the production certificate
     //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)
@@ -72,6 +95,14 @@ builder.Host.ConfigureServices((host, services) =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
         // Add other Swagger configuration as needed
+    });
+
+    services.ConfigureApplicationCookie(options =>
+    {
+        // ... other options ...
+
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 });
 
