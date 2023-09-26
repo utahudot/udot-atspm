@@ -1,4 +1,11 @@
-﻿using System;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Specifications;
+using ATSPM.Data;
+using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -86,6 +93,24 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.DirectionType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionHardware)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.LaneType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.MovementType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectorComments)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionTypes)
+                            .ThenInclude(d => d.MetricTypeMetrics)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())

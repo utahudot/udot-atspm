@@ -44,7 +44,7 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public async Task<IEnumerable<ApproachVolumeResult>> GetChartData([FromBody] ApproachVolumeOptions options)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId);
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalId, options.Start);
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
             var tasks = new List<Task<ApproachVolumeResult>>();
             var nbSbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();

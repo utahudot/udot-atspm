@@ -11,6 +11,11 @@ namespace ATSPM.Data.Models
     //TODO: Remove this when everything is cleaned up
     public partial class Signal
     {
+        public void GetAvailableMetrics()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string? ToString()
         {
             return $"{SignalIdentifier} - {PrimaryName} {SecondaryName}";
