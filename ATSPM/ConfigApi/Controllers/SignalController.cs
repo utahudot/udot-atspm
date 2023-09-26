@@ -37,6 +37,20 @@ namespace ATSPM.ConfigApi.Controllers
 
         }
 
+        [EnableQuery]
+        public IActionResult GetApproaches([FromRoute] int key)
+        {
+            var approaches = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+
+            if (approaches == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(approaches);
+        }
+
+
         /// <summary>
         /// Get all active <see cref="Signal"/> that match <paramref name="identifier"/>
         /// </summary>
@@ -50,6 +64,19 @@ namespace ATSPM.ConfigApi.Controllers
         {
             return Ok(options.ApplyTo(_repository.GetAllVersionsOfSignal(identifier).AsQueryable()));
         }
+
+
+
+
+
+
+
+
+
+
+
+        //GET THIS WORKING WITHOUT THE QUERY ATTRIBUTE!!!!
+
 
         /// <summary>
         /// Get latest version of all <see cref="Signal"/>
@@ -67,6 +94,28 @@ namespace ATSPM.ConfigApi.Controllers
             return Ok(_repository.GetLatestVersionOfAllSignals());
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="identifier"/>
         /// </summary>
@@ -78,6 +127,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult GetLatestVersionOfSignal(string identifier, ODataQueryOptions<Signal> options)
         {
+            //https://learn.microsoft.com/en-us/odata/webapi-8/fundamentals/query-options?tabs=net60
             options.Request.ODataFeature().SelectExpandClause = new SelectExpandQueryOption(null, "Approaches", options.Context, new ODataQueryOptionParser(
                 model: options.Context.Model,
                 targetEdmType: options.Context.NavigationSource.EntityType(),
@@ -138,6 +188,27 @@ namespace ATSPM.ConfigApi.Controllers
             }
             
             return Ok();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(Signal), Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        public IActionResult GetSignalsForMetricType(int metricTypeId, ODataQueryOptions<Signal> options)
+        {
+            var i = _repository.GetSignalsForMetricType(metricTypeId);
+
+            return Ok(options.ApplyTo(i.AsQueryable()));
         }
     }
 }

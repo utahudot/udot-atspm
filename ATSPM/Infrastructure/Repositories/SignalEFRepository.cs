@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data;
@@ -24,10 +25,10 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.ControllerType)
                 .Include(i => i.Jurisdiction)
                 .Include(i => i.Region)
-                .Include(i => i.VersionAction)
-                .Include(i => i.Approaches)
-                .ThenInclude(i => i.Detectors)
-                .Include(i => i.Areas);
+                .Include(i => i.VersionAction);
+                //.Include(i => i.Approaches)
+                //.ThenInclude(i => i.Detectors)
+                //.Include(i => i.Areas);
             //.Include(i => i.MetricComments);
         }
 
@@ -110,6 +111,20 @@ namespace ATSPM.Infrastructure.Repositories
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
+                .ToList();
+
+            var s = new Signal();
+
+            s.GetAvailableMetrics();
+
+            return result;
+        }
+
+        public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
+        {
+            var result = BaseQuery()
+                .Take(50)
+                .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
                 .ToList();
 
             return result;
