@@ -3,12 +3,14 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class ConfigurationSeedData
+namespace ATSPM.Infrastructure.Migrations.Identity
 {
-    // Methods to define seed data
-    public static IEnumerable<ApiResource> GetApiResources()
+    public static class ConfigurationSeedData
     {
-        return new List<ApiResource>
+        // Methods to define seed data
+        public static IEnumerable<ApiResource> GetApiResources()
+        {
+            return new List<ApiResource>
         {
             new ApiResource("reportsApi", "Reports API")
             {
@@ -37,11 +39,11 @@ public static class ConfigurationSeedData
                 Scopes = { "admin.utility" }
             }
         };
-    }
+        }
 
-    public static IEnumerable<ApiScope> GetApiScopes()
-    {
-        return new List<ApiScope>
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new List<ApiScope>
         {
             new ApiScope("reports.private", "Access to private reports"),
             new ApiScope("reports.public", "Access to public reports"),
@@ -50,23 +52,23 @@ public static class ConfigurationSeedData
             new ApiScope("admin.utility", "Access to admin utility"),
             new ApiScope("config.public", "Basic user access")
         };
-    }
+        }
 
-    // ... other parts of ConfigurationSeedData ...
+        // ... other parts of ConfigurationSeedData ...
 
-    public static IEnumerable<IdentityResource> GetIdentityResources()
-    {
-        return new List<IdentityResource>
+        public static IEnumerable<IdentityResource> GetIdentityResources()
+        {
+            return new List<IdentityResource>
     {
         new IdentityResources.OpenId(),
         new IdentityResources.Profile(),
         // ... other identity resources ...
     };
-    }
+        }
 
-    public static IEnumerable<Client> GetClients()
-    {
-        return new List<Client>
+        public static IEnumerable<Client> GetClients()
+        {
+            return new List<Client>
     {
          new Client
         {
@@ -115,54 +117,56 @@ public static class ConfigurationSeedData
             AllowedScopes = { "config.admin", "config.public" }
         },
     };
-    }
-
-    public static void Seed(IdentityConfigurationContext context)
-    {
-        // ... seeding logic for ApiResources and ApiScopes ...
-
-        // Seed IdentityResources
-        if (!context.IdentityResources.Any())
-        {
-            foreach (var resource in GetIdentityResources())
-            {
-                context.IdentityResources.Add(resource.ToEntity());
-            }
-            context.SaveChanges();
         }
 
-        // Seed Clients
-        if (!context.Clients.Any())
+        public static void Seed(IdentityConfigurationContext context)
         {
-            foreach (var client in GetClients())
+            // ... seeding logic for ApiResources and ApiScopes ...
+
+            // Seed IdentityResources
+            if (!context.IdentityResources.Any())
             {
-                context.Clients.Add(client.ToEntity());
+                foreach (var resource in GetIdentityResources())
+                {
+                    context.IdentityResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
             }
-            context.SaveChanges();
+
+            // Seed Clients
+            if (!context.Clients.Any())
+            {
+                foreach (var client in GetClients())
+                {
+                    context.Clients.Add(client.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            // Seed ApiResources
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in GetApiResources())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            // Seed ApiScopes
+            if (!context.ApiScopes.Any())
+            {
+                foreach (var scope in GetApiScopes())
+                {
+                    context.ApiScopes.Add(scope.ToEntity());
+                }
+                context.SaveChanges();
+            }
+
+            // ... similar logic for seeding clients, identity resources, etc. ...
         }
 
-        // Seed ApiResources
-        if (!context.ApiResources.Any())
-        {
-            foreach (var resource in GetApiResources())
-            {
-                context.ApiResources.Add(resource.ToEntity());
-            }
-            context.SaveChanges();
-        }
 
-        // Seed ApiScopes
-        if (!context.ApiScopes.Any())
-        {
-            foreach (var scope in GetApiScopes())
-            {
-                context.ApiScopes.Add(scope.ToEntity());
-            }
-            context.SaveChanges();
-        }
 
-        // ... similar logic for seeding clients, identity resources, etc. ...
     }
 }
-
-

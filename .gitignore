@@ -210,3 +210,4 @@ dkms.conf
 /ATSPM/IdentityTests/bin
 
 /ATSPM/bin/Debug/SignalControllerLogger.runtimeconfig.json
+/ConfigApi/bin/Debug/net7.0/ATSPM.ConfigApi.deps.json

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Controllers
 {
-    [Authorize(Policy = "AdminActionsPolicy")]
+    [Authorize()]
     [ApiController]
     [Route("api/roles")]
     public class RolesController : ControllerBase
