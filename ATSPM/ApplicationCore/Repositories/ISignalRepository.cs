@@ -60,6 +60,9 @@ namespace ATSPM.Application.Repositories
         /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
         IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate);
 
+
+        IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId);
+
         #region ExtensionMethods
 
         //Signal CopySignalToNewVersion(int id);
