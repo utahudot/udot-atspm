@@ -1,11 +1,4 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,29 +11,14 @@ namespace ATSPM.Infrastructure.Repositories
         private IQueryable<Signal> BaseQuery()
         {
             return base.GetList()
-                .Include(s => s.ControllerType)
-        .Include(s => s.Jurisdiction)
-        .Include(s => s.Region)
-        .Include(s => s.VersionAction)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.DirectionType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectionHardware)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.LaneType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.MovementType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectorComments)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectionTypes)
-                    .ThenInclude(d => d.MetricTypeMetrics)
-        .Include(s => s.Areas);
+                .Include(i => i.ControllerType)
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Region)
+                .Include(i => i.VersionAction);
+            //.Include(i => i.Approaches)
+            //.ThenInclude(i => i.Detectors)
+            //.Include(i => i.Areas);
+            //.Include(i => i.MetricComments);
         }
 
         #region Overrides
@@ -122,6 +100,20 @@ namespace ATSPM.Infrastructure.Repositories
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start > startDate && signal.Start < endDate)
                 .FromSpecification(new ActiveSignalSpecification())
+                .ToList();
+
+            var s = new Signal();
+
+            s.GetAvailableMetrics();
+
+            return result;
+        }
+
+        public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
+        {
+            var result = BaseQuery()
+                .Take(50)
+                .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
                 .ToList();
 
             return result;
