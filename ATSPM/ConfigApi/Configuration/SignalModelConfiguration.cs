@@ -62,6 +62,10 @@ namespace ATSPM.ConfigApi.Configuration
 
                         var e = model.Action("SetSignalToDeleted");
 
+                        var f = model.Collection.Function("GetSignalsForMetricType");
+                        f.Parameter<int>("metricTypeId");
+                        f.ReturnsCollectionFromEntitySet<Signal>("Signals");
+
                         break;
                     }
             }
