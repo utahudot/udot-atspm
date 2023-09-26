@@ -3,7 +3,6 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using AutoFixture;
 using InfrastructureTests.Fixtures;
 using Microsoft.EntityFrameworkCore;
@@ -110,7 +109,7 @@ namespace InfrastructureTests.RepositoryTests
         public void ISignalRepositoryGetLatestVersionOfSignalWithDate(string signalId)
         {
             var start = DateTime.Today.AddDays(-2);
-            
+
             var result = _repo.GetLatestVersionOfSignal(signalId, start);
 
             _output.WriteLine($"result: {result.Id} - {result.SignalIdentifier} - {result.PrimaryName} - {result.VersionActionId} - {result.Start}");
@@ -224,7 +223,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = _repo.GetLatestVersionOfSignal(signalId);
 
-            var actual = await _repo.CopySignalToNewVersion(signal);
+            var actual = await _repo.CopySignalToNewVersion(signal.Id);
 
             _output.WriteLine($"Compare: {signal.Id} - {actual.Id}");
             _output.WriteLine($"Compare: {signal.SignalIdentifier} - {actual.SignalIdentifier}");
