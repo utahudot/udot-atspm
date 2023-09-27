@@ -20,6 +20,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "ViewRoles")]
         public IActionResult GetRoles()
         {
             var roles = _roleManager.Roles.Select(r => r.Name).ToList();
@@ -27,6 +28,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "CreateRoles")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (!ModelState.IsValid)
@@ -48,6 +50,7 @@ namespace Identity.Controllers
         }
 
         [HttpDelete("{roleName}")]
+        [Authorize(Policy = "DeleteRoles")]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
             var role = await _roleManager.FindByNameAsync(roleName);
@@ -68,6 +71,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("assign")]
+        [Authorize(Policy = "EditUsers")]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
             if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)

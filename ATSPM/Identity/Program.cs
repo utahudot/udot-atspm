@@ -79,15 +79,42 @@ builder.Host.ConfigureServices((host, services) =>
     //IdentityClient Settings
     services.AddAuthorization(options =>
     {
-        options.AddPolicy("AdminActionsPolicy", policy =>
+        options.AddPolicy("ViewUsers", policy =>
         {
             policy.RequireAuthenticatedUser();
-            policy.RequireAssertion(context =>
-            context.User.HasClaim(c =>
-                (c.Type == "scope" && c.Value == "config.admin") ||
-                (c.Type == "scope" && c.Value == "config.public")));
-
+            policy.RequireClaim("Admin:ViewUsers", "Admin:ViewUsers");
         });
+        options.AddPolicy("EditUsers", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:ViewUsers", "Admin:EditUsers");
+        });
+        options.AddPolicy("DeleteUsers", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:ViewUsers", "Admin:DeleteUsers");
+        });
+        options.AddPolicy("ViewRoles", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:ViewRoles", "Admin:ViewRoles");
+        });
+        options.AddPolicy("EditRoles", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:EditRoles", "Admin:EditRoles");
+        });
+        options.AddPolicy("DeleteRoles", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:DeleteRoles", "Admin:DeleteRoles");
+        });
+        options.AddPolicy("CreateRoles", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
+        });
+
     });
 
 
