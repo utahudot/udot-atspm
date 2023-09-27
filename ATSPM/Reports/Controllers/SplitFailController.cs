@@ -7,7 +7,6 @@ using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Reports.Business.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -128,7 +127,7 @@ namespace ATSPM.Application.Reports.Controllers
                 terminationEvents,
                 detectorEvents,
                 phaseDetail.Approach);
-            return new SplitFailsResult(
+            var result = new SplitFailsResult(
                 options.SignalIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.PhaseNumber,
@@ -136,7 +135,7 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 splitFailData.TotalFails,
                 splitFailData.Plans,
-                splitFailData.Bins.Select(b => new FailLine(b.StartTime, Convert.ToInt32(b.SplitFails))).ToList(),
+                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new FailLine(c.StartTime)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
                     .Select(b => new GapOutGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
@@ -153,6 +152,9 @@ namespace ATSPM.Application.Reports.Controllers
                 splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
                 splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
                 );
+            result.ApproachDescription = phaseDetail.Approach.Description;
+            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            return result;
         }
 
         private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<ControllerEventLog> detectorEvents)

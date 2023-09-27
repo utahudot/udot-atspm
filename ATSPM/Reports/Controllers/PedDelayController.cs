@@ -5,6 +5,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,8 @@ namespace ATSPM.Application.Reports.Controllers
         {
             var cycleEvents = events.GetCycleEventsWithTimeExtension(phaseDetail.PhaseNumber, phaseDetail.UseOverlap, options.Start, options.End);
             var pedEvents = events.GetPedEvents(options.Start, options.End, phaseDetail.Approach);
+            if (pedEvents.IsNullOrEmpty())
+                return null;
             var pedPhaseData = pedPhaseService.GetPedPhaseData(
                 options,
                 phaseDetail.Approach,
