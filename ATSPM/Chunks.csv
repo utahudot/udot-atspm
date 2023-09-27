@@ -1,0 +1,871 @@
+﻿TextChunk,TextChunk.StartIndex,TextChunk.EndIndex,TextChunk.BoundingBox,TextChunk.Text
+PDFParser.Services.TextChunk,0,2,"Rectangle: 21.274673x0",UT
+PDFParser.Services.TextChunk,2,8,"Rectangle: 60.296875x0","AH DEP"
+PDFParser.Services.TextChunk,8,11,"Rectangle: 32.79779x0",ART
+PDFParser.Services.TextChunk,11,13,"Rectangle: 23.940002x0",ME
+PDFParser.Services.TextChunk,13,15,"Rectangle: 21.274689x0",NT
+PDFParser.Services.TextChunk,15,17,"Rectangle: 16.85376x0"," O"
+PDFParser.Services.TextChunk,17,19,"Rectangle: 14.188446x0","F "
+PDFParser.Services.TextChunk,19,20,"Rectangle: 9.751556x0",T
+PDFParser.Services.TextChunk,20,23,"Rectangle: 34.569366x0",RAN
+PDFParser.Services.TextChunk,23,25,"Rectangle: 21.29065x0",SP
+PDFParser.Services.TextChunk,25,26,"Rectangle: 12.41687x0",O
+PDFParser.Services.TextChunk,26,28,"Rectangle: 21.274689x0",RT
+PDFParser.Services.TextChunk,28,30,"Rectangle: 21.274658x0",AT
+PDFParser.Services.TextChunk,30,32,"Rectangle: 16.85376x0",IO
+PDFParser.Services.TextChunk,32,33,"Rectangle: 11.523132x0",N
+PDFParser.Services.TextChunk,33,34,"Rectangle: 4.4368896x0"," "
+PDFParser.Services.TextChunk,34,35,"Rectangle: 10.136871x0",R
+PDFParser.Services.TextChunk,35,36,"Rectangle: 3.9031067x0",I
+PDFParser.Services.TextChunk,36,38,"Rectangle: 21.059998x0",GH
+PDFParser.Services.TextChunk,38,39,"Rectangle: 8.57843x0",T
+PDFParser.Services.TextChunk,39,40,"Rectangle: 3.9031067x0"," "
+PDFParser.Services.TextChunk,40,41,"Rectangle: 10.923126x0",O
+PDFParser.Services.TextChunk,41,42,"Rectangle: 8.57843x0",F
+PDFParser.Services.TextChunk,42,43,"Rectangle: 3.9031067x0"," "
+PDFParser.Services.TextChunk,43,44,"Rectangle: 13.253754x0",W
+PDFParser.Services.TextChunk,44,45,"Rectangle: 10.136871x0",A
+PDFParser.Services.TextChunk,45,46,"Rectangle: 9.364685x0",Y
+PDFParser.Services.TextChunk,46,47,"Rectangle: 3.9031067x0"," "
+PDFParser.Services.TextChunk,47,48,"Rectangle: 9.364685x0",S
+PDFParser.Services.TextChunk,48,49,"Rectangle: 10.136871x0",U
+PDFParser.Services.TextChunk,49,50,"Rectangle: 11.6953125x0",M
+PDFParser.Services.TextChunk,50,51,"Rectangle: 11.6953125x0",M
+PDFParser.Services.TextChunk,51,52,"Rectangle: 10.136871x0",A
+PDFParser.Services.TextChunk,52,53,"Rectangle: 10.136871x0",R
+PDFParser.Services.TextChunk,53,54,"Rectangle: 9.364685x0",Y
+PDFParser.Services.TextChunk,54,55,"Rectangle: 3.9031067x0"," "
+PDFParser.Services.TextChunk,55,56,"Rectangle: 10.136871x0",N
+PDFParser.Services.TextChunk,56,57,"Rectangle: 8.57843x0",o
+PDFParser.Services.TextChunk,57,58,"Rectangle: 3.9031067x0",.
+PDFParser.Services.TextChunk,58,59,"Rectangle: 3.9031067x0"," "
+PDFParser.Services.TextChunk,59,60,"Rectangle: 7.806244x0",0
+PDFParser.Services.TextChunk,60,61,"Rectangle: 7.806244x0",9
+PDFParser.Services.TextChunk,61,62,"Rectangle: 9.364685x0",P
+PDFParser.Services.TextChunk,62,63,"Rectangle: 3.9031372x0"," "
+PDFParser.Services.TextChunk,63,64,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,64,65,"Rectangle: 8.003998x0",P
+PDFParser.Services.TextChunk,65,68,"Rectangle: 15.995998x0",IN:
+PDFParser.Services.TextChunk,68,69,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,69,70,"Rectangle: 6.671997x0",1
+PDFParser.Services.TextChunk,70,71,"Rectangle: 6.671997x0",5
+PDFParser.Services.TextChunk,71,72,"Rectangle: 6.671997x0",6
+PDFParser.Services.TextChunk,72,73,"Rectangle: 6.671997x0",7
+PDFParser.Services.TextChunk,73,74,"Rectangle: 6.671997x0",7
+PDFParser.Services.TextChunk,74,75,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,75,76,"Rectangle: 8.003998x0",P
+PDFParser.Services.TextChunk,76,80,"Rectangle: 22.007996x0",roje
+PDFParser.Services.TextChunk,80,81,"Rectangle: 6.671997x0",c
+PDFParser.Services.TextChunk,81,84,"Rectangle: 15.996002x0","t N"
+PDFParser.Services.TextChunk,84,86,"Rectangle: 10.667999x0",o.
+PDFParser.Services.TextChunk,86,87,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,87,88,"Rectangle: 7.3320007x0",F
+PDFParser.Services.TextChunk,88,89,"Rectangle: 3.9960022x0",-
+PDFParser.Services.TextChunk,89,90,"Rectangle: 6.671997x0",0
+PDFParser.Services.TextChunk,90,91,"Rectangle: 6.671997x0",0
+PDFParser.Services.TextChunk,91,92,"Rectangle: 6.671997x0",8
+PDFParser.Services.TextChunk,92,93,"Rectangle: 6.671997x0",9
+PDFParser.Services.TextChunk,93,95,"Rectangle: 10.667999x0",(4
+PDFParser.Services.TextChunk,95,96,"Rectangle: 6.6720123x0",5
+PDFParser.Services.TextChunk,96,97,"Rectangle: 6.671997x0",6
+PDFParser.Services.TextChunk,97,100,"Rectangle: 17.339996x0",)42
+PDFParser.Services.TextChunk,100,101,"Rectangle: 6.671997x0",3
+PDFParser.Services.TextChunk,101,102,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,102,103,"Rectangle: 8.003998x0",P
+PDFParser.Services.TextChunk,103,107,"Rectangle: 22.007996x0",roje
+PDFParser.Services.TextChunk,107,108,"Rectangle: 6.671997x0",c
+PDFParser.Services.TextChunk,108,111,"Rectangle: 15.996002x0","t N"
+PDFParser.Services.TextChunk,111,112,"Rectangle: 6.671997x0",a
+PDFParser.Services.TextChunk,112,113,"Rectangle: 10.667999x0",m
+PDFParser.Services.TextChunk,113,114,"Rectangle: 6.671997x0",e
+PDFParser.Services.TextChunk,114,115,"Rectangle: 3.9960022x0",:
+PDFParser.Services.TextChunk,115,116,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,116,118,"Rectangle: 16.644012x0",US
+PDFParser.Services.TextChunk,118,119,"Rectangle: 3.9960022x0",-
+PDFParser.Services.TextChunk,119,120,"Rectangle: 6.671997x0",8
+PDFParser.Services.TextChunk,120,121,"Rectangle: 6.671997x0",9
+PDFParser.Services.TextChunk,121,122,"Rectangle: 3.3359985x0",;
+PDFParser.Services.TextChunk,122,124,"Rectangle: 11.339996x0"," S"
+PDFParser.Services.TextChunk,124,125,"Rectangle: 8.664001x0",R
+PDFParser.Services.TextChunk,125,126,"Rectangle: 3.9960022x0",-
+PDFParser.Services.TextChunk,126,127,"Rectangle: 6.671997x0",1
+PDFParser.Services.TextChunk,127,128,"Rectangle: 6.671997x0",2
+PDFParser.Services.TextChunk,128,129,"Rectangle: 6.671997x0",6
+PDFParser.Services.TextChunk,129,130,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,130,132,"Rectangle: 10.007996x0",to
+PDFParser.Services.TextChunk,132,134,"Rectangle: 11.340027x0"," P"
+PDFParser.Services.TextChunk,134,135,"Rectangle: 6.671997x0",e
+PDFParser.Services.TextChunk,135,137,"Rectangle: 7.9920044x0",rr
+PDFParser.Services.TextChunk,137,138,"Rectangle: 6x0",y
+PDFParser.Services.TextChunk,138,139,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,139,143,"Rectangle: 26.003998x0",Regi
+PDFParser.Services.TextChunk,143,146,"Rectangle: 18.66x0",on:
+PDFParser.Services.TextChunk,146,147,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,147,148,"Rectangle: 6.671997x0",1
+PDFParser.Services.TextChunk,148,149,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,149,151,"Rectangle: 15.996002x0",Co
+PDFParser.Services.TextChunk,151,154,"Rectangle: 18.660004x0",unt
+PDFParser.Services.TextChunk,154,155,"Rectangle: 6.671997x0",y
+PDFParser.Services.TextChunk,155,156,"Rectangle: 3.9960022x0",:
+PDFParser.Services.TextChunk,156,157,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,157,158,"Rectangle: 8.003998x0",B
+PDFParser.Services.TextChunk,158,159,"Rectangle: 6.671997x0",o
+PDFParser.Services.TextChunk,159,162,"Rectangle: 17.339996x0","x E"
+PDFParser.Services.TextChunk,162,165,"Rectangle: 16.007996x0",lde
+PDFParser.Services.TextChunk,165,166,"Rectangle: 3.9960022x0",r
+PDFParser.Services.TextChunk,166,167,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,167,169,"Rectangle: 15.996002x0",Ro
+PDFParser.Services.TextChunk,169,171,"Rectangle: 11.328003x0",ut
+PDFParser.Services.TextChunk,171,172,"Rectangle: 6.671997x0",e
+PDFParser.Services.TextChunk,172,176,"Rectangle: 18.660004x0",(s):
+PDFParser.Services.TextChunk,176,177,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,177,179,"Rectangle: 16.644012x0",US
+PDFParser.Services.TextChunk,179,180,"Rectangle: 3.9960022x0",-
+PDFParser.Services.TextChunk,180,182,"Rectangle: 13.391998x0",89
+PDFParser.Services.TextChunk,182,183,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,183,184,"Rectangle: 3.0691185x0"," "
+PDFParser.Services.TextChunk,184,185,"Rectangle: 3.6763306x0",(
+PDFParser.Services.TextChunk,185,186,"Rectangle: 7.363678x0",S
+PDFParser.Services.TextChunk,186,187,"Rectangle: 3.0691223x0",t
+PDFParser.Services.TextChunk,187,190,"Rectangle: 15.345612x0",ate
+PDFParser.Services.TextChunk,190,191,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,191,192,"Rectangle: 7.970886x0",R
+PDFParser.Services.TextChunk,192,194,"Rectangle: 12.276489x0",ou
+PDFParser.Services.TextChunk,194,195,"Rectangle: 3.0691223x0",t
+PDFParser.Services.TextChunk,195,196,"Rectangle: 6.1382446x0",e
+PDFParser.Services.TextChunk,196,197,"Rectangle: 3.0691223x0",","
+PDFParser.Services.TextChunk,197,198,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,198,199,"Rectangle: 7.970886x0",U
+PDFParser.Services.TextChunk,199,200,"Rectangle: 7.363678x0",S
+PDFParser.Services.TextChunk,200,201,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,201,202,"Rectangle: 7.970886x0",R
+PDFParser.Services.TextChunk,202,204,"Rectangle: 12.276489x0",ou
+PDFParser.Services.TextChunk,204,205,"Rectangle: 3.0690918x0",t
+PDFParser.Services.TextChunk,205,207,"Rectangle: 9.207336x0","e,"
+PDFParser.Services.TextChunk,207,208,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,208,211,"Rectangle: 12.883667x0","or "
+PDFParser.Services.TextChunk,211,213,"Rectangle: 12.276489x0",Lo
+PDFParser.Services.TextChunk,213,216,"Rectangle: 14.109131x0",cal
+PDFParser.Services.TextChunk,216,217,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,217,218,"Rectangle: 7.970886x0",R
+PDFParser.Services.TextChunk,218,220,"Rectangle: 12.276489x0",ou
+PDFParser.Services.TextChunk,220,221,"Rectangle: 3.0690918x0",t
+PDFParser.Services.TextChunk,221,222,"Rectangle: 6.1382446x0",e
+PDFParser.Services.TextChunk,222,223,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,223,225,"Rectangle: 9.5164795x0","= "
+PDFParser.Services.TextChunk,225,226,"Rectangle: 7.3637085x0",S
+PDFParser.Services.TextChunk,226,227,"Rectangle: 3.0690918x0",t
+PDFParser.Services.TextChunk,227,228,"Rectangle: 3.6763306x0",r
+PDFParser.Services.TextChunk,228,230,"Rectangle: 12.276489x0",ee
+PDFParser.Services.TextChunk,230,231,"Rectangle: 3.0690918x0",t
+PDFParser.Services.TextChunk,231,232,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,232,233,"Rectangle: 7.970886x0",N
+PDFParser.Services.TextChunk,233,236,"Rectangle: 21.472778x0",ame
+PDFParser.Services.TextChunk,236,237,"Rectangle: 3.6763306x0",)
+PDFParser.Services.TextChunk,237,238,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,238,239,"Rectangle: 3.0691185x0"," "
+PDFParser.Services.TextChunk,239,240,"Rectangle: 7.363682x0",P
+PDFParser.Services.TextChunk,240,245,"Rectangle: 25.778404x0",arcel
+PDFParser.Services.TextChunk,245,246,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,246,247,"Rectangle: 7.9708786x0",N
+PDFParser.Services.TextChunk,247,251,"Rectangle: 29.44368x0",umbe
+PDFParser.Services.TextChunk,251,252,"Rectangle: 4.2945633x0",r
+PDFParser.Services.TextChunk,252,253,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,253,254,"Rectangle: 8.589127x0",G
+PDFParser.Services.TextChunk,254,257,"Rectangle: 17.178238x0",ran
+PDFParser.Services.TextChunk,257,258,"Rectangle: 3.6763153x0",t
+PDFParser.Services.TextChunk,258,260,"Rectangle: 11.039993x0",or
+PDFParser.Services.TextChunk,260,261,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,261,262,"Rectangle: 7.363678x0",S
+PDFParser.Services.TextChunk,262,265,"Rectangle: 12.883667x0","q. "
+PDFParser.Services.TextChunk,265,267,"Rectangle: 10.421753x0",Ft
+PDFParser.Services.TextChunk,267,268,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,268,269,"Rectangle: 7.970886x0",A
+PDFParser.Services.TextChunk,269,273,"Rectangle: 22.70929x0",cres
+PDFParser.Services.TextChunk,273,274,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,274,275,"Rectangle: 7.970886x0",D
+PDFParser.Services.TextChunk,275,277,"Rectangle: 12.276489x0",ee
+PDFParser.Services.TextChunk,277,280,"Rectangle: 16.559998x0","d T"
+PDFParser.Services.TextChunk,280,282,"Rectangle: 12.883667x0",yp
+PDFParser.Services.TextChunk,282,283,"Rectangle: 6.1382446x0",e
+PDFParser.Services.TextChunk,283,284,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,284,285,"Rectangle: 7.363678x0",V
+PDFParser.Services.TextChunk,285,288,"Rectangle: 16.559998x0",oid
+PDFParser.Services.TextChunk,288,289,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,289,290,"Rectangle: 7.3637085x0",V
+PDFParser.Services.TextChunk,290,294,"Rectangle: 19.62909x0","oid "
+PDFParser.Services.TextChunk,294,295,"Rectangle: 7.970886x0",&
+PDFParser.Services.TextChunk,295,296,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,296,297,"Rectangle: 7.970886x0",R
+PDFParser.Services.TextChunk,297,299,"Rectangle: 12.883667x0",ep
+PDFParser.Services.TextChunk,299,300,"Rectangle: 3.0690918x0",l
+PDFParser.Services.TextChunk,300,302,"Rectangle: 12.276489x0",ac
+PDFParser.Services.TextChunk,302,303,"Rectangle: 6.1382446x0",e
+PDFParser.Services.TextChunk,303,304,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,304,305,"Rectangle: 9.19635x0",M
+PDFParser.Services.TextChunk,305,307,"Rectangle: 12.883667x0",ap
+PDFParser.Services.TextChunk,307,308,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,308,309,"Rectangle: 7.3637085x0",S
+PDFParser.Services.TextChunk,309,311,"Rectangle: 12.883667x0",he
+PDFParser.Services.TextChunk,311,312,"Rectangle: 6.1382446x0",e
+PDFParser.Services.TextChunk,312,313,"Rectangle: 3.6763306x0",t
+PDFParser.Services.TextChunk,313,314,"Rectangle: 6.1382446x0",s
+PDFParser.Services.TextChunk,314,315,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,315,319,"Rectangle: 23.48999x0",(RWT
+PDFParser.Services.TextChunk,319,321,"Rectangle: 8.000977x0","T,"
+PDFParser.Services.TextChunk,321,325,"Rectangle: 19.997986x0"," RW,"
+PDFParser.Services.TextChunk,325,329,"Rectangle: 23.499023x0"," RWS"
+PDFParser.Services.TextChunk,329,330,"Rectangle: 7.4970093x0",M
+PDFParser.Services.TextChunk,330,332,"Rectangle: 5.0040283x0",", "
+PDFParser.Services.TextChunk,332,333,"Rectangle: 5.0040283x0",e
+PDFParser.Services.TextChunk,333,334,"Rectangle: 2.5020142x0",t
+PDFParser.Services.TextChunk,334,335,"Rectangle: 4.5x0",c
+PDFParser.Services.TextChunk,335,337,"Rectangle: 5.4990234x0",.)
+PDFParser.Services.TextChunk,337,338,"Rectangle: 3.0690918x0"," "
+PDFParser.Services.TextChunk,338,339,"Rectangle: 2.768879x0"," "
+PDFParser.Services.TextChunk,339,340,"Rectangle: 7.363678x0",P
+PDFParser.Services.TextChunk,340,341,"Rectangle: 3.6763191x0",r
+PDFParser.Services.TextChunk,341,343,"Rectangle: 12.276478x0",ep
+PDFParser.Services.TextChunk,343,348,"Rectangle: 25.160164x0","ared "
+PDFParser.Services.TextChunk,348,349,"Rectangle: 6.138237x0",b
+PDFParser.Services.TextChunk,349,351,"Rectangle: 8.589119x0",y:
+PDFParser.Services.TextChunk,351,352,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,352,353,"Rectangle: 3.676323x0",(
+PDFParser.Services.TextChunk,353,354,"Rectangle: 9.19632x0",M
+PDFParser.Services.TextChunk,354,356,"Rectangle: 13.501923x0",LB
+PDFParser.Services.TextChunk,356,358,"Rectangle: 6.0691376x0",", "
+PDFParser.Services.TextChunk,358,359,"Rectangle: 7.363678x0",A
+PDFParser.Services.TextChunk,359,361,"Rectangle: 11.658234x0",ve
+PDFParser.Services.TextChunk,361,363,"Rectangle: 12.276474x0",nu
+PDFParser.Services.TextChunk,363,367,"Rectangle: 23.316483x0","e Co"
+PDFParser.Services.TextChunk,367,370,"Rectangle: 17.796478x0",nsu
+PDFParser.Services.TextChunk,370,371,"Rectangle: 2.450882x0",l
+PDFParser.Services.TextChunk,371,372,"Rectangle: 3.0691223x0",t
+PDFParser.Services.TextChunk,372,374,"Rectangle: 12.276474x0",an
+PDFParser.Services.TextChunk,374,375,"Rectangle: 3.0691223x0",t
+PDFParser.Services.TextChunk,375,376,"Rectangle: 5.5200043x0",s
+PDFParser.Services.TextChunk,376,378,"Rectangle: 6.0691376x0",", "
+PDFParser.Services.TextChunk,378,380,"Rectangle: 9.189163x0",4/
+PDFParser.Services.TextChunk,380,381,"Rectangle: 6.1382446x0",2
+PDFParser.Services.TextChunk,381,382,"Rectangle: 6.1382294x0",5
+PDFParser.Services.TextChunk,382,383,"Rectangle: 3.0691223x0",/
+PDFParser.Services.TextChunk,383,385,"Rectangle: 12.276489x0",20
+PDFParser.Services.TextChunk,385,387,"Rectangle: 12.276489x0",23
+PDFParser.Services.TextChunk,387,388,"Rectangle: 3.6763306x0",)
+PDFParser.Services.TextChunk,388,389,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,389,390,"Rectangle: 7.363678x0",S
+PDFParser.Services.TextChunk,390,392,"Rectangle: 12.276482x0",he
+PDFParser.Services.TextChunk,392,395,"Rectangle: 12.276482x0","et "
+PDFParser.Services.TextChunk,395,396,"Rectangle: 6.138237x0",1
+PDFParser.Services.TextChunk,396,397,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,397,399,"Rectangle: 9.207359x0",of
+PDFParser.Services.TextChunk,399,400,"Rectangle: 3.0691223x0"," "
+PDFParser.Services.TextChunk,400,401,"Rectangle: 6.138237x0",1
+PDFParser.Services.TextChunk,401,402,"Rectangle: 3.3359985x0"," "
+PDFParser.Services.TextChunk,402,404,"Rectangle: 10.502991x0",Fo
+PDFParser.Services.TextChunk,404,406,"Rectangle: 10.494019x0",rm
+PDFParser.Services.TextChunk,406,407,"Rectangle: 2.9970093x0",-
+PDFParser.Services.TextChunk,407,408,"Rectangle: 6.497986x0",R
+PDFParser.Services.TextChunk,408,410,"Rectangle: 13.5x0",W5
+PDFParser.Services.TextChunk,410,411,"Rectangle: 5.0040283x0",3
+PDFParser.Services.TextChunk,411,412,"Rectangle: 2.5020142x0"," "
+PDFParser.Services.TextChunk,412,414,"Rectangle: 8.000977x0",(0
+PDFParser.Services.TextChunk,414,415,"Rectangle: 5.0040283x0",7
+PDFParser.Services.TextChunk,415,416,"Rectangle: 2.9970093x0",-
+PDFParser.Services.TextChunk,416,417,"Rectangle: 5.0040283x0",0
+PDFParser.Services.TextChunk,417,418,"Rectangle: 5.0040283x0",5
+PDFParser.Services.TextChunk,418,419,"Rectangle: 2.9970093x0",-
+PDFParser.Services.TextChunk,419,420,"Rectangle: 5.0040283x0",2
+PDFParser.Services.TextChunk,420,421,"Rectangle: 5.0040283x0",0
+PDFParser.Services.TextChunk,421,422,"Rectangle: 5.0040283x0",2
+PDFParser.Services.TextChunk,422,423,"Rectangle: 5.0040283x0",0
+PDFParser.Services.TextChunk,423,424,"Rectangle: 2.9970093x0",)
+PDFParser.Services.TextChunk,424,425,"Rectangle: 2.5020142x0"," "
+PDFParser.Services.TextChunk,425,427,"Rectangle: 11.075516x0",34
+PDFParser.Services.TextChunk,427,429,"Rectangle: 8.306641x0",5:
+PDFParser.Services.TextChunk,429,430,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,430,431,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,431,432,"Rectangle: 6.643326x0",E
+PDFParser.Services.TextChunk,432,435,"Rectangle: 13.844406x0",tha
+PDFParser.Services.TextChunk,435,439,"Rectangle: 21.035522x0","n Da"
+PDFParser.Services.TextChunk,439,441,"Rectangle: 7.748886x0",ni
+PDFParser.Services.TextChunk,441,443,"Rectangle: 7.748886x0",el
+PDFParser.Services.TextChunk,443,444,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,444,445,"Rectangle: 6.643326x0",S
+PDFParser.Services.TextChunk,445,446,"Rectangle: 8.296677x0",m
+PDFParser.Services.TextChunk,446,447,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,447,449,"Rectangle: 8.306641x0",th
+PDFParser.Services.TextChunk,449,450,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,450,453,"Rectangle: 16.577667x0",816
+PDFParser.Services.TextChunk,453,454,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,454,457,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,457,458,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,458,459,"Rectangle: 5.5377502x0",9
+PDFParser.Services.TextChunk,459,460,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,460,461,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,461,463,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,463,465,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,465,466,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,466,469,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,469,470,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,470,471,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,471,473,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,473,475,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,475,477,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,477,478,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,478,479,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,479,480,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,480,481,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,481,483,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,483,484,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,484,485,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,485,486,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,486,488,"Rectangle: 11.057739x0",03
+PDFParser.Services.TextChunk,488,490,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,490,492,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,492,493,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,493,494,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,494,495,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,495,496,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,496,499,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,499,500,"Rectangle: 7.191101x0",R
+PDFParser.Services.TextChunk,500,501,"Rectangle: 9.402222x0",W
+PDFParser.Services.TextChunk,501,502,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,502,504,"Rectangle: 11.057739x0",21
+PDFParser.Services.TextChunk,504,505,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,505,507,"Rectangle: 11.075516x0",34
+PDFParser.Services.TextChunk,507,509,"Rectangle: 8.306641x0",6:
+PDFParser.Services.TextChunk,509,510,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,510,511,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,511,512,"Rectangle: 6.643318x0",A
+PDFParser.Services.TextChunk,512,516,"Rectangle: 19.929962x0",aron
+PDFParser.Services.TextChunk,516,522,"Rectangle: 25.467712x0"," T. an"
+PDFParser.Services.TextChunk,522,526,"Rectangle: 21.035522x0","d Ce"
+PDFParser.Services.TextChunk,526,527,"Rectangle: 2.2111206x0",l
+PDFParser.Services.TextChunk,527,529,"Rectangle: 10.517761x0",es
+PDFParser.Services.TextChunk,529,530,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,530,533,"Rectangle: 14.949966x0","e S"
+PDFParser.Services.TextChunk,533,534,"Rectangle: 2.7688751x0",.
+PDFParser.Services.TextChunk,534,536,"Rectangle: 12.171112x0"," W"
+PDFParser.Services.TextChunk,536,539,"Rectangle: 14.392197x0",ard
+PDFParser.Services.TextChunk,539,540,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,540,543,"Rectangle: 13.844391x0","1,3"
+PDFParser.Services.TextChunk,543,544,"Rectangle: 5.5377502x0",9
+PDFParser.Services.TextChunk,544,545,"Rectangle: 5.5377502x0",7
+PDFParser.Services.TextChunk,545,546,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,546,549,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,549,550,"Rectangle: 5.5377502x0",3
+PDFParser.Services.TextChunk,550,551,"Rectangle: 5.5377502x0",2
+PDFParser.Services.TextChunk,551,552,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,552,553,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,553,555,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,555,557,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,557,558,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,558,561,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,561,562,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,562,563,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,563,565,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,565,567,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,567,569,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,569,570,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,570,571,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,571,572,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,572,573,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,573,575,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,575,576,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,576,577,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,577,578,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,578,580,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,580,582,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,582,584,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,584,585,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,585,586,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,586,587,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,587,588,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,588,591,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,591,593,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,593,594,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,594,596,"Rectangle: 11.057739x0",21
+PDFParser.Services.TextChunk,596,597,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,597,599,"Rectangle: 11.075516x0",34
+PDFParser.Services.TextChunk,599,601,"Rectangle: 8.306641x0",7:
+PDFParser.Services.TextChunk,601,602,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,602,603,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,603,605,"Rectangle: 11.075523x0",La
+PDFParser.Services.TextChunk,605,606,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,606,607,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,607,608,"Rectangle: 4.9799957x0",y
+PDFParser.Services.TextChunk,608,611,"Rectangle: 11.075516x0"," L."
+PDFParser.Services.TextChunk,611,614,"Rectangle: 13.844406x0"," an"
+PDFParser.Services.TextChunk,614,618,"Rectangle: 21.035522x0","d Re"
+PDFParser.Services.TextChunk,618,620,"Rectangle: 11.075516x0",ne
+PDFParser.Services.TextChunk,620,621,"Rectangle: 5.5377655x0",e
+PDFParser.Services.TextChunk,621,624,"Rectangle: 13.834442x0"," M."
+PDFParser.Services.TextChunk,624,625,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,625,628,"Rectangle: 18.266632x0",Cha
+PDFParser.Services.TextChunk,628,630,"Rectangle: 7.748886x0",pi
+PDFParser.Services.TextChunk,630,632,"Rectangle: 8.306641x0","n "
+PDFParser.Services.TextChunk,632,635,"Rectangle: 17.708878x0",Rev
+PDFParser.Services.TextChunk,635,637,"Rectangle: 10.517761x0",oc
+PDFParser.Services.TextChunk,637,639,"Rectangle: 11.075516x0",ab
+PDFParser.Services.TextChunk,639,640,"Rectangle: 2.2111206x0",l
+PDFParser.Services.TextChunk,640,643,"Rectangle: 13.844406x0","e L"
+PDFParser.Services.TextChunk,643,644,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,644,645,"Rectangle: 4.9799957x0",v
+PDFParser.Services.TextChunk,645,646,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,646,647,"Rectangle: 5.5377655x0",n
+PDFParser.Services.TextChunk,647,651,"Rectangle: 17.708878x0","g Tr"
+PDFParser.Services.TextChunk,651,653,"Rectangle: 10.517761x0",us
+PDFParser.Services.TextChunk,653,654,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,654,655,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,655,658,"Rectangle: 16.577667x0",810
+PDFParser.Services.TextChunk,658,659,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,659,662,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,662,663,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,663,664,"Rectangle: 5.5377502x0",9
+PDFParser.Services.TextChunk,664,665,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,665,666,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,666,668,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,668,670,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,670,671,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,671,674,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,674,675,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,675,676,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,676,678,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,678,680,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,680,682,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,682,683,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,683,684,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,684,685,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,685,686,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,686,688,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,688,689,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,689,690,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,690,691,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,691,693,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,693,695,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,695,697,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,697,698,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,698,699,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,699,700,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,700,701,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,701,704,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,704,706,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,706,707,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,707,709,"Rectangle: 11.057739x0",21
+PDFParser.Services.TextChunk,709,711,"Rectangle: 5.5288696x0",", "
+PDFParser.Services.TextChunk,711,713,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,713,714,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,714,716,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,716,717,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,717,719,"Rectangle: 11.075516x0",34
+PDFParser.Services.TextChunk,719,721,"Rectangle: 8.306641x0",9:
+PDFParser.Services.TextChunk,721,722,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,722,723,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,723,726,"Rectangle: 17.708878x0",Dav
+PDFParser.Services.TextChunk,726,727,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,727,729,"Rectangle: 8.306641x0","d "
+PDFParser.Services.TextChunk,729,731,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,731,734,"Rectangle: 14.392197x0","d T"
+PDFParser.Services.TextChunk,734,739,"Rectangle: 24.909958x0","ara G"
+PDFParser.Services.TextChunk,739,740,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,740,742,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,742,743,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,743,744,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,744,747,"Rectangle: 16.577667x0",486
+PDFParser.Services.TextChunk,747,748,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,748,751,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,751,752,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,752,753,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,753,754,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,754,755,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,755,757,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,757,759,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,759,760,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,760,763,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,763,764,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,764,765,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,765,767,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,767,769,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,769,771,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,771,772,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,772,773,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,773,774,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,774,775,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,775,777,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,777,778,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,778,779,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,779,780,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,780,782,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,782,784,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,784,786,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,786,787,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,787,788,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,788,789,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,789,790,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,790,793,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,793,795,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,795,796,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,796,798,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,798,799,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,799,801,"Rectangle: 11.075516x0",34
+PDFParser.Services.TextChunk,801,803,"Rectangle: 8.306641x0",9:
+PDFParser.Services.TextChunk,803,805,"Rectangle: 12.181076x0",2E
+PDFParser.Services.TextChunk,805,806,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,806,809,"Rectangle: 17.708878x0",Dav
+PDFParser.Services.TextChunk,809,810,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,810,812,"Rectangle: 8.306641x0","d "
+PDFParser.Services.TextChunk,812,814,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,814,817,"Rectangle: 14.392197x0","d T"
+PDFParser.Services.TextChunk,817,822,"Rectangle: 24.909958x0","ara G"
+PDFParser.Services.TextChunk,822,823,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,823,825,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,825,826,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,826,827,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,827,830,"Rectangle: 16.577667x0",164
+PDFParser.Services.TextChunk,830,831,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,831,834,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,834,835,"Rectangle: 5.5377502x0",0
+PDFParser.Services.TextChunk,835,836,"Rectangle: 5.5377502x0",4
+PDFParser.Services.TextChunk,836,837,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,837,838,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,838,840,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,840,842,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,842,843,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,843,846,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,846,847,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,847,848,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,848,850,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,850,852,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,852,854,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,854,855,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,855,856,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,856,857,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,857,858,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,858,860,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,860,861,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,861,862,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,862,863,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,863,865,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,865,867,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,867,869,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,869,870,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,870,871,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,871,872,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,872,873,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,873,876,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,876,878,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,878,879,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,879,881,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,881,882,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,882,884,"Rectangle: 11.07552x0",34
+PDFParser.Services.TextChunk,884,885,"Rectangle: 5.537758x0",9
+PDFParser.Services.TextChunk,885,886,"Rectangle: 6.643318x0",B
+PDFParser.Services.TextChunk,886,888,"Rectangle: 9.412201x0",:E
+PDFParser.Services.TextChunk,888,889,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,889,892,"Rectangle: 17.708878x0",Dav
+PDFParser.Services.TextChunk,892,893,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,893,896,"Rectangle: 15.497757x0","d R"
+PDFParser.Services.TextChunk,896,898,"Rectangle: 7.748886x0",ei
+PDFParser.Services.TextChunk,898,902,"Rectangle: 19.372192x0","d Gr"
+PDFParser.Services.TextChunk,902,904,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,904,905,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,905,906,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,906,909,"Rectangle: 16.577667x0",897
+PDFParser.Services.TextChunk,909,910,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,910,913,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,913,914,"Rectangle: 5.5377502x0",2
+PDFParser.Services.TextChunk,914,915,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,915,916,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,916,917,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,917,919,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,919,921,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,921,922,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,922,925,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,925,926,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,926,927,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,927,929,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,929,931,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,931,933,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,933,934,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,934,935,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,935,936,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,936,937,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,937,939,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,939,940,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,940,941,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,941,942,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,942,944,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,944,946,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,946,948,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,948,949,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,949,950,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,950,951,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,951,952,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,952,955,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,955,957,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,957,958,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,958,960,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,960,961,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,961,963,"Rectangle: 11.07552x0",34
+PDFParser.Services.TextChunk,963,964,"Rectangle: 5.5377617x0",9
+PDFParser.Services.TextChunk,964,965,"Rectangle: 6.643318x0",B
+PDFParser.Services.TextChunk,965,967,"Rectangle: 8.306641x0",:2
+PDFParser.Services.TextChunk,967,968,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,968,969,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,969,972,"Rectangle: 17.708878x0",Dav
+PDFParser.Services.TextChunk,972,973,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,973,976,"Rectangle: 15.497757x0","d R"
+PDFParser.Services.TextChunk,976,978,"Rectangle: 7.748886x0",ei
+PDFParser.Services.TextChunk,978,982,"Rectangle: 19.372192x0","d Gr"
+PDFParser.Services.TextChunk,982,984,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,984,985,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,985,986,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,986,989,"Rectangle: 16.577667x0",255
+PDFParser.Services.TextChunk,989,990,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,990,993,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,993,994,"Rectangle: 5.5377502x0",0
+PDFParser.Services.TextChunk,994,995,"Rectangle: 5.5377502x0",6
+PDFParser.Services.TextChunk,995,996,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,996,997,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,997,999,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,999,1001,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,1001,1002,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1002,1005,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,1005,1006,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1006,1007,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,1007,1009,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,1009,1011,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1011,1013,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,1013,1014,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,1014,1015,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1015,1016,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1016,1017,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1017,1019,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1019,1020,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1020,1021,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1021,1022,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1022,1024,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,1024,1026,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,1026,1028,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1028,1029,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,1029,1030,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,1030,1031,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1031,1032,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,1032,1035,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,1035,1037,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,1037,1038,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1038,1040,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,1040,1041,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1041,1043,"Rectangle: 11.075523x0",34
+PDFParser.Services.TextChunk,1043,1046,"Rectangle: 15.497757x0",9D:
+PDFParser.Services.TextChunk,1046,1047,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,1047,1048,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,1048,1051,"Rectangle: 17.708878x0",Dav
+PDFParser.Services.TextChunk,1051,1052,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,1052,1054,"Rectangle: 8.306641x0","d "
+PDFParser.Services.TextChunk,1054,1056,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,1056,1059,"Rectangle: 14.392197x0","d T"
+PDFParser.Services.TextChunk,1059,1064,"Rectangle: 24.909958x0","ara G"
+PDFParser.Services.TextChunk,1064,1065,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1065,1067,"Rectangle: 11.075516x0",an
+PDFParser.Services.TextChunk,1067,1068,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,1068,1069,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,1069,1072,"Rectangle: 16.577667x0",620
+PDFParser.Services.TextChunk,1072,1073,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1073,1076,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,1076,1077,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,1077,1078,"Rectangle: 5.5377502x0",4
+PDFParser.Services.TextChunk,1078,1079,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1079,1080,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1080,1082,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1082,1084,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,1084,1085,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1085,1088,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,1088,1089,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1089,1090,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,1090,1092,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,1092,1094,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1094,1096,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,1096,1097,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,1097,1098,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1098,1099,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1099,1100,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1100,1102,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1102,1103,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1103,1104,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1104,1105,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1105,1107,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,1107,1109,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,1109,1111,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1111,1112,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,1112,1113,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,1113,1114,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1114,1115,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,1115,1118,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,1118,1120,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,1120,1121,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1121,1123,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,1123,1124,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1124,1126,"Rectangle: 11.075516x0",35
+PDFParser.Services.TextChunk,1126,1128,"Rectangle: 8.306641x0",2:
+PDFParser.Services.TextChunk,1128,1129,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,1129,1130,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,1130,1134,"Rectangle: 23.804398x0",Robe
+PDFParser.Services.TextChunk,1134,1135,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1135,1137,"Rectangle: 8.306641x0",ta
+PDFParser.Services.TextChunk,1137,1139,"Rectangle: 9.412201x0"," A"
+PDFParser.Services.TextChunk,1139,1140,"Rectangle: 2.7688751x0",.
+PDFParser.Services.TextChunk,1140,1143,"Rectangle: 16.603317x0"," Mo"
+PDFParser.Services.TextChunk,1143,1144,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1144,1145,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1145,1146,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,1146,1149,"Rectangle: 16.577667x0",600
+PDFParser.Services.TextChunk,1149,1150,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1150,1153,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,1153,1154,"Rectangle: 5.5377502x0",1
+PDFParser.Services.TextChunk,1154,1155,"Rectangle: 5.5377502x0",4
+PDFParser.Services.TextChunk,1155,1156,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1156,1157,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1157,1159,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1159,1161,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,1161,1162,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1162,1165,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,1165,1166,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1166,1167,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,1167,1169,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,1169,1171,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1171,1173,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,1173,1174,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,1174,1175,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1175,1176,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1176,1177,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1177,1179,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1179,1180,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1180,1181,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1181,1182,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1182,1184,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,1184,1186,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,1186,1188,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1188,1189,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,1189,1190,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,1190,1191,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1191,1192,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,1192,1195,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,1195,1197,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,1197,1198,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1198,1200,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,1200,1201,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1201,1203,"Rectangle: 11.075516x0",35
+PDFParser.Services.TextChunk,1203,1205,"Rectangle: 8.306641x0",3:
+PDFParser.Services.TextChunk,1205,1206,"Rectangle: 6.643318x0",E
+PDFParser.Services.TextChunk,1206,1207,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,1207,1208,"Rectangle: 6.085556x0",T
+PDFParser.Services.TextChunk,1208,1210,"Rectangle: 11.075523x0",he
+PDFParser.Services.TextChunk,1210,1214,"Rectangle: 18.814438x0"," Chr"
+PDFParser.Services.TextChunk,1214,1215,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,1215,1216,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1216,1219,"Rectangle: 13.844406x0",ten
+PDFParser.Services.TextChunk,1219,1220,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1220,1222,"Rectangle: 11.075516x0",en
+PDFParser.Services.TextChunk,1222,1226,"Rectangle: 22.688889x0"," Fam"
+PDFParser.Services.TextChunk,1226,1227,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,1227,1228,"Rectangle: 2.2111206x0",l
+PDFParser.Services.TextChunk,1228,1229,"Rectangle: 4.9799957x0",y
+PDFParser.Services.TextChunk,1229,1232,"Rectangle: 12.171112x0"," Tr"
+PDFParser.Services.TextChunk,1232,1234,"Rectangle: 10.517761x0",us
+PDFParser.Services.TextChunk,1234,1235,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,1235,1236,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,1236,1239,"Rectangle: 16.577667x0",305
+PDFParser.Services.TextChunk,1239,1240,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1240,1243,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,1243,1244,"Rectangle: 5.5377502x0",0
+PDFParser.Services.TextChunk,1244,1245,"Rectangle: 5.5377502x0",7
+PDFParser.Services.TextChunk,1245,1246,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1246,1247,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1247,1249,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1249,1251,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,1251,1252,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1252,1255,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,1255,1256,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1256,1257,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,1257,1259,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,1259,1261,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1261,1263,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,1263,1264,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,1264,1265,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1265,1266,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1266,1267,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1267,1269,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1269,1270,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1270,1271,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1271,1272,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1272,1274,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,1274,1276,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,1276,1278,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1278,1279,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,1279,1280,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,1280,1281,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1281,1282,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,1282,1285,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,1285,1287,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,1287,1288,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1288,1290,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,1290,1291,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1291,1293,"Rectangle: 11.075516x0",35
+PDFParser.Services.TextChunk,1293,1295,"Rectangle: 8.306641x0",3:
+PDFParser.Services.TextChunk,1295,1297,"Rectangle: 12.181076x0",2E
+PDFParser.Services.TextChunk,1297,1298,"Rectangle: 2.7688828x0"," "
+PDFParser.Services.TextChunk,1298,1299,"Rectangle: 6.085556x0",T
+PDFParser.Services.TextChunk,1299,1301,"Rectangle: 11.075523x0",he
+PDFParser.Services.TextChunk,1301,1305,"Rectangle: 18.814438x0"," Chr"
+PDFParser.Services.TextChunk,1305,1306,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,1306,1307,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1307,1310,"Rectangle: 13.844406x0",ten
+PDFParser.Services.TextChunk,1310,1311,"Rectangle: 4.9799957x0",s
+PDFParser.Services.TextChunk,1311,1313,"Rectangle: 11.075516x0",en
+PDFParser.Services.TextChunk,1313,1317,"Rectangle: 22.688889x0"," Fam"
+PDFParser.Services.TextChunk,1317,1318,"Rectangle: 2.2111206x0",i
+PDFParser.Services.TextChunk,1318,1319,"Rectangle: 2.2111206x0",l
+PDFParser.Services.TextChunk,1319,1320,"Rectangle: 4.9799957x0",y
+PDFParser.Services.TextChunk,1320,1323,"Rectangle: 12.171112x0"," Tr"
+PDFParser.Services.TextChunk,1323,1325,"Rectangle: 10.517761x0",us
+PDFParser.Services.TextChunk,1325,1326,"Rectangle: 2.7688751x0",t
+PDFParser.Services.TextChunk,1326,1327,"Rectangle: 2.7688751x0"," "
+PDFParser.Services.TextChunk,1327,1330,"Rectangle: 16.577667x0",962
+PDFParser.Services.TextChunk,1330,1331,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1331,1334,"Rectangle: 13.844391x0",0.0
+PDFParser.Services.TextChunk,1334,1335,"Rectangle: 5.5377502x0",2
+PDFParser.Services.TextChunk,1335,1336,"Rectangle: 5.5377502x0",2
+PDFParser.Services.TextChunk,1336,1337,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1337,1338,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1338,1340,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1340,1342,"Rectangle: 11.075531x0",po
+PDFParser.Services.TextChunk,1342,1343,"Rectangle: 3.316681x0",r
+PDFParser.Services.TextChunk,1343,1346,"Rectangle: 13.834442x0",ary
+PDFParser.Services.TextChunk,1346,1347,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1347,1348,"Rectangle: 6.6433105x0",E
+PDFParser.Services.TextChunk,1348,1350,"Rectangle: 10.517761x0",as
+PDFParser.Services.TextChunk,1350,1352,"Rectangle: 13.834442x0",em
+PDFParser.Services.TextChunk,1352,1354,"Rectangle: 11.075531x0",en
+PDFParser.Services.TextChunk,1354,1355,"Rectangle: 2.7688904x0",t
+PDFParser.Services.TextChunk,1355,1356,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1356,1357,"Rectangle: 2.7688904x0"," "
+PDFParser.Services.TextChunk,1357,1358,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1358,1360,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1360,1361,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1361,1362,"Rectangle: 6.0855713x0",T
+PDFParser.Services.TextChunk,1362,1363,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1363,1365,"Rectangle: 11.0755005x0",03
+PDFParser.Services.TextChunk,1365,1367,"Rectangle: 5.537781x0",", "
+PDFParser.Services.TextChunk,1367,1369,"Rectangle: 16.593384x0",RW
+PDFParser.Services.TextChunk,1369,1370,"Rectangle: 6.6433105x0",S
+PDFParser.Services.TextChunk,1370,1371,"Rectangle: 8.296692x0",M
+PDFParser.Services.TextChunk,1371,1372,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1372,1373,"Rectangle: 5.537781x0",0
+PDFParser.Services.TextChunk,1373,1376,"Rectangle: 11.0755005x0","1, "
+PDFParser.Services.TextChunk,1376,1378,"Rectangle: 16.722351x0",RW
+PDFParser.Services.TextChunk,1378,1379,"Rectangle: 3.3166504x0",-
+PDFParser.Services.TextChunk,1379,1381,"Rectangle: 11.057739x0",22
+PDFParser.Services.TextChunk,1381,1382,"Rectangle: 2.7688599x0"," "
+PDFParser.Services.TextChunk,1382,1383,"Rectangle: 2.2351189x0"," "
