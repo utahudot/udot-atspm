@@ -2,6 +2,8 @@
 using Asp.Versioning.OData;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Specifications;
+using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using Google.Apis.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
 using NetTopologySuite.Densify;
 using System;
+using ATSPM.Domain.Extensions;
 using System.Linq;
 using System.Net;
 using System.Reflection.Metadata;
@@ -201,14 +204,43 @@ namespace ATSPM.ConfigApi.Controllers
 
 
 
+        
         [HttpGet]
-        [ProducesResponseType(typeof(Signal), Status200OK)]
-        [ProducesResponseType(Status404NotFound)]
-        public IActionResult GetSignalsForMetricType(int metricTypeId, ODataQueryOptions<Signal> options)
+        [ProducesResponseType(typeof(IEnumerable<SearchSignal>), Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        public IActionResult GetSignalsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
-            var i = _repository.GetSignalsForMetricType(metricTypeId);
+            var result = _repository.GetList()
+                .FromSpecification(new ActiveSignalSpecification())
 
-            return Ok(options.ApplyTo(i.AsQueryable()));
+                .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
+                .Where(w => regionId == null || w.RegionId == regionId)
+                .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
+                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
+
+
+                .Select(s => new SearchSignal()
+                {
+                    Id = s.Id,
+                    Start = s.Start,
+                    SignalIdentifier = s.SignalIdentifier,
+                    PrimaryName = s.PrimaryName,
+                    SecondaryName = s.SecondaryName,
+                    RegionId = s.RegionId,
+                    JurisdictionId = s.JurisdictionId,
+                    Longitude = s.Longitude,
+                    Latitude = s.Latitude,
+                    ChartEnabled = s.ChartEnabled,
+                    Areas = s.Areas.Select(a => a.Id),
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MetricTypeMetrics.Select(i => i.Id))))
+                })
+
+                .GroupBy(r => r.SignalIdentifier)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
+
+            return Ok(result);
         }
     }
 }
