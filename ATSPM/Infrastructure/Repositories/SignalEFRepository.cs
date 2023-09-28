@@ -57,13 +57,12 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
+        public IQueryable<Signal> GetLatestVersionOfAllSignals()
         {
             var result = BaseQuery()
                 .FromSpecification(new ActiveSignalSpecification())
                 .GroupBy(r => r.SignalIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault());
 
             return result;
         }
@@ -134,15 +133,14 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
-        {
-            var result = BaseQuery()
-                .Take(50)
-                .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
-                .ToList();
+        //public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
+        //{
+        //    var result = BaseQuery()
+        //        .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
+        //        .ToList();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         #endregion
     }
