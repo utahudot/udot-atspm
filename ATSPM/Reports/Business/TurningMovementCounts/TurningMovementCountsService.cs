@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
+﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
@@ -89,8 +88,8 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 options.Start,
                 options.End,
                 directionType.ToString(),
-                laneType.GetName(),
-                movementType.GetName(),
+                Enum.GetName(laneType),
+                Enum.GetName(movementType),
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new TotalVolume(i.StartTime, i.HourlyVolume)).ToList(),

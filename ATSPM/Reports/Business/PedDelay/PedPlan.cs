@@ -9,14 +9,14 @@ namespace ATSPM.Application.Reports.Business.PedDelay
     {
         public PedPlan(int phaseNumber, DateTime startDate, DateTime endDate, int planNumber)
         {
-            StartDate = startDate;
-            EndDate = endDate;
+            Start = startDate;
+            End = endDate;
             PlanNumber = planNumber;
             PhaseNumber = phaseNumber;
         }
 
-        public DateTime StartDate { get; }
-        public DateTime EndDate { get; }
+        public DateTime Start { get; }
+        public DateTime End { get; }
         public int PlanNumber { get; }
         public int PhaseNumber { get; }
         public List<ControllerEventLog> Events { get; set; }

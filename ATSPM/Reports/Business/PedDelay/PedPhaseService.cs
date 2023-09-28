@@ -67,11 +67,11 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 var plan = new PedPlan(pedPhaseData.PhaseNumber, plansData[i].Timestamp, endTime,
                     plansData[i].EventParam);
 
-                plan.Events = mainEvents.Where(e => e.Timestamp > plan.StartDate && e.Timestamp < plan.EndDate).ToList();
+                plan.Events = mainEvents.Where(e => e.Timestamp > plan.Start && e.Timestamp < plan.End).ToList();
 
                 plan.UniquePedDetections = CountUniquePedDetections(
                     plan.Events,
-                    pedEvents.Where(e => e.EventCode == 90 && e.Timestamp < plan.StartDate).ToList(),
+                    pedEvents.Where(e => e.EventCode == 90 && e.Timestamp < plan.Start).ToList(),
                     pedPhaseData);
                 pedPlans.Add(plan);
             }
@@ -83,7 +83,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             foreach (var p in pedPhaseData.Plans)
             {
                 var cycles = pedPhaseData.Cycles
-                    .Where(c => c.CallRegistered >= p.StartDate && c.CallRegistered < p.EndDate)
+                    .Where(c => c.CallRegistered >= p.Start && c.CallRegistered < p.End)
                     .ToList();
                 p.Cycles = cycles;
             }
