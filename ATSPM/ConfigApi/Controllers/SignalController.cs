@@ -25,6 +25,7 @@ using System.Net;
 using System.Reflection.Metadata;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -40,17 +41,22 @@ namespace ATSPM.ConfigApi.Controllers
 
         }
 
-        [EnableQuery]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(IEnumerable<Approach>), Status200OK)]
         public IActionResult GetApproaches([FromRoute] int key)
         {
-            var approaches = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+            //var approaches = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+            //var approaches = _repository.GetList().SingleOrDefault(s => s.Id == key);
 
-            if (approaches == null)
+            //var i = repo.GetList().Where(w => w.SignalId == key);
+            var i = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+
+            if (i == null)
             {
                 return NotFound();
             }
 
-            return Ok(approaches);
+            return Ok(i);
         }
 
 
@@ -198,13 +204,6 @@ namespace ATSPM.ConfigApi.Controllers
 
 
 
-
-
-
-
-
-
-        
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<SearchSignal>), Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
