@@ -105,7 +105,6 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                     PlanNumber = p.PlanNumber,
                     Start = p.Start,
                     EndTime = p.EndTime,
-                    OffsetLength = p.OffsetLength,
                     AverageSplit = p.AverageSplit,
                     HighCycleCount = p.HighCycleCount,
                     PercentSkips = p.PercentSkips,
