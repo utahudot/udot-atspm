@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
@@ -22,16 +23,19 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
         private readonly ISignalRepository signalRepository;
+        private readonly PlanService planService;
 
         public TurningMovementCountsController(
             IControllerEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
-            ISignalRepository signalRepository
+            ISignalRepository signalRepository,
+            PlanService planService
             )
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.turningMovementCountsService = turningMovementCountsService;
             this.signalRepository = signalRepository;
+            this.planService = planService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -52,6 +56,7 @@ namespace ATSPM.Application.Reports.Controllers
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
 
             var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
@@ -62,7 +67,7 @@ namespace ATSPM.Application.Reports.Controllers
                     (LaneTypes)laneType,
                     options,
                     controllerEventLogs,
-                    planEvents)
+                    plans.ToList())
                     );
             }
             var results = await Task.WhenAll(tasks);
@@ -75,7 +80,7 @@ namespace ATSPM.Application.Reports.Controllers
             LaneTypes laneType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents)
+            List<Plan> plans)
         {
             var directions = signal.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
             var tasks = new List<Task<TurningMovementCountsResult>>();
@@ -102,7 +107,7 @@ namespace ATSPM.Application.Reports.Controllers
                     {
                         tasks.Add(GetChartDataByMovementType(
                             options,
-                            planEvents,
+                            plans,
                             controllerEventLogs,
                             movementTypeDetectors,
                             movementType,
@@ -121,7 +126,7 @@ namespace ATSPM.Application.Reports.Controllers
 
         private async Task<TurningMovementCountsResult> GetChartDataByMovementType(
             TurningMovementCountsOptions options,
-            List<ControllerEventLog> planEvents,
+            List<Plan> planEvents,
             List<ControllerEventLog> controllerEventLogs,
             List<Detector> detectors,
             MovementTypes movementType,
@@ -148,7 +153,7 @@ namespace ATSPM.Application.Reports.Controllers
                 directionType,
                 options,
                 detectorEvents,
-                planEvents.ToList(),
+                planEvents,
                 signalIdentifier,
                 signalDescription);
 

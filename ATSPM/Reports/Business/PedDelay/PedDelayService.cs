@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Reports.Business.Common;
+﻿
+using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +76,23 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                     percentDelayByCycleLength.Add(new PercentDelayByCycleLength(cycle.Key, cycle.Value));
                 }
             }
+            var pedDelayPlans = new List<PedDelayPlan>();
+            foreach (var plan in pedPhase.Plans)
+            {
+                var vehicleCycles = redToRedCycles.Where(r => r.StartTime >= plan.Start && r.EndTime < plan.End).ToList();
+                var averageCycleLength = vehicleCycles.Any() ? vehicleCycles.Average(c => c.TotalTimeSeconds) : 0;
+                var pedRecallMessage = (vehicleCycles.Count > 0 && ((double)plan.PedBeginWalkCount / (double)vehicleCycles.Count * 100 >= options.PedRecallThreshold) ? "Ped Recall On" : "");
+                pedDelayPlans.Add(new PedDelayPlan(
+                    plan.PlanNumber.ToString(),
+                    plan.Start,
+                    plan.End,
+                    pedRecallMessage,
+                    Convert.ToInt32(plan.CyclesWithPedRequests),
+                    plan.UniquePedDetections,
+                    plan.AvgDelay,
+                    averageCycleLength));
+            }
+
             return new PedDelayResult(
                 pedPhase.Approach.Signal.SignalIdentifier,
                 pedPhase.Approach.Id,
@@ -89,7 +107,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                 pedPhase.MinDelay,
                 pedPhase.MaxDelay,
                 pedPhase.AverageDelay,
-                plans,
+                pedDelayPlans,
                 cycleLengths,
                 pedestrianDelay,
                 startOfWalk,

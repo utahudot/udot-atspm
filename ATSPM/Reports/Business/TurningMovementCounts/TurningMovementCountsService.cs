@@ -31,11 +31,11 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             DirectionTypes directionType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> detectorEvents,
-            List<ControllerEventLog> planEvents,
+            List<Plan> plans,
             string signalIdentifier,
             string signalDescription)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, planEvents);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
@@ -88,8 +88,8 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 options.Start,
                 options.End,
                 directionType.ToString(),
-                laneType.ToString(),
-                movementType.ToString(),
+                Enum.GetName(laneType),
+                Enum.GetName(movementType),
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new TotalVolume(i.StartTime, i.HourlyVolume)).ToList(),
