@@ -27,15 +27,15 @@ namespace Reports.Business.PurdueCoordinationDiagram
             }
             var plans = signalPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
                 p.PlanNumber.ToString(),
-                p.StartTime,
+                p.Start,
                 p.EndTime,
                 p.PercentGreenTime,
                 p.PercentArrivalOnGreen,
                 p.PlatoonRatio)).ToList();
-            var redSeries = signalPhase.Cycles.Select(c => new CycleDataPoint(c.EndTime, c.RedLineY));
-            var yellowSeries = signalPhase.Cycles.Select(c => new CycleDataPoint(c.EndTime, c.YellowLineY));
-            var greenSeries = signalPhase.Cycles.Select(c => new CycleDataPoint(c.EndTime, c.GreenLineY));
-            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new CycleDataPoint(d.TimeStamp, d.YPointSeconds)));
+            var redSeries = signalPhase.Cycles.Select(c => new DataPoint(c.EndTime, c.RedLineY));
+            var yellowSeries = signalPhase.Cycles.Select(c => new DataPoint(c.EndTime, c.YellowLineY));
+            var greenSeries = signalPhase.Cycles.Select(c => new DataPoint(c.EndTime, c.GreenLineY));
+            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPoint(d.TimeStamp, d.YPointSeconds)));
 
             return new PurdueCoordinationDiagramResult(
                 options.SignalIdentifier,

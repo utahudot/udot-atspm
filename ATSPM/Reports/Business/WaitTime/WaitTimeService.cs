@@ -191,7 +191,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                 }
 
 
-                var splits = plans.Select(p => new PlanSplit(p.StartTime, p.EndTime, phaseDetail.PhaseNumber, p.Splits[phaseDetail.PhaseNumber]));
+                var splits = plans.Select(p => new PlanSplit(p.Start, p.EndTime, phaseDetail.PhaseNumber, p.Splits[phaseDetail.PhaseNumber]));
                 var waitTimePlans = GetWaitTimePlans(plans, waitTimeTrackerList);
                 //}
 
@@ -227,15 +227,15 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                 planWaitTimes.Add(
                     new PlanWaitTime(
                         plan.PlanNumber,
-                        plan.StartTime,
+                        plan.Start,
                         plan.EndTime,
                         waitTimeTrackerList
-                            .Where(x => x.Time > plan.StartTime && x.Time < plan.EndTime)
+                            .Where(x => x.Time > plan.Start && x.Time < plan.EndTime)
                             .Select(x => x.WaitTimeSeconds)
                             .DefaultIfEmpty(0)
                             .Average(),
                         waitTimeTrackerList
-                            .Where(x => x.Time > plan.StartTime && x.Time < plan.EndTime)
+                            .Where(x => x.Time > plan.Start && x.Time < plan.EndTime)
                             .Select(x => x.WaitTimeSeconds)
                             .DefaultIfEmpty(0)
                             .Max()

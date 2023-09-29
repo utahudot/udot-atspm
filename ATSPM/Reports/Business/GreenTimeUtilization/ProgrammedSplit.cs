@@ -11,9 +11,9 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 
         public ProgrammedSplit(Plan analysisPlan, DateTime analysisStart, double splitLength, double durYR)
         {
-            if (analysisStart < analysisPlan.StartTime)
+            if (analysisStart < analysisPlan.Start)
             {
-                StartTime = analysisPlan.StartTime;
+                StartTime = analysisPlan.Start;
             }
             else
             {

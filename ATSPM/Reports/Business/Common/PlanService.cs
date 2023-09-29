@@ -171,10 +171,10 @@ namespace ATSPM.Application.Reports.Business.Common
             if (plans.Count == 0)
                 plans.Add(new Plan("0", startDate, endDate));
             return plans.Select(plan => new YellowRedActivationPlan(
-                plan.StartTime,
+                plan.Start,
                 plan.EndTime,
                 plan.PlanNumber,
-                cycles.Where(c => c.StartTime >= plan.StartTime && c.StartTime < plan.EndTime).ToList(),
+                cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.EndTime).ToList(),
                 severeRedLightViolationSeconds)).ToList();
         }
 

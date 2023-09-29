@@ -180,7 +180,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             foreach (Plan analysisplan in plans)
             {
                 //GetProgrammedSplitTimesInAnalysisPeriod(approach.ProtectedPhaseNumber, analysisplan, options.EndDate);
-                var splitTime = GetProgrammedSplitTime(phaseDetail.PhaseNumber, analysisplan.StartTime, analysisplan.EndTime.AddMinutes(-1), controllerEventLogs);
+                var splitTime = GetProgrammedSplitTime(phaseDetail.PhaseNumber, analysisplan.Start, analysisplan.EndTime.AddMinutes(-1), controllerEventLogs);
                 programmedSplits.Add(new ProgrammedSplit(analysisplan, options.Start, splitTime, durYellowRed));
             }
 

@@ -1,5 +1,7 @@
-﻿using ATSPM.Application.Reports.Business.Common;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,8 +69,17 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
 
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
         {
+            var plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
+            var test = plans.SelectMany(p => p.Splits.Where(s => s.Key == phase.PhaseNumber));
+            var splits = new List<DataPoint>();
+            foreach (var plan in plans)
+            {
+                var splitForPhase = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault();
+                splits.Add(new DataPoint(plan.Start, splitForPhase.Value));
+            }
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalIdentifier, options.Start, options.End)
             {
+                ProgramedSplits = splits,
                 GapOuts = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
@@ -87,10 +98,26 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                                 .ToList(),
                 Peds = phase.Cycles.Items
                                 .Where(c => c.HasPed)
-                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .Select(c => new SplitMonitorEvent(c.PedStartTime, c.PedDuration))
                                 .ToList(),
+                Plans = plans.Select(p => new PlanSplitMonitorDTO
+                {
+                    PlanNumber = p.PlanNumber,
+                    Start = p.Start,
+                    EndTime = p.EndTime,
+                    OffsetLength = p.OffsetLength,
+                    AverageSplit = p.AverageSplit,
+                    HighCycleCount = p.HighCycleCount,
+                    PercentSkips = p.PercentSkips,
+                    PercentGapOuts = p.PercentGapOuts,
+                    PercentMaxOuts = p.PercentMaxOuts,
+                    PercentForceOffs = p.PercentForceOffs,
+                    PercentileSplit = p.PercentileSplit,
+
+                }).ToList(),
+                SignalDescription = phase.Signal.SignalDescription()
             };
-            splitMonitorResult.Plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
+
             return splitMonitorResult;
         }
 
@@ -102,14 +129,14 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.StartTime && x.StartTime < plan.EndTime).ToList();
+                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.EndTime).ToList();
                 if (cycles.Any())
                 {
                     var planCycleCount = Convert.ToDouble(cycles.Count());
                     var percentile = Convert.ToDouble(options.PercentileSplit) / 100;
-                    phasePlans.Add(new PlanSplitMonitorData(plan.StartTime, plan.EndTime, plan.PlanNumber)
+                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.EndTime, plan.PlanNumber)
                     {
-                        StartTime = plan.StartTime,
+                        Start = plan.Start,
                         EndTime = plan.EndTime,
                         PlanNumber = plan.PlanNumber,
                         PercentSkips = planCycleCount > 0 ? Convert.ToDouble((plan.HighCycleCount) - planCycleCount) / plan.HighCycleCount : 0,
