@@ -109,6 +109,13 @@ builder.Host.ConfigureServices((h, s) =>
 //var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 
 var app = builder.Build();
+app.UseCors(builder =>
+{
+    builder
+        .WithOrigins("*") // Allow all origins
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+});
 
 if (app.Environment.IsDevelopment())
 {

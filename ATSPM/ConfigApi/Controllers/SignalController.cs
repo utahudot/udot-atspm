@@ -134,7 +134,7 @@ namespace ATSPM.ConfigApi.Controllers
                 targetNavigationSource: options.Context.NavigationSource,
                 queryOptions: new Dictionary<string, string>
                 {
-                    { "$expand", "Approaches($expand=Detectors), Jurisdiction, ControllerType, Region, VersionAction, Areas" }
+                    { "$expand", "controllerType, Jurisdiction, Region, VersionAction, Areas, Approaches($expand=directionType,Detectors($expand=detectionTypes, detectionHardware, movementType, laneType, detectorComments))" }
                 },
                 container: options.Context.RequestContainer)).SelectExpandClause;
 
