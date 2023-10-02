@@ -56,7 +56,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="200">Items successfully retrieved.</response>
         // GET /Entity
         //[HttpGet()]
-        //[EnableQuery]
+        [EnableQuery]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,18 +66,18 @@ namespace ATSPM.ConfigApi.Controllers
         //}
         public ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
-            try
-            {
-                options.Validate(QueryValidation);
-            }
-            catch (ODataException e)
-            {
-                return BadRequest(e.Message);
-            }
+            //try
+            //{
+            //    options.Validate(QueryValidation);
+            //}
+            //catch (ODataException e)
+            //{
+            //    return BadRequest(e.Message);
+            //}
 
-            return Ok(options.ApplyTo(_repository.GetList()));
+            //return Ok(options.ApplyTo(_repository.GetList()));
 
-            //return Ok(_repository.GetList());
+            return Ok(_repository.GetList());
         }
 
         /// <summary>
@@ -95,7 +95,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public virtual async Task<ActionResult<T?>> Get(TKey key)
         {
-            var i = await _repository.LookupAsync(key);
+            //var i = await _repository.LookupAsync(key);
+
+            var i = _repository.GetList().Where(w => w.Id.ToString() == key.ToString());
 
             if (i == null)
             {

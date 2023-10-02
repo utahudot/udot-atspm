@@ -120,68 +120,15 @@ namespace ATSPM.SignalControllerLogger
 
             //await host.RunAsync();
 
-            //Console.Read();
-
-            //Console.ReadKey();
-
-            //var file = new FileInfo("C:\\temp\\4396\\ECON_10.208.24.203_2022_12_28_0030.dat");
-            //var file = new FileInfo("C:\\Sample Controller Logs\\1001\\ECON_10.203.7.155_2021_08_09_1711.dat");
-
-            //file.OpenRead();
-
-            int total = 0;
-
-            var root = new DirectoryInfo("\\\\srwtcmvweb2\\ControllerLogs2");
-
-            foreach (var dir in root.GetDirectories())
+            using (var scope = host.Services.CreateScope())
             {
-                foreach (var file in dir.GetFiles())
-                {
-                    if (file.CreationTime < DateTime.Now.AddDays(-14))
-                    {
-                        using (var scope = host.Services.CreateScope())
-                        {
-                            var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
+                var repo = scope.ServiceProvider.GetService<IRegionsRepository>();
 
-                            var logs = await decoder.ExecuteAsync(file);
-
-                            Console.WriteLine($"Log Count: {logs.Count}");
-
-                            total += logs.Count;
-
-                            if (logs.Count == 0)
-                                file.Delete();
-
-                            //if (dir.GetFiles().Length == 0)
-                            //    dir.Delete();
-
-
-
-                            //if (logs.Count > 0)
-                            //{
-                            //    HashSet<ControllerEventLog> result = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
-
-                            //    var db = scope.ServiceProvider.GetService<EventLogContext>();
-
-                            //    try
-                            //    {
-                            //        await db.BulkInsertOrUpdateAsync(result.ToList(),
-                            //        new BulkConfig()
-                            //        {
-                            //            SqlBulkCopyOptions = Microsoft.Data.SqlClient.SqlBulkCopyOptions.CheckConstraints,
-                            //            OmitClauseExistsExcept = true
-                            //        });
-                            //    }
-                            //    catch (Exception)
-                            //    {
-                            //    }
-                            //}
-                        }
-                    }
-                }
+                var test = repo.GetList().ToList();
             }
 
-            Console.WriteLine($"Total Count: {total}");
+            Console.Read();
+
         }
     }
 
