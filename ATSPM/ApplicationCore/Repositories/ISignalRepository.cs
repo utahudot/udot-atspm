@@ -25,7 +25,7 @@ namespace ATSPM.Application.Repositories
         /// Get latest version of all <see cref="Signal"/> and related entities
         /// </summary>
         /// <returns>List of <see cref="Signal"/> with newest start date</returns>
-        IQueryable<Signal> GetLatestVersionOfAllSignals();
+        IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
 
         /// <summary>
         /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="ControllerType"/>
