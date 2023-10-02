@@ -61,12 +61,13 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IQueryable<Signal> GetLatestVersionOfAllSignals()
+        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
             var result = BaseQuery()
                 .FromSpecification(new ActiveSignalSpecification())
                 .GroupBy(r => r.SignalIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault());
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
 
             return result;
         }
@@ -86,6 +87,8 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
+                .Include(i => i.Approaches)
+                .Include(i => i.Areas)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .FromSpecification(new ActiveSignalSpecification())
                 .FirstOrDefault();
