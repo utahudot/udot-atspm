@@ -23,6 +23,8 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.Mpo).MaxLength = 50;
                         model.Property(p => p.OtherPartners).MaxLength = 50;
 
+                        //model.HasMany(m => m.Signals);
+
                         break;
                     }
             }
