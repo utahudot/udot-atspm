@@ -14,7 +14,7 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Signal>("Signal").EntityType;
             model.Page(default, default);
-
+            model.Expand(1, SelectExpandType.Automatic, new string[] { "controllerType", "jurisdiction", "region" });
 
             var ip = builder.ComplexType<IPAddress>();
             //ip.Property(i => i.Address);
