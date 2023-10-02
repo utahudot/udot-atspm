@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Query.Validator;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.OData;
+using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Controllers
 {
-    
+
     /// <summary>
     /// Base class for ATSPM Config oData Controllers
     /// </summary>
@@ -26,31 +28,15 @@ namespace ATSPM.ConfigApi.Controllers
     {
         private readonly IAsyncRepository<T> _repository;
 
-        /// <summary>
-        /// Validation settings for oData query
-        /// </summary>
-        protected ODataValidationSettings QueryValidation { get; set; }
-
         /// <inheritdoc/>
         public AtspmConfigControllerBase(IAsyncRepository<T> repository)
         {
-            //_configContext = configContext;
             _repository = repository;
-
-            QueryValidation = new ODataValidationSettings()
-            {
-                AllowedQueryOptions = AllowedQueryOptions.All,
-                AllowedArithmeticOperators = AllowedArithmeticOperators.All,
-                AllowedFunctions = AllowedFunctions.All,
-                AllowedLogicalOperators = AllowedLogicalOperators.All,
-                //AllowedOrderByProperties = { "firstName", "lastName" },
-                //MaxOrderByNodeCount = 2,v  
-                //MaxTop = 1000,
-            };
         }
 
         /// <summary>
-        /// Collection of type from oData query
+        /// Collection of objects from oData query.
+        /// Override to use ODataQueryOptions.
         /// </summary>
         /// <returns>Action result of type</returns>
         /// <response code="200">Items successfully retrieved.</response>
@@ -60,28 +46,14 @@ namespace ATSPM.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public ActionResult<IQueryable<T>> Get()
-        //{
-        //    return Ok(_repository.GetList());
-        //}
-        public ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
+        public virtual ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
-            //try
-            //{
-            //    options.Validate(QueryValidation);
-            //}
-            //catch (ODataException e)
-            //{
-            //    return BadRequest(e.Message);
-            //}
-
-            //return Ok(options.ApplyTo(_repository.GetList()));
-
             return Ok(_repository.GetList());
         }
 
         /// <summary>
-        /// Key type from oData query
+        /// object with key from oData query.
+        /// Override to use ODataQueryOptions.
         /// </summary>
         /// <param name="key">Key value of object to get</param>
         /// <returns>Action result of type</returns>
@@ -93,18 +65,16 @@ namespace ATSPM.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public virtual async Task<ActionResult<T?>> Get(TKey key)
+        public virtual ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
         {
-            //var i = await _repository.LookupAsync(key);
+            var result = _repository.GetList().Where(w => w.Id.Equals(key));
 
-            var i = _repository.GetList().Where(w => w.Id.ToString() == key.ToString());
-
-            if (i == null)
+            if (!result.Any())
             {
                 return NotFound(key);
             }
 
-            return Ok(i);
+            return Ok(SingleResult.Create(result).Queryable);
         }
 
         /// <summary>
