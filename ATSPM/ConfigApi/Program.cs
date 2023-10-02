@@ -103,11 +103,6 @@ builder.Host.ConfigureServices((h, s) =>
 
 });
 
-//TODO: remove this after testing GCP Cloud Run
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-//var url = $"http://0.0.0.0:{port}";
-//var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -134,11 +129,9 @@ app.UseSwaggerUI(o =>
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
-app.UseHttpsRedirection();
-
 app.Run();
-//app.Run(url);
+
+
 
 
 /// <summary>

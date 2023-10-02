@@ -19,7 +19,6 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.Name).MaxLength = 50;
-                        model.HasOptional(p => p.Signals);
 
                         break;
                     }
