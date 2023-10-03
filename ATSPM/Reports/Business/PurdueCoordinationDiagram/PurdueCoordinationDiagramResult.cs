@@ -22,10 +22,10 @@ public class PurdueCoordinationDiagramResult : ApproachResult
         double percentArrivalOnGreen,
         ICollection<PerdueCoordinationPlanViewModel> plans,
         ICollection<VolumePerHour> volumePerHour,
-        ICollection<DataPoint> redSeries,
-        ICollection<DataPoint> yellowSeries,
-        ICollection<DataPoint> greenSeries,
-        ICollection<DataPoint> detectorEvents) : base(approachId, signalId, start, end)
+        ICollection<DataPointSeconds> redSeries,
+        ICollection<DataPointSeconds> yellowSeries,
+        ICollection<DataPointSeconds> greenSeries,
+        ICollection<DataPointSeconds> detectorEvents) : base(approachId, signalId, start, end)
     {
         PhaseNumber = phaseNumber;
         PhaseDescription = phaseDescription;
@@ -46,9 +46,9 @@ public class PurdueCoordinationDiagramResult : ApproachResult
     public double PercentArrivalOnGreen { get; }
     public ICollection<PerdueCoordinationPlanViewModel> Plans { get; }
     public ICollection<VolumePerHour> VolumePerHour { get; }
-    public ICollection<DataPoint> RedSeries { get; }
-    public ICollection<DataPoint> YellowSeries { get; }
-    public ICollection<DataPoint> GreenSeries { get; }
-    public ICollection<DataPoint> DetectorEvents { get; }
+    public ICollection<DataPointSeconds> RedSeries { get; }
+    public ICollection<DataPointSeconds> YellowSeries { get; }
+    public ICollection<DataPointSeconds> GreenSeries { get; }
+    public ICollection<DataPointSeconds> DetectorEvents { get; }
 
 }

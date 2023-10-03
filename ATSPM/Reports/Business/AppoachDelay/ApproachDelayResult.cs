@@ -16,7 +16,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             double averageDelayPerVehicle,
             double totalDelay,
             List<ApproachDelayPlan> plans,
-            List<DataPoint> approachDelayDataPoints,
+            List<DataPointSeconds> approachDelayDataPoints,
             List<ApproachDelayPerVehicleDataPoint> approachDelayPerVehicleDataPoints) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
@@ -33,7 +33,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
         public double AverageDelayPerVehicle { get; }
         public double TotalDelay { get; }
         public List<ApproachDelayPlan> Plans { get; }
-        public List<DataPoint> ApproachDelayDataPoints { get; }
+        public List<DataPointSeconds> ApproachDelayDataPoints { get; }
         public List<ApproachDelayPerVehicleDataPoint> ApproachDelayPerVehicleDataPoints { get; }
     }
 
