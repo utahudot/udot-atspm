@@ -14,7 +14,7 @@ public class SplitMonitorResult : SignalResult
     {
         PhaseNumber = phaseNumber;
         Plans = new List<PlanSplitMonitorDTO>();
-        ProgramedSplits = new List<DataPointSeconds>();
+        ProgrammedSplits = new List<DataPointSeconds>();
         GapOuts = new List<SplitMonitorEvent>();
         MaxOuts = new List<SplitMonitorEvent>();
         ForceOffs = new List<SplitMonitorEvent>();
@@ -28,7 +28,7 @@ public class SplitMonitorResult : SignalResult
         DateTime end,
         int phaseNumber,
         ICollection<PlanSplitMonitorDTO> plans,
-        ICollection<DataPointSeconds> programedSplits,
+        ICollection<DataPointSeconds> programmedSplits,
         ICollection<SplitMonitorEvent> gapOuts,
         ICollection<SplitMonitorEvent> maxOuts,
         ICollection<SplitMonitorEvent> forceOffs,
@@ -37,7 +37,7 @@ public class SplitMonitorResult : SignalResult
     {
         PhaseNumber = phaseNumber;
         Plans = plans;
-        ProgramedSplits = programedSplits;
+        ProgrammedSplits = programmedSplits;
         GapOuts = gapOuts;
         MaxOuts = maxOuts;
         ForceOffs = forceOffs;
@@ -46,7 +46,7 @@ public class SplitMonitorResult : SignalResult
     }
     public int PhaseNumber { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
-    public ICollection<DataPointSeconds> ProgramedSplits { get; internal set; }
+    public ICollection<DataPointSeconds> ProgrammedSplits { get; internal set; }
     public ICollection<SplitMonitorEvent> GapOuts { get; internal set; }
     public ICollection<SplitMonitorEvent> MaxOuts { get; internal set; }
     public ICollection<SplitMonitorEvent> ForceOffs { get; internal set; }

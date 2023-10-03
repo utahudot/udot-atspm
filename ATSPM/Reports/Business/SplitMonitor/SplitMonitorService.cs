@@ -79,7 +79,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
             }
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalIdentifier, options.Start, options.End)
             {
-                ProgramedSplits = splits,
+                ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
