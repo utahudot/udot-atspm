@@ -56,7 +56,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 lanes.Add(new Lane
                 {
                     LaneNumber = laneNumber,
-                    MovementType = firstDetector.Key?.MovementTypeId ?? 0,
+                    MovementType = firstDetector.Key?.MovementTypeId.GetDisplayName(),
                     LaneType = firstDetector.Key?.LaneTypeId ?? 0,
                     Volume = laneVolume.Items.Select(i => new LaneVolume { StartTime = i.StartTime, Volume = i.HourlyVolume }).ToList()
                 });
@@ -87,9 +87,9 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 signalDescription,
                 options.Start,
                 options.End,
-                directionType.ToString(),
-                Enum.GetName(laneType),
-                Enum.GetName(movementType),
+                directionType.GetDisplayName(),
+                laneType.GetDisplayName(),
+                movementType.GetDisplayName(),
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new TotalVolume(i.StartTime, i.HourlyVolume)).ToList(),
