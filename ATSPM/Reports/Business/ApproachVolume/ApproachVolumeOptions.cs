@@ -12,7 +12,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
         public bool ShowSbWbVolume { get; set; }
         public bool ShowTMCDetection { get; set; }
         public bool ShowAdvanceDetection { get; set; }
-        public string SignalId { get; set; }
+        public string SignalIdentifier { get; set; }
         public DirectionTypes Direction { get; set; }
         public DetectionTypes DetectionType { get; set; }
         public DateTime Start { get; set; }

@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
@@ -41,12 +40,12 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
                 options.Start,
                 options.End,
                 primaryDetectorEvents,
-                options.SelectedBinSize); 
+                options.SelectedBinSize);
             var opposingDirectionVolume = new VolumeCollection(
                 options.Start,
                 options.End,
                 opposingDetectorEvents,
-                options.SelectedBinSize); 
+                options.SelectedBinSize);
             var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.SelectedBinSize);
             //ApproachVolume approachVolume = new ApproachVolume(
             //    primaryApproaches,
@@ -83,12 +82,12 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             KeyValuePair<DateTime, int> combinedPeakHourItem = GetPeakHourVolumeItem(combinedDirectionsVolumes, binSizeMultiplier);
             int combinedVolume = combinedDirectionsVolumes.Items.Sum(d => d.DetectorCount);
             int combinedPeakHourValue = FindPeakValueinHour(combinedPeakHourItem.Key, combinedDirectionsVolumes, binSizeMultiplier);
-            double combinedPeakHourFactor = GetPeakHourFactor(combinedPeakHourItem.Value, combinedPeakHourValue*binSizeMultiplier);
-            double combinedPeakHourKFactor = Convert.ToDouble(combinedPeakHourItem.Value)/ Convert.ToDouble(combinedVolume);
+            double combinedPeakHourFactor = GetPeakHourFactor(combinedPeakHourItem.Value, combinedPeakHourValue * binSizeMultiplier);
+            double combinedPeakHourKFactor = Convert.ToDouble(combinedPeakHourItem.Value) / Convert.ToDouble(combinedVolume);
             string combinedPeakHourString = combinedPeakHourItem.Key.ToShortTimeString() + " - " + combinedPeakHourItem.Key.AddHours(1).ToShortTimeString();
 
             double primaryDirectionPeakHourFactor = GetPeakHourFactor(primayDirectionPeakHourItem.Value, primaryDirectionPeakHourlyValueInHour);
-            double primaryDirectionPeakHourDFactor = GetPeakHourDFactor(primayDirectionPeakHourItem.Key, primayDirectionPeakHourItem.Value,opposingDirectionVolume, binSizeMultiplier);
+            double primaryDirectionPeakHourDFactor = GetPeakHourDFactor(primayDirectionPeakHourItem.Key, primayDirectionPeakHourItem.Value, opposingDirectionVolume, binSizeMultiplier);
             string primaryDirectionPeakHourString = primayDirectionPeakHourItem.Key.ToShortTimeString() + " - " + primayDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
             int opposingDirectionPeakValueInHour = FindPeakValueinHour(opposingDirectionPeakHourItem.Key, opposingDirectionVolume, binSizeMultiplier);
             int opposingDirectionPeakHourlyValueInHour = opposingDirectionPeakValueInHour * binSizeMultiplier;
@@ -99,10 +98,10 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(options.DetectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
-                options.SignalId,
+                options.SignalIdentifier,
                 options.Start,
                 options.End,
-                options.DetectionType,
+                options.DetectionType.GetDisplayName(),
                 distanceFromStopBar,
                 primaryApproaches.First().DirectionType.Description,
                 direction1VolumesSeries,
@@ -131,7 +130,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
 
         private double GetKFactor(int primaryDirectionPeakHourVolume, int opposingVolumeForPrimaryPeakHour, double primaryDirectionTotalVolume, double opposingDirectionTotalVolume)
         {
-            return (primaryDirectionPeakHourVolume+opposingVolumeForPrimaryPeakHour)/(primaryDirectionTotalVolume+opposingDirectionTotalVolume);
+            return (primaryDirectionPeakHourVolume + opposingVolumeForPrimaryPeakHour) / (primaryDirectionTotalVolume + opposingDirectionTotalVolume);
         }
 
         //private VolumeCollection GetVolumeByDetection(
@@ -198,7 +197,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
                 }
             }
             return result;
-        }       
+        }
 
         private List<DirectionVolumes> GetDirectionSeries(VolumeCollection approachVolume)
         {
@@ -209,7 +208,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return new List<DirectionVolumes>();
         }
 
-       
+
 
         private static double GetPeakHourFactor(int direction1PeakHourVolume, int PeakHourMaxHourlyVolume)
         {
@@ -221,7 +220,7 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return PeakHourFactor;
         }
 
-        private SortedDictionary<DateTime,int> CombineDirectionHourlyVolumes(List<DirectionVolumes> direction1Volumes, List<DirectionVolumes> direction2Volumes)
+        private SortedDictionary<DateTime, int> CombineDirectionHourlyVolumes(List<DirectionVolumes> direction1Volumes, List<DirectionVolumes> direction2Volumes)
         {
             var sortedDictionary = new SortedDictionary<DateTime, int>();
             foreach (DirectionVolumes current in direction1Volumes)
