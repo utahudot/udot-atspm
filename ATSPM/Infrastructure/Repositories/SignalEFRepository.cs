@@ -60,6 +60,8 @@ namespace ATSPM.Infrastructure.Repositories
         public IQueryable<Signal> GetLatestVersionOfAllSignals()
         {
             var result = BaseQuery()
+                .Include(i => i.ControllerType)
+                .Include(i => i.Region)
                 .FromSpecification(new ActiveSignalSpecification())
                 .GroupBy(r => r.SignalIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault());
