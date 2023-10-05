@@ -32,10 +32,10 @@ namespace Reports.Business.PurdueCoordinationDiagram
                 p.PercentGreenTime,
                 p.PercentArrivalOnGreen,
                 p.PlatoonRatio)).ToList();
-            var redSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.RedLineY));
-            var yellowSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.YellowLineY));
-            var greenSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.GreenLineY));
-            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointSeconds(d.TimeStamp, d.YPointSeconds)));
+            var redSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.RedLineY));
+            var yellowSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.YellowLineY));
+            var greenSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.GreenLineY));
+            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointForDouble(d.TimeStamp, d.YPointSeconds)));
 
             return new PurdueCoordinationDiagramResult(
                 options.SignalIdentifier,

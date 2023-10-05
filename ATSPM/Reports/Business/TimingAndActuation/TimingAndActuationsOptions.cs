@@ -1,9 +1,9 @@
-using System;
+using Reports.Business.Common;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.TimingAndActuation
 {
-    public class TimingAndActuationsOptions
+    public class TimingAndActuationsOptions : OptionsBase
     {
         public bool ShowPedestrianIntervals { get; set; }
         public bool ShowPedestrianActuation { get; set; }
@@ -17,8 +17,5 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         public List<int> GlobalEventParamsList { get; set; }
         public List<int> PhaseEventCodesList { get; set; }
         public int GlobalEventCounter { get; set; }
-        public DateTime End { get; set; }
-        public DateTime Start { get; set; }
-        public string SignalIdentifier { get; set; }
     }
 }

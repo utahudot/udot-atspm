@@ -51,6 +51,8 @@ namespace ATSPM.Application.Reports.Business.Common
             string signalId,
             List<ControllerEventLog> tempPlanEvents)
         {
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
                 SetFirstPlan(startDate, signalId, tempPlanEvents);

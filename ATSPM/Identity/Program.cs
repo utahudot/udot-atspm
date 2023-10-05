@@ -1,6 +1,5 @@
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Migrations.Identity;
-using Identity.Business.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -151,7 +150,7 @@ if (app.Environment.IsDevelopment())
 
             // Run the seed method
             ConfigurationSeedData.Seed(configContext);
-            await SeedAdminRoleAndClaims.SeedAdminUser(services);
+            //await SeedAdminRoleAndClaims.SeedAdminUser(services);
         }
         catch (Exception ex)
         {

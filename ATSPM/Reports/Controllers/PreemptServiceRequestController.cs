@@ -18,13 +18,16 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly PreemptServiceRequestService preemptServiceRequestService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
 
         public PreemptServiceRequestController(
             PreemptServiceRequestService preemptServiceRequestService,
-            IControllerEventLogRepository controllerEventLogRepository)
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository)
         {
             this.preemptServiceRequestService = preemptServiceRequestService;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -39,12 +42,15 @@ namespace ATSPM.Application.Reports.Controllers
         [HttpPost("getChartData")]
         public PreemptServiceRequestResult GetChartData([FromBody] PreemptServiceRequestOptions options)
         {
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
             var events = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<int>() { 102 });
             PreemptServiceRequestResult viewModel = preemptServiceRequestService.GetChartData(options, planEvents, events);
+            viewModel.SignalDescription = signal.SignalDescription();
             return viewModel;
         }
 

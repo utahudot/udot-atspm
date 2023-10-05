@@ -71,11 +71,11 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
         {
             var plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
             var test = plans.SelectMany(p => p.Splits.Where(s => s.Key == phase.PhaseNumber));
-            var splits = new List<DataPointSeconds>();
+            var splits = new List<DataPointForDouble>();
             foreach (var plan in plans)
             {
                 var splitForPhase = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault();
-                splits.Add(new DataPointSeconds(plan.Start, splitForPhase.Value));
+                splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalIdentifier, options.Start, options.End)
             {
