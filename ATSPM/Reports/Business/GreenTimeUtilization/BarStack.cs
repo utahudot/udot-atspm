@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Reports.Business.Common;
+using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
-    public class BarStack
+    public class BarStack : DataPointBase
     {
         public List<Layer> Layers { get; }
-        public DateTime StartTime { get; set; }
 
 
-        public BarStack(DateTime startAggTime, List<int> binValueList, int cycleCount, int binSize)
+        public BarStack(DateTime startAggTime, List<int> binValueList, int cycleCount, int binSize) : base(startAggTime)
         {
-            StartTime = startAggTime;
             //find the max layers number that is used
             int maxI = 0;
             for (int i = 0; i < binValueList.Count; i++)

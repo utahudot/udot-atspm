@@ -20,10 +20,10 @@ namespace Reports.Business.PurdueCoordinationDiagram
             Approach approach,
             SignalPhase signalPhase)
         {
-            List<VolumePerHour> volume = new List<VolumePerHour>();
+            List<DataPointForDouble> volume = new List<DataPointForDouble>();
             if (options.ShowVolumes)
             {
-                volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.HourlyVolume));
+                volume = signalPhase.Volume.Items.ConvertAll(v => new DataPointForDouble(v.StartTime, v.HourlyVolume));
             }
             var plans = signalPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
                 p.PlanNumber.ToString(),

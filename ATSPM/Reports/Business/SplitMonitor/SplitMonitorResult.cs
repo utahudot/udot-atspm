@@ -15,11 +15,11 @@ public class SplitMonitorResult : SignalResult
         PhaseNumber = phaseNumber;
         Plans = new List<PlanSplitMonitorDTO>();
         ProgrammedSplits = new List<DataPointForDouble>();
-        GapOuts = new List<SplitMonitorEvent>();
-        MaxOuts = new List<SplitMonitorEvent>();
-        ForceOffs = new List<SplitMonitorEvent>();
-        Unknowns = new List<SplitMonitorEvent>();
-        Peds = new List<SplitMonitorEvent>();
+        GapOuts = new List<DataPointForDouble>();
+        MaxOuts = new List<DataPointForDouble>();
+        ForceOffs = new List<DataPointForDouble>();
+        Unknowns = new List<DataPointForDouble>();
+        Peds = new List<DataPointForDouble>();
     }
 
     public SplitMonitorResult(
@@ -29,11 +29,11 @@ public class SplitMonitorResult : SignalResult
         int phaseNumber,
         ICollection<PlanSplitMonitorDTO> plans,
         ICollection<DataPointForDouble> programmedSplits,
-        ICollection<SplitMonitorEvent> gapOuts,
-        ICollection<SplitMonitorEvent> maxOuts,
-        ICollection<SplitMonitorEvent> forceOffs,
-        ICollection<SplitMonitorEvent> unknowns,
-        ICollection<SplitMonitorEvent> peds) : base(signalId, start, end)
+        ICollection<DataPointForDouble> gapOuts,
+        ICollection<DataPointForDouble> maxOuts,
+        ICollection<DataPointForDouble> forceOffs,
+        ICollection<DataPointForDouble> unknowns,
+        ICollection<DataPointForDouble> peds) : base(signalId, start, end)
     {
         PhaseNumber = phaseNumber;
         Plans = plans;
@@ -47,9 +47,9 @@ public class SplitMonitorResult : SignalResult
     public int PhaseNumber { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
     public ICollection<DataPointForDouble> ProgrammedSplits { get; internal set; }
-    public ICollection<SplitMonitorEvent> GapOuts { get; internal set; }
-    public ICollection<SplitMonitorEvent> MaxOuts { get; internal set; }
-    public ICollection<SplitMonitorEvent> ForceOffs { get; internal set; }
-    public ICollection<SplitMonitorEvent> Unknowns { get; internal set; }
-    public ICollection<SplitMonitorEvent> Peds { get; internal set; }
+    public ICollection<DataPointForDouble> GapOuts { get; internal set; }
+    public ICollection<DataPointForDouble> MaxOuts { get; internal set; }
+    public ICollection<DataPointForDouble> ForceOffs { get; internal set; }
+    public ICollection<DataPointForDouble> Unknowns { get; internal set; }
+    public ICollection<DataPointForDouble> Peds { get; internal set; }
 }

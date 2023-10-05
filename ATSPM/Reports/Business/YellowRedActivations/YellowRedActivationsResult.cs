@@ -7,7 +7,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
     /// <summary>
     /// Yellow Red Activations chart
     /// </summary>
-    public class YellowRedActivationsResult:ApproachResult
+    public class YellowRedActivationsResult : ApproachResult
     {
         public YellowRedActivationsResult(
             string signalId,
@@ -20,10 +20,10 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             int severeViolations,
             int yellowLightOccurences,
             ICollection<YellowRedActivationsPlan> plans,
-            ICollection<YellowRedActivationEvent> redEvents,
-            ICollection<YellowRedActivationEvent> yellowEvents,
-            ICollection<YellowRedActivationEvent> redClearanceEvents,
-            ICollection<YellowRedActivationEvent> detectorEvents):base(approachId, signalId,  start, end)
+            ICollection<DataPointForDouble> redEvents,
+            ICollection<DataPointForDouble> yellowEvents,
+            ICollection<DataPointForDouble> redClearanceEvents,
+            ICollection<DataPointForDouble> detectorEvents) : base(approachId, signalId, start, end)
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;
@@ -44,9 +44,9 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
         public int SevereViolations { get; internal set; }
         public int YellowLightOccurences { get; internal set; }
         public ICollection<YellowRedActivationsPlan> Plans { get; internal set; }
-        public ICollection<YellowRedActivationEvent> RedEvents { get; internal set; }
-        public ICollection<YellowRedActivationEvent> YellowEvents { get; internal set; }
-        public ICollection<YellowRedActivationEvent> RedClearanceEvents { get; internal set; }
-        public ICollection<YellowRedActivationEvent> DetectorEvents { get; internal set; }
+        public ICollection<DataPointForDouble> RedEvents { get; internal set; }
+        public ICollection<DataPointForDouble> YellowEvents { get; internal set; }
+        public ICollection<DataPointForDouble> RedClearanceEvents { get; internal set; }
+        public ICollection<DataPointForDouble> DetectorEvents { get; internal set; }
     }
 }

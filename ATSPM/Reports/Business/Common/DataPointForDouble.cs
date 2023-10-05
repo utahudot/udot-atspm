@@ -2,26 +2,13 @@
 
 namespace Reports.Business.Common
 {
-    public class DataPointForDouble
+    public class DataPointForDouble : DataPointBase
     {
-        public DataPointForDouble(DateTime startTime, double seconds)
+        public DataPointForDouble(DateTime start, double value) : base(start)
         {
-            this.startTime = DateTime.SpecifyKind(startTime, DateTimeKind.Unspecified);
-            Value = seconds;
+            Value = value;
         }
 
-        private DateTime startTime;
-        public DateTime StartTime
-        {
-            get
-            {
-                return startTime;
-            }
-            set
-            {
-                startTime = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
-            }
-        }
-        public double Value { get; set; }
+        public Double Value { get; set; }
     }
 }

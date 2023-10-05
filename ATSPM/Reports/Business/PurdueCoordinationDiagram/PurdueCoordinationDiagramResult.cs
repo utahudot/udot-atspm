@@ -21,7 +21,7 @@ public class PurdueCoordinationDiagramResult : ApproachResult
         int totalDetectorHits,
         double percentArrivalOnGreen,
         ICollection<PerdueCoordinationPlanViewModel> plans,
-        ICollection<VolumePerHour> volumePerHour,
+        ICollection<DataPointForDouble> volumePerHour,
         ICollection<DataPointForDouble> redSeries,
         ICollection<DataPointForDouble> yellowSeries,
         ICollection<DataPointForDouble> greenSeries,
@@ -45,7 +45,7 @@ public class PurdueCoordinationDiagramResult : ApproachResult
     public int TotalDetectorHits { get; }
     public double PercentArrivalOnGreen { get; }
     public ICollection<PerdueCoordinationPlanViewModel> Plans { get; }
-    public ICollection<VolumePerHour> VolumePerHour { get; }
+    public ICollection<DataPointForDouble> VolumePerHour { get; }
     public ICollection<DataPointForDouble> RedSeries { get; }
     public ICollection<DataPointForDouble> YellowSeries { get; }
     public ICollection<DataPointForDouble> GreenSeries { get; }

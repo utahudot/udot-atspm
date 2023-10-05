@@ -1,5 +1,6 @@
 ﻿
 using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,20 +24,20 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             int currentRedToRedCycle = 0;
             var delayByCycleLengthDataPoints = new Dictionary<PedCycle, double>();
             var plans = new List<PedDelayPlan>();
-            var cycleLengths = new List<CycleLengths>();
-            var pedestrianDelay = new List<PedestrianDelay>();
-            var startOfWalk = new List<StartBeginWalk>();
-            var percentDelayByCycleLength = new List<PercentDelayByCycleLength>();
+            var cycleLengths = new List<DataPointForDouble>();
+            var pedestrianDelay = new List<DataPointForDouble>();
+            var startOfWalk = new List<DataPointForDouble>();
+            var percentDelayByCycleLength = new List<DataPointForDouble>();
 
             foreach (var pedPlan in pedPhase.Plans)
             {
                 foreach (var pedCycle in pedPlan.Cycles)
                 {
-                    pedestrianDelay.Add(new PedestrianDelay(pedCycle.BeginWalk, pedCycle.Delay));
+                    pedestrianDelay.Add(new DataPointForDouble(pedCycle.BeginWalk, pedCycle.Delay));
 
                     if (options.ShowPedBeginWalk)
                     {
-                        startOfWalk.Add(new StartBeginWalk(pedCycle.BeginWalk, pedCycle.Delay)); //add ped walk to top of delay
+                        startOfWalk.Add(new DataPointForDouble(pedCycle.BeginWalk, pedCycle.Delay)); //add ped walk to top of delay
                     }
 
                     if (options.ShowPercentDelay)
@@ -54,7 +55,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             {
                 foreach (var cycle in redToRedCycles)
                 {
-                    cycleLengths.Add(new CycleLengths(cycle.EndTime, cycle.RedLineY));
+                    cycleLengths.Add(new DataPointForDouble(cycle.EndTime, cycle.RedLineY));
                 }
             }
 
@@ -62,7 +63,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             {
                 foreach (var e in pedPhase.PedBeginWalkEvents)
                 {
-                    startOfWalk.Add(new StartBeginWalk(e.Timestamp, 0));
+                    startOfWalk.Add(new DataPointForDouble(e.Timestamp, 0));
                 }
             }
 
@@ -73,7 +74,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
                     pedPhase);
                 foreach (var cycle in delayByCycleLengthStepChart)
                 {
-                    percentDelayByCycleLength.Add(new PercentDelayByCycleLength(cycle.Key, cycle.Value));
+                    percentDelayByCycleLength.Add(new DataPointForDouble(cycle.Key, cycle.Value));
                 }
             }
             var pedDelayPlans = new List<PedDelayPlan>();

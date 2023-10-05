@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Models;
-using Reports.Business.Common;
+﻿using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -16,14 +15,14 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             bool phaseOrOverlap,
             string phaseNumberSort,
             bool getPermissivePhase,
-            List<DataPointEventCode> pedestrianIntervals,
-            Dictionary<string, List<DataPointEventCode>> pedestrianEvents,
-            Dictionary<string, List<ControllerEventLog>> cycleAllEvents,
-            Dictionary<string, List<DataPointEventCode>> advanceCountEvents,
-            Dictionary<string, List<DataPointEventCode>> advancePresenceEvents,
-            Dictionary<string, List<DataPointEventCode>> stopBarEvents,
-            Dictionary<string, List<DataPointEventCode>> laneByLanes,
-            Dictionary<string, List<DataPointEventCode>> phaseCustomEvents) : base(approachId, signalId, start, end)
+            List<DataPointForInt> pedestrianIntervals,
+            Dictionary<string, List<DataPointForInt>> pedestrianEvents,
+            Dictionary<string, List<DataPointForInt>> cycleAllEvents,
+            Dictionary<string, List<DataPointForInt>> advanceCountEvents,
+            Dictionary<string, List<DataPointForInt>> advancePresenceEvents,
+            Dictionary<string, List<DataPointForInt>> stopBarEvents,
+            Dictionary<string, List<DataPointForInt>> laneByLanes,
+            Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseOrOverlap = phaseOrOverlap;
@@ -43,14 +42,14 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         public bool PhaseOrOverlap { get; set; }
         public string PhaseNumberSort { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public List<DataPointEventCode> PedestrianIntervals { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> PedestrianEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> CycleAllEvents { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> AdvanceCountEvents { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> AdvancePresenceEvents { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> StopBarEvents { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> LaneByLanes { get; set; }
-        public Dictionary<string, List<DataPointEventCode>> PhaseCustomEvents { get; set; }
+        public List<DataPointForInt> PedestrianIntervals { get; set; }
+        public Dictionary<string, List<DataPointForInt>> PedestrianEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> CycleAllEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> AdvanceCountEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> AdvancePresenceEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> StopBarEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> LaneByLanes { get; set; }
+        public Dictionary<string, List<DataPointForInt>> PhaseCustomEvents { get; set; }
     }
 }
 

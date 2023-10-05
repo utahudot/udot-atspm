@@ -1,4 +1,5 @@
 using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +20,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             string movementType,
             IReadOnlyList<Plan> plans,
             IReadOnlyList<Lane> lanes,
-            IReadOnlyList<TotalVolume> totalVolumes,
+            IReadOnlyList<DataPointForInt> totalVolumes,
             int totalVolume,
             string peakHour,
             double? peakHourVolume,
@@ -53,7 +54,7 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
         public string MovementType { get; }
         public IReadOnlyList<Plan> Plans { get; set; }
         public IReadOnlyList<Lane> Lanes { get; set; }
-        public IReadOnlyList<TotalVolume> TotalVolumes { get; set; }
+        public IReadOnlyList<DataPointForInt> TotalVolumes { get; set; }
         public int TotalVolume { get; set; }
         public string PeakHour { get; }
         public double? PeakHourVolume { get; set; }

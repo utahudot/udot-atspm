@@ -135,22 +135,22 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 splitFailData.TotalFails,
                 splitFailData.Plans,
-                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new FailLine(c.StartTime)).ToList(),
+                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new DataPointBase(c.StartTime)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
-                    .Select(b => new GapOutGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
-                    .Select(b => new GapOutRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.RedOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
-                    .Select(b => new ForceOffGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
-                    .Select(b => new ForceOffRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new AverageGor(b.StartTime, b.AverageGreenOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
+                    .Select(b => new DataPointForDouble(b.StartTime, b.RedOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageGreenOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();

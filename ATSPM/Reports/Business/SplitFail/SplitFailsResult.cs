@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.SplitFail
 {
-    public class SplitFailsResult:ApproachResult
+    public class SplitFailsResult : ApproachResult
     {
         public SplitFailsResult(
             string signalId,
@@ -14,14 +14,14 @@ namespace ATSPM.Application.Reports.Business.SplitFail
             DateTime end,
             int totalSplitFails,
             ICollection<PlanSplitFail> plans,
-            ICollection<FailLine> failLines,
-            ICollection<GapOutGreenOccupancy> gapOutGreenOccupancies,
-            ICollection<GapOutRedOccupancy> gapOutRedOccupancies,
-            ICollection<ForceOffGreenOccupancy> forceOffGreenOccupancies,
-            ICollection<ForceOffRedOccupancy> forceOffRedOccupancies,
-            ICollection<AverageGor> averageGor,
-            ICollection<AverageRor> averageRor,
-            ICollection<PercentFail> percentFails):base(approachId, signalId, start, end)
+            ICollection<DataPointBase> failLines,
+            ICollection<DataPointForDouble> gapOutGreenOccupancies,
+            ICollection<DataPointForDouble> gapOutRedOccupancies,
+            ICollection<DataPointForDouble> forceOffGreenOccupancies,
+            ICollection<DataPointForDouble> forceOffRedOccupancies,
+            ICollection<DataPointForDouble> averageGor,
+            ICollection<DataPointForDouble> averageRor,
+            ICollection<DataPointForDouble> percentFails) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             TotalSplitFails = totalSplitFails;
@@ -38,13 +38,13 @@ namespace ATSPM.Application.Reports.Business.SplitFail
         public int PhaseNumber { get; set; }
         public int TotalSplitFails { get; set; }
         public ICollection<PlanSplitFail> Plans { get; set; }
-        public ICollection<FailLine> FailLines { get; set; }
-        public ICollection<GapOutGreenOccupancy> GapOutGreenOccupancies { get; set; }
-        public ICollection<GapOutRedOccupancy> GapOutRedOccupancies { get; set; }
-        public ICollection<ForceOffGreenOccupancy> ForceOffGreenOccupancies { get; set; }
-        public ICollection<ForceOffRedOccupancy> ForceOffRedOccupancies { get; set; }
-        public ICollection<AverageGor> AverageGor { get; set; }
-        public ICollection<AverageRor> AverageRor { get; set; }
-        public ICollection<PercentFail> PercentFails { get; set; }
+        public ICollection<DataPointBase> FailLines { get; set; }
+        public ICollection<DataPointForDouble> GapOutGreenOccupancies { get; set; }
+        public ICollection<DataPointForDouble> GapOutRedOccupancies { get; set; }
+        public ICollection<DataPointForDouble> ForceOffGreenOccupancies { get; set; }
+        public ICollection<DataPointForDouble> ForceOffRedOccupancies { get; set; }
+        public ICollection<DataPointForDouble> AverageGor { get; set; }
+        public ICollection<DataPointForDouble> AverageRor { get; set; }
+        public ICollection<DataPointForDouble> PercentFails { get; set; }
     }
 }

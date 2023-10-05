@@ -82,23 +82,23 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 4)
-                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 MaxOuts = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 5)
-                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 ForceOffs = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 6)
-                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 Unknowns = phase.Cycles.Items
                                 .Where(c => c.TerminationEvent == 0)
-                                .Select(c => new SplitMonitorEvent(c.StartTime, c.Duration.TotalSeconds))
+                                .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 Peds = phase.Cycles.Items
                                 .Where(c => c.HasPed)
-                                .Select(c => new SplitMonitorEvent(c.PedStartTime, c.PedDuration))
+                                .Select(c => new DataPointForDouble(c.PedStartTime, c.PedDuration))
                                 .ToList(),
                 Plans = plans.Select(p => new PlanSplitMonitorDTO
                 {

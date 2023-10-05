@@ -26,10 +26,10 @@ public class ApproachVolumeResult : SignalResult
         string detectorType,
         int distanceFromStopBar,
         string primaryDirectionName,
-        ICollection<DirectionVolumes> primaryDirectionVolumes,
+        ICollection<DataPointForInt> primaryDirectionVolumes,
         string opposingDirectionName,
-        ICollection<DirectionVolumes> opposingDirectionVolumes,
-        ICollection<DirectionVolumes> combinedDirectionVolumes,
+        ICollection<DataPointForInt> opposingDirectionVolumes,
+        ICollection<DataPointForInt> combinedDirectionVolumes,
         ICollection<DFactors> primaryDFactors,
         ICollection<DFactors> opposingDFactors,
         string peakHour,
@@ -79,9 +79,9 @@ public class ApproachVolumeResult : SignalResult
     public string OpposingDirectionName { get; set; }
     public int DistanceFromStopBar { get; set; }
     public string DetectorType { get; set; }
-    public ICollection<DirectionVolumes> PrimaryDirectionVolumes { get; set; }
-    public ICollection<DirectionVolumes> OpposingDirectionVolumes { get; set; }
-    public ICollection<DirectionVolumes> CombinedDirectionVolumes { get; set; }
+    public ICollection<DataPointForInt> PrimaryDirectionVolumes { get; set; }
+    public ICollection<DataPointForInt> OpposingDirectionVolumes { get; set; }
+    public ICollection<DataPointForInt> CombinedDirectionVolumes { get; set; }
     public ICollection<DFactors> PrimaryDFactors { get; set; }
     public ICollection<DFactors> OpposingDFactors { get; set; }
     public SummaryData SummaryData { get; set; }
