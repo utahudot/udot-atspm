@@ -8,7 +8,7 @@ namespace ATSPM.Application.Extensions
     {
         public static string SignalDescription(this Signal signal)
         {
-            return $"{signal.SignalIdentifier} - {signal.PrimaryName} {signal.SecondaryName}";
+            return $"#{signal.SignalIdentifier} - {signal.PrimaryName} & {signal.SecondaryName}";
         }
 
         public static List<Approach> GetApproachesForSignalThatSupportMetric(this Signal signal, int metricTypeID)
