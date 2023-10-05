@@ -27,7 +27,7 @@ namespace ATSPM.Application.Reports.Business.PreemptService
                 pl.PlanNumber.ToString(),
                 pl.Start,
                 pl.End,
-                preemptEvents.Count(p => p.TimeStamp >= pl.Start && p.TimeStamp < pl.End))).ToList();
+                preemptEvents.Count(p => p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
             return new PreemptServiceRequestResult(
                 "Preempt Service",
                 options.SignalIdentifier,

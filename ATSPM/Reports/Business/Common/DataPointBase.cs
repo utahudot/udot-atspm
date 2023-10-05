@@ -4,20 +4,20 @@ namespace Reports.Business.Common
 {
     public class DataPointBase
     {
-        private DateTime _timeStamp;
+        private DateTime _timestamp;
         public DataPointBase(DateTime timeStamp)
         {
-            _timeStamp = DateTime.SpecifyKind(timeStamp, DateTimeKind.Unspecified);
+            _timestamp = DateTime.SpecifyKind(timeStamp, DateTimeKind.Unspecified);
         }
-        public DateTime TimeStamp
+        public DateTime Timestamp
         {
             get
             {
-                return _timeStamp;
+                return _timestamp;
             }
             set
             {
-                _timeStamp = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
+                _timestamp = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
             }
         }
     }

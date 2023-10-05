@@ -226,9 +226,9 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             var sortedDictionary = new SortedDictionary<DateTime, int>();
             foreach (DataPointForInt current in direction1Volumes)
             {
-                var index = direction2Volumes.FindIndex(d => d.TimeStamp == current.TimeStamp);
+                var index = direction2Volumes.FindIndex(d => d.Timestamp == current.Timestamp);
                 if (index >= 0)
-                    sortedDictionary.Add(current.TimeStamp, direction2Volumes[index].Value + current.Value);
+                    sortedDictionary.Add(current.Timestamp, direction2Volumes[index].Value + current.Value);
             }
             return sortedDictionary;
         }
