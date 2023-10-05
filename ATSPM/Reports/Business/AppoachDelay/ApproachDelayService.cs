@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                         avgDelay,
                         totalDelay,
                         plan.Start,
-                        plan.EndTime,
+                        plan.End,
                         plan.PlanNumber.ToString(),
                         planDescription)
                     );

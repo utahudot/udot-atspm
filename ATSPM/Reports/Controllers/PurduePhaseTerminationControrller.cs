@@ -96,7 +96,7 @@ namespace ATSPM.Application.Reports.Controllers
                     ));
             }
 
-            var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.Start, p.EndTime)).ToList();
+            var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.Start, p.End)).ToList();
             var result = new PhaseTerminationResult(
                 phaseCollectionData.SignalId,
                 options.Start,

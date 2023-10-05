@@ -28,7 +28,7 @@ namespace Reports.Business.PurdueCoordinationDiagram
             var plans = signalPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
                 p.PlanNumber.ToString(),
                 p.Start,
-                p.EndTime,
+                p.End,
                 p.PercentGreenTime,
                 p.PercentArrivalOnGreen,
                 p.PlatoonRatio)).ToList();

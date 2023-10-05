@@ -100,7 +100,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                 arrivals.Add(new ArrivalOnRedPlan(
                     planPcd.PlanNumber.ToString(),
                     planPcd.Start,
-                    planPcd.EndTime,
+                    planPcd.End,
                     planPcd.PercentArrivalOnRed,
                     planPcd.PercentRedTime));
             }

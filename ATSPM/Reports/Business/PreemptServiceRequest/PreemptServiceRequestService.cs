@@ -25,8 +25,8 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             IReadOnlyList<Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
                 pl.Start,
-                pl.EndTime,
-                preemptEvents.Count(p => p.StartTime >= pl.Start && p.StartTime < pl.EndTime))).ToList();
+                pl.End,
+                preemptEvents.Count(p => p.StartTime >= pl.Start && p.StartTime < pl.End))).ToList();
             return new PreemptServiceRequestResult(
                 "Preempt Service",
                 options.SignalIdentifier,

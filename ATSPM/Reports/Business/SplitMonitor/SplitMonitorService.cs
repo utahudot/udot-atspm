@@ -104,7 +104,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 {
                     PlanNumber = p.PlanNumber,
                     Start = p.Start,
-                    EndTime = p.EndTime,
+                    EndTime = p.End,
                     AverageSplit = p.AverageSplit,
                     HighCycleCount = p.HighCycleCount,
                     PercentSkips = p.PercentSkips,
@@ -128,15 +128,15 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.EndTime).ToList();
+                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
                 if (cycles.Any())
                 {
                     var planCycleCount = Convert.ToDouble(cycles.Count());
                     var percentile = Convert.ToDouble(options.PercentileSplit) / 100;
-                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.EndTime, plan.PlanNumber)
+                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
                     {
                         Start = plan.Start,
-                        EndTime = plan.EndTime,
+                        End = plan.End,
                         PlanNumber = plan.PlanNumber,
                         PercentSkips = planCycleCount > 0 ? Convert.ToDouble((plan.HighCycleCount) - planCycleCount) / plan.HighCycleCount : 0,
                         PercentGapOuts = planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / planCycleCount : 0,

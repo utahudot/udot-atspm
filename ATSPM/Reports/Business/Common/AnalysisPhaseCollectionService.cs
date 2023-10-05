@@ -274,7 +274,7 @@ namespace ATSPM.Application.Reports.Business.Common
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
-                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.EndTime
+                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
                              select cycle;
 
                 if (Cycles.Count() > HighCycleCount)

@@ -7,12 +7,12 @@ namespace ATSPM.Application.Reports.Business.Common
         public Plan(string planNumber, DateTime startTime, DateTime endTime)
         {
             PlanNumber = planNumber;
-            Start = startTime;
-            EndTime = endTime;
+            Start = DateTime.SpecifyKind(startTime, DateTimeKind.Unspecified);
+            End = DateTime.SpecifyKind(endTime, DateTimeKind.Unspecified);
         }
 
         public string PlanNumber { get; internal set; }
         public DateTime Start { get; internal set; }
-        public DateTime EndTime { get; internal set; }
+        public DateTime End { get; internal set; }
     }
 }
