@@ -3,6 +3,7 @@ using ATSPM.Application.Reports.Business.PreempDetail;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,10 +40,13 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public PreemptDetailResult GetChartData([FromBody] PreemptDetailOptions options)
+        public IActionResult GetChartData([FromBody] PreemptDetailOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var codes = new List<int>();
 
             for (var i = 101; i <= 111; i++)
@@ -54,10 +58,15 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 codes).ToList();
 
+            if (events.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
 
             PreemptDetailResult viewModel = preemptDetailService.GetChartData(options, events);
             viewModel.SignalDescription = signal.SignalDescription();
-            return viewModel;
+            return Ok(viewModel);
         }
 
     }

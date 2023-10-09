@@ -4,6 +4,7 @@ using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,10 +43,18 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<ApproachVolumeResult>> GetChartData([FromBody] ApproachVolumeOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] ApproachVolumeOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
             var tasks = new List<Task<ApproachVolumeResult>>();
             var nbSbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();
             GetApproachVolume(options, signal, controllerEventLogs, tasks, nbSbApproaches);
@@ -57,7 +66,13 @@ namespace ATSPM.Application.Reports.Controllers
             GetApproachVolume(options, signal, controllerEventLogs, tasks, nebSwbApproaches);
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private void GetApproachVolume(ApproachVolumeOptions options, Signal signal, List<ControllerEventLog> controllerEventLogs, List<Task<ApproachVolumeResult>> tasks, List<Approach> approaches)

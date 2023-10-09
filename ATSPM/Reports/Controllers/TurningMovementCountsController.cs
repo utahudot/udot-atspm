@@ -49,10 +49,19 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<TurningMovementCountsResult>> GetChartData([FromBody] TurningMovementCountsOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] TurningMovementCountsOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
@@ -72,7 +81,13 @@ namespace ATSPM.Application.Reports.Controllers
             }
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null).SelectMany(r => r);
+            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
