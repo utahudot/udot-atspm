@@ -51,6 +51,9 @@
     <None Update="TestFiles\LTGap_EventLogs.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\PCDevents.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\PedDelayEventcodes.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
