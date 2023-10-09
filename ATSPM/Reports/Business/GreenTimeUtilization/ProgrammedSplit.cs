@@ -13,11 +13,11 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         {
             if (analysisStart < analysisPlan.Start)
             {
-                TimeStamp = analysisPlan.Start;
+                Timestamp = analysisPlan.Start;
             }
             else
             {
-                TimeStamp = analysisStart;
+                Timestamp = analysisStart;
             }
 
             if (splitLength >= durYR)

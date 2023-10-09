@@ -6,7 +6,7 @@ namespace Reports.Business.Common
     {
         public DataPointForInt(DateTime start, int value) : base(start)
         {
-            TimeStamp = start;
+            Timestamp = start;
             Value = value;
         }
         public int Value { get; set; }
