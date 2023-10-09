@@ -2,6 +2,8 @@
 using Asp.Versioning.OData;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Specifications;
+using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using Google.Apis.Util;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +19,13 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OData.UriParser;
 using NetTopologySuite.Densify;
 using System;
+using ATSPM.Domain.Extensions;
 using System.Linq;
 using System.Net;
 using System.Reflection.Metadata;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -37,6 +41,25 @@ namespace ATSPM.ConfigApi.Controllers
 
         }
 
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(typeof(IEnumerable<Approach>), Status200OK)]
+        public IActionResult GetApproaches([FromRoute] int key)
+        {
+            //var approaches = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+            //var approaches = _repository.GetList().SingleOrDefault(s => s.Id == key);
+
+            //var i = repo.GetList().Where(w => w.SignalId == key);
+            var i = _repository.GetList().Where(w => w.Id == key).SelectMany(m => m.Approaches);
+
+            if (i == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(i);
+        }
+
+
         /// <summary>
         /// Get all active <see cref="Signal"/> that match <paramref name="identifier"/>
         /// </summary>
@@ -50,6 +73,19 @@ namespace ATSPM.ConfigApi.Controllers
         {
             return Ok(options.ApplyTo(_repository.GetAllVersionsOfSignal(identifier).AsQueryable()));
         }
+
+
+
+
+
+
+
+
+
+
+
+        //GET THIS WORKING WITHOUT THE QUERY ATTRIBUTE!!!!
+
 
         /// <summary>
         /// Get latest version of all <see cref="Signal"/>
@@ -67,6 +103,28 @@ namespace ATSPM.ConfigApi.Controllers
             return Ok(_repository.GetLatestVersionOfAllSignals());
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="identifier"/>
         /// </summary>
@@ -78,13 +136,14 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status404NotFound)]
         public IActionResult GetLatestVersionOfSignal(string identifier, ODataQueryOptions<Signal> options)
         {
+            //https://learn.microsoft.com/en-us/odata/webapi-8/fundamentals/query-options?tabs=net60
             options.Request.ODataFeature().SelectExpandClause = new SelectExpandQueryOption(null, "Approaches", options.Context, new ODataQueryOptionParser(
                 model: options.Context.Model,
                 targetEdmType: options.Context.NavigationSource.EntityType(),
                 targetNavigationSource: options.Context.NavigationSource,
                 queryOptions: new Dictionary<string, string>
                 {
-                    { "$expand", "Approaches($expand=Detectors), Jurisdiction, ControllerType, Region, VersionAction, Areas" }
+                    { "$expand", "controllerType, Jurisdiction, Region, VersionAction, Areas, Approaches($expand=directionType,Detectors($expand=detectionTypes, detectionHardware, movementType, laneType, detectorComments))" }
                 },
                 container: options.Context.RequestContainer)).SelectExpandClause;
 
@@ -138,6 +197,49 @@ namespace ATSPM.ConfigApi.Controllers
             }
             
             return Ok();
+        }
+
+
+
+
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<SearchSignal>), Status200OK)]
+        [ProducesResponseType(Status400BadRequest)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        public IActionResult GetSignalsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
+        {
+            var result = _repository.GetList()
+                .FromSpecification(new ActiveSignalSpecification())
+
+                .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
+                .Where(w => regionId == null || w.RegionId == regionId)
+                .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
+                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
+
+
+                .Select(s => new SearchSignal()
+                {
+                    Id = s.Id,
+                    Start = s.Start,
+                    SignalIdentifier = s.SignalIdentifier,
+                    PrimaryName = s.PrimaryName,
+                    SecondaryName = s.SecondaryName,
+                    RegionId = s.RegionId,
+                    JurisdictionId = s.JurisdictionId,
+                    Longitude = s.Longitude,
+                    Latitude = s.Latitude,
+                    ChartEnabled = s.ChartEnabled,
+                    Areas = s.Areas.Select(a => a.Id),
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MetricTypeMetrics.Select(i => i.Id))))
+                })
+
+                .GroupBy(r => r.SignalIdentifier)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
+
+            return Ok(result);
         }
     }
 }

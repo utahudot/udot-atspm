@@ -1,15 +1,10 @@
 ﻿using Reports.Business.Common;
-using System;
 
 namespace ATSPM.Application.Reports.Business.SplitMonitor
 {
-    public class SplitMonitorOptions 
+    public class SplitMonitorOptions : OptionsBase
     {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public String SignalIdentifier { get; set; }
         public int PercentileSplit { get; set; }
-
 
     }
 }

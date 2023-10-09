@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,11 +32,11 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
             DirectionTypes directionType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> detectorEvents,
-            List<ControllerEventLog> planEvents,
+            List<Plan> plans,
             string signalIdentifier,
             string signalDescription)
         {
-            var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, planEvents);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
@@ -56,9 +57,9 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 lanes.Add(new Lane
                 {
                     LaneNumber = laneNumber,
-                    MovementType = firstDetector.Key?.MovementTypeId ?? 0,
+                    MovementType = firstDetector.Key?.MovementTypeId.GetDisplayName(),
                     LaneType = firstDetector.Key?.LaneTypeId ?? 0,
-                    Volume = laneVolume.Items.Select(i => new LaneVolume { StartTime = i.StartTime, Volume = i.HourlyVolume }).ToList()
+                    Volume = laneVolume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
                 });
 
                 laneNumberVolumes.Add(laneNumber.Value, laneVolume);
@@ -87,12 +88,12 @@ namespace ATSPM.Application.Reports.Business.TurningMovementCounts
                 signalDescription,
                 options.Start,
                 options.End,
-                directionType.ToString(),
-                laneType.ToString(),
-                movementType.ToString(),
+                directionType.GetDisplayName(),
+                laneType.GetDisplayName(),
+                movementType.GetDisplayName(),
                 plans,
                 lanes,
-                allLanesMovementVolumes.Items.Select(i => new TotalVolume(i.StartTime, i.HourlyVolume)).ToList(),
+                allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
                 totalDetectorCounts,
                 $"{peakHour.Key.ToShortTimeString()} - {peakHourEnd.ToShortTimeString()}",
                 peakHour.Value / binMultiplier,

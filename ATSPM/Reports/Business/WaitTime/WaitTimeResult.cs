@@ -8,7 +8,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
     /// <summary>
     /// Wait Time chart
     /// </summary>
-    public class WaitTimeResult:ApproachResult
+    public class WaitTimeResult : ApproachResult
     {
         public WaitTimeResult(string signalId,
                              int approachId,
@@ -18,12 +18,12 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                              DateTime end,
                              string detectionTypes,
                              IReadOnlyList<PlanWaitTime> plans,
-                             IReadOnlyList<WaitTimePoint> gapOuts,
-                             IReadOnlyList<WaitTimePoint> maxOuts,
-                             IReadOnlyList<WaitTimePoint> forceOffs,
-                             IReadOnlyList<WaitTimePoint> unknowns,
-                             IReadOnlyList<WaitTimePoint> average,
-                             IReadOnlyList<Volume> volumes):base(approachId, signalId, start, end)
+                             IReadOnlyList<DataPointForDouble> gapOuts,
+                             IReadOnlyList<DataPointForDouble> maxOuts,
+                             IReadOnlyList<DataPointForDouble> forceOffs,
+                             IReadOnlyList<DataPointForDouble> unknowns,
+                             IReadOnlyList<DataPointForDouble> average,
+                             IReadOnlyList<DataPointForInt> volumes) : base(approachId, signalId, start, end)
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;
@@ -41,12 +41,12 @@ namespace ATSPM.Application.Reports.Business.WaitTime
         public int PhaseNumber { get; internal set; }
         public string DetectionTypes { get; internal set; }
         public IReadOnlyList<PlanWaitTime> Plans { get; internal set; }
-        public IReadOnlyList<WaitTimePoint> GapOuts { get; internal set; }
-        public IReadOnlyList<WaitTimePoint> MaxOuts { get; internal set; }
-        public IReadOnlyList<WaitTimePoint> ForceOffs { get; internal set; }
-        public IReadOnlyList<WaitTimePoint> Unknowns { get; internal set; }
-        public IReadOnlyList<WaitTimePoint> Average { get; internal set; }
-        public IReadOnlyList<Volume> Volumes { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> GapOuts { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> MaxOuts { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> ForceOffs { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> Unknowns { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> Average { get; internal set; }
+        public IReadOnlyList<DataPointForInt> Volumes { get; internal set; }
         public IReadOnlyList<PlanSplit> PlanSplits { get; internal set; }
     }
 }

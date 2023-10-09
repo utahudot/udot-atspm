@@ -3,6 +3,7 @@ using ATSPM.Data.Models;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace ATSPM.Application.Repositories
         /// Get latest version of all <see cref="Signal"/> and related entities
         /// </summary>
         /// <returns>List of <see cref="Signal"/> with newest start date</returns>
-        IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
+        IQueryable<Signal> GetLatestVersionOfAllSignals();
 
         /// <summary>
         /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="ControllerType"/>
@@ -59,6 +60,9 @@ namespace ATSPM.Application.Repositories
         /// <param name="endDate">Date controllers are newer than</param>
         /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
         IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate);
+
+
+        //ReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId);
 
         #region ExtensionMethods
 

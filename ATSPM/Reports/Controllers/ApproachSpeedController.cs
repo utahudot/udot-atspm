@@ -3,6 +3,7 @@ using ATSPM.Application.Reports.Business.ApproachSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Reports.Business.Common;
 using System.Collections.Generic;
@@ -47,10 +48,14 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<ApproachSpeedResult>> GetChartData([FromBody] ApproachSpeedOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] ApproachSpeedOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No data found");
+            }
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
@@ -62,7 +67,12 @@ namespace ATSPM.Application.Reports.Controllers
                 tasks.Add(GetChartDataByApproach(options, controllerEventLogs, planEvents, phaseDetail, signal.SignalDescription()));
             }
             var results = await Task.WhenAll(tasks);
-            return results;
+            var finalResultcheck = results.Where(result => result != null).ToList();
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No data found");
+            }
+            return Ok(finalResultcheck);
 
         }
 
@@ -73,12 +83,25 @@ namespace ATSPM.Application.Reports.Controllers
             PhaseDetail phaseDetail,
             string signalDescription)
         {
-            var detector = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId).First();
+            var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
+            Detector detector;
+            if (detectors.IsNullOrEmpty())
+            {
+                return null;
+            }
+            else
+            {
+                detector = detectors.First();
+            }
             var speedEvents = speedEventRepository.GetSpeedEventsByDetector(
                 detector,
                 options.Start,
                 options.End,
                 detector.MinSpeedFilter ?? 5).ToList();
+            if (speedEvents.IsNullOrEmpty())
+            {
+                return null;
+            }
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 phaseDetail.PhaseNumber,
                 phaseDetail.UseOverlap,

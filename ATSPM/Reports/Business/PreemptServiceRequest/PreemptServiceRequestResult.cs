@@ -8,19 +8,19 @@ namespace ATSPM.Application.Reports.Business.PreemptServiceRequest
     /// <summary>
     /// Preempt Service Request chart
     /// </summary>
-    public class PreemptServiceRequestResult:SignalResult
+    public class PreemptServiceRequestResult : SignalResult
     {
         public PreemptServiceRequestResult(string chartName,
             string signalId,
             DateTime start,
             DateTime end,
             IReadOnlyList<Plan> plans,
-            IReadOnlyList<PreemptRequest> preemptRequests):base(signalId, start, end)  
+            IReadOnlyList<DataPointForInt> preemptRequests) : base(signalId, start, end)
         {
             Plans = plans;
             PreemptRequests = preemptRequests;
         }
         public IReadOnlyList<Plan> Plans { get; internal set; }
-        public IReadOnlyList<PreemptRequest> PreemptRequests { get; internal set; }
+        public IReadOnlyList<DataPointForInt> PreemptRequests { get; internal set; }
     }
 }

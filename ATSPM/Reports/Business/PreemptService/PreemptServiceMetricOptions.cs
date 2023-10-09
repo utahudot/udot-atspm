@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Reports.Business.Common;
 using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.PreemptService
 
 {
     [DataContract]
-    public class PreemptServiceMetricOptions
+    public class PreemptServiceMetricOptions : OptionsBase
     {
-        public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
     }
 }

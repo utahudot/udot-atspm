@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,9 +26,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
             double totalAoR = 0;
             double totalCars = 0;
             double totalPercentAoR = 0;
-            List<PercentArrivalsOnRed> percentArrivalsOnReds = new List<PercentArrivalsOnRed>();
-            List<TotalVehicles> totalVehicles = new List<TotalVehicles>();
-            List<ArrivalsOnRed> arrivalsOnReds = new List<ArrivalsOnRed>();
+            List<DataPointForDouble> percentArrivalsOnReds = new List<DataPointForDouble>();
+            List<DataPointForDouble> totalVehicles = new List<DataPointForDouble>();
+            List<DataPointForDouble> arrivalsOnReds = new List<DataPointForDouble>();
             if (signalPhase.Cycles.Count > 0)
             {
                 var dt = signalPhase.StartDate;
@@ -60,9 +61,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
                         if (binDetectorHits > 0)
                             binPercentAoR = binTotalStops / binDetectorHits * 100;
                     }
-                    percentArrivalsOnReds.Add(new PercentArrivalsOnRed(dt, binPercentAoR));
-                    totalVehicles.Add(new TotalVehicles(dt, binDetectorHits * (60 / options.SelectedBinSize)));
-                    arrivalsOnReds.Add(new ArrivalsOnRed(dt, binTotalStops * (60 / options.SelectedBinSize)));
+                    percentArrivalsOnReds.Add(new DataPointForDouble(dt, binPercentAoR));
+                    totalVehicles.Add(new DataPointForDouble(dt, binDetectorHits * (60 / options.SelectedBinSize)));
+                    arrivalsOnReds.Add(new DataPointForDouble(dt, binTotalStops * (60 / options.SelectedBinSize)));
                     dt = dt.AddMinutes(options.SelectedBinSize);
                 }
             }
@@ -99,8 +100,8 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
             {
                 arrivals.Add(new ArrivalOnRedPlan(
                     planPcd.PlanNumber.ToString(),
-                    planPcd.StartTime,
-                    planPcd.EndTime,
+                    planPcd.Start,
+                    planPcd.End,
                     planPcd.PercentArrivalOnRed,
                     planPcd.PercentRedTime));
             }

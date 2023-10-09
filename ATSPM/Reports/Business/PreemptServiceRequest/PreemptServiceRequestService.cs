@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.PreemptServiceRequest;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,13 +21,13 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new PreemptRequest(row.Timestamp, row.EventParam));
+            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
             var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
             IReadOnlyList<Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
-                pl.StartTime,
-                pl.EndTime,
-                preemptEvents.Count(p => p.StartTime >= pl.StartTime && p.StartTime < pl.EndTime))).ToList();
+                pl.Start,
+                pl.End,
+                preemptEvents.Count(p => p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
             return new PreemptServiceRequestResult(
                 "Preempt Service",
                 options.SignalIdentifier,

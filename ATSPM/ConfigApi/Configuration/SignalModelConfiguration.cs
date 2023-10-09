@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.OData;
+using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using Microsoft.OData.ModelBuilder;
 using System.Net;
@@ -61,6 +62,13 @@ namespace ATSPM.ConfigApi.Configuration
                         d.ReturnsFromEntitySet<Signal>("Signal");
 
                         var e = model.Action("SetSignalToDeleted");
+
+                        var f = model.Collection.Function("GetSignalsForSearch");
+                        //f.Parameter<int>("areaId");
+                        //f.Parameter<int>("regionId");
+                        //f.Parameter<int>("jurisdictionId");
+                        //f.Parameter<int>("metricTypeId");
+                        f.ReturnsCollectionFromEntitySet<SearchSignal>("SearchSignals");
 
                         break;
                     }

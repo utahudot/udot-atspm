@@ -18,29 +18,14 @@ namespace ATSPM.Infrastructure.Repositories
         private IQueryable<Signal> BaseQuery()
         {
             return base.GetList()
-                .Include(s => s.ControllerType)
-        .Include(s => s.Jurisdiction)
-        .Include(s => s.Region)
-        .Include(s => s.VersionAction)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.DirectionType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectionHardware)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.LaneType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.MovementType)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectorComments)
-        .Include(s => s.Approaches)
-            .ThenInclude(a => a.Detectors)
-                .ThenInclude(d => d.DetectionTypes)
-                    .ThenInclude(d => d.MetricTypeMetrics)
-        .Include(s => s.Areas);
+                .Include(i => i.ControllerType)
+                .Include(i => i.Jurisdiction)
+                .Include(i => i.Region)
+                .Include(i => i.VersionAction);
+            //.Include(i => i.Approaches)
+            //.ThenInclude(i => i.Detectors)
+            //.Include(i => i.Areas);
+            //.Include(i => i.MetricComments);
         }
 
         #region Overrides
@@ -72,13 +57,14 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
+        public IQueryable<Signal> GetLatestVersionOfAllSignals()
         {
             var result = BaseQuery()
+                .Include(i => i.ControllerType)
+                .Include(i => i.Region)
                 .FromSpecification(new ActiveSignalSpecification())
                 .GroupBy(r => r.SignalIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault());
 
             return result;
         }
@@ -108,6 +94,24 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.DirectionType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionHardware)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.LaneType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.MovementType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectorComments)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionTypes)
+                            .ThenInclude(d => d.MetricTypeMetrics)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
@@ -124,8 +128,21 @@ namespace ATSPM.Infrastructure.Repositories
                 .FromSpecification(new ActiveSignalSpecification())
                 .ToList();
 
+            var s = new Signal();
+
+            s.GetAvailableMetrics();
+
             return result;
         }
+
+        //public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
+        //{
+        //    var result = BaseQuery()
+        //        .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
+        //        .ToList();
+
+        //    return result;
+        //}
 
         #endregion
     }

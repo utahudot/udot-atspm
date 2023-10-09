@@ -1,6 +1,7 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using Reports.Business.Common;
+using System;
 using System.Collections.Generic;
-using ATSPM.Data.Models;
 
 namespace ATSPM.Application.Reports.Business.PedDelay
 {
@@ -14,7 +15,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
         public string SignalId { get; set; }
         public List<PedCycle> Cycles { get; set; }
         public List<PedPlan> Plans { get; set; }
-        public List<PedHourlyTotal> HourlyTotals { get; set; }
+        public List<DataPointForDouble> HourlyTotals { get; set; }
         public double MinDelay { get; set; }
         public double AverageDelay { get; set; }
         public double MaxDelay { get; set; }

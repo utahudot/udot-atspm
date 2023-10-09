@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
@@ -22,16 +23,19 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
         private readonly ISignalRepository signalRepository;
+        private readonly PlanService planService;
 
         public TurningMovementCountsController(
             IControllerEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
-            ISignalRepository signalRepository
+            ISignalRepository signalRepository,
+            PlanService planService
             )
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.turningMovementCountsService = turningMovementCountsService;
             this.signalRepository = signalRepository;
+            this.planService = planService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -45,13 +49,23 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<TurningMovementCountsResult>> GetChartData([FromBody] TurningMovementCountsOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] TurningMovementCountsOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
 
             var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
@@ -62,12 +76,18 @@ namespace ATSPM.Application.Reports.Controllers
                     (LaneTypes)laneType,
                     options,
                     controllerEventLogs,
-                    planEvents)
+                    plans.ToList())
                     );
             }
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null).SelectMany(r => r);
+            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
@@ -75,7 +95,7 @@ namespace ATSPM.Application.Reports.Controllers
             LaneTypes laneType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents)
+            List<Plan> plans)
         {
             var directions = signal.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
             var tasks = new List<Task<TurningMovementCountsResult>>();
@@ -102,7 +122,7 @@ namespace ATSPM.Application.Reports.Controllers
                     {
                         tasks.Add(GetChartDataByMovementType(
                             options,
-                            planEvents,
+                            plans,
                             controllerEventLogs,
                             movementTypeDetectors,
                             movementType,
@@ -121,7 +141,7 @@ namespace ATSPM.Application.Reports.Controllers
 
         private async Task<TurningMovementCountsResult> GetChartDataByMovementType(
             TurningMovementCountsOptions options,
-            List<ControllerEventLog> planEvents,
+            List<Plan> planEvents,
             List<ControllerEventLog> controllerEventLogs,
             List<Detector> detectors,
             MovementTypes movementType,
@@ -148,7 +168,7 @@ namespace ATSPM.Application.Reports.Controllers
                 directionType,
                 options,
                 detectorEvents,
-                planEvents.ToList(),
+                planEvents,
                 signalIdentifier,
                 signalDescription);
 

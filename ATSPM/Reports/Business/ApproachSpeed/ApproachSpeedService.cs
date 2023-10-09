@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,14 +36,14 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                 planEvents,
                 cycleEvents,
                 speedEvents);
-            var averageSpeeds = new List<AverageSpeeds>();
-            var eightyFifthSpeeds = new List<EightyFifthSpeeds>();
-            var fifteenthSpeeds = new List<FifteenthSpeeds>();
+            var averageSpeeds = new List<DataPointForInt>();
+            var eightyFifthSpeeds = new List<DataPointForInt>();
+            var fifteenthSpeeds = new List<DataPointForInt>();
             foreach (var bucket in speedDetector.AvgSpeedBucketCollection.AvgSpeedBuckets)
             {
-                averageSpeeds.Add(new AverageSpeeds(bucket.StartTime, bucket.AvgSpeed));
-                eightyFifthSpeeds.Add(new EightyFifthSpeeds(bucket.StartTime, bucket.EightyFifth));
-                fifteenthSpeeds.Add(new FifteenthSpeeds(bucket.StartTime, bucket.FifteenthPercentile));
+                averageSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.AvgSpeed));
+                eightyFifthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.EightyFifth));
+                fifteenthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.FifteenthPercentile));
             }
             return new ApproachSpeedResult(
                     detector.Approach.Signal.SignalIdentifier,
