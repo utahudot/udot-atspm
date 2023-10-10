@@ -15,15 +15,15 @@ namespace ATSPM.Application.Reports.Business.Common
             double platoonRatio)
         {
             PlanNumber = planNumber;
-            StartTime = startTime;
+            Start = startTime;
             PercentGreenTime = percentGreenTime;
             PercentArrivalOnGreen = percentArrivalOnGreen;
             PlatoonRatio = platoonRatio;
-            EndTime = endTime;
+            End = endTime;
         }
 
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
         public double PercentGreenTime { get; set; }
         public double PercentArrivalOnGreen { get; set; }
         public double PlatoonRatio { get; set; }
