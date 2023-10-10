@@ -66,9 +66,9 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
                     p.PercentViolations,
                     p.PercentSevereViolations,
                     p.AverageTRLV)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.RedEvent, c.RedBeginY)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.YellowClearanceEvent, c.YellowClearanceBeginY)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.RedClearanceEvent, c.RedClearanceBeginY)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.EndTime)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedClearanceEvent)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedEvent)).ToList(),
                 detectorActivations.Select(d => new DataPointForDouble(d.TimeStamp, d.YPoint)).ToList()
                 );
         }
