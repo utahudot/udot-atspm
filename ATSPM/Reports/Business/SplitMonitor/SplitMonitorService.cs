@@ -103,6 +103,7 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 Plans = plans.Select(p => new PlanSplitMonitorDTO
                 {
                     PlanNumber = p.PlanNumber,
+                    PlanDescription = p.PlanDescription,
                     Start = p.Start,
                     End = p.End,
                     AverageSplit = p.AverageSplit,
