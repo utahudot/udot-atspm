@@ -47,11 +47,14 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
             var detectorActivations = cycles.SelectMany(c => c.DetectorActivations).ToList();
 
+            var phaseType = PedDelay.Approaches.GetPhaseType(phaseDetail.Approach).ToString();
+
             return new YellowRedActivationsResult(
                 phaseDetail.Approach.Signal.SignalIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Description,
                 phaseDetail.PhaseNumber,
+                phaseType,
                 options.Start,
                 options.End,
                 Convert.ToInt32(plans.Sum(p => p.Violations)),
