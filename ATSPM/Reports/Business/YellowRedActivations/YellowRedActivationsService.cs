@@ -59,8 +59,8 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
                 Convert.ToInt32(plans.Sum(p => p.YellowOccurrences)),
                 plans.Select(p => new YellowRedActivationsPlan(
                     p.PlanNumber.ToString(),
-                    p.StartTime,
-                    p.EndTime,
+                    p.Start,
+                    p.End,
                     Convert.ToInt32(p.Violations),
                     Convert.ToInt32(p.SevereRedLightViolations),
                     p.PercentViolations,
