@@ -30,8 +30,8 @@ public class ApproachVolumeResult : SignalResult
         string opposingDirectionName,
         ICollection<DataPointForInt> opposingDirectionVolumes,
         ICollection<DataPointForInt> combinedDirectionVolumes,
-        ICollection<DFactors> primaryDFactors,
-        ICollection<DFactors> opposingDFactors,
+        ICollection<DataPointForDouble> primaryDFactors,
+        ICollection<DataPointForDouble> opposingDFactors,
         string peakHour,
         double kFactor,
         int peakHourVolume,
@@ -82,8 +82,8 @@ public class ApproachVolumeResult : SignalResult
     public ICollection<DataPointForInt> PrimaryDirectionVolumes { get; set; }
     public ICollection<DataPointForInt> OpposingDirectionVolumes { get; set; }
     public ICollection<DataPointForInt> CombinedDirectionVolumes { get; set; }
-    public ICollection<DFactors> PrimaryDFactors { get; set; }
-    public ICollection<DFactors> OpposingDFactors { get; set; }
+    public ICollection<DataPointForDouble> PrimaryDFactors { get; set; }
+    public ICollection<DataPointForDouble> OpposingDFactors { get; set; }
     public SummaryData SummaryData { get; set; }
 
 }

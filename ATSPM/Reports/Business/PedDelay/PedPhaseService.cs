@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Reports.Business.Common;
+using ATSPM.Data.Models;
 using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
@@ -58,15 +59,17 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             List<ControllerEventLog> mainEvents,
             PedPhaseData pedPhaseData)
         {
+            var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            for (var i = 0; i < plansData.Count; i++)
+            var planEvents = planService.GetPlanEvents(options.Start, options.End, options.SignalIdentifier, plansData.ToList());
+            for (var i = 0; i < planEvents.Count; i++)
             {
                 //if this is the last plan then we want the end of the plan
                 //to coincide with the end of the graph
-                var endTime = i == plansData.Count - 1 ? options.End : plansData[i + 1].Timestamp;
+                var endTime = i == planEvents.Count - 1 ? options.End : planEvents[i + 1].Timestamp;
 
-                var plan = new PedPlan(pedPhaseData.PhaseNumber, plansData[i].Timestamp, endTime,
-                    plansData[i].EventParam);
+                var plan = new PedPlan(pedPhaseData.PhaseNumber, planEvents[i].Timestamp, endTime,
+                    planEvents[i].EventParam);
 
                 plan.Events = mainEvents.Where(e => e.Timestamp > plan.Start && e.Timestamp < plan.End).ToList();
 
