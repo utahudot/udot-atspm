@@ -77,7 +77,8 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 var splitForPhase = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault();
                 splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
-            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, options.SignalIdentifier, options.Start, options.End)
+
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.SignalIdentifier, options.Start, options.End)
             {
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items
@@ -103,8 +104,9 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor
                 Plans = plans.Select(p => new PlanSplitMonitorDTO
                 {
                     PlanNumber = p.PlanNumber,
+                    PlanDescription = p.PlanDescription,
                     Start = p.Start,
-                    EndTime = p.End,
+                    End = p.End,
                     AverageSplit = p.AverageSplit,
                     HighCycleCount = p.HighCycleCount,
                     PercentSkips = p.PercentSkips,

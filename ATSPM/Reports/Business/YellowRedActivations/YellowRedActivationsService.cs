@@ -47,11 +47,14 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
             var detectorActivations = cycles.SelectMany(c => c.DetectorActivations).ToList();
 
+            var phaseType = PedDelay.Approaches.GetPhaseType(phaseDetail.Approach).ToString();
+
             return new YellowRedActivationsResult(
                 phaseDetail.Approach.Signal.SignalIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Description,
                 phaseDetail.PhaseNumber,
+                phaseType,
                 options.Start,
                 options.End,
                 Convert.ToInt32(plans.Sum(p => p.Violations)),
@@ -59,16 +62,16 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
                 Convert.ToInt32(plans.Sum(p => p.YellowOccurrences)),
                 plans.Select(p => new YellowRedActivationsPlan(
                     p.PlanNumber.ToString(),
-                    p.StartTime,
-                    p.EndTime,
+                    p.Start,
+                    p.End,
                     Convert.ToInt32(p.Violations),
                     Convert.ToInt32(p.SevereRedLightViolations),
                     p.PercentViolations,
                     p.PercentSevereViolations,
                     p.AverageTRLV)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.RedEvent, c.RedBeginY)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.YellowClearanceEvent, c.YellowClearanceBeginY)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.RedClearanceEvent, c.RedClearanceBeginY)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.EndTime)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedClearanceEvent)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedEvent)).ToList(),
                 detectorActivations.Select(d => new DataPointForDouble(d.TimeStamp, d.YPoint)).ToList()
                 );
         }

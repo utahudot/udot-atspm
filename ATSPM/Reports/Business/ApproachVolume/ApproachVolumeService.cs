@@ -183,18 +183,18 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return opposingDirection;
         }
 
-        private List<DFactors> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
+        private List<DataPointForDouble> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
         {
-            List<DFactors> result = new List<DFactors>();
+            List<DataPointForDouble> result = new List<DataPointForDouble>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
             {
                 if (combinedVolume.Items[i].DetectorCount == 0)
                 {
-                    result.Add(new DFactors(approachVolume.Items[i].StartTime, 0));
+                    result.Add(new DataPointForDouble(approachVolume.Items[i].StartTime, 0));
                 }
                 else
                 {
-                    result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].DetectorCount) / Convert.ToDouble(combinedVolume.Items[i].DetectorCount)));
+                    result.Add(new DataPointForDouble(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].DetectorCount) / Convert.ToDouble(combinedVolume.Items[i].DetectorCount)));
                 }
             }
             return result;
