@@ -26,10 +26,12 @@
 
   <ItemGroup>
     <Folder Include="Business\AppoachDelay\" />
-    <Folder Include="TestFiles\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFiles\ControllerEventLogs %2889%29.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\ControllerEventLogs-7115-Phase2-CycleEvents-20230417-800-901.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -49,6 +51,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestFiles\LTGap_EventLogs.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\PCDevents.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestFiles\PedDelayEventcodes.csv">
