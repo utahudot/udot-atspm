@@ -1,4 +1,5 @@
 ﻿using Reports.Business.Common;
+using Reports.Business.TimingAndActuation;
 using System;
 using System.Collections.Generic;
 
@@ -29,12 +30,12 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             PhaseNumberSort = phaseNumberSort;
             GetPermissivePhase = getPermissivePhase;
             PedestrianIntervals = pedestrianIntervals;
-            PedestrianEvents = pedestrianEvents;
-            CycleAllEvents = cycleAllEvents;
-            AdvanceCountEvents = advanceCountEvents;
-            AdvancePresenceEvents = advancePresenceEvents;
-            StopBarEvents = stopBarEvents;
-            LaneByLanes = laneByLanes;
+            PedestrianDetectors = pedestrianEvents;
+            CycleEvents = cycleAllEvents;
+            AdvanceCountDetectors = advanceCountEvents;
+            AdvancePresenceDetectors = advancePresenceEvents;
+            StopBarDetectors = stopBarEvents;
+            LaneByLanesDetectors = laneByLanes;
             PhaseCustomEvents = phaseCustomEvents;
         }
 
@@ -42,13 +43,13 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         public bool PhaseOrOverlap { get; set; }
         public string PhaseNumberSort { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public List<DataPointForInt> PedestrianIntervals { get; set; }
-        public Dictionary<string, List<DataPointForInt>> PedestrianEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> CycleAllEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> AdvanceCountEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> AdvancePresenceEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> StopBarEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> LaneByLanes { get; set; }
+        public List<DataPointForDetectorEvent> PedestrianIntervals { get; set; }
+        public Dictionary<string, List<DetectorEventDto>> PedestrianDetectors { get; set; }
+        public Dictionary<string, List<CycleEventsDto>> CycleEvents { get; set; }
+        public Dictionary<string, List<DetectorEventDto>> AdvanceCountDetectors { get; set; }
+        public Dictionary<string, List<DetectorEventDto>> AdvancePresenceDetectors { get; set; }
+        public List<DetectorEventDto> StopBarDetectors { get; set; }
+        public List<DetectorEventDto> LaneByLanesDetectors { get; set; }
         public Dictionary<string, List<DataPointForInt>> PhaseCustomEvents { get; set; }
     }
 }

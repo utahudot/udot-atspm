@@ -2,6 +2,7 @@ using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Reports.Business.Common;
+using Reports.Business.TimingAndActuation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -166,14 +167,14 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
 
 
 
-        public Dictionary<string, List<DataPointForInt>> GetDetectionEvents(
+        public List<DetectorEventDto> GetDetectionEvents(
             Approach approach,
             TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs,
             DetectionTypes detectionType
             )
         {
-            var stopBarEvents = new Dictionary<string, List<DataPointForInt>>();
+            var stopBarEvents = new List<DetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.DisplayOrder)
                 .ThenByDescending(l => l.LaneNumber).ToList();
@@ -193,8 +194,10 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                     if (stopEvents.Count > 0)
                     {
                         var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
-                        stopBarEvents.Add($"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}",
-                                            stopEvents.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
+                        var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}"
+                        stopBarEvents.Add(new DetectorEventDto(lableName, stopEvents.Select(s => new DetectorEventBase(s.)) ));
+                        //stopBarEvents.Add(stopEvents.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
+                        // name , movementType, lane number, channel
                     }
 
                     if (stopEvents.Count == 0 && options.ShowAllLanesInfo)
