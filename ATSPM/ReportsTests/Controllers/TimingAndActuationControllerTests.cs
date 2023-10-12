@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using ATSPM.Application.Extensions;
+using Reports.Business.Common;
+using ATSPM.Application.Reports.Business.PhaseTermination;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
@@ -111,8 +113,6 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 SignalIdentifier = "7115",
                 Start = Convert.ToDateTime("6/14/2023 8:00:00.0"),
                 End = Convert.ToDateTime("6/14/2023 8:05:00.0"),
-                ShowPermissivePhases = true,
-                ExtendVsdSearch = 5,
                 ExtendStartStopSearch = 2,
                 GlobalEventCodesList = new List<int>(), 
                 GlobalEventCounter = 1,
@@ -124,12 +124,13 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 ShowLaneByLaneCount = true, 
                 ShowPedestrianActuation = true, 
                 ShowPedestrianIntervals = true, 
-                ShowStopBarPresence = true, 
-                ShowVehicleSignalDisplay = true,
+                ShowStopBarPresence = true,
             };
             // Test one approach
             var eventCodes = new List<int> { };
-            
+
+            var phaseDetails = new PhaseDetail { PhaseNumber = 2, Approach = approach.Object, UseOverlap = false };
+
             if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
                 eventCodes.AddRange(new List<int> { 81, 82 });
             if (options.ShowPedestrianActuation)
@@ -138,10 +139,12 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
             if (options.PhaseEventCodesList != null)
                 eventCodes.AddRange(options.PhaseEventCodesList);
-                var result = GetChartDataForPhase(options, allEvents, approach.Object, eventCodes, false);
+                var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
 
             Assert.NotEmpty(result.StopBarEvents);
-            Assert.Equal( 9, result.StopBarEvents );
+            Assert.Equal(9, result.StopBarEvents["Stop Bar Presence, T 1, ch 19 "].Count(s => s.Value == 81));
+            Assert.Equal(9, result.StopBarEvents["Stop Bar Presence, T 1, ch 19 "].Count(s => s.Value == 82));
+            Assert.NotEmpty(result.PedestrianIntervals);
         }
 
         private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
@@ -171,24 +174,21 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
         private TimingAndActuationsForPhaseResult GetChartDataForPhase(
             TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<int> eventCodes,
             bool usePermissivePhase)
         {
             var timingAndActuationsForPhaseService = new TimingAndActuationsForPhaseService();
 
-            eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(
-                (usePermissivePhase && approach.IsPermissivePhaseOverlap) ||
-                (usePermissivePhase && approach.IsPermissivePhaseOverlap))
-                );
+            eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
             var approachevents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start,
                 options.End,
                 eventCodes,
-                usePermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).ToList();
-            var viewModel = timingAndActuationsForPhaseService.GetChartData(options, approach, approachevents, usePermissivePhase);
-            viewModel.SignalDescription = approach.Signal.SignalDescription();
-            viewModel.ApproachDescription = approach.Description;
+                phaseDetail.PhaseNumber).ToList();
+            var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
+            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }
     }
