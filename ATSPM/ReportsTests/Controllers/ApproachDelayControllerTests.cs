@@ -90,7 +90,6 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             Assert.NotEmpty(result.ApproachDelayDataPoints);
             Assert.NotEmpty(result.ApproachDelayPerVehicleDataPoints);
 
-
         }
 
         private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
