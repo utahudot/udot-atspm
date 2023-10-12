@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Net;
 using Reports.Business.PurdueCoordinationDiagram;
 using ATSPM.Application.Reports.Business.PerdueCoordinationDiagram;
+using ATSPM.Application.Reports.Business.PedDelay;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -81,13 +82,15 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            var approaches = new List<Approach>() { approach.Object};
+            mockSignal.Setup(a => a.Approaches).Returns(approaches);
 
             var phaseDetail = phaseService.GetPhases(mockSignal.Object);
 
-            var options = new PurdueCoordinationDiagramOptions() { SignalIdentifier = "7115", SelectedBinSize = 15, Start = start, End = end, ShowVolumes = true };
+            var options = new PurdueCoordinationDiagramOptions() { SignalIdentifier = "7191", SelectedBinSize = 15, Start = start, End = end, ShowVolumes = true };
 
-            //SignalPhase signalPhase = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
-            //var result = purdueCoordinationDiagramService.GetChartData(options, approach.Object, signalPhase);
+            SignalPhase signalPhase = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
+            var result = purdueCoordinationDiagramService.GetChartData(options, approach.Object, signalPhase);
 
             // Assert
             //Assert.Equal(approach.Object.Id, result.ApproachId);
@@ -96,10 +99,10 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //Assert.Equal("NBT Ph2", result.PhaseDescription);
             //Assert.Equal(start, result.Start);
             //Assert.Equal(end, result.End);
-            //Assert.Equal(23.15599626691554, result.PercentArrivalOnGreen);
-            ////Assert.Equal(49623, result.TotalOnGreenEvents;
-            ////Assert.Equal(49623.3, result.Plans);
-            //Assert.Equal(49623.3, result.TotalDetectorHits);
+            //Assert.Equal(199, result.TotalOnGreenEvents);
+            //Assert.Equal(382, result.TotalDetectorHits);
+            //Assert.Equal(52, result.PercentArrivalOnGreen);
+            
 
 
         }
