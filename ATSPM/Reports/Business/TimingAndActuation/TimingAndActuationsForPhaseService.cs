@@ -190,38 +190,43 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                     {
                         laneNumber = detector.LaneNumber.Value.ToString();
                     }
+                    var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
+                    var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}";
 
                     if (stopEvents.Count > 0)
                     {
-                        var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
-                        var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}"
-                        stopBarEvents.Add(new DetectorEventDto(lableName, stopEvents.Select(s => new DetectorEventBase(s.)) ));
+                        var detectorEvents = new List<DetectorEventBase>();
+                        for ( var i = 0; i < stopEvents.Count; i+= 2)
+                        {
+                            detectorEvents.Add(new DetectorEventBase(stopEvents[i].Timestamp, stopEvents[i + 1].Timestamp));
+                        }
+                        
+                        
+                        stopBarEvents.Add(new DetectorEventDto(lableName, detectorEvents));
                         //stopBarEvents.Add(stopEvents.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
                         // name , movementType, lane number, channel
                     }
 
                     if (stopEvents.Count == 0 && options.ShowAllLanesInfo)
                     {
-                        var forceEventsForAllLanes = new List<ControllerEventLog>();
-                        var event1 = new ControllerEventLog()
-                        {
-                            SignalIdentifier = approach.Signal.SignalIdentifier,
-                            EventCode = 82,
-                            EventParam = detector.DetChannel,
-                            Timestamp = options.Start.AddSeconds(-10)
-                        };
-                        forceEventsForAllLanes.Add(event1);
-                        var event2 = new ControllerEventLog()
-                        {
-                            SignalIdentifier = approach.Signal.SignalIdentifier,
-                            EventParam = detector.DetChannel,
-                            EventCode = 81,
-                            Timestamp = options.Start.AddSeconds(-9)
-                        };
-                        forceEventsForAllLanes.Add(event2);
-                        stopBarEvents.Add(detectionType.GetDisplayName() + ", ch " + detector.DetChannel + " " +
-                                          detector.MovementType.Abbreviation + " " +
-                                          laneNumber, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
+                        //var forceEventsForAllLanes = new List<ControllerEventLog>();
+                        //var event1 = new ControllerEventLog()
+                        //{
+                        //    SignalIdentifier = approach.Signal.SignalIdentifier,
+                        //    EventCode = 82,
+                        //    EventParam = detector.DetChannel,
+                        //    Timestamp = options.Start.AddSeconds(-10)
+                        //};
+                        //forceEventsForAllLanes.Add(event1);
+                        //var event2 = new ControllerEventLog()
+                        //{
+                        //    SignalIdentifier = approach.Signal.SignalIdentifier,
+                        //    EventParam = detector.DetChannel,
+                        //    EventCode = 81,
+                        //    Timestamp = options.Start.AddSeconds(-9)
+                        //};
+                        //forceEventsForAllLanes.Add(event2);
+                        stopBarEvents.Add(new DetectorEventDto(lableName, [new DetectorEventBase(options.Start.AddSeconds(-10), options.Start.AddSeconds(-9))]) );
                     }
                 }
             }
