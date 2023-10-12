@@ -41,7 +41,6 @@
   <ItemGroup>
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
-    <Folder Include="Migrations\Identity\" />
     <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 

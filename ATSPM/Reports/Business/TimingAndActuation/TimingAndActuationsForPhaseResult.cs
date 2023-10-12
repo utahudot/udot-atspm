@@ -1,11 +1,10 @@
-﻿using ATSPM.Data.Models;
-using Reports.Business.Common;
+﻿using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.TimingAndActuation
 {
-    public class TimingAndActuationsForPhaseResult:ApproachResult
+    public class TimingAndActuationsForPhaseResult : ApproachResult
     {
         public TimingAndActuationsForPhaseResult(
             int approachId,
@@ -16,14 +15,14 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             bool phaseOrOverlap,
             string phaseNumberSort,
             bool getPermissivePhase,
-            List<ControllerEventLog> pedestrianIntervals,
-            Dictionary<string, List<ControllerEventLog>> pedestrianEvents,
-            Dictionary<string, List<ControllerEventLog>> cycleAllEvents,
-            Dictionary<string, List<ControllerEventLog>> advanceCountEvents,
-            Dictionary<string, List<ControllerEventLog>> advancePresenceEvents,
-            Dictionary<string, List<ControllerEventLog>> stopBarEvents,
-            Dictionary<string, List<ControllerEventLog>> laneByLanes,
-            Dictionary<string, List<ControllerEventLog>> phaseCustomEvents) : base(approachId, signalId, start, end)
+            List<DataPointForInt> pedestrianIntervals,
+            Dictionary<string, List<DataPointForInt>> pedestrianEvents,
+            Dictionary<string, List<DataPointForInt>> cycleAllEvents,
+            Dictionary<string, List<DataPointForInt>> advanceCountEvents,
+            Dictionary<string, List<DataPointForInt>> advancePresenceEvents,
+            Dictionary<string, List<DataPointForInt>> stopBarEvents,
+            Dictionary<string, List<DataPointForInt>> laneByLanes,
+            Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseOrOverlap = phaseOrOverlap;
@@ -43,14 +42,14 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         public bool PhaseOrOverlap { get; set; }
         public string PhaseNumberSort { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public List<ControllerEventLog> PedestrianIntervals { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> PedestrianEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> CycleAllEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> AdvanceCountEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> AdvancePresenceEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> StopBarEvents { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> LaneByLanes { get; set; }
-        public Dictionary<string, List<ControllerEventLog>> PhaseCustomEvents { get; set; }
+        public List<DataPointForInt> PedestrianIntervals { get; set; }
+        public Dictionary<string, List<DataPointForInt>> PedestrianEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> CycleAllEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> AdvanceCountEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> AdvancePresenceEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> StopBarEvents { get; set; }
+        public Dictionary<string, List<DataPointForInt>> LaneByLanes { get; set; }
+        public Dictionary<string, List<DataPointForInt>> PhaseCustomEvents { get; set; }
     }
 }
 

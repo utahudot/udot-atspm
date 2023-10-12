@@ -1,23 +1,23 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
+using Reports.Business.Common;
 using System;
 
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
-    public class ProgrammedSplit
+    public class ProgrammedSplit : DataPointBase
     {
-        public DateTime StartTime { get; set; }
         public double ProgValue { get; set; }
 
 
-        public ProgrammedSplit(Plan analysisPlan, DateTime analysisStart, double splitLength, double durYR)
+        public ProgrammedSplit(Plan analysisPlan, DateTime analysisStart, double splitLength, double durYR) : base(analysisPlan.Start)
         {
-            if (analysisStart < analysisPlan.StartTime)
+            if (analysisStart < analysisPlan.Start)
             {
-                StartTime = analysisPlan.StartTime;
+                Timestamp = analysisPlan.Start;
             }
             else
             {
-                StartTime = analysisStart;
+                Timestamp = analysisStart;
             }
 
             if (splitLength >= durYR)

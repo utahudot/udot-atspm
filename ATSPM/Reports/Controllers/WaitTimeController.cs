@@ -3,8 +3,10 @@ using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Application.Reports.Business.WaitTime;
 using ATSPM.Application.Repositories;
 using AutoFixture;
+using IdentityServer4.Extensions;
 //using Legacy.Common.Business;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,18 +23,21 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly WaitTimeService waitTimeService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public WaitTimeController(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             WaitTimeService waitTimeService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository
+            ISignalRepository signalRepository,
+            PhaseService phaseService
             )
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.waitTimeService = waitTimeService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -45,10 +50,19 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<WaitTimeResult>> GetChartData([FromBody] WaitTimeOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] WaitTimeOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
@@ -58,10 +72,10 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 new List<int>() {
                     82,
-                    WaitTimeOptions.PHASE_BEGIN_GREEN,
-                    WaitTimeOptions.PHASE_CALL_DROPPED,
-                    WaitTimeOptions.PHASE_END_RED_CLEARANCE,
-                    WaitTimeOptions.PHASE_CALL_REGISTERED}
+                    WaitTimeService.PHASE_BEGIN_GREEN,
+                    WaitTimeService.PHASE_CALL_DROPPED,
+                    WaitTimeService.PHASE_END_RED_CLEARANCE,
+                    WaitTimeService.PHASE_CALL_REGISTERED}
                 );
             var terminationEvents = controllerEventLogs.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
@@ -90,22 +104,28 @@ namespace ATSPM.Application.Reports.Controllers
                 terminationEvents,
                 signal,
                 1);
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<WaitTimeResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phaseDetail in phaseDetails)
             {
                 tasks.Add(waitTimeService.GetChartData(
                 options,
-                approach,
+                phaseDetail,
                 phaseEvents,
-                analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == approach.ProtectedPhaseNumber).First(),
+                analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == phaseDetail.PhaseNumber).First(),
                 analysisPhaseDataCollection.Plans,
-                volume,
-                approach.ProtectedPhaseNumber
+                volume
                 ));
             }
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
 
         }
     }

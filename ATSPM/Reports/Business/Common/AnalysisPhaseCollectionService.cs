@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using Microsoft.IdentityModel.Tokens;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,7 @@ namespace ATSPM.Application.Reports.Business.Common
             int consecutiveCount)
         {
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
+            var phaseService = new PhaseService();
             analysisPhaseCollectionData.SignalId = signalId;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
             analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents.ToList());
@@ -91,7 +93,8 @@ namespace ATSPM.Application.Reports.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    signal);
+                    signal,
+                    phaseService);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
@@ -274,7 +277,7 @@ namespace ATSPM.Application.Reports.Business.Common
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
-                             where cycle.StartTime > planSplitMonitorData.StartTime && cycle.EndTime < planSplitMonitorData.EndTime
+                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
                              select cycle;
 
                 if (Cycles.Count() > HighCycleCount)

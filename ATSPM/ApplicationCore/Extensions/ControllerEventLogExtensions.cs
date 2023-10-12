@@ -213,16 +213,23 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<ControllerEventLog> GetCycleEventsWithTimeExtension(
            this IEnumerable<ControllerEventLog> events,
-           Approach approach,
-           bool getPermissivePhase,
+           int phaseNumber,
+           bool useOverlap,
            DateTime start,
            DateTime end)
         {
             return events.GetEventsByEventCodes(
                 start.AddSeconds(-900),
                 end.AddSeconds(900),
-                approach.GetCycleEventCodes(getPermissivePhase),
-                getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+                GetCycleEventCodes(useOverlap),
+                phaseNumber).OrderBy(e => e.Timestamp).ToList();
+        }
+
+        public static List<int> GetCycleEventCodes(bool useOvelap)
+        {
+            return useOvelap
+                ? new List<int> { 61, 63, 64, 66 }
+                : new List<int> { 1, 8, 9 };
         }
 
         public static IReadOnlyList<ControllerEventLog> GetPedEvents(

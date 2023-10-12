@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +24,8 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
         }
 
         public GreenTimeUtilizationResult GetChartData(
-            Approach approach,
+            PhaseDetail phaseDetail,
             GreenTimeUtilizationOptions options,
-            bool getPermissivePhase,
             List<ControllerEventLog> detectorEvents, //DetectorType 4
             List<ControllerEventLog> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
             List<ControllerEventLog> planEvents,
@@ -36,30 +36,36 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             //var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
 
-
+            var isPermissivePhase = phaseDetail.PhaseNumber != phaseDetail.Approach.ProtectedPhaseNumber;
             //define properties
-            var phaseNumberSort = getPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
-
-            var phaseNumber = getPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber; //this and the if statement below were taken from ChartTitleFactory.GetPhaseAndPhaseDescriptions
-
-            string phaseNumberDescription;
-            if ((approach.IsProtectedPhaseOverlap && !getPermissivePhase) ||
-                (approach.IsPermissivePhaseOverlap && getPermissivePhase))
+            string phaseNumberSort;
+            if (phaseDetail.Approach.PermissivePhaseNumber.HasValue)
             {
-                phaseNumberDescription = "Overlap " + phaseNumber + ": " + approach.Description;
+                phaseNumberSort = phaseDetail.PhaseNumber == phaseDetail.Approach.PermissivePhaseNumber.Value ?
+                   phaseDetail.Approach.PermissivePhaseNumber.Value.ToString() + "-1" : phaseDetail.Approach.ProtectedPhaseNumber.ToString() + "-2";
             }
             else
             {
-                phaseNumberDescription = "Phase " + phaseNumber + ": " + approach.Description;
+                phaseNumberSort = phaseDetail.Approach.ProtectedPhaseNumber.ToString() + "-2";
+            }
+
+            string phaseNumberDescription;
+            if (phaseDetail.UseOverlap)
+            {
+                phaseNumberDescription = "Overlap " + phaseDetail.PhaseNumber + ": " + phaseDetail.Approach.Description;
+            }
+            else
+            {
+                phaseNumberDescription = "Phase " + phaseDetail.PhaseNumber + ": " + phaseDetail.Approach.Description;
             }
 
             //get a list of cycle events
             var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
             //var phaseEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End)
             var checkAgainstEvents = new List<ControllerEventLog>();
-            if (getPermissivePhase == true && approach.ProtectedPhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
+            if (isPermissivePhase == true && phaseDetail.PhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
             {
-                checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.SelectedBinSize), phaseEventNumbers, approach.ProtectedPhaseNumber).ToList();
+                checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.SelectedBinSize), phaseEventNumbers, phaseDetail.PhaseNumber).ToList();
             }
 
             //get a list of detections for that phase
@@ -111,7 +117,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                                 x.Timestamp >= firstGreen.Timestamp &&
                                 x.Timestamp <= lastYellow.Timestamp)
                     .OrderBy(x => x.Timestamp);
-                if (getPermissivePhase && checkAgainstEvents != null)
+                if (isPermissivePhase && checkAgainstEvents != null)
                 {
                     var yProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_YELLOW);
                     var gProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_GREEN);
@@ -169,28 +175,28 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 
             //get plans
             var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
-            var durYellowRed = GetYellowRedTimeSeconds(options, phaseNumber, cycleEvents);
+            var durYellowRed = GetYellowRedTimeSeconds(options, phaseDetail.PhaseNumber, cycleEvents);
             var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)
             {
                 //GetProgrammedSplitTimesInAnalysisPeriod(approach.ProtectedPhaseNumber, analysisplan, options.EndDate);
-                var splitTime = GetProgrammedSplitTime(phaseNumber, analysisplan.StartTime, analysisplan.EndTime.AddMinutes(-1), controllerEventLogs);
+                var splitTime = GetProgrammedSplitTime(phaseDetail.PhaseNumber, analysisplan.Start, analysisplan.End.AddMinutes(-1), controllerEventLogs);
                 programmedSplits.Add(new ProgrammedSplit(analysisplan, options.Start, splitTime, durYellowRed));
             }
 
             GreenTimeUtilizationResult result = new GreenTimeUtilizationResult(
-                approach.Id,
-                approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Id,
+                phaseDetail.Approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End,
                 stacks,
                 averageSplits,
                 programmedSplits,
-                phaseNumber,
+                phaseDetail.PhaseNumber,
                 phaseNumberSort
                 );
-            result.ApproachDescription = approach.Description;
-            result.SignalDescription = approach.Signal.SignalDescription();
+            result.ApproachDescription = phaseDetail.Approach.Description;
+            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
             return result;
         }
 

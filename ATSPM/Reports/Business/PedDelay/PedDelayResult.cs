@@ -7,7 +7,7 @@ namespace ATSPM.Application.Reports.Business.PedDelay
     /// <summary>
     /// Ped Delay chart
     /// </summary>
-    public class PedDelayResult:ApproachResult
+    public class PedDelayResult : ApproachResult
     {
         public PedDelayResult(
             string signalId,
@@ -23,11 +23,11 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             double minDelay,
             double maxDelay,
             double averageDelay,
-            ICollection<PedDelayPlan> plans,
-            ICollection<CycleLengths> cycleLengths,
-            ICollection<PedestrianDelay> pedestrianDelay,
-            ICollection<StartBeginWalk> startOfWalk,
-            ICollection<PercentDelayByCycleLength> percentDelayByCycleLength):base(approachId, signalId,  start, end)
+            List<PedDelayPlan> plans,
+            List<DataPointForDouble> cycleLengths,
+            List<DataPointForDouble> pedestrianDelay,
+            List<DataPointForDouble> startOfWalk,
+            List<DataPointForDouble> percentDelayByCycleLength) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -53,11 +53,11 @@ namespace ATSPM.Application.Reports.Business.PedDelay
         public double MinDelay { get; internal set; }
         public double MaxDelay { get; internal set; }
         public double AverageDelay { get; internal set; }
-        public ICollection<PedDelayPlan> Plans { get; internal set; }
-        public ICollection<CycleLengths> CycleLengths { get; internal set; }
-        public ICollection<PedestrianDelay> PedestrianDelay { get; internal set; }
-        public ICollection<StartBeginWalk> StartOfWalk { get; internal set; }
-        public ICollection<PercentDelayByCycleLength> PercentDelayByCycleLength { get; internal set; }
+        public List<PedDelayPlan> Plans { get; internal set; }
+        public List<DataPointForDouble> CycleLengths { get; internal set; }
+        public List<DataPointForDouble> PedestrianDelay { get; internal set; }
+        public List<DataPointForDouble> StartOfWalk { get; internal set; }
+        public List<DataPointForDouble> PercentDelayByCycleLength { get; internal set; }
 
     }
 }

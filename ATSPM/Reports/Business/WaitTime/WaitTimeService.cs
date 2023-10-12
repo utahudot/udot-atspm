@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,11 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 {
     public class WaitTimeService
     {
+
+        public const int PHASE_BEGIN_GREEN = 1;
+        public const int PHASE_END_RED_CLEARANCE = 11;
+        public const int PHASE_CALL_REGISTERED = 43;
+        public const int PHASE_CALL_DROPPED = 44;
         public class WaitTimeTracker
         {
             public DateTime Time;
@@ -45,34 +51,33 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 
         public async Task<WaitTimeResult> GetChartData(
             WaitTimeOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             IReadOnlyList<ControllerEventLog> controllerEventLogs,
             AnalysisPhaseData analysisPhaseData,
             IReadOnlyList<PlanSplitMonitorData> plans,
-            VolumeCollection volumeCollection,
-            int phaseNumber
+            VolumeCollection volumeCollection
             )
         {
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
-            GetDetectionTypes(approach, out useDroppingAlgorithm, out detectionTypesForApproach);
+            GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
             var redList = controllerEventLogs.Where(x =>
-                x.EventCode == WaitTimeOptions.PHASE_END_RED_CLEARANCE
-                && x.EventParam == phaseNumber)
+                x.EventCode == PHASE_END_RED_CLEARANCE
+                && x.EventParam == phaseDetail.PhaseNumber)
                 .OrderBy(x => x.Timestamp);
             var greenList = controllerEventLogs.Where(x =>
-            x.EventCode == WaitTimeOptions.PHASE_BEGIN_GREEN
-            && x.EventParam == phaseNumber)
+            x.EventCode == PHASE_BEGIN_GREEN
+            && x.EventParam == phaseDetail.PhaseNumber)
                 .OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
-                (x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED ||
-                x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED)
-                && x.EventParam == phaseNumber);
+                (x.EventCode == PHASE_CALL_REGISTERED ||
+                x.EventCode == PHASE_CALL_DROPPED)
+                && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
-            var gapOuts = new List<WaitTimePoint>();
-            var maxOuts = new List<WaitTimePoint>();
-            var forceOffs = new List<WaitTimePoint>();
-            var unknowns = new List<WaitTimePoint>();
+            var gapOuts = new List<DataPointForDouble>();
+            var maxOuts = new List<DataPointForDouble>();
+            var forceOffs = new List<DataPointForDouble>();
+            var unknowns = new List<DataPointForDouble>();
             try
             {
                 foreach (var red in redList)
@@ -99,10 +104,10 @@ namespace ATSPM.Application.Reports.Business.WaitTime
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
                     if (useDroppingAlgorithm &&
-                        phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED))
+                        phaseCallList.Any(x => x.EventCode == PHASE_CALL_DROPPED))
                     {
                         var lastDroppedPhaseCall =
-                            phaseCallList.LastOrDefault(x => x.EventCode == WaitTimeOptions.PHASE_CALL_DROPPED);
+                            phaseCallList.LastOrDefault(x => x.EventCode == PHASE_CALL_DROPPED);
                         if (lastDroppedPhaseCall != null)
                         {
                             var lastIndex = phaseCallList.IndexOf(lastDroppedPhaseCall);
@@ -117,9 +122,9 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                             };
                         }
                     }
-                    else if (phaseCallList.Any(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED))
+                    else if (phaseCallList.Any(x => x.EventCode == PHASE_CALL_REGISTERED))
                     {
-                        var firstPhaseCall = phaseCallList.First(x => x.EventCode == WaitTimeOptions.PHASE_CALL_REGISTERED);
+                        var firstPhaseCall = phaseCallList.First(x => x.EventCode == PHASE_CALL_REGISTERED);
                         //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
@@ -142,19 +147,19 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                         switch (priorPhase.TerminationEvent)
                         {
                             case 4: //Gap Out
-                                gapOuts.Add(new WaitTimePoint(waitTimeTrackerToFill.Time,
+                                gapOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
                             case 5: //Max Out
-                                maxOuts.Add(new WaitTimePoint(waitTimeTrackerToFill.Time,
+                                maxOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
                             case 6: //Force Off
-                                forceOffs.Add(new WaitTimePoint(waitTimeTrackerToFill.Time,
+                                forceOffs.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
                             case 0:
-                                unknowns.Add(new WaitTimePoint(waitTimeTrackerToFill.Time,
+                                unknowns.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
                         }
@@ -166,7 +171,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                 throw;
             }
 
-            var averageWaitTime = new List<WaitTimePoint>();
+            var averageWaitTime = new List<DataPointForDouble>();
             try
             {
                 if (!waitTimeTrackerList.Any())
@@ -180,21 +185,21 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                         if (items.Any())
                         {
                             var avg = items.Average(x => x.WaitTimeSeconds);
-                            averageWaitTime.Add(new WaitTimePoint(upperTimeLimit, avg));
+                            averageWaitTime.Add(new DataPointForDouble(upperTimeLimit, avg));
                         }
                     }
                 }
 
 
-                var splits = plans.Select(p => new PlanSplit(p.StartTime, p.EndTime, approach.ProtectedPhaseNumber, p.Splits[approach.ProtectedPhaseNumber]));
+                var splits = plans.Select(p => new PlanSplit(p.Start, p.End, phaseDetail.PhaseNumber, p.Splits[phaseDetail.PhaseNumber]));
                 var waitTimePlans = GetWaitTimePlans(plans, waitTimeTrackerList);
                 //}
 
                 return new WaitTimeResult(
                     "Wait Time",
-                    approach.Id,
-                    approach.Description,
-                    approach.ProtectedPhaseNumber,
+                    phaseDetail.Approach.Id,
+                    phaseDetail.Approach.Description,
+                    phaseDetail.Approach.ProtectedPhaseNumber,
                     options.Start,
                     options.End,
                     detectionTypesForApproach,
@@ -204,7 +209,7 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                     forceOffs,
                     unknowns,
                     averageWaitTime,
-                    volumeCollection.Items.Select(v => new WaitTime.Volume(v.StartTime, v.HourlyVolume)).ToList()
+                    volumeCollection.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList()
                     );
             }
             catch
@@ -222,15 +227,15 @@ namespace ATSPM.Application.Reports.Business.WaitTime
                 planWaitTimes.Add(
                     new PlanWaitTime(
                         plan.PlanNumber,
-                        plan.StartTime,
-                        plan.EndTime,
+                        plan.Start,
+                        plan.End,
                         waitTimeTrackerList
-                            .Where(x => x.Time > plan.StartTime && x.Time < plan.EndTime)
+                            .Where(x => x.Time > plan.Start && x.Time < plan.End)
                             .Select(x => x.WaitTimeSeconds)
                             .DefaultIfEmpty(0)
                             .Average(),
                         waitTimeTrackerList
-                            .Where(x => x.Time > plan.StartTime && x.Time < plan.EndTime)
+                            .Where(x => x.Time > plan.Start && x.Time < plan.End)
                             .Select(x => x.WaitTimeSeconds)
                             .DefaultIfEmpty(0)
                             .Max()

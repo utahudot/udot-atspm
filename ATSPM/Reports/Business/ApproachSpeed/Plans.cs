@@ -1,34 +1,35 @@
-﻿using System;
+﻿using ATSPM.Application.Reports.Business.Common;
+using System;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
-    public class SpeedPlan
+    public class SpeedPlan: Plan
     {
         public SpeedPlan(
-            DateTime startTime,
-            DateTime endTime,
+            DateTime start,
+            DateTime end,
             string planNumber,
             int averageSpeed,
             int standardDeviation,
             int eightyFifthPercentile,
-            int fifteenthPercentile)
+            int fifteenthPercentile) : base(planNumber, start, end)
         {
             AverageSpeed = averageSpeed;
             StandardDeviation = standardDeviation;
             EightyFifthPercentile = eightyFifthPercentile;
             FifteenthPercentile = fifteenthPercentile;
-            PlanNumber = planNumber;
-            StartTime = startTime;
-            EndTime = endTime;
+            //PlanNumber = planNumber;
+            //Start = start;
+            //End = end;
         }
 
         public int AverageSpeed { get; set; }
         public int StandardDeviation { get; set; }
         public int EightyFifthPercentile { get; set; }
         public int FifteenthPercentile { get; set; }
-        public string PlanNumber { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        //public string PlanNumber { get; set; }
+        //public DateTime Start { get; set; }
+        //public DateTime End { get; set; }
 
     }
 }

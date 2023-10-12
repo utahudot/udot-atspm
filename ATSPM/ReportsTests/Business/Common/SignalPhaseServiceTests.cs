@@ -3,6 +3,7 @@ using ATSPM.Data.Models;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Reports.Business.Common;
 using System.Globalization;
 using System.Net;
 using Xunit;
@@ -21,6 +22,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             CycleService cycleService = new CycleService(); // Replace with your CycleService instance
             ILoggerFactory loggerFactory = new LoggerFactory(); // Create an instance of ILoggerFactory
             ILogger<SignalPhaseService> logger = loggerFactory.CreateLogger<SignalPhaseService>(); // Create the ILogger<SignalPhaseService> instance
+            PhaseService phaseService = new PhaseService();
 
             SignalPhaseService signalPhaseService = new SignalPhaseService(planService, cycleService, logger);
 
@@ -70,8 +72,9 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            var phaseDetail = phaseService.GetPhases(mockSignal.Object);
 
-            SignalPhase result = await signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
+            SignalPhase result = await signalPhaseService.GetSignalPhaseData(phaseDetail.FirstOrDefault(), start, end, true, 0, 15, cycleEvents, planEvents, detectorEvents);
 
             // Assert
             Assert.NotNull(result);

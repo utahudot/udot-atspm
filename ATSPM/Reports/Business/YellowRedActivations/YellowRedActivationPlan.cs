@@ -1,11 +1,11 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.YellowRedActivations
 {
-    public class YellowRedActivationPlan
+    public class YellowRedActivationPlan : Plan
     {
         protected int cycleCount;
         protected DateTime endTime;
@@ -20,13 +20,12 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DateTime end,
             string planNumber,
             List<YellowRedActivationsCycle> cycles,
-            double srlvSeconds,
-            Approach approach)
+            double srlvSeconds) : base(planNumber, start, end
+            )
         {
-            Approach = approach;
-            startTime = start;
-            endTime = end;
-            this.planNumber = planNumber;
+            //startTime = start;
+            //endTime = end;
+            //this.planNumber = planNumber;
             SRLVSeconds = srlvSeconds;
             startTime = start;
             endTime = end;
@@ -38,18 +37,17 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
         public YellowRedActivationPlan(
             DateTime start,
             DateTime end,
-            string plan,
-            double srlvSeconds,
-            Approach approach)
+            string planNumber,
+            double srlvSeconds) : base(planNumber, start, end
+            )
         {
             SRLVSeconds = srlvSeconds;
-            startTime = start;
-            endTime = end;
-            planNumber = plan;
-            Approach = approach;
+            //startTime = start;
+            //endTime = end;
+            //planNumber = plan;
         }
 
-        public DateTime StartTime => startTime;
+        //public DateTime StartTime => startTime;
 
         public double Violations
         {
@@ -67,7 +65,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             set => rlmCycleCollection = value;
         }
 
-        public DateTime EndTime => endTime;
+        //public DateTime EndTime => endTime;
 
         public int CycleCount
         {
@@ -79,7 +77,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
 
         public int OffsetLength { get; set; }
 
-        public string PlanNumber => planNumber;
+        //public string PlanNumber => planNumber;
 
         public double SRLVSeconds { get; }
 
@@ -145,7 +143,6 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             }
         }
 
-        public Approach Approach { get; set; }
         public double ViolationTime
         {
             get { return rlmCycleCollection.Sum(c => c.TotalViolationTime); }

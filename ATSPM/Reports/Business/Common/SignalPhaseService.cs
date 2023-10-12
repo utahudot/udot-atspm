@@ -3,6 +3,7 @@ using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,17 +52,17 @@ namespace ATSPM.Application.Reports.Business.Common
         /// <param name="events"></param>
         /// <returns></returns>
         public async Task<SignalPhase> GetSignalPhaseData(
+            PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
             bool showVolume,
             int? pcdCycleTime,
             int binSize,
-            Approach approach,
             List<ControllerEventLog> cycleEvents,
             List<ControllerEventLog> planEvents,
             List<ControllerEventLog> detectorEvents)
         {
-            if (approach == null)
+            if (phaseDetail.Approach == null)
             {
                 logger.LogError("Approach cannot be null");
                 throw new ReportsNullAgrumentException("Approach cannot be null");
@@ -70,32 +71,31 @@ namespace ATSPM.Application.Reports.Business.Common
             if (!cycleEvents.Any())
                 return new SignalPhase();
             var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
-            var plans = planService.GetPcdPlans(cycles, start, end, approach, planEvents);
+            var plans = planService.GetPcdPlans(cycles, start, end, phaseDetail.Approach, planEvents);
             return new SignalPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
                 plans,
                 cycles,
                 detectorEvents,
-                approach,
+                phaseDetail.Approach,
                 start,
                 end
                 );
         }
 
         public async Task<SignalPhase> GetSignalPhaseData(
-            bool usePermissivePhase,
+            PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
             int binSize,
             DetectionType detectionType,
-            Approach approach,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             bool getVolume)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(
                 8,
-                approach,
+                phaseDetail.Approach,
                 start,
                 end,
                 true,
@@ -107,19 +107,19 @@ namespace ATSPM.Application.Reports.Business.Common
             }
 
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
-                approach,
-                usePermissivePhase,
+                phaseDetail.PhaseNumber,
+                phaseDetail.UseOverlap,
                 start,
                 end);
             if (cycleEvents.IsNullOrEmpty())
                 return null;
             var signalPhase = await GetSignalPhaseData(
+                phaseDetail,
                 start,
                 end,
                 getVolume,
                 null,
                 binSize,
-                approach,
                 cycleEvents.ToList(),
                 planEvents.ToList(),
                 detectorEvents.ToList());

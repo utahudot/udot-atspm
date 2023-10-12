@@ -160,6 +160,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //    events,
             //    planEvents
             //    );
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
 
             TurningMovementCountsResult viewModel = await turningMovementCountsService.GetChartData(
                 detectors,
@@ -168,7 +169,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 DirectionTypes.WB,
                 options,
                 events,
-                planEvents,
+                plans.ToList(),
                 mockSignal.Object.SignalIdentifier,
                 mockSignal.Object.SignalDescription()
                 );

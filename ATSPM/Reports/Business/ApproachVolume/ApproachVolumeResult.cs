@@ -20,18 +20,18 @@ public class ApproachVolumeResult : SignalResult
     }
 
     public ApproachVolumeResult(
-        string signalId,
+        string signalIdentifier,
         DateTime start,
         DateTime end,
-        DetectionTypes detectorType,
+        string detectorType,
         int distanceFromStopBar,
         string primaryDirectionName,
-        ICollection<DirectionVolumes> primaryDirectionVolumes,
+        ICollection<DataPointForInt> primaryDirectionVolumes,
         string opposingDirectionName,
-        ICollection<DirectionVolumes> opposingDirectionVolumes,
-        ICollection<DirectionVolumes> combinedDirectionVolumes,
-        ICollection<DFactors> primaryDFactors,
-        ICollection<DFactors> opposingDFactors,
+        ICollection<DataPointForInt> opposingDirectionVolumes,
+        ICollection<DataPointForInt> combinedDirectionVolumes,
+        ICollection<DataPointForDouble> primaryDFactors,
+        ICollection<DataPointForDouble> opposingDFactors,
         string peakHour,
         double kFactor,
         int peakHourVolume,
@@ -46,7 +46,7 @@ public class ApproachVolumeResult : SignalResult
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume) : base(signalId, start, end)
+        int opposingTotalVolume) : base(signalIdentifier, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;
@@ -57,6 +57,56 @@ public class ApproachVolumeResult : SignalResult
         CombinedDirectionVolumes = combinedDirectionVolumes;
         PrimaryDFactors = primaryDFactors;
         OpposingDFactors = opposingDFactors;
+        SummaryData = new SummaryData(
+        peakHour,
+        kFactor,
+        peakHourVolume,
+        peakHourFactor,
+        totalVolume,
+        primaryPeakHour,
+        primaryKFactor,
+        primaryPeakHourVolume,
+        primaryPeakHourFactor,
+        primaryTotalVolume,
+        opposingPeakHour,
+        opposingKFactor,
+        opposingPeakHourVolume,
+        opposingPeakHourFactor,
+        opposingTotalVolume);
+    }
+
+    public string PrimaryDirectionName { get; set; }
+    public string OpposingDirectionName { get; set; }
+    public int DistanceFromStopBar { get; set; }
+    public string DetectorType { get; set; }
+    public ICollection<DataPointForInt> PrimaryDirectionVolumes { get; set; }
+    public ICollection<DataPointForInt> OpposingDirectionVolumes { get; set; }
+    public ICollection<DataPointForInt> CombinedDirectionVolumes { get; set; }
+    public ICollection<DataPointForDouble> PrimaryDFactors { get; set; }
+    public ICollection<DataPointForDouble> OpposingDFactors { get; set; }
+    public SummaryData SummaryData { get; set; }
+
+}
+
+public class SummaryData
+{
+    public SummaryData(
+        string peakHour,
+        double kFactor,
+        int peakHourVolume,
+        double peakHourFactor,
+        int totalVolume,
+        string primaryPeakHour,
+        double primaryKFactor,
+        int primaryPeakHourVolume,
+        double primaryPeakHourFactor,
+        int primaryTotalVolume,
+        string opposingPeakHour,
+        double opposingKFactor,
+        int opposingPeakHourVolume,
+        double opposingPeakHourFactor,
+        int opposingTotalVolume)
+    {
         PeakHour = peakHour;
         KFactor = kFactor;
         PeakHourVolume = peakHourVolume;
@@ -74,15 +124,6 @@ public class ApproachVolumeResult : SignalResult
         OpposingTotalVolume = opposingTotalVolume;
     }
 
-    public DetectionTypes DetectorType { get; set; }
-    public int DistanceFromStopBar { get; set; }
-    public string PrimaryDirectionName { get; set; }
-    public ICollection<DirectionVolumes> PrimaryDirectionVolumes { get; set; }
-    public string OpposingDirectionName { get; set; }
-    public ICollection<DirectionVolumes> OpposingDirectionVolumes { get; set; }
-    public ICollection<DirectionVolumes> CombinedDirectionVolumes { get; set; }
-    public ICollection<DFactors> PrimaryDFactors { get; set; }
-    public ICollection<DFactors> OpposingDFactors { get; set; }
     public string PeakHour { get; set; }
     public double KFactor { get; set; }
     public int PeakHourVolume { get; set; }

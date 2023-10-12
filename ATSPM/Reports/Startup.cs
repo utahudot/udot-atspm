@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Reports.Business.Common;
 using Reports.Business.PurdueCoordinationDiagram;
 using GzipCompressionProvider = Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider;
 
@@ -67,7 +68,19 @@ namespace ATSPM.Application.Reports
             services.AddDbContext<ConfigContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
             services.AddDbContext<EventLogContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
             services.AddDbContext<SpeedContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-            services.AddDbContext<IdentityContext>(db => db.UseSqlServer(Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)));
+
+            services.AddIdentityServer()
+               .AddConfigurationStore<IdentityConfigurationContext>(options =>
+               {
+                   options.ConfigureDbContext = b => b.UseSqlServer(Configuration.GetConnectionString(nameof(IdentityContext)));
+               })
+               .AddOperationalStore<IdentityOperationalContext>(options =>
+               {
+                   options.ConfigureDbContext = b => b.UseSqlServer(Configuration.GetConnectionString(nameof(IdentityContext)));
+               })
+               // other configurations, like adding a signing credential...
+               .AddDeveloperSigningCredential();
+
 
             //Repositories
             services.AddScoped<ISignalRepository, SignalEFRepository>();
@@ -111,6 +124,7 @@ namespace ATSPM.Application.Reports
             services.AddScoped<AnalysisPhaseCollectionService>();
             services.AddScoped<AnalysisPhaseService>();
             services.AddScoped<PreemptDetailService>();
+            services.AddScoped<PhaseService>();
 
             //services.AddScoped<IDetectorRepository, DetectorEFRepository>();
             //services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationRepository>();

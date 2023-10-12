@@ -78,7 +78,6 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 ShowPedRecall = false,
                 ShowPercentDelay = false,
                 TimeBuffer = 15,
-                UsePermissivePhase = false,
                 Start = start,
                 End = end
             };

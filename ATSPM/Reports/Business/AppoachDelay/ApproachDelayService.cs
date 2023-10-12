@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Data.Models;
 using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
@@ -17,12 +16,12 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
 
         public ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             SignalPhase signalPhase)
         {
             var dt = signalPhase.StartDate;
-            var approachDelayDataPoints = new List<CycleDataPoint>();
-            var approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
+            var approachDelayDataPoints = new List<DataPointForDouble>();
+            var approachDelayPerVehicleDataPoints = new List<DataPointForDouble>();
             while (dt < signalPhase.EndDate)
             {
                 var endDt = dt.AddMinutes(options.BinSize);
@@ -37,16 +36,16 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                     bindDelaypervehicle = binDelay / detectorEvents.Count;
 
                 bindDelayperhour = binDelay * (60 / options.BinSize) / 60 / 60;
-                approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
-                approachDelayDataPoints.Add(new CycleDataPoint(dt, bindDelayperhour));
+                approachDelayPerVehicleDataPoints.Add(new DataPointForDouble(dt, bindDelaypervehicle));
+                approachDelayDataPoints.Add(new DataPointForDouble(dt, bindDelayperhour));
                 dt = dt.AddMinutes(options.BinSize);
             }
             var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
-                approach.Id,
-                approach.Signal.SignalIdentifier,
-                options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber,
-                approach.Description,
+                phaseDetail.Approach.Id,
+                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.PhaseNumber,
+                phaseDetail.Approach.Description,
                 options.Start,
                 options.End,
                 signalPhase.AvgDelaySeconds,
@@ -87,8 +86,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                     new ApproachDelayPlan(
                         avgDelay,
                         totalDelay,
-                        plan.StartTime,
-                        plan.EndTime,
+                        plan.Start,
+                        plan.End,
                         plan.PlanNumber.ToString(),
                         planDescription)
                     );

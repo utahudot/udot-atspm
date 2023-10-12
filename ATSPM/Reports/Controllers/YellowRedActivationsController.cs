@@ -3,7 +3,9 @@ using ATSPM.Application.Reports.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,15 +20,18 @@ namespace ATSPM.Application.Reports.Controllers
         private readonly YellowRedActivationsService yellowRedActivationsService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
+        private readonly PhaseService phaseService;
 
         public YellowRedActivationsController(
             YellowRedActivationsService yellowRedActivationsService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository)
+            ISignalRepository signalRepository,
+            PhaseService phaseService)
         {
             this.yellowRedActivationsService = yellowRedActivationsService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.signalRepository = signalRepository;
+            this.phaseService = phaseService;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -39,27 +44,43 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<YellowRedActivationsResult>> GetChartData([FromBody] YellowRedActivationsOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] YellowRedActivationsOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
+            var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<YellowRedActivationsResult>>();
-            foreach (var approach in signal.Approaches)
+            foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(options, approach, controllerEventLogs, planEvents, signal.SignalDescription()));
+                tasks.Add(GetChartDataForApproach(options, phaseDetail, controllerEventLogs, planEvents, signal.SignalDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<YellowRedActivationsResult> GetChartDataForApproach(
             YellowRedActivationsOptions options,
-            Approach approach,
+            PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             string signalDescription)
@@ -67,11 +88,13 @@ namespace ATSPM.Application.Reports.Controllers
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start.AddSeconds(-900),
                 options.End.AddSeconds(900),
-                GetYellowRedActivationsCycleEventCodes(approach, false),
-                approach.ProtectedPhaseNumber).OrderBy(e => e.Timestamp).ToList();
+                GetYellowRedActivationsCycleEventCodes(phaseDetail.UseOverlap),
+                phaseDetail.PhaseNumber)
+                .OrderBy(e => e.Timestamp)
+                .ToList();
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
                 options.MetricTypeId,
-                approach,
+                phaseDetail.Approach,
                 options.Start,
                 options.End,
                 true,
@@ -79,18 +102,18 @@ namespace ATSPM.Application.Reports.Controllers
 
             var viewModel = yellowRedActivationsService.GetChartData(
                 options,
-                approach,
+                phaseDetail,
                 cycleEvents,
                 detectorEvents,
                 planEvents);
             viewModel.SignalDescription = signalDescription;
-            viewModel.ApproachDescription = approach.Description;
+            viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }
 
-        private List<int> GetYellowRedActivationsCycleEventCodes(Approach approach, bool getPermissivePhase)
+        private List<int> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
         {
-            return (getPermissivePhase && approach.IsPermissivePhaseOverlap) || (!getPermissivePhase && approach.IsProtectedPhaseOverlap)
+            return useOverlap
                 ? new List<int> { 62, 63, 64 }
                 : new List<int> { 1, 8, 9, 11 };
         }
