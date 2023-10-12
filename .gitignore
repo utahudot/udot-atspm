@@ -213,3 +213,4 @@ dkms.conf
 /ConfigApi/bin/Debug/net7.0/ATSPM.ConfigApi.deps.json
 /ConfigApi/bin/Debug/net7.0
 /ATSPM/Reports/Business/TimingAndActuation/CycleEventsDto.cs
+/ATSPM/ATSPM.sln
