@@ -216,9 +216,9 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                             Timestamp = options.Start.AddSeconds(-9)
                         };
                         forceEventsForAllLanes.Add(event2);
-                        stopBarEvents.Add(detectionType.GetDisplayName() + ", ch " + detector.DetChannel + " " +
-                                          detector.MovementType.Abbreviation + " " +
-                                          laneNumber, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
+                        var labelName = detectionType.GetDisplayName() + ", " + detector.MovementType.Abbreviation + " " +
+                                         laneNumber + ", ch " + detector.DetChannel + " ";
+                        stopBarEvents.Add(labelName, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
                     }
                 }
             }
