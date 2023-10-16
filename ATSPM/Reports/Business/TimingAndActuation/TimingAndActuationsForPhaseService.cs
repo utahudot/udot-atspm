@@ -170,7 +170,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             DetectionTypes detectionType
             )
         {
-            var stopBarEvents = new List<DetectorEventDto>();
+            var DetEvents = new List<DetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.DisplayOrder)
                 .ThenByDescending(l => l.LaneNumber).ToList();
@@ -180,7 +180,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
                 {
                     var extendStartStopLine = options.ExtendStartStopSearch * 60.0;
-                    var stopEvents = controllerEventLogs.Where(c => detectorActivationCodes.Contains(c.EventCode) && c.EventParam == detector.DetChannel).ToList();
+                    var filteredEvents = controllerEventLogs.Where(c => detectorActivationCodes.Contains(c.EventCode) && c.EventParam == detector.DetChannel).ToList();
                     var laneNumber = "";
                     if (detector.LaneNumber != null)
                     {
@@ -189,24 +189,24 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                     var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
                     var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}";
 
-                    if (stopEvents.Count > 0)
+                    if (filteredEvents.Count > 0)
                     {
                         var detectorEvents = new List<DetectorEventBase>();
-                        for (var i = 0; i < stopEvents.Count; i += 2)
+                        for (var i = 0; i < filteredEvents.Count; i += 2)
                         {
-                            if (i + 1 == stopEvents.Count)
+                            if (i + 1 == filteredEvents.Count)
                             {
-                                detectorEvents.Add(new DetectorEventBase(stopEvents[i].Timestamp, stopEvents[i].Timestamp));
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i].Timestamp));
                             }
                             else
                             {
-                                detectorEvents.Add(new DetectorEventBase(stopEvents[i].Timestamp, stopEvents[i + 1].Timestamp));
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
                             }
                         }
-                        stopBarEvents.Add(new DetectorEventDto(lableName, detectorEvents));
+                        DetEvents.Add(new DetectorEventDto(lableName, detectorEvents));
                     }
 
-                    if (stopEvents.Count == 0 && options.ShowAllLanesInfo)
+                    else if (filteredEvents.Count == 0 && options.ShowAllLanesInfo)
                     {
                         var e = new DetectorEventBase(options.Start.AddSeconds(-10), options.Start.AddSeconds(-9));
 
@@ -214,11 +214,11 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         {
                             e
                         };
-                        stopBarEvents.Add(new DetectorEventDto(lableName, list));
+                        DetEvents.Add(new DetectorEventDto(lableName, list));
                     }
                 }
             }
-            return stopBarEvents;
+            return DetEvents;
         }
 
         public List<DetectorEventDto> GetPedestrianEventsNew(

@@ -99,8 +99,7 @@ namespace ATSPM.Application.Reports.Controllers
             var approachevents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start,
                 options.End,
-                eventCodes,
-                phaseDetail.PhaseNumber).ToList();
+                eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
