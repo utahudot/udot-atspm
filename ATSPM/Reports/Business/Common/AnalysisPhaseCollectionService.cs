@@ -68,7 +68,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //}
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-            string signalId,
+            string signalIdentifier,
             DateTime startTime,
             DateTime endTime,
             IReadOnlyList<ControllerEventLog> planEvents,
@@ -80,9 +80,9 @@ namespace ATSPM.Application.Reports.Business.Common
             int consecutiveCount)
         {
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-            analysisPhaseCollectionData.SignalId = signalId;
+            analysisPhaseCollectionData.SignalId = signalIdentifier;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents.ToList());
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalIdentifier, planEvents.ToList());
             foreach (var phaseNumber in phasesInUse)
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(

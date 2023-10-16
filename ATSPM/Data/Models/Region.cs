@@ -12,6 +12,7 @@ namespace ATSPM.Data.Models
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<UserRegion> UserRegions { get; set; } = new HashSet<UserRegion>();
 
         public override string ToString()
         {

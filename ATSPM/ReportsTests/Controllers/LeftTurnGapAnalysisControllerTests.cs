@@ -210,25 +210,25 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 );
 
 
-            Assert.Equal(15, viewModel.Gap1Count.ToList()[0].Gaps);
-            Assert.Equal(20, viewModel.Gap1Count.ToList()[1].Gaps);
-            Assert.Equal(19, viewModel.Gap1Count.ToList()[2].Gaps);
-            Assert.Equal(16, viewModel.Gap1Count.ToList()[3].Gaps);
+            Assert.Equal(15, viewModel.Gap1Count.ToList()[0].Value);
+            Assert.Equal(20, viewModel.Gap1Count.ToList()[1].Value);
+            Assert.Equal(19, viewModel.Gap1Count.ToList()[2].Value);
+            Assert.Equal(16, viewModel.Gap1Count.ToList()[3].Value);
 
-            Assert.Equal(1, viewModel.Gap2Count.ToList()[0].Gaps);
+            Assert.Equal(1, viewModel.Gap2Count.ToList()[0].Value);
             //Assert.Equal(5, viewModel[1].Gap2Count.ToList()[1].Gaps); 3 (-2)
-            Assert.Equal(4, viewModel.Gap2Count.ToList()[2].Gaps);
-            Assert.Equal(3, viewModel.Gap2Count.ToList()[3].Gaps);
+            Assert.Equal(4, viewModel.Gap2Count.ToList()[2].Value);
+            Assert.Equal(3, viewModel.Gap2Count.ToList()[3].Value);
 
-            Assert.Equal(4, viewModel.Gap3Count.ToList()[0].Gaps);
+            Assert.Equal(4, viewModel.Gap3Count.ToList()[0].Value);
             //Assert.Equal(4, viewModel[1].Gap3Count.ToList()[1].Gaps); 6 (+2)
-            Assert.Equal(9, viewModel.Gap3Count.ToList()[2].Gaps);
-            Assert.Equal(6, viewModel.Gap3Count.ToList()[3].Gaps);
+            Assert.Equal(9, viewModel.Gap3Count.ToList()[2].Value);
+            Assert.Equal(6, viewModel.Gap3Count.ToList()[3].Value);
 
-            Assert.Equal(13, viewModel.Gap4Count.ToList()[0].Gaps);
-            Assert.Equal(14, viewModel.Gap4Count.ToList()[1].Gaps);
-            Assert.Equal(14, viewModel.Gap4Count.ToList()[2].Gaps);
-            Assert.Equal(15, viewModel.Gap4Count.ToList()[3].Gaps);
+            Assert.Equal(13, viewModel.Gap4Count.ToList()[0].Value);
+            Assert.Equal(14, viewModel.Gap4Count.ToList()[1].Value);
+            Assert.Equal(14, viewModel.Gap4Count.ToList()[2].Value);
+            Assert.Equal(15, viewModel.Gap4Count.ToList()[3].Value);
 
             //Assert.Equal(86.46, viewModel[1].PercentTurnableSeries.ToList()[0].Seconds);
             //Assert.Equal(75.44, viewModel[1].PercentTurnableSeries.ToList()[1].Seconds);

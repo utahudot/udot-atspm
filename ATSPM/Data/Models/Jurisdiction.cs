@@ -15,6 +15,7 @@ namespace ATSPM.Data.Models
         public string OtherPartners { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<UserJurisdiction> UserJurisdictions { get; set; } = new HashSet<UserJurisdiction>();
 
         public override string ToString()
         {

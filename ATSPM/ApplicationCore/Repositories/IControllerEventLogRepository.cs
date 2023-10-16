@@ -1,10 +1,7 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
@@ -16,11 +13,11 @@ namespace ATSPM.Application.Repositories
         /// <summary>
         /// Get all controller event logs by <c>SignalId</c> and date range
         /// </summary>
-        /// <param name="signalId">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Signal controller identifier</param>
         /// <param name="startTime">Start time</param>
         /// <param name="endTime">End time</param>
         /// <returns></returns>
-        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime);
+        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalIdentifier, DateTime startTime, DateTime endTime);
 
         #region ExtensionMethods
 

@@ -33,6 +33,7 @@ namespace Identity.Business.Claims
 
         public const string AdminViewMenuConfig = "Admin:ViewMenuConfig";
         public const string AdminEditMenuConfig = "Admin:EditMenuConfig";
+        public const string AdminWatchDogConfig = "Admin:WatchDog";
 
         public const string DownloadControllerEventLogs = "Download:ControllerEventLogs";
         public const string DownloadAggregateData = "Download:AggregateData";

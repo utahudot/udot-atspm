@@ -26,6 +26,20 @@ namespace ATSPM.Application.Extensions
                 .ToList();
         }
 
+        public static List<Detector> GetDetectorsForSignalThatSupportMetric(this Signal signal, int metricTypeID)
+        {
+            var detectorsForMetricType = new List<Detector>();
+            foreach (var a in signal.Approaches)
+                foreach (var d in a.Detectors)
+                    if (d.SupportsMetricType(metricTypeID))
+                    {
+                        detectorsForMetricType.Add(d);
+                        break;
+                    }
+            //return approachesForMeticType;
+            return detectorsForMetricType;
+        }
+
         public static List<Detector> GetDetectorsForSignal(this Signal signal)
         {
             var detectors = new List<Detector>();

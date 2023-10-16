@@ -8,7 +8,7 @@ namespace ATSPM.Application.Reports.Business.Common
     public class AnalysisPhaseData
     {
         public int PhaseNumber { get; set; }
-        public string SignalId { get; set; }
+        public string SignalIdentifier { get; set; }
         public double PercentMaxOuts { get; set; }
         public double PercentForceOffs { get; set; }
         public int TotalPhaseTerminations { get; set; }
@@ -50,7 +50,7 @@ namespace ATSPM.Application.Reports.Business.Common
             {
                 analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents);
             if (!terminationEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
@@ -84,11 +84,11 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.SignalId = signal.SignalIdentifier;
+            analysisPhaseData.SignalIdentifier = signal.SignalIdentifier;
             analysisPhaseData.IsOverlap = false;
             var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
             var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, pedEvents);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
             var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
             analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
             analysisPhaseData.Signal = signal;
