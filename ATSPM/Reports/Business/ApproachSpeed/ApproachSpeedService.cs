@@ -52,7 +52,7 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
                     detector.Approach.Description,
                     options.Start,
                     options.End,
-                    detector.DetectionTypes.ToString(),
+                    detector.DetectionTypes.FirstOrDefault(d => d.MetricTypeMetrics.Any(m => m.Id == options.MetricTypeId)).Description,
                     detector.DistanceFromStopBar.Value,
                     detector.Approach.Mph.Value,
                     speedDetector.Plans,
