@@ -40,7 +40,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DetectorEvents = detectorEvents;
         }
 
-        public string ApproachDescription { get; internal set; }
+        public string ApproachDescription { get; set;  }
         public int PhaseNumber { get; internal set; }
         public string PhaseType { get; internal set; }
         public int TotalViolations { get; internal set; }

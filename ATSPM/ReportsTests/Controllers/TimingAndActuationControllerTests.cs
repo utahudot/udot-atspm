@@ -4,17 +4,11 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using CsvHelper;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using ATSPM.Application.Extensions;
 using Reports.Business.Common;
-using ATSPM.Application.Reports.Business.PhaseTermination;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
@@ -141,9 +135,9 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 eventCodes.AddRange(options.PhaseEventCodesList);
                 var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
 
-            Assert.NotEmpty(result.StopBarEvents);
-            Assert.Equal(9, result.StopBarEvents["Stop Bar Presence, T 1, ch 19 "].Count(s => s.Value == 81));
-            Assert.Equal(9, result.StopBarEvents["Stop Bar Presence, T 1, ch 19 "].Count(s => s.Value == 82));
+            Assert.NotEmpty(result.StopBarDetectors);
+            Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOff != null));
+            Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOn != null));
             Assert.NotEmpty(result.PedestrianIntervals);
         }
 
