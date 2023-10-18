@@ -40,4 +40,7 @@ public class ApplicationUser : IdentityUser
 
     // Navigation property for user roles
     public ICollection<IdentityUserRole<string>> Roles { get; set; }
+    //public ICollection<UserRegion> UserRegions { get; set; }
+    //public ICollection<UserJurisdiction> UserJurisdictions { get; set; }
+    //public ICollection<UserArea> UserAreas { get; set; }
 }

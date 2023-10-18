@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
-namespace Identity.Business.Claims
+namespace ATSPM.Infrastructure.Migrations.Identity
 {
     public static class CustomClaims
     {
@@ -33,6 +34,7 @@ namespace Identity.Business.Claims
 
         public const string AdminViewMenuConfig = "Admin:ViewMenuConfig";
         public const string AdminEditMenuConfig = "Admin:EditMenuConfig";
+        public const string AdminWatchDogConfig = "Admin:WatchDog";
 
         public const string DownloadControllerEventLogs = "Download:ControllerEventLogs";
         public const string DownloadAggregateData = "Download:AggregateData";
