@@ -1,17 +1,15 @@
-﻿using Asp.Versioning;
-using Asp.Versioning.OData;
-using ATSPM.Data;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.OData;
-using Microsoft.OData.ModelBuilder;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using Thrift.Protocol;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -33,6 +31,8 @@ namespace ATSPM.ConfigApi.Controllers
         {
             _repository = repository;
         }
+
+        #region oData Actions
 
         /// <summary>
         /// Collection of objects from oData query.
@@ -78,7 +78,7 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Insert/update object of specified type
+        /// Insert object of specified type
         /// </summary>
         /// <param name="item">Properties of object to add</param>
         /// <returns>Action result with created object</returns>
@@ -98,7 +98,6 @@ namespace ATSPM.ConfigApi.Controllers
 
             return Created(item);
         }
-
 
         // PUT /Entity(1)
         //[ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
@@ -182,6 +181,27 @@ namespace ATSPM.ConfigApi.Controllers
             await _repository.RemoveAsync(i);
 
             return NoContent();
+        }
+
+        #endregion
+
+        protected virtual ActionResult<TType> GetNavigationProperty<TType>(TKey key)
+        {
+            var collection = new Uri(HttpContext.Request.GetEncodedUrl()).Segments.Last().Capitalize();
+
+            var obj = _repository.GetList().Include(collection).FirstOrDefault(f => f.Id.Equals(key));
+
+            if (obj == null)
+                return NotFound(key);
+
+            if (!obj.HasProperty(collection))
+                return BadRequest(collection);
+
+            //var result = obj.GetType().GetProperty(collection).GetValue(obj, null);
+
+            var result = obj.GetPropertyValue<TType>(collection);
+
+            return Ok(result);
         }
     }
 }

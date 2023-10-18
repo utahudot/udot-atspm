@@ -97,6 +97,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IFaqRepository, FaqEFRepository>();
     s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
     s.AddScoped<IMeasuresDefaultsRepository, MeasureDefaultEFRepository>();
+    s.AddScoped<IMetricTypeRepository, MetricTypeEFRepository>();
     s.AddScoped<IMenuRepository, MenuEFRepository>();
     s.AddScoped<IRegionsRepository, RegionEFRepository>();
     s.AddScoped<ISignalRepository, SignalEFRepository>();
