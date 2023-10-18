@@ -10,11 +10,11 @@ namespace ATSPM.Data.Models
         public DateTime Timestamp { get; set; }         // Time when the event was logged
         public WatchDogComponentType ComponentType { get; set; } // 'Signal', 'Approach', or 'Detector'
         public int ComponentId { get; set; }         // Specific identifier for the component (like signal ID)
-        public WatchDogIssueType IssueType { get; set; }            // The type of issue (e.g. 'Malfunction', 'Blocked Lane')
+        public WatchDogIssueType IssueType { get; set; }
         public string Details { get; set; }              // Additional details about the issue
         public int? Phase { get; set; }
 
-        public WatchDogLogEvent(int signalId, string signalIdentifier, DateTime timestamp, WatchDogComponentType componentType, int componentId, WatchDogIssueType issueType, string details)
+        public WatchDogLogEvent(int signalId, string signalIdentifier, DateTime timestamp, WatchDogComponentType componentType, int componentId, WatchDogIssueType issueType, string details, int? phase)
         {
             SignalId = signalId;
             SignalIdentifier = signalIdentifier;
@@ -23,6 +23,7 @@ namespace ATSPM.Data.Models
             ComponentId = componentId;
             IssueType = issueType;
             Details = details;
+            Phase = phase;
         }
 
         public override string ToString()

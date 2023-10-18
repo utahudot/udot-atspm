@@ -1,4 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
@@ -9,8 +11,15 @@ namespace WatchDog.Services
     public class ScanService
     {
         private readonly ISignalRepository signalRepository;
-        private readonly IWatchDogLogEventRepository watchDogEventRepository;
-        // private readonly UserManager<ApplicationUser> userManager;
+        private readonly IWatchDogLogEventRepository watchDogLogEventRepository;
+        private readonly IRegionsRepository regionsRepository;
+        private readonly IJurisdictionRepository jurisdictionRepository;
+        private readonly IAreaRepository areaRepository;
+        private readonly IUserRegionRepository userRegionRepository;
+        private readonly IUserJurisdictionRepository userJurisdictionRepository;
+        private readonly IUserAreaRepository userAreaRepository;
+
+        private readonly UserManager<ApplicationUser> userManager;
         private readonly WatchDogLogService logService;
         private readonly EmailService emailService;
         private readonly ILogger<ScanService> logger;
@@ -18,14 +27,27 @@ namespace WatchDog.Services
         public ScanService(
             ISignalRepository signalRepository,
             IWatchDogLogEventRepository watchDogEventRepository,
-            //UserManager<ApplicationUser> userManager,
+            IWatchDogLogEventRepository watchDogLogEventRepository,
+            IRegionsRepository regionsRepository,
+            IJurisdictionRepository jurisdictionRepository,
+            IAreaRepository areaRepository,
+            IUserRegionRepository userRegionRepository,
+            IUserJurisdictionRepository userJurisdictionRepository,
+            IUserAreaRepository userAreaRepository,
+            UserManager<ApplicationUser> userManager,
             WatchDogLogService logService,
             EmailService emailService,
             ILogger<ScanService> logger)
         {
             this.signalRepository = signalRepository;
-            this.watchDogEventRepository = watchDogEventRepository;
-            //this.userManager = userManager;
+            this.watchDogLogEventRepository = watchDogLogEventRepository;
+            this.regionsRepository = regionsRepository;
+            this.jurisdictionRepository = jurisdictionRepository;
+            this.areaRepository = areaRepository;
+            this.userRegionRepository = userRegionRepository;
+            this.userJurisdictionRepository = userJurisdictionRepository;
+            this.userAreaRepository = userAreaRepository;
+            this.userManager = userManager;
             this.logService = logService;
             this.emailService = emailService;
             this.logger = logger;
@@ -43,16 +65,71 @@ namespace WatchDog.Services
                 if (emailOptions.Port.HasValue)
                     smtp.Port = emailOptions.Port.Value;
                 if (emailOptions.Password != null)
-                    smtp.Credentials = new NetworkCredential(emailOptions.FromEmailAddress, emailOptions.Password);
+                    smtp.Credentials = new NetworkCredential(emailOptions.UserName, emailOptions.Password);
                 if (emailOptions.EnableSsl.HasValue)
                     smtp.EnableSsl = emailOptions.EnableSsl.Value;
-                await emailService.CreateAndSendEmail(emailOptions, errors, signals, smtp);
+
+                var regions = regionsRepository.GetList().ToList();
+                var userRegions = await userRegionRepository.GetAllAsync();
+
+                var areas = areaRepository.GetList().ToList();
+                var userAreas = await userAreaRepository.GetAllAsync();
+
+                var jurisdictions = jurisdictionRepository.GetList().ToList();
+                var userJurisdictions = await userJurisdictionRepository.GetAllAsync();
+
+                var users = GetUsersWithWatchDogClaim();
+
+
+                var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
+                if (!emailOptions.EmailAllErrors)
+                {
+                    //List<WatchDogEvent> RecordsFromTheDayBefore = new List<WatchDogEvent>();
+                    //compare to error log to see if this was failing yesterday
+                    if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
+                        recordsFromTheDayBefore =
+                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
+                                w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
+                    else
+                        recordsFromTheDayBefore =
+                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
+                                w.Timestamp < emailOptions.ScanDate).ToList();
+                }
+
+                await emailService.SendAllEmails(
+                    emailOptions,
+                    errors,
+                    signals,
+                    smtp,
+                    users,
+                    jurisdictions,
+                    userJurisdictions.ToList(),
+                    areas,
+                    userAreas.ToList(),
+                    regions,
+                    userRegions.ToList(),
+                    recordsFromTheDayBefore);
             }
         }
 
 
 
+        public List<ApplicationUser> GetUsersWithWatchDogClaim()
+        {
+            // Define the claim type and value you want to search for
+            const string claimType = "Admin:WatchDog";
 
+            // Get all users
+            var allUsers = userManager.Users.ToList();
+
+            // Filter users with the specified claim
+            var usersWithWatchDogClaim = allUsers
+                .Where(user => userManager.GetClaimsAsync(user).Result
+                    .Any(claim => claim.Type == claimType))
+                .ToList();
+
+            return usersWithWatchDogClaim;
+        }
 
 
 

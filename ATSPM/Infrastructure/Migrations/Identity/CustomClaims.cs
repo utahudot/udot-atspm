@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
-namespace Identity.Business.Claims
+namespace ATSPM.Infrastructure.Migrations.Identity
 {
     public static class CustomClaims
     {

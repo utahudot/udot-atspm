@@ -79,11 +79,11 @@ class Program
                     ScanDayEndHour = 5,
                     ScanDayStartHour = 1,
                     WeekdayOnly = false,
-                    EmailServer = "sandbox.smtp.mailtrap.io",
-                    FromEmailAddress = "241b4c03c87968",
-                    Password = "0f894391e4e8d3",
-                    Port = 587,
-                    EnableSsl = true,
+                    EmailServer = "smtp.freesmtpservers.com",
+                    //UserName = "241b4c03c87968",
+                    //Password = "0f894391e4e8d3",
+                    Port = 25,
+                    //EnableSsl = true,
                     DefaultEmailAddress = "derekjlowe@gmail.com",
                     EmailAllErrors = true
                 };

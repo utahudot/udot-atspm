@@ -101,3 +101,5 @@ dkms.conf
 /upgrade-assistant.clef/
 
 # Note: Add more project-specific folders if necessary
+/WatchDogTests/bin/Debug/net6.0
+/WatchDogTests/obj

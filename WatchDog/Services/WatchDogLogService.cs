@@ -93,7 +93,8 @@ namespace WatchDog.Services
                                 WatchDogComponentType.Detector,
                                 detector.Id,
                                 WatchDogIssueType.LowDetectorHits,
-                                $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}");
+                                $"CH: {channel} - Count: {currentVolume.ToString().ToLowerInvariant()}",
+                                null);
                             if (!errors.Contains(error))
                                 errors.Add(error);
                         }
@@ -207,7 +208,8 @@ namespace WatchDog.Services
                     WatchDogComponentType.Approach,
                     approach.Id,
                     WatchDogIssueType.StuckPed,
-                    phase.PedestrianEvents.Count + " Pedestrian Activations"
+                    phase.PedestrianEvents.Count + " Pedestrian Activations",
+                    phase.PhaseNumber
                 );
                 if (!errors.Contains(error))
                 {
@@ -230,7 +232,8 @@ namespace WatchDog.Services
                     WatchDogComponentType.Approach,
                     approach.Id,
                     WatchDogIssueType.ForceOffThreshold,
-                    "Force Offs " + Math.Round(phase.PercentForceOffs * 100, 1) + "%"
+                    "Force Offs " + Math.Round(phase.PercentForceOffs * 100, 1) + "%",
+                    phase.PhaseNumber
                 );
                 if (!errors.Contains(error))
                 {
@@ -253,7 +256,8 @@ namespace WatchDog.Services
                     WatchDogComponentType.Approach,
                     approach.Id,
                     WatchDogIssueType.MaxOutThreshold,
-                    "Max Outs " + Math.Round(phase.PercentMaxOuts * 100, 1) + "%"
+                    "Max Outs " + Math.Round(phase.PercentMaxOuts * 100, 1) + "%",
+                    phase.PhaseNumber
                 );
                 if (errors.Count == 0 || !errors.Contains(error))
                 {
@@ -280,7 +284,8 @@ namespace WatchDog.Services
                     WatchDogComponentType.Signal,
                     signal.Id,
                     WatchDogIssueType.RecordCount,
-                    "Missing Records - IP: " + signal.Ipaddress
+                    "Missing Records - IP: " + signal.Ipaddress,
+                    null
                 );
             }
 
