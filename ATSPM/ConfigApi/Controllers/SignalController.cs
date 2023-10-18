@@ -1,31 +1,15 @@
 ﻿using Asp.Versioning;
-using Asp.Versioning.OData;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
-using Google.Apis.Util;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Extensions;
-using Microsoft.AspNetCore.OData.Formatter;
-using Microsoft.AspNetCore.OData.Formatter.Serialization;
-using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Query.Validator;
-using Microsoft.AspNetCore.OData.Results;
-using Microsoft.OData;
-using Microsoft.OData.Edm;
-using Microsoft.OData.ModelBuilder;
-using Microsoft.OData.UriParser;
-using NetTopologySuite.Densify;
-using System;
 using ATSPM.Domain.Extensions;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ConfigApi.Controllers
 {

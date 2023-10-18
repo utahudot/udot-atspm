@@ -10,20 +10,25 @@ namespace ATSPM.Application.Repositories
 {
     public interface IMetricTypeRepository : IAsyncRepository<MetricType>
     {
+        [Obsolete("Not required in v5.0")]
         IReadOnlyList<MetricType> GetAllToDisplayMetrics();
 
+        [Obsolete("Not required in v5.0")]
         IReadOnlyList<MetricType> GetAllToAggregateMetrics();
-        
+
+        [Obsolete("Not required in v5.0")]
         IReadOnlyList<MetricType> GetBasicMetrics();
 
+        [Obsolete("Not required in v5.0")]
         IReadOnlyList<MetricType> GetMetricsByIDs(List<int> metricIDs);
 
+        [Obsolete("Not required in v5.0")]
         IReadOnlyList<MetricType> GetMetricTypesByMetricComment(MetricComment metricComment);
 
-        [Obsolete("Use GetList instead")]
-        IReadOnlyList<MetricType> GetAllMetrics();
+        //[Obsolete("Use GetList instead")]
+        //IReadOnlyList<MetricType> GetAllMetrics();
 
-        [Obsolete("Use Lookup instead")]
-        MetricType GetMetricsByID(int metricID);
+        //[Obsolete("Use Lookup instead")]
+        //MetricType GetMetricsByID(int metricID);
     }
 }
