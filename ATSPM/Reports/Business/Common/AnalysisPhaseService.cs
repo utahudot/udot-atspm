@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using ATSPM.Data.Models;
+using IdentityServer4.Extensions;
+using Reports.Business.Common;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.Common
@@ -26,8 +29,11 @@ namespace ATSPM.Application.Reports.Business.Common
 
     public class AnalysisPhaseService
     {
-        public AnalysisPhaseService()
+        private readonly PhaseService phaseService;
+
+        public AnalysisPhaseService(PhaseService phaseService)
         {
+            this.phaseService = phaseService;
         }
 
         public AnalysisPhaseData GetAnalysisPhaseData(
@@ -36,8 +42,7 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
             int consecutiveCount,
-            Signal signal,
-            PhaseService phaseService
+            Signal signal
             )
         {
             var analysisPhaseData = new AnalysisPhaseData();

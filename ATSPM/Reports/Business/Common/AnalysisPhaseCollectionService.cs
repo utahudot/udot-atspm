@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using IdentityServer4.Extensions;
+using Reports.Business.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,14 +26,17 @@ namespace ATSPM.Application.Reports.Business.Common
     {
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
+        private readonly PhaseService phaseService;
 
         public AnalysisPhaseCollectionService(
             PlanService planService,
-            AnalysisPhaseService analysisPhaseService
+            AnalysisPhaseService analysisPhaseService,
+            PhaseService phaseService
             )
         {
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
+            this.phaseService = phaseService;
         }
 
         //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
@@ -89,8 +95,7 @@ namespace ATSPM.Application.Reports.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    signal,
-                    phaseService);
+                    signal);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
