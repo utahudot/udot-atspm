@@ -2,9 +2,9 @@
 
 namespace ATSPM.Application.Reports.Business.Common
 {
-    public class PerdueCoordinationPlanViewModel
+    public class PerdueCoordinationPlanViewModel : Plan
     {
-        public string PlanNumber { get; set; }
+        //public string PlanNumber { get; set; }
 
         public PerdueCoordinationPlanViewModel(
             string planNumber,
@@ -12,18 +12,18 @@ namespace ATSPM.Application.Reports.Business.Common
             DateTime endTime,
             double percentGreenTime,
             double percentArrivalOnGreen,
-            double platoonRatio)
+            double platoonRatio) : base(planNumber, startTime, endTime)
         {
-            PlanNumber = planNumber;
-            StartTime = startTime;
+            //PlanNumber = planNumber;
+            //Start = startTime;
             PercentGreenTime = percentGreenTime;
             PercentArrivalOnGreen = percentArrivalOnGreen;
             PlatoonRatio = platoonRatio;
-            EndTime = endTime;
+            //End = endTime;
         }
 
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        //public DateTime Start { get; set; }
+        //public DateTime End { get; set; }
         public double PercentGreenTime { get; set; }
         public double PercentArrivalOnGreen { get; set; }
         public double PlatoonRatio { get; set; }

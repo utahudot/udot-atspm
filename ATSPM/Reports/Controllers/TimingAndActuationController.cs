@@ -3,6 +3,7 @@ using ATSPM.Application.Reports.Business.TimingAndActuation;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Reports.Business.Common;
 using System.Collections.Generic;
@@ -47,10 +48,19 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<TimingAndActuationsForPhaseResult>> GetChartData([FromBody] TimingAndActuationsOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] TimingAndActuationsOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var phaseDetails = phaseService.GetPhases(signal);
             var tasks = new List<Task<TimingAndActuationsForPhaseResult>>();
 
@@ -69,7 +79,13 @@ namespace ATSPM.Application.Reports.Controllers
             }
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<TimingAndActuationsForPhaseResult> GetChartDataForPhase(
@@ -83,8 +99,7 @@ namespace ATSPM.Application.Reports.Controllers
             var approachevents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start,
                 options.End,
-                eventCodes,
-                phaseDetail.PhaseNumber).ToList();
+                eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;

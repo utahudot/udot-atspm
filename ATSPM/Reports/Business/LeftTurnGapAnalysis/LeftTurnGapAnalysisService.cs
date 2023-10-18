@@ -28,7 +28,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                 (x.EventCode == EVENT_GREEN || x.EventCode == EVENT_RED)));
 
             var detectorsToUse = new List<Data.Models.Detector>();
-            var detectionTypeStr = "Detector Type: Lane-By-Lane Count";
+            var detectionTypeStr = "Lane-By-Lane Count";
 
             //Use only lane-by-lane count detectors if they exists, otherwise check for stop bar
             detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.LLC);
@@ -36,7 +36,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             if (!detectorsToUse.Any())
             {
                 detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.SBP);
-                detectionTypeStr = "Detector Type: Stop Bar Presence";
+                detectionTypeStr = "Stop Bar Presence";
 
                 //If no detectors of either type for this approach, skip it
                 if (!detectorsToUse.Any())

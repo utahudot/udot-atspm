@@ -6,8 +6,9 @@ namespace ATSPM.Application.Reports.Business.Common
     {
 
         public string PlanNumber { get; internal set; }
+        public string PlanDescription { get; internal set; }
         public DateTime Start { get; internal set; }
-        public DateTime EndTime { get; internal set; }
+        public DateTime End { get; internal set; }
         public int HighCycleCount { get; set; }
         public double PercentSkips { get; set; }
         public double PercentGapOuts { get; set; }
