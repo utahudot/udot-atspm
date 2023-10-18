@@ -1,4 +1,5 @@
 ﻿using Reports.Business.Common;
+using Reports.Business.TimingAndActuation;
 using System;
 using System.Collections.Generic;
 
@@ -15,13 +16,13 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             bool phaseOrOverlap,
             string phaseNumberSort,
             bool getPermissivePhase,
-            List<DataPointForInt> pedestrianIntervals,
-            Dictionary<string, List<DataPointForInt>> pedestrianEvents,
-            Dictionary<string, List<DataPointForInt>> cycleAllEvents,
-            Dictionary<string, List<DataPointForInt>> advanceCountEvents,
-            Dictionary<string, List<DataPointForInt>> advancePresenceEvents,
-            Dictionary<string, List<DataPointForInt>> stopBarEvents,
-            Dictionary<string, List<DataPointForInt>> laneByLanes,
+            List<CycleEventsDto> pedestrianIntervals,
+            List<DetectorEventDto> pedestrianEvents,
+            List<CycleEventsDto> cycleAllEvents,
+            List<DetectorEventDto> advanceCountEvents,
+            List<DetectorEventDto> advancePresenceEvents,
+            List<DetectorEventDto> stopBarEvents,
+            List<DetectorEventDto> laneByLanes,
             Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
@@ -31,10 +32,10 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             PedestrianIntervals = pedestrianIntervals;
             PedestrianEvents = pedestrianEvents;
             CycleAllEvents = cycleAllEvents;
-            AdvanceCountEvents = advanceCountEvents;
-            AdvancePresenceEvents = advancePresenceEvents;
-            StopBarEvents = stopBarEvents;
-            LaneByLanes = laneByLanes;
+            AdvanceCountDetectors = advanceCountEvents;
+            AdvancePresenceDetectors = advancePresenceEvents;
+            StopBarDetectors = stopBarEvents;
+            LaneByLanesDetectors = laneByLanes;
             PhaseCustomEvents = phaseCustomEvents;
         }
 
@@ -42,14 +43,13 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         public bool PhaseOrOverlap { get; set; }
         public string PhaseNumberSort { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public List<DataPointForInt> PedestrianIntervals { get; set; }
-        public Dictionary<string, List<DataPointForInt>> PedestrianEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> CycleAllEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> AdvanceCountEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> AdvancePresenceEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> StopBarEvents { get; set; }
-        public Dictionary<string, List<DataPointForInt>> LaneByLanes { get; set; }
+        public List<CycleEventsDto> PedestrianIntervals { get; set; }
+        public List<DetectorEventDto> PedestrianEvents { get; set; }
+        public List<CycleEventsDto> CycleAllEvents { get; set; }
+        public List<DetectorEventDto> AdvanceCountDetectors { get; set; }
+        public List<DetectorEventDto> AdvancePresenceDetectors { get; set; }
+        public List<DetectorEventDto> StopBarDetectors { get; set; }
+        public List<DetectorEventDto> LaneByLanesDetectors { get; set; }
         public Dictionary<string, List<DataPointForInt>> PhaseCustomEvents { get; set; }
     }
 }
-

@@ -4,6 +4,7 @@ using ATSPM.Application.Reports.Business.PhaseTermination;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -43,33 +44,42 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public PhaseTerminationResult GetChartData([FromBody] PurduePhaseTerminationOptions options)
+        public IActionResult GetChartData([FromBody] PurduePhaseTerminationOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-            var planEvents = signalEvents.GetPlanEvents(
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
+            var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
-            var terminationEvents = signalEvents.Where(e =>
+            var terminationEvents = controllerEventLogs.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
-            var pedEvents = signalEvents.Where(e =>
+            var pedEvents = controllerEventLogs.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
-            var cycleEvents = signalEvents.Where(e =>
+            var cycleEvents = controllerEventLogs.Where(e =>
                 new List<int> { 1, 11 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
             var splitsEventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 splitsEventCodes.Add(i);
-            var splitsEvents = signalEvents.Where(e =>
+            var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
-            signalEvents = null;
+            controllerEventLogs = null;
             GC.Collect();
 
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
@@ -106,7 +116,7 @@ namespace ATSPM.Application.Reports.Controllers
                 phases
                 );
             result.SignalDescription = signal.SignalDescription();
-            return result;
+            return Ok(result);
         }
     }
 }

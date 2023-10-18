@@ -52,11 +52,20 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("GetChartData")]
-        public async Task<IEnumerable<PedDelayResult>> GetChartData(
+        public async Task<IActionResult> GetChartData(
             PedDelayOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
@@ -69,7 +78,13 @@ namespace ATSPM.Application.Reports.Controllers
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<PedDelayResult> GetChartDataForApproach(

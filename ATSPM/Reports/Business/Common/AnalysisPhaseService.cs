@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Application.Reports.Business.Common
@@ -8,6 +6,8 @@ namespace ATSPM.Application.Reports.Business.Common
     public class AnalysisPhaseData
     {
         public int PhaseNumber { get; set; }
+        public string PhaseDescription { get; set; }
+        public string SignalId { get; set; }
         public string SignalIdentifier { get; set; }
         public double PercentMaxOuts { get; set; }
         public double PercentForceOffs { get; set; }
@@ -36,10 +36,12 @@ namespace ATSPM.Application.Reports.Business.Common
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
             int consecutiveCount,
-            Signal signal
+            Signal signal,
+            PhaseService phaseService
             )
         {
             var analysisPhaseData = new AnalysisPhaseData();
+            analysisPhaseData.PhaseDescription = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phasenumber).Approach.Description;
             analysisPhaseData.PhaseNumber = phasenumber;
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())

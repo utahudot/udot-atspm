@@ -10,9 +10,10 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor;
 /// </summary>
 public class SplitMonitorResult : SignalResult
 {
-    public SplitMonitorResult(int phaseNumber, string signalId, DateTime start, DateTime end) : base(signalId, start, end)
+    public SplitMonitorResult(int phaseNumber, string phaseDescription, string signalId, DateTime start, DateTime end) : base(signalId, start, end)
     {
         PhaseNumber = phaseNumber;
+        PhaseDescription = phaseDescription;
         Plans = new List<PlanSplitMonitorDTO>();
         ProgrammedSplits = new List<DataPointForDouble>();
         GapOuts = new List<DataPointForDouble>();
@@ -45,6 +46,8 @@ public class SplitMonitorResult : SignalResult
         Peds = peds;
     }
     public int PhaseNumber { get; internal set; }
+
+    public string PhaseDescription { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
     public ICollection<DataPointForDouble> ProgrammedSplits { get; internal set; }
     public ICollection<DataPointForDouble> GapOuts { get; internal set; }

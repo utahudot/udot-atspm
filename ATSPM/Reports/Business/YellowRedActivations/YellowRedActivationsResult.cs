@@ -14,6 +14,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             int approachId,
             string approachDescription,
             int phaseNumber,
+            string phaseType,
             DateTime start,
             DateTime end,
             int totalViolations,
@@ -28,6 +29,7 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             ApproachId = approachId;
             ApproachDescription = approachDescription;
             PhaseNumber = phaseNumber;
+            PhaseType = phaseType;
             TotalViolations = totalViolations;
             SevereViolations = severeViolations;
             YellowLightOccurences = yellowLightOccurences;
@@ -38,8 +40,9 @@ namespace ATSPM.Application.Reports.Business.YellowRedActivations
             DetectorEvents = detectorEvents;
         }
 
-        public string ApproachDescription { get; internal set; }
+        public string ApproachDescription { get; set;  }
         public int PhaseNumber { get; internal set; }
+        public string PhaseType { get; internal set; }
         public int TotalViolations { get; internal set; }
         public int SevereViolations { get; internal set; }
         public int YellowLightOccurences { get; internal set; }

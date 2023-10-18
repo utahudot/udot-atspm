@@ -5,7 +5,7 @@ namespace ATSPM.Application.Reports.Business.Common
 {
     public class PlanSplitMonitorData : Plan
     {
-        public PlanSplitMonitorData(DateTime start, DateTime end, string planNumber) : base(planNumber.ToString(), start, end)
+        public PlanSplitMonitorData(DateTime start, DateTime end, string planNumber) : base(planNumber, start, end)
         {
             Splits = new SortedDictionary<int, int>();
         }

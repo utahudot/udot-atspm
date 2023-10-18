@@ -3,6 +3,8 @@ using ATSPM.Application.Reports.Business.SplitMonitor;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,37 +42,55 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<SplitMonitorResult>> GetChartData([FromBody] SplitMonitorOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] SplitMonitorOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12));
-            var planEvents = signalEvents.GetPlanEvents(
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12));
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
+            var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
-            var pedEvents = signalEvents.Where(e =>
+            var pedEvents = controllerEventLogs.Where(e =>
                 new List<int> { 21, 23 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
-            var cycleEvents = signalEvents.Where(e =>
+            var cycleEvents = controllerEventLogs.Where(e =>
                 new List<int> { 1, 4, 5, 6, 7, 8, 11 }.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
             var splitsEventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 splitsEventCodes.Add(i);
-            var splitsEvents = signalEvents.Where(e =>
+            var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= options.Start
                 && e.Timestamp <= options.End).ToList();
-            signalEvents = null;
+            controllerEventLogs = null;
 
-            return await splitMonitorService.GetChartData(
+            var results = await splitMonitorService.GetChartData(
                options,
                planEvents,
                cycleEvents,
                pedEvents,
                splitsEvents,
                signal);
+
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
+
         }
 
     }

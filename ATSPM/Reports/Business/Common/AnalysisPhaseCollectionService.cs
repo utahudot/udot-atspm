@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -91,7 +89,8 @@ namespace ATSPM.Application.Reports.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    signal);
+                    signal,
+                    phaseService);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();

@@ -25,5 +25,7 @@ namespace ATSPM.Data.Enums
         SBP = 6,
         [Display(Name = "Advanced Presence", Order = 7)]
         AP = 7,
+        [Display(Name = "Ped Det. Actuations", Order = 8)]
+        PDA = 8,
     }
 }
