@@ -151,7 +151,7 @@ if (app.Environment.IsDevelopment())
 
             // Run the seed method
             ConfigurationSeedData.Seed(configContext);
-            await SeedAdminRoleAndClaims.SeedAdminUser(services);
+            //await SeedAdminRoleAndClaims.SeedAdminUser(services);
         }
         catch (Exception ex)
         {
