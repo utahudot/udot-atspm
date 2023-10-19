@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Business\AppoachDelay\" />
-    <Folder Include="TestFiles\" />
   </ItemGroup>
 
   <ItemGroup>
