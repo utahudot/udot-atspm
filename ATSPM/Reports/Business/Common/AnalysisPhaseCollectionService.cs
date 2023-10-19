@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.Extensions;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +26,17 @@ namespace ATSPM.Application.Reports.Business.Common
     {
         private readonly PlanService planService;
         private readonly AnalysisPhaseService analysisPhaseService;
+        private readonly PhaseService phaseService;
 
         public AnalysisPhaseCollectionService(
             PlanService planService,
-            AnalysisPhaseService analysisPhaseService
+            AnalysisPhaseService analysisPhaseService,
+            PhaseService phaseService
             )
         {
             this.planService = planService;
             this.analysisPhaseService = analysisPhaseService;
+            this.phaseService = phaseService;
         }
 
         //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
@@ -68,7 +72,7 @@ namespace ATSPM.Application.Reports.Business.Common
         //}
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-            string signalId,
+            string signalIdentifier,
             DateTime startTime,
             DateTime endTime,
             IReadOnlyList<ControllerEventLog> planEvents,
@@ -80,9 +84,9 @@ namespace ATSPM.Application.Reports.Business.Common
             int consecutiveCount)
         {
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-            analysisPhaseCollectionData.SignalId = signalId;
+            analysisPhaseCollectionData.SignalId = signalIdentifier;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalId, planEvents.ToList());
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalIdentifier, planEvents.ToList());
             foreach (var phaseNumber in phasesInUse)
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(
@@ -274,7 +278,7 @@ namespace ATSPM.Application.Reports.Business.Common
             foreach (var phase in phases.AnalysisPhases)
             {
                 var Cycles = from cycle in phase.Cycles.Items
-                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.EndTime
+                             where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
                              select cycle;
 
                 if (Cycles.Count() > HighCycleCount)

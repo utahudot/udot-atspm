@@ -24,10 +24,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
             double maxDelay,
             double averageDelay,
             List<PedDelayPlan> plans,
-            List<CycleLengths> cycleLengths,
-            List<PedestrianDelay> pedestrianDelay,
-            List<StartBeginWalk> startOfWalk,
-            List<PercentDelayByCycleLength> percentDelayByCycleLength) : base(approachId, signalId, start, end)
+            List<DataPointForDouble> cycleLengths,
+            List<DataPointForDouble> pedestrianDelay,
+            List<DataPointForDouble> startOfWalk,
+            List<DataPointForDouble> percentDelayByCycleLength) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -54,10 +54,10 @@ namespace ATSPM.Application.Reports.Business.PedDelay
         public double MaxDelay { get; internal set; }
         public double AverageDelay { get; internal set; }
         public List<PedDelayPlan> Plans { get; internal set; }
-        public List<CycleLengths> CycleLengths { get; internal set; }
-        public List<PedestrianDelay> PedestrianDelay { get; internal set; }
-        public List<StartBeginWalk> StartOfWalk { get; internal set; }
-        public List<PercentDelayByCycleLength> PercentDelayByCycleLength { get; internal set; }
+        public List<DataPointForDouble> CycleLengths { get; internal set; }
+        public List<DataPointForDouble> PedestrianDelay { get; internal set; }
+        public List<DataPointForDouble> StartOfWalk { get; internal set; }
+        public List<DataPointForDouble> PercentDelayByCycleLength { get; internal set; }
 
     }
 }

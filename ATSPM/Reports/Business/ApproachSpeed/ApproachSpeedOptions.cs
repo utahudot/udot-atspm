@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
-    public class ApproachSpeedOptions
+    public class ApproachSpeedOptions : OptionsBase
     {
         public int SelectedBinSize { get; set; }
         public int MetricTypeId { get; } = 10;
-        public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
     }
 }

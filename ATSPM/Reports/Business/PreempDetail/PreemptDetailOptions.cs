@@ -1,14 +1,9 @@
-﻿using AutoFixture.Kernel;
-using System;
-using System.Runtime.Serialization;
+﻿using Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.PreempDetail
 {
-    public class PreemptDetailOptions
+    public class PreemptDetailOptions : OptionsBase
     {
-        public string SignalIdentifier { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
 
     }
 }

@@ -1,7 +1,9 @@
 ﻿using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace ATSPM.Infrastructure.Migrations.Identity
 {
@@ -164,6 +166,52 @@ namespace ATSPM.Infrastructure.Migrations.Identity
             }
 
             // ... similar logic for seeding clients, identity resources, etc. ...
+        }
+
+        private static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            // Define your roles
+            string[] roles = new string[]
+            {
+        "Admin",
+        "User",
+                // Add other roles as needed
+            };
+
+            foreach (var roleName in roles)
+            {
+                // Check if the role already exists
+                if (!roleManager.RoleExistsAsync(roleName).Result)
+                {
+                    // Create the role
+                    var role = new IdentityRole(roleName);
+                    var result = roleManager.CreateAsync(role).Result;
+
+                    if (result.Succeeded)
+                    {
+                        // Add claims to the role
+                        AddClaimsToRole(roleManager, roleName);
+                    }
+                    else
+                    {
+                        // Handle role creation failure
+                    }
+                }
+            }
+        }
+
+        private static void AddClaimsToRole(RoleManager<IdentityRole> roleManager, string roleName)
+        {
+            var claims = CustomClaims.GetAllClaimsFromCustomClaims();
+
+            var role = roleManager.FindByNameAsync(roleName).Result;
+            if (role != null)
+            {
+                foreach (var claim in claims)
+                {
+                    roleManager.AddClaimAsync(role, new Claim(ClaimTypes.Role, claim)).Wait();
+                }
+            }
         }
 
 

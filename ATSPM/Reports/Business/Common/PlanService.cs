@@ -2,6 +2,7 @@
 using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Reports.Business.YellowRedActivations;
 using ATSPM.Data.Models;
+using IdentityServer4.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace ATSPM.Application.Reports.Business.Common
             string signalId,
             List<ControllerEventLog> tempPlanEvents)
         {
+            startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
+            endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
                 SetFirstPlan(startDate, signalId, tempPlanEvents);
@@ -172,9 +175,9 @@ namespace ATSPM.Application.Reports.Business.Common
                 plans.Add(new Plan("0", startDate, endDate));
             return plans.Select(plan => new YellowRedActivationPlan(
                 plan.Start,
-                plan.EndTime,
+                plan.End,
                 plan.PlanNumber,
-                cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.EndTime).ToList(),
+                cycles.Where(c => c.StartTime >= plan.Start && c.StartTime < plan.End).ToList(),
                 severeRedLightViolationSeconds)).ToList();
         }
 
@@ -213,60 +216,72 @@ namespace ATSPM.Application.Reports.Business.Common
         public List<SpeedPlan> GetSpeedPlans(List<CycleSpeed> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
+            if (events.IsNullOrEmpty())
+            {
+                return new List<SpeedPlan>();
+            }
             var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events);
             var plans = new List<SpeedPlan>();
-            for (var i = 0; i < planEvents.Count; i++)
+            try
             {
-                var planStart = new DateTime();
-                var planEnd = new DateTime();
-                var planNumber = 0;
-                var averageSpeed = 0;
-                var standardDeviation = 0;
-                var eightyFifthPercentile = 0;
-                var fifteenthPercentile = 0;
-                if (planEvents.Count - 1 == i)
+                for (var i = 0; i < planEvents.Count; i++)
                 {
-                    if (planEvents[i].Timestamp != endDate)
+                    var planStart = new DateTime();
+                    var planEnd = new DateTime();
+                    var planNumber = 0;
+                    var averageSpeed = 0;
+                    var standardDeviation = 0;
+                    var eightyFifthPercentile = 0;
+                    var fifteenthPercentile = 0;
+                    if (planEvents.Count - 1 == i)
                     {
-                        var planCycles = cycles
-                            .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
-                        planStart = planEvents[i].Timestamp;
-                        planEnd = endDate;
-                        planNumber = planEvents[i].EventParam;
-                        SetSpeedStatistics(
-                            planCycles,
-                            out averageSpeed,
-                            out standardDeviation,
-                            out eightyFifthPercentile,
-                            out fifteenthPercentile);
+                        if (planEvents[i].Timestamp != endDate)
+                        {
+                            var planCycles = cycles
+                                .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
+                            planStart = planEvents[i].Timestamp;
+                            planEnd = endDate;
+                            planNumber = planEvents[i].EventParam;
+                            SetSpeedStatistics(
+                                planCycles,
+                                out averageSpeed,
+                                out standardDeviation,
+                                out eightyFifthPercentile,
+                                out fifteenthPercentile);
+                        }
                     }
-                }
-                else
-                {
-                    if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
+                    else
                     {
-                        var planCycles = cycles.Where(c =>
-                                c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
-                            .ToList();
-                        planStart = planEvents[i].Timestamp;
-                        planEnd = planEvents[i + 1].Timestamp;
-                        planNumber = planEvents[i].EventParam;
-                        SetSpeedStatistics(
-                            planCycles,
-                            out averageSpeed,
-                            out standardDeviation,
-                            out eightyFifthPercentile,
-                            out fifteenthPercentile);
+                        if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
+                        {
+                            var planCycles = cycles.Where(c =>
+                                    c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
+                                .ToList();
+                            planStart = planEvents[i].Timestamp;
+                            planEnd = planEvents[i + 1].Timestamp;
+                            planNumber = planEvents[i].EventParam;
+                            SetSpeedStatistics(
+                                planCycles,
+                                out averageSpeed,
+                                out standardDeviation,
+                                out eightyFifthPercentile,
+                                out fifteenthPercentile);
+                        }
                     }
+                    plans.Add(new SpeedPlan(
+                        planStart,
+                        planEnd,
+                        planNumber.ToString(),
+                        averageSpeed,
+                        standardDeviation,
+                        eightyFifthPercentile,
+                        fifteenthPercentile));
                 }
-                plans.Add(new SpeedPlan(
-                    planStart,
-                    planEnd,
-                    planNumber.ToString(),
-                    averageSpeed,
-                    standardDeviation,
-                    eightyFifthPercentile,
-                    fifteenthPercentile));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
             return plans;
         }
@@ -301,6 +316,8 @@ namespace ATSPM.Application.Reports.Business.Common
 
         private int GetPercentile(IReadOnlyList<int> speeds, double percentile)
         {
+            if (speeds.IsNullOrEmpty())
+                return -1;
             var sortedSpeeds = speeds.OrderBy(x => x).ToList();
             var index = (int)Math.Ceiling(percentile * (sortedSpeeds.Count - 1));
             var percentileValue = sortedSpeeds[index];

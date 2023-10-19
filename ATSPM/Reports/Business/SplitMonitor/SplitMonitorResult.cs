@@ -10,16 +10,17 @@ namespace ATSPM.Application.Reports.Business.SplitMonitor;
 /// </summary>
 public class SplitMonitorResult : SignalResult
 {
-    public SplitMonitorResult(int phaseNumber, string signalId, DateTime start, DateTime end) : base(signalId, start, end)
+    public SplitMonitorResult(int phaseNumber, string phaseDescription, string signalId, DateTime start, DateTime end) : base(signalId, start, end)
     {
         PhaseNumber = phaseNumber;
+        PhaseDescription = phaseDescription;
         Plans = new List<PlanSplitMonitorDTO>();
-        ProgrammedSplits = new List<DataPointSeconds>();
-        GapOuts = new List<SplitMonitorEvent>();
-        MaxOuts = new List<SplitMonitorEvent>();
-        ForceOffs = new List<SplitMonitorEvent>();
-        Unknowns = new List<SplitMonitorEvent>();
-        Peds = new List<SplitMonitorEvent>();
+        ProgrammedSplits = new List<DataPointForDouble>();
+        GapOuts = new List<DataPointForDouble>();
+        MaxOuts = new List<DataPointForDouble>();
+        ForceOffs = new List<DataPointForDouble>();
+        Unknowns = new List<DataPointForDouble>();
+        Peds = new List<DataPointForDouble>();
     }
 
     public SplitMonitorResult(
@@ -28,12 +29,12 @@ public class SplitMonitorResult : SignalResult
         DateTime end,
         int phaseNumber,
         ICollection<PlanSplitMonitorDTO> plans,
-        ICollection<DataPointSeconds> programmedSplits,
-        ICollection<SplitMonitorEvent> gapOuts,
-        ICollection<SplitMonitorEvent> maxOuts,
-        ICollection<SplitMonitorEvent> forceOffs,
-        ICollection<SplitMonitorEvent> unknowns,
-        ICollection<SplitMonitorEvent> peds) : base(signalId, start, end)
+        ICollection<DataPointForDouble> programmedSplits,
+        ICollection<DataPointForDouble> gapOuts,
+        ICollection<DataPointForDouble> maxOuts,
+        ICollection<DataPointForDouble> forceOffs,
+        ICollection<DataPointForDouble> unknowns,
+        ICollection<DataPointForDouble> peds) : base(signalId, start, end)
     {
         PhaseNumber = phaseNumber;
         Plans = plans;
@@ -45,11 +46,13 @@ public class SplitMonitorResult : SignalResult
         Peds = peds;
     }
     public int PhaseNumber { get; internal set; }
+
+    public string PhaseDescription { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
-    public ICollection<DataPointSeconds> ProgrammedSplits { get; internal set; }
-    public ICollection<SplitMonitorEvent> GapOuts { get; internal set; }
-    public ICollection<SplitMonitorEvent> MaxOuts { get; internal set; }
-    public ICollection<SplitMonitorEvent> ForceOffs { get; internal set; }
-    public ICollection<SplitMonitorEvent> Unknowns { get; internal set; }
-    public ICollection<SplitMonitorEvent> Peds { get; internal set; }
+    public ICollection<DataPointForDouble> ProgrammedSplits { get; internal set; }
+    public ICollection<DataPointForDouble> GapOuts { get; internal set; }
+    public ICollection<DataPointForDouble> MaxOuts { get; internal set; }
+    public ICollection<DataPointForDouble> ForceOffs { get; internal set; }
+    public ICollection<DataPointForDouble> Unknowns { get; internal set; }
+    public ICollection<DataPointForDouble> Peds { get; internal set; }
 }

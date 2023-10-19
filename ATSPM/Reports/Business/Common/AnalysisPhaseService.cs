@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.Extensions;
+using Reports.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,9 @@ namespace ATSPM.Application.Reports.Business.Common
     public class AnalysisPhaseData
     {
         public int PhaseNumber { get; set; }
+        public string PhaseDescription { get; set; }
         public string SignalId { get; set; }
+        public string SignalIdentifier { get; set; }
         public double PercentMaxOuts { get; set; }
         public double PercentForceOffs { get; set; }
         public int TotalPhaseTerminations { get; set; }
@@ -26,8 +29,11 @@ namespace ATSPM.Application.Reports.Business.Common
 
     public class AnalysisPhaseService
     {
-        public AnalysisPhaseService()
+        private readonly PhaseService phaseService;
+
+        public AnalysisPhaseService(PhaseService phaseService)
         {
+            this.phaseService = phaseService;
         }
 
         public AnalysisPhaseData GetAnalysisPhaseData(
@@ -40,6 +46,7 @@ namespace ATSPM.Application.Reports.Business.Common
             )
         {
             var analysisPhaseData = new AnalysisPhaseData();
+            analysisPhaseData.PhaseDescription = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phasenumber).Approach.Description;
             analysisPhaseData.PhaseNumber = phasenumber;
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
@@ -50,7 +57,7 @@ namespace ATSPM.Application.Reports.Business.Common
             {
                 analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, analysisPhaseData.PedestrianEvents);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents);
             if (!terminationEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
@@ -84,11 +91,11 @@ namespace ATSPM.Application.Reports.Business.Common
         {
             var analysisPhaseData = new AnalysisPhaseData();
             analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.SignalId = signal.SignalIdentifier;
+            analysisPhaseData.SignalIdentifier = signal.SignalIdentifier;
             analysisPhaseData.IsOverlap = false;
             var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
             var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalId, phaseEvents, pedEvents);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
             var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
             analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
             analysisPhaseData.Signal = signal;

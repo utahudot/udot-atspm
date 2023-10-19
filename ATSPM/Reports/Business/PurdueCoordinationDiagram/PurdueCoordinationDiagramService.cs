@@ -20,22 +20,22 @@ namespace Reports.Business.PurdueCoordinationDiagram
             Approach approach,
             SignalPhase signalPhase)
         {
-            List<VolumePerHour> volume = new List<VolumePerHour>();
+            List<DataPointForDouble> volume = new List<DataPointForDouble>();
             if (options.ShowVolumes)
             {
-                volume = signalPhase.Volume.Items.ConvertAll(v => new VolumePerHour(v.StartTime, v.HourlyVolume));
+                volume = signalPhase.Volume.Items.ConvertAll(v => new DataPointForDouble(v.StartTime, v.HourlyVolume));
             }
             var plans = signalPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
                 p.PlanNumber.ToString(),
                 p.Start,
-                p.EndTime,
+                p.End,
                 p.PercentGreenTime,
                 p.PercentArrivalOnGreen,
                 p.PlatoonRatio)).ToList();
-            var redSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.RedLineY));
-            var yellowSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.YellowLineY));
-            var greenSeries = signalPhase.Cycles.Select(c => new DataPointSeconds(c.EndTime, c.GreenLineY));
-            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointSeconds(d.TimeStamp, d.YPointSeconds)));
+            var redSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.RedLineY));
+            var yellowSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.YellowLineY));
+            var greenSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.GreenLineY));
+            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointForDouble(d.TimeStamp, d.YPointSeconds)));
 
             return new PurdueCoordinationDiagramResult(
                 options.SignalIdentifier,

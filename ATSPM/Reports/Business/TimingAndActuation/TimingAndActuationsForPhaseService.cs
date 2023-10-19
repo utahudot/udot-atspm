@@ -1,8 +1,7 @@
-using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Microsoft.OpenApi.Extensions;
 using Reports.Business.Common;
+using Reports.Business.TimingAndActuation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,13 +17,13 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             bool usePermissivePhase
             )
         {
-            var stopBarEvents = new Dictionary<string, List<DataPointEventCode>>();
-            var pedestrianEvents = new Dictionary<string, List<DataPointEventCode>>();
-            var laneByLanes = new Dictionary<string, List<DataPointEventCode>>();
-            var advancePresenceEvents = new Dictionary<string, List<DataPointEventCode>>();
-            var advanceCountEvents = new Dictionary<string, List<DataPointEventCode>>();
-            var phaseCustomEvents = new Dictionary<string, List<DataPointEventCode>>();
-            var pedestrianIntervals = new List<DataPointEventCode>();
+            var stopBarEvents = new List<DetectorEventDto>();
+            var pedestrianEvents = new List<DetectorEventDto>();
+            var laneByLanes = new List<DetectorEventDto>();
+            var advancePresenceEvents = new List<DetectorEventDto>();
+            var advanceCountEvents = new List<DetectorEventDto>();
+            var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
+            var pedestrianIntervals = new List<CycleEventsDto>();
 
 
             if (options.ShowStopBarPresence)
@@ -33,7 +32,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             }
             if (options.ShowPedestrianActuation && !usePermissivePhase)
             {
-                pedestrianEvents = GetPedestrianEvents(phaseDetail.Approach, controllerEventLogs);
+                pedestrianEvents = GetPedestrianEventsNew(phaseDetail.Approach, options, controllerEventLogs);
             }
             if (options.ShowPedestrianIntervals && !usePermissivePhase)
             {
@@ -90,7 +89,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                     : "Phase = " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
         }
 
-        public Dictionary<string, List<ControllerEventLog>> GetCycleEvents(
+        public List<CycleEventsDto> GetCycleEvents(
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs)
         {
@@ -98,10 +97,10 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
             List<int> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
-            var events = new Dictionary<string, List<ControllerEventLog>>();
+            var events = new List<CycleEventsDto>();
             if (controllerEventLogs.Any())
             {
-                events.Add(keyLabel, controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode)).ToList());
+                events = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode)).Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
             }
             return events;
         }
@@ -118,13 +117,13 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
         }
 
 
-        public Dictionary<string, List<DataPointEventCode>> GetPhaseCustomEvents(
+        public Dictionary<string, List<DataPointForInt>> GetPhaseCustomEvents(
             string signalIdentifier,
             int phaseNumber,
             TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs)
         {
-            var phaseCustomEvents = new Dictionary<string, List<DataPointEventCode>>();
+            var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
             if (options.PhaseEventCodesList != null && options.PhaseEventCodesList.Any())
             {
                 foreach (var phaseEventCode in options.PhaseEventCodesList)
@@ -134,7 +133,7 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                     if (phaseEvents.Count > 0)
                     {
                         phaseCustomEvents.Add(
-                            "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList());
+                            "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
                     }
 
                     if (phaseCustomEvents.Count == 0 && options.ShowAllLanesInfo)
@@ -157,24 +156,21 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                         };
                         forceEventsForAllLanes.Add(tempEvent2);
                         phaseCustomEvents.Add(
-                            "Phase Events: " + phaseEventCode, forceEventsForAllLanes.Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList());
+                            "Phase Events: " + phaseEventCode, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
                     }
                 }
             }
             return phaseCustomEvents;
         }
 
-
-
-
-        public Dictionary<string, List<DataPointEventCode>> GetDetectionEvents(
+        public List<DetectorEventDto> GetDetectionEvents(
             Approach approach,
             TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs,
             DetectionTypes detectionType
             )
         {
-            var stopBarEvents = new Dictionary<string, List<DataPointEventCode>>();
+            var DetEvents = new List<DetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.DisplayOrder)
                 .ThenByDescending(l => l.LaneNumber).ToList();
@@ -184,73 +180,88 @@ namespace ATSPM.Application.Reports.Business.TimingAndActuation
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
                 {
                     var extendStartStopLine = options.ExtendStartStopSearch * 60.0;
-                    var stopEvents = controllerEventLogs.Where(c => detectorActivationCodes.Contains(c.EventCode) && c.EventParam == detector.DetChannel).ToList();
+                    var filteredEvents = controllerEventLogs.Where(c => detectorActivationCodes.Contains(c.EventCode) && c.EventParam == detector.DetChannel).ToList();
                     var laneNumber = "";
                     if (detector.LaneNumber != null)
                     {
                         laneNumber = detector.LaneNumber.Value.ToString();
                     }
+                    var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
+                    var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}";
 
-                    if (stopEvents.Count > 0)
+                    if (filteredEvents.Count > 0)
                     {
-                        var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
-                        stopBarEvents.Add($"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetChannel}",
-                                            stopEvents.Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList());
+                        var detectorEvents = new List<DetectorEventBase>();
+                        for (var i = 0; i < filteredEvents.Count; i += 2)
+                        {
+                            if (i + 1 == filteredEvents.Count)
+                            {
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i].Timestamp));
+                            }
+                            else
+                            {
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
+                            }
+                        }
+                        DetEvents.Add(new DetectorEventDto(lableName, detectorEvents));
                     }
 
-                    if (stopEvents.Count == 0 && options.ShowAllLanesInfo)
+                    else if (filteredEvents.Count == 0 && options.ShowAllLanesInfo)
                     {
-                        var forceEventsForAllLanes = new List<ControllerEventLog>();
-                        var event1 = new ControllerEventLog()
+                        var e = new DetectorEventBase(options.Start.AddSeconds(-10), options.Start.AddSeconds(-9));
+
+                        var list = new List<DetectorEventBase>
                         {
-                            SignalIdentifier = approach.Signal.SignalIdentifier,
-                            EventCode = 82,
-                            EventParam = detector.DetChannel,
-                            Timestamp = options.Start.AddSeconds(-10)
+                            e
                         };
-                        forceEventsForAllLanes.Add(event1);
-                        var event2 = new ControllerEventLog()
-                        {
-                            SignalIdentifier = approach.Signal.SignalIdentifier,
-                            EventParam = detector.DetChannel,
-                            EventCode = 81,
-                            Timestamp = options.Start.AddSeconds(-9)
-                        };
-                        forceEventsForAllLanes.Add(event2);
-                        stopBarEvents.Add(detectionType.GetDisplayName() + ", ch " + detector.DetChannel + " " +
-                                          detector.MovementType.Abbreviation + " " +
-                                          laneNumber, forceEventsForAllLanes.Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList());
+                        DetEvents.Add(new DetectorEventDto(lableName, list));
                     }
                 }
             }
-            return stopBarEvents;
+            return DetEvents;
         }
 
-
-        public Dictionary<string, List<DataPointEventCode>> GetPedestrianEvents(
+        public List<DetectorEventDto> GetPedestrianEventsNew(
             Approach approach,
+            TimingAndActuationsOptions options,
             List<ControllerEventLog> controllerEventLogs)
         {
-            var pedestrianEvents = new Dictionary<string, List<DataPointEventCode>>();
+            var pedestrianEvents = new List<DetectorEventDto>();
             if (string.IsNullOrEmpty(approach.PedestrianDetectors) && (approach.Signal.Pedsare1to1 && approach.IsProtectedPhaseOverlap)
                 || (!approach.Signal.Pedsare1to1 && approach.PedestrianPhaseNumber.HasValue))
                 return pedestrianEvents;
             var pedEventCodes = new List<int> { 89, 90 };
-            var pedDetectors = approach.GetPedDetectorsFromApproach();
-            foreach (var pedDetector in pedDetectors)
+            foreach (var pedDetector in approach.Detectors)
             {
-                pedestrianEvents.Add(pedDetector.ToString(), controllerEventLogs.Where(c => pedEventCodes.Contains(c.EventCode) && c.EventParam == pedDetector).ToList().Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList());
+                var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector.DetChannel}";
+                var pedEvents = controllerEventLogs.Where(c => pedEventCodes.Contains(c.EventCode) && c.EventParam == pedDetector.DetChannel).ToList();
+                if (pedEvents.Count > 0)
+                {
+                    var detectorEvents = new List<DetectorEventBase>();
+                    for (var i = 0; i < pedEvents.Count; i += 2)
+                    {
+                        if (i + 1 == pedEvents.Count)
+                        {
+                            detectorEvents.Add(new DetectorEventBase(pedEvents[i].Timestamp, pedEvents[i].Timestamp));
+                        }
+                        else
+                        {
+                            detectorEvents.Add(new DetectorEventBase(pedEvents[i].Timestamp, pedEvents[i + 1].Timestamp));
+                        }
+                    }
+                    pedestrianEvents.Add(new DetectorEventDto(lableName, detectorEvents));
+                }
             }
             return pedestrianEvents;
         }
 
-        public List<DataPointEventCode> GetPedestrianIntervals(
+        public List<CycleEventsDto> GetPedestrianIntervals(
             Approach approach,
             List<ControllerEventLog> controllerEventLogs)
         {
             List<int> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
             var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
-            return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode) && c.EventParam == pedPhase).Select(s => new DataPointEventCode(s.Timestamp, s.EventCode)).ToList();
+            return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode) && c.EventParam == pedPhase).Select(s => new CycleEventsDto(s.Timestamp, s.EventCode)).ToList();
         }
 
         public List<int> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)

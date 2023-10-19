@@ -28,16 +28,16 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
                 var cycles = cycleService.CreatePreemptCycle(tempEvents);
                 preemptDetails.Add(new PreemptDetail(
                     preemptDetailOptions.SignalIdentifier,
-                    preemptDetailOptions.StartDate,
-                    preemptDetailOptions.EndDate,
+                    preemptDetailOptions.Start,
+                    preemptDetailOptions.End,
                     preemptNumber,
                     cycles));
             }
 
             return new PreemptDetailResult(
                 preemptDetailOptions.SignalIdentifier,
-                preemptDetailOptions.StartDate,
-                preemptDetailOptions.EndDate,
+                preemptDetailOptions.Start,
+                preemptDetailOptions.End,
                 preemptDetails
                 );
         }

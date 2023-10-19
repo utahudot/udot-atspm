@@ -20,8 +20,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
             SignalPhase signalPhase)
         {
             var dt = signalPhase.StartDate;
-            var approachDelayDataPoints = new List<DataPointSeconds>();
-            var approachDelayPerVehicleDataPoints = new List<ApproachDelayPerVehicleDataPoint>();
+            var approachDelayDataPoints = new List<DataPointForDouble>();
+            var approachDelayPerVehicleDataPoints = new List<DataPointForDouble>();
             while (dt < signalPhase.EndDate)
             {
                 var endDt = dt.AddMinutes(options.BinSize);
@@ -36,8 +36,8 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                     bindDelaypervehicle = binDelay / detectorEvents.Count;
 
                 bindDelayperhour = binDelay * (60 / options.BinSize) / 60 / 60;
-                approachDelayPerVehicleDataPoints.Add(new ApproachDelayPerVehicleDataPoint(dt, bindDelaypervehicle));
-                approachDelayDataPoints.Add(new DataPointSeconds(dt, bindDelayperhour));
+                approachDelayPerVehicleDataPoints.Add(new DataPointForDouble(dt, bindDelaypervehicle));
+                approachDelayDataPoints.Add(new DataPointForDouble(dt, bindDelayperhour));
                 dt = dt.AddMinutes(options.BinSize);
             }
             var plans = GetPlans(signalPhase.Plans);
@@ -87,7 +87,7 @@ namespace ATSPM.Application.Reports.Business.AppoachDelay
                         avgDelay,
                         totalDelay,
                         plan.Start,
-                        plan.EndTime,
+                        plan.End,
                         plan.PlanNumber.ToString(),
                         planDescription)
                     );

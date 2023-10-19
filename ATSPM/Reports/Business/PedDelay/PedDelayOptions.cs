@@ -1,15 +1,11 @@
-﻿using System;
+﻿using Reports.Business.Common;
 using System.Runtime.Serialization;
 
 namespace ATSPM.Application.Reports.Business.PedDelay
 {
     [DataContract]
-    public class PedDelayOptions
+    public class PedDelayOptions : OptionsBase
     {
-
-        public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
         public int TimeBuffer { get; set; }
         public bool ShowPedBeginWalk { get; set; }
         public bool ShowCycleLength { get; set; }

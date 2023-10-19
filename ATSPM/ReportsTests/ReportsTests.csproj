@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\YellowRedActivationsController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Moq" Version="4.18.2" />
@@ -29,6 +33,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFiles\ControllerEventLogs %2889%29.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\ControllerEventLogs-7115-Phase2-CycleEvents-20230417-800-901.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -50,7 +57,13 @@
     <None Update="TestFiles\LTGap_EventLogs.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\PCDevents.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\PedDelayEventcodes.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TestFiles\YRA_CombinedEvents.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

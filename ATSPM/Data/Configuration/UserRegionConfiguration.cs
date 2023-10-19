@@ -1,0 +1,25 @@
+﻿using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace ATSPM.Data.Configuration
+{
+    public class UserRegionConfiguration : IEntityTypeConfiguration<UserRegion>
+    {
+        public void Configure(EntityTypeBuilder<UserRegion> builder)
+        {
+            builder
+            .HasKey(ur => new { ur.UserId, ur.RegionId });
+
+            //builder
+            //    .HasOne(ur => ur.User)
+            //    .WithMany(u => u.UserRegions)
+            //    .HasForeignKey(ur => ur.UserId);
+
+            builder
+                .HasOne(ur => ur.Region)
+                .WithMany(r => r.UserRegions)
+                .HasForeignKey(ur => ur.RegionId);
+        }
+    }
+}

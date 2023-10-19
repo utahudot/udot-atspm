@@ -2,6 +2,7 @@
 using ATSPM.Application.Reports.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -182,30 +183,30 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return opposingDirection;
         }
 
-        private List<DFactors> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
+        private List<DataPointForDouble> GetDFactorSeries(VolumeCollection approachVolume, VolumeCollection combinedVolume)
         {
-            List<DFactors> result = new List<DFactors>();
+            List<DataPointForDouble> result = new List<DataPointForDouble>();
             for (int i = 0; i < approachVolume.Items.Count; i++)
             {
                 if (combinedVolume.Items[i].DetectorCount == 0)
                 {
-                    result.Add(new DFactors(approachVolume.Items[i].StartTime, 0));
+                    result.Add(new DataPointForDouble(approachVolume.Items[i].StartTime, 0));
                 }
                 else
                 {
-                    result.Add(new DFactors(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].DetectorCount) / Convert.ToDouble(combinedVolume.Items[i].DetectorCount)));
+                    result.Add(new DataPointForDouble(approachVolume.Items[i].StartTime, Convert.ToDouble(approachVolume.Items[i].DetectorCount) / Convert.ToDouble(combinedVolume.Items[i].DetectorCount)));
                 }
             }
             return result;
         }
 
-        private List<DirectionVolumes> GetDirectionSeries(VolumeCollection approachVolume)
+        private List<DataPointForInt> GetDirectionSeries(VolumeCollection approachVolume)
         {
             if (approachVolume != null && approachVolume.Items.Any())
             {
-                return approachVolume.Items.ConvertAll(x => new DirectionVolumes(x.StartTime, x.HourlyVolume));
+                return approachVolume.Items.ConvertAll(x => new DataPointForInt(x.StartTime, x.HourlyVolume));
             }
-            return new List<DirectionVolumes>();
+            return new List<DataPointForInt>();
         }
 
 
@@ -220,14 +221,14 @@ namespace ATSPM.Application.Reports.Business.ApproachVolume
             return PeakHourFactor;
         }
 
-        private SortedDictionary<DateTime, int> CombineDirectionHourlyVolumes(List<DirectionVolumes> direction1Volumes, List<DirectionVolumes> direction2Volumes)
+        private SortedDictionary<DateTime, int> CombineDirectionHourlyVolumes(List<DataPointForInt> direction1Volumes, List<DataPointForInt> direction2Volumes)
         {
             var sortedDictionary = new SortedDictionary<DateTime, int>();
-            foreach (DirectionVolumes current in direction1Volumes)
+            foreach (DataPointForInt current in direction1Volumes)
             {
-                var index = direction2Volumes.FindIndex(d => d.StartTime == current.StartTime);
+                var index = direction2Volumes.FindIndex(d => d.Timestamp == current.Timestamp);
                 if (index >= 0)
-                    sortedDictionary.Add(current.StartTime, direction2Volumes[index].Volume + current.Volume);
+                    sortedDictionary.Add(current.Timestamp, direction2Volumes[index].Value + current.Value);
             }
             return sortedDictionary;
         }

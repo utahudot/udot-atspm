@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.ApproachSpeed
 {
-    public class ApproachSpeedResult:ApproachResult
+    public class ApproachSpeedResult : ApproachResult
     {
         public ApproachSpeedResult(
             string signalId,
@@ -17,9 +17,9 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
             int distanceFromStopBar,
             double postedSpeed,
             ICollection<SpeedPlan> plans,
-            ICollection<AverageSpeeds> averageSpeeds,
-            ICollection<EightyFifthSpeeds> eightyFifthSpeeds,
-            ICollection<FifteenthSpeeds> fifteenthSpeeds):base(approachId, signalId, start, end)
+            ICollection<DataPointForInt> averageSpeeds,
+            ICollection<DataPointForInt> eightyFifthSpeeds,
+            ICollection<DataPointForInt> fifteenthSpeeds) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -37,8 +37,8 @@ namespace ATSPM.Application.Reports.Business.ApproachSpeed
         public int DistanceFromStopBar { get; set; }
         public double PostedSpeed { get; set; }
         public ICollection<SpeedPlan> Plans { get; set; }
-        public ICollection<AverageSpeeds> AverageSpeeds { get; set; }
-        public ICollection<EightyFifthSpeeds> EightyFifthSpeeds { get; set; }
-        public ICollection<FifteenthSpeeds> FifteenthSpeeds { get; set; }
+        public ICollection<DataPointForInt> AverageSpeeds { get; set; }
+        public ICollection<DataPointForInt> EightyFifthSpeeds { get; set; }
+        public ICollection<DataPointForInt> FifteenthSpeeds { get; set; }
     }
 }

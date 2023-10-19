@@ -3,6 +3,7 @@ using ATSPM.Application.Reports.Business.PreemptService;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +18,17 @@ namespace ATSPM.Application.Reports.Controllers
     {
         private readonly PreemptServiceService preemptServiceService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly ISignalRepository signalRepository;
 
         public PreemptServiceController(
             PreemptServiceService preemptServiceService,
-            IControllerEventLogRepository controllerEventLogRepository
+            IControllerEventLogRepository controllerEventLogRepository,
+            ISignalRepository signalRepository
             )
         {
             this.preemptServiceService = preemptServiceService;
             this.controllerEventLogRepository = controllerEventLogRepository;
+            this.signalRepository = signalRepository;
         }
 
         // GET: api/<ApproachVolumeController>
@@ -37,9 +41,19 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public PreemptServiceResult GetChartData([FromBody] PreemptServiceMetricOptions options)
+        public IActionResult GetChartData([FromBody] PreemptServiceMetricOptions options)
         {
+            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(options.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                 options.Start.AddHours(-12),
                 options.End.AddHours(12)).ToList();
@@ -49,7 +63,8 @@ namespace ATSPM.Application.Reports.Controllers
                 options,
                 planEvents.ToList(),
                 preemptEvents.ToList());
-            return viewModel;
+            viewModel.SignalDescription = signal.SignalDescription();
+            return Ok(viewModel);
         }
 
     }

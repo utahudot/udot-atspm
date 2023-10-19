@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.PhaseTermination
 {
-    public class PurduePhaseTerminationOptions
+    public class PurduePhaseTerminationOptions : OptionsBase
     {
         public int SelectedConsecutiveCount { get; set; }
-        public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
     }
 }

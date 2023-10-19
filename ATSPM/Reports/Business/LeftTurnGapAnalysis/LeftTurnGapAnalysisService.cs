@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Reports.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                 (x.EventCode == EVENT_GREEN || x.EventCode == EVENT_RED)));
 
             var detectorsToUse = new List<Data.Models.Detector>();
-            var detectionTypeStr = "Detector Type: Lane-By-Lane Count";
+            var detectionTypeStr = "Lane-By-Lane Count";
 
             //Use only lane-by-lane count detectors if they exists, otherwise check for stop bar
             detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.LLC);
@@ -35,7 +36,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             if (!detectorsToUse.Any())
             {
                 detectorsToUse = approach.GetAllDetectorsOfDetectionType(DetectionTypes.SBP);
-                detectionTypeStr = "Detector Type: Stop Bar Presence";
+                detectionTypeStr = "Stop Bar Presence";
 
                 //If no detectors of either type for this approach, skip it
                 if (!detectorsToUse.Any())
@@ -53,7 +54,10 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 
             if (phaseEvents.Any())
             {
-                return GetData(phaseEvents, options, detectionTypeStr, approach);
+                var result = GetData(phaseEvents, options, detectionTypeStr, approach);
+                result.ApproachDescription = approach.Description;
+                result.SignalDescription = approach.Signal.SignalDescription();
+                return result;
             }
             return null;
         }
@@ -87,7 +91,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             string detectionTypeStr,
             Approach approach)
         {
-            var percentTurnableSeries = new List<PercentTurnableSeries>();
+            var percentTurnableSeries = new List<DataPointForDouble>();
             var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
             var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.Start && x.Timestamp < options.End)
@@ -135,16 +139,16 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
                 out sumGreenTime);
 
             var highestTotal = 0;
-            var gaps1 = new List<GapCount>();
-            var gaps2 = new List<GapCount>();
-            var gaps3 = new List<GapCount>();
-            var gaps4 = new List<GapCount>();
-            var gaps5 = new List<GapCount>();
-            var gaps6 = new List<GapCount>();
-            var gaps7 = new List<GapCount>();
-            var gaps8 = new List<GapCount>();
-            var gaps9 = new List<GapCount>();
-            var gaps10 = new List<GapCount>();
+            var gaps1 = new List<DataPointForInt>();
+            var gaps2 = new List<DataPointForInt>();
+            var gaps3 = new List<DataPointForInt>();
+            var gaps4 = new List<DataPointForInt>();
+            var gaps5 = new List<DataPointForInt>();
+            var gaps6 = new List<DataPointForInt>();
+            var gaps7 = new List<DataPointForInt>();
+            var gaps8 = new List<DataPointForInt>();
+            var gaps9 = new List<DataPointForInt>();
+            var gaps10 = new List<DataPointForInt>();
 
             for (var lowerTimeLimit = options.Start; lowerTimeLimit < options.End; lowerTimeLimit = lowerTimeLimit.AddMinutes(options.BinSize))
             {
@@ -153,50 +157,50 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
 
 
                 if (!items.Any()) continue;
-                gaps1.Add(new GapCount(upperTimeLimit, items.Sum(x => x.GapCounter1)));
-                gaps2.Add(new GapCount(upperTimeLimit, items.Sum(x => x.GapCounter2)));
-                gaps3.Add(new GapCount(upperTimeLimit, items.Sum(x => x.GapCounter3)));
-                gaps4.Add(new GapCount(upperTimeLimit, items.Sum(x => x.GapCounter4)));
+                gaps1.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter1)));
+                gaps2.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter2)));
+                gaps3.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter3)));
+                gaps4.Add(new DataPointForInt(upperTimeLimit, items.Sum(x => x.GapCounter4)));
                 var localTotal = items.Sum(x => x.GapCounter1) + items.Sum(x => x.GapCounter2)
                                                                + items.Sum(x => x.GapCounter3) +
                                                                items.Sum(x => x.GapCounter4);
                 if (options.Gap5Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter5);
-                    gaps5.Add(new GapCount(upperTimeLimit, sum));
+                    gaps5.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap6Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter6);
-                    gaps6.Add(new GapCount(upperTimeLimit, sum));
+                    gaps6.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap7Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter7);
-                    gaps7.Add(new GapCount(upperTimeLimit, sum));
+                    gaps7.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap8Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter8);
-                    gaps8.Add(new GapCount(upperTimeLimit, sum));
+                    gaps8.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap9Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter9);
-                    gaps9.Add(new GapCount(upperTimeLimit, sum));
+                    gaps9.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
                 if (options.Gap10Min.HasValue)
                 {
                     int sum = items.Sum(x => x.GapCounter10);
-                    gaps10.Add(new GapCount(upperTimeLimit, sum));
+                    gaps10.Add(new DataPointForInt(upperTimeLimit, sum));
                     localTotal += sum;
                 }
-                percentTurnableSeries.Add(new PercentTurnableSeries(upperTimeLimit, items.Average(x => x.PercentPhaseTurnable) * 100));
+                percentTurnableSeries.Add(new DataPointForDouble(upperTimeLimit, items.Average(x => x.PercentPhaseTurnable) * 100));
 
                 if (localTotal > highestTotal)
                     highestTotal = localTotal;

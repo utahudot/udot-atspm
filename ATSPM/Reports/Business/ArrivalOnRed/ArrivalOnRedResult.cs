@@ -7,7 +7,7 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
     /// <summary>
     /// Arrival On Red chart
     /// </summary>
-    public class ArrivalOnRedResult:ApproachResult
+    public class ArrivalOnRedResult : ApproachResult
     {
         public ArrivalOnRedResult(
             string signalId,
@@ -20,9 +20,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
             double totalArrivalOnRed,
             double percentArrivalOnRed,
             ICollection<ArrivalOnRedPlan> plans,
-            ICollection<PercentArrivalsOnRed> percentArrivalsOnRed,
-            ICollection<TotalVehicles> totalVehicles,
-            ICollection<ArrivalsOnRed> arrivalsOnRed):base(approachId, signalId,  start, end)
+            ICollection<DataPointForDouble> percentArrivalsOnRed,
+            ICollection<DataPointForDouble> totalVehicles,
+            ICollection<DataPointForDouble> arrivalsOnRed) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -40,9 +40,9 @@ namespace ATSPM.Application.Reports.Business.ArrivalOnRed
         public double TotalArrivalOnRed { get; set; }
         public double PercentArrivalOnRed { get; set; }
         public ICollection<ArrivalOnRedPlan> Plans { get; set; }
-        public ICollection<PercentArrivalsOnRed> PercentArrivalsOnRed { get; set; }
-        public ICollection<TotalVehicles> TotalVehicles { get; set; }
-        public ICollection<ArrivalsOnRed> ArrivalsOnRed { get; set; }
+        public ICollection<DataPointForDouble> PercentArrivalsOnRed { get; set; }
+        public ICollection<DataPointForDouble> TotalVehicles { get; set; }
+        public ICollection<DataPointForDouble> ArrivalsOnRed { get; set; }
 
     }
 }

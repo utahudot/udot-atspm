@@ -14,12 +14,12 @@ namespace ATSPM.Application.Reports.Business.PreemptService
             DateTime start,
             DateTime end,
             ICollection<PreemptPlan> plans,
-            ICollection<PreemptServiceEvent> preemptServiceEvents) : base(signalId, start, end)
+            ICollection<DataPointForInt> preemptServiceEvents) : base(signalId, start, end)
         {
             Plans = plans;
             PreemptServiceEvents = preemptServiceEvents;
         }
         public ICollection<PreemptPlan> Plans { get; }
-        public ICollection<PreemptServiceEvent> PreemptServiceEvents { get; }
+        public ICollection<DataPointForInt> PreemptServiceEvents { get; }
     }
 }

@@ -12,5 +12,6 @@ namespace ATSPM.Data.Models
         public string Name { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<UserArea> UserAreas { get; set; } = new HashSet<UserArea>();
     }
 }

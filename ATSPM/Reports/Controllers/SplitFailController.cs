@@ -48,10 +48,19 @@ namespace ATSPM.Application.Reports.Controllers
 
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<SplitFailsResult>> GetChartData([FromBody] SplitFailOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] SplitFailOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
+
             var planEvents = controllerEventLogs.GetPlanEvents(
                options.Start.AddHours(-12),
                options.End.AddHours(12)).ToList();
@@ -63,7 +72,13 @@ namespace ATSPM.Application.Reports.Controllers
             }
 
             var results = await Task.WhenAll(tasks);
-            return results.Where(result => result != null).SelectMany(r => r);
+            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
         private async Task<IEnumerable<SplitFailsResult>> GetChartDataForApproach(
@@ -135,22 +150,22 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End,
                 splitFailData.TotalFails,
                 splitFailData.Plans,
-                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new FailLine(c.StartTime)).ToList(),
+                splitFailData.Cycles.Where(c => c.IsSplitFail).Select(c => new DataPointBase(c.StartTime)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
-                    .Select(b => new GapOutGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.GapOut)
-                    .Select(b => new GapOutRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.RedOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
-                    .Select(b => new ForceOffGreenOccupancy(b.StartTime, b.GreenOccupancyPercent)).ToList(),
+                    .Select(b => new DataPointForDouble(b.StartTime, b.GreenOccupancyPercent)).ToList(),
                 splitFailData.Cycles
                     .Where(c => c.TerminationEvent == CycleSplitFail.TerminationType.ForceOff)
-                    .Select(b => new ForceOffRedOccupancy(b.StartTime, b.RedOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new AverageGor(b.StartTime, b.AverageGreenOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new AverageRor(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
-                splitFailData.Bins.Select(b => new PercentFail(b.StartTime, b.PercentSplitfails)).ToList()
+                    .Select(b => new DataPointForDouble(b.StartTime, b.RedOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageGreenOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.AverageRedOccupancyPercent)).ToList(),
+                splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();

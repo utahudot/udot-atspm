@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Reports.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.WaitTime
 {
-    public class WaitTimeOptions
+    public class WaitTimeOptions : OptionsBase
     {
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-        public string SignalIdentifier { get; set; }
         public int BinSize { get; set; }
 
 

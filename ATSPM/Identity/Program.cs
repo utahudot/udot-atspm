@@ -1,6 +1,5 @@
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Migrations.Identity;
-using Identity.Business.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

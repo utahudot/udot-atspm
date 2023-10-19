@@ -2335,6 +2335,54 @@ namespace ATSPM.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "AreaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserAreas");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("JurisdictionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "JurisdictionId");
+
+                    b.HasIndex("JurisdictionId");
+
+                    b.ToTable("UserJurisdictions");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(900)");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RegionId");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("UserRegions");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.VersionAction", b =>
                 {
                     b.Property<int>("Id")
@@ -2379,6 +2427,47 @@ namespace ATSPM.Infrastructure.Migrations
                             Id = 10,
                             Description = "Initial"
                         });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.WatchDogLogEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ComponentType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("IssueType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Phase")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SignalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SignalIdentifier")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WatchDogLogEvents");
                 });
 
             modelBuilder.Entity("ActionActionLog", b =>
@@ -2623,6 +2712,39 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("VersionAction");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", "Area")
+                        .WithMany("UserAreas")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
+                        .WithMany("UserJurisdictions")
+                        .HasForeignKey("JurisdictionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Region", "Region")
+                        .WithMany("UserRegions")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Region");
+                });
+
             modelBuilder.Entity("ActionActionLog", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.ActionLog", null)
@@ -2728,6 +2850,11 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Detectors");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
+                {
+                    b.Navigation("UserAreas");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
                 {
                     b.Navigation("Signals");
@@ -2753,6 +2880,8 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserJurisdictions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.LaneType", b =>
@@ -2768,6 +2897,8 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserRegions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Route", b =>

@@ -2,6 +2,7 @@
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using AutoFixture;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,9 +43,13 @@ namespace ATSPM.Application.Reports.Controllers
         }
 
         [HttpPost("getChartData")]
-        public async Task<IEnumerable<LeftTurnGapAnalysisResult>> GetChartData([FromBody] LeftTurnGapAnalysisOptions options)
+        public async Task<IActionResult> GetChartData([FromBody] LeftTurnGapAnalysisOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
+            if (signal == null)
+            {
+                return BadRequest("Signal not found");
+            }
             var eventCodes = new List<int> { 1, 10, 81 };
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(
                 signal.SignalIdentifier,
@@ -52,6 +57,10 @@ namespace ATSPM.Application.Reports.Controllers
                 options.End)
                 .ToList();
 
+            if (controllerEventLogs.IsNullOrEmpty())
+            {
+                return Ok("No Controller Event Logs found for signal");
+            }
 
             var tasks = new List<Task<LeftTurnGapAnalysisResult>>();
             var leftTurnGapData = new List<LeftTurnGapAnalysisResult>();
@@ -81,7 +90,13 @@ namespace ATSPM.Application.Reports.Controllers
             }
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            var finalResultcheck = results.Where(result => result != null).ToList();
+
+            if (finalResultcheck.IsNullOrEmpty())
+            {
+                return Ok("No chart data found");
+            }
+            return Ok(finalResultcheck);
         }
 
 

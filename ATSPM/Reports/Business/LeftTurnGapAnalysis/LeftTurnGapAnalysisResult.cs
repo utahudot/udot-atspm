@@ -7,7 +7,7 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
     /// <summary>
     /// Left Turn Gap Analysis chart
     /// </summary>
-    public class LeftTurnGapAnalysisResult:ApproachResult
+    public class LeftTurnGapAnalysisResult : ApproachResult
     {
         public LeftTurnGapAnalysisResult(
             string signalId,
@@ -18,32 +18,32 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
             DateTime end,
             string detectionTypeDescription,
             double gap1,
-            ICollection<GapCount> gap1Count,
+            ICollection<DataPointForInt> gap1Count,
             double gap2,
-            ICollection<GapCount> gap2Count,
+            ICollection<DataPointForInt> gap2Count,
             double gap3,
-            ICollection<GapCount> gap3Count,
+            ICollection<DataPointForInt> gap3Count,
             double? gap4,
-            ICollection<GapCount> gap4Count,
+            ICollection<DataPointForInt> gap4Count,
             double? gap5,
-            ICollection<GapCount> gap5Count,
+            ICollection<DataPointForInt> gap5Count,
             double? gap6,
-            ICollection<GapCount> gap6Count,
+            ICollection<DataPointForInt> gap6Count,
             double? gap7,
-            ICollection<GapCount> gap7Count,
+            ICollection<DataPointForInt> gap7Count,
             double? gap8,
-            ICollection<GapCount> gap8Count,
+            ICollection<DataPointForInt> gap8Count,
             double? gap9,
-            ICollection<GapCount> gap9Count,
+            ICollection<DataPointForInt> gap9Count,
             double? gap10,
-            ICollection<GapCount> gap10Count,
-            ICollection<PercentTurnableSeries> percentTurnableSeries,
+            ICollection<DataPointForInt> gap10Count,
+            ICollection<DataPointForDouble> percentTurnableSeries,
             double? sumDuration1,
             double? sumDuration2,
             double? sumDuration3,
             double sumGreenTime,
             int highestTotal,
-            string detectionTypeStr):base(approachId, signalId,  start, end)
+            string detectionTypeStr) : base(approachId, signalId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;
@@ -80,34 +80,34 @@ namespace ATSPM.Application.Reports.Business.LeftTurnGapAnalysis
         public string PhaseDescription { get; internal set; }
         public string DetectionTypeDescription { get; internal set; }
         public double Gap1 { get; internal set; }
-        public ICollection<GapCount> Gap1Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap1Count { get; internal set; }
         public double Gap2 { get; internal set; }
-        public ICollection<GapCount> Gap2Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap2Count { get; internal set; }
         public double Gap3 { get; internal set; }
-        public ICollection<GapCount> Gap3Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap3Count { get; internal set; }
         public double? Gap4 { get; internal set; }
-        public ICollection<GapCount> Gap4Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap4Count { get; internal set; }
         public double? Gap5 { get; internal set; }
-        public ICollection<GapCount> Gap5Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap5Count { get; internal set; }
         public double? Gap6 { get; internal set; }
-        public ICollection<GapCount> Gap6Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap6Count { get; internal set; }
         public double? Gap7 { get; internal set; }
-        public ICollection<GapCount> Gap7Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap7Count { get; internal set; }
         public double? Gap8 { get; internal set; }
-        public ICollection<GapCount> Gap8Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap8Count { get; internal set; }
         public double? Gap9 { get; internal set; }
-        public ICollection<GapCount> Gap9Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap9Count { get; internal set; }
         public double? Gap10 { get; internal set; }
-        public ICollection<GapCount> Gap10Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap10Count { get; internal set; }
         public double? Gap11 { get; internal set; }
-        public ICollection<GapCount> Gap11Count { get; internal set; }
+        public ICollection<DataPointForInt> Gap11Count { get; internal set; }
         public double? SumDuration1 { get; private set; }
         public double? SumDuration2 { get; private set; }
         public double? SumDuration3 { get; private set; }
         public double SumGreenTime { get; private set; }
         public int HighestTotal { get; set; }
         public string DetectionTypeStr { get; set; }
-        public ICollection<PercentTurnableSeries> PercentTurnableSeries { get; internal set; }
+        public ICollection<DataPointForDouble> PercentTurnableSeries { get; internal set; }
 
 
     }
