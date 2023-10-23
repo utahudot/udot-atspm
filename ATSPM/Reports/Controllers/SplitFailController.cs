@@ -46,7 +46,6 @@ namespace ATSPM.Application.Reports.Controllers
             return viewModel;
         }
 
-
         [HttpPost("getChartData")]
         public async Task<IActionResult> GetChartData([FromBody] SplitFailOptions options)
         {
