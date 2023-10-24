@@ -12,7 +12,8 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Detector>("Detector")
                 .EntityType
-                .Page(default, default);
+                .Page(default, default)
+                .Expand(1, SelectExpandType.Automatic, new string[] { "approach", "detectionHardware", "laneType", "movementType" });
 
             switch (apiVersion.MajorVersion)
             {
