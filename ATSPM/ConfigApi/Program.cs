@@ -20,6 +20,7 @@ using Microsoft.OData;
 using System.Reflection.Metadata;
 using Microsoft.OData.Edm;
 using ATSPM.ConfigApi.Controllers;
+using Microsoft.AspNetCore.OData.Batch;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +93,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IApproachRepository, ApproachEFRepository>();
     s.AddScoped<IAreaRepository, AreaEFRepository>();
     s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
+    s.AddScoped<IDetectionHardwareRepository, DetectionHardwareEFRepository>();
     s.AddScoped<IDetectorRepository, DetectorEFRepository>();
     s.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
     s.AddScoped<IFaqRepository, FaqEFRepository>();
@@ -127,8 +129,11 @@ app.UseSwaggerUI(o =>
         }
     });
 
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseVersionedODataBatching();
+app.UseRouting();
 app.MapControllers();
 app.Run();
 

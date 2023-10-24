@@ -1,19 +1,20 @@
-﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
 namespace ATSPM.ConfigApi.Controllers
 {
+    /// <summary>
+    /// MetricType Controller
+    /// </summary>
     public class MetricTypeController : AtspmConfigControllerBase<MetricType, int>
     {
         private readonly IMetricTypeRepository _repository;
 
+        /// <inheritdoc/>
         public MetricTypeController(IMetricTypeRepository repository) : base(repository)
         {
             _repository = repository;
@@ -21,24 +22,47 @@ namespace ATSPM.ConfigApi.Controllers
 
         #region NavigationProperties
 
-        //[EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
-        //[ProducesResponseType(typeof(IEnumerable<ActionLog>), Status200OK)]
-        //[ProducesResponseType(Status404NotFound)]
-        //public IActionResult GetActionLogs([FromRoute] int key)
-        //{
-        //    var test = HttpContext.Request.GetEncodedUrl();
+        /// <summary>
+        /// <see cref="ActionLog"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<ActionLog>> GetActionLogActionLogs([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<ActionLog>>(key);
+        }
 
-        //    var collection = new Uri(test).Segments.Last();
+        /// <summary>
+        /// <see cref="DetectionType"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<DetectionType>> GetDetectionTypeDetectionTypes([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<DetectionType>>(key);
+        }
 
-        //    var result = _repository.GetList().Include(collection).FirstOrDefault(f => f.Id == key);
-
-        //    if (result == null)
-        //    {
-        //        return NotFound(key);
-        //    }
-
-        //    return Ok(result.Signals);
-        //}
+        /// <summary>
+        /// <see cref="MetricComment"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<MetricComment>> GetMetricComments([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<MetricComment>>(key);
+        }
 
         #endregion
     }
