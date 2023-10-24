@@ -185,6 +185,12 @@ namespace ATSPM.ConfigApi.Controllers
 
         #endregion
 
+        /// <summary>
+        /// Method to help with creating oData navigation property actions
+        /// </summary>
+        /// <typeparam name="TType">Type that should be returned</typeparam>
+        /// <param name="key">Key of object to navigate from</param>
+        /// <returns>Object of type <typeparamref name="TType"/></returns>
         protected virtual ActionResult<TType> GetNavigationProperty<TType>(TKey key)
         {
             var collection = new Uri(HttpContext.Request.GetEncodedUrl()).Segments.Last().Capitalize();
@@ -196,8 +202,6 @@ namespace ATSPM.ConfigApi.Controllers
 
             if (!obj.HasProperty(collection))
                 return BadRequest(collection);
-
-            //var result = obj.GetType().GetProperty(collection).GetValue(obj, null);
 
             var result = obj.GetPropertyValue<TType>(collection);
 
