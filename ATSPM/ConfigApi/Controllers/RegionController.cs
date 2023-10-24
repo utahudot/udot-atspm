@@ -1,10 +1,8 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -26,6 +24,11 @@ namespace ATSPM.ConfigApi.Controllers
 
         #region NavigationProperties
 
+        /// <summary>
+        /// <see cref="Signal"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
