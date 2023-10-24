@@ -10,6 +10,7 @@ namespace ATSPM.Application.Repositories
 {
     public interface IDetectionHardwareRepository : IAsyncRepository<DetectionHardware>
     {
+        [Obsolete("Use GetList instead")]
         IReadOnlyList<DetectionHardware> GetAllDetectionHardwaresNoBasic();
 
         [Obsolete("Use GetList instead")]

@@ -7,7 +7,6 @@ using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
@@ -30,43 +29,31 @@ namespace ATSPM.ConfigApi.Controllers
         #region NavigationProperties
 
         /// <summary>
-        /// Gets all <see cref="Approach"/> navigation properties
+        /// <see cref="Approach"/> navigation property action
         /// </summary>
-        /// <param name="key">Signal key</param>
+        /// <param name="key"></param>
         /// <returns></returns>
         [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<Approach>), Status200OK)]
+        [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public IActionResult GetApproaches([FromRoute] int key)
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<Approach>> GetApproaches([FromRoute] int key)
         {
-            var result = _repository.GetList().Include(i => i.Approaches).FirstOrDefault(f => f.Id == key);
-
-            if (result == null)
-            {
-                return NotFound(key);
-            }
-
-            return Ok(result.Approaches);
+            return GetNavigationProperty<IEnumerable<Approach>>(key);
         }
 
         /// <summary>
-        /// Gets all <see cref="Area"/> navigation properties
+        /// <see cref="Area"/> navigation property action
         /// </summary>
-        /// <param name="key">Signal key</param>
+        /// <param name="key"></param>
         /// <returns></returns>
         [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<Area>), Status200OK)]
+        [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public IActionResult GetAreas([FromRoute] int key)
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<Area>> GetAreas([FromRoute] int key)
         {
-            var result = _repository.GetList().Include(i => i.Areas).FirstOrDefault(f => f.Id == key);
-
-            if (result == null)
-            {
-                return NotFound(key);
-            }
-
-            return Ok(result.Areas);
+            return GetNavigationProperty<IEnumerable<Area>>(key);
         }
 
         #endregion
