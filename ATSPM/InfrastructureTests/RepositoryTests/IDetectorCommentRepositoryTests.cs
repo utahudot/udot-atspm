@@ -57,7 +57,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _list)
             {
-                _output.WriteLine($"Seed Data: {s.Id} - {s.CommentText} - {s.TimeStamp}");
+                _output.WriteLine($"Seed Data: {s.Id} - {s.Comment} - {s.TimeStamp}");
             }
         }
 
@@ -72,7 +72,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             var result = _repo.GetMostRecentDetectorCommentByDetectorID(DetectorId);
 
-            _output.WriteLine($"result: {result.Id} - {result.CommentText} - {result.TimeStamp}");
+            _output.WriteLine($"result: {result.Id} - {result.Comment} - {result.TimeStamp}");
 
             var expected = _list.Where(r => r.DetectorId == DetectorId).Select(s => s.TimeStamp).Max();
             var actual = result.TimeStamp;
