@@ -10,7 +10,7 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MeasuresDefault>("MeasuresDefault")
+            var model = builder.EntitySet<MeasureOption>("MeasuresDefault")
                 .EntityType
                 .Page(default, default);
 
@@ -19,7 +19,7 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.Measure).MaxLength = 128;
-                        model.Property(p => p.OptionName).MaxLength = 128;
+                        model.Property(p => p.Option).MaxLength = 128;
                         model.Property(p => p.Value).MaxLength = 512;
 
                         break;

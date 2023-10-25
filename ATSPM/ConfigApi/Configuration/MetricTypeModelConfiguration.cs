@@ -10,7 +10,7 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MetricType>("MetricType")
+            var model = builder.EntitySet<MeasureType>("MetricType")
                 .EntityType
                 .Page(default, default);
 
@@ -19,7 +19,7 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.Abbreviation).MaxLength = 8;
-                        model.Property(p => p.ChartName).MaxLength = 50;
+                        model.Property(p => p.Name).MaxLength = 50;
 
                         break;
                     }
