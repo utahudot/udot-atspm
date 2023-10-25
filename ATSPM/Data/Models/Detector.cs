@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Detector
     /// </summary>
-    public class Detector : 
+    public partial class Detector : 
         AtspmConfigModelBase<int>, 
         IRelatedApproach, 
         IRelatedDetectorComments,
