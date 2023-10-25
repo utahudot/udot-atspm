@@ -1,7 +1,9 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -14,11 +16,6 @@ namespace ATSPM.Infrastructure.Repositories
         public MeasureCommentEFRepository(ConfigContext db, ILogger<MeasureCommentEFRepository> log) : base(db, log) { }
 
         #region Overrides
-
-        //public override IQueryable<MeasureComment> GetList()
-        //{
-        //    return base.GetList().Include(i => i.MeasureTypes);
-        //}
 
         #endregion
 

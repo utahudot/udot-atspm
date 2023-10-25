@@ -4,13 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// Area configuration
+    /// </summary>
     public class AreaConfiguration : IEntityTypeConfiguration<Area>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Area> builder)
         {
-            builder.HasComment("Signal Area");
-
-            builder.Property(e => e.Id).ValueGeneratedNever();
+            builder.HasComment("Areas");
 
             builder.Property(e => e.Name).HasMaxLength(50);
 

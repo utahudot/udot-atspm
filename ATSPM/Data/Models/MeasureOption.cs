@@ -19,7 +19,14 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Value { get; set; }
 
+        #region IRelatedMeasureType
+
         /// <inheritdoc/>
         public MeasureType MeasureType { get; set; }
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {Option} - {Value}";
     }
 }

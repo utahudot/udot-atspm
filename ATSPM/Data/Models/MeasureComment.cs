@@ -4,6 +4,7 @@ using ATSPM.Data.Interfaces;
 using ATSPM.Data.Relationships;
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace ATSPM.Data.Models
 {
@@ -12,9 +13,6 @@ namespace ATSPM.Data.Models
     /// </summary>
     public partial class MeasureComment : AtspmConfigModelBase<int>, IRelatedMeasureTypes, ISignalLayer
     {
-        /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
-        
         /// <summary>
         /// Creation timestamp of comment
         /// </summary>
@@ -25,7 +23,21 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Comment { get; set; }
 
+        #region ISignalLayer
+
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        #endregion
+
+        #region IRelatedMeasureTypes
+
         /// <inheritdoc/>
         public virtual ICollection<MeasureType> MeasureTypes { get; set; } = new HashSet<MeasureType>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {SignalIdentifier} - {TimeStamp} - {Comment}";
     }
 }

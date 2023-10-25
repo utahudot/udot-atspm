@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class VersionAction : AtspmConfigModelBase<SignaVersionActions>, IRelatedSignals
+    public partial class VersionAction : AtspmConfigModelBase<SignalVersionActions>, IRelatedSignals
     {
         //public SignaVersionActions Id { get; set; }
         public string Description { get; set; }

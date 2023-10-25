@@ -1,9 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Specifications;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Data;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +9,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Signal controller entity framework repository
+    /// </summary>
     public class SignalEFRepository : ATSPMRepositoryEFBase<Signal>, ISignalRepository
     {
+        /// <inheritdoc/>
         public SignalEFRepository(ConfigContext db, ILogger<SignalEFRepository> log) : base(db, log) { }
 
         private IQueryable<Signal> BaseQuery()
@@ -51,6 +52,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region ISignalRepository
 
+        /// <inheritdoc/>
         public IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
@@ -61,6 +63,7 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc/>
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals()
         {
             var result = BaseQuery()
@@ -72,6 +75,7 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc/>
         public IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId)
         {
             var result = BaseQuery()
@@ -84,6 +88,7 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc/>
         public Signal GetLatestVersionOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
@@ -96,6 +101,7 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc/>
         public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
@@ -107,6 +113,7 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
+        /// <inheritdoc/>
         public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate)
         {
             var result = BaseQuery()
@@ -121,15 +128,6 @@ namespace ATSPM.Infrastructure.Repositories
 
             return result;
         }
-
-        //public IReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId)
-        //{
-        //    var result = BaseQuery()
-        //        .Where(w => w.Approaches.Any(s => s.Detectors.Any(d => d.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
-        //        .ToList();
-
-        //    return result;
-        //}
 
         #endregion
     }
