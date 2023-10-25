@@ -16,33 +16,27 @@ using ATSPM.Data.Enums;
 
 namespace ATSPM.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Detector entity framework repository
+    /// </summary>
     public class DetectorEFRepository : ATSPMRepositoryEFBase<Detector>, IDetectorRepository
     {
+        /// <inheritdoc/>
         public DetectorEFRepository(ConfigContext db, ILogger<DetectorEFRepository> log) : base(db, log) { }
-
-        private IQueryable<Detector> BaseQuery()
-        {
-            return base.GetList()
-                .Include(i => i.Approach)
-                .Include(i => i.DetectionHardware)
-                .Include(i => i.LaneType)
-                .Include(i => i.MovementType)
-                .Include(i => i.DetectorComments)
-                .Include(i => i.DetectionTypes);
-        }
 
         #region Overrides
 
-        //public override IQueryable<Detector> GetList()
-        //{
-        //    return base.GetList()
-        //        .Include(i => i.Approach)
-        //        .Include(i => i.DetectionHardware)
-        //        .Include(i => i.LaneType)
-        //        .Include(i => i.MovementType)
-        //        .Include(i => i.DetectorComments)
-        //        .Include(i => i.DetectionTypes);
-        //}
+        /// <inheritdoc/>
+        public override IQueryable<Detector> GetList()
+        {
+            return base.GetList()
+                .Include(i => i.Approach);
+                //.Include(i => i.DetectionHardware)
+                //.Include(i => i.LaneType)
+                //.Include(i => i.MovementType)
+                //.Include(i => i.DetectorComments)
+                //.Include(i => i.DetectionTypes);
+        }
 
         #endregion
 
@@ -54,7 +48,7 @@ namespace ATSPM.Infrastructure.Repositories
             return _db.Set<Approach>()
                 .Where(a => a.DirectionTypeId == directionType)
                 .SelectMany(a => a.Detectors)
-                .Where(d => movementTypeIds.Contains(d.MovementTypeId))
+                .Where(d => movementTypeIds.Contains(d.MovementType))
                 .ToList();
         }
 
@@ -64,7 +58,7 @@ namespace ATSPM.Infrastructure.Repositories
             return _db.Set<Approach>()
                 .Where(a => a.SignalId == id)
                 .SelectMany(a => a.Detectors)
-                .Max(m => m.DetChannel);
+                .Max(m => m.DetectorChannel);
         }
 
         #endregion
