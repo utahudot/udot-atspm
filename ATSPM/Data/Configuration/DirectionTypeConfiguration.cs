@@ -7,8 +7,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// Direction type configuration
+    /// </summary>
     public class DirectionTypeConfiguration : IEntityTypeConfiguration<DirectionType>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DirectionType> builder)
         {
             builder.HasComment("Direction Types");
