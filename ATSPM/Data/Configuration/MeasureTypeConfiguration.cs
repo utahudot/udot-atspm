@@ -1,319 +1,320 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection;
-using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Data.Configuration
 {
-    public class MetricTypeConfiguration : IEntityTypeConfiguration<MetricType>
+    /// <summary>
+    /// Measure type configuration
+    /// </summary>
+    public class MeasureTypeConfiguration : IEntityTypeConfiguration<MeasureType>
     {
-        public void Configure(EntityTypeBuilder<MetricType> builder)
+        /// <inheritdoc/>
+        public void Configure(EntityTypeBuilder<MeasureType> builder)
         {
-            builder.HasComment("Metric Types");
+            builder.HasComment("Measure Types");
 
             builder.Property(e => e.Id)
                 .ValueGeneratedNever();
 
             builder.Property(e => e.Abbreviation).HasMaxLength(8);
 
-            builder.Property(e => e.ChartName).HasMaxLength(50);
+            builder.Property(e => e.Name).HasMaxLength(50);
 
             builder.HasData(
-                new MetricType
+                new MeasureType
                 {
                     Id = 1,
-                    ChartName = "Purdue Phase Termination",
+                    Name = "Purdue Phase Termination",
                     Abbreviation = "PPT",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 1
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 2,
-                    ChartName = "Split Monitor",
+                    Name = "Split Monitor",
                     Abbreviation = "SM",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 5
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 3,
-                    ChartName = "Pedestrian Delay",
+                    Name = "Pedestrian Delay",
                     Abbreviation = "PedD",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 10
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 4,
-                    ChartName = "Preemption Details",
+                    Name = "Preemption Details",
                     Abbreviation = "PD",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 15
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 17,
-                    ChartName = "Timing And Actuation",
+                    Name = "Timing And Actuation",
                     Abbreviation = "TAA",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 20
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 12,
-                    ChartName = "Purdue Split Failure",
+                    Name = "Purdue Split Failure",
                     Abbreviation = "SF",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 30
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 11,
-                    ChartName = "Yellow and Red Actuations",
+                    Name = "Yellow and Red Actuations",
                     Abbreviation = "YRA",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 35
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 5,
-                    ChartName = "Turning Movement Counts",
+                    Name = "Turning Movement Counts",
                     Abbreviation = "TMC",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 40
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 7,
-                    ChartName = "Approach Volume",
+                    Name = "Approach Volume",
                     Abbreviation = "AV",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 45
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 8,
-                    ChartName = "Approach Delay",
+                    Name = "Approach Delay",
                     Abbreviation = "AD",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 50
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 9,
-                    ChartName = "Arrivals On Red",
+                    Name = "Arrivals On Red",
                     Abbreviation = "AoR",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 55
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 6,
-                    ChartName = "Purdue Coordination Diagram",
+                    Name = "Purdue Coordination Diagram",
                     Abbreviation = "PCD",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 60
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 10,
-                    ChartName = "Approach Speed",
+                    Name = "Approach Speed",
                     Abbreviation = "Speed",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 65
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 13,
-                    ChartName = "Purdue Link Pivot",
+                    Name = "Purdue Link Pivot",
                     Abbreviation = "LP",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 70
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 15,
-                    ChartName = "Preempt Service",
+                    Name = "Preempt Service",
                     Abbreviation = "PS",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 75
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 14,
-                    ChartName = "Preempt Service Request",
+                    Name = "Preempt Service Request",
                     Abbreviation = "PSR",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 80
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 16,
-                    ChartName = "Detector Activation Count",
+                    Name = "Detector Activation Count",
                     Abbreviation = "DVA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 85
                 },
 
-                new MetricType
+                new MeasureType
                 {
                     Id = 18,
-                    ChartName = "Approach Pcd", //"Purdue Coodination",
+                    Name = "Approach Pcd", //"Purdue Coodination",
                     Abbreviation = "APCD", // "PCDA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 102
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 19,
-                    ChartName = "Approach Cycle", // "Cycle"
+                    Name = "Approach Cycle", // "Cycle"
                     Abbreviation = "CA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 103
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 20,
-                    ChartName = "Approach Split Fail", //"Purdue Split Failure",
+                    Name = "Approach Split Fail", //"Purdue Split Failure",
                     Abbreviation = "SFA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 104
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 22,
-                    ChartName = "Signal Preemption", //"Preemption",
+                    Name = "Signal Preemption", //"Preemption",
                     Abbreviation = "PreemptA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 105
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 24,
-                    ChartName = "Signal Priority", // "Transit Signal Priority",
+                    Name = "Signal Priority", // "Transit Signal Priority",
                     Abbreviation = "TSPA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 106
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 25,
-                    ChartName = "Approach Speed",
+                    Name = "Approach Speed",
                     Abbreviation = "ASA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 107
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 26,
-                    ChartName = "Approach Yellow Red Activations", //"Yellow Red Activations",
+                    Name = "Approach Yellow Red Activations", //"Yellow Red Activations",
                     Abbreviation = "YRAA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 108
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 27,
-                    ChartName = "Signal Event Count",
+                    Name = "Signal Event Count",
                     Abbreviation = "SEC",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 109
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 28,
-                    ChartName = "Approach Event Count",
+                    Name = "Approach Event Count",
                     Abbreviation = "AEC",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 110
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 29,
-                    ChartName = "Phase Termination",
+                    Name = "Phase Termination",
                     Abbreviation = "AEC",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 111
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 30,
-                    ChartName = "Phase Pedestrian Delay",
+                    Name = "Phase Pedestrian Delay",
                     Abbreviation = "APD",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 112
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 31,
-                    ChartName = "Left Turn Gap Analysis",
+                    Name = "Left Turn Gap Analysis",
                     Abbreviation = "LTGA",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 112
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 32,
-                    ChartName = "Wait Time",
+                    Name = "Wait Time",
                     Abbreviation = "WT",
                     ShowOnWebsite = true,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 113
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 33,
-                    ChartName = "Gap Vs Demand",
+                    Name = "Gap Vs Demand",
                     Abbreviation = "GVD",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = false,
                     DisplayOrder = 115
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 34,
-                    ChartName = "Left Turn Gap",
+                    Name = "Left Turn Gap",
                     Abbreviation = "LTG",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 114
                 },
-                new MetricType
+                new MeasureType
                 {
                     Id = 35,
-                    ChartName = "Split Monitor",
+                    Name = "Split Monitor",
                     Abbreviation = "SM",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,

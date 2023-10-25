@@ -25,7 +25,7 @@ namespace ATSPM.Infrastructure.Repositories
             return base.GetList()
                 .Include(i => i.Agency)
                 .Include(i => i.Actions)
-                .Include(i => i.MetricTypes);
+                .Include(i => i.MeasureTypes);
         }
 
         #endregion

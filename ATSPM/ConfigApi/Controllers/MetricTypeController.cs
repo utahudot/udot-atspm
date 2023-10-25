@@ -10,12 +10,12 @@ namespace ATSPM.ConfigApi.Controllers
     /// <summary>
     /// MetricType Controller
     /// </summary>
-    public class MetricTypeController : AtspmConfigControllerBase<MetricType, int>
+    public class MetricTypeController : AtspmConfigControllerBase<MeasureType, int>
     {
-        private readonly IMetricTypeRepository _repository;
+        private readonly IMeasureTypeRepository _repository;
 
         /// <inheritdoc/>
-        public MetricTypeController(IMetricTypeRepository repository) : base(repository)
+        public MetricTypeController(IMeasureTypeRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -51,7 +51,7 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// <see cref="MetricComment"/> navigation property action
+        /// <see cref="MeasureComment"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -59,9 +59,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<MetricComment>> GetMetricComments([FromRoute] int key)
+        public ActionResult<IEnumerable<MeasureComment>> GetMetricComments([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<MetricComment>>(key);
+            return GetNavigationProperty<IEnumerable<MeasureComment>>(key);
         }
 
         #endregion
