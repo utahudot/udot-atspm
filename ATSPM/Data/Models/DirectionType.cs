@@ -2,19 +2,37 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DirectionType : AtspmConfigModelBase<DirectionTypes>, IRelatedRoutePhaseDirections, IRelatedApproaches
+    /// <summary>
+    /// Direction type
+    /// </summary>
+    public partial class DirectionType : AtspmConfigModelBase<DirectionTypes>, IRelatedApproaches
     {
-        //public DirectionTypes Id { get; set; }
+        /// <summary>
+        /// Direction type description
+        /// </summary>
         public string Description { get; set; }
+        
+        /// <summary>
+        /// Direction type abbreviation
+        /// </summary>
         public string Abbreviation { get; set; }
+        
+        /// <summary>
+        /// Direction type display order
+        /// </summary>
         public int DisplayOrder { get; set; }
 
+        #region IRelatedApproaches
+
+        /// <inheritdoc/>
         public virtual ICollection<Approach> Approaches { get; set; } = new HashSet<Approach>();
-        public virtual ICollection<RoutePhaseDirection> RoutePhaseDirections { get; set; } = new HashSet<RoutePhaseDirection>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {Abbreviation} - {Description}";
     }
 }

@@ -2,16 +2,16 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
+    /// <summary>
+    /// Detector
+    /// </summary>
     public class Detector : 
         AtspmConfigModelBase<int>, 
         IRelatedApproach, 
         IRelatedLaneType,
-        IRelatedMovementType,
         IRelatedDetectionHardware,
         IRelatedDetectorComments,
         IRelatedDetectionTypes
@@ -24,20 +24,32 @@ namespace ATSPM.Data.Models
         public DateTime DateAdded { get; set; }
         public DateTime? DateDisabled { get; set; }
         public int? LaneNumber { get; set; }
-        public MovementTypes MovementTypeId { get; set; }
+        public MovementTypes MovementType { get; set; }
         public LaneTypes LaneTypeId { get; set; }
         public int? DecisionPoint { get; set; }
         public int? MovementDelay { get; set; }
-        public int ApproachId { get; set; }
+        
         public DetectionHardwareTypes DetectionHardwareId { get; set; }
         public double LatencyCorrection { get; set; }
 
-        public virtual Approach Approach { get; set; }
+        
         public virtual DetectionHardware DetectionHardware { get; set; }
         public virtual LaneType LaneType { get; set; }
-        public virtual MovementType MovementType { get; set; }
 
         public virtual ICollection<DetectorComment> DetectorComments { get; set; } = new HashSet<DetectorComment>();
         public virtual ICollection<DetectionType> DetectionTypes { get; set; } = new HashSet<DetectionType>();
+
+        #region IRelatedApproach
+
+        /// <inheritdoc/>
+        public int ApproachId { get; set; }
+
+        /// <inheritdoc/>
+        public virtual Approach Approach { get; set; }
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {DectectorIdentifier} - {DetChannel}";
     }
 }
