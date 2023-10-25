@@ -24,7 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .GroupBy(g => g.EventParam)
                     .Select(s => Tuple.Create(new Detector()
                     {
-                        DetChannel = s.Key,
+                        DetectorChannel = s.Key,
                         DistanceFromStopBar = 340,
                         LatencyCorrection = 1.2,
                         Approach = new Approach()

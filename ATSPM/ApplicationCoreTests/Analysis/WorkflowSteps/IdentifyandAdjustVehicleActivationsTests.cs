@@ -60,7 +60,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var expected = testData.First().Item2.Where(w => w.EventParam == detChannel).Count();
-            var actual = result.Where(w => w.Detector.DetChannel == detChannel).Count();
+            var actual = result.Where(w => w.Detector.DetectorChannel == detChannel).Count();
 
             Assert.Equal(expected, actual);
         }
@@ -154,7 +154,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var d = new Detector()
             {
-                DetChannel = detChannel,
+                DetectorChannel = detChannel,
                 DistanceFromStopBar = 340,
                 LatencyCorrection = 1.2,
                 Approach = new Approach()
