@@ -15,12 +15,17 @@ using ATSPM.Data;
 
 namespace ATSPM.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Detector comment entity framework repository
+    /// </summary>
     public class DetectorCommentEFRepository : ATSPMRepositoryEFBase<DetectorComment>, IDetectorCommentRepository
     {
+        /// <inheritdoc/>
         public DetectorCommentEFRepository(ConfigContext db, ILogger<DetectorCommentEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
+        /// <inheritdoc/>
         public override IQueryable<DetectorComment> GetList()
         {
             return base.GetList()
