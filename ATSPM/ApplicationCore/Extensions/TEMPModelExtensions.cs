@@ -55,7 +55,7 @@ namespace ATSPM.Application.Extensions
         /// Checks to see if <see cref="Detector"/>.<see cref="DetectionType"/> metrics contains <paramref name="metricId"/>
         /// </summary>
         /// <param name="detector"><see cref="Detector"/> whos <see cref="DetectionType"/> collection to check</param>
-        /// <param name="metricId"><see cref="MetricType"/> id to match within <see cref="DetectionType"/> collection</param>
+        /// <param name="metricId"><see cref="MeasureType"/> id to match within <see cref="DetectionType"/> collection</param>
         /// <returns></returns>
         public static bool CheckReportAvialbility (this Detector detector, int metricId)
         {
@@ -117,7 +117,7 @@ namespace ATSPM.Application.Extensions
             return item.Approaches.Where(w => w.ProtectedPhaseNumber == phase || w.PermissivePhaseNumber == phase).SelectMany(s => s.Detectors).Where(d => d.CheckReportAvialbility(metricTypeId)).ToList();
         }
 
-        public static IReadOnlyList<MetricType> GetAvailableMetrics(this IRelatedApproaches item)
+        public static IReadOnlyList<MeasureType> GetAvailableMetrics(this IRelatedApproaches item)
         {
             return item.GetDetectors().SelectMany(s => s.DetectionTypes).Where(d => d.Id != DetectionTypes.B).SelectMany(m => m.MetricTypeMetrics).ToList();
         }
