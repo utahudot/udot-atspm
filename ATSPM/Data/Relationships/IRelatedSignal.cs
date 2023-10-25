@@ -131,20 +131,4 @@ namespace ATSPM.Data.Relationships
         ApplicationTypes ApplicationId { get; set; }
         Application Application { get; set; }
     }
-
-    public interface IRelatedActionLogs
-    {
-        ICollection<ActionLog> ActionLogs { get; set; }
-    }
-
-    public interface IRelatedAgency
-    {
-        AgencyTypes AgencyId { get; set; }
-        Agency Agency { get; set; }
-    }
-
-    public interface IRelatedActions
-    {
-        ICollection<Models.Action> Actions { get; set; }
-    }
 }
