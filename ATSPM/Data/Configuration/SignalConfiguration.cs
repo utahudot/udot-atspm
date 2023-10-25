@@ -4,11 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// Signal configuration
+    /// </summary>
     public class SignalConfiguration : IEntityTypeConfiguration<Signal>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Signal> builder)
         {
-            builder.HasComment("Signals");
+            builder.HasComment("Signal Controllers");
 
             builder.HasIndex(e => e.ControllerTypeId);
 
@@ -16,12 +20,10 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.RegionId);
 
-            builder.HasIndex(e => e.VersionActionId);
-
             builder.Property(e => e.Ipaddress)
                 .IsRequired()
                 .HasMaxLength(15)
-                .HasDefaultValueSql("('127.0.0.1')");
+                .HasDefaultValueSql("('10.0.0.1')");
 
             builder.Property(e => e.JurisdictionId).HasDefaultValueSql("((0))");
 
@@ -47,7 +49,7 @@ namespace ATSPM.Data.Configuration
                 .IsRequired()
                 .HasMaxLength(10);
 
-            builder.Property(e => e.VersionActionId).HasDefaultValueSql("((10))");
+            builder.Property(e => e.VersionAction).HasDefaultValueSql("((10))");
         }
     }
 }

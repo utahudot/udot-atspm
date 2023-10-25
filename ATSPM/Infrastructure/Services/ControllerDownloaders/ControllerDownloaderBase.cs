@@ -110,13 +110,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                         try
                         {
-                            logMessages.GettingDirectoryListMessage(parameter.SignalIdentifier, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory);
+                            logMessages.GettingDirectoryListMessage(parameter.SignalIdentifier, parameter.Ipaddress, parameter.ControllerType?.LogDirectory);
 
-                            remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.Ftpdirectory, cancelToken, FileFilters);
+                            remoteFiles = await _client.ListDirectoryAsync(parameter.ControllerType?.LogDirectory, cancelToken, FileFilters);
                         }
                         catch (ControllerListDirectoryException e)
                         {
-                            logMessages.DirectoryListingException(parameter.SignalIdentifier, parameter.Ipaddress, parameter.ControllerType?.Ftpdirectory, e);
+                            logMessages.DirectoryListingException(parameter.SignalIdentifier, parameter.Ipaddress, parameter.ControllerType?.LogDirectory, e);
                         }
                         catch (ControllerConnectionException e)
                         {
