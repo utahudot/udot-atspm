@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ActionLog : AtspmConfigModelBase<int>, IRelatedAgency, IRelatedActions, IRelatedMetricTypes, ISignalLayer
+    public partial class ActionLog : AtspmConfigModelBase<int>, IRelatedAgency, IRelatedActions, IRelatedMeasureTypes, ISignalLayer
     {
         //public int Id { get; set; }
         public DateTime Date { get; set; }
@@ -20,6 +20,6 @@ namespace ATSPM.Data.Models
         public virtual Agency Agency { get; set; }
 
         public virtual ICollection<Action> Actions { get; set; } = new HashSet<Action>();
-        public virtual ICollection<MetricType> MetricTypes { get; set; } = new HashSet<MetricType>();
+        public virtual ICollection<MeasureType> MeasureTypes { get; set; } = new HashSet<MeasureType>();
     }
 }

@@ -132,21 +132,6 @@ namespace ATSPM.Data.Relationships
         Application Application { get; set; }
     }
 
-    public interface IRelatedDetectionType
-    {
-        ICollection<DetectionType> DetectionTypeDetectionTypes { get; set; }
-    }
-
-    public interface IRelatedMetricTypes
-    {
-        ICollection<MetricType> MetricTypes { get; set; }
-    }
-
-    public interface IRelatedMetricComments
-    {
-        ICollection<MetricComment> MetricComments { get; set; }
-    }
-
     public interface IRelatedActionLogs
     {
         ICollection<ActionLog> ActionLogs { get; set; }
