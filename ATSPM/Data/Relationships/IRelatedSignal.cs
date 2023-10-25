@@ -46,12 +46,6 @@ namespace ATSPM.Data.Relationships
         Approach Approach { get; set; }
     }
 
-    public interface IRelatedDetector
-    {
-        int DetectorId { get; set; }
-        Detector Detector { get; set; }
-    }
-
     public interface IRelatedApplicationSettings
     {
         ICollection<ApplicationSetting> ApplicationSettings { get; set; }
