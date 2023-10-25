@@ -35,14 +35,12 @@ namespace ATSPM.Data
         public virtual DbSet<Faq> Faqs { get; set; }
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
         public virtual DbSet<LaneType> LaneTypes { get; set; }
-        public virtual DbSet<MeasureOption> MeasuresDefaults { get; set; }
+        public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
         public virtual DbSet<Menu> Menus { get; set; }
-        public virtual DbSet<MeasureComment> MetricComments { get; set; }
-        public virtual DbSet<MeasureType> MetricTypes { get; set; }
-        public virtual DbSet<MovementType> MovementTypes { get; set; }
+        public virtual DbSet<MeasureComment> MeasureComments { get; set; }
+        public virtual DbSet<MeasureType> MeasureType { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
-        public virtual DbSet<RoutePhaseDirection> RoutePhaseDirections { get; set; }
         public virtual DbSet<RouteSignal> RouteSignals { get; set; }
         public virtual DbSet<Signal> Signals { get; set; }
 
@@ -86,7 +84,6 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new MovementTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
-            modelBuilder.ApplyConfiguration(new RoutePhaseDirectionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
             modelBuilder.ApplyConfiguration(new SignalConfiguration());
 

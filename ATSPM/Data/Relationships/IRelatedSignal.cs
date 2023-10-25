@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Data.Relationships
 {
+    /// <summary>
+    /// Related signal
+    /// </summary>
     public interface IRelatedSignal
     {
+        /// <summary>
+        /// Related signal
+        /// </summary>
         int SignalId { get; set; }
+        
+        /// <summary>
+        /// Signal
+        /// </summary>
         Signal Signal { get; set; }
-    }
-
-    public interface IRelatedRoute
-    {
-        int RouteId { get; set; }
-        Route Route { get; set; }
     }
 
     public interface IRelatedRouteSignal
@@ -26,25 +30,19 @@ namespace ATSPM.Data.Relationships
         RouteSignal RouteSignal { get; set; }
     }
 
-    public interface IRelatedRouteSignals
-    {
-        ICollection<RouteSignal> RouteSignals { get; set; }
-    }
-
-    public interface IRelatedRoutePhaseDirections
-    {
-        ICollection<RoutePhaseDirection> RoutePhaseDirections { get; set; }
-    }
-
-    public interface IRelatedDirectionType
-    {
-        DirectionType DirectionType { get; set; }
-        DirectionTypes DirectionTypeId { get; set; }
-    }
-
+    /// <summary>
+    /// Related approach
+    /// </summary>
     public interface IRelatedApproach
     {
+        /// <summary>
+        /// Related approach
+        /// </summary>
         int ApproachId { get; set; }
+        
+        /// <summary>
+        /// Approach
+        /// </summary>
         Approach Approach { get; set; }
     }
 
@@ -54,21 +52,10 @@ namespace ATSPM.Data.Relationships
         Detector Detector { get; set; }
     }
 
-    public interface IRelatedDetectors
-    {
-        ICollection<Detector> Detectors { get; set; }
-    }
-
     public interface IRelatedLaneType
     {
         LaneTypes LaneTypeId { get; set; }
         LaneType LaneType { get; set; }
-    }
-
-    public interface IRelatedMovementType
-    {
-        MovementTypes MovementTypeId { get; set; }
-        MovementType MovementType { get; set; }
     }
 
     public interface IRelatedDetectionHardware

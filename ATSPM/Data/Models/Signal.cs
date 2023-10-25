@@ -121,6 +121,7 @@ namespace ATSPM.Data.Models
 
         #region IRelatedAreas
 
+        /// <inheritdoc/>
         public virtual ICollection<Area> Areas { get; set; } = new HashSet<Area>();
 
         #endregion
