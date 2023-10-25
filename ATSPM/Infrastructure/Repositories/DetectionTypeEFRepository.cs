@@ -1,34 +1,38 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Linq.Expressions;
-using ATSPM.Domain.Specifications;
 
 namespace ATSPM.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Detection type entity framework repository
+    /// </summary>
     public class DetectionTypeEFRepository : ATSPMRepositoryEFBase<DetectionType>, IDetectionTypeRepository
     {
+        /// <inheritdoc/>
         public DetectionTypeEFRepository(DbContext db, ILogger<DetectionTypeEFRepository> log) : base(db, log) { }
 
-        public IReadOnlyList<DetectionType> GetAllDetectionTypes()
+        #region Overrides
+
+        /// <inheritdoc/>
+        public override IQueryable<DetectionType> GetList()
         {
-            throw new NotImplementedException();
+            return base.GetList().OrderBy(o => o.DisplayOrder);
         }
+
+        #endregion
+
+        #region IDetectionTypeRepository
 
         public IReadOnlyList<DetectionType> GetAllDetectionTypesNoBasic()
         {
             throw new NotImplementedException();
         }
 
-        public DetectionType GetDetectionTypeByDetectionTypeID(int detectionTypeID)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

@@ -7,8 +7,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// Detection type configuration
+    /// </summary>
     public class DetectionTypeConfiguration : IEntityTypeConfiguration<DetectionType>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DetectionType> builder)
         {
             builder.HasComment("Detector Types");
