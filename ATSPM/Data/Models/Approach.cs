@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Approach
     /// </summary>
-    public class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
+    public partial class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
     {
         /// <summary>
         /// Approach description
