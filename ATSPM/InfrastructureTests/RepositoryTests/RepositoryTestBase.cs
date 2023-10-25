@@ -112,7 +112,7 @@ namespace InfrastructureTests.RepositoryTests
                 .Without(w => w.Id)
                 .Without(w => w.Agency)
                 .Without(w => w.Actions)
-                .Without(w => w.MetricTypes)
+                .Without(w => w.MeasureTypes)
             );
 
             this.Customize<Approach>(c => c

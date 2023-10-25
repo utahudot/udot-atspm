@@ -11,7 +11,7 @@ namespace ATSPM.Application.Repositories
     /// <summary>
     /// Metric Comment Repository
     /// </summary>
-    public interface IMetricCommentRepository : IAsyncRepository<MetricComment>
+    public interface IMeasureCommentRepository : IAsyncRepository<MeasureComment>
     {
         #region ExtensionMethods
 
