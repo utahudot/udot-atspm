@@ -63,6 +63,9 @@
     <None Update="TestFiles\PedDelayEventcodes.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\Split_Failure_NL.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\YRA_CombinedEvents.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

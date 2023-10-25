@@ -97,7 +97,28 @@ namespace ReportsTests.Controllers
             // Associate the Detector to the Approach
             mockDetector1.Setup(a => a.Approach).Returns(approach.Object);
 
-            approach.Setup(a => a.Detectors).Returns(new List<Detector> { mockDetector1.Object});
+            var detectors = new List<Detector> { mockDetector1.Object };
+            approach.Setup(a => a.Detectors).Returns(detectors);
+            
+
+            //set up detection type
+            // Create mock Detection type
+            var detectionTypeAC = new Mock<DetectionType>();
+            detectionTypeAC.Object.Id = DetectionTypes.SBP;
+            detectionTypeAC.Object.Abbreviation = "SBP";
+            // Associate detectors with detection types
+            mockDetector1.Setup(a => a.DetectionTypes).Returns(new List<DetectionType>() { detectionTypeAC.Object });
+            
+            //associate detection type with metric types
+            //detectionTypeAC.Setup(a => a.MetricTypeMetrics).Returns(new List<MetricType>() { });
+
+            // Create mock movement type
+            var movementType = new Mock<MovementType>();
+            movementType.Object.Id = MovementTypes.T;
+            movementType.Object.Abbreviation = "T";
+            // Associate movements with movement types
+            mockDetector1.Setup(a => a.MovementType).Returns(movementType.Object);
+
 
             // set up plan events. Getting plan events from csv
             // PlanService planService = new PlanService();
@@ -115,7 +136,7 @@ namespace ReportsTests.Controllers
             var options = new SplitFailOptions
             {
                 Start = new DateTime(2023, 8, 9, 15, 0, 0),
-                End = new DateTime(2023, 8, 9, 18, 0, 0),
+                End = new DateTime(2023, 8, 9, 15, 8, 0),
                 SignalIdentifier = "7115",
                 FirstSecondsOfRed = 5,
                 UsePermissivePhase = false,
@@ -123,7 +144,7 @@ namespace ReportsTests.Controllers
             };
 
             // instead of looping through phases, I just want phase 2
-            GetChartDataForApproach(options, phase, allEvents, planEvents, false);
+            var result = await GetChartDataForApproach(options, phase, allEvents, planEvents, detectors, false);
 
             // cycle events
 
@@ -136,7 +157,9 @@ namespace ReportsTests.Controllers
 
             // Detector events
 
-            Assert.Equal(1, 1);
+            Assert.NotEmpty(result);
+            //Assert.Equal(0.33, result.First().PercentFails);
+
         }
 
 
@@ -162,6 +185,7 @@ namespace ReportsTests.Controllers
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
+            List<Detector> detectors,
             bool usePermissivePhase)
         {
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
@@ -177,7 +201,7 @@ namespace ReportsTests.Controllers
                  options.End,
                  new List<int> { 4, 5, 6 },
                  phaseDetail.PhaseNumber);
-            var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
+            // var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
             var tasks = new List<Task<SplitFailsResult>>();
             foreach (var detectionType in detectors.SelectMany(d => d.DetectionTypes).Distinct())
             {
