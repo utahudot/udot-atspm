@@ -14,35 +14,6 @@ namespace ATSPM.Data.Relationships
         Signal Signal { get; set; }
     }
 
-    public interface IRelatedSignals
-    {
-        ICollection<Signal> Signals { get; set; }
-    }
-
-    public interface IRelatedControllerType
-    {
-        int ControllerTypeId { get; set; }
-        ControllerType ControllerType { get; set; }
-    }
-
-    public interface IRelatedJurisdiction
-    {
-        int JurisdictionId { get; set; }
-        Jurisdiction Jurisdiction { get; set; }
-    }
-
-    public interface IRelatedRegion
-    {
-        int RegionId { get; set; }
-        Region Region { get; set; }
-    }
-
-    public interface IRelatedVersionAction
-    {
-        SignaVersionActions VersionActionId { get; set; }
-        VersionAction VersionAction { get; set; }
-    }
-
     public interface IRelatedRoute
     {
         int RouteId { get; set; }
@@ -69,11 +40,6 @@ namespace ATSPM.Data.Relationships
     {
         DirectionType DirectionType { get; set; }
         DirectionTypes DirectionTypeId { get; set; }
-    }
-
-    public interface IRelatedApproaches
-    {
-        ICollection<Approach> Approaches { get; set; }
     }
 
     public interface IRelatedApproach

@@ -36,10 +36,21 @@ namespace ATSPM.Data.Models
         /// </summary>
         public int DisplayOrder { get; set; }
 
+        #region IRelatedDetectionType
+
         /// <inheritdoc/>
         public virtual ICollection<DetectionType> DetectionTypes { get; set; } = new HashSet<DetectionType>();
 
+        #endregion
+
+        #region IRelatedMeasureComments
+
         /// <inheritdoc/>
         public virtual ICollection<MeasureComment> MeasureComments { get; set; } = new HashSet<MeasureComment>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {DisplayOrder} - {Abbreviation} - {Name}";
     }
 }
