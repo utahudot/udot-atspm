@@ -34,7 +34,6 @@ namespace ATSPM.Data
         public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
         public virtual DbSet<Faq> Faqs { get; set; }
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
-        public virtual DbSet<LaneType> LaneTypes { get; set; }
         public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
         public virtual DbSet<Menu> Menus { get; set; }
         public virtual DbSet<MeasureComment> MeasureComments { get; set; }
@@ -76,12 +75,10 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
-            modelBuilder.ApplyConfiguration(new LaneTypeConfiguration());
             modelBuilder.ApplyConfiguration(new MenuConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new MovementTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());

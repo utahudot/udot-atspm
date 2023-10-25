@@ -11,33 +11,73 @@ namespace ATSPM.Data.Models
     public class Detector : 
         AtspmConfigModelBase<int>, 
         IRelatedApproach, 
-        IRelatedLaneType,
-        IRelatedDetectionHardware,
         IRelatedDetectorComments,
         IRelatedDetectionTypes
     {
-        //public int Id { get; set; }
+        /// <summary>
+        /// Detector identifier
+        /// </summary>
         public string DectectorIdentifier { get; set; }
-        public int DetChannel { get; set; }
+        
+        /// <summary>
+        /// Detector channel
+        /// </summary>
+        public int DetectorChannel { get; set; }
+        
+        /// <summary>
+        /// Distance from stop bar
+        /// </summary>
         public int? DistanceFromStopBar { get; set; }
+        
+        /// <summary>
+        /// Minimum speed filter
+        /// </summary>
         public int? MinSpeedFilter { get; set; }
+        
+        /// <summary>
+        /// Date added
+        /// </summary>
         public DateTime DateAdded { get; set; }
+        
+        /// <summary>
+        /// Date disabled
+        /// </summary>
         public DateTime? DateDisabled { get; set; }
+        
+        /// <summary>
+        /// Lane number
+        /// </summary>
         public int? LaneNumber { get; set; }
+        
+        /// <summary>
+        /// Movement type
+        /// </summary>
         public MovementTypes MovementType { get; set; }
-        public LaneTypes LaneTypeId { get; set; }
+        
+        /// <summary>
+        /// Lane type
+        /// </summary>
+        public LaneTypes LaneType { get; set; }
+
+        /// <summary>
+        /// Detection hardware
+        /// </summary>
+        public DetectionHardwareTypes DetectionHardware { get; set; }
+        
+        /// <summary>
+        /// Decision point
+        /// </summary>
         public int? DecisionPoint { get; set; }
+        
+        /// <summary>
+        /// Movement delay
+        /// </summary>
         public int? MovementDelay { get; set; }
         
-        public DetectionHardwareTypes DetectionHardwareId { get; set; }
+        /// <summary>
+        /// Latency correction
+        /// </summary>
         public double LatencyCorrection { get; set; }
-
-        
-        public virtual DetectionHardware DetectionHardware { get; set; }
-        public virtual LaneType LaneType { get; set; }
-
-        public virtual ICollection<DetectorComment> DetectorComments { get; set; } = new HashSet<DetectorComment>();
-        public virtual ICollection<DetectionType> DetectionTypes { get; set; } = new HashSet<DetectionType>();
 
         #region IRelatedApproach
 
@@ -49,7 +89,21 @@ namespace ATSPM.Data.Models
 
         #endregion
 
+        #region IRelatedDetectorComments
+
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {DectectorIdentifier} - {DetChannel}";
+        public virtual ICollection<DetectorComment> DetectorComments { get; set; } = new HashSet<DetectorComment>();
+
+        #endregion
+
+        #region IRelatedDetectionTypes
+
+        /// <inheritdoc/>
+        public virtual ICollection<DetectionType> DetectionTypes { get; set; } = new HashSet<DetectionType>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {DectectorIdentifier} - {DetectorChannel}";
     }
 }
