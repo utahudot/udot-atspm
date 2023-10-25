@@ -2,31 +2,89 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
+    /// <summary>
+    /// Approach
+    /// </summary>
+    public class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
     {
-        //public int Id { get; set; }
-        //public string SignalId { get; set; }
-        public int SignalId { get; set; }
-        public DirectionTypes DirectionTypeId { get; set; }
+        /// <summary>
+        /// Approach description
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Mph of approach
+        /// </summary>
         public int? Mph { get; set; }
+
+        //TODO: name these better
+
+        /// <summary>
+        /// ProtectedPhaseNumber
+        /// </summary>
         public int ProtectedPhaseNumber { get; set; }
+
+        /// <summary>
+        /// IsProtectedPhaseOverlap
+        /// </summary>
         public bool IsProtectedPhaseOverlap { get; set; }
+
+        /// <summary>
+        /// PermissivePhaseNumber
+        /// </summary>
         public int? PermissivePhaseNumber { get; set; }
-        //public int VersionId { get; set; }
+
+        /// <summary>
+        /// IsPermissivePhaseOverlap
+        /// </summary>
         public bool IsPermissivePhaseOverlap { get; set; }
+
+        /// <summary>
+        /// PedestrianPhaseNumber
+        /// </summary>
         public int? PedestrianPhaseNumber { get; set; }
+
+        /// <summary>
+        /// IsPedestrianPhaseOverlap
+        /// </summary>
         public bool IsPedestrianPhaseOverlap { get; set; }
+
+        /// <summary>
+        /// PedestrianDetectors
+        /// </summary>
         public string PedestrianDetectors { get; set; }
 
-        public virtual DirectionType DirectionType { get; set; }
+        #region IRelatedSignal
+
+        /// <inheritdoc/>
+        public int SignalId { get; set; }
+
+        /// <inheritdoc/>
         public virtual Signal Signal { get; set; }
 
+        #endregion
+
+        #region IRelatedDirectionType
+
+        /// <inheritdoc/>
+        public DirectionTypes DirectionTypeId { get; set; }
+
+        /// <inheritdoc/>
+        public virtual DirectionType DirectionType { get; set; }
+
+        #endregion
+
+        #region IRelatedDetectors
+
+        /// <inheritdoc/>
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {Description} - {DirectionTypeId}";
     }
 }
