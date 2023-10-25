@@ -3,6 +3,7 @@ using ATSPM.Data;
 using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories
 {
@@ -15,6 +16,12 @@ namespace ATSPM.Infrastructure.Repositories
         public MeasureTypeEFRepository(ConfigContext db, ILogger<MeasureTypeEFRepository> log) : base(db, log) { }
 
         #region Overrides
+
+        /// <inheritdoc/>
+        public override IQueryable<MeasureType> GetList()
+        {
+            return base.GetList().OrderBy(o => o.DisplayOrder);
+        }
 
         #endregion
 
