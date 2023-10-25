@@ -52,28 +52,6 @@ namespace ATSPM.Data.Relationships
         Detector Detector { get; set; }
     }
 
-    public interface IRelatedLaneType
-    {
-        LaneTypes LaneTypeId { get; set; }
-        LaneType LaneType { get; set; }
-    }
-
-    public interface IRelatedDetectionHardware
-    {
-        DetectionHardwareTypes DetectionHardwareId { get; set; }
-        DetectionHardware DetectionHardware { get; set; }
-    }
-
-    public interface IRelatedDetectorComments
-    {
-        ICollection<DetectorComment> DetectorComments { get; set; }
-    }
-
-    public interface IRelatedDetectionTypes
-    {
-        ICollection<DetectionType> DetectionTypes { get; set; }
-    }
-
     public interface IRelatedApplicationSettings
     {
         ICollection<ApplicationSetting> ApplicationSettings { get; set; }

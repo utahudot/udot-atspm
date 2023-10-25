@@ -37,7 +37,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _detector = new Detector()
             {
-                DetChannel = 1,
+                DetectorChannel = 1,
                 DistanceFromStopBar = 340,
                 LatencyCorrection = 1.2,
                 Approach = new Approach()
