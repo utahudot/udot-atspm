@@ -20,7 +20,7 @@ namespace ATSPM.Application.Analysis.Common
 
         public override string ToString()
         {
-            return $"{Detector.Approach.Signal.SignalIdentifier}-{Detector.DetChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
+            return $"{Detector.Approach.Signal.SignalIdentifier}-{Detector.DetectorChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
         }
     }
 }

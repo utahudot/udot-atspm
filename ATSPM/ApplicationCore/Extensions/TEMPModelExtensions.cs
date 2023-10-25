@@ -20,14 +20,14 @@ namespace ATSPM.Application.Extensions
 
         public static IRelatedDetectors SetDetChannelWhenMultipleDetectorsExist(this IRelatedDetectors item)
         {
-            var detChannel = item.Detectors.ToList()[0].DetChannel + 1;
+            var detChannel = item.Detectors.ToList()[0].DetectorChannel + 1;
 
             foreach(var detector in item.Detectors)
             {
-                detector.DetChannel = detChannel;
+                detector.DetectorChannel = detChannel;
                 if (item is IRelatedSignal s)
                 {
-                    detector.DectectorIdentifier = $"{s.Signal.SignalIdentifier} {detector.DetChannel}";
+                    detector.DectectorIdentifier = $"{s.Signal.SignalIdentifier} {detector.DetectorChannel}";
                 }
             }
 
@@ -94,7 +94,7 @@ namespace ATSPM.Application.Extensions
 
         public static Detector GetDetector(this IRelatedApproaches item, int channel)
         {
-            return item.GetDetectors().FirstOrDefault(f => f.DetChannel == channel);
+            return item.GetDetectors().FirstOrDefault(f => f.DetectorChannel == channel);
         }
 
         public static IReadOnlyList<Detector> GetDetectors(this IRelatedApproaches item)
