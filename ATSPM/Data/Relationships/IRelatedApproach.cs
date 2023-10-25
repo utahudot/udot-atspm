@@ -3,18 +3,18 @@
 namespace ATSPM.Data.Relationships
 {
     /// <summary>
-    /// Related signal
+    /// Related approach
     /// </summary>
-    public interface IRelatedSignal
+    public interface IRelatedApproach
     {
         /// <summary>
-        /// Related signal
+        /// Related approach
         /// </summary>
-        int SignalId { get; set; }
+        int ApproachId { get; set; }
         
         /// <summary>
-        /// Signal
+        /// Approach
         /// </summary>
-        Signal Signal { get; set; }
+        Approach Approach { get; set; }
     }
 }

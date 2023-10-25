@@ -7,14 +7,28 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class DetectionType : AtspmConfigModelBase<DetectionTypes>, IRelatedDetectors
+    
+    public partial class DetectionType : AtspmConfigModelBase<DetectionTypes>, IRelatedDetectors, IRelatedMeasureTypes
     {
-        //public DetectionTypes Id { get; set; }
         public string Description { get; set; }
         public string Abbreviation { get; set; }
         public int DisplayOrder { get; set; }
 
+        #region IRelatedDetectors
+
+        /// <inheritdoc/>
         public virtual ICollection<Detector> Detectors { get; set; } = new HashSet<Detector>();
-        public virtual ICollection<MeasureType> MetricTypeMetrics { get; set; } = new HashSet<MeasureType>();
+
+        #endregion
+
+        #region IRelatedMeasureTypes
+
+        /// <inheritdoc/>
+        public virtual ICollection<MeasureType> MeasureTypes { get; set; } = new HashSet<MeasureType>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {DisplayOrder} - {Abbreviation} - {Description}";
     }
 }
