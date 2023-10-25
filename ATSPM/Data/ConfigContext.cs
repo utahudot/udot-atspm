@@ -26,7 +26,6 @@ namespace ATSPM.Data
         public virtual DbSet<Approach> Approaches { get; set; }
         public virtual DbSet<Area> Areas { get; set; }
         public virtual DbSet<ControllerType> ControllerTypes { get; set; }
-        public virtual DbSet<DetectionHardware> DetectionHardwares { get; set; }
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
         public virtual DbSet<Detector> Detectors { get; set; }
         public virtual DbSet<DetectorComment> DetectorComments { get; set; }
@@ -67,7 +66,6 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
             modelBuilder.ApplyConfiguration(new ControllerTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new DetectionHardwareConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());
