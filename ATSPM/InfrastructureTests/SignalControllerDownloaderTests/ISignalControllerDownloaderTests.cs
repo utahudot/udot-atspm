@@ -246,7 +246,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
             Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-            signal.ControllerType = new ControllerType() { Id = d.ControllerType, Ftpdirectory = ftpDirectory };
+            signal.ControllerType = new ControllerType() { Id = d.ControllerType, LogDirectory = ftpDirectory };
             var files = new List<FileInfo>();
 
             await foreach (var file in d.Execute(signal))
@@ -299,7 +299,7 @@ namespace InfrastructureTests.SignalControllerDownloaderTests
             Mock.Get(mockClient).Setup(s => s.DisconnectAsync(default)).Returns(Task.CompletedTask).Verifiable();
             Mock.Get(mockClient).Setup(s => s.Dispose()).Verifiable();
 
-            signal.ControllerType = new ControllerType() { Id = d.ControllerType, Ftpdirectory = ftpDirectory };
+            signal.ControllerType = new ControllerType() { Id = d.ControllerType, LogDirectory = ftpDirectory };
 
             var progressList = new List<ControllerDownloadProgress>();
 

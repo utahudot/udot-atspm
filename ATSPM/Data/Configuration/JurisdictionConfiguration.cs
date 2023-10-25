@@ -4,13 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// Jurisdiction configuration
+    /// </summary>
     public class JurisdictionConfiguration : IEntityTypeConfiguration<Jurisdiction>
     {
+        /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Jurisdiction> builder)
         {
-            builder.HasComment("Signal Jurisdictions");
-
-            builder.Property(e => e.Id).ValueGeneratedNever();
+            builder.HasComment("Jurisdictions");
 
             builder.Property(e => e.CountyParish).HasMaxLength(50);
 

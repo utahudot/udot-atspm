@@ -7,45 +7,125 @@ using System.Net;
 
 namespace ATSPM.Data.Models
 {
+    /// <summary>
+    /// Traffic signal controller
+    /// </summary>
     public partial class Signal :
-        AtspmConfigModelBase<int>, 
+        AtspmConfigModelBase<int>,
+        ISignalLayer,
         IRelatedControllerType, 
         IRelatedJurisdiction, 
         IRelatedRegion, 
-        IRelatedVersionAction,
-        IRelatedApproaches,
-        ISignalLayer
-    //IRelatedMetricComments
+        IRelatedApproaches, 
+        IRelatedAreas
     {
-        //public int Id { get; set; }
-        public string SignalIdentifier { get; set; }
+        /// <summary>
+        /// Latitude of signal
+        /// </summary>
         public double Latitude { get; set; }
+
+        /// <summary>
+        /// Longitude of signal
+        /// </summary>
         public double Longitude { get; set; }
+
+        /// <summary>
+        /// Priamry name of signal
+        /// </summary>
         public string PrimaryName { get; set; }
+        
+        /// <summary>
+        /// Secondary name of signal
+        /// </summary>
         public string SecondaryName { get; set; }
+        
+        /// <summary>
+        /// Ipaddress of signal
+        /// </summary>
         public IPAddress Ipaddress { get; set; }
-        public int RegionId { get; set; }
-        public int ControllerTypeId { get; set; }
+        
+        /// <summary>
+        /// Enable signal to be charted
+        /// </summary>
         public bool ChartEnabled { get; set; }
+        
+        /// <summary>
+        /// Enable signal to be logged
+        /// </summary>
         public bool LoggingEnabled { get; set; }
-        public SignaVersionActions VersionActionId { get; set; }
+        
+        /// <summary>
+        /// Version action of signal
+        /// </summary>
+        public SignalVersionActions VersionAction { get; set; }
+        
+        /// <summary>
+        /// Note
+        /// </summary>
         public string Note { get; set; }
+        
+        /// <summary>
+        /// Start date signal became active
+        /// </summary>
         public DateTime Start { get; set; }
-        public int JurisdictionId { get; set; }
+
+        //TODO: update comment
+        /// <summary>
+        /// Pedsare1to1
+        /// </summary>
         public bool Pedsare1to1 { get; set; }
 
+        #region ISignalLayer
+
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        #endregion
+
+        #region IRelatedControllerType
+
+        /// <inheritdoc/>
+        public int ControllerTypeId { get; set; }
+
+        /// <inheritdoc/>
         public virtual ControllerType ControllerType { get; set; }
+
+        #endregion
+
+        #region IRelatedJurisdiction
+
+        /// <inheritdoc/>
+        public int JurisdictionId { get; set; }
+
+        /// <inheritdoc/>
         public virtual Jurisdiction Jurisdiction { get; set; }
+
+        #endregion
+
+        #region IRelatedRegion
+
+        /// <inheritdoc/>
+        public int RegionId { get; set; }
+
+        /// <inheritdoc/>
         public virtual Region Region { get; set; }
-        public virtual VersionAction VersionAction { get; set; }
 
+        #endregion
+
+        #region IRelatedApproaches
+
+        /// <inheritdoc/>
         public virtual ICollection<Approach> Approaches { get; set; } = new HashSet<Approach>();
-        public virtual ICollection<Area> Areas { get; set; } = new HashSet<Area>();
-        //public virtual ICollection<MetricComment> MetricComments { get; set; } = new HashSet<MetricComment>();
 
-        public override string? ToString()
-        {
-            return $"{SignalIdentifier} - {PrimaryName} {SecondaryName}";
-        }
+        #endregion
+
+        #region IRelatedAreas
+
+        public virtual ICollection<Area> Areas { get; set; } = new HashSet<Area>();
+
+        #endregion
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Id} - {SignalIdentifier} - {PrimaryName} {SecondaryName}";
     }
 }
