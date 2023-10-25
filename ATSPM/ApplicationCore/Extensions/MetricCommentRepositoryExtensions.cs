@@ -14,10 +14,10 @@ namespace ATSPM.Application.Extensions
 {
     public static class MetricCommentRepositoryExtensions
     {
-        public static MetricComment GetLatestCommentForReport(this IMetricCommentRepository repo, string signalId, int metricId)
+        public static MeasureComment GetLatestCommentForReport(this IMeasureCommentRepository repo, string signalId, int metricId)
         {
             return repo.GetList()
-                .Where(w => w.SignalIdentifier == signalId && (w.MetricTypes.Where(i => i.Id == metricId).Count() > 0))
+                .Where(w => w.SignalIdentifier == signalId && (w.MeasureTypes.Where(i => i.Id == metricId).Count() > 0))
                 .OrderByDescending(o => o.TimeStamp)
                 .FirstOrDefault();
         }

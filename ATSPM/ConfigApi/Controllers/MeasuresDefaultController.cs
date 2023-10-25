@@ -8,12 +8,12 @@ namespace ATSPM.ConfigApi.Controllers
     /// MeasureDefault Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasuresDefaultController : AtspmConfigControllerBase<MeasuresDefault, int>
+    public class MeasuresDefaultController : AtspmConfigControllerBase<MeasureOption, int>
     {
-        private readonly IMeasuresDefaultsRepository _repository;
+        private readonly IMeasureOptionsRepository _repository;
 
         /// <inheritdoc/>
-        public MeasuresDefaultController(IMeasuresDefaultsRepository repository) : base(repository)
+        public MeasuresDefaultController(IMeasureOptionsRepository repository) : base(repository)
         {
             _repository = repository;
         }
