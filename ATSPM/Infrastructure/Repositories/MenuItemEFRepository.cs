@@ -29,8 +29,8 @@ namespace ATSPM.Infrastructure.Repositories
         public override IQueryable<MenuItem> GetList()
         {
             return base.GetList()
-                //.Include(i => i.Parent)
-                //.Include(i => i.Children)
+                .Include(i => i.Parent)
+                .Include(i => i.Children)
                 .OrderBy(o => o.DisplayOrder);
         }
 

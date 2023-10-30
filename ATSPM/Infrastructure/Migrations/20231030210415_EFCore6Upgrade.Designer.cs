@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231030193239_EFCore6Upgrade")]
+    [Migration("20231030210415_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -124,11 +124,16 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.Property<long>("Port")
-                        .HasColumnType("bigint");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValueSql("((0))");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)")
+                        .HasDefaultValue("Unknown");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
@@ -784,10 +789,6 @@ namespace ATSPM.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MeasureTypeId");
-
-                    b.HasIndex("Option")
-                        .IsUnique()
-                        .HasFilter("[Option] IS NOT NULL");
 
                     b.ToTable("MeasureOptions", t =>
                         {
