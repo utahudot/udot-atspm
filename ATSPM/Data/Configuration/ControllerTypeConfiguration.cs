@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +17,12 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Description)
                 .HasMaxLength(50);
+
+            builder.Property(e => e.Protocol)
+                .HasMaxLength(12)
+                .HasDefaultValue(TransportProtocols.Unknown);
+
+            builder.Property(e => e.Port).HasDefaultValueSql("((0))");
 
             builder.Property(e => e.Password)
                 .HasMaxLength(50);
