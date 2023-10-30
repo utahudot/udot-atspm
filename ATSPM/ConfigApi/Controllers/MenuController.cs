@@ -8,12 +8,12 @@ namespace ATSPM.ConfigApi.Controllers
     /// Menu Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MenuController : AtspmConfigControllerBase<Menu, int>
+    public class MenuController : AtspmConfigControllerBase<MenuItem, int>
     {
-        private readonly IMenuRepository _repository;
+        private readonly IMenuItemReposiotry _repository;
 
         /// <inheritdoc/>
-        public MenuController(IMenuRepository repository) : base(repository)
+        public MenuController(IMenuItemReposiotry repository) : base(repository)
         {
             _repository = repository;
         }

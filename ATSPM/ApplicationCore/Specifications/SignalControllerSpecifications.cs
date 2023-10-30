@@ -10,7 +10,7 @@ namespace ATSPM.Application.Specifications
 {
     public class ActiveSignalSpecification : BaseSpecification<Signal>
     {
-        public ActiveSignalSpecification() : base(s => s.VersionActionId != SignalVersionActions.Delete) 
+        public ActiveSignalSpecification() : base(s => s.VersionAction != SignalVersionActions.Delete) 
         {
             ApplyOrderByDescending(o => o.Start);
         }

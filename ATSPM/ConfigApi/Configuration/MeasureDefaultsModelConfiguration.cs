@@ -18,7 +18,7 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Measure).MaxLength = 128;
+                        //model.Property(p => p.MeasureType).MaxLength = 128;
                         model.Property(p => p.Option).MaxLength = 128;
                         model.Property(p => p.Value).MaxLength = 512;
 

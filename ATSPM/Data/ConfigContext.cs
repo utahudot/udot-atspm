@@ -21,25 +21,99 @@ namespace ATSPM.Data
         /// <inheritdoc/>
         public ConfigContext(DbContextOptions<ConfigContext> options): base(options) {}
 
-        public virtual DbSet<Application> Applications { get; set; }
-        public virtual DbSet<ApplicationSetting> ApplicationSettings { get; set; }
+        /// <summary>
+        /// Settings table
+        /// </summary>
+        public virtual DbSet<Settings> ApplicationSettings { get; set; }
+        
+        /// <summary>
+        /// Approaches table
+        /// </summary>
         public virtual DbSet<Approach> Approaches { get; set; }
+        
+        /// <summary>
+        /// Area table
+        /// </summary>
         public virtual DbSet<Area> Areas { get; set; }
+        
+        /// <summary>
+        /// Controller type table
+        /// </summary>
         public virtual DbSet<ControllerType> ControllerTypes { get; set; }
+        
+        /// <summary>
+        /// Detection type table
+        /// </summary>
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
+        
+        /// <summary>
+        /// Detectors table
+        /// </summary>
         public virtual DbSet<Detector> Detectors { get; set; }
+        
+        /// <summary>
+        /// Detector comments table
+        /// </summary>
         public virtual DbSet<DetectorComment> DetectorComments { get; set; }
+        
+        /// <summary>
+        /// Direction type table
+        /// </summary>
         public virtual DbSet<DirectionType> DirectionTypes { get; set; }
+        
+        /// <summary>
+        /// External links table
+        /// </summary>
         public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
+        
+        /// <summary>
+        /// Faqs table
+        /// </summary>
         public virtual DbSet<Faq> Faqs { get; set; }
+        
+        /// <summary>
+        /// Jurisdiction table
+        /// </summary>
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
+        
+        /// <summary>
+        /// Measure options table
+        /// </summary>
         public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
-        public virtual DbSet<Menu> Menus { get; set; }
+        
+        /// <summary>
+        /// Menu table
+        /// </summary>
+        public virtual DbSet<MenuItem> Menus { get; set; }
+        
+        /// <summary>
+        /// Measure comments table
+        /// </summary>
         public virtual DbSet<MeasureComment> MeasureComments { get; set; }
+        
+        /// <summary>
+        /// Measure type table
+        /// </summary>
         public virtual DbSet<MeasureType> MeasureType { get; set; }
+        
+        /// <summary>
+        /// Regions table
+        /// </summary>
         public virtual DbSet<Region> Regions { get; set; }
+        
+        /// <summary>
+        /// Routes table
+        /// </summary>
         public virtual DbSet<Route> Routes { get; set; }
+        
+        /// <summary>
+        /// Route signals table
+        /// </summary>
         public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        
+        /// <summary>
+        /// Signals table
+        /// </summary>
         public virtual DbSet<Signal> Signals { get; set; }
 
         /// <inheritdoc/>
@@ -54,15 +128,13 @@ namespace ATSPM.Data
             configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
             configurationBuilder.Properties<DetectionTypes>().HaveConversion<int>();
-            configurationBuilder.Properties<ApplicationTypes>().HaveConversion<int>();
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
         }
 
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
-            modelBuilder.ApplyConfiguration(new ApplicationSettingConfiguration());
+            modelBuilder.ApplyConfiguration(new SettingsConfiguration());
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
             modelBuilder.ApplyConfiguration(new ControllerTypeConfiguration());
@@ -73,7 +145,7 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
-            modelBuilder.ApplyConfiguration(new MenuConfiguration());
+            modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureTypeConfiguration());

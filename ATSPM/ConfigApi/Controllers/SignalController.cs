@@ -192,7 +192,7 @@ namespace ATSPM.ConfigApi.Controllers
                 .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
                 .Where(w => regionId == null || w.RegionId == regionId)
                 .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
-                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MetricTypeMetrics.Any(a => a.Id == metricTypeId)))))
+                .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))))
 
                 .Select(s => new SearchSignal()
                 {
@@ -207,7 +207,7 @@ namespace ATSPM.ConfigApi.Controllers
                     Latitude = s.Latitude,
                     ChartEnabled = s.ChartEnabled,
                     Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MetricTypeMetrics.Select(i => i.Id))))
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id))))
                 })
 
                 .GroupBy(r => r.SignalIdentifier)
