@@ -14,21 +14,6 @@ namespace ATSPM.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ApplicationSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Setting = table.Column<string>(type: "varchar(900)", unicode: false, nullable: true),
-                    Value = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationSettings", x => x.Id);
-                },
-                comment: "Application Settings");
-
-            migrationBuilder.CreateTable(
                 name: "Areas",
                 columns: table => new
                 {
@@ -174,7 +159,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Measure Types");
 
             migrationBuilder.CreateTable(
-                name: "Menus",
+                name: "MenuItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -182,19 +167,19 @@ namespace ATSPM.Infrastructure.Migrations
                     Name = table.Column<string>(type: "varchar(24)", unicode: false, maxLength: 24, nullable: false),
                     Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false),
                     Link = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
-                    Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                    Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.PrimaryKey("PK_MenuItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Menus_Menus_ParentId",
+                        name: "FK_MenuItems_MenuItems_ParentId",
                         column: x => x.ParentId,
-                        principalTable: "Menus",
+                        principalTable: "MenuItems",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 },
                 comment: "Menu Items");
 
@@ -225,6 +210,21 @@ namespace ATSPM.Infrastructure.Migrations
                     table.PrimaryKey("PK_Routes", x => x.Id);
                 },
                 comment: "Signal Routes");
+
+            migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Setting = table.Column<string>(type: "varchar(900)", unicode: false, nullable: true),
+                    Value = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => x.Id);
+                },
+                comment: "Application Settings");
 
             migrationBuilder.CreateTable(
                 name: "DetectionTypeMeasureType",
@@ -365,13 +365,13 @@ namespace ATSPM.Infrastructure.Migrations
                         column: x => x.OpposingDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_RouteSignals_DirectionTypes_PrimaryDirectionId",
                         column: x => x.PrimaryDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_RouteSignals_Routes_RouteId",
                         column: x => x.RouteId,
@@ -638,13 +638,6 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationSettings_Setting",
-                table: "ApplicationSettings",
-                column: "Setting",
-                unique: true,
-                filter: "[Setting] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Approaches_DirectionTypeId",
                 table: "Approaches",
                 column: "DirectionTypeId");
@@ -702,24 +695,33 @@ namespace ATSPM.Infrastructure.Migrations
                 filter: "[Option] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Menus_ParentId",
-                table: "Menus",
+                name: "IX_MenuItems_ParentId",
+                table: "MenuItems",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RouteSignals_OpposingDirectionId",
                 table: "RouteSignals",
-                column: "OpposingDirectionId");
+                column: "OpposingDirectionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RouteSignals_PrimaryDirectionId",
                 table: "RouteSignals",
-                column: "PrimaryDirectionId");
+                column: "PrimaryDirectionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RouteSignals_RouteId",
                 table: "RouteSignals",
                 column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Settings_Setting",
+                table: "Settings",
+                column: "Setting",
+                unique: true,
+                filter: "[Setting] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Signals_ControllerTypeId",
@@ -740,9 +742,6 @@ namespace ATSPM.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ApplicationSettings");
-
             migrationBuilder.DropTable(
                 name: "AreaSignal");
 
@@ -768,10 +767,13 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "MeasureOptions");
 
             migrationBuilder.DropTable(
-                name: "Menus");
+                name: "MenuItems");
 
             migrationBuilder.DropTable(
                 name: "RouteSignals");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "Areas");
