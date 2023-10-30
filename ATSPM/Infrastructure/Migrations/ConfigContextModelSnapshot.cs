@@ -4,7 +4,6 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231030171950_EFCore6Upgrade")]
-    partial class EFCore6Upgrade
+    partial class ConfigContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1155,14 +1152,14 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(24)");
 
-                    b.Property<int>("ParentId")
+                    b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Menus", t =>
+                    b.ToTable("MenuItems", t =>
                         {
                             t.HasComment("Menu Items");
                         });
@@ -1250,9 +1247,11 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OpposingDirectionId");
+                    b.HasIndex("OpposingDirectionId")
+                        .IsUnique();
 
-                    b.HasIndex("PrimaryDirectionId");
+                    b.HasIndex("PrimaryDirectionId")
+                        .IsUnique();
 
                     b.HasIndex("RouteId");
 
@@ -1286,7 +1285,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[Setting] IS NOT NULL");
 
-                    b.ToTable("ApplicationSettings", t =>
+                    b.ToTable("Settings", t =>
                         {
                             t.HasComment("Application Settings");
                         });
@@ -1496,8 +1495,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.HasOne("ATSPM.Data.Models.MenuItem", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
                 });
@@ -1505,15 +1503,15 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.RouteSignal", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.DirectionType", "OpposingDirection")
-                        .WithMany()
-                        .HasForeignKey("OpposingDirectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("ATSPM.Data.Models.RouteSignal", "OpposingDirectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ATSPM.Data.Models.DirectionType", "PrimaryDirection")
-                        .WithMany()
-                        .HasForeignKey("PrimaryDirectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("ATSPM.Data.Models.RouteSignal", "PrimaryDirectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ATSPM.Data.Models.Route", "Route")
