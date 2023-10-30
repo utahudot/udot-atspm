@@ -16,7 +16,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Description).HasMaxLength(50);
 
-            builder.HasData(new Region() { Id = 0, Description = "Unknown"});
+            //builder.HasData(new Region() { Description = "Unknown"});
         }
     }
 }

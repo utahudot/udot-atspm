@@ -88,19 +88,17 @@ builder.Host.ConfigureServices((h, s) =>
         });
 
     s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
-    s.AddScoped<IActionLogRepository, ActionLogEFRepository>();
-    s.AddScoped<IApplicationSettingsRepository, ApplicationSettingsEFRepository>();
+    s.AddScoped<ISettingsRepository, SettingsEFRepository>();
     s.AddScoped<IApproachRepository, ApproachEFRepository>();
     s.AddScoped<IAreaRepository, AreaEFRepository>();
     s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
-    s.AddScoped<IDetectionHardwareRepository, DetectionHardwareEFRepository>();
     s.AddScoped<IDetectorRepository, DetectorEFRepository>();
     s.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
     s.AddScoped<IFaqRepository, FaqEFRepository>();
     s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
     s.AddScoped<IMeasureOptionsRepository, MeasureOptionsEFRepository>();
     s.AddScoped<IMeasureTypeRepository, MeasureTypeEFRepository>();
-    s.AddScoped<IMenuRepository, MenuEFRepository>();
+    s.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
     s.AddScoped<IRegionsRepository, RegionEFRepository>();
     s.AddScoped<ISignalRepository, SignalEFRepository>();
 

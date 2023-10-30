@@ -43,7 +43,7 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.SignalIdentifier).MaxLength = 10;
 
                         model.Property(p => p.JurisdictionId).DefaultValueString = "0";
-                        model.EnumProperty(p => p.VersionActionId).DefaultValueString = "10";
+                        //model.EnumProperty(p => p.VersionAction).DefaultValueString = "10";
                         model.Property(p => p.Note).DefaultValueString = "Initial";
 
 

@@ -10,7 +10,7 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Menu>("Menu")
+            var model = builder.EntitySet<MenuItem>("Menu")
                 .EntityType
                 .Page(default, default);
 
@@ -18,14 +18,14 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Action).IsRequired();
-                        model.Property(p => p.Action).MaxLength = 50;
+                        //model.Property(p => p.Action).IsRequired();
+                        //model.Property(p => p.Action).MaxLength = 50;
 
-                        model.Property(p => p.Application).IsRequired();
-                        model.Property(p => p.Application).MaxLength = 50;
+                        //model.Property(p => p.Application).IsRequired();
+                        //model.Property(p => p.Application).MaxLength = 50;
 
-                        model.Property(p => p.Controller).IsRequired();
-                        model.Property(p => p.Controller).MaxLength = 50;
+                        //model.Property(p => p.Controller).IsRequired();
+                        //model.Property(p => p.Controller).MaxLength = 50;
 
                         model.Property(p => p.Name).IsRequired();
                         model.Property(p => p.Name).MaxLength = 50;
