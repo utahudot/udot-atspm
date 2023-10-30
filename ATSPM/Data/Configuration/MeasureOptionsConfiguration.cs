@@ -14,8 +14,6 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Measure Options");
 
-            builder.HasIndex(i => i.Option).IsUnique();
-
             builder.Property(e => e.Option).HasMaxLength(128);
 
             builder.Property(e => e.Value).HasMaxLength(512);
