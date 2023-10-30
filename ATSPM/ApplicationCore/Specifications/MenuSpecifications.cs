@@ -8,9 +8,9 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
-    public class MenuTopLevelSpecification : BaseSpecification<Menu>
+    public class MenuTopLevelSpecification : BaseSpecification<MenuItem>
     {
-        public MenuTopLevelSpecification(string application) : base(s => s.Application == application && s.ParentId == 0) 
+        public MenuTopLevelSpecification(string application) : base(s => s.ParentId == 0) 
         {
             ApplyOrderBy(o => o.DisplayOrder);
         }

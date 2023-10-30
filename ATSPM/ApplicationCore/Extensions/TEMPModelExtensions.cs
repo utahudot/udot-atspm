@@ -45,7 +45,7 @@ namespace ATSPM.Application.Extensions
     {
         public static bool SupportsMetricType(this IRelatedDetectionTypes item, int metricTypeId)
         {
-            return item.DetectionTypes.Any(m => m.MetricTypeMetrics.Any(a => a.Id == metricTypeId));
+            return item.DetectionTypes.Any(m => m.MeasureTypes.Any(a => a.Id == metricTypeId));
         }
     }
 
@@ -59,7 +59,7 @@ namespace ATSPM.Application.Extensions
         /// <returns></returns>
         public static bool CheckReportAvialbility (this Detector detector, int metricId)
         {
-            return detector.DetectionTypes.SelectMany(s => s.MetricTypeMetrics).Any(a => a.Id == metricId);
+            return detector.DetectionTypes.SelectMany(s => s.MeasureTypes).Any(a => a.Id == metricId);
         }
 
         public static double GetOffset(this Detector detector)
@@ -119,7 +119,7 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<MeasureType> GetAvailableMetrics(this IRelatedApproaches item)
         {
-            return item.GetDetectors().SelectMany(s => s.DetectionTypes).Where(d => d.Id != DetectionTypes.B).SelectMany(m => m.MetricTypeMetrics).ToList();
+            return item.GetDetectors().SelectMany(s => s.DetectionTypes).Where(d => d.Id != DetectionTypes.B).SelectMany(m => m.MeasureTypes).ToList();
         }
 
         public static IReadOnlyList<int> GetPhases(this IRelatedApproaches item)
