@@ -22,7 +22,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.OtherPartners).HasMaxLength(50);
 
-            builder.HasData(new Jurisdiction() { Id = 0, CountyParish = "Unknown", Name = "Unknown", OtherPartners = "Unknown"});
+            //builder.HasData(new Jurisdiction() { CountyParish = "Unknown", Name = "Unknown", OtherPartners = "Unknown"});
         }
     }
 }

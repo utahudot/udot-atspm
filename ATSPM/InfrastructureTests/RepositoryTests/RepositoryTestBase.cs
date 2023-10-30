@@ -108,13 +108,6 @@ namespace InfrastructureTests.RepositoryTests
             this.Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
             this.Behaviors.Add(new OmitOnRecursionBehavior());
 
-            this.Customize<ActionLog>(c => c
-                .Without(w => w.Id)
-                .Without(w => w.Agency)
-                .Without(w => w.Actions)
-                .Without(w => w.MeasureTypes)
-            );
-
             this.Customize<Approach>(c => c
             .Without(w => w.Id)
             .Without(w => w.SignalId)
