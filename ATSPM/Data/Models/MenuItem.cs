@@ -28,11 +28,6 @@ namespace ATSPM.Data.Models
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Item parent id
-        /// </summary>
-        public int ParentId { get; set; }
-
-        /// <summary>
         /// Item uri
         /// </summary>
         public Uri Link { get; set; }
@@ -51,6 +46,11 @@ namespace ATSPM.Data.Models
         /// Has document
         /// </summary>
         public bool HasDocument => Document != null;
+
+        /// <summary>
+        /// Item parent id
+        /// </summary>
+        public int? ParentId { get; set; }
 
         /// <summary>
         /// Parent menu item

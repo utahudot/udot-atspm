@@ -23,6 +23,10 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
+
+            builder.HasOne(p => p.PrimaryDirection).WithOne().HasForeignKey<RouteSignal>(k => k.PrimaryDirectionId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.OpposingDirection).WithOne().HasForeignKey<RouteSignal>(k => k.OpposingDirectionId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
