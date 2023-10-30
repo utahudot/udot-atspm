@@ -22,79 +22,74 @@ namespace ATSPM.Data
         public ConfigContext(DbContextOptions<ConfigContext> options): base(options) {}
 
         /// <summary>
-        /// Settings table
-        /// </summary>
-        public virtual DbSet<Settings> ApplicationSettings { get; set; }
-        
-        /// <summary>
         /// Approaches table
         /// </summary>
         public virtual DbSet<Approach> Approaches { get; set; }
-        
+
         /// <summary>
         /// Area table
         /// </summary>
         public virtual DbSet<Area> Areas { get; set; }
-        
+
         /// <summary>
         /// Controller type table
         /// </summary>
         public virtual DbSet<ControllerType> ControllerTypes { get; set; }
-        
+
         /// <summary>
         /// Detection type table
         /// </summary>
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
-        
-        /// <summary>
-        /// Detectors table
-        /// </summary>
-        public virtual DbSet<Detector> Detectors { get; set; }
-        
+
         /// <summary>
         /// Detector comments table
         /// </summary>
         public virtual DbSet<DetectorComment> DetectorComments { get; set; }
-        
+
+        /// <summary>
+        /// Detectors table
+        /// </summary>
+        public virtual DbSet<Detector> Detectors { get; set; }
+
         /// <summary>
         /// Direction type table
         /// </summary>
         public virtual DbSet<DirectionType> DirectionTypes { get; set; }
-        
+
         /// <summary>
         /// External links table
         /// </summary>
         public virtual DbSet<ExternalLink> ExternalLinks { get; set; }
-        
+
         /// <summary>
         /// Faqs table
         /// </summary>
         public virtual DbSet<Faq> Faqs { get; set; }
-        
+
         /// <summary>
         /// Jurisdiction table
         /// </summary>
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
-        
-        /// <summary>
-        /// Measure options table
-        /// </summary>
-        public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
-        
-        /// <summary>
-        /// Menu table
-        /// </summary>
-        public virtual DbSet<MenuItem> Menus { get; set; }
-        
+
         /// <summary>
         /// Measure comments table
         /// </summary>
         public virtual DbSet<MeasureComment> MeasureComments { get; set; }
-        
+
+        /// <summary>
+        /// Measure options table
+        /// </summary>
+        public virtual DbSet<MeasureOption> MeasureOptions { get; set; }
+
         /// <summary>
         /// Measure type table
         /// </summary>
         public virtual DbSet<MeasureType> MeasureType { get; set; }
+
+        /// <summary>
+        /// Menu table
+        /// </summary>
+        public virtual DbSet<MenuItem> MenuItems { get; set; }
         
         /// <summary>
         /// Regions table
@@ -110,7 +105,12 @@ namespace ATSPM.Data
         /// Route signals table
         /// </summary>
         public virtual DbSet<RouteSignal> RouteSignals { get; set; }
-        
+
+        /// <summary>
+        /// Settings table
+        /// </summary>
+        public virtual DbSet<Settings> Settings { get; set; }
+
         /// <summary>
         /// Signals table
         /// </summary>
