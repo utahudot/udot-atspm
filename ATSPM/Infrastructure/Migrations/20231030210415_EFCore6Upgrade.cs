@@ -34,8 +34,8 @@ namespace ATSPM.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Protocol = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Port = table.Column<long>(type: "bigint", nullable: false),
+                    Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
                     LogDirectory = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
@@ -686,13 +686,6 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "IX_MeasureOptions_MeasureTypeId",
                 table: "MeasureOptions",
                 column: "MeasureTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MeasureOptions_Option",
-                table: "MeasureOptions",
-                column: "Option",
-                unique: true,
-                filter: "[Option] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_ParentId",
