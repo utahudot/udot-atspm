@@ -29,7 +29,7 @@ namespace ATSPM.Application.Extensions
             {
                 var newVersion = (Signal)signal.Clone();
 
-                newVersion.VersionActionId = SignalVersionActions.NewVersion;
+                newVersion.VersionAction = SignalVersionActions.NewVersion;
                 newVersion.Start = DateTime.Today;
                 newVersion.Note = $"Copy of {signal.Note}";
 
@@ -38,7 +38,6 @@ namespace ATSPM.Application.Extensions
                 newVersion.ControllerType = null;
                 newVersion.Jurisdiction = null;
                 newVersion.Region = null;
-                newVersion.VersionAction = null;
 
                 await repo.AddAsync(newVersion);
 
@@ -63,7 +62,7 @@ namespace ATSPM.Application.Extensions
 
             if (signal != null)
             {
-                signal.VersionActionId = SignalVersionActions.Delete;
+                signal.VersionAction = SignalVersionActions.Delete;
                 await repo.UpdateAsync(signal);
             }
             else

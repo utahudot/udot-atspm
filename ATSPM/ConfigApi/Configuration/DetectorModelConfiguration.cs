@@ -20,10 +20,6 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.DectectorIdentifier).MaxLength = 50;
-                        model.HasOptional(p => p.Approach);
-                        model.HasOptional(p => p.DetectionHardware);
-                        model.HasOptional(p => p.LaneType);
-                        model.HasOptional(p => p.MovementType);
 
                         break;
                     }

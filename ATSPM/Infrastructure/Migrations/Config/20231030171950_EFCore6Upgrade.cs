@@ -14,66 +14,44 @@ namespace ATSPM.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Actions",
+                name: "ApplicationSettings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Setting = table.Column<string>(type: "varchar(900)", unicode: false, nullable: true),
+                    Value = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Actions", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationSettings", x => x.Id);
                 },
-                comment: "Action Log Types");
-
-            migrationBuilder.CreateTable(
-                name: "Agencies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Agencies", x => x.Id);
-                },
-                comment: "Agency Type for Action Logs");
-
-            migrationBuilder.CreateTable(
-                name: "Applications",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Applications", x => x.Id);
-                },
-                comment: "Application Types");
+                comment: "Application Settings");
 
             migrationBuilder.CreateTable(
                 name: "Areas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Areas", x => x.Id);
                 },
-                comment: "Signal Area");
+                comment: "Areas");
 
             migrationBuilder.CreateTable(
                 name: "ControllerTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Snmpport = table.Column<long>(type: "bigint", nullable: false),
-                    Ftpdirectory = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    ActiveFtp = table.Column<bool>(type: "bit", nullable: false),
+                    Protocol = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Port = table.Column<long>(type: "bigint", nullable: false),
+                    LogDirectory = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
@@ -82,19 +60,6 @@ namespace ATSPM.Infrastructure.Migrations
                     table.PrimaryKey("PK_ControllerTypes", x => x.Id);
                 },
                 comment: "Signal Controller Types");
-
-            migrationBuilder.CreateTable(
-                name: "DetectionHardwares",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetectionHardwares", x => x.Id);
-                },
-                comment: "Dectector Hardware Types");
 
             migrationBuilder.CreateTable(
                 name: "DetectionTypes",
@@ -162,7 +127,8 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Jurisdictions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Mpo = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     CountyParish = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
@@ -172,77 +138,30 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Jurisdictions", x => x.Id);
                 },
-                comment: "Signal Jurisdictions");
+                comment: "Jurisdictions");
 
             migrationBuilder.CreateTable(
-                name: "LaneTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
-                    Abbreviation = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LaneTypes", x => x.Id);
-                },
-                comment: "Lane Types");
-
-            migrationBuilder.CreateTable(
-                name: "MeasuresDefaults",
+                name: "MeasureComments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Measure = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    OptionName = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    Value = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MeasuresDefaults", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Menus",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: false),
-                    Application = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    Controller = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false, defaultValueSql: "('')"),
-                    Action = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false, defaultValueSql: "('')")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Menus", x => x.Id);
-                },
-                comment: "Menu Items");
-
-            migrationBuilder.CreateTable(
-                name: "MetricComments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SignalIdentifier = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                    Comment = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    SignalIdentifier = table.Column<string>(type: "varchar(900)", unicode: false, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MetricComments", x => x.Id);
+                    table.PrimaryKey("PK_MeasureComments", x => x.Id);
                 },
-                comment: "Metric Comments");
+                comment: "Measure Comments");
 
             migrationBuilder.CreateTable(
-                name: "MetricTypes",
+                name: "MeasureType",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    ChartName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Abbreviation = table.Column<string>(type: "varchar(8)", unicode: false, maxLength: 8, nullable: true),
                     ShowOnWebsite = table.Column<bool>(type: "bit", nullable: false),
                     ShowOnAggregationSite = table.Column<bool>(type: "bit", nullable: false),
@@ -250,30 +169,41 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MetricTypes", x => x.Id);
+                    table.PrimaryKey("PK_MeasureType", x => x.Id);
                 },
-                comment: "Metric Types");
+                comment: "Measure Types");
 
             migrationBuilder.CreateTable(
-                name: "MovementTypes",
+                name: "Menus",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: false),
-                    Abbreviation = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(24)", unicode: false, maxLength: 24, nullable: false),
+                    Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: false),
+                    Link = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovementTypes", x => x.Id);
+                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Menus_Menus_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Menus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 },
-                comment: "Movement Types");
+                comment: "Menu Items");
 
             migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
@@ -288,7 +218,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -297,162 +227,73 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Signal Routes");
 
             migrationBuilder.CreateTable(
-                name: "VersionActions",
+                name: "DetectionTypeMeasureType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                    DetectionTypesId = table.Column<int>(type: "int", nullable: false),
+                    MeasureTypesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VersionActions", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActionLogs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    AgencyId = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    Name = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActionLogs", x => x.Id);
+                    table.PrimaryKey("PK_DetectionTypeMeasureType", x => new { x.DetectionTypesId, x.MeasureTypesId });
                     table.ForeignKey(
-                        name: "FK_ActionLogs_Agencies_AgencyId",
-                        column: x => x.AgencyId,
-                        principalTable: "Agencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "Action Logs");
-
-            migrationBuilder.CreateTable(
-                name: "ApplicationSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ApplicationId = table.Column<int>(type: "int", nullable: false),
-                    ConsecutiveCount = table.Column<int>(type: "int", nullable: true),
-                    MinPhaseTerminations = table.Column<int>(type: "int", nullable: true),
-                    PercentThreshold = table.Column<double>(type: "float", nullable: true),
-                    MaxDegreeOfParallelism = table.Column<int>(type: "int", nullable: true),
-                    ScanDayStartHour = table.Column<int>(type: "int", nullable: true),
-                    ScanDayEndHour = table.Column<int>(type: "int", nullable: true),
-                    PreviousDayPmpeakStart = table.Column<int>(type: "int", nullable: true),
-                    PreviousDayPmpeakEnd = table.Column<int>(type: "int", nullable: true),
-                    MinimumRecords = table.Column<int>(type: "int", nullable: true),
-                    WeekdayOnly = table.Column<bool>(type: "bit", nullable: true),
-                    DefaultEmailAddress = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    FromEmailAddress = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    LowHitThreshold = table.Column<int>(type: "int", nullable: true),
-                    EmailServer = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    MaximumPedestrianEvents = table.Column<int>(type: "int", nullable: true),
-                    Discriminator = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false),
-                    ArchivePath = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    SelectedDeleteOrMove = table.Column<int>(type: "int", nullable: true),
-                    NumberOfRows = table.Column<int>(type: "int", nullable: true),
-                    StartTime = table.Column<int>(type: "int", nullable: true),
-                    TimeDuration = table.Column<int>(type: "int", nullable: true),
-                    ImageUrl = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    ImagePath = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    RawDataCountLimit = table.Column<int>(type: "int", nullable: true),
-                    ReCaptchaPublicKey = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    ReCaptchaSecretKey = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    EnableDatbaseArchive = table.Column<bool>(type: "bit", nullable: true),
-                    SelectedTableScheme = table.Column<int>(type: "int", nullable: true),
-                    MonthsToKeepIndex = table.Column<int>(type: "int", nullable: true),
-                    MonthsToKeepData = table.Column<int>(type: "int", nullable: true),
-                    EmailAllErrors = table.Column<bool>(type: "bit", nullable: true),
-                    CycleCompletionSeconds = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationSettings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ApplicationSettings_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "Application Settings");
-
-            migrationBuilder.CreateTable(
-                name: "DetectionTypeMetricType",
-                columns: table => new
-                {
-                    DetectionTypeDetectionTypesId = table.Column<int>(type: "int", nullable: false),
-                    MetricTypeMetricsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DetectionTypeMetricType", x => new { x.DetectionTypeDetectionTypesId, x.MetricTypeMetricsId });
-                    table.ForeignKey(
-                        name: "FK_DetectionTypeMetricType_DetectionTypes_DetectionTypeDetectionTypesId",
-                        column: x => x.DetectionTypeDetectionTypesId,
+                        name: "FK_DetectionTypeMeasureType_DetectionTypes_DetectionTypesId",
+                        column: x => x.DetectionTypesId,
                         principalTable: "DetectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DetectionTypeMetricType_MetricTypes_MetricTypeMetricsId",
-                        column: x => x.MetricTypeMetricsId,
-                        principalTable: "MetricTypes",
+                        name: "FK_DetectionTypeMeasureType_MeasureType_MeasureTypesId",
+                        column: x => x.MeasureTypesId,
+                        principalTable: "MeasureType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MetricCommentMetricType",
+                name: "MeasureCommentMeasureType",
                 columns: table => new
                 {
-                    MetricCommentsId = table.Column<int>(type: "int", nullable: false),
-                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
+                    MeasureCommentsId = table.Column<int>(type: "int", nullable: false),
+                    MeasureTypesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MetricCommentMetricType", x => new { x.MetricCommentsId, x.MetricTypesId });
+                    table.PrimaryKey("PK_MeasureCommentMeasureType", x => new { x.MeasureCommentsId, x.MeasureTypesId });
                     table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricComments_MetricCommentsId",
-                        column: x => x.MetricCommentsId,
-                        principalTable: "MetricComments",
+                        name: "FK_MeasureCommentMeasureType_MeasureComments_MeasureCommentsId",
+                        column: x => x.MeasureCommentsId,
+                        principalTable: "MeasureComments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MetricCommentMetricType_MetricTypes_MetricTypesId",
-                        column: x => x.MetricTypesId,
-                        principalTable: "MetricTypes",
+                        name: "FK_MeasureCommentMeasureType_MeasureType_MeasureTypesId",
+                        column: x => x.MeasureTypesId,
+                        principalTable: "MeasureType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "RouteSignals",
+                name: "MeasureOptions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RouteId = table.Column<int>(type: "int", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
+                    Option = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
+                    Value = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
+                    MeasureTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RouteSignals", x => x.Id);
+                    table.PrimaryKey("PK_MeasureOptions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RouteSignals_Routes_RouteId",
-                        column: x => x.RouteId,
-                        principalTable: "Routes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_MeasureOptions_MeasureType_MeasureTypeId",
+                        column: x => x.MeasureTypeId,
+                        principalTable: "MeasureType",
+                        principalColumn: "Id");
                 },
-                comment: "Route Signals");
+                comment: "Measure Options");
 
             migrationBuilder.CreateTable(
                 name: "Signals",
@@ -460,21 +301,21 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     Latitude = table.Column<double>(type: "float", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
                     PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
                     SecondaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('127.0.0.1')"),
-                    RegionId = table.Column<int>(type: "int", nullable: false),
-                    ControllerTypeId = table.Column<int>(type: "int", nullable: false),
+                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
                     ChartEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    VersionActionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
+                    VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false, defaultValueSql: "('Initial')"),
                     Start = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Pedsare1to1 = table.Column<bool>(type: "bit", nullable: false),
+                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    ControllerTypeId = table.Column<int>(type: "int", nullable: false),
                     JurisdictionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((0))"),
-                    Pedsare1to1 = table.Column<bool>(type: "bit", nullable: false)
+                    RegionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -497,92 +338,48 @@ namespace ATSPM.Infrastructure.Migrations
                         principalTable: "Regions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Signals_VersionActions_VersionActionId",
-                        column: x => x.VersionActionId,
-                        principalTable: "VersionActions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 },
-                comment: "Signals");
+                comment: "Signal Controllers");
 
             migrationBuilder.CreateTable(
-                name: "ActionActionLog",
-                columns: table => new
-                {
-                    ActionLogsId = table.Column<int>(type: "int", nullable: false),
-                    ActionsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActionActionLog", x => new { x.ActionLogsId, x.ActionsId });
-                    table.ForeignKey(
-                        name: "FK_ActionActionLog_ActionLogs_ActionLogsId",
-                        column: x => x.ActionLogsId,
-                        principalTable: "ActionLogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ActionActionLog_Actions_ActionsId",
-                        column: x => x.ActionsId,
-                        principalTable: "Actions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ActionLogMetricType",
-                columns: table => new
-                {
-                    ActionLogActionLogsId = table.Column<int>(type: "int", nullable: false),
-                    MetricTypesId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActionLogMetricType", x => new { x.ActionLogActionLogsId, x.MetricTypesId });
-                    table.ForeignKey(
-                        name: "FK_ActionLogMetricType_ActionLogs_ActionLogActionLogsId",
-                        column: x => x.ActionLogActionLogsId,
-                        principalTable: "ActionLogs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ActionLogMetricType_MetricTypes_MetricTypesId",
-                        column: x => x.MetricTypesId,
-                        principalTable: "MetricTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RoutePhaseDirections",
+                name: "RouteSignals",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RouteSignalId = table.Column<int>(type: "int", nullable: false),
-                    Phase = table.Column<int>(type: "int", nullable: false),
-                    DirectionTypeId = table.Column<int>(type: "int", nullable: false),
-                    IsOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    IsPrimaryApproach = table.Column<bool>(type: "bit", nullable: false)
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    PrimaryPhase = table.Column<int>(type: "int", nullable: false),
+                    OpposingPhase = table.Column<int>(type: "int", nullable: false),
+                    PrimaryDirectionId = table.Column<int>(type: "int", nullable: false),
+                    OpposingDirectionId = table.Column<int>(type: "int", nullable: false),
+                    IsPrimaryOverlap = table.Column<bool>(type: "bit", nullable: false),
+                    IsOpposingOverlap = table.Column<bool>(type: "bit", nullable: false),
+                    SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    RouteId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoutePhaseDirections", x => x.Id);
+                    table.PrimaryKey("PK_RouteSignals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoutePhaseDirections_DirectionTypes_DirectionTypeId",
-                        column: x => x.DirectionTypeId,
+                        name: "FK_RouteSignals_DirectionTypes_OpposingDirectionId",
+                        column: x => x.OpposingDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RoutePhaseDirections_RouteSignals_RouteSignalId",
-                        column: x => x.RouteSignalId,
-                        principalTable: "RouteSignals",
+                        name: "FK_RouteSignals_DirectionTypes_PrimaryDirectionId",
+                        column: x => x.PrimaryDirectionId,
+                        principalTable: "DirectionTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RouteSignals_Routes_RouteId",
+                        column: x => x.RouteId,
+                        principalTable: "Routes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 },
-                comment: "Route Phase Directions");
+                comment: "Route Signals");
 
             migrationBuilder.CreateTable(
                 name: "Approaches",
@@ -590,8 +387,6 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SignalId = table.Column<int>(type: "int", nullable: false),
-                    DirectionTypeId = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     Mph = table.Column<int>(type: "int", nullable: true),
                     ProtectedPhaseNumber = table.Column<int>(type: "int", nullable: false),
@@ -600,7 +395,9 @@ namespace ATSPM.Infrastructure.Migrations
                     IsPermissivePhaseOverlap = table.Column<bool>(type: "bit", nullable: false),
                     PedestrianPhaseNumber = table.Column<int>(type: "int", nullable: true),
                     IsPedestrianPhaseOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    PedestrianDetectors = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                    PedestrianDetectors = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    SignalId = table.Column<int>(type: "int", nullable: false),
+                    DirectionTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -651,19 +448,19 @@ namespace ATSPM.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DectectorIdentifier = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    DetChannel = table.Column<int>(type: "int", nullable: false),
+                    DetectorChannel = table.Column<int>(type: "int", nullable: false),
                     DistanceFromStopBar = table.Column<int>(type: "int", nullable: true),
                     MinSpeedFilter = table.Column<int>(type: "int", nullable: true),
                     DateAdded = table.Column<DateTime>(type: "datetime", nullable: false),
                     DateDisabled = table.Column<DateTime>(type: "datetime", nullable: true),
                     LaneNumber = table.Column<int>(type: "int", nullable: true),
-                    MovementTypeId = table.Column<int>(type: "int", nullable: false),
-                    LaneTypeId = table.Column<int>(type: "int", nullable: false),
+                    MovementType = table.Column<int>(type: "int", nullable: false),
+                    LaneType = table.Column<int>(type: "int", nullable: false),
+                    DetectionHardware = table.Column<int>(type: "int", nullable: false),
                     DecisionPoint = table.Column<int>(type: "int", nullable: true),
                     MovementDelay = table.Column<int>(type: "int", nullable: true),
-                    ApproachId = table.Column<int>(type: "int", nullable: false),
-                    DetectionHardwareId = table.Column<int>(type: "int", nullable: false),
-                    LatencyCorrection = table.Column<double>(type: "float", nullable: false)
+                    LatencyCorrection = table.Column<double>(type: "float", nullable: false),
+                    ApproachId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -672,24 +469,6 @@ namespace ATSPM.Infrastructure.Migrations
                         name: "FK_Detectors_Approaches_ApproachId",
                         column: x => x.ApproachId,
                         principalTable: "Approaches",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Detectors_DetectionHardwares_DetectionHardwareId",
-                        column: x => x.DetectionHardwareId,
-                        principalTable: "DetectionHardwares",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Detectors_LaneTypes_LaneTypeId",
-                        column: x => x.LaneTypeId,
-                        principalTable: "LaneTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Detectors_MovementTypes_MovementTypeId",
-                        column: x => x.MovementTypeId,
-                        principalTable: "MovementTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 },
@@ -725,9 +504,9 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DetectorId = table.Column<int>(type: "int", nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CommentText = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
+                    Comment = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    DetectorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -740,94 +519,6 @@ namespace ATSPM.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Detector Comments");
-
-            migrationBuilder.InsertData(
-                table: "Actions",
-                columns: new[] { "Id", "Description" },
-                values: new object[,]
-                {
-                    { 0, "Unknown" },
-                    { 1, "Actuated Coord." },
-                    { 2, "Coord On/Off" },
-                    { 3, "Cycle Length" },
-                    { 4, "Detector Issue" },
-                    { 5, "Offset" },
-                    { 6, "Sequence" },
-                    { 7, "Time Of Day" },
-                    { 8, "Other" },
-                    { 9, "All-Red Interval" },
-                    { 10, "Modeling" },
-                    { 11, "Traffic Study" },
-                    { 12, "Yellow Interval" },
-                    { 13, "Force Off Type" },
-                    { 14, "Split Adjustment" },
-                    { 15, "Manual Command" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Agencies",
-                columns: new[] { "Id", "Description" },
-                values: new object[,]
-                {
-                    { 0, "Unknown" },
-                    { 1, "Academics" },
-                    { 2, "City Government" },
-                    { 3, "Consultant" },
-                    { 4, "County Government" },
-                    { 5, "Federal Government" },
-                    { 6, "MPO" },
-                    { 7, "State Government" },
-                    { 8, "Other" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Applications",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 0, "NA" },
-                    { 1, "ATSPM" },
-                    { 2, "SPMWatchDog" },
-                    { 3, "DatabaseArchive" },
-                    { 4, "GeneralSetting" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Areas",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 0, "Unknown" });
-
-            migrationBuilder.InsertData(
-                table: "ControllerTypes",
-                columns: new[] { "Id", "ActiveFtp", "Description", "Ftpdirectory", "Password", "Snmpport", "UserName" },
-                values: new object[,]
-                {
-                    { 0, false, "Unknown", "root", "password", 161L, "user" },
-                    { 1, true, "ASC3", "//Set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 2, true, "Cobalt", "/set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 3, true, "ASC3 - 2070", "/set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 4, false, "MaxTime", "v1/asclog/xml/full", "none", 161L, "none" },
-                    { 5, true, "Trafficware", "none", "none", 161L, "none" },
-                    { 6, false, "Siemens SEPAC", "/mnt/sd", "$adm*kon2", 161L, "admin" },
-                    { 7, false, "McCain ATC EX", " /mnt/rd/hiResData", "root", 161L, "root" },
-                    { 8, false, "Peek", "mnt/sram/cuLogging", "PeekAtc", 161L, "atc" },
-                    { 9, true, "EOS", "/set1", "ecpi2ecpi", 161L, "econolite" },
-                    { 10, true, "New Cobalt", "/opt/econolite/set1", "ecpi2ecpi", 161L, "econolite" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "DetectionHardwares",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 0, "NA" },
-                    { 1, "WavetronixMatrix" },
-                    { 2, "WavetronixAdvance" },
-                    { 3, "InductiveLoops" },
-                    { 4, "Sensys" },
-                    { 5, "Video" },
-                    { 6, "FLIRThermalCamera" }
-                });
 
             migrationBuilder.InsertData(
                 table: "DetectionTypes",
@@ -907,149 +598,51 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Jurisdictions",
-                columns: new[] { "Id", "CountyParish", "Mpo", "Name", "OtherPartners" },
-                values: new object[] { 0, "Unknown", null, "Unknown", "Unknown" });
-
-            migrationBuilder.InsertData(
-                table: "LaneTypes",
-                columns: new[] { "Id", "Abbreviation", "Description" },
+                table: "MeasureType",
+                columns: new[] { "Id", "Abbreviation", "DisplayOrder", "Name", "ShowOnAggregationSite", "ShowOnWebsite" },
                 values: new object[,]
                 {
-                    { 0, "NA", "Unknown" },
-                    { 1, "V", "Vehicle" },
-                    { 2, "Bike", "Bike" },
-                    { 3, "Ped", "Pedestrian" },
-                    { 4, "E", "Exit" },
-                    { 5, "LRT", "Light Rail Transit" },
-                    { 6, "Bus", "Bus" },
-                    { 7, "HDV", "High Occupancy Vehicle" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Menus",
-                columns: new[] { "Id", "Action", "Application", "Controller", "DisplayOrder", "Name", "ParentId" },
-                values: new object[,]
-                {
-                    { 1, "#", "SignalPerformanceMetrics", "#", 10, "Measures", 0 },
-                    { 2, "#", "SignalPerformanceMetrics", "#", 20, "Reports", 0 },
-                    { 3, "Create", "SignalPerformanceMetrics", "ActionLogs", 30, "Log Action Taken", 0 },
-                    { 4, "#", "SignalPerformanceMetrics", "#", 40, "Links", 0 },
-                    { 5, "Display", "SignalPerformanceMetrics", "FAQs", 50, "FAQ", 0 },
-                    { 8, "Usage", "SignalPerformanceMetrics", "ActionLogs", 10, "Chart Usage", 2 },
-                    { 9, "Index", "SignalPerformanceMetrics", "DefaultCharts", 10, "Signal", 1 },
-                    { 10, "Analysis", "SignalPerformanceMetrics", "LinkPivot", 20, "Purdue Link Pivot", 1 },
-                    { 11, "#", "SignalPerformanceMetrics", "#", 100, "Admin", 0 },
-                    { 12, "Index", "SignalPerformanceMetrics", "Signals", 10, "Signal Configuration", 11 },
-                    { 13, "Index", "SignalPerformanceMetrics", "Routes", 30, "Route Configuration", 11 },
-                    { 15, "RoleAddToUser", "SignalPerformanceMetrics", "Account", 100, "Roles", 11 },
-                    { 16, "Index", "SignalPerformanceMetrics", "Menus", 20, "Menu Configuration", 11 },
-                    { 17, "Index", "SignalPerformanceMetrics", "Jurisdictions", 80, "Agency Configuration", 11 },
-                    { 27, "About", "SignalPerformanceMetrics", "Home", 90, "About", 0 },
-                    { 48, "Index", "SignalPerformanceMetrics", "AggregateDataExport", 20, "Aggregate Data", 2 },
-                    { 49, "RawDataExport", "SignalPerformanceMetrics", "DataExport", 50, "Raw Data Export", 11 },
-                    { 51, "Index", "SignalPerformanceMetrics", "SPMUsers", 90, "Users", 11 },
-                    { 52, "Index", "SignalPerformanceMetrics", "FAQs", 70, "FAQs", 11 },
-                    { 54, "Edit", "SignalPerformanceMetrics", "WatchDogApplicationSettings", 60, "Watch Dog", 11 },
-                    { 56, "edit", "SignalPerformanceMetrics", "DatabaseArchiveSettings", 70, "Database Archive Settings", 11 },
-                    { 57, "Edit", "SignalPerformanceMetrics", "GeneralSettings", 40, "General Settings", 11 },
-                    { 58, "Index", "SignalPerformanceMetrics", "LeftTurnGapReport", 25, "Left Turn Gap Analysis", 2 },
-                    { 66, "Index", "SignalPerformanceMetrics", "Areas", 31, "Area Configuration", 11 },
-                    { 71, "SignalDetail", "SignalPerformanceMetrics", "Signals", 15, "Configuration", 2 },
-                    { 100, "Index", "SignalPerformanceMetrics", "MeasuresDefaults", 45, "Measure Defaults Settings", 11 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "MetricTypes",
-                columns: new[] { "Id", "Abbreviation", "ChartName", "DisplayOrder", "ShowOnAggregationSite", "ShowOnWebsite" },
-                values: new object[,]
-                {
-                    { 1, "PPT", "Purdue Phase Termination", 1, false, true },
-                    { 2, "SM", "Split Monitor", 5, false, true },
-                    { 3, "PedD", "Pedestrian Delay", 10, false, true },
-                    { 4, "PD", "Preemption Details", 15, false, true },
-                    { 5, "TMC", "Turning Movement Counts", 40, false, true },
-                    { 6, "PCD", "Purdue Coordination Diagram", 60, false, true },
-                    { 7, "AV", "Approach Volume", 45, false, true },
-                    { 8, "AD", "Approach Delay", 50, false, true },
-                    { 9, "AoR", "Arrivals On Red", 55, false, true },
-                    { 10, "Speed", "Approach Speed", 65, false, true },
-                    { 11, "YRA", "Yellow and Red Actuations", 35, false, true },
-                    { 12, "SF", "Purdue Split Failure", 30, false, true },
-                    { 13, "LP", "Purdue Link Pivot", 70, false, false },
-                    { 14, "PSR", "Preempt Service Request", 80, false, false },
-                    { 15, "PS", "Preempt Service", 75, false, false },
-                    { 16, "DVA", "Detector Activation Count", 85, true, false },
-                    { 17, "TAA", "Timing And Actuation", 20, false, true },
-                    { 18, "APCD", "Approach Pcd", 102, true, false },
-                    { 19, "CA", "Approach Cycle", 103, true, false },
-                    { 20, "SFA", "Approach Split Fail", 104, true, false },
-                    { 22, "PreemptA", "Signal Preemption", 105, true, false },
-                    { 24, "TSPA", "Signal Priority", 106, true, false },
-                    { 25, "ASA", "Approach Speed", 107, true, false },
-                    { 26, "YRAA", "Approach Yellow Red Activations", 108, true, false },
-                    { 27, "SEC", "Signal Event Count", 109, true, false },
-                    { 28, "AEC", "Approach Event Count", 110, true, false },
-                    { 29, "AEC", "Phase Termination", 111, true, false },
-                    { 30, "APD", "Phase Pedestrian Delay", 112, true, false },
-                    { 31, "LTGA", "Left Turn Gap Analysis", 112, false, true },
-                    { 32, "WT", "Wait Time", 113, false, true },
-                    { 33, "GVD", "Gap Vs Demand", 115, false, false },
-                    { 34, "LTG", "Left Turn Gap", 114, true, false },
-                    { 35, "SM", "Split Monitor", 120, true, false }
-                });
-
-            migrationBuilder.InsertData(
-                table: "MovementTypes",
-                columns: new[] { "Id", "Abbreviation", "Description", "DisplayOrder" },
-                values: new object[,]
-                {
-                    { 0, "NA", "Unknown", 6 },
-                    { 1, "T", "Thru", 3 },
-                    { 2, "R", "Right", 5 },
-                    { 3, "L", "Left", 1 },
-                    { 4, "TR", "Thru-Right", 4 },
-                    { 5, "TL", "Thru-Left", 2 },
-                    { 6, "NW", "Northwest", 6 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Regions",
-                columns: new[] { "Id", "Description" },
-                values: new object[] { 0, "Unknown" });
-
-            migrationBuilder.InsertData(
-                table: "VersionActions",
-                columns: new[] { "Id", "Description" },
-                values: new object[,]
-                {
-                    { 0, "Unknown" },
-                    { 1, "New" },
-                    { 2, "Edit" },
-                    { 3, "Delete" },
-                    { 4, "NewVersion" },
-                    { 10, "Initial" }
+                    { 1, "PPT", 1, "Purdue Phase Termination", false, true },
+                    { 2, "SM", 5, "Split Monitor", false, true },
+                    { 3, "PedD", 10, "Pedestrian Delay", false, true },
+                    { 4, "PD", 15, "Preemption Details", false, true },
+                    { 5, "TMC", 40, "Turning Movement Counts", false, true },
+                    { 6, "PCD", 60, "Purdue Coordination Diagram", false, true },
+                    { 7, "AV", 45, "Approach Volume", false, true },
+                    { 8, "AD", 50, "Approach Delay", false, true },
+                    { 9, "AoR", 55, "Arrivals On Red", false, true },
+                    { 10, "Speed", 65, "Approach Speed", false, true },
+                    { 11, "YRA", 35, "Yellow and Red Actuations", false, true },
+                    { 12, "SF", 30, "Purdue Split Failure", false, true },
+                    { 13, "LP", 70, "Purdue Link Pivot", false, false },
+                    { 14, "PSR", 80, "Preempt Service Request", false, false },
+                    { 15, "PS", 75, "Preempt Service", false, false },
+                    { 16, "DVA", 85, "Detector Activation Count", true, false },
+                    { 17, "TAA", 20, "Timing And Actuation", false, true },
+                    { 18, "APCD", 102, "Approach Pcd", true, false },
+                    { 19, "CA", 103, "Approach Cycle", true, false },
+                    { 20, "SFA", 104, "Approach Split Fail", true, false },
+                    { 22, "PreemptA", 105, "Signal Preemption", true, false },
+                    { 24, "TSPA", 106, "Signal Priority", true, false },
+                    { 25, "ASA", 107, "Approach Speed", true, false },
+                    { 26, "YRAA", 108, "Approach Yellow Red Activations", true, false },
+                    { 27, "SEC", 109, "Signal Event Count", true, false },
+                    { 28, "AEC", 110, "Approach Event Count", true, false },
+                    { 29, "AEC", 111, "Phase Termination", true, false },
+                    { 30, "APD", 112, "Phase Pedestrian Delay", true, false },
+                    { 31, "LTGA", 112, "Left Turn Gap Analysis", false, true },
+                    { 32, "WT", 113, "Wait Time", false, true },
+                    { 33, "GVD", 115, "Gap Vs Demand", false, false },
+                    { 34, "LTG", 114, "Left Turn Gap", true, false },
+                    { 35, "SM", 120, "Split Monitor", true, false }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActionActionLog_ActionsId",
-                table: "ActionActionLog",
-                column: "ActionsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActionLogMetricType_MetricTypesId",
-                table: "ActionLogMetricType",
-                column: "MetricTypesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActionLogs_AgencyId",
-                table: "ActionLogs",
-                column: "AgencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationSettings_ApplicationId",
+                name: "IX_ApplicationSettings_Setting",
                 table: "ApplicationSettings",
-                column: "ApplicationId");
+                column: "Setting",
+                unique: true,
+                filter: "[Setting] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Approaches_DirectionTypeId",
@@ -1072,9 +665,9 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "DetectorsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetectionTypeMetricType_MetricTypeMetricsId",
-                table: "DetectionTypeMetricType",
-                column: "MetricTypeMetricsId");
+                name: "IX_DetectionTypeMeasureType_MeasureTypesId",
+                table: "DetectionTypeMeasureType",
+                column: "MeasureTypesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DetectorComments_DetectorId",
@@ -1082,44 +675,46 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "DetectorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetectorComments_Id",
-                table: "DetectorComments",
-                column: "Id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Detectors_ApproachId",
                 table: "Detectors",
                 column: "ApproachId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Detectors_DetectionHardwareId",
-                table: "Detectors",
-                column: "DetectionHardwareId");
+                name: "IX_MeasureCommentMeasureType_MeasureTypesId",
+                table: "MeasureCommentMeasureType",
+                column: "MeasureTypesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Detectors_LaneTypeId",
-                table: "Detectors",
-                column: "LaneTypeId");
+                name: "IX_MeasureComments_SignalIdentifier",
+                table: "MeasureComments",
+                column: "SignalIdentifier");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Detectors_MovementTypeId",
-                table: "Detectors",
-                column: "MovementTypeId");
+                name: "IX_MeasureOptions_MeasureTypeId",
+                table: "MeasureOptions",
+                column: "MeasureTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MetricCommentMetricType_MetricTypesId",
-                table: "MetricCommentMetricType",
-                column: "MetricTypesId");
+                name: "IX_MeasureOptions_Option",
+                table: "MeasureOptions",
+                column: "Option",
+                unique: true,
+                filter: "[Option] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoutePhaseDirections_DirectionTypeId",
-                table: "RoutePhaseDirections",
-                column: "DirectionTypeId");
+                name: "IX_Menus_ParentId",
+                table: "Menus",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoutePhaseDirections_RouteSignalId",
-                table: "RoutePhaseDirections",
-                column: "RouteSignalId");
+                name: "IX_RouteSignals_OpposingDirectionId",
+                table: "RouteSignals",
+                column: "OpposingDirectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteSignals_PrimaryDirectionId",
+                table: "RouteSignals",
+                column: "PrimaryDirectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RouteSignals_RouteId",
@@ -1140,22 +735,11 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "IX_Signals_RegionId",
                 table: "Signals",
                 column: "RegionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Signals_VersionActionId",
-                table: "Signals",
-                column: "VersionActionId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ActionActionLog");
-
-            migrationBuilder.DropTable(
-                name: "ActionLogMetricType");
-
             migrationBuilder.DropTable(
                 name: "ApplicationSettings");
 
@@ -1166,7 +750,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "DetectionTypeDetector");
 
             migrationBuilder.DropTable(
-                name: "DetectionTypeMetricType");
+                name: "DetectionTypeMeasureType");
 
             migrationBuilder.DropTable(
                 name: "DetectorComments");
@@ -1178,25 +762,16 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Faqs");
 
             migrationBuilder.DropTable(
-                name: "MeasuresDefaults");
+                name: "MeasureCommentMeasureType");
+
+            migrationBuilder.DropTable(
+                name: "MeasureOptions");
 
             migrationBuilder.DropTable(
                 name: "Menus");
 
             migrationBuilder.DropTable(
-                name: "MetricCommentMetricType");
-
-            migrationBuilder.DropTable(
-                name: "RoutePhaseDirections");
-
-            migrationBuilder.DropTable(
-                name: "Actions");
-
-            migrationBuilder.DropTable(
-                name: "ActionLogs");
-
-            migrationBuilder.DropTable(
-                name: "Applications");
+                name: "RouteSignals");
 
             migrationBuilder.DropTable(
                 name: "Areas");
@@ -1208,31 +783,16 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Detectors");
 
             migrationBuilder.DropTable(
-                name: "MetricComments");
+                name: "MeasureComments");
 
             migrationBuilder.DropTable(
-                name: "MetricTypes");
-
-            migrationBuilder.DropTable(
-                name: "RouteSignals");
-
-            migrationBuilder.DropTable(
-                name: "Agencies");
-
-            migrationBuilder.DropTable(
-                name: "Approaches");
-
-            migrationBuilder.DropTable(
-                name: "DetectionHardwares");
-
-            migrationBuilder.DropTable(
-                name: "LaneTypes");
-
-            migrationBuilder.DropTable(
-                name: "MovementTypes");
+                name: "MeasureType");
 
             migrationBuilder.DropTable(
                 name: "Routes");
+
+            migrationBuilder.DropTable(
+                name: "Approaches");
 
             migrationBuilder.DropTable(
                 name: "DirectionTypes");
@@ -1248,9 +808,6 @@ namespace ATSPM.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Regions");
-
-            migrationBuilder.DropTable(
-                name: "VersionActions");
         }
     }
 }

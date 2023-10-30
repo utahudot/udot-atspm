@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// Menu Repository
+    /// Menu item repository
     /// </summary>
-    public interface IMenuRepository : IAsyncRepository<Menu>
+    public interface IMenuItemReposiotry : IAsyncRepository<MenuItem>
     {
     }
 }
