@@ -2,16 +2,27 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    
+    /// <summary>
+    /// Detection type
+    /// </summary>
     public partial class DetectionType : AtspmConfigModelBase<DetectionTypes>, IRelatedDetectors, IRelatedMeasureTypes
     {
+        /// <summary>
+        /// Detection type description
+        /// </summary>
         public string Description { get; set; }
+        
+        /// <summary>
+        /// Detection type abbreviation
+        /// </summary>
         public string Abbreviation { get; set; }
+        
+        /// <summary>
+        /// Detection type display order
+        /// </summary>
         public int DisplayOrder { get; set; }
 
         #region IRelatedDetectors

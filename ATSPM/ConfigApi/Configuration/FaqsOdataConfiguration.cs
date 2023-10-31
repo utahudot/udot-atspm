@@ -5,7 +5,10 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class FaqsModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Frequently asked questions oData configuration
+    /// </summary>
+    public class FaqsOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)

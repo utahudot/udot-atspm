@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231030210415_EFCore6Upgrade")]
+    [Migration("20231031153913_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -117,6 +117,11 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<string>("LogDirectory")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<string>("LogFileType")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)

@@ -1,5 +1,7 @@
 ﻿using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories;
 using ATSPM.Data;
+using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +13,7 @@ namespace ATSPM.Infrastructure.Extensions
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddATSPMDbContext(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
             services.AddDbContext<ConfigContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<AggregationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(AggregationContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
@@ -37,6 +39,31 @@ namespace ATSPM.Infrastructure.Extensions
         {
             services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
             services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
+
+            return services;
+        }
+
+        public static IServiceCollection AddAtspmEFRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IApproachRepository, ApproachEFRepository>();
+            services.AddScoped<IAreaRepository, AreaEFRepository>();
+            services.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
+            services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
+            services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
+            services.AddScoped<IDetectorRepository, DetectorEFRepository>();
+            services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
+            services.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
+            services.AddScoped<IFaqRepository, FaqEFRepository>();
+            services.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
+            services.AddScoped<IMeasureCommentRepository, MeasureCommentEFRepository>();
+            services.AddScoped<IMeasureOptionsRepository, MeasureOptionsEFRepository>();
+            services.AddScoped<IMeasureTypeRepository, MeasureTypeEFRepository>();
+            services.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
+            services.AddScoped<IRegionsRepository, RegionEFRepository>();
+            services.AddScoped<IRouteRepository, RouteEFRepository>();
+            services.AddScoped<IRouteSignalsRepository, RouteSignalEFRepository>();
+            services.AddScoped<ISettingsRepository, SettingsEFRepository>();
+            services.AddScoped<ISignalRepository, SignalEFRepository>();
 
             return services;
         }
