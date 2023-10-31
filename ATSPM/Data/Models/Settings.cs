@@ -3,6 +3,9 @@
 
 namespace ATSPM.Data.Models
 {
+    /// <summary>
+    /// Application settings
+    /// </summary>
     public partial class Settings : AtspmConfigModelBase<int>
     {
         /// <summary>

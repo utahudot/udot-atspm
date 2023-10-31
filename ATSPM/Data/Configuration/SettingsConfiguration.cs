@@ -16,6 +16,10 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.Setting).IsUnique();
 
+            builder.Property(e => e.Setting)
+                .IsRequired()
+                .HasMaxLength(32);
+
             builder.Property(e => e.Value)
                 .IsRequired()
                 .HasMaxLength(128);

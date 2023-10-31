@@ -115,6 +115,11 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
+                    b.Property<string>("LogFileType")
+                        .HasMaxLength(5)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(5)");
+
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .IsUnicode(false)

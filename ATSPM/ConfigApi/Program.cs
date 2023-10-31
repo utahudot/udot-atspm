@@ -1,7 +1,8 @@
 using Asp.Versioning;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Data;
-using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -12,15 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Net;
 using System.Text.Json;
-using ATSPM.Domain.Extensions;
-using Microsoft.AspNetCore.OData.Formatter.Serialization;
-using Microsoft.OData;
-using System.Reflection.Metadata;
-using Microsoft.OData.Edm;
-using ATSPM.ConfigApi.Controllers;
-using Microsoft.AspNetCore.OData.Batch;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,11 +47,10 @@ builder.Host.ConfigureServices((h, s) =>
         o.ReportApiVersions = true;
         o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
-        o.Policies.Sunset(0.9)
-        .Effective(DateTimeOffset.Now.AddDays(60))
-        .Link("policy.html")
-        .Title("Versioning Policy")
-        .Type("text/html");
+        
+        //Sunset policies
+        o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
+        //o.Policies.Sunset(0.9).Effective(DateTimeOffset.Now.AddDays(60)).Link("policy.html").Title("Versioning Policy").Type("text/html");
     })
     .AddOData(o => o.AddRouteComponents("api/v{version:apiVersion}"))
     .AddODataApiExplorer(o =>
@@ -87,21 +79,9 @@ builder.Host.ConfigureServices((h, s) =>
             o.IncludeXmlComments(filePath);
         });
 
-    s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
-    s.AddScoped<ISettingsRepository, SettingsEFRepository>();
-    s.AddScoped<IApproachRepository, ApproachEFRepository>();
-    s.AddScoped<IAreaRepository, AreaEFRepository>();
-    s.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
-    s.AddScoped<IDetectorRepository, DetectorEFRepository>();
-    s.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
-    s.AddScoped<IFaqRepository, FaqEFRepository>();
-    s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
-    s.AddScoped<IMeasureOptionsRepository, MeasureOptionsEFRepository>();
-    s.AddScoped<IMeasureTypeRepository, MeasureTypeEFRepository>();
-    s.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
-    s.AddScoped<IRegionsRepository, RegionEFRepository>();
-    s.AddScoped<ISignalRepository, SignalEFRepository>();
-
+    s.AddAtspmDbContext(h);
+    //s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
+    s.AddAtspmEFRepositories();
 });
 
 var app = builder.Build();
