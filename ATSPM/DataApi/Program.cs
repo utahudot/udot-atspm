@@ -69,7 +69,7 @@ builder.Host.ConfigureServices((h, s) =>
          o.OperationFilter<TimestampFormatHeader>();
      });
 
-    s.AddATSPMDbContext(h);
+    s.AddAtspmDbContext(h);
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 });
 

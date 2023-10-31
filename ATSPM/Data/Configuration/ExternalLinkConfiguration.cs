@@ -1,14 +1,15 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection;
-using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.Data.Configuration
 {
+    /// <summary>
+    /// External links configuration
+    /// </summary>
     public class ExternalLinkConfiguration : IEntityTypeConfiguration<ExternalLink>
     {
+        ///<inheritdoc/>
         public void Configure(EntityTypeBuilder<ExternalLink> builder)
         {
             builder.HasComment("External Links");
