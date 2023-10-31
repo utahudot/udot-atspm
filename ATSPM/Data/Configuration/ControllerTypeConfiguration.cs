@@ -22,12 +22,19 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(12)
                 .HasDefaultValue(TransportProtocols.Unknown);
 
-            builder.Property(e => e.Port).HasDefaultValueSql("((0))");
+            builder.Property(e => e.Port)
+                .HasDefaultValueSql("((0))");
+
+            builder.Property(e => e.LogFileType)
+                .IsRequired(false)
+                .HasMaxLength(5);
 
             builder.Property(e => e.Password)
+                .IsRequired(false)
                 .HasMaxLength(50);
 
             builder.Property(e => e.UserName)
+                .IsRequired(false)
                 .HasMaxLength(50);
 
             //builder.HasData
