@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Data;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace ATSPM.Infrastructure.Repositories
     public class DetectionTypeEFRepository : ATSPMRepositoryEFBase<DetectionType>, IDetectionTypeRepository
     {
         /// <inheritdoc/>
-        public DetectionTypeEFRepository(DbContext db, ILogger<DetectionTypeEFRepository> log) : base(db, log) { }
+        public DetectionTypeEFRepository(ConfigContext db, ILogger<DetectionTypeEFRepository> log) : base(db, log) { }
 
         #region Overrides
 

@@ -23,7 +23,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public override IQueryable<Faq> GetList()
         {
-            return base.GetList().OrderBy(o => o.OrderNumber);
+            return base.GetList().OrderBy(o => o.DisplayOrder);
         }
 
         #endregion

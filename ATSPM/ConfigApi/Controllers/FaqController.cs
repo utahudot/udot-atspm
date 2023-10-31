@@ -17,5 +17,17 @@ namespace ATSPM.ConfigApi.Controllers
         {
             _repository = repository;
         }
+
+        #region NavigationProperties
+
+        #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
+
+        #endregion
     }
 }
