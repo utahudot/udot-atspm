@@ -4,30 +4,18 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
 {
-    public class BarStack : DataPointBase
+    public class BarStack
     {
-        public List<Layer> Layers { get; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
+        public double Value { get; set; }
 
-        public BarStack(DateTime startAggTime, List<int> binValueList, int cycleCount, int binSize) : base(startAggTime)
+        public BarStack(int xAxisBinNumber, int yAxisBinNumber, double value)
         {
-            //find the max layers number that is used
-            int maxI = 0;
-            for (int i = 0; i < binValueList.Count; i++)
-            {
-                if (binValueList[i] != 0 && i > maxI)
-                {
-                    maxI = i;
-                }
-            }
-            //create Layers
-            Layers = new List<Layer>();
-            int binStart = 0;
-            for (int i = 0; i <= maxI; i++)
-            {
-                Layers.Add(new Layer(binValueList[i], cycleCount, binStart));
-                binStart = binStart + binSize;
-            }
+            X = xAxisBinNumber;
+            Y = yAxisBinNumber;
+            Value = value;
         }
     }
 }

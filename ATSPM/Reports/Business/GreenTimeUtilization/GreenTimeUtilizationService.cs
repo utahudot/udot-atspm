@@ -65,7 +65,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             var checkAgainstEvents = new List<ControllerEventLog>();
             if (isPermissivePhase == true && phaseDetail.PhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
             {
-                checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.SelectedBinSize), phaseEventNumbers, phaseDetail.PhaseNumber).ToList();
+                checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.XAxisBinSize), phaseEventNumbers, phaseDetail.PhaseNumber).ToList();
             }
 
             //get a list of detections for that phase
@@ -78,12 +78,13 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             //        x.EventCode == DETECTOR_ON && x.EventParam == detector.DetChannel));
             //}
 
-            var stacks = new List<BarStack>();
+            var bins = new List<BarStack>();
             var averageSplits = new List<AverageSplit>();
+            int xAxisBinNumber = 0;
             //loop for each Agg bin
-            for (var StartBinTime = options.Start; StartBinTime < options.End; StartBinTime = StartBinTime.AddMinutes(options.SelectedBinSize))
+            for (var StartBinTime = options.Start; StartBinTime < options.End; StartBinTime = StartBinTime.AddMinutes(options.XAxisBinSize), xAxisBinNumber++)
             {
-                DateTime endAggTime = StartBinTime.AddMinutes(options.SelectedBinSize) <= options.End ? StartBinTime.AddMinutes(options.SelectedBinSize) : options.End; //make the enddate the end of the bin or the end of the ananlysis period, whichever is sooner
+                DateTime endAggTime = StartBinTime.AddMinutes(options.XAxisBinSize) <= options.End ? StartBinTime.AddMinutes(options.XAxisBinSize) : options.End; //make the enddate the end of the bin or the end of the ananlysis period, whichever is sooner
                 List<double> greenDurationList = new List<double>();
                 List<int> BinValueList = new List<int>(new int[99]);
                 int cycleCount = 0;
@@ -153,23 +154,21 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                     foreach (var detection in greenDetectionsList)
                     {
                         TimeSpan timeSinceGreenStart = detection.Timestamp - green.Timestamp;
-                        var binnumber = (int)(timeSinceGreenStart.TotalSeconds / options.SelectedBinSize);
-                        if (BinValueList.Count < binnumber)
+                        var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.XAxisBinSize);
+                        if (BinValueList.Count < yAxisBinNumber)
                         {
-                            int howMany = binnumber - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
+                            int howMany = yAxisBinNumber - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
                             for (int i = 1; i <= howMany; i++)
                             {
                                 BinValueList.Add(0); //add a new value of 0 -- not sure if this is the right statement yet
                             }
                         }
-                        BinValueList[binnumber] = BinValueList[binnumber] + 1;
+                        BinValueList[yAxisBinNumber] = BinValueList[yAxisBinNumber] + 1;
 
-                    }
-
+                    }                  
                 }
 
-                //create new classes
-                stacks.Add(new BarStack(StartBinTime, BinValueList, cycleCount, options.SelectedBinSize));
+                createStack(bins, BinValueList, cycleCount, xAxisBinNumber);
                 averageSplits.Add(new AverageSplit(StartBinTime, greenDurationList));
             }
 
@@ -189,7 +188,7 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
                 phaseDetail.Approach.Signal.SignalIdentifier,
                 options.Start,
                 options.End,
-                stacks,
+                bins,
                 averageSplits,
                 programmedSplits,
                 phaseDetail.PhaseNumber,
@@ -200,6 +199,23 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             return result;
         }
 
+        private void createStack(List<BarStack> bins, List<int> binValueList, int cycleCount, int xAxisBinNumber)
+        {
+            int maxI = 0;
+            for (int i = 0; i < binValueList.Count; i++)
+            {
+                if (binValueList[i] != 0 && i > maxI)
+                {
+                    maxI = i;
+                }
+            }
+
+            for (int yAxisBinNumber = 0; yAxisBinNumber <= maxI; yAxisBinNumber++)
+            {
+                double value = Math.Round((double)binValueList[yAxisBinNumber] / (double)cycleCount, 2);
+                bins.Add(new BarStack(xAxisBinNumber, yAxisBinNumber, value));
+            }
+        }
 
         private int GetProgrammedSplitTime(
             int phaseNumber,

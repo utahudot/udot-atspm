@@ -17,14 +17,14 @@ namespace ATSPM.Application.Reports.Business.PerdueCoordinationDiagram
             int phaseNumber,
             string phaseNumberSort) : base(approachId, signalIdentifier, start, end)
         {
-            Stacks = stacks;
+            Bins = stacks;
             AvgSplits = avgSplits;
             ProgSplits = progSplits;
             PhaseNumber = phaseNumber;
             PhaseNumberSort = phaseNumberSort;
         }
 
-        public List<BarStack> Stacks { get; set; } = new List<BarStack>();
+        public List<BarStack> Bins { get; set; } = new List<BarStack>();
         public List<AverageSplit> AvgSplits { get; set; } = new List<AverageSplit>();
         public List<ProgrammedSplit> ProgSplits { get; set; } = new List<ProgrammedSplit>();
         public int PhaseNumber { get; set; }
