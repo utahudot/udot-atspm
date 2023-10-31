@@ -2,6 +2,7 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.Data.Models
 {
@@ -29,6 +30,11 @@ namespace ATSPM.Data.Models
         /// Path to log directory
         /// </summary>
         public string LogDirectory { get; set; }
+
+        /// <summary>
+        /// Extension of log file type to look for
+        /// </summary>
+        public string LogFileType { get; set; }
 
         /// <summary>
         /// Username
