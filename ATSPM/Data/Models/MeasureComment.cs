@@ -2,9 +2,6 @@
 #nullable disable
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace ATSPM.Data.Models
 {

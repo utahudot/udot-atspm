@@ -5,7 +5,10 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class ExternalLinksModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// External links oData configuration
+    /// </summary>
+    public class ExternalLinksOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
@@ -16,7 +19,7 @@ namespace ATSPM.ConfigApi.Configuration
 
             switch (apiVersion.MajorVersion)
             {
-                case 1:
+                default:
                     {
                         model.Property(p => p.Name).IsRequired();
                         model.Property(p => p.Url).IsRequired();
