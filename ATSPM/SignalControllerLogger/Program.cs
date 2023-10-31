@@ -63,7 +63,7 @@ namespace ATSPM.SignalControllerLogger
 
                     s.AddLogging();
 
-                    s.AddATSPMDbContext(h);
+                    s.AddAtspmDbContext(h);
 
                     //background services
                     s.AddHostedService<LoggerBackgroundService>();

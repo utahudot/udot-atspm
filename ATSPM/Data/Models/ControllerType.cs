@@ -2,7 +2,6 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using ATSPM.Domain.Extensions;
 
 namespace ATSPM.Data.Models
 {
@@ -15,7 +14,7 @@ namespace ATSPM.Data.Models
         /// Controller type description
         /// </summary>
         public string Description { get; set; }
-        
+
         /// <summary>
         /// Transport protocol for controller logging
         /// </summary>

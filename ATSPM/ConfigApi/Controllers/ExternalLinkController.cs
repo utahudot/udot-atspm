@@ -7,7 +7,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// <summary>
     /// ExternalLinks Controller
     /// </summary>
-    [ApiVersion(1.0)]
+    [ApiVersion(0.1)]
     public class ExternalLinkController : AtspmConfigControllerBase<ExternalLink, int>
     {
         private readonly IExternalLinksRepository _repository;
@@ -17,5 +17,17 @@ namespace ATSPM.ConfigApi.Controllers
         {
             _repository = repository;
         }
+
+        #region NavigationProperties
+
+        #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
+
+        #endregion
     }
 }

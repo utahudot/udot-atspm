@@ -37,6 +37,7 @@ namespace ATSPM.Infrastructure.Migrations
                     Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
                     LogDirectory = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    LogFileType = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
