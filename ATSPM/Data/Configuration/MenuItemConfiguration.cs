@@ -28,6 +28,9 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.Link)
                 .HasMaxLength(512);
 
+            builder.Property(e => e.ParentId)
+                .IsRequired(false);
+
             builder.HasOne(d => d.Parent).WithMany(m => m.Children).HasForeignKey(d => d.ParentId).OnDelete(DeleteBehavior.Restrict);
 
             builder.Ignore(i => i.HasLink).Ignore(i => i.HasDocument);

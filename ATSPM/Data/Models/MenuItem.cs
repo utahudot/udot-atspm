@@ -50,7 +50,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Item parent id
         /// </summary>
-        public int? ParentId { get; set; }
+        public int ParentId { get; set; }
 
         /// <summary>
         /// Parent menu item
