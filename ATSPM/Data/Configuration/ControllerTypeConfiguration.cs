@@ -37,6 +37,8 @@ namespace ATSPM.Data.Configuration
                 .IsRequired(false)
                 .HasMaxLength(50);
 
+            //Christian, we will want to change the "Controller Type" names in ATSPM to the following so they make sense: "ASC3" - change to "ASC3-2.54+"; "Cobalt" - change to "ASC3-32.54+"; "EOS" - change to "ASC3 32.67.20+"; create a new one that says, "ASC3-32.68.40+".
+
             //builder.HasData
             //    (
             //        new ControllerType()
