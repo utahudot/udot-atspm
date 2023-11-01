@@ -7,7 +7,10 @@ using System.Net;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class SignalModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Signal oData configuration
+    /// </summary>
+    public class SignalOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)

@@ -5,22 +5,23 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class DetectorModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Approach oData configuration
+    /// </summary>
+    public class ApproachOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Detector>("Detector")
+            var model = builder.EntitySet<Approach>("Approach")
                 .EntityType
                 .Page(default, default)
-                .Expand(1, SelectExpandType.Automatic, new string[] { "approach", "detectionHardware", "laneType", "movementType" });
+                .Expand(1, SelectExpandType.Automatic, new string[] { "directionType", "signal" });
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        model.Property(p => p.DectectorIdentifier).MaxLength = 50;
-
                         break;
                     }
             }
