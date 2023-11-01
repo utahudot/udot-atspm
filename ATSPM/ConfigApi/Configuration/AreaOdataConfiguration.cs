@@ -5,20 +5,24 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class ApproachModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Area oData configuration
+    /// </summary>
+    public class AreaOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Approach>("Approach")
+            var model = builder.EntitySet<Area>("Area")
                 .EntityType
-                .Page(default, default)
-                .Expand(1, SelectExpandType.Automatic, new string[] { "directionType", "signal" });
+                .Page(default, default);
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
+                        model.Property(p => p.Name).MaxLength = 50;
+
                         break;
                     }
             }
