@@ -22,7 +22,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Abbreviation).HasMaxLength(5);
 
-            builder.Property(e => e.Description).IsRequired();
+            builder.Property(e => e.Description).HasMaxLength(128).IsRequired();
 
             builder.HasData(typeof(DetectionTypes).GetFields().Where(t => t.FieldType == typeof(DetectionTypes)).Select(s => new DetectionType()
             {

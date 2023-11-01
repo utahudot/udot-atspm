@@ -5,15 +5,15 @@ using ATSPM.Data.Models;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// Detector comments controller
+    /// Menu items controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorCommentController : AtspmConfigControllerBase<DetectorComment, int>
+    public class MenuItemsController : AtspmConfigControllerBase<MenuItem, int>
     {
-        private readonly IDetectorCommentRepository _repository;
+        private readonly IMenuItemReposiotry _repository;
 
         /// <inheritdoc/>
-        public DetectorCommentController(IDetectorCommentRepository repository) : base(repository)
+        public MenuItemsController(IMenuItemReposiotry repository) : base(repository)
         {
             _repository = repository;
         }
