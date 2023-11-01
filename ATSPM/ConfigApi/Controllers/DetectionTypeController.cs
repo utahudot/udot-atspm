@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -9,15 +10,15 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// Detector Controller
+    /// Detection type controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class DetectorController : AtspmConfigControllerBase<Detector, int>
+    public class DetectionTypeController : AtspmConfigControllerBase<DetectionType, DetectionTypes>
     {
-        private readonly IDetectorRepository _repository;
+        private readonly IDetectionTypeRepository _repository;
 
         /// <inheritdoc/>
-        public DetectorController(IDetectorRepository repository) : base(repository)
+        public DetectionTypeController(IDetectionTypeRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -25,7 +26,7 @@ namespace ATSPM.ConfigApi.Controllers
         #region NavigationProperties
 
         /// <summary>
-        /// <see cref="DetectorComment"/> navigation property action
+        /// <see cref="Detector"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -33,13 +34,13 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<DetectorComment>> GetDetectorComments([FromRoute] int key)
+        public ActionResult<IEnumerable<Detector>> GetDetectors([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<DetectorComment>>(key);
+            return GetNavigationProperty<IEnumerable<Detector>>((DetectionTypes)key);
         }
 
         /// <summary>
-        /// <see cref="DetectionType"/> navigation property action
+        /// <see cref="MeasureType"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -47,9 +48,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<DetectionType>> GetDetectionTypes([FromRoute] int key)
+        public ActionResult<IEnumerable<MeasureType>> GetMeasureTypes([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<DetectionType>>(key);
+            return GetNavigationProperty<IEnumerable<MeasureType>>((DetectionTypes)key);
         }
 
         #endregion

@@ -124,7 +124,7 @@ namespace ATSPM.Data
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
             configurationBuilder.Properties<SignalVersionActions>().HaveConversion<int>();
-            configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
+            //configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
             configurationBuilder.Properties<DetectionTypes>().HaveConversion<int>();

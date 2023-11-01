@@ -5,12 +5,15 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class AreaModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Detection type oData configuration
+    /// </summary>
+    public class DetectionTypeOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Area>("Area")
+            var model = builder.EntitySet<DetectionType>("DetectionType")
                 .EntityType
                 .Page(default, default);
 
@@ -18,7 +21,10 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Name).MaxLength = 50;
+                        model.Property(p => p.Description).IsRequired();
+
+                        model.Property(p => p.Abbreviation).MaxLength = 5;
+                        model.Property(p => p.Description).MaxLength = 128;
 
                         break;
                     }

@@ -5,7 +5,10 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class MenuModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Menu items oData configuration
+    /// </summary>
+    public class MenuItemsOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
@@ -18,17 +21,11 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        //model.Property(p => p.Action).IsRequired();
-                        //model.Property(p => p.Action).MaxLength = 50;
-
-                        //model.Property(p => p.Application).IsRequired();
-                        //model.Property(p => p.Application).MaxLength = 50;
-
-                        //model.Property(p => p.Controller).IsRequired();
-                        //model.Property(p => p.Controller).MaxLength = 50;
-
                         model.Property(p => p.Name).IsRequired();
-                        model.Property(p => p.Name).MaxLength = 50;
+
+                        model.Property(p => p.Name).MaxLength = 24;
+                        model.Property(p => p.Icon).MaxLength = 1024;
+                        //model.Property(p => p.Link).MaxLength = 512;
 
                         break;
                     }

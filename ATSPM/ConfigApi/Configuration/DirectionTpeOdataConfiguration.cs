@@ -5,12 +5,15 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class ControllerTypeModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Direction type oData configuration
+    /// </summary>
+    public class DirectionTpeOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<ControllerType>("ControllerType")
+            var model = builder.EntitySet<DirectionType>("DirectionType")
                 .EntityType
                 .Page(default, default);
 
@@ -18,9 +21,8 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Description).MaxLength = 50;
-                        model.Property(p => p.UserName).MaxLength = 50;
-                        model.Property(p => p.Password).MaxLength = 50;
+                        model.Property(p => p.Abbreviation).MaxLength = 5;
+                        model.Property(p => p.Description).MaxLength = 30;
 
                         break;
                     }
