@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Emit;
 
 namespace ATSPM.Data.Configuration
 {
@@ -31,6 +32,10 @@ namespace ATSPM.Data.Configuration
                 Abbreviation = s.GetValue(s).ToString(),
                 DisplayOrder = s.GetCustomAttribute<DisplayAttribute>().Order
             }));
+
+            builder.HasMany(t => t.PrimaryDirections).WithOne(g => g.PrimaryDirection).HasForeignKey(k => k.PrimaryDirectionId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(t => t.OpposingDirections).WithOne(g => g.OpposingDirection).HasForeignKey(k => k.OpposingDirectionId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
