@@ -16,17 +16,15 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.RouteId);
 
-            builder.HasIndex(e => e.PrimaryDirectionId);
-
-            builder.HasIndex(e => e.OpposingDirectionId);
+            builder.HasIndex(p => new { p.RouteId, p.SignalIdentifier }).IsUnique();
 
             builder.Property(e => e.SignalIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
 
-            builder.HasOne(p => p.PrimaryDirection).WithOne().HasForeignKey<RouteSignal>(k => k.PrimaryDirectionId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(p => p.PrimaryDirection).WithMany(a => a.PrimaryDirections).HasForeignKey(k => k.PrimaryDirectionId).OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(p => p.OpposingDirection).WithOne().HasForeignKey<RouteSignal>(k => k.OpposingDirectionId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(p => p.OpposingDirection).WithMany(a => a.OpposingDirections).HasForeignKey(k => k.OpposingDirectionId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
