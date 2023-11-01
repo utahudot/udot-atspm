@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using Thrift.Protocol;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -36,7 +34,6 @@ namespace ATSPM.ConfigApi.Controllers
 
         /// <summary>
         /// Collection of objects from oData query.
-        /// Override to use ODataQueryOptions.
         /// </summary>
         /// <returns>Action result of type</returns>
         /// <response code="200">Items successfully retrieved.</response>
@@ -53,7 +50,6 @@ namespace ATSPM.ConfigApi.Controllers
 
         /// <summary>
         /// object with key from oData query.
-        /// Override to use ODataQueryOptions.
         /// </summary>
         /// <param name="key">Key value of object to get</param>
         /// <returns>Action result of type</returns>

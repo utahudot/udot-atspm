@@ -9,7 +9,7 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// Region Controller
+    /// Region controller
     /// </summary>
     [ApiVersion(1.0)]
     public class RegionController : AtspmConfigControllerBase<Region, int>
@@ -37,6 +37,14 @@ namespace ATSPM.ConfigApi.Controllers
         {
             return GetNavigationProperty<IEnumerable<Signal>>(key);
         }
+
+        #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
 
         #endregion
     }
