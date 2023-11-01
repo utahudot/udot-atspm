@@ -15,8 +15,8 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<RouteSignal>("RouteSignal")
                 .EntityType
-                .Page(default, default);
-                //.Expand(1, SelectExpandType.Automatic, new string[] { "primaryDirection", "opposingDirection", "route" });
+                .Page(default, default)
+                .Expand(1, SelectExpandType.Automatic, new string[] { "primaryDirection", "opposingDirection", "route" });
 
             switch (apiVersion.MajorVersion)
             {
@@ -25,10 +25,6 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.SignalIdentifier).IsRequired();
 
                         model.Property(p => p.SignalIdentifier).MaxLength = 10;
-
-                        model.HasOptional(p => p.PrimaryDirection);
-                        model.HasOptional(p => p.OpposingDirection);
-                        model.HasOptional(p => p.Route);
 
                         break;
                     }
