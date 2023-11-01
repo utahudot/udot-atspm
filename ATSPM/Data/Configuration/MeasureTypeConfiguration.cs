@@ -14,8 +14,8 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Measure Types");
 
-            builder.Property(e => e.Id)
-                .ValueGeneratedNever();
+            //builder.Property(e => e.Id)
+            //    .ValueGeneratedNever();
 
             builder.Property(e => e.Abbreviation).HasMaxLength(8);
 

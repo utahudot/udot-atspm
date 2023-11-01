@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Repositories;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -13,12 +12,12 @@ namespace ATSPM.ConfigApi.Controllers
     /// Measure comments controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureComment : AtspmConfigControllerBase<Data.Models.MeasureComment, int>
+    public class MeasureCommentController : AtspmConfigControllerBase<MeasureComment, int>
     {
         private readonly IMeasureCommentRepository _repository;
 
         /// <inheritdoc/>
-        public MeasureComment(IMeasureCommentRepository repository) : base(repository)
+        public MeasureCommentController(IMeasureCommentRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -38,6 +37,14 @@ namespace ATSPM.ConfigApi.Controllers
         {
             return GetNavigationProperty<IEnumerable<MeasureType>>(key);
         }
+
+        #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
 
         #endregion
     }

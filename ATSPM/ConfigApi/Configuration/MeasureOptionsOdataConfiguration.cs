@@ -5,20 +5,22 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class MeasureDefaultsModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Measure options oData configuration
+    /// </summary>
+    public class MeasureOptionsOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MeasureOption>("MeasuresDefault")
-                .EntityType
-                .Page(default, default);
+            var model = builder.EntitySet<MeasureOption>("MeasureOption").EntityType;
+            model.Page(default, default);
+            model.Expand(1, SelectExpandType.Automatic, new string[] { "measureType" });
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        //model.Property(p => p.MeasureType).MaxLength = 128;
                         model.Property(p => p.Option).MaxLength = 128;
                         model.Property(p => p.Value).MaxLength = 512;
 
