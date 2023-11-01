@@ -5,12 +5,15 @@ using Microsoft.OData.ModelBuilder;
 
 namespace ATSPM.ConfigApi.Configuration
 {
-    public class JurisdictionModelConfiguration : IModelConfiguration
+    /// <summary>
+    /// Route oData configuration
+    /// </summary>
+    public class RouteOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Jurisdiction>("Jurisdiction")
+            var model = builder.EntitySet<Data.Models.Route>("Route")
                 .EntityType
                 .Page(default, default);
 
@@ -18,12 +21,7 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.CountyParish).MaxLength = 50;
                         model.Property(p => p.Name).MaxLength = 50;
-                        model.Property(p => p.Mpo).MaxLength = 50;
-                        model.Property(p => p.OtherPartners).MaxLength = 50;
-
-                        //model.HasMany(m => m.Signals);
 
                         break;
                     }
