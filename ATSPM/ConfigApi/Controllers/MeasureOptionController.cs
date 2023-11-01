@@ -8,14 +8,26 @@ namespace ATSPM.ConfigApi.Controllers
     /// Measure options Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasureOptionsController : AtspmConfigControllerBase<MeasureOption, int>
+    public class MeasureOptionController : AtspmConfigControllerBase<MeasureOption, int>
     {
         private readonly IMeasureOptionsRepository _repository;
 
         /// <inheritdoc/>
-        public MeasureOptionsController(IMeasureOptionsRepository repository) : base(repository)
+        public MeasureOptionController(IMeasureOptionsRepository repository) : base(repository)
         {
             _repository = repository;
         }
+
+        #region NavigationProperties
+
+        #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
+
+        #endregion
     }
 }
