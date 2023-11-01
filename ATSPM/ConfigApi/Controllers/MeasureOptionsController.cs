@@ -5,15 +5,15 @@ using ATSPM.Data.Models;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// MeasureDefault Controller
+    /// Measure options Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class MeasuresDefaultController : AtspmConfigControllerBase<MeasureOption, int>
+    public class MeasureOptionsController : AtspmConfigControllerBase<MeasureOption, int>
     {
         private readonly IMeasureOptionsRepository _repository;
 
         /// <inheritdoc/>
-        public MeasuresDefaultController(IMeasureOptionsRepository repository) : base(repository)
+        public MeasureOptionsController(IMeasureOptionsRepository repository) : base(repository)
         {
             _repository = repository;
         }

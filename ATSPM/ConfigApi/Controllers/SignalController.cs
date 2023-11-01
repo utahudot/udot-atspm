@@ -142,7 +142,6 @@ namespace ATSPM.ConfigApi.Controllers
         /// Get all active <see cref="Signal"/> that match <paramref name="identifier"/>
         /// </summary>
         /// <param name="identifier">Signal controller identifier</param>
-        /// <param name="options">oData query options</param>
         /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]

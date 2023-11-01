@@ -39,5 +39,13 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         #endregion
+
+        #region Actions
+
+        #endregion
+
+        #region Functions
+
+        #endregion
     }
 }
