@@ -1,5 +1,7 @@
 using ATSPM.Application.Reports.Business.PreemptService;
 using Reports.Business.Common;
+using Reports.Business.PreempDetail;
+using Reports.Business.PreemptService;
 using System;
 using System.Collections.Generic;
 
@@ -8,17 +10,18 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
     /// <summary>
     /// Preempt Detail chart
     /// </summary>
-    public class PreemptDetailResult : SignalResult
+    public class PreemptDetailResult
     {
         public PreemptDetailResult(
-            string signalId,
-            DateTime start,
-            DateTime end,
-            ICollection<PreemptDetail> preemptDetails) : base(signalId, start, end)
+            ICollection<PreemptDetail> preemptDetails,
+            PreemptRequestAndServices preemptSummary)
         {
-            PreemptDetails = preemptDetails;
+            Details = preemptDetails;
+            Summary = preemptSummary;
         }
-        public ICollection<PreemptDetail> PreemptDetails { get; set; }
+        public ICollection<PreemptDetail> Details { get; set; }
+
+        public PreemptRequestAndServices Summary { get; set; }
     }
 
     public class PreemptDetail : SignalResult
@@ -28,12 +31,12 @@ namespace ATSPM.Application.Reports.Business.PreempDetail
             DateTime start,
             DateTime end,
             int preemptNumber,
-            ICollection<PreemptCycle> preemptCycles) : base(signalId, start, end)
+            ICollection<PreemptCycleResult> preemptCycles) : base(signalId, start, end)
         {
-            PreemptNumber = preemptNumber;
-            PreemptCycles = preemptCycles;
+            PreemptionNumber = preemptNumber;
+            Cycles = preemptCycles;
         }
-        public int PreemptNumber { get; set; }
-        public ICollection<PreemptCycle> PreemptCycles { get; }
+        public int PreemptionNumber { get; set; }
+        public ICollection<PreemptCycleResult> Cycles { get; }
     }
 }

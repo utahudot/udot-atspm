@@ -65,7 +65,8 @@ namespace ATSPM.Application.Reports.Controllers
 
 
             PreemptDetailResult viewModel = preemptDetailService.GetChartData(options, events);
-            viewModel.SignalDescription = signal.SignalDescription();
+            //viewModel.Details = signal.SignalDescription();
+            viewModel.Summary.SignalDescription = signal.SignalDescription();
             return Ok(viewModel);
         }
 
