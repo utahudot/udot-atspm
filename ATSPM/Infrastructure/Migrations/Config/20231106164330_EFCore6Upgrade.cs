@@ -33,11 +33,12 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    Product = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    Firmware = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: true),
                     Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
-                    LogDirectory = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    LogFileType = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: true),
+                    Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
                 },
@@ -83,8 +84,8 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    Url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
+                    Url = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: false),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -99,8 +100,8 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Header = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    Body = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    Header = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
+                    Body = table.Column<string>(type: "varchar(8000)", unicode: false, maxLength: 8000, nullable: false),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -311,7 +312,7 @@ namespace ATSPM.Infrastructure.Migrations
                     ChartEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
                     VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
-                    Note = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false, defaultValueSql: "('Initial')"),
+                    Note = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
                     Start = table.Column<DateTime>(type: "datetime", nullable: false),
                     Pedsare1to1 = table.Column<bool>(type: "bit", nullable: false),
                     SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
@@ -507,7 +508,7 @@ namespace ATSPM.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Comment = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    Comment = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
                     DetectorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
