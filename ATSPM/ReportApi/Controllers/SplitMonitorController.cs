@@ -1,18 +1,14 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.SplitMonitor;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.SplitMonitor;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
-using IdentityServer4.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
