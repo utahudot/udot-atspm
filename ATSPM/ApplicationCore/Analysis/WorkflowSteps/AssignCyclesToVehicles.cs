@@ -20,7 +20,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             foreach (var v in input.Item1)
             {
                 //TODO: Add phase validation here too!!!
-                var redCycle = input.Item2?.FirstOrDefault(w => w.SignalIdentifier == v.Detector.Approach?.Signal?.SignalId && w.InRange(v.CorrectedTimeStamp));
+                var redCycle = input.Item2?.FirstOrDefault(w => w.SignalIdentifier == v.Detector.Approach?.Signal?.SignalIdentifier && w.InRange(v.CorrectedTimeStamp));
 
                 if (redCycle != null)
                 {
