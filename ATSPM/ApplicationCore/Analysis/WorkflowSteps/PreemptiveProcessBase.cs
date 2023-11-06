@@ -20,12 +20,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => g.SignalId)
+            var result = input.GroupBy(g => g.SignalIdentifier)
                 .SelectMany(s => s.GroupBy(g => g.EventParam)
                 .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
                 {
-                    SignalIdentifier = s.Item1[0].SignalId == s.Item1[1].SignalId ? s.Item1[0].SignalId : string.Empty,
+                    SignalIdentifier = s.Item1[0].SignalIdentifier == s.Item1[1].SignalIdentifier ? s.Item1[0].SignalIdentifier : string.Empty,
                     PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
                     Start = s.Item1[0].Timestamp,
                     End = s.Item1[1].Timestamp,
