@@ -1,16 +1,14 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.ApproachSpeed;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.ApproachSpeed;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Reports.Business.Common;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

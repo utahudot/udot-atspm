@@ -1,20 +1,17 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.TurningMovementCounts;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.TurningMovementCounts;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -110,13 +107,13 @@ namespace ATSPM.Application.Reports.Controllers
                     if (movementType == MovementTypes.T)
                     {
                         movementTypeDetectors = detectorsForDirection.Where(d =>
-                        d.MovementTypeId == MovementTypes.T
-                        || d.MovementTypeId == MovementTypes.TL
-                        || d.MovementTypeId == MovementTypes.TR).ToList();
+                        d.MovementType == MovementTypes.T
+                        || d.MovementType == MovementTypes.TL
+                        || d.MovementType == MovementTypes.TR).ToList();
                     }
                     else
                     {
-                        movementTypeDetectors = detectorsForDirection.Where(d => d.MovementTypeId == movementType).ToList();
+                        movementTypeDetectors = detectorsForDirection.Where(d => d.MovementType == movementType).ToList();
                     }
                     if (!movementTypeDetectors.IsNullOrEmpty())
                     {
@@ -157,7 +154,7 @@ namespace ATSPM.Application.Reports.Controllers
                     options.Start,
                     options.End,
                     new List<int>() { 82 },
-                    detector.DetChannel,
+                    detector.DetectorChannel,
                     detector.GetOffset(),
                     detector.LatencyCorrection).ToList());
             }

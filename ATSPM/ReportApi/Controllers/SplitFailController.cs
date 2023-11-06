@@ -1,19 +1,16 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.SplitFail;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.SplitFail;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Reports.Business.Common;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -176,8 +173,8 @@ namespace ATSPM.Application.Reports.Controllers
             foreach (Detector channel in detectors.Where(d => d.DetectionTypes.Contains(detectionType)))
             {
                 //add an EC 82 at the beginning if the first EC code is 81
-                var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).FirstOrDefault();
-                var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetChannel).LastOrDefault();
+                var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetectorChannel).FirstOrDefault();
+                var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetectorChannel).LastOrDefault();
 
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
@@ -185,7 +182,7 @@ namespace ATSPM.Application.Reports.Controllers
                     newDetectorOn.SignalIdentifier = options.SignalIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
-                    newDetectorOn.EventParam = channel.DetChannel;
+                    newDetectorOn.EventParam = channel.DetectorChannel;
                     detectorEvents.Add(newDetectorOn);
                 }
 
@@ -196,7 +193,7 @@ namespace ATSPM.Application.Reports.Controllers
                     newDetectorOn.SignalIdentifier = options.SignalIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
-                    newDetectorOn.EventParam = channel.DetChannel;
+                    newDetectorOn.EventParam = channel.DetectorChannel;
                     detectorEvents.Add(newDetectorOn);
                 }
             }
