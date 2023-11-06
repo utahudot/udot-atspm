@@ -33,7 +33,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                 Capacity = GetGapSummedTotal(criticalGap, phaseLeftTurnGapAggregations),
                 AcceptableGaps = GetGapsList(start, end, startTime, endTime, criticalGap, daysOfWeek, phaseLeftTurnGapAggregations),
                 Demand = CalculateGapDemand(criticalGap, totalActivations),
-                Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType.Abbreviation,
+                Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType,
                 OpposingDirection = GetOpposingPhaseDirection(signal, opposingPhase)
             };
             if (gapDurationResult.Capacity == 0)
@@ -115,7 +115,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             return signal
                 .Approaches
                 .SelectMany(a => a.Detectors)
-                .Where(d => d.DetectionTypes.First().Id == DetectionTypes.LLC && thruMovements.Contains(d.MovementTypeId))
+                .Where(d => d.DetectionTypes.First().Id == DetectionTypes.LLC && thruMovements.Contains(d.MovementType))
                 .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 

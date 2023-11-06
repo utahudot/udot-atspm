@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.PreemptService;
+using ATSPM.ReportApi.TempModels;
 
 namespace ATSPM.ReportApi.Business.PreempDetail
 {
