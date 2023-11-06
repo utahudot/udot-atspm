@@ -1,17 +1,12 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.AppoachDelay;
-using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.AppoachDelay;
+using ATSPM.ReportApi.Business.Common;
 using AutoFixture;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Reports.Business.Common;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -50,7 +45,7 @@ namespace ATSPM.Application.Reports.Controllers
         public async Task<IActionResult> GetChartData([FromBody] ApproachDelayOptions options)
         {
             var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            if(signal == null)
+            if (signal == null)
             {
                 return BadRequest("Signal not found");
             }

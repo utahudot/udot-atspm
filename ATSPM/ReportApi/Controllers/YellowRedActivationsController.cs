@@ -1,17 +1,14 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.YellowRedActivations;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.YellowRedActivations;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Reports.Business.Common;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -91,7 +88,7 @@ namespace ATSPM.Application.Reports.Controllers
                 GetYellowRedActivationsCycleEventCodes(phaseDetail.UseOverlap),
                 phaseDetail.PhaseNumber)
                 .OrderBy(e => e.Timestamp)
-                .ToList();
+            .ToList();
             var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
                 options.MetricTypeId,
                 phaseDetail.Approach,
