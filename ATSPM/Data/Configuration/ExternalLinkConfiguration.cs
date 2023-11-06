@@ -14,9 +14,13 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("External Links");
 
-            builder.Property(e => e.Name).IsRequired();
+            builder.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(64);
 
-            builder.Property(e => e.Url).IsRequired();
+            builder.Property(e => e.Url)
+                .IsRequired()
+                .HasMaxLength(512);
 
             builder.HasData(
                 new ExternalLink
