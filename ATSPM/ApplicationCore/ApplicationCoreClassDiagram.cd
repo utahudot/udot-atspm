@@ -1,0 +1,683 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="ATSPM.Application.Common.EqualityComparers.ControllerEventLogEqualityComparer" Collapsed="true">
+    <Position X="14.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Common\EqualityComparers\ControllerEventLogEqualityComparer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Common.ControllerEventLogExtensions" Collapsed="true">
+    <Position X="16.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Common\ControllerEventLogExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Common.ControllerLoggerProgress&lt;T&gt;" Collapsed="true">
+    <Position X="9.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAEAACAAAAAABAAQAAAAABAAACACAA=</HashCode>
+      <FileName>Common\ControllerLoggerProgress.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Common.ControllerDownloadProgress" Collapsed="true">
+    <Position X="8.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Common\ControllerLoggerProgress.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Common.ControllerDecodeProgress" Collapsed="true">
+    <Position X="10.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Common\ControllerLoggerProgress.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Configuration.FileRepositoryConfiguration" Collapsed="true">
+    <Position X="14.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Configuration\FileRepositoryConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Configuration.SignalControllerDownloaderConfiguration" Collapsed="true">
+    <Position X="21.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAIAAAAAEAAAAAAAAAAAAACAQAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Configuration\SignalControllerDownloaderConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Configuration.SignalControllerLoggerConfiguration" Collapsed="true">
+    <Position X="23.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAQgg=</HashCode>
+      <FileName>Configuration\SignalControllerLoggerConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Exceptions.ATSPMExceptionBase" Collapsed="true">
+    <Position X="2.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\ATSPMExceptionBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Exceptions.ControllerLoggerExceptions" Collapsed="true">
+    <Position X="2.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\ControllerLoggerExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Exceptions.ControllerConnectionException" Collapsed="true">
+    <Position X="0.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Exceptions\ControllerLoggerExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Exceptions.ControllerDownloadFileException" Collapsed="true">
+    <Position X="2.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Exceptions\ControllerLoggerExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Exceptions.ControllerDeleteFileException" Collapsed="true">
+    <Position X="5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Exceptions\ControllerLoggerExceptions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Extensions.ControllerEventLogRepositoryExtensions" Collapsed="true">
+    <Position X="18.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AUAAAAAAAAAAQAgEAkAiAAwQLAAAAAIAEAgABAEAEAA=</HashCode>
+      <FileName>Extensions\ControllerEventLogRepositoryExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Extensions.ExceptionExtensions" Collapsed="true">
+    <Position X="25.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Extensions\ExceptionExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Action" Collapsed="true">
+    <Position X="13" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAgAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ActionLog" Collapsed="true">
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACEAAAAAAAQAAAAAAQAAAAAUAIBBAAAAAAAAAA=</HashCode>
+      <FileName>Models\ActionLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ActionLogAction" Collapsed="true">
+    <Position X="16.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAgABAAAAAAAQAAAA=</HashCode>
+      <FileName>Models\ActionLogAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ActionLogMetricType" Collapsed="true">
+    <Position X="18.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAQAAAI=</HashCode>
+      <FileName>Models\ActionLogMetricType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Agency" Collapsed="true">
+    <Position X="20" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAEQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Agency.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Applicationz" Collapsed="true">
+    <Position X="25.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Application.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApplicationEvent" Collapsed="true">
+    <Position X="21.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAIAAAAkAAAAAAICAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ApplicationEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApplicationSetting" Collapsed="true">
+    <Position X="23.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgKwBAIIDgAAEAECzCoAICAICIEAECgAAEBAAFAAAA=</HashCode>
+      <FileName>Models\ApplicationSetting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Approach" Collapsed="true">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAQAAAgAAAAAAEAAACAAIAAAAAABEAAQAEIAgA=</HashCode>
+      <FileName>Models\Approach.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApproachPcdAggregation" Collapsed="true">
+    <Position X="27" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAoAAAAAAAAAIAAQAAAAABAIAAAAIBEA=</HashCode>
+      <FileName>Models\ApproachPcdAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApproachSpeedAggregation" Collapsed="true">
+    <Position X="13" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAIAAAIAAAEAAAAAAAAAAAAAABAAAAAAIAAA=</HashCode>
+      <FileName>Models\ApproachSpeedAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApproachSplitFailAggregation" Collapsed="true">
+    <Position X="14.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQgACAAgBAAAAAAAAAAAAAAAAABAAAAEAoBAA=</HashCode>
+      <FileName>Models\ApproachSplitFailAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ApproachYellowRedActivationAggregation" Collapsed="true">
+    <Position X="16.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAgQAACAAgAAAAAAAAAAAEAAAEAABAAAAAAIBAA=</HashCode>
+      <FileName>Models\ApproachYellowRedActivationAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.AspNetRole" Collapsed="true">
+    <Position X="18.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAIAAAAAAAAAAAAAAQAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>Models\AspNetRole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.AspNetUser" Collapsed="true">
+    <Position X="20" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACCAAAAACAAoEAAAAAAQAABAAAAQAAICRQAABAAAQA=</HashCode>
+      <FileName>Models\AspNetUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.AspNetUserClaim" Collapsed="true">
+    <Position X="21.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAADAAAAAAAAAAAAQAAAAAgAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Models\AspNetUserClaim.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.AspNetUserLogin" Collapsed="true">
+    <Position X="23.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAgAAAAAEAAAABAAAAAAAAA=</HashCode>
+      <FileName>Models\AspNetUserLogin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.AspNetUserRole" Collapsed="true">
+    <Position X="25.25" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAIAAAAAAAAAEAAAAAgAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\AspNetUserRole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ATSPMModelBase" Collapsed="true">
+    <Position X="3.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ATSPMModelBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Comment" Collapsed="true">
+    <Position X="27" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAgAACAAAAAAAAAAAAAAAAAQAAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Comment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ControllerEventLog" Collapsed="true">
+    <Position X="13" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAACAAAAAQAAAAAABAAAAAAIAAA=</HashCode>
+      <FileName>Models\ControllerEventLog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ControllerLogArchive" Collapsed="true">
+    <Position X="5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAEAAAAAAAAAAEAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Models\ControllerLogArchive.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ControllerType" Collapsed="true">
+    <Position X="25.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAhACAAAAAAAAAAACAQAAAAAAAIQ=</HashCode>
+      <FileName>Models\ControllerType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DatabaseArchiveExcludedSignal" Collapsed="true">
+    <Position X="27" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Models\DatabaseArchiveExcludedSignal.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectionHardware" Collapsed="true">
+    <Position X="13" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Models\DetectionHardware.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectionType" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAQAAgAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\DetectionType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectionTypeDetector" Collapsed="true">
+    <Position X="14.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAQAAAAgAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\DetectionTypeDetector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectionTypeMetricType" Collapsed="true">
+    <Position X="16.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAEAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Models\DetectionTypeMetricType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Detector" Collapsed="true">
+    <Position X="18.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAADQBAEQAABBACAAAIEAAAAAgwAAAAAIQAFAAAIEgA=</HashCode>
+      <FileName>Models\Detector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectorComment" Collapsed="true">
+    <Position X="20" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAACABAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Models\DetectorComment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DetectorEventCountAggregation" Collapsed="true">
+    <Position X="21.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAACAAAAAAAAABAIAAAAIAAA=</HashCode>
+      <FileName>Models\DetectorEventCountAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.DirectionType" Collapsed="true">
+    <Position X="23.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQABQAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAA=</HashCode>
+      <FileName>Models\DirectionType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ExternalLink" Collapsed="true">
+    <Position X="27" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAQAAAAAAAAACAACAAAAAAA=</HashCode>
+      <FileName>Models\ExternalLink.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Faq" Collapsed="true">
+    <Position X="13" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAIAAAAAAAAAAAABAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Models\Faq.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.LaneType" Collapsed="true">
+    <Position X="18.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAgAACAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Models\LaneType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Menu" Collapsed="true">
+    <Position X="20" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAARCAAAAAAAAAAAAAAAAABAAAAgAAAAAAAAQ=</HashCode>
+      <FileName>Models\Menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MetricComment" Collapsed="true">
+    <Position X="21.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACABAAAAAAAAAAAAAAAAAAAAQAgBEAAAAAAAAA=</HashCode>
+      <FileName>Models\MetricComment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MetricCommentMetricType" Collapsed="true">
+    <Position X="23.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAEAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Models\MetricCommentMetricType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MetricsFilterType" Collapsed="true">
+    <Position X="25.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\MetricsFilterType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MetricType" Collapsed="true">
+    <Position X="27" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQADQAAAAAAAAAAAAQAAAAACAAQAAYAAAAAAAAAA=</HashCode>
+      <FileName>Models\MetricType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MigrationHistory" Collapsed="true">
+    <Position X="13" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAACAAAAEAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Models\MigrationHistory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.MovementType" Collapsed="true">
+    <Position X="14.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQABAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Models\MovementType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PhaseCycleAggregation" Collapsed="true">
+    <Position X="16.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAIAQgCAAAAAAAAAAAAAAIAABCAAAAAIAAA=</HashCode>
+      <FileName>Models\PhaseCycleAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PhaseLeftTurnGapAggregation" Collapsed="true">
+    <Position X="18.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAQAAAAAgAAwABAAAAAAAAAAAAABAAAAAQIAAA=</HashCode>
+      <FileName>Models\PhaseLeftTurnGapAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PhasePedAggregation" Collapsed="true">
+    <Position X="20" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQABAAQgAEAAAAAAAAAAAAAAAABAAABAAAAAA=</HashCode>
+      <FileName>Models\PhasePedAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PhaseSplitMonitorAggregation" Collapsed="true">
+    <Position X="21.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQQAAAAgAAAABAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Models\PhaseSplitMonitorAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PhaseTerminationAggregation" Collapsed="true">
+    <Position X="23.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAgAAAAAIAAAAAAAAAAAABAAIAAAAABA=</HashCode>
+      <FileName>Models\PhaseTerminationAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PreemptionAggregation" Collapsed="true">
+    <Position X="27" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAQgAAAAAAAAAAAAAAAAAAAAAAABAAAAAACAAA=</HashCode>
+      <FileName>Models\PreemptionAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.PriorityAggregation" Collapsed="true">
+    <Position X="13" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQCAAAAAAAAAAAAAAAAAAAIAAABAAAAIgAAAA=</HashCode>
+      <FileName>Models\PriorityAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Region" Collapsed="true">
+    <Position X="14.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Region.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Route" Collapsed="true">
+    <Position X="16.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>Models\Route.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.RoutePhaseDirection" Collapsed="true">
+    <Position X="18.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAADAIgQAAAAAAAAAgAAAAAAAAAAAAAAAAACAAAABAA=</HashCode>
+      <FileName>Models\RoutePhaseDirection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.RouteSignal" Collapsed="true">
+    <Position X="20" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAECAAAABAAAAAAAAEAAAAAAAAAAAAAABAAAAACAAAA=</HashCode>
+      <FileName>Models\RouteSignal.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.Signal" Collapsed="true">
+    <Position X="7.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAIgHAAAIAkAACKAAAAAAIAAAAABEAAAAEAAAA=</HashCode>
+      <FileName>Models\Signal.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.SignalEventCountAggregation" Collapsed="true">
+    <Position X="25.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAACAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Models\SignalEventCountAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.SignalPlanAggregation" Collapsed="true">
+    <Position X="27" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAACAAAAAAAAAAAAAAAAAAAAAABAAAIAAAAAA=</HashCode>
+      <FileName>Models\SignalPlanAggregation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.SignalToAggregate" Collapsed="true">
+    <Position X="13" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Models\SignalToAggregate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.SpeedEvent" Collapsed="true">
+    <Position X="14.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAggA=</HashCode>
+      <FileName>Models\SpeedEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.SpmwatchDogErrorEvent" Collapsed="true">
+    <Position X="16.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACABCAAAAAAAAAACAAAAAAAAgAAAAABAAAIAAABAA=</HashCode>
+      <FileName>Models\SpmwatchDogErrorEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.StagingControllerEventLog20190915" Collapsed="true">
+    <Position X="18.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAAAAQAAAAAABAAAAAAIAAA=</HashCode>
+      <FileName>Models\StagingControllerEventLog20190915.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.StatusOfProcessedTable" Collapsed="true">
+    <Position X="20" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABiAACAAAAAgAAAQAAAAAAAAAAAAAAAAUAIAAAAAAA=</HashCode>
+      <FileName>Models\StatusOfProcessedTable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.TablePartitionProcessed" Collapsed="true">
+    <Position X="21.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAACBAAEAIAAAAAAAEAAAAQAAEAAAAAAAAAABKAAAAA=</HashCode>
+      <FileName>Models\TablePartitionProcessed.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ToBeProcessededIndex" Collapsed="true">
+    <Position X="23.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABACAAQAAAAAAAAIAAAAAAQAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ToBeProcessededIndex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ToBeProcessededTable" Collapsed="true">
+    <Position X="25.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAIAAgAAEgAAACAQBAAABAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ToBeProcessededTable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.ToBeProcessedTableIndex" Collapsed="true">
+    <Position X="27" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABACAAQAAAAAAAAIAAAAAQQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ToBeProcessedTableIndex.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Models.VersionAction" Collapsed="true">
+    <Position X="13" Y="11.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\VersionAction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Specifications.ControllerLogDateRangeSpecification" Collapsed="true">
+    <Position X="21.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Specifications\ControllerEventLogSpecifications.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Specifications.ControllerLogCodeAndParamSpecification" Collapsed="true">
+    <Position X="20" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Specifications\ControllerEventLogSpecifications.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.Specifications.ControllerLogDateTimeRangeSpecification" Collapsed="true">
+    <Position X="23.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Specifications\ControllerEventLogSpecifications.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.ValueObjects.InfoBox" Collapsed="true">
+    <Position X="16.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAIAAAACAAACAAAAAgAAAAAAAgA=</HashCode>
+      <FileName>ValueObjects\InfoBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATSPM.Application.ValueObjects.Pin" Collapsed="true">
+    <Position X="25.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACCARAAAgEAkAAAApAAIAgAACAIAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>ValueObjects\Pin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="ATSPM.Application.Repositories.IApproachRepository" Collapsed="true">
+    <Position X="13" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAgAAAAAABAAAAAAAAAAAgAIAAAAAACA=</HashCode>
+      <FileName>Repositories\IApproachRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Repositories.IControllerEventLogRepository" Collapsed="true">
+    <Position X="14.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Repositories\IControllerEventLogRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Repositories.IDetectionTypeRepository" Collapsed="true">
+    <Position X="16.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAgAAAAAAAAAAAAAABAAAAAAAAAAAAAAABAAAAAg=</HashCode>
+      <FileName>Repositories\IDetectionTypeRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Repositories.ISignalRepository" Collapsed="true">
+    <Position X="21.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAACAAAABAABgQBAAAkAAEABAAAACAgAAAAIAMCAhA=</HashCode>
+      <FileName>Repositories\ISignalRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IDownloaderClient" Collapsed="true">
+    <Position X="2.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAABAAAAAAAABAAgEAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IFTPDownloaderClient" Collapsed="true">
+    <Position X="0.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISFTPDownloaderClient" Collapsed="true">
+    <Position X="2.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IHTTPDownloaderClient" Collapsed="true">
+    <Position X="5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISignalControllerDecoder" Collapsed="true">
+    <Position X="18.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAMAAAgAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\ISignalControllerDecoder.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISignalControllerDownloader" Collapsed="true">
+    <Position X="20" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SignalControllerProtocols\ISignalControllerDownloader.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="ATSPM.Application.Enums.SignalControllerType" Collapsed="true">
+    <Position X="13" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MAAAAAAABAAEAAAAIAAAABAAIAAAAACAAAAAAEAAABA=</HashCode>
+      <FileName>Enums\SignalControllerTypeEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
