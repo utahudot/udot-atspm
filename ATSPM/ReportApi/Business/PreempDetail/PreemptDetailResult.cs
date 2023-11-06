@@ -1,4 +1,5 @@
 using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.TempModels;
 
 namespace ATSPM.ReportApi.Business.PreempDetail
 {
