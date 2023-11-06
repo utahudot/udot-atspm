@@ -4,7 +4,6 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231101215846_EFCore6Upgrade")]
-    partial class EFCore6Upgrade
+    partial class ConfigContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,19 +106,15 @@ namespace ATSPM.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(50)
+                    b.Property<string>("Directory")
+                        .HasMaxLength(1024)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(1024)");
 
-                    b.Property<string>("LogDirectory")
+                    b.Property<string>("Firmware")
+                        .HasMaxLength(32)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
-                    b.Property<string>("LogFileType")
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                        .HasColumnType("varchar(32)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
@@ -133,12 +126,23 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasDefaultValueSql("((0))");
 
+                    b.Property<string>("Product")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)")
                         .HasDefaultValue("Unknown");
+
+                    b.Property<string>("SearchTerm")
+                        .HasMaxLength(128)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
@@ -310,8 +314,10 @@ namespace ATSPM.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<int>("DetectorId")
                         .HasColumnType("int");
@@ -433,13 +439,15 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(64)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("Url")
                         .IsRequired()
+                        .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(512)");
 
                     b.HasKey("Id");
 
@@ -538,16 +546,18 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.Property<string>("Body")
                         .IsRequired()
+                        .HasMaxLength(8000)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(8000)");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("Header")
                         .IsRequired()
+                        .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
@@ -1347,8 +1357,9 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<string>("Note")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("varchar(256)")
                         .HasDefaultValueSql("('Initial')");
 
                     b.Property<bool>("Pedsare1to1")

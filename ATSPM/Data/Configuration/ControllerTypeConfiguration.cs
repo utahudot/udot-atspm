@@ -15,8 +15,12 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Signal Controller Types");
 
-            builder.Property(e => e.Description)
+            builder.Property(e => e.Product)
+                .IsRequired()
                 .HasMaxLength(50);
+
+            builder.Property(e => e.Firmware)
+                .HasMaxLength(32);
 
             builder.Property(e => e.Protocol)
                 .HasMaxLength(12)
@@ -25,9 +29,13 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.Port)
                 .HasDefaultValueSql("((0))");
 
-            builder.Property(e => e.LogFileType)
+            builder.Property(e => e.Directory)
                 .IsRequired(false)
-                .HasMaxLength(5);
+                .HasMaxLength(1024);
+
+            builder.Property(e => e.SearchTerm)
+                .IsRequired(false)
+                .HasMaxLength(128);
 
             builder.Property(e => e.Password)
                 .IsRequired(false)

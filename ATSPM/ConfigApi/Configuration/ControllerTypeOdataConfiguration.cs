@@ -21,7 +21,12 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
-                        model.Property(p => p.Description).MaxLength = 50;
+                        model.Property(p => p.Product).IsRequired();
+
+                        model.Property(p => p.Product).MaxLength = 50;
+                        model.Property(p => p.Product).MaxLength = 32;
+                        model.Property(p => p.Directory).MaxLength = 1024;
+                        model.Property(p => p.SearchTerm).MaxLength = 128;
                         model.Property(p => p.UserName).MaxLength = 50;
                         model.Property(p => p.Password).MaxLength = 50;
 
