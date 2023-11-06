@@ -22,6 +22,10 @@ namespace ATSPM.ConfigApi.Configuration
             {
                 case 1:
                     {
+                        model.Property(p => p.Comment).IsRequired();
+
+                        model.Property(p => p.Comment).MaxLength = 256;
+
                         break;
                     }
             }

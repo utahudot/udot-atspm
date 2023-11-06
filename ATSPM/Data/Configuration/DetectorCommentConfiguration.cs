@@ -13,6 +13,10 @@ namespace ATSPM.Data.Configuration
         public void Configure(EntityTypeBuilder<DetectorComment> builder)
         {
             builder.HasComment("Detector Comments");
+
+            builder.Property(e => e.Comment)
+                .IsRequired()
+                .HasMaxLength(256);
         }
     }
 }

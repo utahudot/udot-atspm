@@ -11,9 +11,14 @@ namespace ATSPM.Data.Models
     public partial class ControllerType : AtspmConfigModelBase<int>, IRelatedSignals
     {
         /// <summary>
-        /// Controller type description
+        /// Product type description
         /// </summary>
-        public string Description { get; set; }
+        public string Product { get; set; }
+
+        /// <summary>
+        /// Firmware version
+        /// </summary>
+        public string Firmware { get; set; }
 
         /// <summary>
         /// Transport protocol for controller logging
@@ -28,12 +33,13 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Path to log directory
         /// </summary>
-        public string LogDirectory { get; set; }
+        public string Directory { get; set; }
 
         /// <summary>
-        /// Extension of log file type to look for
+        /// Log search term to find log in directory
+        /// Can be a query string or file extension
         /// </summary>
-        public string LogFileType { get; set; }
+        public string SearchTerm { get; set; }
 
         /// <summary>
         /// Username
@@ -53,6 +59,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Description}";
+        public override string ToString() => $"{Id} - {Product}";
     }
 }
