@@ -24,7 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var result = input
                 .Where(w => w.EventCode == (int)DataLoggerEnum.CoordPatternChange)
                 .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalId, (k, i) => i
+                .GroupBy(g => g.SignalIdentifier, (k, i) => i
                 .GroupBy(p => p.EventParam, (n, c) => c
                 .Where((w, i) => i < c.Count() - 1)
                 .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))

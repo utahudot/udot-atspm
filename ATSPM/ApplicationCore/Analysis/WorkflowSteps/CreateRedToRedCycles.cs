@@ -66,7 +66,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
                 .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalId, (s, x) => x
+                .GroupBy(g => g.SignalIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y    
                 .Where((w, i) => y.Count() > 3 && i <= y.Count() - 3)
                 .Where((w, i) => w.EventCode == 9 && y.ElementAt(i + 1).EventCode == 1 && y.ElementAt(i + 2).EventCode == 8 && y.ElementAt(i + 3).EventCode == 9)
