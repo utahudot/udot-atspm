@@ -12,9 +12,13 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Frequently Asked Questions");
 
-            builder.Property(e => e.Body).IsRequired();
+            builder.Property(e => e.Header)
+                .IsRequired()
+                .HasMaxLength(256);
 
-            builder.Property(e => e.Header).IsRequired();
+            builder.Property(e => e.Body)
+                .IsRequired()
+                .HasMaxLength(8000);
 
             builder.HasData(
                 new Faq
