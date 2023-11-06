@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\ATSPM.ConfigApi.props" />
-</Project>
