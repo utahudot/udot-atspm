@@ -24,6 +24,9 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.Name).IsRequired();
                         model.Property(p => p.Url).IsRequired();
 
+                        model.Property(p => p.Name).MaxLength = 64;
+                        model.Property(p => p.Url).MaxLength = 512;
+
                         break;
                     }
             }

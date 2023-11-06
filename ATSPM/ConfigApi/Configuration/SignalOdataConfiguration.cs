@@ -44,6 +44,7 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.PrimaryName).MaxLength = 100;
                         model.Property(p => p.SecondaryName).MaxLength = 100;
                         model.Property(p => p.SignalIdentifier).MaxLength = 10;
+                        model.Property(p => p.Note).MaxLength = 256;
 
                         model.Property(p => p.JurisdictionId).DefaultValueString = "0";
                         //model.EnumProperty(p => p.VersionAction).DefaultValueString = "10";

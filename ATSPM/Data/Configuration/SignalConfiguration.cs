@@ -35,6 +35,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Note)
                 .IsRequired()
+                .HasMaxLength(256)
                 .HasDefaultValueSql("('Initial')");
 
             builder.Property(e => e.PrimaryName)
