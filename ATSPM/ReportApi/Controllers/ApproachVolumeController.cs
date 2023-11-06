@@ -1,18 +1,16 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Reports.Business.ApproachVolume;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.ApproachVolume;
+using ATSPM.ReportApi.TempExtensions;
 using AutoFixture;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 //For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ATSPM.Application.Reports.Controllers
+namespace ATSPM.ReportApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -140,7 +138,7 @@ namespace ATSPM.Application.Reports.Controllers
 
             var detectors = approaches
                 .SelectMany(a => a.Detectors)
-                .Where(d => d.DetectionTypes.Any(dt => dt.Id == options.DetectionType) && (d.LaneTypeId == LaneTypes.V || d.LaneTypeId == LaneTypes.NA))
+                .Where(d => d.DetectionTypes.Any(dt => dt.Id == options.DetectionType) && (d.LaneType == LaneTypes.V || d.LaneType == LaneTypes.NA))
                 .ToList();
             distanceFromStopBar = 0;
             if (detectors.Any())
