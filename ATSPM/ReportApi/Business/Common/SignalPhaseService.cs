@@ -64,7 +64,7 @@ namespace ATSPM.ReportApi.Business.Common
             if (phaseDetail.Approach == null)
             {
                 logger.LogError("Approach cannot be null");
-                throw new ReportsNullAgrumentException("Approach cannot be null");
+                throw new ArgumentNullException("Approach cannot be null");
             }
 
             if (!cycleEvents.Any())
