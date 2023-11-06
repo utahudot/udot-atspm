@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 
@@ -20,7 +20,7 @@ namespace ATSPM.Application.Analysis.Common
 
         public override string ToString()
         {
-            return $"{Detector.Approach.Signal.SignalId}-{Detector.DetChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
+            return $"{Detector.Approach.Signal.SignalIdentifier}-{Detector.DetectorChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
         }
     }
 }
