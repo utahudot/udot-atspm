@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "EventLogUtility": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "GOOGLE_APPLICATION_CREDENTIALS": "M:\\My Drive\\ut-udot-atspm-dev-023438451801.json"
+      }
+    }
+  }
+}
