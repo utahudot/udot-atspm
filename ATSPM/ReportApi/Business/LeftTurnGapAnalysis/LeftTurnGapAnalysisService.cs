@@ -65,8 +65,8 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
 
         private bool IsThruDetector(Detector detector)
         {
-            return detector.MovementTypeId == MovementTypes.T || detector.MovementTypeId == MovementTypes.R ||
-                   detector.MovementTypeId == MovementTypes.TR || detector.MovementTypeId == MovementTypes.TL;
+            return detector.MovementType == MovementTypes.T || detector.MovementType == MovementTypes.R ||
+                   detector.MovementType == MovementTypes.TR || detector.MovementType == MovementTypes.TL;
         }
 
         private int GetOpposingPhase(int phase)
