@@ -1,13 +1,12 @@
 using Asp.Versioning;
 using ATSPM.Application.Repositories;
-using ATSPM.DataApi.Formatters;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using Google.Api;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -22,8 +21,6 @@ builder.Host.ConfigureServices((h, s) =>
         o.ReturnHttpNotAcceptable = true;
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
         //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
-        o.OutputFormatters.Add(new EventLogCsvFormatter());
-        o.OutputFormatters.RemoveType<StringOutputFormatter>();
     })
     .AddXmlDataContractSerializerFormatters();
     s.AddProblemDetails();
@@ -31,23 +28,23 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddResponseCompression(o =>
     {
         o.EnableForHttps = true; // Enable compression for HTTPS requests
-        //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
-        //o.Providers.Add<BrotliCompressionProvider>();
+                                 //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
+                                 //o.Providers.Add<BrotliCompressionProvider>();
 
-        o.MimeTypes = new[] { "application/json", "application/xml", "text/csv" };
+        //o.MimeTypes = new[] { "application/json", "application/xml", "text/csv" };
     });
 
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
     s.AddApiVersioning(o =>
     {
         o.ReportApiVersions = true;
-        o.DefaultApiVersion = new ApiVersion(1, 0);
+        //o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
         o.Policies.Sunset(0.9)
-        .Effective(DateTimeOffset.Now.AddDays(60))
-        .Link("policy.html")
-        .Title("Versioning Policy")
-        .Type("text/html");
+    .Effective(DateTimeOffset.Now.AddDays(60))
+    .Link("policy.html")
+    .Title("Versioning Policy")
+    .Type("text/html");
     }).AddApiExplorer(o =>
     {
         o.GroupNameFormat = "'v'VVV";
@@ -57,20 +54,30 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     s.AddSwaggerGen(o =>
-     {
-         // add a custom operation filter which sets default values
-         o.OperationFilter<SwaggerDefaultValues>();
+    {
+        // add a custom operation filter which sets default values
+        o.OperationFilter<SwaggerDefaultValues>();
 
-         var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
-         var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
+        var fileName = typeof(Program).Assembly.GetName().Name + ".xml";
+        var filePath = Path.Combine(AppContext.BaseDirectory, fileName);
 
-         // integrate xml comments
-         o.IncludeXmlComments(filePath);
+        // integrate xml comments
+        o.IncludeXmlComments(filePath);
+    });
 
-         o.OperationFilter<TimestampFormatHeader>();
-     });
+    s.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll",
+            builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+    });
 
     s.AddAtspmDbContext(h);
+    s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
@@ -92,9 +99,9 @@ app.UseResponseCompression();
 if (app.Environment.IsDevelopment())
 {
     app.Services.PrintHostInformation();
+    app.UseDeveloperExceptionPage();
+    app.UseCors("AllowAll");
 }
-
-app.UseHttpLogging();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
