@@ -1,13 +1,10 @@
 ﻿using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace ATSPM.ReportApi.Business
 {
     public interface IReportService<Tin, Tout> : IExecuteAsyncWithProgress<Tin, Tout, int> { }
-
 
     public abstract class ReportServiceBase<Tin, Tout> : IReportService<Tin, Tout>
     {
