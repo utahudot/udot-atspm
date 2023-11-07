@@ -1,5 +1,7 @@
 using Asp.Versioning;
+using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
@@ -105,7 +107,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
     //mocked report services
-    s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
@@ -125,7 +127,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
     //report services
-    //s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
+    s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     //s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     //s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
@@ -215,7 +217,23 @@ app.UseSwaggerUI(o =>
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var test = scope.ServiceProvider.GetService<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>>();
+    var option = new ApproachDelayOptions() { BinSize = 17 };
+    Console.WriteLine($"-------------------------------------------------------{test.CanExecute(option)}"); 
+}
+
 app.Run();
+
+
+
+
+
+
 
 IReportService<Tin, IEnumerable<Tout>> GenerateMoqReportServiceA<Tin, Tout>()
 {

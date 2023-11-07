@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Controllers
         }
 
         /// <summary>
-        /// Get a generic response of mocked data for testing
+        /// Get example data for testing
         /// </summary>
         /// <returns></returns>
         [HttpGet("test")]
@@ -36,7 +36,7 @@ namespace ATSPM.ReportApi.Controllers
         /// <summary>
         /// Get report data
         /// </summary>
-        /// <param name="options">Input options</param>
+        /// <param name="options">Reporting options</param>
         /// <returns></returns>
         [HttpPost("getReportData")]
         //[Produces("application/json", "application/xml")]
