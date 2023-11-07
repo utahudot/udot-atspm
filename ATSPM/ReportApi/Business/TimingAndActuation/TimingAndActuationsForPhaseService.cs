@@ -3,6 +3,7 @@ using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.ReportApi.Business.TimingAndActuation
 {
@@ -171,7 +172,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         {
             var DetEvents = new List<DetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
-                .OrderByDescending(d => d.MovementType.DisplayOrder)
+                .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
                 .ThenByDescending(l => l.LaneNumber).ToList();
             var detectorActivationCodes = new List<int> { 81, 82 };
             foreach (var detector in localSortedDetectors)
@@ -186,7 +187,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         laneNumber = detector.LaneNumber.Value.ToString();
                     }
                     var distanceFromStopBarLable = detector.DistanceFromStopBar.HasValue ? $"({detector.DistanceFromStopBar} ft)" : "";
-                    var lableName = $"{detectionType.GetDisplayName()} {distanceFromStopBarLable}, {detector.MovementType.Abbreviation} {laneNumber}, ch {detector.DetectorChannel}";
+                    var lableName = $"{detectionType.GetDisplayAttribute()?.Name} {distanceFromStopBarLable}, {detector.MovementType} {laneNumber}, ch {detector.DetectorChannel}";
 
                     if (filteredEvents.Count > 0)
                     {

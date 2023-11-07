@@ -1,110 +1,20 @@
-﻿using ATSPM.Application.Repositories;
+﻿using Asp.Versioning;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
-using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Approach delay report controller
+    /// </summary>
+    [ApiVersion(1.0)]
     [ApiController]
-    public class ApproachDelayController : ControllerBase
+    [Route("v{version:apiVersion}/[controller]")]
+    public class ApproachDelayController : ReportControllerBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>
     {
-        private readonly ApproachDelayService approachDelayService;
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly ISignalRepository signalRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly PhaseService phaseService;
-
-        public ApproachDelayController(
-            ApproachDelayService approachDelayService,
-            SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
-            PhaseService phaseService
-            )
-        {
-            this.approachDelayService = approachDelayService;
-            this.signalPhaseService = signalPhaseService;
-            this.signalRepository = signalRepository;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.phaseService = phaseService;
-        }
-
-        [HttpGet("test")]
-        public ApproachDelayResult Test()
-        {
-            Fixture fixture = new();
-            ApproachDelayResult viewModel = fixture.Create<ApproachDelayResult>();
-            return viewModel;
-        }
-
-        [HttpPost("getChartData")]
-        public async Task<IActionResult> GetChartData([FromBody] ApproachDelayOptions options)
-        {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            if (signal == null)
-            {
-                return BadRequest("Signal not found");
-            }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-            if (controllerEventLogs.IsNullOrEmpty())
-            {
-                return Ok("No Controller Event Logs found for signal");
-            }
-
-            var planEvents = controllerEventLogs.GetPlanEvents(
-                options.Start.AddHours(-12),
-                options.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
-            var tasks = new List<Task<ApproachDelayResult>>();
-            foreach (var phase in phaseDetails)
-            {
-                tasks.Add(GetChartDataByApproach(options, phase, controllerEventLogs, planEvents, signal.SignalDescription()));
-            }
-
-            var results = await Task.WhenAll(tasks);
-            var finalResultcheck = results.Where(result => result != null).ToList();
-
-            if (finalResultcheck.IsNullOrEmpty())
-            {
-                return Ok("No chart data found");
-            }
-            return Ok(finalResultcheck);
-        }
-
-        private async Task<ApproachDelayResult> GetChartDataByApproach(
-            ApproachDelayOptions options,
-            PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
-            string signalDescription)
-        {
-            var signalPhase = await signalPhaseService.GetSignalPhaseData(
-                phaseDetail,
-                options.Start,
-                options.End,
-                options.BinSize,
-                null,
-                controllerEventLogs,
-                planEvents,
-                false);
-            if (signalPhase == null)
-            {
-                return null;
-            }
-            ApproachDelayResult viewModel = approachDelayService.GetChartData(
-                options,
-                phaseDetail,
-                signalPhase);
-            viewModel.SignalDescription = signalDescription;
-            viewModel.ApproachDescription = phaseDetail.Approach.Description;
-            return viewModel;
-        }
-
-
+        /// <inheritdoc/>
+        public ApproachDelayController(IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>> reportService) : base(reportService) { }
     }
 }
