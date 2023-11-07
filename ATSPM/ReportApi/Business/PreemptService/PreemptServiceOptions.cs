@@ -5,7 +5,7 @@ namespace ATSPM.ReportApi.Business.PreemptService
 
 {
     [DataContract]
-    public class PreemptServiceMetricOptions : OptionsBase
+    public class PreemptServiceOptions : OptionsBase
     {
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.ReportApi.Business.ApproachVolume
 {
@@ -102,7 +103,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
                 options.SignalIdentifier,
                 options.Start,
                 options.End,
-                options.DetectionType.GetDisplayName(),
+                options.DetectionType.GetDisplayAttribute()?.Name,
                 distanceFromStopBar,
                 primaryApproaches.First().DirectionType.Description,
                 direction1VolumesSeries,

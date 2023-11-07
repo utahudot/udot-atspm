@@ -12,7 +12,7 @@ namespace ATSPM.ReportApi.Business.PreemptService
         }
 
         public PreemptServiceResult GetChartData(
-            PreemptServiceMetricOptions options,
+            PreemptServiceOptions options,
             IReadOnlyList<ControllerEventLog> planEvents,
             IReadOnlyList<ControllerEventLog> preemptEvents)
         {
