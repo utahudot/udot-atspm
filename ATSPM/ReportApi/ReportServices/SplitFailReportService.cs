@@ -18,6 +18,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ISignalRepository signalRepository;
         private readonly PhaseService phaseService;
 
+        /// <inheritdoc/>
         public SplitFailReportService(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
