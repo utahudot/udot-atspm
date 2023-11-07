@@ -20,6 +20,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ISignalRepository signalRepository;
         private readonly PlanService planService;
 
+        /// <inheritdoc/>
         public TurningMovementCountReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
