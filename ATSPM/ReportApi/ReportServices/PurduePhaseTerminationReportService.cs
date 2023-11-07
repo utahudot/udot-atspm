@@ -16,6 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
 
+        /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             IControllerEventLogRepository controllerEventLogRepository,

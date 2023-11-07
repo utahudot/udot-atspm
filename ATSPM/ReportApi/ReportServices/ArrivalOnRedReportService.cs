@@ -19,6 +19,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PhaseService phaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
+        /// <inheritdoc/>
         public ArrivalOnRedReportService(
             ArrivalOnRedService arrivalOnRedService,
             SignalPhaseService signalPhaseService,
@@ -74,7 +75,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         private async Task<ArrivalOnRedResult> GetChartDataByApproach(

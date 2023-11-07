@@ -16,6 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PreemptDetailService preemptDetailService;
         private readonly ISignalRepository signalRepository;
 
+        /// <inheritdoc/>
         public PreemptDetailReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             PreemptDetailService preemptDetailService,

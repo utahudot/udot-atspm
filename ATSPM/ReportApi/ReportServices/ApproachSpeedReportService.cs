@@ -69,7 +69,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         private async Task<ApproachSpeedResult> GetChartDataByApproach(

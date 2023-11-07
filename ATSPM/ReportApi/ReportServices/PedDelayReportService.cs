@@ -20,6 +20,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ISignalRepository signalRepository;
         private readonly PhaseService phaseService;
 
+        /// <inheritdoc/>
         public PedDelayReportService(
             PedDelayService pedDelayService,
             PedPhaseService pedPhaseService,
@@ -72,7 +73,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         private async Task<PedDelayResult> GetChartDataForApproach(
