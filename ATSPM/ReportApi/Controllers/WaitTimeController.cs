@@ -1,129 +1,20 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.ReportApi.Business.Common;
+﻿using Asp.Versioning;
+using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.WaitTime;
-using ATSPM.ReportApi.TempExtensions;
-using AutoFixture;
-//using Legacy.Common.Business;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ATSPM.ReportApi.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Wait time report controller
+    /// </summary>
+    [ApiVersion(1.0)]
     [ApiController]
-    public class WaitTimeController : ControllerBase
+    [Route("v{version:apiVersion}/[controller]")]
+    public class WaitTimeController : ReportControllerBase<WaitTimeOptions, IEnumerable<WaitTimeResult>>
     {
-        private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly WaitTimeService waitTimeService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
-        private readonly PhaseService phaseService;
-
-        public WaitTimeController(
-            AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            WaitTimeService waitTimeService,
-            IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
-            PhaseService phaseService
-            )
-        {
-            this.analysisPhaseCollectionService = analysisPhaseCollectionService;
-            this.waitTimeService = waitTimeService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
-            this.phaseService = phaseService;
-        }
-
-        // GET: api/<ApproachVolumeController>
-        [HttpGet("test")]
-        public WaitTimeResult Test()
-        {
-            Fixture fixture = new();
-            WaitTimeResult viewModel = fixture.Create<WaitTimeResult>();
-            return viewModel;
-        }
-
-        [HttpPost("getChartData")]
-        public async Task<IActionResult> GetChartData([FromBody] WaitTimeOptions options)
-        {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            if (signal == null)
-            {
-                return BadRequest("Signal not found");
-            }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-            if (controllerEventLogs.IsNullOrEmpty())
-            {
-                return Ok("No Controller Event Logs found for signal");
-            }
-
-            var planEvents = controllerEventLogs.GetPlanEvents(
-                options.Start.AddHours(-12),
-                options.End.AddHours(12)).ToList();
-            var phaseEvents = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                options.SignalIdentifier,
-                options.Start,
-                options.End,
-                new List<int>() {
-                    82,
-                    WaitTimeService.PHASE_BEGIN_GREEN,
-                    WaitTimeService.PHASE_CALL_DROPPED,
-                    WaitTimeService.PHASE_END_RED_CLEARANCE,
-                    WaitTimeService.PHASE_CALL_REGISTERED}
-                );
-            var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
-                && e.Timestamp >= options.Start
-                && e.Timestamp <= options.End).ToList();
-            var splitsEventCodes = new List<int>();
-            for (var i = 130; i <= 151; i++)
-                splitsEventCodes.Add(i);
-            var splitsEvents = controllerEventLogs.Where(e =>
-                splitsEventCodes.Contains(e.EventCode)
-                && e.Timestamp >= options.Start
-                && e.Timestamp <= options.End).ToList();
-            var volume = new VolumeCollection(
-                options.Start,
-                options.End,
-                phaseEvents.Where(e => e.EventCode == 82).ToList(),
-                options.BinSize);
-            var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.SignalIdentifier,
-                options.Start,
-                options.End,
-                planEvents,
-                phaseEvents,
-                splitsEvents,
-                null,
-                terminationEvents,
-                signal,
-                1);
-            var phaseDetails = phaseService.GetPhases(signal);
-            var tasks = new List<Task<WaitTimeResult>>();
-            foreach (var phaseDetail in phaseDetails)
-            {
-                tasks.Add(waitTimeService.GetChartData(
-                options,
-                phaseDetail,
-                phaseEvents,
-                analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == phaseDetail.PhaseNumber).First(),
-                analysisPhaseDataCollection.Plans,
-                volume
-                ));
-            }
-            var results = await Task.WhenAll(tasks);
-
-            var finalResultcheck = results.Where(result => result != null).ToList();
-
-            if (finalResultcheck.IsNullOrEmpty())
-            {
-                return Ok("No chart data found");
-            }
-            return Ok(finalResultcheck);
-
-        }
+        /// <inheritdoc/>
+        public WaitTimeController(IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>> reportService) : base(reportService) { }
     }
 }

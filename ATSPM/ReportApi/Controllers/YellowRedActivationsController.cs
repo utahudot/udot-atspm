@@ -1,118 +1,20 @@
-﻿using ATSPM.Application.Repositories;
+﻿using Asp.Versioning;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.YellowRedActivations;
-using ATSPM.ReportApi.TempExtensions;
-using AutoFixture;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ATSPM.ReportApi.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Yellow and red activations report controller
+    /// </summary>
+    [ApiVersion(1.0)]
     [ApiController]
-    public class YellowRedActivationsController : ControllerBase
+    [Route("v{version:apiVersion}/[controller]")]
+    public class YellowRedActivationsController : ReportControllerBase<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>
     {
-        private readonly YellowRedActivationsService yellowRedActivationsService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
-        private readonly PhaseService phaseService;
-
-        public YellowRedActivationsController(
-            YellowRedActivationsService yellowRedActivationsService,
-            IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
-            PhaseService phaseService)
-        {
-            this.yellowRedActivationsService = yellowRedActivationsService;
-            this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
-            this.phaseService = phaseService;
-        }
-
-        // GET: api/<ApproachVolumeController>
-        [HttpGet("test")]
-        public YellowRedActivationsResult Test()
-        {
-            Fixture fixture = new();
-            YellowRedActivationsResult viewModel = fixture.Create<YellowRedActivationsResult>();
-            return viewModel;
-        }
-
-        [HttpPost("getChartData")]
-        public async Task<IActionResult> GetChartData([FromBody] YellowRedActivationsOptions options)
-        {
-            var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            if (signal == null)
-            {
-                return BadRequest("Signal not found");
-            }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
-            if (controllerEventLogs.IsNullOrEmpty())
-            {
-                return Ok("No Controller Event Logs found for signal");
-            }
-
-            var planEvents = controllerEventLogs.GetPlanEvents(
-                options.Start.AddHours(-12),
-                options.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
-            var tasks = new List<Task<YellowRedActivationsResult>>();
-            foreach (var phaseDetail in phaseDetails)
-            {
-                tasks.Add(GetChartDataForApproach(options, phaseDetail, controllerEventLogs, planEvents, signal.SignalDescription()));
-            }
-
-            var results = await Task.WhenAll(tasks);
-
-            var finalResultcheck = results.Where(result => result != null).ToList();
-
-            if (finalResultcheck.IsNullOrEmpty())
-            {
-                return Ok("No chart data found");
-            }
-            return Ok(finalResultcheck);
-        }
-
-        private async Task<YellowRedActivationsResult> GetChartDataForApproach(
-            YellowRedActivationsOptions options,
-            PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
-            string signalDescription)
-        {
-            var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
-                options.Start.AddSeconds(-900),
-                options.End.AddSeconds(900),
-                GetYellowRedActivationsCycleEventCodes(phaseDetail.UseOverlap),
-                phaseDetail.PhaseNumber)
-                .OrderBy(e => e.Timestamp)
-            .ToList();
-            var detectorEvents = controllerEventLogRepository.GetDetectorEvents(
-                options.MetricTypeId,
-                phaseDetail.Approach,
-                options.Start,
-                options.End,
-                true,
-                false);
-
-            var viewModel = yellowRedActivationsService.GetChartData(
-                options,
-                phaseDetail,
-                cycleEvents,
-                detectorEvents,
-                planEvents);
-            viewModel.SignalDescription = signalDescription;
-            viewModel.ApproachDescription = phaseDetail.Approach.Description;
-            return viewModel;
-        }
-
-        private List<int> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
-        {
-            return useOverlap
-                ? new List<int> { 62, 63, 64 }
-                : new List<int> { 1, 8, 9, 11 };
-        }
+        /// <inheritdoc/>
+        public YellowRedActivationsController(IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>> reportService) : base(reportService) { }
     }
 }

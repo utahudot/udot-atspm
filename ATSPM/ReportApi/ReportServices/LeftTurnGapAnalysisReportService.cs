@@ -15,6 +15,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ISignalRepository signalRepository;
 
+        /// <inheritdoc/>
         public LeftTurnGapAnalysisReportService(
             LeftTurnGapAnalysisService leftTurnGapAnalysisService,
             IApproachRepository approachRepository,
@@ -85,7 +86,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
     }
 }
