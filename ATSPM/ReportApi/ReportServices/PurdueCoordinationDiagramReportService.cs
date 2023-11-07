@@ -19,6 +19,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ISignalRepository signalRepository;
         private readonly PhaseService phaseService;
 
+        /// <inheritdoc/>
         public PurdueCoordinationDiagramReportService(
             PurdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
@@ -69,7 +70,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         private async Task<PurdueCoordinationDiagramResult> GetChartDataForApproach(

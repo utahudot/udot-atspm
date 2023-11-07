@@ -66,7 +66,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         private void GetApproachVolume(ApproachVolumeOptions options, Signal signal, List<ControllerEventLog> controllerEventLogs, List<Task<ApproachVolumeResult>> tasks, List<Approach> approaches)
