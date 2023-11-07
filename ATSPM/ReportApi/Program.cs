@@ -1,14 +1,38 @@
 using Asp.Versioning;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.ReportApi.Business;
+using ATSPM.ReportApi.Business.AppoachDelay;
+using ATSPM.ReportApi.Business.ApproachSpeed;
+using ATSPM.ReportApi.Business.ApproachVolume;
+using ATSPM.ReportApi.Business.ArrivalOnRed;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.GreenTimeUtilization;
+using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
+using ATSPM.ReportApi.Business.LeftTurnGapReport;
+using ATSPM.ReportApi.Business.PedDelay;
+using ATSPM.ReportApi.Business.PhaseTermination;
+using ATSPM.ReportApi.Business.PreempDetail;
+using ATSPM.ReportApi.Business.PreemptService;
+using ATSPM.ReportApi.Business.PreemptServiceRequest;
+using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
+using ATSPM.ReportApi.Business.SplitFail;
+using ATSPM.ReportApi.Business.SplitMonitor;
+using ATSPM.ReportApi.Business.TimingAndActuation;
+using ATSPM.ReportApi.Business.TurningMovementCounts;
+using ATSPM.ReportApi.Business.WaitTime;
+using ATSPM.ReportApi.Business.YellowRedActivations;
+using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 
@@ -19,7 +43,7 @@ builder.Host.ConfigureServices((h, s) =>
     {
         o.ReturnHttpNotAcceptable = true;
         o.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
-        //o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
+        o.Filters.Add(new ProducesAttribute("application/json", "application/xml"));
     })
     .AddXmlDataContractSerializerFormatters();
     s.AddProblemDetails();
@@ -30,7 +54,7 @@ builder.Host.ConfigureServices((h, s) =>
                                  //o.Providers.Add<GzipCompressionProvider>(); // Enable GZIP compression
                                  //o.Providers.Add<BrotliCompressionProvider>();
 
-        //o.MimeTypes = new[] { "application/json", "application/xml", "text/csv" };
+        o.MimeTypes = new[] { "application/json", "application/xml" };
     });
 
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
@@ -67,17 +91,66 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddCors(options =>
     {
         options.AddPolicy("AllowAll",
-            builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
     });
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+
+    //report services
+    s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
+    s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
+    s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
+    s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<PurduePhaseTerminationOptions, PurdueCoordinationDiagramResult>());
+    s.AddScoped(f => GenerateMoqReportServiceB<PedDelayOptions, PedDelayResult>());
+    s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
+
+    //Chart Services
+    s.AddScoped<ApproachDelayService>();
+    s.AddScoped<ApproachSpeedService>();
+    s.AddScoped<ApproachVolumeService>();
+    s.AddScoped<ArrivalOnRedService>();
+    s.AddScoped<LeftTurnGapAnalysisService>();
+    s.AddScoped<LeftTurnReportPreCheckService>();
+    s.AddScoped<LeftTurnVolumeAnalysisService>();
+    s.AddScoped<PedDelayService>();
+    s.AddScoped<GreenTimeUtilizationService>();
+    s.AddScoped<PreemptServiceService>();
+    s.AddScoped<PreemptServiceRequestService>();
+    s.AddScoped<PurdueCoordinationDiagramService>();
+    s.AddScoped<SplitFailPhaseService>();
+    s.AddScoped<SplitMonitorService>();
+    s.AddScoped<TimingAndActuationsForPhaseService>();
+    s.AddScoped<TurningMovementCountsService>();
+    s.AddScoped<WaitTimeService>();
+    s.AddScoped<YellowRedActivationsService>();
+
+    //Common Services
+    s.AddScoped<PlanService>();
+    s.AddScoped<SignalPhaseService>();
+    s.AddScoped<CycleService>();
+    s.AddScoped<PedPhaseService>();
+    s.AddScoped<AnalysisPhaseCollectionService>();
+    s.AddScoped<AnalysisPhaseService>();
+    s.AddScoped<PreemptDetailService>();
+    s.AddScoped<PhaseService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
@@ -122,7 +195,19 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
+IReportService<Tin, IEnumerable<Tout>> GenerateMoqReportServiceA<Tin, Tout>()
+{
+    var moq = new Mock<IReportService<Tin, IEnumerable<Tout>>>();
+    moq.Setup(s => s.ExecuteAsync(It.IsAny<Tin>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => new Fixture().CreateMany<Tout>(10));
+    return moq.Object;
+}
 
+IReportService<Tin, Tout> GenerateMoqReportServiceB<Tin, Tout>()
+{
+    var moq = new Mock<IReportService<Tin, Tout>>();
+    moq.Setup(s => s.ExecuteAsync(It.IsAny<Tin>(), It.IsAny<IProgress<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(() => new Fixture().Create<Tout>());
+    return moq.Object;
+}
 
 /// <summary>
 /// Represents the OpenAPI/Swashbuckle operation filter used to document information provided, but not used.

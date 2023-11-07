@@ -1,6 +1,7 @@
 ﻿using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace ATSPM.ReportApi.Business.AppoachDelay
@@ -11,7 +12,6 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
         public ApproachDelayService()
         {
         }
-
 
         public ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
