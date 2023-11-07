@@ -218,15 +218,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-
-
-using (var scope = app.Services.CreateScope())
-{
-    var test = scope.ServiceProvider.GetService<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>>();
-    var option = new ApproachDelayOptions() { BinSize = 17 };
-    Console.WriteLine($"-------------------------------------------------------{test.CanExecute(option)}"); 
-}
-
 app.Run();
 
 
