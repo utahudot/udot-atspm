@@ -4,7 +4,10 @@ namespace ATSPM.ReportApi.Business.Common
 {
     public class BaseResult
     {
-
+        public BaseResult()
+        {
+                
+        }
         public BaseResult(DateTime start, DateTime end)
         {
             Start = start;
