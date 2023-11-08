@@ -4,6 +4,11 @@ namespace ATSPM.ReportApi.Business.Common
 {
     public class SignalResult : BaseResult
     {
+        public SignalResult()
+        {
+                
+        }
+
         public string SignalIdentifier { get; set; }
         public string SignalDescription { get; set; }
 
