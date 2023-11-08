@@ -25,8 +25,8 @@ namespace ATSPM.Infrastructure.Repositories
             return base.GetList()
                 .Include(i => i.ControllerType)
                 .Include(i => i.Jurisdiction)
-                .Include(i => i.Region)
-                .Include(i => i.VersionAction);
+                .Include(i => i.Region);
+                //.Include(i => i.VersionAction);
                 //.Include(i => i.Approaches)
                 //.ThenInclude(i => i.Detectors)
                 //.Include(i => i.Areas);
