@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
@@ -37,7 +38,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((h, s) =>
@@ -107,7 +110,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
     //mocked report services
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
+    s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
@@ -126,8 +129,10 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
     s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
+    s.AddScoped<TestDataUtility>();
+
     //report services
-    s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
+    //s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     //s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     //s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
@@ -218,6 +223,71 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+
+
+
+using(var scope = app.Services.CreateScope())
+{
+    var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
+
+    testGen.GenerateTestFile("7115",
+        new ApproachDelayOptions()
+        {
+            SignalIdentifier = "7115",
+            BinSize = 15,
+            Start = new DateTime(2023, 4, 17, 8, 0, 0),
+            End = new DateTime(2023, 4, 17, 9, 0, 0),
+            GetVolume = true
+        },
+        new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
+        new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
+
+
+    //var repo = scope.ServiceProvider.GetService<ISignalRepository>();
+
+    //var signal = repo.GetLatestVersionOfSignal("7115");
+
+    //string path = @"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv";
+
+    //var logs = File.ReadAllLines(path)
+    //               .Skip(1)
+    //               .Select(x => x.Split(','))
+    //               .Select(x => new ControllerEventLog
+    //               {
+    //                   SignalIdentifier = x[0],
+    //                   Timestamp = DateTime.Parse(x[1]),
+    //                   EventCode = int.Parse(x[2]),
+    //                   EventParam = int.Parse(x[3])
+    //               }).ToList();
+
+    //var stuff = new ReportServiceData<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>()
+    //{
+    //    Signal = signal,
+        //Options = new ApproachDelayOptions()
+        //{
+        //    SignalIdentifier = "7115",
+        //    BinSize = 15,
+        //    Start = new DateTime(2023, 4, 17, 8, 0, 0),
+        //    End = new DateTime(2023, 4, 17, 9, 0, 0),
+        //    GetVolume = true
+        //},
+    //    Logs = logs,
+    //    Results = new Fixture().CreateMany<ApproachDelayResult>(10).ToList()
+    //};
+
+    //var json = JsonSerializer.Serialize(stuff, new JsonSerializerOptions() 
+    //{ 
+    //    ReferenceHandler = ReferenceHandler.IgnoreCycles, 
+    //    WriteIndented = true, 
+    //    DefaultIgnoreCondition = JsonIgnoreCondition.Never}
+    //);
+
+    //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayReportService.json", json);
+}
+
+
+
+
 app.Run();
 
 
@@ -289,7 +359,7 @@ public class SwaggerDefaultValues : IOperationFilter
                  description.ModelMetadata is ModelMetadata modelMetadata)
             {
                 // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
-                var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
+                var json = System.Text.Json.JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
                 parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
             }
 
