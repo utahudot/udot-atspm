@@ -6,6 +6,11 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
 {
     public class ApproachDelayResult : ApproachResult
     {
+        public ApproachDelayResult()
+        {
+            
+        }
+
         public ApproachDelayResult(
             int approachId,
             string signalId,

@@ -66,7 +66,7 @@ namespace ATSPM.ReportApi.ReportServices
             }
 
             var results = await Task.WhenAll(tasks);
-            //var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -74,7 +74,7 @@ namespace ATSPM.ReportApi.ReportServices
             //}
             //return Ok(finalResultcheck);
 
-            return results;
+            return finalResultcheck;
         }
 
         protected async Task<ApproachDelayResult> GetChartDataByApproach(
