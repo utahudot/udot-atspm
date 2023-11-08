@@ -13,7 +13,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
         {
         }
 
-        public ApproachDelayResult GetChartData(
+        public virtual ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
             PhaseDetail phaseDetail,
             SignalPhase signalPhase)
