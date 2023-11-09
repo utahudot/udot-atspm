@@ -1,12 +1,11 @@
-﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.PedDelay;
 using CsvHelper;
 using Moq;
 using System.Globalization;
 using System.Net;
-using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
