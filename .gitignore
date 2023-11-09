@@ -116,3 +116,4 @@ dkms.conf
 /TempReportTests/obj/project.nuget.cache
 /TempReportTests/obj/TempReportTests.csproj.nuget.dgspec.json
 /TempReportTests/obj/TempReportTests.csproj.nuget.g.props
+/ATSPM/ReportsTests/bin/Debug/net6.0/CoverletSourceRootsMapping
