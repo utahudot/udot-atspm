@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "kbOAQVEC7ptexqPDAXUZgi4owTNccjuwQtb0rMjOBKvtLSsgREYcLYfeql8lBFpbjktC4hQXEDzKhtPGsrNzXw==",
+  "dgSpecHash": "2pBHGpQxibVLcAhlGrwiboXck3yr44s7A3kFwo9+lfPMQx7+79keXA7p3jFy/px2BuK7jyYTL07ot1sPtj6CRA==",
   "success": true,
   "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
   "expectedPackageFiles": [
@@ -13,6 +13,7 @@
     "C:\\Users\\christianbaker\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
+    "C:\\Users\\christianbaker\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\dotmorten.microsoft.sqlserver.types\\1.4.0\\dotmorten.microsoft.sqlserver.types.1.4.0.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\efcore.bulkextensions\\6.5.6\\efcore.bulkextensions.6.5.6.nupkg.sha512",
     "C:\\Users\\christianbaker\\.nuget\\packages\\entityframeworkcore.sqlserver.hierarchyid\\3.0.1\\entityframeworkcore.sqlserver.hierarchyid.3.0.1.nupkg.sha512",
