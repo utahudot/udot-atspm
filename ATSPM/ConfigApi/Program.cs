@@ -1,17 +1,11 @@
 using Asp.Versioning;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Data;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using Google.Api;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -82,7 +76,6 @@ builder.Host.ConfigureServices((h, s) =>
         });
 
     s.AddAtspmDbContext(h);
-    //s.AddDbContext<ConfigContext>(db => db.UseSqlServer(h.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(h.HostingEnvironment.IsDevelopment()));
     s.AddAtspmEFRepositories();
 
 

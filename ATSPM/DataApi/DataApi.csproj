@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<UserSecretsId>af468330-96e6-4297-a188-86f216ee07b4</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 	  <ServerGarbageCollection>true</ServerGarbageCollection>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
