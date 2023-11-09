@@ -4,6 +4,7 @@ using ATSPM.DataApi.Formatters;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -71,6 +72,17 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddAtspmDbContext(h);
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+
+    //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
+    s.AddHttpLogging(l =>
+    {
+        l.LoggingFields = HttpLoggingFields.All;
+        //l.RequestHeaders.Add("My-Request-Header");
+        //l.ResponseHeaders.Add("My-Response-Header");
+        //l.MediaTypeOptions.AddText("application/json");
+        l.RequestBodyLogLimit = 4096;
+        l.ResponseBodyLogLimit = 4096;
+    });
 });
 
 var app = builder.Build();
@@ -81,6 +93,8 @@ if (app.Environment.IsDevelopment())
 {
     app.Services.PrintHostInformation();
 }
+
+app.UseHttpLogging();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
