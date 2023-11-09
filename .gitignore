@@ -117,3 +117,7 @@ dkms.conf
 /TempReportTests/obj/TempReportTests.csproj.nuget.dgspec.json
 /TempReportTests/obj/TempReportTests.csproj.nuget.g.props
 /ATSPM/ReportsTests/bin/Debug/net6.0/CoverletSourceRootsMapping
+/TempReportTests/bin/Debug/net7.0/appsettings.Development.json
+/TempReportTests/bin/Debug/net7.0/ReportApi.deps.json
+/TempReportTests/obj/Debug/net7.0/TempReportTests.genruntimeconfig.cache
+/TempReportTests/bin/Debug/net7.0/TempReportTests.deps.json
