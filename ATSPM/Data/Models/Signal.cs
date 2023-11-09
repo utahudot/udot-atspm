@@ -4,6 +4,7 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Relationships;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace ATSPM.Data.Models
 {
@@ -38,10 +39,11 @@ namespace ATSPM.Data.Models
         /// Secondary name of signal
         /// </summary>
         public string SecondaryName { get; set; }
-        
+
         /// <summary>
         /// Ipaddress of signal
         /// </summary>
+        [JsonIgnore]
         public IPAddress Ipaddress { get; set; }
         
         /// <summary>
