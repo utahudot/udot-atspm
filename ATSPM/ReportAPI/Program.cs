@@ -220,64 +220,64 @@ app.MapControllers();
 
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
 
-    testGen.GenerateTestFile("7115",
-        new ApproachDelayOptions()
-        {
-            SignalIdentifier = "7115",
-            BinSize = 15,
-            Start = new DateTime(2023, 4, 17, 8, 0, 0),
-            End = new DateTime(2023, 4, 17, 9, 0, 0),
-            GetVolume = true
-        },
-        new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
-        new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
+//    testGen.GenerateTestFile("7115",
+//        new ApproachDelayOptions()
+//        {
+//            SignalIdentifier = "7115",
+//            BinSize = 15,
+//            Start = new DateTime(2023, 4, 17, 8, 0, 0),
+//            End = new DateTime(2023, 4, 17, 9, 0, 0),
+//            GetVolume = true
+//        },
+//        new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
+//        new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
 
 
-    //var repo = scope.ServiceProvider.GetService<ISignalRepository>();
+//    //var repo = scope.ServiceProvider.GetService<ISignalRepository>();
 
-    //var signal = repo.GetLatestVersionOfSignal("7115");
+//    //var signal = repo.GetLatestVersionOfSignal("7115");
 
-    //string path = @"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv";
+//    //string path = @"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv";
 
-    //var logs = File.ReadAllLines(path)
-    //               .Skip(1)
-    //               .Select(x => x.Split(','))
-    //               .Select(x => new ControllerEventLog
-    //               {
-    //                   SignalIdentifier = x[0],
-    //                   Timestamp = DateTime.Parse(x[1]),
-    //                   EventCode = int.Parse(x[2]),
-    //                   EventParam = int.Parse(x[3])
-    //               }).ToList();
+//    //var logs = File.ReadAllLines(path)
+//    //               .Skip(1)
+//    //               .Select(x => x.Split(','))
+//    //               .Select(x => new ControllerEventLog
+//    //               {
+//    //                   SignalIdentifier = x[0],
+//    //                   Timestamp = DateTime.Parse(x[1]),
+//    //                   EventCode = int.Parse(x[2]),
+//    //                   EventParam = int.Parse(x[3])
+//    //               }).ToList();
 
-    //var stuff = new ReportServiceData<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>()
-    //{
-    //    Signal = signal,
-    //Options = new ApproachDelayOptions()
-    //{
-    //    SignalIdentifier = "7115",
-    //    BinSize = 15,
-    //    Start = new DateTime(2023, 4, 17, 8, 0, 0),
-    //    End = new DateTime(2023, 4, 17, 9, 0, 0),
-    //    GetVolume = true
-    //},
-    //    Logs = logs,
-    //    Results = new Fixture().CreateMany<ApproachDelayResult>(10).ToList()
-    //};
+//    //var stuff = new ReportServiceData<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>()
+//    //{
+//    //    Signal = signal,
+//    //Options = new ApproachDelayOptions()
+//    //{
+//    //    SignalIdentifier = "7115",
+//    //    BinSize = 15,
+//    //    Start = new DateTime(2023, 4, 17, 8, 0, 0),
+//    //    End = new DateTime(2023, 4, 17, 9, 0, 0),
+//    //    GetVolume = true
+//    //},
+//    //    Logs = logs,
+//    //    Results = new Fixture().CreateMany<ApproachDelayResult>(10).ToList()
+//    //};
 
-    //var json = JsonSerializer.Serialize(stuff, new JsonSerializerOptions() 
-    //{ 
-    //    ReferenceHandler = ReferenceHandler.IgnoreCycles, 
-    //    WriteIndented = true, 
-    //    DefaultIgnoreCondition = JsonIgnoreCondition.Never}
-    //);
+//    //var json = JsonSerializer.Serialize(stuff, new JsonSerializerOptions() 
+//    //{ 
+//    //    ReferenceHandler = ReferenceHandler.IgnoreCycles, 
+//    //    WriteIndented = true, 
+//    //    DefaultIgnoreCondition = JsonIgnoreCondition.Never}
+//    //);
 
-    //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayReportService.json", json);
-}
+//    //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayReportService.json", json);
+//}
 
 
 
