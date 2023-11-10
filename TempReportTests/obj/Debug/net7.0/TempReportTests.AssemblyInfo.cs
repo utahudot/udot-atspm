@@ -11,8 +11,6 @@
 using System;
 using System.Reflection;
 
-[assembly: Xunit.TestFramework("Xunit.DependencyInjection.DependencyInjectionTestFramework", "Xunit.DependencyInjection")]
-[assembly: Xunit.DependencyInjection.StartupType("TempReportTests.Startup")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("TempReportTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]

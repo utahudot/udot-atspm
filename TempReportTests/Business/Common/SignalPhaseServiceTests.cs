@@ -69,8 +69,10 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             mockSignal.Object.Start = new DateTime(2011, 1, 1);
             mockSignal.Object.JurisdictionId = 35;
             mockSignal.Object.Pedsare1to1 = true;
+            //mockSignal.Object.Approaches = new List<Approach>() { approach };
 
             // Create the mock Approach object and set its Signal property to the mock Signal object
+            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
             var phaseDetail = phaseService.GetPhases(mockSignal.Object);
 
