@@ -1,4 +1,4 @@
-SignalId,Timestamp,EventCode,EventParam
+SignalIdentifier,Timestamp,EventCode,EventParam
 7115,6/13/2023 6:00:10.2,81,27
 7115,6/13/2023 6:00:11.7,81,25
 7115,6/13/2023 6:00:12.5,81,26

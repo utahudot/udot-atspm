@@ -61,7 +61,7 @@ namespace ATSPM.ReportApi.Business.Common
             List<ControllerEventLog> planEvents,
             List<ControllerEventLog> detectorEvents)
         {
-            if (phaseDetail.Approach == null)
+            if (phaseDetail == null || phaseDetail.Approach == null)
             {
                 logger.LogError("Approach cannot be null");
                 throw new ArgumentNullException("Approach cannot be null");

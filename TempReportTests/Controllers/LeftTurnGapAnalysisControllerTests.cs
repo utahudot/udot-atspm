@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
+using ATSPM.ReportApi.Business.PedDelay;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -161,6 +162,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockSignal.Object.Pedsare1to1 = true;
             mockSignal.Object.Approaches = approaches;
             // Create the mock Approach object and set its Signal property to the mock Signal object
+            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach2.Object, approach6.Object });
             approach2.Setup(a => a.Signal).Returns(mockSignal.Object);
             approach6.Setup(a => a.Signal).Returns(mockSignal.Object);
             mockSignal.Setup(a => a.Approaches).Returns(approaches);
