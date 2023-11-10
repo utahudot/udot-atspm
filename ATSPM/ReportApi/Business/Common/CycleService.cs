@@ -140,6 +140,9 @@ namespace ATSPM.ReportApi.Business.Common
             int? pcdCycleTime)
         {
             cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
+            if(cycleEvents.Count <= 0) { 
+                return new List<CyclePcd>();
+            }
             var min = cycleEvents.Min(c => c.Timestamp);
             var max = cycleEvents.Max(c => c.Timestamp);
             double pcdCycleShift = pcdCycleTime ?? 0;
