@@ -46,6 +46,7 @@ namespace ATSPM.Infrastructure.Extensions
         public static IServiceCollection AddAtspmEFRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
+            services.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
             services.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
