@@ -6,7 +6,6 @@ using CsvHelper;
 using Moq;
 using System.Globalization;
 using System.Net;
-using Xunit;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
