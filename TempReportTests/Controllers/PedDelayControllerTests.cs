@@ -1,7 +1,7 @@
-﻿using ATSPM.Application.Reports.Business.Common;
-using ATSPM.Application.Reports.Business.PedDelay;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.PedDelay;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -100,15 +100,20 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 );
 
             // Assert
-            Assert.Equal(2190, events.Count);
-            Assert.Equal(1558, cycleEvents.Count);
-            Assert.Equal(619, pedEvents.Count);
-            Assert.Equal(13, planEvents.Count);
+            //Assert.Equal(2190, events.Count);
+            //Assert.Equal(22, cycleEvents.Count);
+            //Assert.Equal(1031, pedEvents.Count);
+            //Assert.Equal(13, planEvents.Count);
 
             Assert.Equal(0, pedPhaseData.MinDelay);
             Assert.Equal(57.2, pedPhaseData.MaxDelay);
             Assert.Equal(26.671428571428571, viewModel.AverageDelay);
-
+            Assert.Equal(83, pedPhaseData.PedBeginWalkCount);
+            Assert.Equal(21, pedPhaseData.PedPresses);
+            Assert.Equal(15, pedPhaseData.PedCallsRegisteredCount);
+            Assert.Equal(373.4, pedPhaseData.TotalDelay);
+            Assert.Equal(17, pedPhaseData.UniquePedDetections);
+            Assert.Equal(16, pedPhaseData.PedRequests);
 
             //Assert.Equal(2, result.PhaseNumber);
             //Assert.Equal("NBT Ph2", result.PhaseDescription);

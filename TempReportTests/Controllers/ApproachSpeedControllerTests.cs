@@ -1,20 +1,10 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Moq;
 using CsvHelper;
 using System.Globalization;
-using ATSPM.Application.Reports.Business.Common;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using NetTopologySuite.Mathematics;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.ApproachSpeed;
 
@@ -61,6 +51,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             // Create the mock Detector object
             var detector = new Mock<Detector>();
             var detectionType = new Mock<DetectionType>();
+            var measureType = new Mock<MeasureType>();
 
             // Set the properties of the mock Detector object
             detector.Object.Id = 101540; // Updated Id
@@ -77,20 +68,18 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             detector.Object.DecisionPoint = 0; //int
             detector.Object.MovementDelay = null; //int
             detector.Object.MinSpeedFilter = 5; //int
-            //DetectionType myDetectionType = new DetectionType
-            //{
-            //    Id = DetectionTypes.AS,
-            //    Description = "Advanced Speed"
-            //};
+            //detectionType.Object.Description = "Advanced Speed";
             detectionType.Object.Abbreviation = "AS";
             detectionType.Object.Description = "Advanced Speed";
-            detectionType.Object.Description = "Advanced Speed";
             detectionType.Object.Id = DetectionTypes.AS;
+            measureType.Object.Id = 10;
 
             //myDetectionType.Detectors = new List<Detector> { };
             //myDetectionType.MetricTypeMetrics = new List<MetricType> { };
             //detector.Object.DetectionTypes = new List<DetectionType> { myDetectionType };
             //detector.Object.DetectionTypes = new List<DetectionType> { myDetectionType };  // no matter what I have tried, this detection type keeps returning as null, causing issues down the road
+            detectionType.Setup(d => d.MeasureTypes).Returns(new List<MeasureType>() { measureType.Object });
+            detector.Setup(d => d.DetectionTypes).Returns(new  List<DetectionType>() { detectionType.Object });
 
             //Need this
             var mockSignal = new Mock<Signal>();
@@ -115,8 +104,10 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Create the mock Approach object and set its Signal property to the mock Signal object
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            approach.Setup(a => a.Detectors).Returns(new List<Detector>() { detector.Object });
             detector.Setup(a => a.Approach).Returns(approach.Object);
             detector.Setup(a => a.DetectionTypes).Returns(new List<DetectionType> { detectionType.Object });
+            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
 
             ApproachSpeedOptions options = new ApproachSpeedOptions()
             {

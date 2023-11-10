@@ -70,6 +70,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             mockSignal.Object.Pedsare1to1 = true;
 
             // Create the mock Approach object and set its Signal property to the mock Signal object
+            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
             approach.Setup(a => a.Signal).Returns(mockSignal.Object);
 
             var phaseDetail = phaseService.GetPhases(mockSignal.Object);
