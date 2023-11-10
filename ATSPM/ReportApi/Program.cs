@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.ReportApi.Business;
@@ -123,7 +122,7 @@ builder.Host.ConfigureServices((h, s) =>
     //s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
     //s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
-    s.AddScoped<TestDataUtility>();
+    //s.AddScoped<TestDataUtility>();
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
