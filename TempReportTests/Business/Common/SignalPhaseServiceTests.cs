@@ -10,10 +10,13 @@ using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {
-    public class SignalPhaseServiceTests
+    public class Startup
     {
 
+    }
 
+    public class SignalPhaseServiceTests
+    {
         [Fact()]
         public async void GetSignalPhaseDataTest()
         {

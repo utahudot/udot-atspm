@@ -1,6 +1,8 @@
 ﻿using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ATSPM.ReportApi.Business.AppoachDelay
 {
@@ -33,13 +35,24 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
             ApproachDelayPerVehicleDataPoints = approachDelayPerVehicleDataPoints;
         }
 
-        public int PhaseNumber { get; }
-        public string PhaseDescription { get; }
-        public double AverageDelayPerVehicle { get; }
-        public double TotalDelay { get; }
-        public List<ApproachDelayPlan> Plans { get; }
-        public List<DataPointForDouble> ApproachDelayDataPoints { get; }
-        public List<DataPointForDouble> ApproachDelayPerVehicleDataPoints { get; }
+        public int PhaseNumber { get; set; }
+        public string PhaseDescription { get; set; }
+        public double AverageDelayPerVehicle { get; set; }
+        public double TotalDelay { get; set; }
+
+        [JsonIgnore]
+        public List<ApproachDelayPlan> Plans { get; set; }
+
+        [JsonIgnore]
+        public List<DataPointForDouble> ApproachDelayDataPoints { get; set; }
+
+        [JsonIgnore]
+        public List<DataPointForDouble> ApproachDelayPerVehicleDataPoints { get; set; }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using ATSPM.ReportApi.Business.Common;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {
