@@ -1,22 +1,12 @@
-﻿using Xunit;
-using ATSPM.Application.Reports.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Moq;
-using CsvHelper;
-using System.Globalization;
-using ATSPM.Application.Reports.Business.Common;
-using Microsoft.Extensions.Logging;
-using System.Net;
-using NetTopologySuite.Mathematics;
-using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.ApproachSpeed;
+using ATSPM.ReportApi.Business.Common;
+using CsvHelper;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Globalization;
+using System.Net;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
