@@ -108,48 +108,49 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+    s.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
 
     //mocked report services
-    s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
-    s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
-    s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
-    s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<PurdueCoordinationDiagramOptions, PurdueCoordinationDiagramResult>());
-    s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<TimeSpaceDiagramOptions, TimeSpaceDiagramResults>());
-    s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
-    s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<PurdueCoordinationDiagramOptions, PurdueCoordinationDiagramResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<TimeSpaceDiagramOptions, TimeSpaceDiagramResults>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
+    //s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
     s.AddScoped<TestDataUtility>();
 
     //report services
-    //s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
-    //s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
-    //s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
-    //s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
-    //s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
-    //s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
-    //s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
-    //s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
-    //s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
-    //s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
-    //s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
-    //s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
-    //s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    //s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResults>>, TimeSpaceDiagramReportService>();
-    //s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
-    //s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
-    //s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
+    s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
+    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
+    s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
+    s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
+    s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
+    s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
+    s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
+    s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
+    s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
+    s.AddScoped<IReportService<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>, PurdueCoordinationDiagramReportService>();
+    s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
+    s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
+    s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResults>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
+    s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
+    s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
 
     //Chart Services
     s.AddScoped<ApproachDelayService>();
@@ -228,61 +229,21 @@ app.MapControllers();
 
 using(var scope = app.Services.CreateScope())
 {
-    var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
+    //var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
 
-    testGen.GenerateTestFile("7115",
-        new ApproachDelayOptions()
-        {
-            SignalIdentifier = "7115",
-            BinSize = 15,
-            Start = new DateTime(2023, 4, 17, 8, 0, 0),
-            End = new DateTime(2023, 4, 17, 9, 0, 0),
-            GetVolume = true
-        },
-        new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
-        new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
+    //testGen.GenerateTestFile("7115",
+    //    new ApproachDelayOptions()
+    //    {
+    //        SignalIdentifier = "7115",
+    //        BinSize = 15,
+    //        Start = new DateTime(2023, 4, 17, 8, 0, 0),
+    //        End = new DateTime(2023, 4, 17, 9, 0, 0),
+    //        GetVolume = true
+    //    },
+    //    new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
+    //    new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
 
 
-    //var repo = scope.ServiceProvider.GetService<ISignalRepository>();
-
-    //var signal = repo.GetLatestVersionOfSignal("7115");
-
-    //string path = @"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv";
-
-    //var logs = File.ReadAllLines(path)
-    //               .Skip(1)
-    //               .Select(x => x.Split(','))
-    //               .Select(x => new ControllerEventLog
-    //               {
-    //                   SignalIdentifier = x[0],
-    //                   Timestamp = DateTime.Parse(x[1]),
-    //                   EventCode = int.Parse(x[2]),
-    //                   EventParam = int.Parse(x[3])
-    //               }).ToList();
-
-    //var stuff = new ReportServiceData<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>()
-    //{
-    //    Signal = signal,
-        //Options = new ApproachDelayOptions()
-        //{
-        //    SignalIdentifier = "7115",
-        //    BinSize = 15,
-        //    Start = new DateTime(2023, 4, 17, 8, 0, 0),
-        //    End = new DateTime(2023, 4, 17, 9, 0, 0),
-        //    GetVolume = true
-        //},
-    //    Logs = logs,
-    //    Results = new Fixture().CreateMany<ApproachDelayResult>(10).ToList()
-    //};
-
-    //var json = JsonSerializer.Serialize(stuff, new JsonSerializerOptions() 
-    //{ 
-    //    ReferenceHandler = ReferenceHandler.IgnoreCycles, 
-    //    WriteIndented = true, 
-    //    DefaultIgnoreCondition = JsonIgnoreCondition.Never}
-    //);
-
-    //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayReportService.json", json);
 }
 
 
