@@ -51,10 +51,11 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             approach.Object.Description = "NBT Ph2";
             approach.Object.Mph = 45;
             approach.Object.ProtectedPhaseNumber = 2;
+            approach.Object.PermissivePhaseNumber = 19;
             approach.Object.IsProtectedPhaseOverlap = false;
-            approach.Object.PermissivePhaseNumber = null;
+            //approach.Object.PermissivePhaseNumber = null;
             approach.Object.IsPermissivePhaseOverlap = false;
-            approach.Object.PedestrianPhaseNumber = null;
+            approach.Object.PedestrianPhaseNumber = 2;
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
@@ -79,6 +80,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             mockDetector1.Object.LatencyCorrection = 1.2;
             mockDetector1.Object.MinSpeedFilter = null;
             mockDetector1.Object.MovementDelay = null;
+            mockDetector1.Object.MovementType = MovementTypes.T;
 
             // Associate detector to the Approach
             mockDetector1.Setup(a => a.Approach).Returns(approach.Object);
@@ -93,11 +95,12 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             mockDetector1.Setup(a => a.DetectionTypes).Returns(new List<DetectionType>() { detectionTypeAC.Object });
 
             // Create mock movement type
-            //var movementType = new Mock<MovementType>();
+            //var 
+            //var movementType = new Mock<MovementTypes>();
             //movementType.Object.Id = MovementTypes.T;
             //movementType.Object.Abbreviation = "T";
             // Associate movements with movement types
-            mockDetector1.Setup(a => a.MovementType).Returns(MovementTypes.T);
+            //mockDetector1.Setup(a => a.MovementType).Returns(MovementTypes.T);
 
             TimingAndActuationsOptions options = new TimingAndActuationsOptions
             {
@@ -120,7 +123,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             // Test one approach
             var eventCodes = new List<int> { };
 
-            var phaseDetails = new PhaseDetail { PhaseNumber = 2, Approach = approach.Object, UseOverlap = false };
+            var phaseDetails = new PhaseDetail { PhaseNumber = 19, Approach = approach.Object, UseOverlap = false };
 
             if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
                 eventCodes.AddRange(new List<int> { 81, 82 });
@@ -130,7 +133,8 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
             if (options.PhaseEventCodesList != null)
                 eventCodes.AddRange(options.PhaseEventCodesList);
-                var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
+            
+            var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
 
             Assert.NotEmpty(result.StopBarDetectors);
             Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOff != null));
