@@ -42,4 +42,32 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             return Task.FromResult<IReadOnlyList<CorrectedDetectorEvent>>(result);
         }
     }
+
+
+
+
+
+
+
+
+    public class TestIdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, IReadOnlyList<IGrouping<Detector, IEnumerable<CorrectedDetectorEvent>>>>
+    {
+        /// <inheritdoc/>
+        public TestIdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        /// <inheritdoc/>
+        protected override Task<IReadOnlyList<IGrouping<Detector, IEnumerable<CorrectedDetectorEvent>>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        {
+            var result = input.Item1.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) => Tuple.Create(o, i.Select(s => new CorrectedDetectorEvent(o)
+            {
+                CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
+            })))
+            //this filters out only matching events
+            .Where(w => w.Item2.Any())
+            .GroupBy(g => g.Item1, s => s.Item2)
+            .ToList();
+
+            return Task.FromResult<IReadOnlyList<IGrouping<Detector, IEnumerable<CorrectedDetectorEvent>>>>(result);
+        }
+    }
 }
