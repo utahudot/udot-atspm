@@ -92,7 +92,7 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
-                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes)
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
@@ -106,7 +106,7 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
-                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes)
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
