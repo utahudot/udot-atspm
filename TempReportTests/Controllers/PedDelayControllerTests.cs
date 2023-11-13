@@ -2,6 +2,8 @@
 using ATSPM.Application.Reports.Business.PedDelay;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.Business.PedDelay;
 using CsvHelper;
 using Moq;
 using System.Globalization;
