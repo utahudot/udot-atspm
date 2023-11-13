@@ -24,7 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
             x.GroupBy(g => g.PhaseNumber, (phase, y) =>
-            y.GroupBy(g => g.DetChannel, (det, z) => new ApproachDelayResult()
+            y.GroupBy(g => g.DetectorChannel, (det, z) => new ApproachDelayResult()
             {
                 SignalIdentifier = signal,
                 PhaseNumber = phase,

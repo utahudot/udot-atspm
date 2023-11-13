@@ -30,7 +30,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = "1001",
                 PhaseNumber = 1,
-                DetChannel = 2,
+                DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
@@ -58,7 +58,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = (1000 + Random.Shared.Next(1, 4)).ToString(),
                 PhaseNumber = 1,
-                DetChannel = 2,
+                DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
@@ -84,7 +84,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = "1001",
                 PhaseNumber = Random.Shared.Next(1, 4),
-                DetChannel = 2,
+                DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
@@ -110,7 +110,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = "1001",
                 PhaseNumber = 1,
-                DetChannel = Random.Shared.Next(1, 4),
+                DetectorChannel = Random.Shared.Next(1, 4),
                 Start = GetStaticDateTime(s),
                 GreenEvent = GetStaticDateTime(s + 1),
                 YellowEvent = GetStaticDateTime(s + 2),
@@ -121,7 +121,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             var actual = result.Count();
-            var expected = testData.GroupBy(g => g.DetChannel).Count();
+            var expected = testData.GroupBy(g => g.DetectorChannel).Count();
 
             Assert.Equal(expected, actual);
         }

@@ -112,7 +112,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <param name="identifier">Signal controller identifier</param>
         /// <returns>Lastest <see cref="Signal"/> version</returns>
         [HttpGet]
-        [EnableQuery(AllowedQueryOptions = Expand | Select)]
+        [EnableQuery(AllowedQueryOptions = Expand | Select, MaxExpansionDepth = 4)]
         [ProducesResponseType(typeof(Signal), Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         public IActionResult GetLatestVersionOfSignal(string identifier)
