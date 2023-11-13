@@ -14,7 +14,7 @@ namespace ATSPM.Application.Analysis.Common
         {
             SignalIdentifier = detectorEvent.Detector.Approach?.Signal?.SignalIdentifier;
             CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
-            DetChannel = detectorEvent.Detector.DetectorChannel;
+            DetectorChannel = detectorEvent.Detector.DetectorChannel;
             PhaseNumber = redToRedCycle.PhaseNumber;
             Start = redToRedCycle.Start;
             End = redToRedCycle.End;
@@ -32,7 +32,7 @@ namespace ATSPM.Application.Analysis.Common
 
         #endregion
 
-        public int DetChannel { get; set; }
+        public int DetectorChannel { get; set; }
         public DateTime CorrectedTimeStamp { get; set; }
 
         //public DateTime Start { get; set; }
