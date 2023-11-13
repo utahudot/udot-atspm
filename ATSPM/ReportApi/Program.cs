@@ -227,24 +227,24 @@ app.MapControllers();
 
 
 
-using(var scope = app.Services.CreateScope())
-{
-    //var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
+//using(var scope = app.Services.CreateScope())
+//{
+//    var testGen = scope.ServiceProvider.GetService<TestDataUtility>();
 
-    //testGen.GenerateTestFile("7115",
-    //    new ApproachDelayOptions()
-    //    {
-    //        SignalIdentifier = "7115",
-    //        BinSize = 15,
-    //        Start = new DateTime(2023, 4, 17, 8, 0, 0),
-    //        End = new DateTime(2023, 4, 17, 9, 0, 0),
-    //        GetVolume = true
-    //    },
-    //    new Fixture().CreateMany<ApproachDelayResult>(10).ToList(),
-    //    new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
+//    testGen.GenerateTestFile("7115",
+//        new ApproachDelayOptions()
+//        {
+//            SignalIdentifier = "7115",
+//            BinSize = 15,
+//            Start = new DateTime(2023, 4, 17, 8, 0, 0),
+//            End = new DateTime(2023, 4, 17, 9, 0, 0),
+//            GetVolume = true
+//        },
+//        new Fixture().CreateMany<ApproachDelayResult>(1).ToList(),
+//        new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\ControllerEvents-ApproachDelay.csv"));
 
 
-}
+//}
 
 
 
