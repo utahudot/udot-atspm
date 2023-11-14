@@ -1,5 +1,7 @@
+using ApplicationCoreTests.Fixtures;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -9,39 +11,167 @@ using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
-    public class CreateRedToRedCyclesTests : IDisposable
+    public class CreateRedToRedCyclesTests : IClassFixture<TestApproachFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
+        private readonly Approach _testApproach;
 
-        public CreateRedToRedCyclesTests(ITestOutputHelper output)
+        public CreateRedToRedCyclesTests(ITestOutputHelper output, TestApproachFixture testApproach)
         {
             _output = output;
+            _testApproach = testApproach.TestApproach;
         }
 
         [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Timestamp Order")]
-        public async void CreateRedToRedCyclesOrderTest()
+        [Trait(nameof(CreateRedToRedCycles), "Signal Filter")]
+        public async void CreateRedToRedCyclesSignalGroupingTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var correct = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2 },
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2 }
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             };
+
+            var incorrect = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            };
+
+            var testLogs = correct.Union(incorrect);
+
+            foreach (var l in testLogs)
+            {
+                _output.WriteLine($"logs: {l}");
+            }
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.First();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateRedToRedCycles), "Approach Filter")]
+        public async void IdentifyandAdjustVehicleActivationsApproachFilterTest()
+        {
+            var correct = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            };
+
+            var incorrect = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 5 },
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 5 },
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 5 },
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 5 },
+            };
+
+            var testLogs = correct.Union(incorrect);
+
+            foreach (var l in testLogs)
+            {
+                _output.WriteLine($"logs: {l}");
+            }
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var expected = correct.Select(s => s.EventParam).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => s.PhaseNumber).Distinct().OrderBy(o => o);
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateRedToRedCycles), "Code Filter")]
+        public async void IdentifyandAdjustVehicleActivationsCodeFilterTest()
+        {
+            var correct = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            };
+
+            var incorrect = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 101, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 102, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 103, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 104, EventParam = _testApproach.ProtectedPhaseNumber},
+            };
+
+            var testLogs = correct.Union(incorrect);
+
+            foreach (var l in testLogs)
+            {
+                _output.WriteLine($"logs: {l}");
+            }
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
             var expected = new RedToRedCycle()
             {
-                Start = DateTime.Parse("4/17/2023 8:01:48.8"),
-                GreenEvent = DateTime.Parse("4/17/2023 8:03:11.7"),
-                YellowEvent = DateTime.Parse("4/17/2023 8:04:13.7"),
-                End = DateTime.Parse("4/17/2023 8:04:18.8")
+                Start = correct[0].Timestamp,
+                GreenEvent = correct[1].Timestamp,
+                YellowEvent = correct[2].Timestamp,
+                End = correct[3].Timestamp
             };
+
+            var actual = result.Item2.First();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
@@ -50,24 +180,73 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Filter Events")]
-        public async void CreateRedToRedCyclesFilterEventsTest()
+        [Trait(nameof(CreateRedToRedCycles), "Data Check")]
+        public async void CreateRedToRedCyclesDataCheckTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:12.5"), EventCode = 101, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:14.2"), EventCode = 102, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.First();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.First();
+            var expected = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:01:48.8"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:03:11.7"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:04:13.7"),
+                End = DateTime.Parse("4/17/2023 8:04:18.8")
+            };
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equivalent(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateRedToRedCycles), "Timestamp Order")]
+        public async void CreateRedToRedCyclesOrderTest()
+        {
+            var testLogs = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.First();
             var expected = new RedToRedCycle()
             {
                 Start = DateTime.Parse("4/17/2023 8:01:48.8"),
@@ -75,6 +254,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 YellowEvent = DateTime.Parse("4/17/2023 8:04:13.7"),
                 End = DateTime.Parse("4/17/2023 8:04:18.8")
             };
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(expected.Start, actual.Start);
             Assert.Equal(expected.GreenEvent, actual.GreenEvent);
@@ -86,20 +268,32 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Start Event")]
         public async void CreateRedToRedCyclesNoStartTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = new List<ControllerEventLog>
             {
-                //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.Count();
             var expected = 0;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(actual, expected);
         }
@@ -108,20 +302,32 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No End Event")]
         public async void CreateRedToRedCyclesNoEndTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2}
-                //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.Count();
             var expected = 0;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(actual, expected);
         }
@@ -130,20 +336,32 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Green Event")]
         public async void CreateRedToRedCyclesNoGreenTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.Count();
             var expected = 0;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(actual, expected);
         }
@@ -152,20 +370,32 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "No Yellow Event")]
         public async void CreateRedToRedCyclesNoYellowTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                //new ControllerEventLog() { SignalId = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var actual = result.Item2.Count();
             var expected = 0;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
 
             Assert.Equal(actual, expected);
         }
@@ -174,18 +404,28 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateRedToRedCycles), "Event Order")]
         public async void CreateRedToRedCyclesEventOrderTest()
         {
+            var testLogs = new List<ControllerEventLog>
+            {
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
             var sut = new CreateRedToRedCycles();
 
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
-
             var result = await sut.ExecuteAsync(testData);
-            var cycle = result.First();
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"cycle: {l}");
+            }
+
+            var cycle = result.Item2.First();
 
             var condition = cycle.Start < cycle.GreenEvent && cycle.GreenEvent < cycle.YellowEvent && cycle.YellowEvent < cycle.End;
 
@@ -193,121 +433,58 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Mismatched Signals")]
-        public async void CreateRedToRedCyclesMismatchedSignalTest()
+        [Trait(nameof(CreateRedToRedCycles), "Null Input")]
+        public async void IdentifyandAdjustVehicleActivationsNullInputTest()
         {
-            var sut = new CreateRedToRedCycles();
+            var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
 
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1004", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
-            var expected = 0;
 
-            Assert.Equal(actual, expected);
+            var condition = result != null && result.Item2.Count() == 0;
+
+            _output.WriteLine($"condition: {condition}");
+
+            Assert.True(condition);
         }
 
         [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Mismatched Phases")]
-        public async void CreateRedToRedCyclesMismatchedPhaseTest()
+        [Trait(nameof(CreateRedToRedCycles), "No Data")]
+        public async void IdentifyandAdjustVehicleActivationsNoDataTest()
         {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 4}
-            };
+                SignalIdentifier = "1001",
+                Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+                EventCode = Random.Shared.Next(1, 50),
+                EventParam = 5
+            });
+
+            foreach (var l in testLogs)
+            {
+                _output.WriteLine($"logs: {l}");
+            }
+
+            var testData = Tuple.Create(_testApproach, testLogs);
+
+            var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.Count();
-            var expected = 0;
+            _output.WriteLine($"approach: {result.Item1}");
 
-            Assert.Equal(actual, expected);
-        }
-
-        [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Signal Grouping")]
-        public async void CreateRedToRedCyclesSignalGroupingTest()
-        {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
+            foreach (var l in result.Item2)
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1002", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1003", Timestamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 2}
-            };
+                _output.WriteLine($"cycle: {l}");
+            }
 
-            var result = await sut.ExecuteAsync(testData);
+            var condition = result != null && result.Item2.Count() == 0;
 
-            var actual = result.Select(s => s.SignalIdentifier).Distinct();
-            var expected = new List<string>()
-            {
-                "1001", "1002", "1003"
-            };
+            _output.WriteLine($"condition: {condition}");
 
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Phase Grouping")]
-        public async void CreateRedToRedCyclesPhaseGroupingTest()
-        {
-            var sut = new CreateRedToRedCycles();
-
-            var testData = new List<ControllerEventLog>
-            {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 1},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:01:48.8"), EventCode = 9, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:03:11.7"), EventCode = 1, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:04:13.7"), EventCode = 8, EventParam = 3},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 9:04:18.8"), EventCode = 9, EventParam = 3}
-            };
-
-            var result = await sut.ExecuteAsync(testData);
-
-            var actual = result.Select(s => s.PhaseNumber).Distinct();
-            var expected = new List<int>()
-            {
-                1, 2, 3
-            };
-
-            Assert.Equal(expected, actual);
+            Assert.True(condition);
         }
 
         public void Dispose()
