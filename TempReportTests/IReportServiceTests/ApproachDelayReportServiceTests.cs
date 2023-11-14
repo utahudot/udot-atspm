@@ -237,43 +237,43 @@ namespace TempReportTests.IReportServiceTests
 
             var workflow = new ApproachDelayWorkflow();
 
-            await foreach (var r in workflow.Execute(controllerEventLogs, null, default))
-            {
-                var test = new ApproachDelayResult()
-                {
-                    PhaseNumber = r.PhaseNumber,
-                    PhaseDescription = "Figure this out",
-                    ApproachDescription = "Figure this out",
-                    AverageDelayPerVehicle = r.AverageDelay,
-                    TotalDelay = r.TotalDelay,
-                    ApproachId = 0,
-                    Start = parameter.Start,
-                    End = parameter.End,
-                    SignalIdentifier = r.SignalIdentifier,
-                    SignalDescription = signal.ToString(),
-                    //Plans = r.Plans
-                };
+            //await foreach (var r in workflow.Execute(controllerEventLogs, null, default))
+            //{
+            //    var test = new ApproachDelayResult()
+            //    {
+            //        PhaseNumber = r.PhaseNumber,
+            //        PhaseDescription = "Figure this out",
+            //        ApproachDescription = "Figure this out",
+            //        AverageDelayPerVehicle = r.AverageDelay,
+            //        TotalDelay = r.TotalDelay,
+            //        ApproachId = 0,
+            //        Start = parameter.Start,
+            //        End = parameter.End,
+            //        SignalIdentifier = r.SignalIdentifier,
+            //        SignalDescription = signal.ToString(),
+            //        //Plans = r.Plans
+            //    };
 
-                test.ApproachDelayDataPoints = new List<DataPointForDouble>();
+            //    test.ApproachDelayDataPoints = new List<DataPointForDouble>();
 
-                var tl = Timeline.FromMinutes<StartEndRange>(parameter.Start, parameter.End, parameter.BinSize);
+            //    var tl = Timeline.FromMinutes<StartEndRange>(parameter.Start, parameter.End, parameter.BinSize);
 
-                foreach (var t in tl)
-                {
-                    Console.WriteLine($"timeline: {t.Start} - {t.End}");
+            //    foreach (var t in tl)
+            //    {
+            //        Console.WriteLine($"timeline: {t.Start} - {t.End}");
 
-                    var dp = new DataPointForDouble(t.Start, r.Vehicles.Where(w => t.InRange(w.CorrectedTimeStamp)).Sum(s => s.Delay) / 3600);
+            //        var dp = new DataPointForDouble(t.Start, r.Vehicles.Where(w => t.InRange(w.CorrectedTimeStamp)).Sum(s => s.Delay) / 3600);
 
-                    test.ApproachDelayDataPoints.Add(dp);
-                }
-
-
-                //public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
+            //        test.ApproachDelayDataPoints.Add(dp);
+            //    }
 
 
+            //    //public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
 
-                result.Add(test);
-            }
+
+
+            //    result.Add(test);
+            //}
 
             return result;
         }

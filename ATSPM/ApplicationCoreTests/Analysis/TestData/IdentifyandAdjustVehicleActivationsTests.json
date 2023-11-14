@@ -1,0 +1,784 @@
+{
+  "description": "NBT Ph2",
+  "mph": 45,
+  "protectedPhaseNumber": 2,
+  "isProtectedPhaseOverlap": false,
+  "permissivePhaseNumber": null,
+  "isPermissivePhaseOverlap": false,
+  "pedestrianPhaseNumber": null,
+  "isPedestrianPhaseOverlap": false,
+  "pedestrianDetectors": null,
+  "signalId": 1680,
+  "directionTypeId": "NB",
+  "id": 2880,
+  "directionType": {
+    "abbreviation": "NB",
+    "description": "Northbound",
+    "displayOrder": 3,
+    "id": "NB"
+  },
+  "detectors": [
+    {
+      "dectectorIdentifier": "711519",
+      "detectorChannel": 19,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2016-03-08T00:00:00-07:00",
+      "dateDisabled": null,
+      "laneNumber": 1,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 1.2,
+      "approachId": 2880,
+      "id": 6424,
+      "detectionTypes": [
+        {
+          "description": "Stop Bar Presence",
+          "abbreviation": "SBP",
+          "displayOrder": 6,
+          "id": "SBP",
+          "measureTypes": [
+            {
+              "abbreviation": "SF",
+              "name": "Purdue Split Failure",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 30,
+              "id": 12
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            },
+            {
+              "abbreviation": "WT",
+              "name": "Wait Time",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 113,
+              "id": 32
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711520",
+      "detectorChannel": 20,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2016-03-08T00:00:00-07:00",
+      "dateDisabled": null,
+      "laneNumber": 2,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 1.2,
+      "approachId": 2880,
+      "id": 6425,
+      "detectionTypes": [
+        {
+          "description": "Stop Bar Presence",
+          "abbreviation": "SBP",
+          "displayOrder": 6,
+          "id": "SBP",
+          "measureTypes": [
+            {
+              "abbreviation": "SF",
+              "name": "Purdue Split Failure",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 30,
+              "id": 12
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            },
+            {
+              "abbreviation": "WT",
+              "name": "Wait Time",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 113,
+              "id": 32
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711521",
+      "detectorChannel": 21,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2016-03-08T00:00:00-07:00",
+      "dateDisabled": null,
+      "laneNumber": 3,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 1.2,
+      "approachId": 2880,
+      "id": 6426,
+      "detectionTypes": [
+        {
+          "description": "Stop Bar Presence",
+          "abbreviation": "SBP",
+          "displayOrder": 6,
+          "id": "SBP",
+          "measureTypes": [
+            {
+              "abbreviation": "SF",
+              "name": "Purdue Split Failure",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 30,
+              "id": 12
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            },
+            {
+              "abbreviation": "WT",
+              "name": "Wait Time",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 113,
+              "id": 32
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711525",
+      "detectorChannel": 25,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2014-07-16T14:37:50-06:00",
+      "dateDisabled": null,
+      "laneNumber": 1,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 0.0,
+      "approachId": 2880,
+      "id": 6444,
+      "detectionTypes": [
+        {
+          "description": "Lane-by-lane Count",
+          "abbreviation": "LLC",
+          "displayOrder": 4,
+          "id": "LLC",
+          "measureTypes": [
+            {
+              "abbreviation": "TMC",
+              "name": "Turning Movement Counts",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 40,
+              "id": 5
+            },
+            {
+              "abbreviation": "AV",
+              "name": "Approach Volume",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 45,
+              "id": 7
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711526",
+      "detectorChannel": 26,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2014-07-16T14:38:13-06:00",
+      "dateDisabled": null,
+      "laneNumber": 2,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 0.0,
+      "approachId": 2880,
+      "id": 6445,
+      "detectionTypes": [
+        {
+          "description": "Lane-by-lane Count",
+          "abbreviation": "LLC",
+          "displayOrder": 4,
+          "id": "LLC",
+          "measureTypes": [
+            {
+              "abbreviation": "TMC",
+              "name": "Turning Movement Counts",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 40,
+              "id": 5
+            },
+            {
+              "abbreviation": "AV",
+              "name": "Approach Volume",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 45,
+              "id": 7
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711527",
+      "detectorChannel": 27,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2014-07-16T14:38:48-06:00",
+      "dateDisabled": null,
+      "laneNumber": 3,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 0.0,
+      "approachId": 2880,
+      "id": 6446,
+      "detectionTypes": [
+        {
+          "description": "Lane-by-lane Count",
+          "abbreviation": "LLC",
+          "displayOrder": 4,
+          "id": "LLC",
+          "measureTypes": [
+            {
+              "abbreviation": "TMC",
+              "name": "Turning Movement Counts",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 40,
+              "id": 5
+            },
+            {
+              "abbreviation": "AV",
+              "name": "Approach Volume",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 45,
+              "id": 7
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711528",
+      "detectorChannel": 28,
+      "distanceFromStopBar": null,
+      "minSpeedFilter": null,
+      "dateAdded": "2014-07-16T14:39:11-06:00",
+      "dateDisabled": null,
+      "laneNumber": 1,
+      "movementType": "R",
+      "laneType": "V",
+      "detectionHardware": "WavetronixMatrix",
+      "decisionPoint": null,
+      "movementDelay": null,
+      "latencyCorrection": 0.0,
+      "approachId": 2880,
+      "id": 6447,
+      "detectionTypes": [
+        {
+          "description": "Lane-by-lane Count",
+          "abbreviation": "LLC",
+          "displayOrder": 4,
+          "id": "LLC",
+          "measureTypes": [
+            {
+              "abbreviation": "TMC",
+              "name": "Turning Movement Counts",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 40,
+              "id": 5
+            },
+            {
+              "abbreviation": "AV",
+              "name": "Approach Volume",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 45,
+              "id": 7
+            },
+            {
+              "abbreviation": "LTGA",
+              "name": "Left Turn Gap Analysis",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 112,
+              "id": 31
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    },
+    {
+      "dectectorIdentifier": "711502",
+      "detectorChannel": 2,
+      "distanceFromStopBar": 340,
+      "minSpeedFilter": 5,
+      "dateAdded": "2020-08-07T14:58:47-06:00",
+      "dateDisabled": null,
+      "laneNumber": 1,
+      "movementType": "T",
+      "laneType": "V",
+      "detectionHardware": "WavetronixAdvance",
+      "decisionPoint": 0,
+      "movementDelay": 15,
+      "latencyCorrection": 1.2,
+      "approachId": 2880,
+      "id": 63014,
+      "detectionTypes": [
+        {
+          "description": "Advanced Count",
+          "abbreviation": "AC",
+          "displayOrder": 2,
+          "id": "AC",
+          "measureTypes": [
+            {
+              "abbreviation": "PCD",
+              "name": "Purdue Coordination Diagram",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 60,
+              "id": 6
+            },
+            {
+              "abbreviation": "AV",
+              "name": "Approach Volume",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 45,
+              "id": 7
+            },
+            {
+              "abbreviation": "AD",
+              "name": "Approach Delay",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 50,
+              "id": 8
+            },
+            {
+              "abbreviation": "AoR",
+              "name": "Arrivals On Red",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 55,
+              "id": 9
+            },
+            {
+              "abbreviation": "LP",
+              "name": "Purdue Link Pivot",
+              "showOnWebsite": false,
+              "showOnAggregationSite": false,
+              "displayOrder": 70,
+              "id": 13
+            },
+            {
+              "abbreviation": "WT",
+              "name": "Wait Time",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 113,
+              "id": 32
+            }
+          ]
+        },
+        {
+          "description": "Advanced Speed",
+          "abbreviation": "AS",
+          "displayOrder": 3,
+          "id": "AS",
+          "measureTypes": [
+            {
+              "abbreviation": "Speed",
+              "name": "Approach Speed",
+              "showOnWebsite": true,
+              "showOnAggregationSite": false,
+              "displayOrder": 65,
+              "id": 10
+            }
+          ]
+        }
+      ],
+      "approach": {
+        "description": "NBT Ph2",
+        "mph": 45,
+        "protectedPhaseNumber": 2,
+        "isProtectedPhaseOverlap": false,
+        "permissivePhaseNumber": null,
+        "isPermissivePhaseOverlap": false,
+        "pedestrianPhaseNumber": null,
+        "isPedestrianPhaseOverlap": false,
+        "pedestrianDetectors": null,
+        "signalId": 1680,
+        "directionTypeId": "NB",
+        "id": 2880,
+        "signal": {
+          "latitude": 40.62398502,
+          "longitude": -111.9387819,
+          "note": "Initial",
+          "primaryName": "Redwood Road",
+          "signalIdentifier": "7115",
+          "secondaryName": "7000 South",
+          "jurisdictionId": 35,
+          "chartEnabled": true,
+          "loggingEnabled": true,
+          "versionAction": "Initial",
+          "start": "2011-01-01T00:00:00-07:00",
+          "pedsare1to1": true,
+          "controllerTypeId": 2,
+          "regionId": 2,
+          "id": 1680
+        },
+        "directionType": {
+          "abbreviation": "NB",
+          "description": "Northbound",
+          "displayOrder": 3,
+          "id": "NB"
+        }
+      }
+    }
+  ],
+  "signal": {
+    "latitude": 40.62398502,
+    "longitude": -111.9387819,
+    "note": "Initial",
+    "primaryName": "Redwood Road",
+    "signalIdentifier": "7115",
+    "secondaryName": "7000 South",
+    "jurisdictionId": 35,
+    "chartEnabled": true,
+    "loggingEnabled": true,
+    "versionAction": "Initial",
+    "start": "2011-01-01T00:00:00-07:00",
+    "pedsare1to1": true,
+    "controllerTypeId": 2,
+    "regionId": 2,
+    "id": 1680
+  }
+}
+      
