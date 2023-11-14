@@ -27,64 +27,20 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item1.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-            Tuple.Create(o, i.Where(w => w.SignalIdentifier == o.Approach?.Signal?.SignalIdentifier)
-            .Select(s => new CorrectedDetectorEvent(o)
+            var result = input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
+            Tuple.Create(o, i.Where(w => w.SignalIdentifier == o.Approach?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
+            .Select(s => new CorrectedDetectorEvent()
             {
+                SignalIdentifier = s.SignalIdentifier,
+                DetectorChannel = o.DetectorChannel,
                 CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
             })))
             //this filters out only matching events
             .Where(w => w.Item2.Any())
             //.GroupBy(g => g.Item1, s => s.Item2)
-            .ToList();
+            .ToList() ?? new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>();
 
             return Task.FromResult<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(result);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>, IReadOnlyList<CorrectedDetectorEvent>>
-    //{
-    //    /// <inheritdoc/>
-    //    public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    /// <inheritdoc/>
-    //    protected override Task<IReadOnlyList<CorrectedDetectorEvent>> Process(IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = input
-    //            .Select(s =>
-    //            Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalIdentifier == w.SignalIdentifier && w.EventParam == s.Item1.DetectorChannel)))
-    //            .Select(s => s
-    //            .Item2.Select(c =>
-    //            new CorrectedDetectorEvent(s.Item1)
-    //            {
-    //                CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
-    //            }))
-    //        .SelectMany(s => s)
-    //        .ToList();
-
-    //        return Task.FromResult<IReadOnlyList<CorrectedDetectorEvent>>(result);
-    //    }
-    //}
-
-
-
-
-
-
-
-
-
 }

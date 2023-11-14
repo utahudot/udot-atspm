@@ -12,9 +12,9 @@ namespace ATSPM.Application.Analysis.Common
 
         public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
         {
-            SignalIdentifier = detectorEvent.Detector.Approach?.Signal?.SignalIdentifier;
+            SignalIdentifier = detectorEvent.SignalIdentifier;
             CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
-            DetectorChannel = detectorEvent.Detector.DetectorChannel;
+            DetectorChannel = detectorEvent.DetectorChannel;
             PhaseNumber = redToRedCycle.PhaseNumber;
             Start = redToRedCycle.Start;
             End = redToRedCycle.End;
