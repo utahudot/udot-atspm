@@ -16,55 +16,33 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GenerateApproachDelayResults : TransformManyProcessStepBase<IReadOnlyList<Vehicle>, ApproachDelayResult>
+    public class GenerateApproachDelayResults : TransformProcessStepBase<Tuple<Approach, IEnumerable<Vehicle>>, Tuple<Approach, ApproachDelayResult>>
     {
         public GenerateApproachDelayResults(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<ApproachDelayResult>> Process(IReadOnlyList<Vehicle> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, ApproachDelayResult>> Process(Tuple<Approach, IEnumerable<Vehicle>> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
-            x.GroupBy(g => g.PhaseNumber, (phase, y) =>
-            y.GroupBy(g => g.DetectorChannel, (det, z) => new ApproachDelayResult()
-            {
-                SignalIdentifier = signal,
-                PhaseNumber = phase,
-                Start = z.Min(m => m.Start),
-                End = z.Max(m => m.End),
-                Plans = new List<ApproachDelayPlan>() {
-                    new ApproachDelayPlan()
-                    {
-                        SignalIdentifier = signal,
-                        Start = z.Min(m => m.Start),
-                        End = z.Max(m => m.End),
-                        Vehicles = z.ToList()
-                    }
-                }
-            })).SelectMany(m => m))
-                .SelectMany(m => m);
-
-            //var plans = new List<ApproachDelayPlan>();
-
-            //var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
+            var result = Tuple.Create(input.Item1, new ApproachDelayResult());
+            
+            //var result = input.Item2.GroupBy(g => g.SignalIdentifier, (signal, x) =>
             //x.GroupBy(g => g.PhaseNumber, (phase, y) =>
-            //y.GroupBy(g => g.DetChannel, (det, z) => new ApproachDelayResult()
+            //y.GroupBy(g => g.DetectorChannel, (det, z) => new ApproachDelayResult()
             //{
             //    SignalIdentifier = signal,
             //    PhaseNumber = phase,
             //    Start = z.Min(m => m.Start),
             //    End = z.Max(m => m.End),
-            //    Plans = plans.Where(w => w.SignalIdentifier == signal)
-            //    .Select(p => new ApproachDelayPlan()
-            //    {
-            //        SignalIdentifier = p.SignalIdentifier,
-            //        PlanNumber = p.PlanNumber,
-            //        Start = p.Start,
-            //        End = p.End,
-            //        Vehicles = z.ToList()
-            //    }).Where(w => w.Vehicles.Count > 0)
-            //    .ToList()
+            //    Plans = new List<ApproachDelayPlan>() {
+            //        new ApproachDelayPlan()
+            //        {
+            //            SignalIdentifier = signal,
+            //            Start = z.Min(m => m.Start),
+            //            End = z.Max(m => m.End),
+            //            Vehicles = z.ToList()
+            //        }
+            //    }
             //})).SelectMany(m => m))
-            //    .SelectMany(m => m)
-            //    .ToList();
+            //    .SelectMany(m => m);
 
             return Task.FromResult(result);
         }
