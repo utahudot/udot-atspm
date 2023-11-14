@@ -26,45 +26,46 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = new List<TotalVolumes>();
 
-            var test = input.GroupBy(g => g.Detector.Approach);
+            //this is the original i just removed it so it would compile
+            //var test = input.GroupBy(g => g.Detector.Approach);
 
-            foreach (var t in test)
-            {
-                var total = new TotalVolumes(_options);
+            //foreach (var t in test)
+            //{
+            //    var total = new TotalVolumes(_options);
 
-                var c = new OpposingDirection(t.Key.DirectionTypeId);
+            //    var c = new OpposingDirection(t.Key.DirectionTypeId);
 
-                var o = test.Where(w => w.Key.DirectionTypeId == c).FirstOrDefault();
+            //    var o = test.Where(w => w.Key.DirectionTypeId == c).FirstOrDefault();
 
-                total.ForEach(f =>
-                {
-                    f.Primary = new Volume()
-                    {
-                        Start = f.Start,
-                        End = f.End,
-                        Direction = t.Key.DirectionTypeId,
-                        Phase = t.Key.ProtectedPhaseNumber,
-                        DetectorCount = t.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
-                    };
+            //    total.ForEach(f =>
+            //    {
+            //        f.Primary = new Volume()
+            //        {
+            //            Start = f.Start,
+            //            End = f.End,
+            //            Direction = t.Key.DirectionTypeId,
+            //            Phase = t.Key.ProtectedPhaseNumber,
+            //            DetectorCount = t.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
+            //        };
 
-                    f.Opposing = new Volume()
-                    {
-                        Start = f.Start,
-                        End = f.End,
-                        Direction = o.Key.DirectionTypeId,
-                        Phase = o.Key.ProtectedPhaseNumber,
-                        DetectorCount = o.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
-                    };
-                });
+            //        f.Opposing = new Volume()
+            //        {
+            //            Start = f.Start,
+            //            End = f.End,
+            //            Direction = o.Key.DirectionTypeId,
+            //            Phase = o.Key.ProtectedPhaseNumber,
+            //            DetectorCount = o.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
+            //        };
+            //    });
 
-                result.Add(total);
+            //    result.Add(total);
 
-                foreach (var a in total)
-                {
-                    Console.WriteLine($"p: {a.Primary}");
-                    Console.WriteLine($"o: {a.Opposing}");
-                }
-            }
+            //    foreach (var a in total)
+            //    {
+            //        Console.WriteLine($"p: {a.Primary}");
+            //        Console.WriteLine($"o: {a.Opposing}");
+            //    }
+            //}
 
             return Task.FromResult<IEnumerable<TotalVolumes>>(result);
         }
