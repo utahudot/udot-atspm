@@ -4,6 +4,7 @@ using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks.Dataflow;
@@ -18,7 +19,7 @@ namespace ATSPM.Application.Analysis.Workflows
     /// Approach delay is a measure that integrates individual vehicle delay with
     /// volume to get an estimated sum of all vehicle delay on an approach.
     /// </summary>
-    public class ApproachDelayWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachDelayResult>
+    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
     {
         private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
@@ -30,8 +31,8 @@ namespace ATSPM.Application.Analysis.Workflows
             _stepOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
-        protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCyclesAndVehicles;
-        protected GetDetectorEvents GetDetectorEvents { get; private set; }
+        protected JoinBlock<IEnumerable<Tuple<Detector,IEnumerable<CorrectedDetectorEvent>>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
+        //protected GetDetectorEvents GetDetectorEvents { get; private set; }
 
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
         public FilteredDetectorData FilteredDetectorData { get; private set; }
@@ -51,7 +52,7 @@ namespace ATSPM.Application.Analysis.Workflows
             AssignCyclesToVehicles = new();
             GenerateApproachDelayResults = new();
 
-            GetDetectorEvents = new();
+            //GetDetectorEvents = new();
         }
 
         /// <inheritdoc/>
@@ -65,7 +66,7 @@ namespace ATSPM.Application.Analysis.Workflows
             Steps.Add(AssignCyclesToVehicles);
             Steps.Add(GenerateApproachDelayResults);
 
-            Steps.Add(GetDetectorEvents);
+            //Steps.Add(GetDetectorEvents);
         }
 
         /// <inheritdoc/>
@@ -75,8 +76,8 @@ namespace ATSPM.Application.Analysis.Workflows
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
             FilteredPhaseIntervalChanges.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-            GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredDetectorData.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
 
             IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
             CreateRedToRedCycles.LinkTo(mergeCyclesAndVehicles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });

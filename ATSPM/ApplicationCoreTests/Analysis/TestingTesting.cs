@@ -36,17 +36,14 @@ namespace ApplicationCoreTests.Analysis
 
             _output.WriteLine($"data count: {data.Logs.Count}");
 
-            var testFilteredDetectorData = new TestFilteredDetectorData();
-            var testIdentifyandAdjustVehicleActivations = new TestIdentifyandAdjustVehicleActivations();
+            var testFilteredDetectorData = new FilteredDetectorData();
+            var testIdentifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
 
-            var result = new ActionBlock<IReadOnlyList<IGrouping<Detector, IEnumerable<CorrectedDetectorEvent>>>>(a =>
+            var result = new ActionBlock<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(a =>
             {
                 foreach (var r in a)
                 {
-                    foreach (var h in r)
-                    {
-                        _output.WriteLine($"stuff: {r.Key} --- {h.Count()}");
-                    }
+                    _output.WriteLine($"stuff: {r.Item1} --- {r.Item2.Count()}");
                 }
 
                 //foreach (var r in a.SelectMany(s => s))
