@@ -56,15 +56,16 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// 
     /// </list>
     /// </summary>
-    public class CreateRedToRedCycles : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<RedToRedCycle>>
+    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach,IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
     {
         /// <inheritdoc/>
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IReadOnlyList<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, IEnumerable<RedToRedCycle>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
+            //TODO: get the correct phase from approach here
+            var result = Tuple.Create(input.Item1, input.Item2.Where(l => l.EventParam == input.Item1.ProtectedPhaseNumber && (l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9))
                 .OrderBy(o => o.Timestamp)
                 .GroupBy(g => g.SignalIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y    
@@ -82,9 +83,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 }))
                 .SelectMany(m => m))
                 .SelectMany(m => m)
-                .ToList();
+);
 
-            return Task.FromResult<IReadOnlyList<RedToRedCycle>>(result);
+            return Task.FromResult(result);
         }
     }
 }

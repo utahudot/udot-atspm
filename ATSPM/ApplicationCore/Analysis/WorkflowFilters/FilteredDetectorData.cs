@@ -15,17 +15,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredDetectorData : FilterStepBase
-    {
-        /// <inheritdoc/>
-        public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-        {
-            filteredList.Add((int)DataLoggerEnum.DetectorOff);
-            filteredList.Add((int)DataLoggerEnum.DetectorOn);
-        }
-    }
-
-    public class TestFilteredDetectorData : ProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
+    public class FilteredDetectorData : ProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
     {
         /// <summary>
         /// List of filtered event codes
@@ -33,7 +23,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         protected List<int> filteredList = new();
 
         /// <inheritdoc/>
-        public TestFilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             filteredList.Add((int)DataLoggerEnum.DetectorOff);
             filteredList.Add((int)DataLoggerEnum.DetectorOn);
@@ -42,7 +32,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
             {
                 var dc = f.Item1.Detectors.Select(s => s.DetectorChannel).ToList();
 
-                var result = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(f.Item1, f.Item2.Where(w => filteredList.Contains(w.EventCode) && dc.Contains(w.EventParam)));
+                var result = Tuple.Create(f.Item1, f.Item2.Where(w => w.SignalIdentifier == f.Item1.Signal.SignalIdentifier && filteredList.Contains(w.EventCode) && dc.Contains(w.EventParam)));
 
                 return result;
 
@@ -52,4 +42,15 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     }
 
 
+
+
+    //public class FilteredDetectorData : FilterStepBase
+    //{
+    //    /// <inheritdoc/>
+    //    public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+    //    {
+    //        filteredList.Add((int)DataLoggerEnum.DetectorOff);
+    //        filteredList.Add((int)DataLoggerEnum.DetectorOn);
+    //    }
+    //}
 }
