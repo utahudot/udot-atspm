@@ -54,6 +54,7 @@ namespace ATSPM.Application.Analysis.Common
             return time >= Start && time <= End;
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);

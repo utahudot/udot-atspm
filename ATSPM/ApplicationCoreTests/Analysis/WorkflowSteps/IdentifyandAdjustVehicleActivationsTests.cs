@@ -1,18 +1,15 @@
+using ApplicationCoreTests.Analysis.TestObjects;
 using ApplicationCoreTests.Fixtures;
 using ATSPM.Application;
-using ATSPM.Application.Analysis.ApproachDelay;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Channels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -242,7 +239,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-
             var condition = result != null && result.Count == 0;
 
             _output.WriteLine($"condition: {condition}");
@@ -288,6 +284,38 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             _output.WriteLine($"condition: {condition}");
 
             Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(IdentifyandAdjustVehicleActivations), "From File")]
+        public async void IdentifyandAdjustVehicleActivationsFromFileTest()
+        {
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData.json").FullName);
+            var testLogs = JsonConvert.DeserializeObject<IdentifyandAdjustVehicleActivationsTestData>(json);
+
+            _output.WriteLine($"log count: {testLogs.EventLogs.Count}");
+            _output.WriteLine($"event count: {testLogs.CorrectedDetectorEvents.Count}");
+
+            var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
+
+            var sut = new IdentifyandAdjustVehicleActivations();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            foreach (var r in result)
+            {
+                _output.WriteLine($"detector: {r.Item1}");
+
+                _output.WriteLine($"events: {r.Item2.Count()}");
+            }
+
+            var expected = testLogs.CorrectedDetectorEvents;
+            var actual = result.SelectMany(m => m.Item2).ToList();
+
+            _output.WriteLine($"expected: {expected.Count}");
+            _output.WriteLine($"actual: {actual.Count}");
+
+            Assert.Equivalent(expected, actual);
         }
 
         public void Dispose()
