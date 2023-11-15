@@ -1,0 +1,673 @@
+using ApplicationCoreTests.Analysis.TestObjects;
+using ApplicationCoreTests.Fixtures;
+using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Application.Enums;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using AutoFixture;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace ApplicationCoreTests.Analysis.WorkflowSteps
+{
+    internal class DetectorFixture : Fixture
+    {
+        public DetectorFixture()
+        {
+            Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
+            Behaviors.Add(new OmitOnRecursionBehavior());
+
+            this.Customize<Detector>(c => c
+                    .With(w => w.ApproachId, 100)
+                    .With(w => w.DetectorChannel, 50)
+                );
+        }
+    }
+
+    public class CreateVehicleTests : IClassFixture<TestApproachFixture>, IDisposable
+    {
+        private readonly ITestOutputHelper _output;
+        private readonly Approach _testApproach;
+
+        public CreateVehicleTests(ITestOutputHelper output, TestApproachFixture testApproach)
+        {
+            _output = output;
+            _testApproach = testApproach.TestApproach;
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Signal Filter")]
+        public async void CreateVehicleSignalFilterTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var correctDetectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, correctDetectorEvents.Union(incorrectDetectorEvents))
+            }.AsEnumerable();
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                new RedToRedCycle()
+                {
+                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                    Start = DateTime.Parse("4/17/2023 8:00:00"),
+                    End = DateTime.Parse("4/17/2023 8:10:00"),
+                    GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                    YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+                }
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var expected = 2;
+            var actual = result.Item2.Count();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Detector Filter")]
+        public async void CreateVehicleDetectorFilterTest()
+        {
+            var correct = _testApproach.Detectors.First();
+            var inccorect = new DetectorFixture().Create<Detector>();
+
+            var correctDetectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = correct.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = inccorect.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(correct, correctDetectorEvents),
+                Tuple.Create(inccorect, incorrectDetectorEvents)
+            }.AsEnumerable();
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                new RedToRedCycle()
+                {
+                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                    Start = DateTime.Parse("4/17/2023 8:00:00"),
+                    End = DateTime.Parse("4/17/2023 8:10:00"),
+                    GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                    YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+                }
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var expected = 4;
+            var actual = result.Item2.Count();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Compare Start")]
+        public async void CreateVehicleTestsCompareStartTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 7:59:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                new RedToRedCycle()
+                {
+                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                    Start = DateTime.Parse("4/17/2023 8:00:00"),
+                    End = DateTime.Parse("4/17/2023 8:10:00"),
+                    GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                    YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+                }
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var expected = 2;
+            var actual = result.Item2.Count();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Compare End")]
+        public async void CreateVehicleTestsCompareEndTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:10:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:11:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                new RedToRedCycle()
+                {
+                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                    Start = DateTime.Parse("4/17/2023 8:00:00"),
+                    End = DateTime.Parse("4/17/2023 8:10:00"),
+                    GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                    YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+                }
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var expected = 2;
+            var actual = result.Item2.Count();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Data Check")]
+        public async void CreateVehicleTestsDataCheckTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCycle = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:10:00"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+            };
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                testCycle
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var expected = new Vehicle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"),
+                DetectorChannel = detector.DetectorChannel,
+                Start = testCycle.Start,
+                End = testCycle.End,
+                GreenEvent = testCycle.GreenEvent,
+                YellowEvent = testCycle.YellowEvent
+            };
+            var actual = result.Item2.First();
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equivalent(expected, actual);
+        }
+
+        ///// <summary>
+        ///// Delay is only calculated for arrival on red
+        ///// </summary>
+        //[Fact]
+        //[Trait(nameof(CreateVehicleTests), "Red Delay")]
+        //public async void CreateVehicleTestsRedDelayTest()
+        //{
+        //    var sut = new CreateVehicleTests();
+
+        //    var testEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:0.5") }
+        //    };
+
+        //    var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
+
+        //    var actual = result.First().Delay;
+        //    var expected = (_redCycles.First().GreenEvent - testEvents.First().CorrectedTimeStamp).TotalSeconds;
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        ///// <summary>
+        ///// Delay is only calculated for arrival on red result should be 0
+        ///// </summary>
+        //[Fact]
+        //[Trait(nameof(CreateVehicleTests), "Green Delay")]
+        //public async void CreateVehicleTestsGreenDelayTest()
+        //{
+        //    var sut = new CreateVehicleTests();
+
+        //    var testEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:1.5") }
+        //    };
+
+        //    var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
+
+        //    _output.WriteLine($"{result.First().GreenEvent:yyyy-MM-dd'T'HH:mm:ss.f} - {result.First().CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}");
+
+        //    var actual = result.First().Delay;
+        //    var expected = 0;
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        ///// <summary>
+        ///// Delay is only calculated for arrival on red result should be 0
+        ///// </summary>
+        //[Fact]
+        //[Trait(nameof(CreateVehicleTests), "Yellow Delay")]
+        //public async void CreateVehicleTestsYellowDelayTest()
+        //{
+        //    var sut = new CreateVehicleTests();
+
+        //    var testEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent(_detector) { CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:00:2.5") }
+        //    };
+
+        //    var result = await sut.ExecuteAsync(Tuple.Create<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>>(testEvents, _redCycles));
+
+        //    var actual = result.First().Delay;
+        //    var expected = 0;
+
+        //    Assert.Equal(expected, actual);
+        //}
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Arrival on Red")]
+        public async void CreateVehicleTestsArrivalOnRedTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCycle = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:10:00"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+            };
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                testCycle
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var condition = result.Item2.First().ArrivalType == ArrivalType.ArrivalOnRed;
+
+            _output.WriteLine($"condition: {condition}");
+
+            Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Arrival on Green")]
+        public async void CreateVehicleTestsArrivalOnGreenTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:08:30"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCycle = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:10:00"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+            };
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                testCycle
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var condition = result.Item2.First().ArrivalType == ArrivalType.ArrivalOnGreen;
+
+            _output.WriteLine($"condition: {condition}");
+
+            Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Arrival on Yellow")]
+        public async void CreateVehicleTestsArrivalOnYellowTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
+
+            var testCycle = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:10:00"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+            };
+
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                testCycle
+            }.AsEnumerable());
+
+
+            var testData = Tuple.Create(testEvents, testCyles);
+
+            var sut = new CreateVehicle();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            var condition = result.Item2.First().ArrivalType == ArrivalType.ArrivalOnYellow;
+
+            _output.WriteLine($"condition: {condition}");
+
+            Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "Null Input")]
+        public async void CreateVehicleNullInputTest()
+        {
+            //var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
+
+            //var sut = new CreateVehicle();
+
+            //var result = await sut.ExecuteAsync(testData);
+
+            //var condition = result != null && result.Count == 0;
+
+            //_output.WriteLine($"condition: {condition}");
+
+            //Assert.True(condition);
+
+            Assert.True(false);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "No Data")]
+        public async void CreateVehicleNoDataTest()
+        {
+            //var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
+            //{
+            //    SignalIdentifier = "1001",
+            //    Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+            //    EventCode = Random.Shared.Next(1, 50),
+            //    EventParam = 5
+            //});
+
+            //foreach (var l in testLogs)
+            //{
+            //    _output.WriteLine($"logs: {l}");
+            //}
+
+            //var testData = Tuple.Create(_testApproach, testLogs);
+
+            //var sut = new CreateVehicle();
+
+            //var result = await sut.ExecuteAsync(testData);
+
+            //foreach (var r in result)
+            //{
+            //    _output.WriteLine($"detector: {r.Item1}");
+
+            //    foreach (var l in r.Item2)
+            //    {
+            //        _output.WriteLine($"corrected event: {l}");
+            //    }
+            //}
+
+            //var condition = result != null && result.Count == 0;
+
+            //_output.WriteLine($"condition: {condition}");
+
+            //Assert.True(condition);
+
+            Assert.True(false);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateVehicle), "From File")]
+        public async void CreateVehicleFromFileTest()
+        {
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CreateVehicleTestData.json").FullName);
+            //var testLogs = JsonConvert.DeserializeObject<CreateVehicleTestData>(json);
+
+            //_output.WriteLine($"log count: {testLogs.EventLogs.Count}");
+            //_output.WriteLine($"event count: {testLogs.CorrectedDetectorEvents.Count}");
+
+            //var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
+
+            //var sut = new CreateVehicle();
+
+            //var result = await sut.ExecuteAsync(testData);
+
+            //foreach (var r in result)
+            //{
+            //    _output.WriteLine($"detector: {r.Item1}");
+
+            //    _output.WriteLine($"events: {r.Item2.Count()}");
+            //}
+
+            //var expected = testLogs.CorrectedDetectorEvents;
+            //var actual = result.SelectMany(m => m.Item2).ToList();
+
+            //_output.WriteLine($"expected: {expected.Count}");
+            //_output.WriteLine($"actual: {actual.Count}");
+
+            //Assert.Equivalent(expected, actual);
+
+            Assert.True(false);
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+}
