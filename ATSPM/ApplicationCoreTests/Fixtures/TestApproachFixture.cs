@@ -14,7 +14,7 @@ namespace ApplicationCoreTests.Fixtures
     {
         public TestApproachFixture()
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTests.json").FullName);
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Approach2880TestData.json").FullName);
             TestApproach = JsonConvert.DeserializeObject<Approach>(json);
         }
 

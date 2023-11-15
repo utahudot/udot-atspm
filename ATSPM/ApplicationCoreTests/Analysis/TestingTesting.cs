@@ -1,10 +1,12 @@
-﻿using ATSPM.Application.Analysis.Common;
+﻿using ApplicationCoreTests.Analysis.TestObjects;
+using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Google.Cloud.Logging.Type;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,8 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ApplicationCoreTests.Analysis
 {
+    
+    
     public class TestingTesting
     {
         private readonly ITestOutputHelper _output;
@@ -31,46 +35,88 @@ namespace ApplicationCoreTests.Analysis
         [Fact]
         public async void TestingStuff()
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\7115-ApproachDelay.json").FullName);
-            var data = JsonConvert.DeserializeObject<TestData>(json);
+            var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CycleEvents.csv");
 
-            _output.WriteLine($"data count: {data.Logs.Count}");
+            var logs = File.ReadAllLines(file1.FullName)
+                   .Skip(1)
+                   .Select(x => x.Split(','))
+                   .Select(x => new ControllerEventLog
+                   {
+                       SignalIdentifier = x[0],
+                       Timestamp = DateTime.Parse(x[1]),
+                       EventCode = int.Parse(x[2]),
+                       EventParam = int.Parse(x[3])
+                   }).ToList();
 
-            var testFilteredDetectorData = new FilteredDetectorData();
-            var testIdentifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
+            //var file2 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Correction.csv");
 
-            var result = new ActionBlock<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(a =>
+            //var events = File.ReadAllLines(file2.FullName)
+            //       .Skip(1)
+            //       .Select(x => x.Split(','))
+            //       .Select(x => new CorrectedDetectorEvent
+            //       {
+            //           SignalIdentifier = x[0],
+            //           CorrectedTimeStamp = DateTime.Parse(x[1]),
+            //           //EventCode = int.Parse(x[2]),
+            //           DetectorChannel = int.Parse(x[3])
+            //       }).ToList();
+
+            //_output.WriteLine($"log count: {logs.Count}");
+            //_output.WriteLine($"event count: {events.Count} - {events.Any(a => a.DetectorChannel != 2)}");
+
+            var testdata = new RedToRedCyclesTestData()
             {
-                foreach (var r in a)
-                {
-                    _output.WriteLine($"stuff: {r.Item1} --- {r.Item2.Count()}");
-                }
+                EventLogs = logs,
+                //RedCycles = events
+            };
 
-                //foreach (var r in a.SelectMany(s => s))
-                //{
-                //    _output.WriteLine($"stuff: {r.Count()}");
-                //}
+            var json = JsonConvert.SerializeObject(testdata);
+
+            File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RedToRedCyclesTestData.json", json);
 
 
-                //_output.WriteLine($"this is a thing: {a}");
-            });
 
-            testFilteredDetectorData.LinkTo(testIdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            testIdentifyandAdjustVehicleActivations.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            foreach (var a in data.Signal.Approaches)
-            {
-                testFilteredDetectorData.Post(Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(a, data.Logs.ToList()));
-            }
 
-            testFilteredDetectorData.Complete();
 
-            await result.Completion;
 
-            //var test = await testFilteredDetectorData.ReceiveAsync();
-            //_output.WriteLine($"this is a thing: {test} - {testFilteredDetectorData.OutputAvailableAsync().Result}");
 
-            
+
+
+
+
+
+
+
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\7115-ApproachDelay.json").FullName);
+            //var data = JsonConvert.DeserializeObject<TestData>(json);
+
+            //_output.WriteLine($"data count: {data.Logs.Count}");
+
+            //var testFilteredDetectorData = new FilteredDetectorData();
+            //var testIdentifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
+
+            //var result = new ActionBlock<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(a =>
+            //{
+            //    foreach (var r in a)
+            //    {
+            //        _output.WriteLine($"stuff: {r.Item1} --- {r.Item2.Count()}");
+            //    }
+            //});
+
+            //testFilteredDetectorData.LinkTo(testIdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            //testIdentifyandAdjustVehicleActivations.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //foreach (var a in data.Signal.Approaches)
+            //{
+            //    testFilteredDetectorData.Post(Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(a, data.Logs.ToList()));
+            //}
+
+            //testFilteredDetectorData.Complete();
+
+            //await result.Completion;
+
+
         }
     }
 
@@ -79,4 +125,6 @@ namespace ApplicationCoreTests.Analysis
         public Signal Signal { get; set; }
         public IReadOnlyList<ControllerEventLog> Logs { get; set; }
     }
+
+    
 }
