@@ -38,7 +38,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        public AssignCyclesToVehicles AssignCyclesToVehicles { get; private set; }
+        public CreateVehicle AssignCyclesToVehicles { get; private set; }
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         /// <inheritdoc/>

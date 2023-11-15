@@ -28,7 +28,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-            Tuple.Create(o, i.Where(w => w.SignalIdentifier == o.Approach?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
+            Tuple.Create(o, i.Where(w => w.SignalIdentifier == input.Item1?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
             .Select(s => new CorrectedDetectorEvent()
             {
                 SignalIdentifier = s.SignalIdentifier,

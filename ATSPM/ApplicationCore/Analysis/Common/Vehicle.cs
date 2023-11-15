@@ -6,21 +6,22 @@ using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class Vehicle : StartEndRange, ISignalPhaseLayer
+    //TODO: this has the same props as redtoredcycle start, end, greenevent and yellow event. make the same base class?
+    public class Vehicle : StartEndRange, ISignalPhaseLayer, IDetectorEvent
     {
-        public Vehicle() { }
+        //public Vehicle() { }
 
-        public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
-        {
-            SignalIdentifier = detectorEvent.SignalIdentifier;
-            CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
-            DetectorChannel = detectorEvent.DetectorChannel;
-            PhaseNumber = redToRedCycle.PhaseNumber;
-            Start = redToRedCycle.Start;
-            End = redToRedCycle.End;
-            YellowEvent = redToRedCycle.YellowEvent;
-            GreenEvent = redToRedCycle.GreenEvent;
-        }
+        //public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
+        //{
+        //    SignalIdentifier = detectorEvent.SignalIdentifier;
+        //    CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
+        //    DetectorChannel = detectorEvent.DetectorChannel;
+        //    PhaseNumber = redToRedCycle.PhaseNumber;
+        //    Start = redToRedCycle.Start;
+        //    End = redToRedCycle.End;
+        //    YellowEvent = redToRedCycle.YellowEvent;
+        //    GreenEvent = redToRedCycle.GreenEvent;
+        //}
 
         #region ISignalPhaseLayer
 
@@ -34,9 +35,6 @@ namespace ATSPM.Application.Analysis.Common
 
         public int DetectorChannel { get; set; }
         public DateTime CorrectedTimeStamp { get; set; }
-
-        //public DateTime Start { get; set; }
-        //public DateTime End { get; set; }
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 

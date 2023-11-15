@@ -2,12 +2,13 @@
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models;
 using System;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class CorrectedDetectorEvent : ISignalDetector
+    public class CorrectedDetectorEvent : IDetectorEvent
     {
-        #region ISignalDetector
+        #region IDetectorEvent
 
         /// <inheritdoc/>
         public string SignalIdentifier { get; set; }
@@ -15,13 +16,15 @@ namespace ATSPM.Application.Analysis.Common
         /// <inheritdoc/>
         public int DetectorChannel { get; set; }
 
-        #endregion
-
+        /// <inheritdoc/>
         public DateTime CorrectedTimeStamp { get; set; }
 
+        #endregion
+
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{SignalIdentifier} - {DetectorChannel} - {CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
+            return JsonSerializer.Serialize(this);
         }
     }
 }

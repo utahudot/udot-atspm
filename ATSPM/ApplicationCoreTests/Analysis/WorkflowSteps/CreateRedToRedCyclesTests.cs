@@ -1,10 +1,13 @@
+using ApplicationCoreTests.Analysis.TestObjects;
 using ApplicationCoreTests.Fixtures;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,7 +27,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(CreateRedToRedCycles), "Signal Filter")]
-        public async void CreateRedToRedCyclesSignalGroupingTest()
+        public async void CreateRedToRedCyclesSignalFilterTest()
         {
             var correct = new List<ControllerEventLog>
             {
@@ -73,7 +76,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(CreateRedToRedCycles), "Approach Filter")]
-        public async void IdentifyandAdjustVehicleActivationsApproachFilterTest()
+        public async void CreateRedToRedCyclesApproachFilterTest()
         {
             var correct = new List<ControllerEventLog>
             {
@@ -122,7 +125,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(CreateRedToRedCycles), "Code Filter")]
-        public async void IdentifyandAdjustVehicleActivationsCodeFilterTest()
+        public async void CreateRedToRedCyclesCodeFilterTest()
         {
             var correct = new List<ControllerEventLog>
             {
@@ -434,7 +437,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(CreateRedToRedCycles), "Null Input")]
-        public async void IdentifyandAdjustVehicleActivationsNullInputTest()
+        public async void CreateRedToRedCyclesNullInputTest()
         {
             var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
 
@@ -452,7 +455,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         [Fact]
         [Trait(nameof(CreateRedToRedCycles), "No Data")]
-        public async void IdentifyandAdjustVehicleActivationsNoDataTest()
+        public async void CreateRedToRedCyclesNoDataTest()
         {
             var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
@@ -485,6 +488,35 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             _output.WriteLine($"condition: {condition}");
 
             Assert.True(condition);
+        }
+
+        [Fact]
+        [Trait(nameof(CreateRedToRedCycles), "From File")]
+        public async void CreateRedToRedCyclesFromFileTest()
+        {
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RedToRedCyclesTestData.json").FullName);
+            var testLogs = JsonConvert.DeserializeObject<RedToRedCyclesTestData>(json);
+
+            _output.WriteLine($"log count: {testLogs.EventLogs.Count}");
+            _output.WriteLine($"event count: {testLogs.RedCycles.Count}");
+
+            var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
+
+            var sut = new CreateRedToRedCycles();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            _output.WriteLine($"events: {result.Item2.Count()}");
+
+            var expected = testLogs.RedCycles;
+            var actual = result.Item2.ToList();
+
+            _output.WriteLine($"expected: {expected.Count}");
+            _output.WriteLine($"actual: {actual.Count}");
+
+            Assert.Equivalent(expected, actual);
         }
 
         public void Dispose()
