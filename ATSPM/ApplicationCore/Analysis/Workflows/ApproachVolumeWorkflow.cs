@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Analysis.ApproachVolume;
+using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
@@ -16,11 +17,9 @@ namespace ATSPM.Application.Analysis.Workflows
     ///(1). The number of vehicles is normalized to a flow rate(in vehicles per hour).
     ///The data may be aggregated into custom-sized bins, with 15 minutes being the default.
     /// </summary>
-    public class ApproachVolumeWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, ApproachVolumeResult>
+    public class ApproachVolumeWorkflow : WorkflowBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, ApproachVolumeResult>
     {
-        //protected JoinBlock<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> mergeCalculateDelayValues;
-
-        protected GetDetectorEvents GetDetectorEvents { get; private set; }
+        protected JoinBlock<IEnumerable<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
 
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
@@ -32,16 +31,9 @@ namespace ATSPM.Application.Analysis.Workflows
         {
             FilteredDetectorData = new();
             IdentifyandAdjustVehicleActivations = new();
-            //HACK: figure this out!
-            CalculateTotalVolumes = new(new TimelineOptions()
-            {
-                Start = DateTime.Parse("4/17/2023 8:00:0.0"),
-                End = DateTime.Parse("4/17/2023 10:00:0.0"),
-                Size = 15
-            });
-            GenerateApproachVolumeResults = new();
+            CalculateTotalVolumes = new();
 
-            GetDetectorEvents = new();
+            GenerateApproachVolumeResults = new();
         }
 
         /// <inheritdoc/>
@@ -50,9 +42,8 @@ namespace ATSPM.Application.Analysis.Workflows
             Steps.Add(FilteredDetectorData);
             Steps.Add(IdentifyandAdjustVehicleActivations);
             Steps.Add(CalculateTotalVolumes);
-            Steps.Add(GenerateApproachVolumeResults);
 
-            Steps.Add(GetDetectorEvents);
+            Steps.Add(GenerateApproachVolumeResults);
         }
 
         /// <inheritdoc/>
@@ -60,9 +51,12 @@ namespace ATSPM.Application.Analysis.Workflows
         {
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilteredDetectorData.LinkTo(GetDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-            GetDetectorEvents.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            IdentifyandAdjustVehicleActivations.LinkTo(CalculateTotalVolumes, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredDetectorData.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+
+
             CalculateTotalVolumes.LinkTo(GenerateApproachVolumeResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GenerateApproachVolumeResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
