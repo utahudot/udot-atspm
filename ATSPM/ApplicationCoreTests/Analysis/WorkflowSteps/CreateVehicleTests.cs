@@ -79,7 +79,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 }
             }.AsEnumerable());
 
-
             var testData = Tuple.Create(testEvents, testCyles);
 
             var sut = new CreateVehicle();
@@ -146,7 +145,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 }
             }.AsEnumerable());
 
-
             var testData = Tuple.Create(testEvents, testCyles);
 
             var sut = new CreateVehicle();
@@ -200,7 +198,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
                 }
             }.AsEnumerable());
-
 
             var testData = Tuple.Create(testEvents, testCyles);
 
@@ -256,7 +253,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 }
             }.AsEnumerable());
 
-
             var testData = Tuple.Create(testEvents, testCyles);
 
             var sut = new CreateVehicle();
@@ -310,7 +306,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 testCycle
             }.AsEnumerable());
-
 
             var testData = Tuple.Create(testEvents, testCyles);
 
@@ -444,7 +439,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 testCycle
             }.AsEnumerable());
 
-
             var testData = Tuple.Create(testEvents, testCyles);
 
             var sut = new CreateVehicle();
@@ -496,7 +490,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 testCycle
             }.AsEnumerable());
-
 
             var testData = Tuple.Create(testEvents, testCyles);
 
@@ -550,7 +543,6 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 testCycle
             }.AsEnumerable());
 
-
             var testData = Tuple.Create(testEvents, testCyles);
 
             var sut = new CreateVehicle();
@@ -575,94 +567,75 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Null Input")]
         public async void CreateVehicleNullInputTest()
         {
-            //var testData = Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(null, null);
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>().AsEnumerable();
 
-            //var sut = new CreateVehicle();
+            var testCyles = Tuple.Create<Approach, IEnumerable<RedToRedCycle>>(null, null);
 
-            //var result = await sut.ExecuteAsync(testData);
+            var testData = Tuple.Create(testEvents, testCyles);
 
-            //var condition = result != null && result.Count == 0;
+            var sut = new CreateVehicle();
 
-            //_output.WriteLine($"condition: {condition}");
+            var result = await sut.ExecuteAsync(testData);
 
-            //Assert.True(condition);
-
-            Assert.True(false);
+            Assert.True(result != null);
+            Assert.True(result.Item1 == null);
+            Assert.True(result.Item2 == null);
         }
 
         [Fact]
         [Trait(nameof(CreateVehicle), "No Data")]
         public async void CreateVehicleNoDataTest()
         {
-            //var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
-            //{
-            //    SignalIdentifier = "1001",
-            //    Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-            //    EventCode = Random.Shared.Next(1, 50),
-            //    EventParam = 5
-            //});
+            var detector = new DetectorFixture().Create<Detector>();
 
-            //foreach (var l in testLogs)
-            //{
-            //    _output.WriteLine($"logs: {l}");
-            //}
+            var detectorEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = detector.DetectorChannel},
 
-            //var testData = Tuple.Create(_testApproach, testLogs);
+            }.AsEnumerable();
 
-            //var sut = new CreateVehicle();
+            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+            {
+                Tuple.Create(detector, detectorEvents)
+            }.AsEnumerable();
 
-            //var result = await sut.ExecuteAsync(testData);
+            var testCycle = new RedToRedCycle()
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:10:00"),
+                GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+                YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+            };
 
-            //foreach (var r in result)
-            //{
-            //    _output.WriteLine($"detector: {r.Item1}");
+            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+            {
+                testCycle
+            }.AsEnumerable());
 
-            //    foreach (var l in r.Item2)
-            //    {
-            //        _output.WriteLine($"corrected event: {l}");
-            //    }
-            //}
+            var testData = Tuple.Create(testEvents, testCyles);
 
-            //var condition = result != null && result.Count == 0;
+            var sut = new CreateVehicle();
 
-            //_output.WriteLine($"condition: {condition}");
+            var result = await sut.ExecuteAsync(testData);
 
-            //Assert.True(condition);
+            _output.WriteLine($"approach: {result.Item1}");
 
-            Assert.True(false);
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"vehicle: {v}");
+            }
+
+            Assert.True(result != null);
+            Assert.True(result.Item1 == _testApproach);
+            Assert.True(result.Item2?.Count() == 0);
         }
 
         [Fact]
         [Trait(nameof(CreateVehicle), "From File")]
         public async void CreateVehicleFromFileTest()
         {
-            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CreateVehicleTestData.json").FullName);
-            //var testLogs = JsonConvert.DeserializeObject<CreateVehicleTestData>(json);
-
-            //_output.WriteLine($"log count: {testLogs.EventLogs.Count}");
-            //_output.WriteLine($"event count: {testLogs.CorrectedDetectorEvents.Count}");
-
-            //var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
-
-            //var sut = new CreateVehicle();
-
-            //var result = await sut.ExecuteAsync(testData);
-
-            //foreach (var r in result)
-            //{
-            //    _output.WriteLine($"detector: {r.Item1}");
-
-            //    _output.WriteLine($"events: {r.Item2.Count()}");
-            //}
-
-            //var expected = testLogs.CorrectedDetectorEvents;
-            //var actual = result.SelectMany(m => m.Item2).ToList();
-
-            //_output.WriteLine($"expected: {expected.Count}");
-            //_output.WriteLine($"actual: {actual.Count}");
-
-            //Assert.Equivalent(expected, actual);
-
             Assert.True(false);
         }
 
