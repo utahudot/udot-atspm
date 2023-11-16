@@ -37,7 +37,6 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             })))
             //this filters out only matching events
             .Where(w => w.Item2.Any())
-            //.GroupBy(g => g.Item1, s => s.Item2)
             .ToList() ?? new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>();
 
             return Task.FromResult<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(result);
