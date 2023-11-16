@@ -445,12 +445,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-
-            var condition = result != null && result.Item2.Count() == 0;
+            var condition = result != null && result.Item1 == null && result.Item2 == null;
 
             _output.WriteLine($"condition: {condition}");
 
             Assert.True(condition);
+
+            Assert.True(result != null);
+            Assert.True(result.Item1 == null);
+            Assert.True(result.Item2 == null);
         }
 
         [Fact]
@@ -483,11 +486,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"cycle: {l}");
             }
 
-            var condition = result != null && result.Item2.Count() == 0;
-
-            _output.WriteLine($"condition: {condition}");
-
-            Assert.True(condition);
+            Assert.True(result != null);
+            Assert.True(result.Item1 == _testApproach);
+            Assert.True(result.Item2?.Count() == 0);
         }
 
         [Fact]
