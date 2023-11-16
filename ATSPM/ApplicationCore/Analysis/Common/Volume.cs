@@ -18,6 +18,15 @@ namespace ATSPM.Application.Analysis.Common
         public int DetectorCount => Primary?.DetectorCount + Opposing?.DetectorCount ?? 0;
     }
 
+    public class Volumes : Timeline<Volume>
+    {
+        public Volumes(TimelineOptions options) : base(options) { }
+
+        public Volumes(Timeline<Volume> collection) : base(collection) { }
+
+        public int DetectorCount => this.Sum(s => s.DetectorCount);
+    }
+
 
 
     public class TotalVolumes : Timeline<TotalVolume>
