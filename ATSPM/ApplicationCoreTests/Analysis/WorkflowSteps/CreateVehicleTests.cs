@@ -92,7 +92,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"vehicle: {v}");
             }
 
-            var expected = 2;
+            var expected = correctDetectorEvents.Count();
             var actual = result.Item2.Count();
 
             _output.WriteLine($"expected: {expected}");
@@ -158,7 +158,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"vehicle: {v}");
             }
 
-            var expected = 4;
+            var expected = correctDetectorEvents.Count();
             var actual = result.Item2.Count();
 
             _output.WriteLine($"expected: {expected}");
