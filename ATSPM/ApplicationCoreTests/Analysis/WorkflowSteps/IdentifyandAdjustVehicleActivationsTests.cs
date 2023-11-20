@@ -59,18 +59,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                foreach (var l in r.Item2)
-                {
-                    _output.WriteLine($"corrected event: {l}");
-                }
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
-            var actual = result.SelectMany(s => s.Item2).Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -111,18 +108,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                foreach (var l in r.Item2)
-                {
-                    _output.WriteLine($"corrected event: {l}");
-                }
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             var expected = correct.Select(s => s.EventParam).Distinct().OrderBy(o => o);
-            var actual = result.SelectMany(s => s.Item2).Select(s => s.DetectorChannel).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => s.DetectorChannel).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -163,18 +157,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                foreach (var l in r.Item2)
-                {
-                    _output.WriteLine($"corrected event: {l}");
-                }
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             var expected = correct.Select(s => s.EventCode).Where(w => w == (int)DataLoggerEnum.DetectorOn).Count();
-            var actual = result.SelectMany(s => s.Item2).Count();
+            var actual = result.Item2.Count();
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -204,14 +195,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                foreach (var l in r.Item2)
-                {
-                    _output.WriteLine($"corrected event: {l}");
-                }
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             var expected = new CorrectedDetectorEvent()
@@ -221,7 +209,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(testLog.Timestamp, _testApproach.Mph ?? 0, testDetector.DistanceFromStopBar ?? 0, testDetector.LatencyCorrection)
             };
 
-            var actual = result.SelectMany(s => s.Item2).First();
+            var actual = result.Item2.First();
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -240,8 +228,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var result = await sut.ExecuteAsync(testData);
 
             Assert.True(result != null);
-            Assert.True(result.Select(s => s.Item1).Count() == 0);
-            Assert.True(result.SelectMany(m => m.Item2).Count() == 0);
+            Assert.True(result.Item1 == null);
+            Assert.True(result.Item2 == null);
         }
 
         [Fact]
@@ -267,19 +255,16 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                foreach (var l in r.Item2)
-                {
-                    _output.WriteLine($"corrected event: {l}");
-                }
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             Assert.True(result != null);
-            Assert.True(result.Select(s => s.Item1).Count() == 0);
-            Assert.True(result.SelectMany(m => m.Item2).Count() == 0);
+            Assert.True(result.Item1 == _testApproach);
+            Assert.True(result.Item2?.Count() == 0);
         }
 
         [Fact]
@@ -298,15 +283,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"detector: {r.Item1}");
+            _output.WriteLine($"approach: {result.Item1}");
 
-                _output.WriteLine($"events: {r.Item2.Count()}");
+            foreach (var l in result.Item2)
+            {
+                _output.WriteLine($"corrected event: {l}");
             }
 
             var expected = testLogs.CorrectedDetectorEvents;
-            var actual = result.SelectMany(m => m.Item2).ToList();
+            var actual = result.Item2.ToList();
 
             _output.WriteLine($"expected: {expected.Count}");
             _output.WriteLine($"actual: {actual.Count}");
