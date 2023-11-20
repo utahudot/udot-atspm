@@ -16,6 +16,11 @@ namespace ATSPM.Application.Analysis.Common
         public Volume Opposing { get; set; }
 
         public int DetectorCount => Primary?.DetectorCount + Opposing?.DetectorCount ?? 0;
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 
     public class Volumes : Timeline<Volume>
@@ -57,5 +62,10 @@ namespace ATSPM.Application.Analysis.Common
     {
         public int Phase { get; set; }
         public DirectionTypes Direction { get; set; }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }
