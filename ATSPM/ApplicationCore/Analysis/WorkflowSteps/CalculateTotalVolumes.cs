@@ -14,34 +14,6 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculatePhaseVolume : TransformProcessStepBase<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>, Tuple<Approach, Volumes>>
-    {
-        public CalculatePhaseVolume(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<Tuple<Approach, Volumes>> Process(IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>> input, CancellationToken cancelToken = default)
-        {
-            var result = Tuple.Create(input.Select(m => m.Item1.Approach).Distinct().First(), new Volumes(new TimelineOptions()
-            {
-                //Start = input.SelectMany(m => m.Item2).Min(m => m.CorrectedTimeStamp),
-                //End = input.SelectMany(m => m.Item2).Max(m => m.CorrectedTimeStamp),
-                Start = DateTime.Parse("4/17/2023 8:00:00"),
-                End = DateTime.Parse("4/17/2023 10:00:00"),
-                Type = TimelineType.Minutes,
-                Size = 15
-            }));
-
-            result.Item2.ForEach(f =>
-            {
-                f.Phase = input.Select(m => m.Item1.Approach.ProtectedPhaseNumber).Distinct().First();
-                f.Direction = input.Select(m => m.Item1.Approach.DirectionTypeId).Distinct().First();
-                f.DetectorCount = input.SelectMany(m => m.Item2).Where(w => f.InRange(w.CorrectedTimeStamp)).Count();
-
-            });
-
-            return Task.FromResult(result);
-        }
-    }
-
     public class TestCalculateTotalVolumes : TransformProcessStepBase<Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>>, Tuple<Approach, TotalVolumes>>
     {
         protected override Task<Tuple<Approach, TotalVolumes>> Process(Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input, CancellationToken cancelToken = default)

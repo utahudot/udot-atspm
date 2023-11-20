@@ -15,7 +15,7 @@ namespace ATSPM.Application.Analysis.Common
         public Volume Primary { get; set; }
         public Volume Opposing { get; set; }
 
-        public int DetectorCount => Primary?.DetectorCount + Opposing?.DetectorCount ?? 0;
+        public int DetectorCount => Primary?.Count + Opposing?.Count ?? 0;
 
         public override string ToString()
         {
@@ -23,14 +23,14 @@ namespace ATSPM.Application.Analysis.Common
         }
     }
 
-    public class Volumes : Timeline<Volume>
-    {
-        public Volumes(TimelineOptions options) : base(options) { }
+    //public class Volumes : Timeline<Volume>
+    //{
+    //    public Volumes(TimelineOptions options) : base(options) { }
 
-        public Volumes(Timeline<Volume> collection) : base(collection) { }
+    //    public Volumes(Timeline<Volume> collection) : base(collection) { }
 
-        public int DetectorCount => this.Sum(s => s.DetectorCount);
-    }
+    //    public int DetectorCount => this.Sum(s => s.DetectorCount);
+    //}
 
 
 
@@ -58,10 +58,43 @@ namespace ATSPM.Application.Analysis.Common
         }
     }
 
-    public class Volume : VolumeBase
+    //public class Volume : VolumeBase
+    //{
+    //    public int Phase { get; set; }
+    //    public DirectionTypes Direction { get; set; }
+
+    //    public override string ToString()
+    //    {
+    //        return JsonSerializer.Serialize(this);
+    //    }
+    //}
+
+    public class Volume : List<IDetectorEvent>, IStartEndRange
     {
         public int Phase { get; set; }
         public DirectionTypes Direction { get; set; }
+
+        public DateTime End { get; set; }
+        public DateTime Start { get; set; }
+
+        public virtual bool InRange(DateTime time)
+        {
+            return time >= Start && time < End;
+        }
+
+        public override string ToString()
+        {
+            return $"{Phase} - {Direction} - {Start} - {End} - {this.Count}";
+        }
+    }
+
+    public class Volumes : Timeline<Volume>
+    {
+        public Volumes(TimelineOptions options) : base(options) { }
+
+        public Volumes(Timeline<Volume> collection) : base(collection) { }
+
+        public int DetectorCount => this.Sum(s => s.Count());
 
         public override string ToString()
         {
