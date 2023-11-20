@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.Workflows;
 using ATSPM.Application.Common;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
@@ -15,13 +14,13 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculatePhaseVolume : TransformProcessStepBase<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>, Volumes>
+    public class CalculatePhaseVolume : TransformProcessStepBase<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>, Tuple<Approach, Volumes>>
     {
         public CalculatePhaseVolume(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<Volumes> Process(IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, Volumes>> Process(IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>> input, CancellationToken cancelToken = default)
         {
-            var result = new Volumes(new TimelineOptions()
+            var result = Tuple.Create(input.Select(m => m.Item1.Approach).Distinct().First(), new Volumes(new TimelineOptions()
             {
                 //Start = input.SelectMany(m => m.Item2).Min(m => m.CorrectedTimeStamp),
                 //End = input.SelectMany(m => m.Item2).Max(m => m.CorrectedTimeStamp),
@@ -29,9 +28,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 End = DateTime.Parse("4/17/2023 10:00:00"),
                 Type = TimelineType.Minutes,
                 Size = 15
-            });
+            }));
 
-            result.ForEach(f =>
+            result.Item2.ForEach(f =>
             {
                 f.Phase = input.Select(m => m.Item1.Approach.ProtectedPhaseNumber).Distinct().First();
                 f.Direction = input.Select(m => m.Item1.Approach.DirectionTypeId).Distinct().First();
@@ -43,6 +42,31 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         }
     }
 
+    public class TestCalculateTotalVolumes : TransformProcessStepBase<Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>>, Tuple<Approach, TotalVolumes>>
+    {
+        protected override Task<Tuple<Approach, TotalVolumes>> Process(Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input, CancellationToken cancelToken = default)
+        {
+            var result = new TotalVolumes(new TimelineOptions()
+            {
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 10:00:00"),
+                Type = TimelineType.Minutes,
+                Size = 15
+            });
+
+            if (input.Item1.Item1.DirectionTypeId == new OpposingDirection(input.Item2.Item1.DirectionTypeId))
+            {
+                result.ForEach(f =>
+                {
+                    f.Primary = input.Item1.Item2.FirstOrDefault(d => d.Start == f.Start && d.End == f.End);
+                    f.Opposing = input.Item2.Item2.FirstOrDefault(d => d.Start == f.Start && d.End == f.End);
+                });
+            }
+
+            return Task.FromResult(Tuple.Create(input.Item1.Item1, result));
+
+        }
+    }
 
     public class CalculateTotalVolumes : TransformProcessStepBase<Tuple<Approach, IEnumerable<Vehicle>>, TotalVolumes>
     {

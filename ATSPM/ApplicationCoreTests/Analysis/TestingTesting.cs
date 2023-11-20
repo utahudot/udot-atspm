@@ -85,60 +85,52 @@ namespace ApplicationCoreTests.Analysis
 
             _output.WriteLine($"signal: {signal}");
 
+            //var primaryChain = new IdentifyandAdjustVehicleActivations();
+            //var opposingChain = new IdentifyandAdjustVehicleActivations();
+            //var VolumeP = new CalculatePhaseVolume();
+            //var VolumeO = new CalculatePhaseVolume();
 
-            //var primaryChain = new FilteredDetectorData();
-            //var opposingChain = new FilteredDetectorData();
+            //var joinVolumes = new JoinBlock<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>>();
 
-            var primaryChain = new IdentifyandAdjustVehicleActivations();
-            var opposingChain = new IdentifyandAdjustVehicleActivations();
-            var VolumeP = new CalculatePhaseVolume();
-            var VolumeO = new CalculatePhaseVolume();
+            //var totalVolume = new TestCalculateTotalVolumes();
 
-            var testResults = new ActionBlock<Volumes>(a =>
-            {
-                _output.WriteLine($"a: {a.DetectorCount}");
+            //var testResults = new ActionBlock<Tuple<Approach, TotalVolumes>>(a =>
+            //{
+            //    _output.WriteLine($"a: {a.Item1}");
 
-                foreach (var v in a)
-                {
-                    _output.WriteLine($"v: {v}");
-                }
-            });
+            //    foreach (var v in a.Item2)
+            //    {
+            //        _output.WriteLine($"v: {v}");
+            //    }
+            //});
 
-            primaryChain.LinkTo(VolumeP, new DataflowLinkOptions() { PropagateCompletion = true });
-            opposingChain.LinkTo(VolumeO, new DataflowLinkOptions() { PropagateCompletion = true });
+            //primaryChain.LinkTo(VolumeP, new DataflowLinkOptions() { PropagateCompletion = true });
+            //opposingChain.LinkTo(VolumeO, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            VolumeP.LinkTo(testResults, new DataflowLinkOptions() { PropagateCompletion = true });
-            VolumeO.LinkTo(testResults, new DataflowLinkOptions() { PropagateCompletion = true });
+            //VolumeP.LinkTo(joinVolumes.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            //VolumeO.LinkTo(joinVolumes.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            //var combineChains = new JoinBlock<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>, IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>();
+            //joinVolumes.LinkTo(totalVolume, new DataflowLinkOptions() { PropagateCompletion = true });
 
-
-            var stuff = signal.Approaches.SelectMany(m => m.Detectors).GroupJoin(logs, d => d.DetectorChannel, l => l.EventParam, (o, i) => Tuple.Create(signal.Approaches.First(f => f.Id == o.Approach.Id), i)).Where(w => w.Item2.Any());
-
-            foreach (var app in stuff)
-            {
-                //if (s.Item2.Count() > 0)
-                //    _output.WriteLine($"stuff: {s.Item1} - {s.Item2.Count()}");
-                //else
-                //    _output.WriteLine($"fail: {s.Item1} - {s.Item2.Count()}");
+            //totalVolume.LinkTo(testResults, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-                var o = stuff.FirstOrDefault(w => w.Item1.DirectionTypeId == new OpposingDirection(app.Item1.DirectionTypeId));
-                _output.WriteLine($"primary: {app.Item1}:{app.Item2.Count()} opposing: {o}");
+            //var stuff = signal.Approaches.SelectMany(m => m.Detectors).GroupJoin(logs, d => d.DetectorChannel, l => l.EventParam, (o, i) => Tuple.Create(signal.Approaches.First(f => f.Id == o.Approach.Id), i)).Where(w => w.Item2.Any());
+
+            //foreach (var app in stuff)
+            //{
+            //    var o = stuff.FirstOrDefault(w => w.Item1.DirectionTypeId == new OpposingDirection(app.Item1.DirectionTypeId));
+            //    _output.WriteLine($"primary: {app.Item1}:{app.Item2.Count()} opposing: {o}");
 
 
-                primaryChain.Post(app);
-                opposingChain.Post(app);
+            //    primaryChain.Post(app);
+            //    opposingChain.Post(o);
 
-                primaryChain.Complete();
-                opposingChain.Complete();
+            //    primaryChain.Complete();
+            //    opposingChain.Complete();
+            //}
 
-                await testResults.Completion;
-
-
-
-
-            }
+            //await testResults.Completion;
 
 
 
