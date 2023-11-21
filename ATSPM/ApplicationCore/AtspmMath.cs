@@ -123,7 +123,7 @@ namespace ATSPM.Application
             return timestamp.AddSeconds(distanceFromStopBar / (approachSpeed * 1.467)).AddSeconds(latencyCorrection * -1);
         }
 
-        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : VolumeBase
+        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : IPhaseVolume
         {
             return volumes.Where((w, i) => i <= volumes.Count() - chunks)
                 .Select((s, i) => volumes.Skip(i).Take(chunks))

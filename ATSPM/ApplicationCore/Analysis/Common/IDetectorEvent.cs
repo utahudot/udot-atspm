@@ -1,16 +1,20 @@
-﻿using ATSPM.Data.Interfaces;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Interfaces;
+using ATSPM.Domain.Common;
 using System;
 
 namespace ATSPM.Application.Analysis.Common
 {
     /// <summary>
-    /// Detector event
+    /// Events that coorelate to <see cref="DataLoggerEnum.DetectorOn"/>
+    /// and that have been timestamp corrected for detector distances and latency
+    /// using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
     /// </summary>
-    public interface IDetectorEvent : ISignalDetector
+    public interface IDetectorEvent : ISignalPhaseLayer, ISignalDetector, ITimestamp
     {
         /// <summary>
-        /// Coreected timestamp of event
+        /// Direction of travel when the event occured.
         /// </summary>
-        DateTime CorrectedTimeStamp { get; set; }
+        DirectionTypes Direction { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Enums;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
 using System;
@@ -34,27 +35,27 @@ namespace ATSPM.Application.Analysis.Common
         #endregion
 
         public int DetectorChannel { get; set; }
-        public DateTime CorrectedTimeStamp { get; set; }
+        public DateTime Timestamp { get; set; }
         public DateTime GreenEvent { get; set; }
         public DateTime YellowEvent { get; set; }
 
-        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - CorrectedTimeStamp).TotalSeconds : 0;
+        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - Timestamp).TotalSeconds : 0;
 
         public ArrivalType ArrivalType
         {
             get
             {
-                if (CorrectedTimeStamp < GreenEvent && CorrectedTimeStamp >= Start)
+                if (Timestamp < GreenEvent && Timestamp >= Start)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
 
-                else if (CorrectedTimeStamp >= GreenEvent && CorrectedTimeStamp < YellowEvent)
+                else if (Timestamp >= GreenEvent && Timestamp < YellowEvent)
                 {
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (CorrectedTimeStamp >= YellowEvent && CorrectedTimeStamp <= End)
+                else if (Timestamp >= YellowEvent && Timestamp <= End)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
@@ -62,6 +63,8 @@ namespace ATSPM.Application.Analysis.Common
                 return ArrivalType.Unknown;
             }
         }
+
+        public DirectionTypes Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public override string ToString()
         {

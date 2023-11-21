@@ -78,7 +78,7 @@ namespace ATSPM.Application.Analysis.Common
         public double TotalDelay => Vehicles.Sum(d => d.Delay);
 
         /// <inheritdoc/>
-        public double TotalVolume => Vehicles.Count(d => InRange(d.CorrectedTimeStamp));
+        public double TotalVolume => Vehicles.Count(d => InRange(d.Timestamp));
 
         #endregion
 
