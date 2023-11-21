@@ -32,39 +32,14 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             .Select(s => new CorrectedDetectorEvent()
             {
                 SignalIdentifier = s.SignalIdentifier,
+                PhaseNumber = o.Approach.ProtectedPhaseNumber,
+                Direction = o.Approach.DirectionTypeId,
                 DetectorChannel = o.DetectorChannel,
-                CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
+                Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
             }))
             .SelectMany(m => m));
 
             return Task.FromResult(result);
         }
     }
-
-
-
-    //this is passing detectors, not approach
-    //public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>
-    //{
-    //    /// <inheritdoc/>
-    //    public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-    //    /// <inheritdoc/>
-    //    protected override Task<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
-    //    {
-    //        var result = input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-    //        Tuple.Create(o, i.Where(w => w.SignalIdentifier == input.Item1?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
-    //        .Select(s => new CorrectedDetectorEvent()
-    //        {
-    //            SignalIdentifier = s.SignalIdentifier,
-    //            DetectorChannel = o.DetectorChannel,
-    //            CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
-    //        })))
-    //        //this filters out only matching events
-    //        .Where(w => w.Item2.Any())
-    //        .ToList() ?? new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>();
-
-    //        return Task.FromResult<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(result);
-    //    }
-    //}
 }

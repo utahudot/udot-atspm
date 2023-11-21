@@ -1,9 +1,9 @@
 ﻿using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Workflows;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,26 +19,25 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<Tuple<Approach, Volumes>> Process(Tuple<Approach, IEnumerable<CorrectedDetectorEvent>> input, CancellationToken cancelToken = default)
         {
-            var logFilter = input.Item2?.Where(w => w.SignalIdentifier == input.Item1?.Signal.SignalIdentifier && input.Item1.Detectors.Select(s => s.DetectorChannel).Contains(w.DetectorChannel)).ToList();
+            var eventFilter = input.FilterCorrectedDetectorEvents();
 
-            if (logFilter == null || logFilter.Count == 0)
+            if (eventFilter == null || eventFilter.Count == 0)
                 return Task.FromResult(Tuple.Create<Approach, Volumes>(input.Item1, null));
 
-            var result = Tuple.Create(input.Item1, new Volumes(new TimelineOptions()
+            var result = Tuple.Create(input.Item1, new Volumes(eventFilter.CreateTimeline<Volume>(TimelineType.Minutes, 15))
             {
-                Start = logFilter?.Min(m => m.CorrectedTimeStamp).RoundDown(TimeSpan.FromMinutes(15)) ?? DateTime.MinValue,
-                End = logFilter?.Max(m => m.CorrectedTimeStamp).RoundUp(TimeSpan.FromMinutes(15)) ?? DateTime.MaxValue,
-                Type = TimelineType.Minutes,
-                Size = 15
-            }));
-
-            result.Item2.ForEach(f =>
-            {
-                f.Phase = input.Item1?.ProtectedPhaseNumber ?? 0;
-                f.Direction = input.Item1.DirectionTypeId;
-                f.AddRange(logFilter.Where(w => f.InRange(w.CorrectedTimeStamp)));
-
+                SignalIdentifier = input.Item1.Signal.SignalIdentifier,
+                PhaseNumber = input.Item1.ProtectedPhaseNumber,
+                Direction = input.Item1.DirectionTypeId
             });
+
+            result.Item2.ForEach((f =>
+            {
+                f.SignalIdentifier = input.Item1?.Signal.SignalIdentifier;
+                f.PhaseNumber = input.Item1?.ProtectedPhaseNumber ?? 0;
+                f.Direction = input.Item1.DirectionTypeId;
+                f.AddRange(eventFilter.Where(w => f.InRange(w)));
+            }));
 
             return Task.FromResult(result);
         }
