@@ -2,6 +2,7 @@ using ApplicationCoreTests.Fixtures;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Common;
 using AutoFixture;
 using System;
 using System.Collections.Generic;
@@ -26,24 +27,21 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CalculatePhaseVolume), "Signal Filter")]
         public async void CalculatePhaseVolumeSignalFilterTest()
         {
-            var correct = _testApproach.Detectors.First();
-            var inccorect = new DetectorFixture().Create<Detector>();
-
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
             var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:05:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:06:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:07:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:08:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:05:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:06:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:07:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:08:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -80,19 +78,19 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = correct.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = correct.DetectorChannel},
 
             }.AsEnumerable();
 
             var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:05:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:06:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:07:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:08:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:05:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:06:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:07:00"), DetectorChannel = inccorect.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:08:00"), DetectorChannel = inccorect.DetectorChannel},
 
             }.AsEnumerable();
 
@@ -121,6 +119,68 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
+        [Trait(nameof(CalculatePhaseVolume), "Timeline Check")]
+        public async void CalculatePhaseVolumeTimelineCheckTest()
+        {
+            var detector = _testApproach.Detectors.First();
+
+            var testEvents = new List<CorrectedDetectorEvent>
+            {
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
+
+            }.AsEnumerable();
+
+            var testData = Tuple.Create(_testApproach, testEvents);
+
+            var sut = new CalculatePhaseVolume();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"approach: {result.Item1}");
+
+            foreach (var v in result.Item2)
+            {
+                _output.WriteLine($"volume: {v}");
+            }
+
+            //var expected = new Volumes()
+            //{
+            //    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+            //    PhaseNumber = _testApproach.ProtectedPhaseNumber,
+            //    Direction = _testApproach.DirectionTypeId,
+            //    Start = DateTime.Parse("4/17/2023 8:00:00"),
+            //    End = DateTime.Parse("4/17/2023 8:15:00")
+            //};
+
+            var expected = new Volumes(new TimelineOptions()
+            {
+                Start = DateTime.Parse("4/17/2023 8:00:00"),
+                End = DateTime.Parse("4/17/2023 8:15:00"),
+                Type = TimelineType.Minutes,
+                Size = 15
+            })
+            {
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Direction = _testApproach.DirectionTypeId
+            };
+
+            var actual = result.Item2;
+
+            _output.WriteLine($"expected: {expected}");
+            _output.WriteLine($"actual: {actual}");
+
+            Assert.Equal(expected.SignalIdentifier, actual.SignalIdentifier);
+            Assert.Equal(expected.PhaseNumber, actual.PhaseNumber);
+            Assert.Equal(expected.Direction, actual.Direction);
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.End, actual.End);
+        }
+
+        [Fact]
         [Trait(nameof(CalculatePhaseVolume), "Data Check")]
         public async void CalculatePhaseVolumeDataCheckTest()
         {
@@ -128,10 +188,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
 
             }.AsEnumerable();
 
@@ -150,7 +210,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var expected = new Volume()
             {
-                Phase = _testApproach.ProtectedPhaseNumber,
+                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Direction = _testApproach.DirectionTypeId,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:15:00")
@@ -163,7 +224,12 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
 
-            Assert.Equivalent(expected, actual);
+            Assert.Equal(expected.SignalIdentifier, actual.SignalIdentifier);
+            Assert.Equal(expected.PhaseNumber, actual.PhaseNumber);
+            Assert.Equal(expected.Direction, actual.Direction);
+            Assert.Equal(expected.Start, actual.Start);
+            Assert.Equal(expected.End, actual.End);
+            Assert.Equal(expected.DetectorCount, actual.DetectorCount);
         }
 
         [Fact]
@@ -174,14 +240,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
 
             }.AsEnumerable();
 
@@ -193,9 +259,12 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
+            _output.WriteLine($"volumes: {result.Item2}");
+
             foreach (var v in result.Item2)
             {
-                _output.WriteLine($"volume: {v}");
+                _output.WriteLine($"start: {v.Start}");
+                _output.WriteLine($"end: {v.End}");
             }
 
             Assert.Equal(DateTime.Parse("4/17/2023 8:00:00"), result.Item2.Start);
@@ -210,14 +279,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, CorrectedTimeStamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
 
             }.AsEnumerable();
 
@@ -263,7 +332,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testLogs = Enumerable.Range(1, 5).Select(s => new CorrectedDetectorEvent()
             {
                 SignalIdentifier = "1001",
-                CorrectedTimeStamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
+                Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 DetectorChannel = 5
             });
 
