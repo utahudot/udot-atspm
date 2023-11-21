@@ -1,24 +1,39 @@
 ﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Interfaces;
-using ATSPM.Data.Models;
 using System;
 using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
+    /// <summary>
+    /// Events that coorelate to <see cref="DataLoggerEnum.DetectorOn"/>
+    /// and that have been timestamp corrected for detector distances and latency
+    /// using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
+    /// </summary>
     public class CorrectedDetectorEvent : IDetectorEvent
     {
         #region IDetectorEvent
+
+        #region ISignalPhaseLayer
 
         /// <inheritdoc/>
         public string SignalIdentifier { get; set; }
 
         /// <inheritdoc/>
+        public int PhaseNumber { get; set; }
+
+        #endregion
+
+        /// <inheritdoc/>
         public int DetectorChannel { get; set; }
 
         /// <inheritdoc/>
-        public DateTime CorrectedTimeStamp { get; set; }
+        public DirectionTypes Direction { get; set; }
 
+        /// <summary>
+        /// Coreected timestamp of event using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        
         #endregion
 
         /// <inheritdoc/>

@@ -205,8 +205,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var expected = new CorrectedDetectorEvent()
             {
                 SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                PhaseNumber = _testApproach.ProtectedPhaseNumber,
+                Direction = _testApproach.DirectionTypeId,
                 DetectorChannel = testDetector.DetectorChannel,
-                CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(testLog.Timestamp, _testApproach.Mph ?? 0, testDetector.DistanceFromStopBar ?? 0, testDetector.LatencyCorrection)
+                Timestamp = AtspmMath.AdjustTimeStamp(testLog.Timestamp, _testApproach.Mph ?? 0, testDetector.DistanceFromStopBar ?? 0, testDetector.LatencyCorrection)
             };
 
             var actual = result.Item2.First();
