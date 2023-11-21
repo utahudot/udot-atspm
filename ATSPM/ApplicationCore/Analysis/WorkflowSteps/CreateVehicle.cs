@@ -19,11 +19,11 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var result = Tuple.Create(input.Item2?.Item1,
                 input.Item2?.Item2?.Select(s =>
                 input.Item1.Where(w => w.Item1.ApproachId == input.Item2.Item1.Id)
-                .SelectMany(m => m.Item2?.Where(w => w.SignalIdentifier == input.Item2?.Item1?.Signal.SignalIdentifier && s.InRange(w.CorrectedTimeStamp)))
+                .SelectMany(m => m.Item2?.Where(w => w.SignalIdentifier == input.Item2?.Item1?.Signal.SignalIdentifier && s.InRange(w.Timestamp)))
                 .Select(v => new Vehicle()
                 {
                     SignalIdentifier = v.SignalIdentifier,
-                    CorrectedTimeStamp = v.CorrectedTimeStamp,
+                    Timestamp = v.Timestamp,
                     DetectorChannel = v.DetectorChannel,
                     PhaseNumber = s.PhaseNumber,
                     Start = s.Start,
