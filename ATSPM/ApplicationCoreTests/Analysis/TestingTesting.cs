@@ -5,17 +5,25 @@ using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Common;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.Specifications;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Common;
+using ATSPM.Domain.Extensions;
 using Google.Cloud.Logging.Type;
 using Microsoft.Extensions.Options;
+using NetTopologySuite.Operation.Buffer;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Xunit;
@@ -75,62 +83,133 @@ namespace ApplicationCoreTests.Analysis
 
             //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json", json);
 
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
+            //var signal = JsonConvert.DeserializeObject<Signal>(json);
 
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115.json").FullName);
-            var signal = JsonConvert.DeserializeObject<Signal>(json);
+            ////var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Temp.json").FullName);
+            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json").FullName);
+            //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
 
-            var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json").FullName);
-            var logs = JsonConvert.DeserializeObject<IEnumerable<ControllerEventLog>>(json1);
+            //var data1 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json1);
+            //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
 
 
-            _output.WriteLine($"signal: {signal}");
 
-            var primaryChain = new IdentifyandAdjustVehicleActivations();
-            var opposingChain = new IdentifyandAdjustVehicleActivations();
-            var VolumeP = new CalculatePhaseVolume();
-            var VolumeO = new CalculatePhaseVolume();
+            //signal.Approaches.Clear();
+            //signal.Approaches.Add(data1.Configuration);
+            //signal.Approaches.Add(data2.Configuration);
 
-            var joinVolumes = new JoinBlock<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>>();
+            //var c = new CalculateTotalVolumes();
 
-            var totalVolume = new CalculateTotalVolumes();
+            //_output.WriteLine($"start: {data1.Output.Min(m => m.Start).RoundDown(TimeSpan.FromMinutes(15))}");
 
-            var testResults = new ActionBlock<Tuple<Approach, TotalVolumes>>(a =>
+            //data1.Output.Start = data1.Output.Min(m => m.Start).RoundDown(TimeSpan.FromMinutes(15));
+            //data1.Output.End = data1.Output.Max(m => m.Start).RoundUp(TimeSpan.FromMinutes(15));
+            //data2.Output.Start = data2.Output.Min(m => m.Start).RoundDown(TimeSpan.FromMinutes(15));
+            //data2.Output.End = data2.Output.Max(m => m.Start).RoundUp(TimeSpan.FromMinutes(15));
+
+            //_output.WriteLine($"Output1: {data1.Output.Start}");
+            //_output.WriteLine($"Output1: {data1.Output.End}");
+            //_output.WriteLine($"Output2: {data2.Output.Start}");
+            //_output.WriteLine($"Output2: {data2.Output.End}");
+
+            //var t1 = Tuple.Create(data1.Configuration, data1.Output);
+            //var t2 = Tuple.Create(data2.Configuration, data2.Output);
+
+            //var tv = await c.ExecuteAsync(Tuple.Create(t1, t2));
+
+            //_output.WriteLine($"tv1: {tv.Item1}");
+            //_output.WriteLine($"tv2: {tv.Item2}");
+
+            //foreach (var t in tv.Item2)
+            //{
+            //    _output.WriteLine($"tv: {t}");
+            //}
+
+            var times = Enumerable.Range(0, 8).Select(s =>
             {
-                _output.WriteLine($"a: {a.Item1}");
+                return DateTime.Now.AddMinutes(s * 3);
+                
+            }).ToList();
 
-                foreach (var v in a.Item2)
-                {
-                    _output.WriteLine($"v: {v}");
-                }
-            });
-
-            primaryChain.LinkTo(VolumeP, new DataflowLinkOptions() { PropagateCompletion = true });
-            opposingChain.LinkTo(VolumeO, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            VolumeP.LinkTo(joinVolumes.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            VolumeO.LinkTo(joinVolumes.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            joinVolumes.LinkTo(totalVolume, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            totalVolume.LinkTo(testResults, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-            var stuff = signal.Approaches.SelectMany(m => m.Detectors).GroupJoin(logs, d => d.DetectorChannel, l => l.EventParam, (o, i) => Tuple.Create(signal.Approaches.First(f => f.Id == o.Approach.Id), i)).Where(w => w.Item2.Any());
-
-            foreach (var app in stuff)
+            foreach (var t in times)
             {
-                var o = stuff.FirstOrDefault(w => w.Item1.DirectionTypeId == new OpposingDirection(app.Item1.DirectionTypeId));
-                _output.WriteLine($"primary: {app.Item1}:{app.Item2.Count()} opposing: {o}");
-
-
-                primaryChain.Post(app);
-                opposingChain.Post(o);
-
-                primaryChain.Complete();
-                opposingChain.Complete();
+                _output.WriteLine($"t: {t}");
             }
 
-            await testResults.Completion;
+
+           
+            var start = times.Min();
+            var end = times.Max();
+            var size = 15;
+
+            //var huh = Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size + 1);
+
+            //_output.WriteLine($"huh: {huh}");
+
+            //var values = Enumerable
+            //    .Range(0, Convert.ToInt32((end.TimeOfDay.TotalMinutes - start.TimeOfDay.TotalMinutes) / size + 1))
+            //    .Select((s, i) => start.AddMinutes(i * size)).ToList();
+
+            //foreach (var v in values)
+            //{
+            //    _output.WriteLine($"v: {v}");
+            //}
+
+            //var boo = values.Take(values.Count() - 1).Select((s, i) => new StartEndRange() { Start = values[i], End = values[i + 1] });
+
+            
+            var chunk = TimeSpan.FromMinutes(size);
+
+            start = times.Min().RoundDown(chunk);
+            end = times.Max().RoundUp(chunk);
+
+            var test = end - start;
+
+            _output.WriteLine($"start: {start}");
+            _output.WriteLine($"test: {end}");
+
+            _output.WriteLine($"test: {test}");
+            _output.WriteLine($"test: {Convert.ToInt32(test.Divide(chunk))}");
+
+
+            var values = Enumerable
+                .Range(0, Convert.ToInt32(test.Divide(chunk)) + 1)
+                .Select((s, i) => start.Add(chunk.Multiply(i))).ToList();
+
+
+            foreach (var v in values)
+            {
+                _output.WriteLine($"v: {v}");
+            }
+
+            var boo = values.Take(values.Count() - 1).Select((s, i) => new StartEndRange() { Start = values[i], End = values[i + 1] });
+
+            foreach (var b in boo)
+            {
+                _output.WriteLine($"b: {b.Start} - {b.End}");
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

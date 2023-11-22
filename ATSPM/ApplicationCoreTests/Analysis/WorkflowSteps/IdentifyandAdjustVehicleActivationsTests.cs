@@ -274,25 +274,19 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         public async void IdentifyandAdjustVehicleActivationsFromFileTest()
         {
             var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData.json").FullName);
-            var testLogs = JsonConvert.DeserializeObject<IdentifyandAdjustVehicleActivationsTestData>(json);
+            var testFile = JsonConvert.DeserializeObject<IdentifyandAdjustVehicleActivationsTestData>(json);
 
-            _output.WriteLine($"log count: {testLogs.EventLogs.Count}");
-            _output.WriteLine($"event count: {testLogs.CorrectedDetectorEvents.Count}");
+            _output.WriteLine($"Configuration: {testFile.Configuration}");
+            _output.WriteLine($"Input: {testFile.Input.Count}");
+            _output.WriteLine($"Output: {testFile.Output.Count}");
 
-            var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
+            var testData = Tuple.Create(testFile.Configuration, testFile.Input.AsEnumerable());
 
             var sut = new IdentifyandAdjustVehicleActivations();
 
             var result = await sut.ExecuteAsync(testData);
 
-            _output.WriteLine($"approach: {result.Item1}");
-
-            foreach (var l in result.Item2)
-            {
-                _output.WriteLine($"corrected event: {l}");
-            }
-
-            var expected = testLogs.CorrectedDetectorEvents;
+            var expected = testFile.Output;
             var actual = result.Item2.ToList();
 
             _output.WriteLine($"expected: {expected.Count}");

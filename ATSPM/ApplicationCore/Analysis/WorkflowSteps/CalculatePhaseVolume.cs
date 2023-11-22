@@ -31,12 +31,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 Direction = input.Item1.DirectionTypeId
             });
 
-            result.Item2.ForEach((f =>
+            result.Item2.Segments.ToList().ForEach((f =>
             {
                 f.SignalIdentifier = input.Item1?.Signal.SignalIdentifier;
                 f.PhaseNumber = input.Item1?.ProtectedPhaseNumber ?? 0;
                 f.Direction = input.Item1.DirectionTypeId;
-                f.AddRange(eventFilter.Where(w => f.InRange(w)));
+                f.DetectorEvents.AddRange(eventFilter.Where(w => f.InRange(w)));
             }));
 
             return Task.FromResult(result);
