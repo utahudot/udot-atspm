@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace ATSPM.Domain.Common
@@ -72,32 +73,88 @@ namespace ATSPM.Domain.Common
         /// <inheritdoc/>
         public virtual bool InRange(IStartEndRange range)
         {
-            return range.Start >= Start && range.End < End;
+            return range.Start >= Start && range.End <= End;
         }
     }
 
-    public abstract class StartEndList<T> : List<T>, IStartEndRange where T : ITimestamp, new()
+    public abstract class StartEndList<T> : StartEndRange, IList<T> where T : ITimestamp, new()
     {
-        public StartEndList() {}
+        private readonly List<T> _list = new List<T>();
+        
+        #region IEnumerable
 
-        #region IStartEndRange<T>
-
-        /// <inheritdoc/>
-        public DateTime Start { get; set; }
-
-        /// <inheritdoc/>
-        public DateTime End { get; set; }
-
-        /// <inheritdoc/>
-        public virtual bool InRange(DateTime time)
+        public IEnumerator<T> GetEnumerator()
         {
-            return time >= Start && time < End;
+            return _list.GetEnumerator();
         }
 
-        /// <inheritdoc/>
-        public virtual bool InRange(IStartEndRange range)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return range.Start >= Start && range.End < End;
+            return GetEnumerator();
+        }
+
+        #endregion
+
+        #region ICollection<T>
+
+        public void Add(T item)
+        {
+            _list.Add(item);
+        }
+
+        public void Clear()
+        {
+            _list.Clear();
+        }
+
+        public bool Contains(T item)
+        {
+            return _list.Contains(item);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            _list.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(T item)
+        {
+            return _list.Remove(item);
+        }
+
+        public int Count
+        {
+            get { return _list.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return _list.ToArray().IsReadOnly; }
+        }
+
+        #endregion
+
+        #region Implementation of IList<T>
+
+        public int IndexOf(T item)
+        {
+            return _list.IndexOf(item);
+        }
+
+        public void Insert(int index, T item)
+        {
+            _list.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _list.RemoveAt(index);
+        }
+
+        public T this[int index]
+        {
+            get { return _list[index]; }
+            set { _list[index] = value; }
         }
 
         #endregion
@@ -113,10 +170,15 @@ namespace ATSPM.Domain.Common
 
     public class TimelineOptions
     {
-        public DateTime Start { get; set; }
         public DateTime End { get; set; }
-        public int Size { get; set; }
+
+        public DateTime Start { get; set; }
+
+        public TimeSpan SementLength { get; set; }
+
         public TimelineType Type { get; set; } = TimelineType.Minutes;
+
+        public int Size { get; set; }
     }
 
     public static class Timeline
@@ -135,7 +197,7 @@ namespace ATSPM.Domain.Common
             var start = ranges.Min(m => m.Start).RoundDown(ToTimeSpan(tlTYpe, size));
             var end = ranges.Max(m => m.End).RoundUp(ToTimeSpan(tlTYpe, size));
 
-            return FromType<T>(tlTYpe, start, end, size);
+            return CreateTimeline<T>(tlTYpe, start, end, size);
         }
 
         public static Timeline<T> CreateTimeline<T>(this IEnumerable<ITimestamp> Timestamps, TimelineType tlTYpe, int size) where T : IStartEndRange, new()
@@ -143,10 +205,10 @@ namespace ATSPM.Domain.Common
             var start = Timestamps.Min(m => m.Timestamp).RoundDown(ToTimeSpan(tlTYpe, size));
             var end = Timestamps.Max(m => m.Timestamp).RoundUp(ToTimeSpan(tlTYpe, size));
 
-            return FromType<T>(tlTYpe, start, end, size);
+            return CreateTimeline<T>(tlTYpe, start, end, size);
         }
 
-        public static Timeline<T> FromType<T>(TimelineType tlTYpe, DateTime start, DateTime end, int size) where T : IStartEndRange, new()
+        public static Timeline<T> CreateTimeline<T>(TimelineType tlTYpe, DateTime start, DateTime end, int size) where T : IStartEndRange, new()
         {
             switch (tlTYpe)
             {
@@ -169,11 +231,6 @@ namespace ATSPM.Domain.Common
 
             var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Hours, size);
 
-            //result.Start = start;
-            //result.End = end;
-            //result.Size = size;
-            //result.Type = TimelineType.Hours;
-
             return result;
         }
 
@@ -184,11 +241,6 @@ namespace ATSPM.Domain.Common
                 .Select((s, i) => start.AddMinutes(i * size)).ToList();
 
             var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Minutes, size);
-
-            //result.Start = start;
-            //result.End = end;
-            //result.Size = size;
-            //result.Type = TimelineType.Minutes;
 
             return result;
         }
@@ -201,57 +253,87 @@ namespace ATSPM.Domain.Common
 
             var result = new Timeline<T>(ReturnDateTimeRangeList<T>(values), TimelineType.Seconds, size);
 
-            //result.Start = start;
-            //result.End = end;
-            //result.Size = size;
-            //result.Type = TimelineType.Seconds;
-
             return result;
         }
 
-        internal static List<T> ReturnDateTimeRangeList<T>(List<DateTime> values) where T : IStartEndRange, new()
+        private static List<T> ReturnDateTimeRangeList<T>(List<DateTime> values) where T : IStartEndRange, new()
         {
             return new List<T>(values.Take(values.Count() - 1).Select((s, i) => new T() { Start = values[i], End = values[i + 1] }));
         }
     }
 
-    public class Timeline<T> : List<T>, IStartEndRange where T : IStartEndRange, new()
+    //public class Timeline<T> : List<T>, IStartEndRange where T : IStartEndRange, new()
+    //{
+    //    public Timeline() { }
+
+    //    public Timeline(TimelineOptions options) : this(Timeline.FromType<T>(options.Type, options.Start, options.End, options.Size)) { }
+
+    //    //public Timeline(int capacity) : base(capacity) { }
+
+    //    public Timeline(Timeline<T> collection) : base(collection) 
+    //    {
+    //        Start = collection.Start;
+    //        End = collection.End;
+    //        Size = collection.Size;
+    //        Type = collection.Type;
+    //    }
+
+    //    public Timeline(IEnumerable<T> collection, TimelineType tlTYpe, int size) : base(collection)
+    //    {
+    //        Start = collection.ToList().Min(m => m.Start);
+    //        End = collection.ToList().Max(m => m.End);
+    //        Size = size;
+    //        Type = tlTYpe;
+    //    }
+
+    //    public int Size { get; internal set; }
+    //    public DateTime End { get; set; }
+    //    public DateTime Start { get; set; }
+    //    public TimelineType Type { get; internal set; }
+
+    //    ///// <inheritdoc/>
+    //    //public virtual bool InRange(DateTime time)
+    //    //{
+    //    //    return time >= Start && time <= End;
+    //    //}
+
+    //    ///// <inheritdoc/>
+    //    //public bool InRange(IStartEndRange range)
+    //    //{
+    //    //    return range.Start >= Start && range.End < End;
+    //    //}
+    //}
+
+    public class Timeline<T> : StartEndRange where T : IStartEndRange, new()
     {
-        public Timeline(TimelineOptions options) : this(Timeline.FromType<T>(options.Type, options.Start, options.End, options.Size)) { }
+        public Timeline() { }
 
-        //public Timeline(int capacity) : base(capacity) { }
-
-        public Timeline(Timeline<T> collection) : base(collection) 
+        public Timeline(TimelineOptions options)
         {
-            Start = collection.Start;
-            End = collection.End;
-            Size = collection.Size;
-            Type = collection.Type;
+            End = options.End;
+            Start = options.Start;
+            SementLength = options.SementLength;
+            Type = options.Type;
         }
 
-        public Timeline(IEnumerable<T> collection, TimelineType tlTYpe, int size) : base(collection)
+        public Timeline(Timeline<T> timeline)
         {
-            Start = collection.ToList().Min(m => m.Start);
-            End = collection.ToList().Max(m => m.End);
-            Size = size;
-            Type = tlTYpe;
+            End = timeline.End;
+            Start = timeline.Start;
+            SementLength = timeline.SementLength;
+            Type = timeline.Type;
+            Segments = timeline.Segments;
         }
 
-        public int Size { get; internal set; }
-        public DateTime End { get; set; }
-        public DateTime Start { get; set; }
+        public Timeline(IEnumerable<T> stuff, TimelineType type, int size)
+        {
+            
+        }
+
+        public TimeSpan SementLength { get; internal set; }
+
         public TimelineType Type { get; internal set; }
 
-        /// <inheritdoc/>
-        public virtual bool InRange(DateTime time)
-        {
-            return time >= Start && time <= End;
-        }
-
-        /// <inheritdoc/>
-        public bool InRange(IStartEndRange range)
-        {
-            return range.Start >= Start && range.End < End;
-        }
+        public IReadOnlyList<T> Segments { get; internal set; } = new List<T>();
     }
 }
