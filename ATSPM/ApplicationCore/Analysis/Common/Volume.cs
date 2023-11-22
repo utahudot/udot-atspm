@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.Application.Analysis.Common
 {
@@ -15,17 +17,17 @@ namespace ATSPM.Application.Analysis.Common
     {
         int DetectorCount { get; }
     }
-    
+
     public interface IPhaseVolume : IStartEndRange, ISignalPhaseLayer, IDetectorCount
     {
         DirectionTypes Direction { get; set; }
     }
 
     public interface IToltalVolume : IStartEndRange, ISignalLayer, IDetectorCount
-    { 
-        
+    {
+
     }
-    
+
     public class TotalVolume : StartEndRange, IToltalVolume
     {
         public Volume Primary { get; set; }
@@ -40,26 +42,25 @@ namespace ATSPM.Application.Analysis.Common
 
         #endregion
 
-        #region IStartEndRange
-
-        public virtual bool InRange(DateTime time)
-        {
-            return time >= Start && time < End;
-        }
-
-        #endregion
-
         #region IDetectorCount
 
-        public int DetectorCount => Primary?.Count + Opposing?.Count ?? 0;
+        public int DetectorCount => Primary?.DetectorCount + Opposing?.DetectorCount ?? 0;
 
         #endregion
 
         #endregion
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{SignalIdentifier} --- {Primary} --- {Opposing} --- {Start} - {End} - {DetectorCount}";
+        }
     }
 
     public class TotalVolumes : Timeline<TotalVolume>, IToltalVolume
     {
+        public TotalVolumes() { }
+
         public TotalVolumes(TimelineOptions options) : base(options) { }
 
         public TotalVolumes(Timeline<TotalVolume> collection) : base(collection) { }
@@ -73,18 +74,9 @@ namespace ATSPM.Application.Analysis.Common
 
         #endregion
 
-        #region IStartEndRange
-
-        public virtual bool InRange(DateTime time)
-        {
-            return time >= Start && time < End;
-        }
-
-        #endregion
-
         #region IDetectorCount
 
-        public int DetectorCount => this.Sum(s => s.DetectorCount);
+        public int DetectorCount => this.Segments.Sum(s => s.DetectorCount);
 
         #endregion
 
@@ -136,7 +128,7 @@ namespace ATSPM.Application.Analysis.Common
     //    }
     //}
 
-    public class Volume : StartEndList<CorrectedDetectorEvent>, ISignalPhaseLayer, IPhaseVolume
+    public class Volume : StartEndRange, ISignalPhaseLayer, IPhaseVolume
     {
         #region IPhaseVolume
 
@@ -152,7 +144,8 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IDetectorCount
 
-        public int DetectorCount => this.Count();
+        /// <inheritdoc/>
+        public int DetectorCount => DetectorEvents.Count();
 
         #endregion
 
@@ -162,26 +155,91 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IStartEndRange
 
+        /// <inheritdoc/>
         public virtual bool InRange(DateTime time)
         {
             return time >= Start && time < End;
         }
 
-        //public new void AddRange(IEnumerable<CorrectedDetectorEvent> collection)
-        //{
-        //    base.AddRange()
-        //}
-
         #endregion
 
+        public List<CorrectedDetectorEvent> DetectorEvents { get; set; } = new();
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
         }
     }
 
+    //[JsonObject(memberSerialization: MemberSerialization.OptIn)]
+    //public class Volume : StartEndList<CorrectedDetectorEvent>, ISignalPhaseLayer, IPhaseVolume
+    //{
+    //    #region IPhaseVolume
+
+    //    #region ISignalPhaseLayer
+
+    //    /// <inheritdoc/>
+    //    [JsonProperty]
+    //    public string SignalIdentifier { get; set; }
+
+    //    /// <inheritdoc/>
+    //    [JsonProperty]
+    //    public int PhaseNumber { get; set; }
+
+    //    #endregion
+
+    //    #region IDetectorCount
+
+    //    [JsonProperty]
+    //    public int DetectorCount => this.Count();
+
+    //    #endregion
+
+    //    [JsonProperty]
+    //    public DirectionTypes Direction { get; set; }
+
+    //    #endregion
+
+    //    #region IStartEndRange
+
+    //    public virtual bool InRange(DateTime time)
+    //    {
+    //        return time >= Start && time < End;
+    //    }
+
+    //    //public new void AddRange(IEnumerable<CorrectedDetectorEvent> collection)
+    //    //{
+    //    //    base.AddRange()
+    //    //}
+
+    //    #endregion
+
+    //    [JsonProperty]
+    //    CorrectedDetectorEvent[] Items
+    //    {
+    //        get
+    //        {
+    //            return this.ToArray();
+    //        }
+    //        set
+    //        {
+    //            if (value != null)
+    //                this.AddRange(value);
+    //        }
+    //    }
+
+    //    public override string ToString()
+    //    {
+    //        return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+    //    }
+    //}
+
+    //[JsonObject(memberSerialization: MemberSerialization.OptIn)]
     public class Volumes : Timeline<Volume>, IPhaseVolume
     {
+        public Volumes() { }
+
         public Volumes(TimelineOptions options) : base(options) { }
 
         public Volumes(Timeline<Volume> collection) : base(collection) { }
@@ -191,9 +249,11 @@ namespace ATSPM.Application.Analysis.Common
         #region ISignalPhaseLayer
 
         /// <inheritdoc/>
+        [JsonProperty]
         public string SignalIdentifier { get; set; }
 
         /// <inheritdoc/>
+        [JsonProperty]
         public int PhaseNumber { get; set; }
 
         #endregion
@@ -209,10 +269,12 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IDetectorCount
 
-        public int DetectorCount => this.Sum(s => s.DetectorCount);
+        [JsonProperty]
+        public int DetectorCount => this.Segments.Sum(s => s.DetectorCount);
 
         #endregion
 
+        [JsonProperty]
         public DirectionTypes Direction { get; set; }
 
         #endregion
