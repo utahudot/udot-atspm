@@ -1,14 +1,18 @@
+using ApplicationCoreTests.Analysis.TestObjects;
 using ApplicationCoreTests.Fixtures;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using AutoFixture;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
+using ATSPM.Domain.Extensions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
@@ -55,13 +59,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"volume: {v}");
             }
 
             var expected = correctDetectorEvents.Count();
-            var actual = result.Item2.SelectMany(m => m).Count();
+            var actual = result.Item2.Segments.SelectMany(m => m.DetectorEvents).Count();
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -104,13 +108,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"volume: {v}");
             }
 
             var expected = correctDetectorEvents.Count();
-            var actual = result.Item2.SelectMany(m => m).Count();
+            var actual = result.Item2.Segments.SelectMany(m => m.DetectorEvents).Count();
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -141,7 +145,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"volume: {v}");
             }
@@ -203,7 +207,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"volume: {v}");
             }
@@ -217,9 +221,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 End = DateTime.Parse("4/17/2023 8:15:00")
             };
 
-            expected.AddRange(testEvents);
+            expected.DetectorEvents.AddRange(testEvents);
 
-            var actual = result.Item2.First();
+            var actual = result.Item2.Segments.First();
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -261,7 +265,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"volumes: {result.Item2}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"start: {v.Start}");
                 _output.WriteLine($"end: {v.End}");
@@ -298,16 +302,16 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
+            foreach (var v in result.Item2.Segments)
             {
                 _output.WriteLine($"volume: {v}");
             }
 
-            Assert.Collection(result.Item2, 
-                a => Assert.True(a.Count == 2),
-                a => Assert.True(a.Count == 3),
-                a => Assert.True(a.Count == 0),
-                a => Assert.True(a.Count == 3));
+            Assert.Collection(result.Item2.Segments, 
+                a => Assert.True(a.DetectorCount == 2),
+                a => Assert.True(a.DetectorCount == 3),
+                a => Assert.True(a.DetectorCount == 0),
+                a => Assert.True(a.DetectorCount == 3));
         }
 
         [Fact]
@@ -347,11 +351,32 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             Assert.True(result.Item2 == null);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json")]
         [Trait(nameof(CalculatePhaseVolume), "From File")]
-        public async void CalculatePhaseVolumeFromFileTest()
+        public async void CalculatePhaseVolumeFromFileTest(string file)
         {
-            Assert.False(true);
+            var json = File.ReadAllText(new FileInfo(file).FullName);
+            var testFile = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json);
+
+            _output.WriteLine($"Configuration: {testFile.Configuration}");
+            _output.WriteLine($"Input: {testFile.Input.Count}");
+            _output.WriteLine($"Output: {testFile.Output.Segments.Count}");
+
+            var testData = Tuple.Create(testFile.Configuration, testFile.Input.AsEnumerable());
+
+            var sut = new CalculatePhaseVolume();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var expected = testFile.Output.Segments;
+            var actual = result.Item2.Segments.ToList();
+
+            _output.WriteLine($"expected: {expected.Count}");
+            _output.WriteLine($"actual: {actual.Count}");
+
+            Assert.Equivalent(expected, actual);
         }
 
         public void Dispose()

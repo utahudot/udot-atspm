@@ -11,9 +11,6 @@ namespace ATSPM.Domain.Workflows
     /// <typeparam name="T2">Output data type</typeparam>
     public abstract class ProcessStepBase<T1, T2> : IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
     {
-        /// <inheritdoc/>
-        public event EventHandler CanExecuteChanged;
-
         protected IPropagatorBlock<T1, T2> workflowProcess;
         protected DataflowBlockOptions options;
 
