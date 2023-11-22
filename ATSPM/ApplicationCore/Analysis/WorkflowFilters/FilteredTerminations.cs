@@ -12,7 +12,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseForceOff"/></item>
     /// </list>
     /// </summary>
-    public class FilteredTerminations : FilterStepBase
+    public class FilteredTerminations : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

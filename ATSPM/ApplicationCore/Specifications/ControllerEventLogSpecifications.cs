@@ -8,6 +8,26 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
+    public class ControllerLogSignalFilterSpecification : BaseSpecification<ControllerEventLog>
+    {
+        public ControllerLogSignalFilterSpecification(Signal signal) : base()
+        {
+            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier;
+
+            ApplyOrderBy(o => o.Timestamp);
+        }
+    }
+
+    public class ControllerLogApproachFilterSpecification : BaseSpecification<ControllerEventLog>
+    {
+        public ControllerLogApproachFilterSpecification(Approach approach) : base()
+        {
+            base.Criteria = c => c.SignalIdentifier == approach.Signal.SignalIdentifier;
+
+            ApplyOrderBy(o => o.Timestamp);
+        }
+    }
+
     public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     {
         public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()

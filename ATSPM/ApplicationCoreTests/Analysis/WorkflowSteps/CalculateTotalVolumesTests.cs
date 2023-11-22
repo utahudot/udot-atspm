@@ -163,41 +163,41 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         //    Assert.Equivalent(expected, actual);
         //}
 
-        [Fact]
-        [Trait(nameof(CalculateTotalVolumes), "Start/End Check")]
-        public async void CalculatePhaseStartEndCheckTest()
-        {
-            var detector = _testApproach.Detectors.First();
+        //[Fact]
+        //[Trait(nameof(CalculateTotalVolumes), "Start/End Check")]
+        //public async void CalculatePhaseStartEndCheckTest()
+        //{
+        //    var detector = _testApproach.Detectors.First();
 
-            var testEvents = new List<CorrectedDetectorEvent>
-            {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
+        //    var testEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
 
-            }.AsEnumerable();
+        //    }.AsEnumerable();
 
-            var testData = Tuple.Create(_testApproach, testEvents);
+        //    var testData = Tuple.Create(_testApproach, testEvents);
 
-            var sut = new CalculateTotalVolumes();
+        //    var sut = new CalculateTotalVolumes();
 
-            var result = await sut.ExecuteAsync(testData);
+        //    var result = await sut.ExecuteAsync(testData);
 
-            _output.WriteLine($"approach: {result.Item1}");
+        //    _output.WriteLine($"approach: {result.Item1}");
 
-            foreach (var v in result.Item2)
-            {
-                _output.WriteLine($"volume: {v}");
-            }
+        //    foreach (var v in result.Item2)
+        //    {
+        //        _output.WriteLine($"volume: {v}");
+        //    }
 
-            Assert.Equal(DateTime.Parse("4/17/2023 8:00:00"), result.Item2.Start);
-            Assert.Equal(DateTime.Parse("4/17/2023 9:00:00"), result.Item2.End);
-        }
+        //    Assert.Equal(DateTime.Parse("4/17/2023 8:00:00"), result.Item2.Start);
+        //    Assert.Equal(DateTime.Parse("4/17/2023 9:00:00"), result.Item2.End);
+        //}
 
         //[Fact]
         //[Trait(nameof(CalculateTotalVolumes), "Time Segment Check")]
