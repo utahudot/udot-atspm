@@ -26,17 +26,17 @@ namespace ATSPM.Application.Extensions
                 .ToList();
         }
 
-        public static IReadOnlyList<Volumes> FilterCorrectedDetectorEvents(this Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input)
-        {
-            var test = input.Item2.Where(w => w.SignalIdentifier == input.Item1.Signal.SignalIdentifier)
+        //public static IReadOnlyList<Volumes> FilterCorrectedDetectorEvents(this Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input)
+        //{
+        //    var 
 
 
 
-            return input.Item2?
-                .Where(w => w.SignalIdentifier == input.Item1?.Signal.SignalIdentifier && input.Item1.Detectors
-                .Select(s => s.DetectorChannel)
-                .Contains(w.DetectorChannel))
-                .ToList();
-        }
+        //    return input.Item2?
+        //        .Where(w => w.SignalIdentifier == input.Item1?.Signal.SignalIdentifier && input.Item1.Detectors
+        //        .Select(s => s.DetectorChannel)
+        //        .Contains(w.DetectorChannel))
+        //        .ToList();
+        //}
     }
 }
