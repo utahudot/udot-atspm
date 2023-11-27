@@ -159,13 +159,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             //    End = DateTime.Parse("4/17/2023 8:15:00")
             //};
 
-            var expected = new Volumes(new TimelineOptions()
-            {
-                Start = DateTime.Parse("4/17/2023 8:00:00"),
-                End = DateTime.Parse("4/17/2023 8:15:00"),
-                Type = TimelineType.Minutes,
-                Size = 15
-            })
+            var expected = new Volumes(DateTime.Parse("4/17/2023 8:00:00"), DateTime.Parse("4/17/2023 8:15:00"), TimeSpan.FromMinutes(15))
             {
                 SignalIdentifier = _testApproach.Signal.SignalIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
@@ -370,11 +364,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            var expected = testFile.Output.Segments;
-            var actual = result.Item2.Segments.ToList();
+            var expected = testFile.Output;
+            var actual = result.Item2;
 
-            _output.WriteLine($"expected: {expected.Count}");
-            _output.WriteLine($"actual: {actual.Count}");
+            //_output.WriteLine($"expected: {expected.Count}");
+            //_output.WriteLine($"actual: {actual.Count}");
 
             Assert.Equivalent(expected, actual);
         }
