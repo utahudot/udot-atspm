@@ -1,61 +1,72 @@
 ﻿using ATSPM.Application.Enums;
 using ATSPM.Data.Enums;
-using ATSPM.Data.Interfaces;
-using ATSPM.Domain.Common;
-using System;
 using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    //TODO: this has the same props as redtoredcycle start, end, greenevent and yellow event. make the same base class?
-    public class Vehicle : StartEndRange, ISignalPhaseLayer, IDetectorEvent
+    /// <summary>
+    /// Arrival type and dely for vehicle actuation events
+    /// </summary>
+    public interface IVehicle
     {
-        //public Vehicle() { }
+        /// <summary>
+        /// Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
+        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="DataLoggerEnum.PhaseBeginGreen"/>.
+        /// The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
+        /// </summary>
+        ArrivalType ArrivalType { get; }
 
-        //public Vehicle(CorrectedDetectorEvent detectorEvent, RedToRedCycle redToRedCycle)
-        //{
-        //    SignalIdentifier = detectorEvent.SignalIdentifier;
-        //    CorrectedTimeStamp = detectorEvent.CorrectedTimeStamp;
-        //    DetectorChannel = detectorEvent.DetectorChannel;
-        //    PhaseNumber = redToRedCycle.PhaseNumber;
-        //    Start = redToRedCycle.Start;
-        //    End = redToRedCycle.End;
-        //    YellowEvent = redToRedCycle.YellowEvent;
-        //    GreenEvent = redToRedCycle.GreenEvent;
-        //}
+        /// <summary>
+        /// Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
+        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="DataLoggerEnum.PhaseBeginGreen"/>.
+        /// The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
+        /// </summary>
+        double Delay { get; }
 
-        #region ISignalPhaseLayer
+        IRedToRedCycle RedToRedCycle { get; set; }
+    }
+
+    /// <summary>
+    /// Compares a <see cref="CorrectedDetectorEvent"/> to a <see cref="Common.RedToRedCycle"/> to calculate the <see cref="IVehicle"/> properties.
+    /// </summary>
+    public class Vehicle : CorrectedDetectorEvent, IVehicle
+    {
+        /// <inheritdoc/>
+        public Vehicle() { }
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public Vehicle(IDetectorEvent detectorEvent, IRedToRedCycle redToRedCycle)
+        {
+            SignalIdentifier = detectorEvent.SignalIdentifier;
+            PhaseNumber = detectorEvent.PhaseNumber;
+            DetectorChannel = detectorEvent.DetectorChannel;
+            Direction = detectorEvent.Direction;
+            Timestamp = detectorEvent.Timestamp;
+
+            RedToRedCycle = redToRedCycle;
+        }
+
+        #region IVehicle
 
         /// <inheritdoc/>
-        public int PhaseNumber { get; set; }
+        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (RedToRedCycle.GreenEvent - Timestamp).TotalSeconds : 0;
 
-        #endregion
-
-        public int DetectorChannel { get; set; }
-        public DateTime Timestamp { get; set; }
-        public DateTime GreenEvent { get; set; }
-        public DateTime YellowEvent { get; set; }
-
-        public double Delay => ArrivalType == ArrivalType.ArrivalOnRed ? (GreenEvent - Timestamp).TotalSeconds : 0;
-
+        /// <inheritdoc/>
         public ArrivalType ArrivalType
         {
             get
             {
-                if (Timestamp < GreenEvent && Timestamp >= Start)
+                if (Timestamp < RedToRedCycle.GreenEvent && Timestamp >= RedToRedCycle.Start)
                 {
                     return ArrivalType.ArrivalOnRed;
                 }
 
-                else if (Timestamp >= GreenEvent && Timestamp < YellowEvent)
+                else if (Timestamp >= RedToRedCycle.GreenEvent && Timestamp < RedToRedCycle.YellowEvent)
                 {
                     return ArrivalType.ArrivalOnGreen;
                 }
 
-                else if (Timestamp >= YellowEvent && Timestamp <= End)
+                else if (Timestamp >= RedToRedCycle.YellowEvent && Timestamp <= RedToRedCycle.End)
                 {
                     return ArrivalType.ArrivalOnYellow;
                 }
@@ -64,8 +75,11 @@ namespace ATSPM.Application.Analysis.Common
             }
         }
 
-        public DirectionTypes Direction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IRedToRedCycle RedToRedCycle { get; set; } = new RedToRedCycle();
 
+        #endregion
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);

@@ -14,11 +14,11 @@ namespace ATSPM.Application.Analysis.Common
     /// </summary>
     public class CycleArrivals : StartEndRange, ICycleArrivals, ISignalPhaseLayer
     {
-        private readonly ICycle _cycle = new RedToRedCycle();
+        private readonly ICycleTotal _cycle = new RedToRedCycle();
 
         public CycleArrivals() { }
 
-        public CycleArrivals(ICycle cycle)
+        public CycleArrivals(ICycleTotal cycle)
         {
             _cycle = cycle;
             Start = _cycle.Start;
