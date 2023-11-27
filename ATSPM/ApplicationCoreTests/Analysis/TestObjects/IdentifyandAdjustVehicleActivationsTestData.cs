@@ -20,7 +20,7 @@ namespace ApplicationCoreTests.Analysis.TestObjects
 
     public class CalculateTotalVolumeTestData
     {
-        public Signal Configuration { get; set; }
+        public List<Approach> Configuration { get; set; }
         public List<Volumes> Input { get; set; }
         public TotalVolumes Output { get; set; }
     }

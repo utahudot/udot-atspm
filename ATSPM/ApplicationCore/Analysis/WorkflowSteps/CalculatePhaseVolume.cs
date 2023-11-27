@@ -24,7 +24,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             if (eventFilter == null || eventFilter.Count == 0)
                 return Task.FromResult(Tuple.Create<Approach, Volumes>(input.Item1, null));
 
-            var result = Tuple.Create(input.Item1, new Volumes(eventFilter.CreateTimeline<Volume>(TimelineType.Minutes, 15))
+            var result = Tuple.Create(input.Item1, new Volumes(eventFilter, TimeSpan.FromMinutes(15))
             {
                 SignalIdentifier = input.Item1.Signal.SignalIdentifier,
                 PhaseNumber = input.Item1.ProtectedPhaseNumber,
