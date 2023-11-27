@@ -16,19 +16,19 @@ using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
-    internal class DetectorFixture : Fixture
-    {
-        public DetectorFixture()
-        {
-            Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
-            Behaviors.Add(new OmitOnRecursionBehavior());
+    //internal class DetectorFixture : Fixture
+    //{
+    //    public DetectorFixture()
+    //    {
+    //        Behaviors.OfType<ThrowingRecursionBehavior>().ToList().ForEach(b => this.Behaviors.Remove(b));
+    //        Behaviors.Add(new OmitOnRecursionBehavior());
 
-            this.Customize<Detector>(c => c
-                    .With(w => w.ApproachId, 100)
-                    .With(w => w.DetectorChannel, 50)
-                );
-        }
-    }
+    //        this.Customize<Detector>(c => c
+    //                .With(w => w.ApproachId, 100)
+    //                .With(w => w.DetectorChannel, 50)
+    //            );
+    //    }
+    //}
 
     public class CreateVehicleTests : IClassFixture<TestApproachFixture>, IDisposable
     {
@@ -45,26 +45,21 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Signal Filter")]
         public async void CreateVehicleSignalFilterTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
             var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, correctDetectorEvents.Union(incorrectDetectorEvents))
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, correctDetectorEvents.Union(incorrectDetectorEvents));
 
             var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
             {
@@ -101,90 +96,82 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        [Trait(nameof(CreateVehicle), "Detector Filter")]
-        public async void CreateVehicleDetectorFilterTest()
-        {
-            var correct = _testApproach.Detectors.First();
-            var inccorect = new DetectorFixture().Create<Detector>();
+        //[Fact]
+        //[Trait(nameof(CreateVehicle), "Detector Filter")]
+        //public async void CreateVehicleDetectorFilterTest()
+        //{
+        //    var correctDetectorEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
 
-            var correctDetectorEvents = new List<CorrectedDetectorEvent>
-            {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = correct.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = correct.DetectorChannel},
+        //    }.AsEnumerable();
 
-            }.AsEnumerable();
+        //    var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
+        //    {
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = inccorect.DetectorChannel},
 
-            var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
-            {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = inccorect.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = inccorect.DetectorChannel},
+        //    }.AsEnumerable();
 
-            }.AsEnumerable();
+        //    var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
+        //    {
+        //        Tuple.Create(correct, correctDetectorEvents),
+        //        Tuple.Create(inccorect, incorrectDetectorEvents)
+        //    }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(correct, correctDetectorEvents),
-                Tuple.Create(inccorect, incorrectDetectorEvents)
-            }.AsEnumerable();
+        //    var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
+        //    {
+        //        new RedToRedCycle()
+        //        {
+        //            SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+        //            PhaseNumber = _testApproach.ProtectedPhaseNumber,
+        //            Start = DateTime.Parse("4/17/2023 8:00:00"),
+        //            End = DateTime.Parse("4/17/2023 8:10:00"),
+        //            GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
+        //            YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
+        //        }
+        //    }.AsEnumerable());
 
-            var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
-            {
-                new RedToRedCycle()
-                {
-                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
-                    PhaseNumber = _testApproach.ProtectedPhaseNumber,
-                    Start = DateTime.Parse("4/17/2023 8:00:00"),
-                    End = DateTime.Parse("4/17/2023 8:10:00"),
-                    GreenEvent = DateTime.Parse("4/17/2023 8:08:00"),
-                    YellowEvent = DateTime.Parse("4/17/2023 8:09:00"),
-                }
-            }.AsEnumerable());
+        //    var testData = Tuple.Create(testEvents, testCyles);
 
-            var testData = Tuple.Create(testEvents, testCyles);
+        //    var sut = new CreateVehicle();
 
-            var sut = new CreateVehicle();
+        //    var result = await sut.ExecuteAsync(testData);
 
-            var result = await sut.ExecuteAsync(testData);
+        //    _output.WriteLine($"approach: {result.Item1}");
 
-            _output.WriteLine($"approach: {result.Item1}");
+        //    foreach (var v in result.Item2)
+        //    {
+        //        _output.WriteLine($"vehicle: {v}");
+        //    }
 
-            foreach (var v in result.Item2)
-            {
-                _output.WriteLine($"vehicle: {v}");
-            }
+        //    var expected = correctDetectorEvents.Count();
+        //    var actual = result.Item2.Count();
 
-            var expected = correctDetectorEvents.Count();
-            var actual = result.Item2.Count();
+        //    _output.WriteLine($"expected: {expected}");
+        //    _output.WriteLine($"actual: {actual}");
 
-            _output.WriteLine($"expected: {expected}");
-            _output.WriteLine($"actual: {actual}");
-
-            Assert.Equal(expected, actual);
-        }
+        //    Assert.Equal(expected, actual);
+        //}
 
         [Fact]
         [Trait(nameof(CreateVehicle), "Compare Start")]
         public async void CreateVehicleTestsCompareStartTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 7:59:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:00:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 7:59:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:00:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
             {
@@ -229,16 +216,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:10:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:11:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:10:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:11:00"), DetectorChannel = detector.DetectorChannel},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCyles = Tuple.Create(_testApproach, new List<RedToRedCycle>()
             {
@@ -266,7 +250,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"vehicle: {v}");
             }
 
-            var expected = 2;
+            var expected = 1;
             var actual = result.Item2.Count();
 
             _output.WriteLine($"expected: {expected}");
@@ -279,18 +263,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Data Check")]
         public async void CreateVehicleTestsDataCheckTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCycle = new RedToRedCycle()
             {
@@ -325,11 +304,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 SignalIdentifier = _testApproach.Signal.SignalIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Timestamp = DateTime.Parse("4/17/2023 8:01:00"),
-                DetectorChannel = detector.DetectorChannel,
-                Start = testCycle.Start,
-                End = testCycle.End,
-                GreenEvent = testCycle.GreenEvent,
-                YellowEvent = testCycle.YellowEvent
+                DetectorChannel = 2,
+                RedToRedCycle = testCycle
             };
             var actual = result.Item2.First();
 
@@ -411,18 +387,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Arrival on Red")]
         public async void CreateVehicleTestsArrivalOnRedTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCycle = new RedToRedCycle()
             {
@@ -463,18 +434,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Arrival on Green")]
         public async void CreateVehicleTestsArrivalOnGreenTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:08:30"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:08:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCycle = new RedToRedCycle()
             {
@@ -515,18 +481,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Arrival on Yellow")]
         public async void CreateVehicleTestsArrivalOnYellowTest()
         {
-            var detector = _testApproach.Detectors.First();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCycle = new RedToRedCycle()
             {
@@ -567,7 +528,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "Null Input")]
         public async void CreateVehicleNullInputTest()
         {
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>().AsEnumerable();
+            var testEvents = Tuple.Create<Approach, IEnumerable<CorrectedDetectorEvent>>(null, null);
 
             var testCyles = Tuple.Create<Approach, IEnumerable<RedToRedCycle>>(null, null);
 
@@ -586,18 +547,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         [Trait(nameof(CreateVehicle), "No Data")]
         public async void CreateVehicleNoDataTest()
         {
-            var detector = new DetectorFixture().Create<Detector>();
-
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
-            var testEvents = new List<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>()
-            {
-                Tuple.Create(detector, detectorEvents)
-            }.AsEnumerable();
+            var testEvents = Tuple.Create(_testApproach, detectorEvents);
 
             var testCycle = new RedToRedCycle()
             {
