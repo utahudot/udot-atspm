@@ -1,25 +1,63 @@
+using ApplicationCoreTests.Analysis.TestObjects;
 using ApplicationCoreTests.Fixtures;
 using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.WorkflowSteps;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Common;
 using AutoFixture;
+using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
-    public class CalculateTotalVolumesTests : IClassFixture<TestApproachFixture>, IDisposable
+    public class CalculateTotalVolumesTests : IClassFixture<TestSignalFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly Approach _testApproach;
+        private readonly Signal _testSignal;
 
-        public CalculateTotalVolumesTests(ITestOutputHelper output, TestApproachFixture testApproach)
+        public CalculateTotalVolumesTests(ITestOutputHelper output, TestSignalFixture testSignal)
         {
             _output = output;
-            _testApproach = testApproach.TestApproach;
+            _testSignal = testSignal.TestSignal;
+        }
+
+        private Volumes GenerateVolumes(string signalIdentifier, int phaseNumber, int detectorChannel, DirectionTypes direction, DateTime start, DateTime end, int count)
+        {
+            var correctedEventFixture = new Fixture();
+            correctedEventFixture.Customize<CorrectedDetectorEvent>(c =>
+            {
+                return c.With(w => w.SignalIdentifier, signalIdentifier)
+                .With(w => w.PhaseNumber, phaseNumber)
+                .With(w => w.DetectorChannel, detectorChannel)
+                .With(w => w.Direction, direction);
+            });
+            correctedEventFixture.Customizations.Add(new RandomDateTimeSequenceGenerator(start, end));
+
+            var events = correctedEventFixture.CreateMany<CorrectedDetectorEvent>(count);
+
+            var result = new Volumes(events, TimeSpan.FromMinutes(15))
+            {
+                SignalIdentifier = signalIdentifier,
+                PhaseNumber = phaseNumber,
+                Direction = direction,
+            };
+
+            result.Segments.ToList().ForEach(f =>
+            {
+                f.SignalIdentifier = signalIdentifier;
+                f.PhaseNumber = phaseNumber;
+                f.Direction = direction;
+                f.DetectorEvents.AddRange(events.Where(w => f.InRange(w)));
+            });
+
+            return result;
         }
 
         [Fact]
@@ -117,51 +155,55 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         //    Assert.Equal(expected, actual);
         //}
 
-        //[Fact]
-        //[Trait(nameof(CalculateTotalVolumes), "Data Check")]
-        //public async void CalculateTotalVolumesDataCheckTest()
-        //{
-        //    var detector = _testApproach.Detectors.First();
+        [Fact]
+        [Trait(nameof(CalculateTotalVolumes), "Data Check")]
+        public async void CalculateTotalVolumesDataCheckTest()
+        {
+            var start = DateTime.Parse("4/17/2023 8:00:00");
+            var end = DateTime.Parse("4/17/2023 9:00:00");
 
-        //    var testEvents = new List<CorrectedDetectorEvent>
-        //    {
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = detector.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = detector.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = detector.DetectorChannel},
+            var approachP = _testSignal.Approaches.FirstOrDefault(f => f.Id == 2880);
+            var approachO = _testSignal.Approaches.FirstOrDefault(f => f.Id == 2882);
 
-        //    }.AsEnumerable();
+            var primaryVolumes = GenerateVolumes(_testSignal.SignalIdentifier, approachP.ProtectedPhaseNumber, 2, approachP.DirectionTypeId, start, end, 10);
+            var opposingVolumes = GenerateVolumes(_testSignal.SignalIdentifier, approachO.ProtectedPhaseNumber, 6, approachO.DirectionTypeId, start, end, 10);
 
-        //    var testData = Tuple.Create(_testApproach, testEvents);
+            var t1 = Tuple.Create(approachP, primaryVolumes);
+            var t2 = Tuple.Create(approachO, opposingVolumes);
 
-        //    var sut = new CalculateTotalVolumes();
+            var testData = Tuple.Create(t1, t2);
 
-        //    var result = await sut.ExecuteAsync(testData);
+            var sut = new CalculateTotalVolumes();
 
-        //    _output.WriteLine($"approach: {result.Item1}");
+            var result = await sut.ExecuteAsync(testData);
 
-        //    foreach (var v in result.Item2)
-        //    {
-        //        _output.WriteLine($"volume: {v}");
-        //    }
+            _output.WriteLine($"approach: {result.Item1}");
+            _output.WriteLine($"total volume: {result.Item2}");
 
-        //    var expected = new Volume()
-        //    {
-        //        Phase = _testApproach.ProtectedPhaseNumber,
-        //        Direction = _testApproach.DirectionTypeId,
-        //        Start = DateTime.Parse("4/17/2023 8:00:00"),
-        //        End = DateTime.Parse("4/17/2023 8:15:00")
-        //    };
+            foreach (var s in result.Item2.Segments)
+            {
+                _output.WriteLine($"segments: {s}");
+            }
 
-        //    expected.AddRange(testEvents);
+            //var expected = new TotalVolumes()
+            //{
+            //    SignalIdentifier = approachP.Signal.SignalIdentifier,
+            //    Start = start,
+            //    End = end,
 
-        //    var actual = result.Item2.First();
+            //};
 
-        //    _output.WriteLine($"expected: {expected}");
-        //    _output.WriteLine($"actual: {actual}");
+            //expected.AddRange(testEvents);
 
-        //    Assert.Equivalent(expected, actual);
-        //}
+            //var actual = result.Item2.First();
+
+            //_output.WriteLine($"expected: {expected}");
+            //_output.WriteLine($"actual: {actual}");
+
+            //Assert.Equivalent(expected, actual);
+
+            Assert.True(false);
+        }
 
         //[Fact]
         //[Trait(nameof(CalculateTotalVolumes), "Start/End Check")]
@@ -275,11 +317,34 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         //    Assert.True(result.Item2 == null);
         //}
 
-        [Fact]
+        [Theory]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateTotalVolumesTestData1.json")]
         [Trait(nameof(CalculateTotalVolumes), "From File")]
-        public async void CalculateTotalVolumesFromFileTest()
+        public async void CalculateTotalVolumesFromFileTest(string file)
         {
-            Assert.False(true);
+            var json = File.ReadAllText(new FileInfo(file).FullName);
+            var testFile = JsonConvert.DeserializeObject<CalculateTotalVolumeTestData>(json);
+
+            _output.WriteLine($"Configuration: {testFile.Configuration}");
+            _output.WriteLine($"Input: {testFile.Input.Count}");
+            _output.WriteLine($"Output: {testFile.Output.Segments.Count}");
+
+            var t1 = Tuple.Create(testFile.Configuration[0], testFile.Input[0]);
+            var t2 = Tuple.Create(testFile.Configuration[1], testFile.Input[1]);
+
+            var testData = Tuple.Create(t1, t2);
+
+            var sut = new CalculateTotalVolumes();
+
+            var result = await sut.ExecuteAsync(testData);
+
+            var expected = testFile.Output;
+            var actual = result.Item2;
+
+            //_output.WriteLine($"expected: {expected.Count}");
+            //_output.WriteLine($"actual: {actual.Count}");
+
+            Assert.Equivalent(expected, actual);
         }
 
         public void Dispose()
