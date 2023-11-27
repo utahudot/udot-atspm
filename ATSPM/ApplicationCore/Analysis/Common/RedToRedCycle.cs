@@ -6,20 +6,36 @@ using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
+
     /// <summary>
     /// A cycle which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
     /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
     /// </summary>
-    public class RedToRedCycle : StartEndRange, ICycle, ISignalPhaseLayer
+    public interface IRedToRedCycle : IStartEndRange, ISignalPhaseLayer, ICycleTotal
     {
         /// <summary>
         /// Timestamp of <see cref="DataLoggerEnum.PhaseBeginGreen"/> event
         /// </summary>
-        public DateTime GreenEvent { get; set; }
+        DateTime GreenEvent { get; set; }
 
         /// <summary>
         /// Timestamp of <see cref="DataLoggerEnum.PhaseBeginYellowChange"/> event
         /// </summary>
+        DateTime YellowEvent { get; set; }
+    }
+
+    /// <summary>
+    /// A cycle which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
+    /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
+    /// </summary>
+    public class RedToRedCycle : StartEndRange, IRedToRedCycle
+    {
+        #region IRedToRedCycle
+
+        /// <inheritdoc/>
+        public DateTime GreenEvent { get; set; }
+
+        /// <inheritdoc/>
         public DateTime YellowEvent { get; set; }
 
         #region ISignalPhaseLayer
@@ -48,11 +64,7 @@ namespace ATSPM.Application.Analysis.Common
 
         #endregion
 
-        /// <inheritdoc/>
-        public override bool InRange(DateTime time)
-        {
-            return time >= Start && time <= End;
-        }
+        #endregion
 
         /// <inheritdoc/>
         public override string ToString()
