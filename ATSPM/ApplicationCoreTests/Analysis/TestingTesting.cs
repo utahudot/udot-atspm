@@ -11,8 +11,10 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
+using AutoFixture;
 using Google.Cloud.Logging.Type;
 using Microsoft.Extensions.Options;
+using NetTopologySuite.Index.KdTree;
 using NetTopologySuite.Operation.Buffer;
 using Newtonsoft.Json;
 using System;
@@ -86,101 +88,50 @@ namespace ApplicationCoreTests.Analysis
             //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
             //var signal = JsonConvert.DeserializeObject<Signal>(json);
 
-            var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json").FullName);
-            var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
+            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json").FullName);
+            //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
 
-            var data1 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json1);
-            var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
+            //var data1 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json1);
+            //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
 
-            //signal.Approaches.Clear();
-            //signal.Approaches.Add(data1.Configuration);
-            //signal.Approaches.Add(data2.Configuration);
+            ////signal.Approaches.Clear();
+            ////signal.Approaches.Add(data1.Configuration);
+            ////signal.Approaches.Add(data2.Configuration);
 
-            var c = new CalculateTotalVolumes();
-
-
-
-            var t1 = Tuple.Create(data1.Configuration, data1.Output);
-            var t2 = Tuple.Create(data2.Configuration, data2.Output);
-
-            var tv = await c.ExecuteAsync(Tuple.Create(t1, t2));
-
-            var result = new CalculateTotalVolumeTestData()
-            {
-                Configuration = new List<Approach>() { data1.Configuration, data2.Configuration },
-                Input = new List<Volumes>() { data1.Output, data2.Output },
-                Output = tv.Item2
-            };
-
-
-            var test = JsonConvert.SerializeObject(result);
-            File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateTotalVolumesTestData1.json", test);
+            //var c = new CalculateTotalVolumes();
 
 
 
+            //var t1 = Tuple.Create(data1.Configuration, data1.Output);
+            //var t2 = Tuple.Create(data2.Configuration, data2.Output);
 
+            //var tv = await c.ExecuteAsync(Tuple.Create(t1, t2));
 
-
-
-
-            //foreach (var a in signal.Approaches)
+            //var result = new CalculateTotalVolumeTestData()
             //{
-            //    var o = signal.Approaches.FirstOrDefault(w => w.DirectionTypeId == new OpposingDirection(a.DirectionTypeId));
+            //    Configuration = new List<Approach>() { data1.Configuration, data2.Configuration },
+            //    Input = new List<Volumes>() { data1.Output, data2.Output },
+            //    Output = tv.Item2
+            //};
 
-            //    _output.WriteLine($"primary: {a} opposing: {o}");
 
-            //    if (o != null )
-            //    {
-            //        var boo = new TempPhaseDirections(logs) { Primary = a, Opposing = o };
-
-            //        _output.WriteLine($"primary: {boo.Primary} logs: {boo.PrimaryLogs.Count}");
-            //        _output.WriteLine($"opposing: {boo.Opposing} logs: {boo.OpposingLogs.Count}");
-            //    }
+            //var test = JsonConvert.SerializeObject(result);
+            //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateTotalVolumesTestData1.json", test);
 
 
 
 
 
-            //   //foreach (var s in stuff)
-            //   // {
-            //   //     if (s.Item2.Count() > 0)
-            //   //         _output.WriteLine($"stuff: {s.Item1.DetectorChannel} logs: {s.Item2.Count()} - {s.Item2.All(a => a.EventParam == s.Item1.DetectorChannel)}");
-            //   // }
+            //var times = Enumerable.Range(1, 10).Select(s => DateTime.Now.AddMinutes(s)).ToList();
 
+            var tl = new Timeline<StartEndRange>(DateTime.Now, DateTime.Now.AddHours(2), TimeSpan.FromMinutes(15));
 
-            //}
+            var test = tl.Segments.Select(a => a.End - a.Start).Average(a => a.TotalSeconds);
+            var ts = TimeSpan.FromSeconds(test);
 
+            _output.WriteLine($"test {test}");
+            _output.WriteLine($"ts {ts}");
 
-
-
-
-
-
-
-            //_output.WriteLine($"data count: {data.Logs.Count}");
-
-            //var testFilteredDetectorData = new FilteredDetectorData();
-            //var testIdentifyandAdjustVehicleActivations = new IdentifyandAdjustVehicleActivations();
-
-            //var result = new ActionBlock<IReadOnlyList<Tuple<Detector, IEnumerable<CorrectedDetectorEvent>>>>(a =>
-            //{
-            //    foreach (var r in a)
-            //    {
-            //        _output.WriteLine($"stuff: {r.Item1} --- {r.Item2.Count()}");
-            //    }
-            //});
-
-            //testFilteredDetectorData.LinkTo(testIdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
-            //testIdentifyandAdjustVehicleActivations.LinkTo(result, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //foreach (var a in data.Signal.Approaches)
-            //{
-            //    testFilteredDetectorData.Post(Tuple.Create<Approach, IEnumerable<ControllerEventLog>>(a, data.Logs.ToList()));
-            //}
-
-            //testFilteredDetectorData.Complete();
-
-            //await result.Completion;
 
 
         }

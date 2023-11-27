@@ -188,30 +188,27 @@ namespace ATSPM.Domain.Common
         {
             Start = start.RoundDown(segmentSpan);
             End = end.RoundDown(segmentSpan);
-            SegmentSpan = segmentSpan;
 
-            Segments = CreateTimelineSegements(Start, End, SegmentSpan);
+            Segments = CreateTimelineSegements(Start, End, segmentSpan);
         }
 
         public Timeline(IEnumerable<ITimestamp> ranges, TimeSpan segmentSpan)
         {
             Start = ranges.Min(m => m.Timestamp).RoundDown(segmentSpan);
             End = ranges.Max(m => m.Timestamp).RoundUp(segmentSpan);
-            SegmentSpan = segmentSpan;
 
-            Segments = CreateTimelineSegements(Start, End, SegmentSpan);
+            Segments = CreateTimelineSegements(Start, End, segmentSpan);
         }
 
         public Timeline(IEnumerable<IStartEndRange> ranges, TimeSpan segmentSpan)
         {
             Start = ranges.Min(m => m.Start).RoundDown(segmentSpan);
             End = ranges.Max(m => m.End).RoundUp(segmentSpan);
-            SegmentSpan = segmentSpan;
 
-            Segments = CreateTimelineSegements(Start, End, SegmentSpan);
+            Segments = CreateTimelineSegements(Start, End, segmentSpan);
         }
 
-        public TimeSpan SegmentSpan { get; internal set; }
+        public TimeSpan SegmentSpan => TimeSpan.FromSeconds(Segments.Select(a => a.End - a.Start).Average(a => a.TotalSeconds));
 
         public IReadOnlyList<T> Segments { get; internal set; } = new List<T>();
 
