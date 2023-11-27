@@ -269,11 +269,13 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             Assert.True(result.Item2?.Count() == 0);
         }
 
-        [Fact]
-        [Trait(nameof(IdentifyandAdjustVehicleActivations), "From File")]
-        public async void IdentifyandAdjustVehicleActivationsFromFileTest()
+        [Theory]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData1.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData2.json")]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData3.json")]
+        public async void IdentifyandAdjustVehicleActivationsFromFileTest(string file)
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\IdentifyandAdjustVehicleActivationsTestData.json").FullName);
+            var json = File.ReadAllText(new FileInfo(file).FullName);
             var testFile = JsonConvert.DeserializeObject<IdentifyandAdjustVehicleActivationsTestData>(json);
 
             _output.WriteLine($"Configuration: {testFile.Configuration}");

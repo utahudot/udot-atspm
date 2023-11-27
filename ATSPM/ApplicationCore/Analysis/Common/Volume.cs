@@ -61,9 +61,11 @@ namespace ATSPM.Application.Analysis.Common
     {
         public TotalVolumes() { }
 
-        public TotalVolumes(TimelineOptions options) : base(options) { }
+        public TotalVolumes(DateTime start, DateTime end, TimeSpan segmentSpan) : base(start, end, segmentSpan) { }
 
-        public TotalVolumes(Timeline<TotalVolume> collection) : base(collection) { }
+        public TotalVolumes(IEnumerable<ITimestamp> ranges, TimeSpan segmentSpan) : base(ranges, segmentSpan) { }
+
+        public TotalVolumes(IEnumerable<IStartEndRange> ranges, TimeSpan segmentSpan) : base(ranges, segmentSpan) { }
 
         #region IToltalVolume
 
@@ -128,7 +130,7 @@ namespace ATSPM.Application.Analysis.Common
     //    }
     //}
 
-    public class Volume : StartEndRange, ISignalPhaseLayer, IPhaseVolume
+    public class Volume : StartEndRange, IPhaseVolume
     {
         #region IPhaseVolume
 
@@ -240,9 +242,11 @@ namespace ATSPM.Application.Analysis.Common
     {
         public Volumes() { }
 
-        public Volumes(TimelineOptions options) : base(options) { }
+        public Volumes(DateTime start, DateTime end, TimeSpan segmentSpan) : base(start, end, segmentSpan) { }
 
-        public Volumes(Timeline<Volume> collection) : base(collection) { }
+        public Volumes(IEnumerable<ITimestamp> ranges, TimeSpan segmentSpan) : base(ranges, segmentSpan) { }
+
+        public Volumes(IEnumerable<IStartEndRange> ranges, TimeSpan segmentSpan) : base(ranges, segmentSpan) { }
 
         #region IPhaseVolume
 
