@@ -48,6 +48,8 @@ namespace ApplicationCoreTests.Analysis
         public bool HasDelay => Delay?.Seconds.Seconds > 0;
     }
 
+
+
     public class TestingTesting
     {
         private readonly ITestOutputHelper _output;
@@ -57,22 +59,22 @@ namespace ApplicationCoreTests.Analysis
             _output = output;
         }
 
-        IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
-        {
-            var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
-            l1.GroupBy(g => g.EventParam, (preempt, l2) =>
-            l2.TimeSpanFromConsecutiveCodes(first, second)
-            .Select(s => new T()
-            {
-                SignalIdentifier = signal,
-                PreemptNumber = preempt,
-                Start = s.Item1[0].Timestamp,
-                End = s.Item1[1].Timestamp,
-                Seconds = s.Item2
-            })).SelectMany(m => m)).SelectMany(m => m);
+        //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+        //{
+        //    var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+        //    l1.GroupBy(g => g.EventParam, (preempt, l2) =>
+        //    l2.TimeSpanFromConsecutiveCodes(first, second)
+        //    .Select(s => new T()
+        //    {
+        //        SignalIdentifier = signal,
+        //        PreemptNumber = preempt,
+        //        Start = s.Item1[0].Timestamp,
+        //        End = s.Item1[1].Timestamp,
+        //        Seconds = s.Item2
+        //    })).SelectMany(m => m)).SelectMany(m => m);
 
-            return result;
-        }
+        //    return result;
+        //}
 
         [Fact]
         public async void TestingStuff()
@@ -80,24 +82,26 @@ namespace ApplicationCoreTests.Analysis
             //TempGeneratePreemtTestData();
 
 
-            //var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
+            var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\7706PriorityData.csv");
 
-            //var logs = File.ReadAllLines(file1.FullName)
-            //       .Skip(1)
-            //       .Select(x => x.Split(','))
-            //       .Select(x => new ControllerEventLog
-            //       {
-            //           SignalIdentifier = x[0],
-            //           Timestamp = DateTime.Parse(x[1]),
-            //           EventCode = int.Parse(x[2]),
-            //           EventParam = int.Parse(x[3])
-            //       }).ToList();
+            var logs = File.ReadAllLines(file1.FullName)
+                   //.Skip(1)
+                   .Select(x => x.Split(','))
+                   .Select(x => new ControllerEventLog
+                   {
+                       SignalIdentifier = x[0],
+                       Timestamp = DateTime.Parse(x[1]),
+                       EventCode = int.Parse(x[2]),
+                       EventParam = int.Parse(x[3])
+                   }).ToList();
 
-            //var signal1 = new Signal()
-            //{
-            //    SignalIdentifier = "1001",
-            //    PrimaryName = "signal one"
-            //};
+            _output.WriteLine($"logs: {logs.Count}");
+
+            var signal1 = new Signal()
+            {
+                SignalIdentifier = "7706",
+                PrimaryName = "signal one"
+            };
 
             ////var signal2 = new Signal()
             ////{
@@ -127,6 +131,65 @@ namespace ApplicationCoreTests.Analysis
             //var logs3 = logs1.Union(logs2);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+            var filterTspPriorityData = new FilterTspPriorityData();
+            var aggregatePriority = new AggregatePriority();
+
+            var resultAction = new ActionBlock<IEnumerable<PriorityAggregation>>(a =>
+            {
+                _output.WriteLine($"-----------------------------------------------------");
+
+                foreach (var l in a)
+                {
+                    _output.WriteLine($"l: {l}");
+                }
+            });
+
+            filterTspPriorityData.LinkTo(aggregatePriority, new DataflowLinkOptions() { PropagateCompletion = true });
+            aggregatePriority.LinkTo(resultAction, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            filterTspPriorityData.Post(Tuple.Create(signal1, logs.AsEnumerable()));
+
+            filterTspPriorityData.Complete();
+
+            await resultAction.Completion;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //var logs = new List<ControllerEventLog>
             //{
             //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
@@ -139,6 +202,28 @@ namespace ApplicationCoreTests.Analysis
             //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
             //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
             //};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             //var test2 = logs.Select((w, i) => logs.FindIndex(i, 1, f => f.EventCode == 111)).Where(w => w > 0);
 
@@ -187,19 +272,6 @@ namespace ApplicationCoreTests.Analysis
             //    _output.WriteLine($"e: {e}");
             //}
 
-
-
-
-
-
-            /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
-            /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
 
 
 
