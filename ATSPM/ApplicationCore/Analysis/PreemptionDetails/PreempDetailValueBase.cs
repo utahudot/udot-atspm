@@ -7,7 +7,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
 {
     public abstract class PreempDetailValueBase : StartEndRange, ISignalLayer
     {
-        #region ISignalPhaseLayer
+        #region ISignalLayer
 
         /// <inheritdoc/>
         public string SignalIdentifier { get; set; }
