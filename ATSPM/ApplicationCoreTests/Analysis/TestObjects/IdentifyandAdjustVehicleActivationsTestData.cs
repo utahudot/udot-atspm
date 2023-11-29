@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 
@@ -23,5 +24,19 @@ namespace ApplicationCoreTests.Analysis.TestObjects
         public List<Approach> Configuration { get; set; }
         public List<Volumes> Input { get; set; }
         public TotalVolumes Output { get; set; }
+    }
+
+    public class RedToRedCyclesTestData
+    {
+        public Approach Configuration { get; set; }
+        public List<ControllerEventLog> Input { get; set; }
+        public List<RedToRedCycle> Output { get; set; }
+    }
+
+    public class PreemptiveProcessTestData
+    {
+        public Signal Configuration { get; set; }
+        public List<ControllerEventLog> Input { get; set; }
+        public List<PreempDetailValueBase> Output { get; set; }
     }
 }

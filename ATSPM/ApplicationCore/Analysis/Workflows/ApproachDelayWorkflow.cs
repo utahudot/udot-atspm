@@ -30,13 +30,13 @@ namespace ATSPM.Application.Analysis.Workflows
             _stepOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
         }
 
-        protected JoinBlock<IEnumerable<Tuple<Detector,IEnumerable<CorrectedDetectorEvent>>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
+        protected JoinBlock<Tuple<Approach,IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> mergeCyclesAndVehicles;
 
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
         public FilteredDetectorData FilteredDetectorData { get; private set; }
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
         public IdentifyandAdjustVehicleActivations IdentifyandAdjustVehicleActivations { get; private set; }
-        public CreateVehicle AssignCyclesToVehicles { get; private set; }
+        public CreateVehicle CreateVehicle { get; private set; }
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         /// <inheritdoc/>
@@ -47,7 +47,7 @@ namespace ATSPM.Application.Analysis.Workflows
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
             mergeCyclesAndVehicles = new();
-            AssignCyclesToVehicles = new();
+            CreateVehicle = new();
             GenerateApproachDelayResults = new();
         }
 
@@ -59,7 +59,7 @@ namespace ATSPM.Application.Analysis.Workflows
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
             Steps.Add(mergeCyclesAndVehicles);
-            Steps.Add(AssignCyclesToVehicles);
+            Steps.Add(CreateVehicle);
             Steps.Add(GenerateApproachDelayResults);
         }
 
@@ -72,8 +72,8 @@ namespace ATSPM.Application.Analysis.Workflows
             FilteredDetectorData.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
             IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
             CreateRedToRedCycles.LinkTo(mergeCyclesAndVehicles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            mergeCyclesAndVehicles.LinkTo(AssignCyclesToVehicles, new DataflowLinkOptions() { PropagateCompletion = true });
-            AssignCyclesToVehicles.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
+            mergeCyclesAndVehicles.LinkTo(CreateVehicle, new DataflowLinkOptions() { PropagateCompletion = true });
+            CreateVehicle.LinkTo(GenerateApproachDelayResults, new DataflowLinkOptions() { PropagateCompletion = true });
             GenerateApproachDelayResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
