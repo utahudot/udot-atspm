@@ -13,6 +13,7 @@ using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using ATSPM.Domain.Extensions;
+using ATSPM.Application;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
@@ -363,6 +364,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var sut = new CalculatePhaseVolume();
 
             var result = await sut.ExecuteAsync(testData);
+
+            _output.WriteLine($"result: {result.Item2}");
+
+            var test = result.Item2.Segments.GetPeakVolumes(60 / Convert.ToInt32(result.Item2.SegmentSpan.TotalMinutes)).Sum(s => s.DetectorCount);
+            _output.WriteLine($"test: {test}");
 
             var expected = testFile.Output;
             var actual = result.Item2;

@@ -18,11 +18,11 @@ namespace ATSPM.Application.Specifications
         }
     }
 
-    public class ControllerLogApproachFilterSpecification : BaseSpecification<ControllerEventLog>
+    public class ControllerLogSignalAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogApproachFilterSpecification(Approach approach) : base()
+        public ControllerLogSignalAndParamterFilterSpecification(Signal signal, int param) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == approach.Signal.SignalIdentifier;
+            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }

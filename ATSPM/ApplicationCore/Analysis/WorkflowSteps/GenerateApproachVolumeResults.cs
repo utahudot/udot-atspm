@@ -15,26 +15,26 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<ApproachVolumeResult> Process(TotalVolumes input, CancellationToken cancelToken = default)
         {
-            var chunks = 60 / input.Size;
+            var chunks = 60 / input.SegmentSpan.Minutes;
 
-            var peakA = input.Select(s => s.Primary).GetPeakVolumes(chunks).ToList();
-            var o = input.Where(w => peakA.Contains(w.Primary)).Select(s => s.Opposing).Sum(s => s.DetectorCount);
+            var peakA = input.Segments.Select(s => s.Primary).GetPeakVolumes(chunks).ToList();
+            var o = input.Segments.Where(w => peakA.Contains(w.Primary)).Select(s => s.Opposing).Sum(s => s.DetectorCount);
 
-            var peakB = input.Select(s => s.Opposing).GetPeakVolumes(chunks);
-            var p = input.Where(w => peakB.Contains(w.Opposing)).Select(s => s.Primary).Sum(s => s.DetectorCount);
+            var peakB = input.Segments.Select(s => s.Opposing).GetPeakVolumes(chunks);
+            var p = input.Segments.Where(w => peakB.Contains(w.Opposing)).Select(s => s.Primary).Sum(s => s.DetectorCount);
 
-            var peakTotal = input.GetPeakVolumes(chunks);
+            var peakTotal = input.Segments.GetPeakVolumes(chunks);
 
             var result = new ApproachVolumeResult();
 
             result.Start = input.Start;
             result.End = input.End;
 
-            result.PrimaryTotalVolume = input.Select(s => s.Primary).Sum(s => s.DetectorCount);
+            result.PrimaryTotalVolume = input.Segments.Select(s => s.Primary).Sum(s => s.DetectorCount);
             result.PrimaryPeakVolume = peakA.Sum(s => s.DetectorCount);
             result.PrimaryPHF = AtspmMath.PeakHourFactor(result.PrimaryPeakVolume, peakA.Max(m => m.DetectorCount), chunks);
 
-            result.OpposingTotalVolume = input.Select(s => s.Opposing).Sum(s => s.DetectorCount);
+            result.OpposingTotalVolume = input.Segments.Select(s => s.Opposing).Sum(s => s.DetectorCount);
             result.OpposingPeakVolume = peakB.Sum(s => s.DetectorCount);
             result.OpposingPHF = AtspmMath.PeakHourFactor(result.OpposingPeakVolume, peakB.Max(m => m.DetectorCount), chunks);
 
