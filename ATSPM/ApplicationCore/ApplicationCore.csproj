@@ -8,12 +8,9 @@
 
   <ItemGroup>
     <Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\GenerateApproachVolumeResults.cs" />
-    <Compile Remove="Analysis\Workflows\ApproachDelayWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
-    <Compile Remove="Analysis\Workflows\PreemptionDetailsWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
   </ItemGroup>
 
@@ -51,12 +48,9 @@
 
   <ItemGroup>
     <None Include="Analysis\PhaseTerminationAnalysis.cs" />
-    <None Include="Analysis\WorkflowSteps\GenerateApproachVolumeResults.cs" />
-    <None Include="Analysis\Workflows\ApproachDelayWorkflow.cs" />
     <None Include="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
     <None Include="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
     <None Include="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
-    <None Include="Analysis\Workflows\PreemptionDetailsWorkflow.cs" />
     <None Include="Analysis\Workflows\PurdueCoordinationWorkflow.cs" />
   </ItemGroup>
 
