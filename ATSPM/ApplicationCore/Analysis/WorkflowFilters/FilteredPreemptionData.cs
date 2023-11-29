@@ -11,12 +11,13 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
+    /// <item><see cref="DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
     /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPreemptionData : FilterEventCodeBase
+    public class FilteredPreemptionData : FilterEventCodeSignalBase
     {
         /// <inheritdoc/>
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
@@ -25,6 +26,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
             filteredList.Add((int)DataLoggerEnum.PreemptGateDownInputReceived);
             filteredList.Add((int)DataLoggerEnum.PreemptCallInputOff);
             filteredList.Add((int)DataLoggerEnum.PreemptEntryStarted);
+            filteredList.Add((int)DataLoggerEnum.PreemptionBeginTrackClearance);
             filteredList.Add((int)DataLoggerEnum.PreemptionBeginDwellService);
             filteredList.Add((int)DataLoggerEnum.PreemptionMaxPresenceExceeded);
             filteredList.Add((int)DataLoggerEnum.PreemptionBeginExitInterval);

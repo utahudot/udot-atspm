@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
     <Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-    <Compile Remove="Analysis\WorkflowSteps\CreatePreemptiveCyclesTests.cs" />
     <Compile Remove="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
   </ItemGroup>
 
@@ -38,8 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
     <None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
-    <None Include="Analysis\WorkflowSteps\CreatePreemptiveCyclesTests.cs" />
     <None Include="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
   </ItemGroup>
 

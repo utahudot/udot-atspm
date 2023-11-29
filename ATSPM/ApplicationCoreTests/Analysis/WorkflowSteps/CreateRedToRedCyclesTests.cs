@@ -491,27 +491,25 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             Assert.True(result.Item2?.Count() == 0);
         }
 
-        [Fact]
+        [Theory]
+        [InlineData(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CreateRedToRedCyclesTestData1.json")]
         [Trait(nameof(CreateRedToRedCycles), "From File")]
-        public async void CreateRedToRedCyclesFromFileTest()
+        public async void CreateRedToRedCyclesFromFileTest(string file)
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RedToRedCyclesTestData.json").FullName);
-            var testLogs = JsonConvert.DeserializeObject<RedToRedCyclesTestData>(json);
+            var json = File.ReadAllText(new FileInfo(file).FullName);
+            var testFile = JsonConvert.DeserializeObject<RedToRedCyclesTestData>(json);
 
-            _output.WriteLine($"log count: {testLogs.EventLogs.Count}");
-            _output.WriteLine($"event count: {testLogs.RedCycles.Count}");
+            _output.WriteLine($"Configuration: {testFile.Configuration}");
+            _output.WriteLine($"Input: {testFile.Input.Count}");
+            _output.WriteLine($"Output: {testFile.Output.Count}");
 
-            var testData = Tuple.Create(_testApproach, testLogs.EventLogs.AsEnumerable());
+            var testData = Tuple.Create(testFile.Configuration, testFile.Input.AsEnumerable());
 
             var sut = new CreateRedToRedCycles();
 
             var result = await sut.ExecuteAsync(testData);
 
-            _output.WriteLine($"approach: {result.Item1}");
-
-            _output.WriteLine($"events: {result.Item2.Count()}");
-
-            var expected = testLogs.RedCycles;
+            var expected = testFile.Output;
             var actual = result.Item2.ToList();
 
             _output.WriteLine($"expected: {expected.Count}");

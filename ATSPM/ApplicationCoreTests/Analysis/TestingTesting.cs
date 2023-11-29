@@ -1,7 +1,9 @@
 ﻿using ApplicationCoreTests.Analysis.TestObjects;
 using ATSPM.Application;
 using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Application.Analysis.WorkflowFilters;
+using ATSPM.Application.Analysis.Workflows;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Common;
 using ATSPM.Application.Extensions;
@@ -34,21 +36,17 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace ApplicationCoreTests.Analysis
 {
-    //public class TempPhaseDirections
-    //{
-    //    private readonly IEnumerable<ControllerEventLog> _logs;
+    public class PreemptCycle1 : PreempDetailValueBase
+    {
+        public DwellTimeValue DwellTime { get; set; }
+        public TrackClearTimeValue TrackClearTime { get; set; }
+        public TimeToServiceValue ServiceTime { get; set; }
+        public DelayTimeValue Delay { get; set; }
+        public TimeToGateDownValue GateDownTime { get; set; }
+        public TimeToCallMaxOutValue CallMaxOutTime { get; set; }
 
-    //    public TempPhaseDirections(IEnumerable<ControllerEventLog> logs)
-    //    {
-    //        _logs = logs;
-    //    }
-
-    //    public Approach Primary { get; set; }
-    //    public Approach Opposing { get; set; }
-
-    //    public IReadOnlyList<ControllerEventLog> PrimaryLogs => _logs.Where(w => w.SignalIdentifier == Primary.Signal.SignalIdentifier && Primary.Detectors.Select(s => s.DetectorChannel).Contains(w.EventParam)).ToList();
-    //    public IReadOnlyList<ControllerEventLog> OpposingLogs => _logs.Where(w => w.SignalIdentifier == Opposing.Signal.SignalIdentifier && Opposing.Detectors.Select(s => s.DetectorChannel).Contains(w.EventParam)).ToList();
-    //}
+        public bool HasDelay => Delay?.Seconds.Seconds > 0;
+    }
 
     public class TestingTesting
     {
@@ -59,10 +57,30 @@ namespace ApplicationCoreTests.Analysis
             _output = output;
         }
 
+        IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+        {
+            var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+            l1.GroupBy(g => g.EventParam, (preempt, l2) =>
+            l2.TimeSpanFromConsecutiveCodes(first, second)
+            .Select(s => new T()
+            {
+                SignalIdentifier = signal,
+                PreemptNumber = preempt,
+                Start = s.Item1[0].Timestamp,
+                End = s.Item1[1].Timestamp,
+                Seconds = s.Item2
+            })).SelectMany(m => m)).SelectMany(m => m);
+
+            return result;
+        }
+
         [Fact]
         public async void TestingStuff()
         {
-            //var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.csv");
+            //TempGeneratePreemtTestData();
+
+
+            //var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
 
             //var logs = File.ReadAllLines(file1.FullName)
             //       .Skip(1)
@@ -75,11 +93,288 @@ namespace ApplicationCoreTests.Analysis
             //           EventParam = int.Parse(x[3])
             //       }).ToList();
 
-            ////var testdata = new RedToRedCyclesTestData()
+            //var signal1 = new Signal()
+            //{
+            //    SignalIdentifier = "1001",
+            //    PrimaryName = "signal one"
+            //};
+
+            ////var signal2 = new Signal()
             ////{
-            ////    EventLogs = logs,
-            ////    //RedCycles = events
+            ////    SignalIdentifier = "1002",
+            ////    PrimaryName = "signal two"
             ////};
+
+            //int preempt1 = 1;
+            //int preempt2 = 2;
+
+            //var logs1 = logs.Select(s => new ControllerEventLog()
+            //{
+            //    SignalIdentifier = signal1.SignalIdentifier,
+            //    EventCode = s.EventCode,
+            //    EventParam = preempt1,
+            //    Timestamp = s.Timestamp
+            //}).ToList();
+
+            //var logs2 = logs.Select(s => new ControllerEventLog()
+            //{
+            //    SignalIdentifier = signal1.SignalIdentifier,
+            //    EventCode = s.EventCode,
+            //    EventParam = preempt2,
+            //    Timestamp = s.Timestamp
+            //}).ToList();
+
+            //var logs3 = logs1.Union(logs2);
+
+
+            //var logs = new List<ControllerEventLog>
+            //{
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
+            //};
+
+            //var test2 = logs.Select((w, i) => logs.FindIndex(i, 1, f => f.EventCode == 111)).Where(w => w > 0);
+
+            //foreach (var e in test2)
+            //{
+            //    _output.WriteLine($"test2: {e}");
+            //}
+
+
+            //foreach (var e in test3)
+            //{
+            //    _output.WriteLine($"test3: {e}");
+            //}
+
+            //var test4 = test2.Select((s, i) => new Range(i == 0 ? 0 : test2[i - 1] + 1, i < test2.Count() - 1 ? test2[i + 1] - test2[i] : test2[i] - test2[i - 1])).ToList();
+
+            //foreach (var e in test4)
+            //{
+            //    _output.WriteLine($"test4: {e}");
+            //}
+
+            //var test4 = test2.Select((s, i) => logs.GetRange(i == 0 ? 0 : test2[i - 1] + 1, i < test2.Count() - 1 ? test2[i + 1] - test2[i] : test2[i] - test2[i - 1])).ToList();
+
+            //foreach (var e in test4)
+            //{
+            //    _output.WriteLine($"test4: {e}");
+            //}
+
+            //var result = test4.Select(s => new PreemptCycle()
+            //{
+            //    InputOff = s.FindAll(f => f.EventCode == 104).Select(s => s.Timestamp).ToList(),
+            //    //InputOn = s.FindAll(f => f.EventCode == 102).Select(s => s.Timestamp).ToList(),
+            //    StartInputOn = s.Find(f => f.EventCode == 102)?.Timestamp ?? default,
+            //    GateDown = s.Find(f => f.EventCode == 103)?.Timestamp ?? default,
+            //    EntryStarted = s.Find(f => f.EventCode == 104)?.Timestamp ?? default,
+            //    BeginTrackClearance = s.Find(f => f.EventCode == 106)?.Timestamp ?? default,
+            //    BeginDwellService = s.Find(f => f.EventCode == 107)?.Timestamp ?? default,
+            //    MaxPresenceExceeded = s.Find(f => f.EventCode == 110)?.Timestamp ?? default,
+            //    BeginExitInterval = s.Find(f => f.EventCode == 110)?.Timestamp ?? default,
+            //});
+
+
+
+            //foreach (var e in result)
+            //{
+            //    _output.WriteLine($"e: {e}");
+            //}
+
+
+
+
+
+
+            /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
+            /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
+
+
+
+            //var cycles = PreemptDetailRange<PreemptCycle1>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+
+            //var dwell = PreemptDetailRange<DwellTimeValue>(logs, DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
+            //var trackclear = PreemptDetailRange<TrackClearTimeValue>(logs, DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
+            //var timetoservice = PreemptDetailRange<TimeToServiceValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
+            //var delay = PreemptDetailRange<DelayTimeValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
+            //var gatedown = PreemptDetailRange<TimeToGateDownValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
+            //var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+
+
+            //foreach (var c in cycles)
+            //{
+            //    c.DwellTime = dwell.FirstOrDefault(w => c.InRange(w));
+            //    c.TrackClearTime = trackclear.FirstOrDefault(w => c.InRange(w));
+            //    c.ServiceTime = timetoservice.FirstOrDefault(w => c.InRange(w));
+            //    c.Delay = delay.FirstOrDefault(w => c.InRange(w));
+            //    c.GateDownTime = gatedown.FirstOrDefault(w => c.InRange(w));
+            //    c.CallMaxOutTime = maxout.FirstOrDefault(w => c.InRange(w));
+
+            //    _output.WriteLine($"c: {c}");
+            //}
+
+
+
+            //var codes = new List<int>() { 102, 103, 104, 105, 107, 110, 111 };
+
+            //var cycle = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+            //var dwell = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
+            //var trackclear = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
+            //var timetoservice = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
+            //var delay = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
+            //var gatdown = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
+            //var maxout = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+
+            //var cycles = cycle.Select(s => new PreemptDetailResult()
+            //{
+            //    Start = s.Item1[0].Timestamp,
+            //    End = s.Item1[1].Timestamp,
+            //    Seconds = s.Item2
+            //}).ToList();
+
+            //cycles.ForEach(f =>
+            //{
+            //    //f.SignalIdentifier = signal.Key;
+            //    //f.PreemptNumber = item.Key;
+            //    //f.Start = item.Min(m => m.Start);
+            //    //f.End = item.Max(m => m.End);
+            //    f.DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>().ToList();
+            //            f.TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>().ToList();
+            //            f.ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>().ToList();
+            //            f.Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>().ToList();
+            //            f.GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>().ToList();
+            //    f.CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>().ToList();
+            //});
+
+
+
+
+
+
+
+
+
+            //var filteredPreemptionData = new FilteredPreemptionData();
+            //var groupEventLogsByParameter = new GroupEventLogsByParameter();
+            //var filterLogsBySignalAndParamter = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>, int>>(f =>
+            //{
+            //    return Tuple.Create(f.Item1, f.Item2.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(f.Item1, f.Item3)), f.Item3);
+            //});
+
+            //var options = new ExecutionDataflowBlockOptions()
+            //{
+            //    BoundedCapacity = 6
+            //};
+
+
+            //var calculateDwellTime = new CalculateDwellTime(options);
+            //var calculateTrackClearTime = new CalculateTrackClearTime(options);
+            //var calculateTimeToService = new CalculateTimeToService(options);
+            //var calculateDelay = new CalculateDelay(options);
+            //var calculateTimeToGateDown = new CalculateTimeToGateDown(options);
+            //var calculateTimeToCallMaxOut = new CalculateTimeToCallMaxOut(options);
+
+            //var batchPrempt = new BatchBlock<PreempDetailValueBase>(6);
+
+            ////var generatePreemptDetailResults = new GeneratePreemptDetailResults();
+            //var generatePreemptDetailResults = new TransformManyBlock<PreempDetailValueBase[], PreemptDetailResult>(f =>
+            //{
+            //    _output.WriteLine($"f: {f.Length}");
+
+            //    foreach (var v in f)
+            //    {
+            //        _output.WriteLine($"v: {v.GetType().Name} --- {v}");
+            //    }
+
+            //    return f.Select(s => new PreemptDetailResult()
+            //    {
+            //        //SignalIdentifier = signal.Key,
+            //        //PreemptNumber = item.Key,
+            //        //Start = item.Min(m => m.Start),
+            //        //End = item.Max(m => m.End),
+            //        //DwellTimes = item.Where(w => w.GetType().Name == nameof(DwellTimeValue)).Cast<DwellTimeValue>().ToList(),
+            //        //TrackClearTimes = item.Where(w => w.GetType().Name == nameof(TrackClearTimeValue)).Cast<TrackClearTimeValue>().ToList(),
+            //        //ServiceTimes = item.Where(w => w.GetType().Name == nameof(TimeToServiceValue)).Cast<TimeToServiceValue>().ToList(),
+            //        //Delay = item.Where(w => w.GetType().Name == nameof(DelayTimeValue)).Cast<DelayTimeValue>().ToList(),
+            //        //GateDownTimes = item.Where(w => w.GetType().Name == nameof(TimeToGateDownValue)).Cast<TimeToGateDownValue>().ToList(),
+            //        //CallMaxOutTimes = item.Where(w => w.GetType().Name == nameof(TimeToCallMaxOutValue)).Cast<TimeToCallMaxOutValue>().ToList()
+            //    });
+            //});
+
+
+            //var resultAction = new ActionBlock<PreemptDetailResult>(a =>
+            //{
+            //    //_output.WriteLine($"a: {a}");
+            //});
+
+
+
+
+            //filteredPreemptionData.LinkTo(groupEventLogsByParameter, new DataflowLinkOptions() { PropagateCompletion = true });
+            //groupEventLogsByParameter.LinkTo(filterLogsBySignalAndParamter, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+            //filterLogsBySignalAndParamter.LinkTo(calculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true, MaxMessages = 3});
+            //filterLogsBySignalAndParamter.LinkTo(calculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsBySignalAndParamter.LinkTo(calculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+            //calculateDwellTime.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+            //calculateTrackClearTime.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+            //calculateTimeToService.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+            //calculateDelay.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+            //calculateTimeToGateDown.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+            //calculateTimeToCallMaxOut.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //batchPrempt.LinkTo(generatePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //generatePreemptDetailResults.LinkTo(resultAction, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+            //filteredPreemptionData.Post(Tuple.Create(signal1, logs3));
+
+            //filteredPreemptionData.Complete();
+
+            //await resultAction.Completion;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             //var json = JsonConvert.SerializeObject(logs);
 
@@ -88,60 +383,68 @@ namespace ApplicationCoreTests.Analysis
             //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
             //var signal = JsonConvert.DeserializeObject<Signal>(json);
 
-            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData1.json").FullName);
+            //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
             //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
 
-            //var data1 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json1);
+            //var data1 = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json1);
             //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
 
             ////signal.Approaches.Clear();
             ////signal.Approaches.Add(data1.Configuration);
             ////signal.Approaches.Add(data2.Configuration);
 
-            //var c = new CalculateTotalVolumes();
-
-
-
-            //var t1 = Tuple.Create(data1.Configuration, data1.Output);
-            //var t2 = Tuple.Create(data2.Configuration, data2.Output);
-
-            //var tv = await c.ExecuteAsync(Tuple.Create(t1, t2));
-
-            //var result = new CalculateTotalVolumeTestData()
-            //{
-            //    Configuration = new List<Approach>() { data1.Configuration, data2.Configuration },
-            //    Input = new List<Volumes>() { data1.Output, data2.Output },
-            //    Output = tv.Item2
-            //};
-
-
-            //var test = JsonConvert.SerializeObject(result);
-            //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateTotalVolumesTestData1.json", test);
 
 
 
 
-
-            //var times = Enumerable.Range(1, 10).Select(s => DateTime.Now.AddMinutes(s)).ToList();
-
-            var tl = new Timeline<StartEndRange>(DateTime.Now, DateTime.Now.AddHours(2), TimeSpan.FromMinutes(15));
-
-            var test = tl.Segments.Select(a => a.End - a.Start).Average(a => a.TotalSeconds);
-            var ts = TimeSpan.FromSeconds(test);
-
-            _output.WriteLine($"test {test}");
-            _output.WriteLine($"ts {ts}");
+            //var t1 = Tuple.Create(signal.Approaches.FirstOrDefault(f => f.Id == 2880), data1.AsEnumerable());
+            ////var t2 = Tuple.Create(data2.Configuration, data2.Output);
 
 
 
         }
+
+        //private async void TempGeneratePreemtTestData()
+        //{
+        //    var file1 = new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\PreemptDetaildata.csv");
+
+        //    var logs = File.ReadAllLines(file1.FullName)
+        //           .Skip(1)
+        //           .Select(x => x.Split(','))
+        //           .Select(x => new ControllerEventLog
+        //           {
+        //               SignalIdentifier = x[0],
+        //               Timestamp = DateTime.Parse(x[1]),
+        //               EventCode = int.Parse(x[2]),
+        //               EventParam = int.Parse(x[3])
+        //           }).ToList();
+
+        //    var signal = new Signal()
+        //    {
+        //        SignalIdentifier = "7573",
+        //        PrimaryName = "Test Controller"
+        //    };
+
+        //    var c = new CalculateDwellTime();
+
+        //    var r = await c.ExecuteAsync(Tuple.Create(signal, logs.AsEnumerable(), 1));
+
+        //    var result = new PreemptiveProcessTestData()
+        //    {
+        //        Configuration = signal,
+        //        Input = logs,
+        //        Output = r.Item2.Cast<PreempDetailValueBase>().ToList()
+        //    };
+
+
+        //    var test = JsonConvert.SerializeObject(result, new JsonSerializerSettings()
+        //    {
+        //        TypeNameHandling = TypeNameHandling.All
+        //    });
+        //    File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculateDwellTimeTestData1.json", test);
+        //}
     }
 
-    public class TestData
-    {
-        public Signal Signal { get; set; }
-        public IReadOnlyList<ControllerEventLog> Logs { get; set; }
-    }
-
+    
 
 }
