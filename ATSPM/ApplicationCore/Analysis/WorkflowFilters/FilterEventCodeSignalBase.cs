@@ -24,9 +24,9 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         {
             workflowProcess = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(f =>
             {
-                return Tuple.Create(f.Item1, f.Item2
+               return Tuple.Create(f.Item1, f.Item2
                     .FromSpecification(new ControllerLogSignalFilterSpecification(f.Item1))
-                    .Where(w => filteredList.Contains(w.EventCode)));                
+                    .Where(w => filteredList.Contains(w.EventCode)));
             }, options);
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }
