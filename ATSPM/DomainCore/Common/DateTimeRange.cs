@@ -194,8 +194,8 @@ namespace ATSPM.Domain.Common
 
         public Timeline(IEnumerable<ITimestamp> ranges, TimeSpan segmentSpan)
         {
-            Start = ranges.Min(m => m.Timestamp).RoundDown(segmentSpan);
-            End = ranges.Max(m => m.Timestamp).RoundUp(segmentSpan);
+            Start = ranges.Count() > 0 ? ranges.Min(m => m.Timestamp).RoundDown(segmentSpan) : default;
+            End = ranges.Count() > 0 ? ranges.Max(m => m.Timestamp).RoundUp(segmentSpan) : default;
 
             Segments = CreateTimelineSegements(Start, End, segmentSpan);
         }
