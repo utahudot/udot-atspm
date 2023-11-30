@@ -1,7 +1,6 @@
 ﻿using ATSPM.Domain.Common;
 using ATSPM.Data.Enums;
 using System.Text.Json;
-using ATSPM.Data.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +9,7 @@ namespace ATSPM.Application.Analysis.Plans
     /// <summary>
     /// Base for signal controller plans which are derrived from <see cref="DataLoggerEnum.CoordPatternChange"/> events
     /// </summary>
-    public abstract class Plan : StartEndRange, IPlan
+    public class Plan : StartEndRange, IPlan
     {
         #region IPlan
 
@@ -21,7 +20,10 @@ namespace ATSPM.Application.Analysis.Plans
         public int PlanNumber { get; set; }
 
         /// <inheritdoc/>
-        public abstract void AssignToPlan<T>(IEnumerable<T> range) where T : IStartEndRange;
+        public virtual void AssignToPlan<T>(IEnumerable<T> range) where T : IStartEndRange
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 

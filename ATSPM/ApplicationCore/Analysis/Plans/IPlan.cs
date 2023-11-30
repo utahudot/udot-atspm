@@ -1,8 +1,11 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Analysis.Plans
 {
