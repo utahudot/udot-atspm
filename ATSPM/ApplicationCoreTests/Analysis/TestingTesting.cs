@@ -4,7 +4,6 @@ using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Application.Analysis.WorkflowFilters;
-using ATSPM.Application.Analysis.Workflows;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Common;
 using ATSPM.Application.Extensions;
@@ -82,14 +81,18 @@ namespace ApplicationCoreTests.Analysis
         {
             var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
 
-            var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115Oct22PlanLogs.csv"));
+            var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115June5202282Events.csv"));
             //var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
-            var signal1 = new Signal()
-            {
-                SignalIdentifier = "7115",
-                PrimaryName = "signal one"
-            };
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
+            var signal = JsonConvert.DeserializeObject<Signal>(json);
+
+
+            //var signal1 = new Signal()
+            //{
+            //    SignalIdentifier = "7115",
+            //    PrimaryName = "signal one"
+            //};
 
             ////var signal2 = new Signal()
             ////{
@@ -119,87 +122,47 @@ namespace ApplicationCoreTests.Analysis
             //var logs3 = logs1.Union(logs2);
 
             var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
+            var groupSignalsByApproaches = new GroupSignalsByApproaches();
+            var filteredDetectorData = new FilteredDetectorData();
+            var groupDetectorsByDetectorEvent = new GroupDetectorsByDetectorEvent();
+            var aggregateDetectorEvents = new AggregateDetectorEvents();
+
 
             var filteredPlanData = new FilteredPlanData();
             var groupEventLogsByParameter = new GroupEventLogsByParameter();
             var calculateTimingPlans = new CalculateTimingPlans<Plan>();
             var aggregateSignalPlans = new AggregateSignalPlans();
 
-            var resultAction1 = new ActionBlock<Tuple<Signal, int, IEnumerable<SignalPlanAggregation>>>(a =>
+
+            //var resultAction1 = new ActionBlock<Tuple<Detector, int, IEnumerable<ControllerEventLog>>>(a =>
+            var resultAction1 = new ActionBlock<IEnumerable<DetectorEventCountAggregation>>(a =>
             {
-                _output.WriteLine($"signal: {a.Item1} plan number: {a.Item2}------------------------------------------------------------");
-
-                _output.WriteLine($"SignalPlanAggregation: {a.Item3.Count()}");
-
-                //foreach (var l in a.Item3)
-                //{
-                //    _output.WriteLine($"CalculateTimingPlans: {l}");
-                //}
-
-                _output.WriteLine($"signal: {a.Item1} plan number: {a.Item2}------------------------------------------------------------\n");
+                //_output.WriteLine($"GroupDetectorsByDetectorEvent: {a.Item1} --- {a.Item2} --- {a.Item3.Count()}");
+                if (a.Count() > 0)
+                {
+                    foreach (var f in a)
+                    {
+                        _output.WriteLine($"DetectorEventCountAggregation: {f}");
+                    }
+                }
             });
 
-            broacastEvents.LinkTo(filteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
-            filteredPlanData.LinkTo(groupEventLogsByParameter, new DataflowLinkOptions() { PropagateCompletion = true });
-            groupEventLogsByParameter.LinkTo(calculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            calculateTimingPlans.LinkTo(aggregateSignalPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            aggregateSignalPlans.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
+            broacastEvents.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
+            groupSignalsByApproaches.LinkTo(filteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
+            filteredDetectorData.LinkTo(groupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
+            groupDetectorsByDetectorEvent.LinkTo(aggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
+            aggregateDetectorEvents.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
 
-            broacastEvents.Post(Tuple.Create(signal1, logs1.AsEnumerable()));
+            broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
 
             broacastEvents.Complete();
 
             await resultAction1.Completion;
 
 
-
-
-
-
-            //var filterTspPriorityData = new FilterTspPriorityData();
-            //var aggregatePriority = new AggregatePriorityCodes();
-
-            //var resultAction1 = new ActionBlock<IEnumerable<PriorityAggregation>>(a =>
-            //{
-            //    _output.WriteLine($"-----------------------------------------------------");
-
-            //    foreach (var l in a)
-            //    {
-            //        _output.WriteLine($"PriorityAggregation: {l}");
-            //    }
-            //});
-
-            //var filteredPreemptionData = new FilteredPreemptionData();
-            //var aggregatePreemptCodes = new AggregatePreemptCodes();
-
-            //var resultAction2 = new ActionBlock<IEnumerable<PreemptionAggregation>>(a =>
-            //{
-            //    _output.WriteLine($"-----------------------------------------------------");
-
-            //    foreach (var l in a)
-            //    {
-            //        _output.WriteLine($"PreemptionAggregation: {l}");
-            //    }
-            //});
-
-            //broacastEvents.LinkTo(filterTspPriorityData, new DataflowLinkOptions() { PropagateCompletion = true });
-            //broacastEvents.LinkTo(filteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //filterTspPriorityData.LinkTo(aggregatePriority, new DataflowLinkOptions() { PropagateCompletion = true });
-            //aggregatePriority.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //filteredPreemptionData.LinkTo(aggregatePreemptCodes, new DataflowLinkOptions() { PropagateCompletion = true });
-            //aggregatePreemptCodes.LinkTo(resultAction2, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //broacastEvents.Post(Tuple.Create(signal1, logs3.AsEnumerable()));
-
-            //broacastEvents.Complete();
-
-            //await resultAction1.Completion;
-            //await resultAction2.Completion;
 
 
 
