@@ -16,42 +16,10 @@ using System.Threading.Tasks.Dataflow;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Text.Json;
 using static ATSPM.Application.Analysis.Workflows.PreemptiveStuff;
-using ATSPM.Domain.Extensions;
-using ATSPM.Application.Specifications;
 
 namespace ATSPM.Application.Analysis.Workflows
 {
     public class InputOnValue : PreempDetailValueBase { }
-
-
-
-    public class AggregatePriority : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<PriorityAggregation>>
-    {
-        public AggregatePriority(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<IEnumerable<IEnumerable<PriorityAggregation>>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
-        {
-            var result = input.Item2
-                .FromSpecification(new ControllerLogSignalFilterSpecification(input.Item1))
-                .GroupBy(g => g.EventParam, (priority, i) =>
-                {
-                    var tl = new Timeline<PriorityAggregation>(i, TimeSpan.FromMinutes(15));
-
-                    tl.Segments.ToList().ForEach(f =>
-                    {
-                        f.SignalIdentifier = input.Item1.SignalIdentifier;
-                        f.PriorityNumber = priority;
-                        f.PriorityRequests = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPCheckIn && f.InRange(c));
-                        f.PriorityServiceEarlyGreen = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen && f.InRange(c));
-                        f.PriorityServiceExtendedGreen = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoExtendGreen && f.InRange(c));
-                    });
-
-                    return tl.Segments.Where(w => i.Any(a => w.InRange(a))).AsEnumerable();
-                });
-
-            return Task.FromResult(result);
-        }
-    }
 
 
 
