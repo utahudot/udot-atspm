@@ -40,17 +40,4 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));
         }
     }
-
-
-
-
-    //public class FilteredDetectorData : FilterStepBase
-    //{
-    //    /// <inheritdoc/>
-    //    public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
-    //    {
-    //        filteredList.Add((int)DataLoggerEnum.DetectorOff);
-    //        filteredList.Add((int)DataLoggerEnum.DetectorOn);
-    //    }
-    //}
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks.Dataflow;
 using ATSPM.Domain.Extensions;
 using ATSPM.Application.Specifications;
 
-namespace ATSPM.Application.Analysis.Workflows
+namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     public class AggregatePreemptCodes : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
     {
