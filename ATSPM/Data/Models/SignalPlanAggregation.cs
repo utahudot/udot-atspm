@@ -7,11 +7,15 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
+    /// <summary>
+    /// Signal plan aggregation
+    /// </summary>
     public partial class SignalPlanAggregation : ATSPMAggregationBase, ISignalLayer, IPlanLayer
     {
+        /// <inheritdoc/>
         public string SignalIdentifier { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+
+        /// <inheritdoc/>
         public int PlanNumber { get; set; }
     }
 }
