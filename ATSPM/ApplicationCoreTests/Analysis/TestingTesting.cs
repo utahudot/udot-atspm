@@ -32,7 +32,6 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Xunit;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ApplicationCoreTests.Analysis
 {
@@ -81,86 +80,99 @@ namespace ApplicationCoreTests.Analysis
         {
             var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
 
-            var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115June5202282Events.csv"));
+            var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
             //var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
             var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
             var signal = JsonConvert.DeserializeObject<Signal>(json);
 
 
-            //var signal1 = new Signal()
-            //{
-            //    SignalIdentifier = "7115",
-            //    PrimaryName = "signal one"
-            //};
-
-            ////var signal2 = new Signal()
-            ////{
-            ////    SignalIdentifier = "1002",
-            ////    PrimaryName = "signal two"
-            ////};
-
-            //int preempt1 = 1;
-            //int preempt2 = 2;
-
-            //var logs1 = logs.Select(s => new ControllerEventLog()
-            //{
-            //    SignalIdentifier = signal1.SignalIdentifier,
-            //    EventCode = s.EventCode,
-            //    EventParam = preempt1,
-            //    Timestamp = s.Timestamp
-            //}).ToList();
-
-            //var logs2 = logs.Select(s => new ControllerEventLog()
-            //{
-            //    SignalIdentifier = signal1.SignalIdentifier,
-            //    EventCode = s.EventCode,
-            //    EventParam = preempt2,
-            //    Timestamp = s.Timestamp
-            //}).ToList();
-
-            //var logs3 = logs1.Union(logs2);
-
-            var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
-            var groupSignalsByApproaches = new GroupSignalsByApproaches();
-            var filteredDetectorData = new FilteredDetectorData();
-            var groupDetectorsByDetectorEvent = new GroupDetectorsByDetectorEvent();
-            var aggregateDetectorEvents = new AggregateDetectorEvents();
 
 
-            var filteredPlanData = new FilteredPlanData();
-            var groupEventLogsByParameter = new GroupEventLogsByParameter();
-            var calculateTimingPlans = new CalculateTimingPlans<Plan>();
-            var aggregateSignalPlans = new AggregateSignalPlans();
-
-
-            //var resultAction1 = new ActionBlock<Tuple<Detector, int, IEnumerable<ControllerEventLog>>>(a =>
-            var resultAction1 = new ActionBlock<IEnumerable<DetectorEventCountAggregation>>(a =>
+            var filters = new List<int>()
             {
-                //_output.WriteLine($"GroupDetectorsByDetectorEvent: {a.Item1} --- {a.Item2} --- {a.Item3.Count()}");
-                if (a.Count() > 0)
-                {
-                    foreach (var f in a)
-                    {
-                        _output.WriteLine($"DetectorEventCountAggregation: {f}");
-                    }
-                }
-            });
-
-            broacastEvents.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
-            groupSignalsByApproaches.LinkTo(filteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            filteredDetectorData.LinkTo(groupDetectorsByDetectorEvent, new DataflowLinkOptions() { PropagateCompletion = true });
-            groupDetectorsByDetectorEvent.LinkTo(aggregateDetectorEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-            aggregateDetectorEvents.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
+                (int)DataLoggerEnum.PhaseGapOut,
+                (int)DataLoggerEnum.PhaseMaxOut,
+                (int)DataLoggerEnum.PhaseForceOff,
+                (int)DataLoggerEnum.PhaseGreenTermination
+            };
 
 
 
+            var logs = logs1
+                .GroupBy(g => g.EventParam)
+                .Where(w => w.Key == 2)
+                .First()
+                .Where(w => filters.Contains(w.EventCode))
+                .OrderBy(o => o.Timestamp)
+                .ToList();
 
-            broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
 
-            broacastEvents.Complete();
+            _output.WriteLine($"group: {logs.Count()}");
 
-            await resultAction1.Completion;
+
+            var unknown = logs.Where((w, i) => w.EventParam == 7 && logs[i + 1].EventCode == 7);
+
+            var c = 3;
+
+            var test = logs
+                .Where(w => w.EventCode != 7)
+                .ToList();
+
+            _output.WriteLine($"test: {test.Count()}");
+
+
+            var test2 = test.Skip(c - 1).Where((w, i) => test.Skip(i - c).Take(c).All(a => a.EventCode == w.EventCode)).ToList();
+            //var test2 = test.Where((w, i) => test).ToList();
+
+
+            _output.WriteLine($"test2: {test2.Where(w => w.EventCode == 6).Count()}");
+
+            foreach (var l in test2.Where(w => w.EventCode == 6))
+            {
+                _output.WriteLine($"6: {l}");
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
+            //var filteredTerminations = new FilteredTerminations();
+            //var groupSignalsByApproaches = new GroupSignalsByApproaches();
+            //var groupApproachesByPhase = new GroupApproachesByPhase();
+            //var identifyTerminationTypesAndTimes = new IdentifyTerminationTypesAndTimes();
+
+            //var resultAction1 = new ActionBlock<Tuple<Approach, int, Phase>>(a =>
+            //{
+            //    _output.WriteLine($"IdentifyTerminationTypesAndTimes: {a.Item1} --- {a.Item2} --- {a.Item3}");
+            //});
+
+            //broacastEvents.LinkTo(filteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filteredTerminations.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
+            //groupSignalsByApproaches.LinkTo(groupApproachesByPhase, new DataflowLinkOptions() { PropagateCompletion = true });
+            //groupApproachesByPhase.LinkTo(identifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //identifyTerminationTypesAndTimes.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
+
+
+
+
+            //broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
+
+            //broacastEvents.Complete();
+
+            //await resultAction1.Completion;
 
 
 
