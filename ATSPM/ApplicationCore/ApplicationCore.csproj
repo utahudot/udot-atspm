@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
+    <Compile Remove="Analysis\Workflows\AggregateControllerDataWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
@@ -48,6 +49,7 @@
 
   <ItemGroup>
     <None Include="Analysis\PhaseTerminationAnalysis.cs" />
+    <None Include="Analysis\Workflows\AggregateControllerDataWorkflow.cs" />
     <None Include="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
     <None Include="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
     <None Include="Analysis\Workflows\PhaseTerminationWorkflow.cs" />
