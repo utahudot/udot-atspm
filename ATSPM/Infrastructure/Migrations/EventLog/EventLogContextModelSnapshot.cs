@@ -3,8 +3,8 @@ using System;
 using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,53 +17,30 @@ namespace ATSPM.Infrastructure.Migrations.EventLog
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerEventLog", b =>
-                {
-                    b.Property<string>("SignalId")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)")
-                        .HasColumnName("SignalID");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime");
-
-                    b.Property<int>("EventCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EventParam")
-                        .HasColumnType("int");
-
-                    b.HasKey("SignalId", "Timestamp", "EventCode", "EventParam");
-
-                    b.ToTable("Controller_Event_Log", (string)null);
-
-                    b.HasComment("Old Log Data Table");
-                });
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
-                    b.Property<string>("SignalId")
+                    b.Property<string>("SignalIdentifier")
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<byte[]>("LogData")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("bytea");
 
-                    b.HasKey("SignalId", "ArchiveDate");
+                    b.HasKey("SignalIdentifier", "ArchiveDate");
 
-                    b.ToTable("ControllerLogArchives");
-
-                    b.HasComment("Compressed Event Log Data");
+                    b.ToTable("ControllerLogArchives", t =>
+                        {
+                            t.HasComment("Compressed Event Log Data");
+                        });
                 });
 #pragma warning restore 612, 618
         }

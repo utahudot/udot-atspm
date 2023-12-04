@@ -26,10 +26,10 @@ namespace ATSPM.Infrastructure.Repositories
                 .Include(i => i.ControllerType)
                 .Include(i => i.Jurisdiction)
                 .Include(i => i.Region);
-                //.Include(i => i.VersionAction);
-                //.Include(i => i.Approaches)
-                //.ThenInclude(i => i.Detectors)
-                //.Include(i => i.Areas);
+            //.Include(i => i.VersionAction);
+            //.Include(i => i.Approaches)
+            //.ThenInclude(i => i.Detectors)
+            //.Include(i => i.Areas);
             //.Include(i => i.MetricComments);
         }
 
@@ -105,6 +105,17 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate)
         {
             var result = BaseQuery()
+                 .Include(s => s.Approaches)
+                    .ThenInclude(a => a.DirectionType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectorComments)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionTypes)
+                            .ThenInclude(d => d.MeasureTypes)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .Where(signal => signal.Start <= startDate)
                 .FromSpecification(new ActiveSignalSpecification())
