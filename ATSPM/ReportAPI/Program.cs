@@ -1,3 +1,4 @@
+
 using Asp.Versioning;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
@@ -36,6 +37,14 @@ using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+// Configure Kestrel to listen on the port defined by the PORT environment variable
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
+});
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -98,7 +107,7 @@ builder.Host.ConfigureServices((h, s) =>
         });
     });
 
-    s.AddAtspmDbContext(h);
+    s.AddNpgAtspmDbContext(h);
     s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
@@ -188,8 +197,11 @@ builder.Host.ConfigureServices((h, s) =>
 
 var app = builder.Build();
 
+
 app.UseResponseCompression();
 
+
+app.UseCors("AllowAll");
 if (app.Environment.IsDevelopment())
 {
     //app.Services.PrintHostInformation();
