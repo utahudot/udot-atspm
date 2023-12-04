@@ -120,7 +120,8 @@ namespace ATSPM.Data
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().AreUnicode(false);
-            configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+            //configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+            configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
             configurationBuilder.Properties<SignalVersionActions>().HaveConversion<int>();
