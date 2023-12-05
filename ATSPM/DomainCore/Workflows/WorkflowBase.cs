@@ -22,6 +22,14 @@ namespace ATSPM.Domain.Workflows
     {
         /// <inheritdoc/>
         public event EventHandler CanExecuteChanged;
+        protected DataflowBlockOptions blockOptions;
+
+        /// <inheritdoc/>
+        public WorkflowBase(DataflowBlockOptions dataflowBlockOptions = default)
+        {
+            blockOptions = dataflowBlockOptions ?? new();
+            blockOptions.NameFormat = GetType().Name;
+        }
 
         /// <summary>
         /// Used for tracking workflow step task completion results
@@ -43,8 +51,8 @@ namespace ATSPM.Domain.Workflows
         {
             Steps = new();
 
-            Input = new(null);
-            Output = new();
+            Input = new(null, blockOptions);
+            Output = new(blockOptions);
 
             InstantiateSteps();
 
@@ -109,7 +117,7 @@ namespace ATSPM.Domain.Workflows
                     Output.Completion.ContinueWith(t =>
                     {
                         Console.WriteLine($"Output is complete! {t.Status}");
-                        IsInitialized = false;
+                        this.IsInitialized = false;
                     }, cancelToken);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -131,7 +139,7 @@ namespace ATSPM.Domain.Workflows
                 await foreach (var item in Output.ReceiveAllAsync(cancelToken))
                     yield return item;
 
-                await Task.WhenAll(Steps.Select(s => s.Completion)).ContinueWith(t => Console.WriteLine($"All steps are complete! {t.Status}"), cancelToken);
+                await Task.WhenAll(Steps.Select(s => s.Completion)).ContinueWith(t => Console.WriteLine($"All steps are complete! {t.Status} in {sw.Elapsed}"), cancelToken);
             }
             else
             {
@@ -142,7 +150,7 @@ namespace ATSPM.Domain.Workflows
         /// <inheritdoc/>
         public virtual bool CanExecute(T1 parameter)
         {
-            return IsInitialized;
+            return this.IsInitialized;
         }
 
         /// <inheritdoc/>
