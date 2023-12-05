@@ -11,9 +11,9 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GroupEventLogsByParameter : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Signal, int, IEnumerable<ControllerEventLog>>>
+    public class GroupSignalByParameter : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Signal, int, IEnumerable<ControllerEventLog>>>
     {
-        public GroupEventLogsByParameter(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public GroupSignalByParameter(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IEnumerable<Tuple<Signal, int, IEnumerable<ControllerEventLog>>>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
