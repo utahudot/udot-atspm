@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +41,6 @@
     <Folder Include="Migrations\Aggregation\" />
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
-    <Folder Include="Migrations\Identity\" />
     <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 

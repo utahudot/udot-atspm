@@ -1,0 +1,7 @@
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.csproj.AssemblyReference.cache
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.AssemblyInfoInputs.cache
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.AssemblyInfo.cs
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.csproj.CoreCompileInputs.cache
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\jbhatia\source\repos\udot-atspm\Identity\obj\Debug\net7.0\Identity.MvcApplicationPartsAssemblyInfo.cache
