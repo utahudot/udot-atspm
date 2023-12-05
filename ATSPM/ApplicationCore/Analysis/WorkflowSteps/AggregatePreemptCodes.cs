@@ -13,31 +13,27 @@ using ATSPM.Application.Specifications;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AggregatePreemptCodes : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
+    public class AggregatePreemptCodes : TransformProcessStepBase<Tuple<Signal, int, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
     {
         public AggregatePreemptCodes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IEnumerable<PreemptionAggregation>>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PreemptionAggregation>> Process(Tuple<Signal, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2
-                .FromSpecification(new ControllerLogSignalFilterSpecification(input.Item1))
-                .GroupBy(g => g.EventParam, (preempt, i) =>
-                {
-                    var tl = new Timeline<PreemptionAggregation>(i, TimeSpan.FromMinutes(15));
+            var signal = input.Item1;
+            var preempt = input.Item2;
+            var logs = input.Item3.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(signal, preempt));
 
-                    tl.Segments.ToList().ForEach(f =>
-                    {
-                        f.SignalIdentifier = input.Item1.SignalIdentifier;
-                        f.PreemptNumber = preempt;
-                        f.PreemptServices = i.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptCallInputOn && f.InRange(c));
-                        f.PreemptServices = i.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptEntryStarted && f.InRange(c));
-                    });
+            var tl = new Timeline<PreemptionAggregation>(logs, TimeSpan.FromMinutes(15));
 
-                    //TODO: this is for testing
-                    return tl.Segments.Where(w => i.Any(a => w.InRange(a))).AsEnumerable();
+            tl.Segments.ToList().ForEach(f =>
+            {
+                f.SignalIdentifier = signal.SignalIdentifier;
+                f.PreemptNumber = preempt;
+                f.PreemptServices = logs.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptCallInputOn && f.InRange(c));
+                f.PreemptServices = logs.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptEntryStarted && f.InRange(c));
+            });
 
-                    //return tl.Segments.AsEnumerable();
-                });
+            var result = tl.Segments.AsEnumerable();
 
             return Task.FromResult(result);
         }
