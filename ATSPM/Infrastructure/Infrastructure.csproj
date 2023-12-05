@@ -18,7 +18,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
@@ -41,6 +40,7 @@
     <Folder Include="Migrations\Aggregation\" />
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
+    <Folder Include="Migrations\Identity\" />
     <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 
