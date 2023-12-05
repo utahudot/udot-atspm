@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Analysis.Common;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
@@ -11,13 +12,13 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AggregatePhaseTerminationEvents : TransformProcessStepBase<Tuple<Approach, int, Phase>, IEnumerable<PhaseTerminationAggregation>>
+    public class AggregatePhaseTerminationEvents : TransformProcessStepBase<Tuple<Approach, int, PhaseTerminations>, IEnumerable<PhaseTerminationAggregation>>
     {
         /// <inheritdoc/>
         public AggregatePhaseTerminationEvents(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IEnumerable<PhaseTerminationAggregation>> Process(Tuple<Approach, int, Phase> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PhaseTerminationAggregation>> Process(Tuple<Approach, int, PhaseTerminations> input, CancellationToken cancelToken = default)
         {
             var approach = input.Item1;
             var phase = input.Item2;

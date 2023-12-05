@@ -4,6 +4,7 @@ using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Application.Analysis.WorkflowFilters;
+using ATSPM.Application.Analysis.Workflows;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Common;
 using ATSPM.Application.Extensions;
@@ -22,6 +23,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -78,51 +80,17 @@ namespace ApplicationCoreTests.Analysis
         [Fact]
         public async void TestingStuff()
         {
-            var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
+            //var filePath = @"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData";
 
-            var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
-            //var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
+            //var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
+            ////var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            var signal = JsonConvert.DeserializeObject<Signal>(json);
-
-
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
+            //var signal = JsonConvert.DeserializeObject<Signal>(json);
 
 
 
 
-
-
-            var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
-            var filteredTerminations = new FilteredTerminations();
-            var groupSignalsByApproaches = new GroupSignalsByApproaches();
-            var groupApproachesByPhase = new GroupApproachesByPhase();
-            var identifyTerminationTypesAndTimes = new IdentifyTerminationTypesAndTimes();
-            var aggregatePhaseTerminationEvents = new AggregatePhaseTerminationEvents();
-
-            var resultAction1 = new ActionBlock<IEnumerable<PhaseTerminationAggregation>>(a =>
-            {
-                foreach (var i in a)
-                    _output.WriteLine($"AggregatePhaseTerminationEvents: {i}");
-
-            });
-
-            broacastEvents.LinkTo(filteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
-            filteredTerminations.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
-            groupSignalsByApproaches.LinkTo(groupApproachesByPhase, new DataflowLinkOptions() { PropagateCompletion = true });
-            groupApproachesByPhase.LinkTo(identifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
-            identifyTerminationTypesAndTimes.LinkTo(aggregatePhaseTerminationEvents, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            aggregatePhaseTerminationEvents.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-
-
-            broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
-
-            broacastEvents.Complete();
-
-            await resultAction1.Completion;
 
 
 
