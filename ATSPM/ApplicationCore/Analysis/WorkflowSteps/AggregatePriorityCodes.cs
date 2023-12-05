@@ -13,32 +13,28 @@ using ATSPM.Application.Specifications;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AggregatePriorityCodes : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<PriorityAggregation>>
+    public class AggregatePriorityCodes : TransformProcessStepBase<Tuple<Signal, int, IEnumerable<ControllerEventLog>>, IEnumerable<PriorityAggregation>>
     {
         public AggregatePriorityCodes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IEnumerable<PriorityAggregation>>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PriorityAggregation>> Process(Tuple<Signal, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2
-                .FromSpecification(new ControllerLogSignalFilterSpecification(input.Item1))
-                .GroupBy(g => g.EventParam, (priority, i) =>
-                {
-                    var tl = new Timeline<PriorityAggregation>(i, TimeSpan.FromMinutes(15));
+            var signal = input.Item1;
+            var priority = input.Item2;
+            var logs = input.Item3.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(signal, priority));
 
-                    tl.Segments.ToList().ForEach(f =>
-                    {
-                        f.SignalIdentifier = input.Item1.SignalIdentifier;
-                        f.PriorityNumber = priority;
-                        f.PriorityRequests = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPCheckIn && f.InRange(c));
-                        f.PriorityServiceEarlyGreen = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen && f.InRange(c));
-                        f.PriorityServiceExtendedGreen = i.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoExtendGreen && f.InRange(c));
-                    });
+            var tl = new Timeline<PriorityAggregation>(logs, TimeSpan.FromMinutes(15));
 
-                    //TODO: this is for testing
-                    return tl.Segments.Where(w => i.Any(a => w.InRange(a))).AsEnumerable();
+            tl.Segments.ToList().ForEach(f =>
+            {
+                f.SignalIdentifier = input.Item1.SignalIdentifier;
+                f.PriorityNumber = priority;
+                f.PriorityRequests = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPCheckIn && f.InRange(c));
+                f.PriorityServiceEarlyGreen = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen && f.InRange(c));
+                f.PriorityServiceExtendedGreen = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoExtendGreen && f.InRange(c));
+            });
 
-                    //return tl.Segments.AsEnumerable();
-                });
+            var result = tl.Segments.AsEnumerable();
 
             return Task.FromResult(result);
         }

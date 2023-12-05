@@ -13,41 +13,17 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class Phase : ISignalPhaseLayer
+    public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<ControllerEventLog>>, Tuple<Approach, int, PhaseTerminations>>
     {
-        public Phase() { }
+        private readonly int _consecutiveCounts;
 
-        public Phase(IEnumerable<ControllerEventLog> terminationEvents)
+        public IdentifyTerminationTypesAndTimes(int consecutiveCounts = 3, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) 
         {
-            TerminationEvents.AddRange(terminationEvents);
+            _consecutiveCounts = consecutiveCounts;
         }
 
-        public string SignalIdentifier { get; set; }
-        
-        public int PhaseNumber { get; set; }
-
-        public List<ControllerEventLog> TerminationEvents { get; set; } = new List<ControllerEventLog>();
-
-        public IReadOnlyList<ITimestamp> GapOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGapOut).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> MaxOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseMaxOut).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> ForceOffs => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseForceOff).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> PedWalkBegins => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PedestrianBeginWalk).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> UnknownTerminations => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).Cast<ITimestamp>().ToList();
-
-        public override string ToString()
+        protected override Task<Tuple<Approach, int, PhaseTerminations>> Process(Tuple<Approach, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            return $"{PhaseNumber} - {TerminationEvents.Count} - {GapOuts?.Count} - {MaxOuts?.Count} - {ForceOffs?.Count} - {PedWalkBegins?.Count} - {UnknownTerminations?.Count}";
-        }
-    }
-
-    public class IdentifyTerminationTypesAndTimes : TransformProcessStepBase<Tuple<Approach, int, IEnumerable<ControllerEventLog>>, Tuple<Approach, int, Phase>>
-    {
-        public IdentifyTerminationTypesAndTimes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
-
-        protected override Task<Tuple<Approach, int, Phase>> Process(Tuple<Approach, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
-        {
-            var consec = 3;
-
             var filters = new List<int>()
             {
                 (int)DataLoggerEnum.PhaseGapOut,
@@ -67,9 +43,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var consecGreenTerminations = logs.GetLastConsecutiveEvent(2).Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).ToList();
 
             //remove DataLoggerEnum.PhaseGreenTermination and get the consecutive terminations
-            var consecTerminations = logs.Where(r => r.EventCode != (int)DataLoggerEnum.PhaseGreenTermination).GetLastConsecutiveEvent(consec).ToList();
+            var consecTerminations = logs.Where(r => r.EventCode != (int)DataLoggerEnum.PhaseGreenTermination).GetLastConsecutiveEvent(_consecutiveCounts).ToList();
 
-            var stuff = new Phase(consecTerminations.Union(consecGreenTerminations))
+            var stuff = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
             {
                 SignalIdentifier = approach.Signal.SignalIdentifier,
                 PhaseNumber = phase,
