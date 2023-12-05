@@ -36,10 +36,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 f.EventCount = logs.Count(w => f.InRange(w));
             });
 
-            //TODO: this is for testing
             var result = tl.Segments.AsEnumerable();
-
-            //var result = tl.Segments.AsEnumerable();
 
             return Task.FromResult(result);
         }
