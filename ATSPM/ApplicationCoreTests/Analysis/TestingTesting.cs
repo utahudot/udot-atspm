@@ -89,90 +89,40 @@ namespace ApplicationCoreTests.Analysis
 
 
 
-            var filters = new List<int>()
+
+
+
+
+            var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
+            var filteredTerminations = new FilteredTerminations();
+            var groupSignalsByApproaches = new GroupSignalsByApproaches();
+            var groupApproachesByPhase = new GroupApproachesByPhase();
+            var identifyTerminationTypesAndTimes = new IdentifyTerminationTypesAndTimes();
+            var aggregatePhaseTerminationEvents = new AggregatePhaseTerminationEvents();
+
+            var resultAction1 = new ActionBlock<IEnumerable<PhaseTerminationAggregation>>(a =>
             {
-                (int)DataLoggerEnum.PhaseGapOut,
-                (int)DataLoggerEnum.PhaseMaxOut,
-                (int)DataLoggerEnum.PhaseForceOff,
-                (int)DataLoggerEnum.PhaseGreenTermination
-            };
+                foreach (var i in a)
+                    _output.WriteLine($"AggregatePhaseTerminationEvents: {i}");
 
+            });
 
+            broacastEvents.LinkTo(filteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
+            filteredTerminations.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
+            groupSignalsByApproaches.LinkTo(groupApproachesByPhase, new DataflowLinkOptions() { PropagateCompletion = true });
+            groupApproachesByPhase.LinkTo(identifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
+            identifyTerminationTypesAndTimes.LinkTo(aggregatePhaseTerminationEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            var logs = logs1
-                .GroupBy(g => g.EventParam)
-                .Where(w => w.Key == 2)
-                .First()
-                .Where(w => filters.Contains(w.EventCode))
-                .OrderBy(o => o.Timestamp)
-                .ToList();
-
-
-            _output.WriteLine($"group: {logs.Count()}");
-
-
-            var unknown = logs.Where((w, i) => w.EventParam == 7 && logs[i + 1].EventCode == 7);
-
-            var c = 3;
-
-            var test = logs
-                .Where(w => w.EventCode != 7)
-                .ToList();
-
-            _output.WriteLine($"test: {test.Count()}");
-
-
-            var test2 = test.Skip(c - 1).Where((w, i) => test.Skip(i - c).Take(c).All(a => a.EventCode == w.EventCode)).ToList();
-            //var test2 = test.Where((w, i) => test).ToList();
-
-
-            _output.WriteLine($"test2: {test2.Where(w => w.EventCode == 6).Count()}");
-
-            foreach (var l in test2.Where(w => w.EventCode == 6))
-            {
-                _output.WriteLine($"6: {l}");
-            }
+            aggregatePhaseTerminationEvents.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
 
 
+            broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
 
+            broacastEvents.Complete();
 
-
-
-
-
-
-
-
-
-
-            //var broacastEvents = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>>>(null);
-            //var filteredTerminations = new FilteredTerminations();
-            //var groupSignalsByApproaches = new GroupSignalsByApproaches();
-            //var groupApproachesByPhase = new GroupApproachesByPhase();
-            //var identifyTerminationTypesAndTimes = new IdentifyTerminationTypesAndTimes();
-
-            //var resultAction1 = new ActionBlock<Tuple<Approach, int, Phase>>(a =>
-            //{
-            //    _output.WriteLine($"IdentifyTerminationTypesAndTimes: {a.Item1} --- {a.Item2} --- {a.Item3}");
-            //});
-
-            //broacastEvents.LinkTo(filteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
-            //filteredTerminations.LinkTo(groupSignalsByApproaches, new DataflowLinkOptions() { PropagateCompletion = true });
-            //groupSignalsByApproaches.LinkTo(groupApproachesByPhase, new DataflowLinkOptions() { PropagateCompletion = true });
-            //groupApproachesByPhase.LinkTo(identifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //identifyTerminationTypesAndTimes.LinkTo(resultAction1, new DataflowLinkOptions() { PropagateCompletion = true });
-
-
-
-
-            //broacastEvents.Post(Tuple.Create(signal, logs1.AsEnumerable()));
-
-            //broacastEvents.Complete();
-
-            //await resultAction1.Completion;
+            await resultAction1.Completion;
 
 
 

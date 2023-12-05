@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Analysis.Common;
 using ATSPM.Data.Enums;
+using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
@@ -12,34 +13,30 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class Phase
+    public class Phase : ISignalPhaseLayer
     {
-        //public Phase(
-        //    int phaseNumber,
-        //    ICollection<DateTime> gapOuts,
-        //    ICollection<DateTime> maxOuts,
-        //    ICollection<DateTime> forceOffs,
-        //    ICollection<DateTime> pedWalkBegins,
-        //    ICollection<DateTime> unknownTerminations)
-        //{
-        //    PhaseNumber = phaseNumber;
-        //    GapOuts = gapOuts;
-        //    MaxOuts = maxOuts;
-        //    ForceOffs = forceOffs;
-        //    PedWalkBegins = pedWalkBegins;
-        //    UnknownTerminations = unknownTerminations;
-        //}
+        public Phase() { }
 
+        public Phase(IEnumerable<ControllerEventLog> terminationEvents)
+        {
+            TerminationEvents.AddRange(terminationEvents);
+        }
+
+        public string SignalIdentifier { get; set; }
+        
         public int PhaseNumber { get; set; }
-        public ICollection<ITimestamp> GapOuts { get; internal set; }
-        public ICollection<ITimestamp> MaxOuts { get; internal set; }
-        public ICollection<ITimestamp> ForceOffs { get; internal set; }
-        public ICollection<ITimestamp> PedWalkBegins { get; internal set; }
-        public ICollection<ITimestamp> UnknownTerminations { get; internal set; }
+
+        public List<ControllerEventLog> TerminationEvents { get; set; } = new List<ControllerEventLog>();
+
+        public IReadOnlyList<ITimestamp> GapOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGapOut).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> MaxOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseMaxOut).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> ForceOffs => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseForceOff).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> PedWalkBegins => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PedestrianBeginWalk).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> UnknownTerminations => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).Cast<ITimestamp>().ToList();
 
         public override string ToString()
         {
-            return $"{PhaseNumber} - {GapOuts?.Count} - {MaxOuts?.Count} - {ForceOffs?.Count} - {PedWalkBegins?.Count} - {UnknownTerminations?.Count}";
+            return $"{PhaseNumber} - {TerminationEvents.Count} - {GapOuts?.Count} - {MaxOuts?.Count} - {ForceOffs?.Count} - {PedWalkBegins?.Count} - {UnknownTerminations?.Count}";
         }
     }
 
@@ -49,6 +46,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<Tuple<Approach, int, Phase>> Process(Tuple<Approach, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
+            var consec = 3;
+
             var filters = new List<int>()
             {
                 (int)DataLoggerEnum.PhaseGapOut,
@@ -64,19 +63,16 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Where(w => filters.Contains(w.EventCode))
                 .OrderBy(o => o.Timestamp).ToList();
 
-            var consec = 3;
+            //if there are two consecutive )DataLoggerEnum.PhaseGreenTermination then the second denotes an unknown termination
+            var consecGreenTerminations = logs.GetLastConsecutiveEvent(2).Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).ToList();
 
-            var test1 = logs.Where((w, i) => (i - consec) >= 0 && logs.Skip(i - consec).Take(consec).All(a => a.EventCode == w.EventCode)).ToList();
-            //var test2 = logs.Where((w, i) => (i - consec) >= 0).ToList();
-            //var test3 = logs.Where((w, i) => logs.Skip(i).Take(2).All(a => a.EventCode == w.EventCode)).ToList();
+            //remove DataLoggerEnum.PhaseGreenTermination and get the consecutive terminations
+            var consecTerminations = logs.Where(r => r.EventCode != (int)DataLoggerEnum.PhaseGreenTermination).GetLastConsecutiveEvent(consec).ToList();
 
-            var stuff = new Phase()
+            var stuff = new Phase(consecTerminations.Union(consecGreenTerminations))
             {
+                SignalIdentifier = approach.Signal.SignalIdentifier,
                 PhaseNumber = phase,
-                GapOuts = test1.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGapOut).Cast<ITimestamp>().ToList(),
-                MaxOuts = test1.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseMaxOut).Cast<ITimestamp>().ToList(),
-                ForceOffs = test1.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseForceOff).Cast<ITimestamp>().ToList(),
-                UnknownTerminations = test1.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).Cast<ITimestamp>().ToList(),
             };
 
             var result = Tuple.Create(approach, phase, stuff);
