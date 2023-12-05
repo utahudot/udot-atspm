@@ -36,7 +36,6 @@
   <ItemGroup>
     <Folder Include="Analysis\TestData\" />
     <Folder Include="Analysis\ReportTests\" />
-    <Folder Include="Analysis\WorkflowFilterTests\" />
   </ItemGroup>
 
   <ItemGroup>
