@@ -1,27 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\UDOT-ATSPM\\TempReportTests\\TempReportTests.csproj": {}
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
         "projectName": "ApplicationCore",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -34,11 +28,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
               },
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -92,28 +86,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\Data.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\Data.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
         "projectName": "ATSPM.Data",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\Data.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Data\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -126,8 +114,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -142,13 +130,21 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Duende.IdentityServer.EntityFramework.Storage": {
+              "target": "Package",
+              "version": "[6.3.6, )"
+            },
             "EFCore.BulkExtensions": {
               "target": "Package",
-              "version": "[6.5.6, )"
+              "version": "[7.1.6, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.14, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[7.0.11, )"
+              "version": "[7.0.14, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -158,7 +154,7 @@
             },
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[7.0.11, )"
+              "version": "[7.0.14, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -185,28 +181,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
         "projectName": "DomainCore",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\DomainCore.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\DomainCore\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -262,28 +252,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "projectName": "ATSPM.Infrastructure",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -296,8 +280,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
               }
             }
           }
@@ -325,10 +312,6 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.0, )"
-            },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[7.0.2, )"
             },
             "Microsoft.Extensions.Hosting.Abstractions": {
               "target": "Package",
@@ -371,28 +354,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj",
         "projectName": "ReportApi",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -405,8 +382,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\Infrastructure\\Infrastructure.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -471,28 +448,22 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Projects\\UDOT-ATSPM\\TempReportTests\\TempReportTests.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\UDOT-ATSPM\\TempReportTests\\TempReportTests.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
         "projectName": "TempReportTests",
-        "projectPath": "C:\\Projects\\UDOT-ATSPM\\TempReportTests\\TempReportTests.csproj",
-        "packagesPath": "C:\\Users\\dlowe\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\UDOT-ATSPM\\TempReportTests\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\dlowe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -505,8 +476,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj": {
-                "projectPath": "C:\\Projects\\UDOT-ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj"
               }
             }
           }
@@ -562,7 +533,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
