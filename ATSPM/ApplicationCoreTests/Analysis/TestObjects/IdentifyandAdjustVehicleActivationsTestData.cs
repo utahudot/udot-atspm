@@ -5,6 +5,23 @@ using System.Collections.Generic;
 
 namespace ApplicationCoreTests.Analysis.TestObjects
 {
+    public abstract class AnalysisTestDataBase
+    {
+        public object Configuration { get; set; }
+        public object Input { get; set; }
+        public object Output { get; set;}
+    }
+
+    public class DetectorEventCountAggregationTestData : AnalysisTestDataBase { }
+
+
+
+
+
+
+
+
+
     public class IdentifyandAdjustVehicleActivationsTestData
     {
         public Approach Configuration { get; set; }
