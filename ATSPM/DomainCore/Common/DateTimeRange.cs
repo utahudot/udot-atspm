@@ -52,8 +52,6 @@ namespace ATSPM.Domain.Common
         {
             return range.InRange(timestamp.Timestamp);
         }
-
-        
     }
 
     /// <inheritdoc/>
@@ -74,7 +72,7 @@ namespace ATSPM.Domain.Common
         /// <inheritdoc/>
         public virtual bool InRange(IStartEndRange range)
         {
-            return range.Start >= Start && range.End <= End;
+            return range.Start >= Start && range.End < End;
         }
     }
 
