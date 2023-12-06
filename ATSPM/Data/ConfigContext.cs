@@ -116,6 +116,21 @@ namespace ATSPM.Data
         /// </summary>
         public virtual DbSet<Signal> Signals { get; set; }
 
+        /// <summary>
+        /// User areas table
+        /// </summary>
+        public virtual DbSet<UserArea> UserAreas { get; set; }
+
+        /// <summary>
+        /// User jurisdictions table
+        /// </summary>
+        public virtual DbSet<UserArea> UserJurisdictions { get; set; }
+
+        /// <summary>
+        /// User regions table
+        /// </summary>
+        public virtual DbSet<UserArea> UserRegions { get; set; }
+
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -154,6 +169,9 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
             modelBuilder.ApplyConfiguration(new SignalConfiguration());
+            modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
+            modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
             //TODO: call based class when using IdentityContext
