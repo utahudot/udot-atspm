@@ -10,17 +10,17 @@ namespace ATSPM.Application.Analysis.Workflows
 {
     public class ArrivalsOnRedWorkflow : WorkflowBase<IEnumerable<ControllerEventLog>, IEnumerable<ApproachDelayResult>>
     {
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             throw new NotImplementedException();
         }
 
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             throw new NotImplementedException();
         }
 
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             throw new NotImplementedException();
         }

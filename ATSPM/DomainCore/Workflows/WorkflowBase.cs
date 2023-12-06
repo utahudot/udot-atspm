@@ -68,17 +68,17 @@ namespace ATSPM.Domain.Workflows
         /// <summary>
         /// Instantiate workflow steps objects
         /// </summary>
-        public abstract void InstantiateSteps();
+        protected abstract void InstantiateSteps();
 
         /// <summary>
         /// Add steps to <see cref="Steps"/> for step task tracking
         /// </summary>
-        public abstract void AddStepsToTracker();
+        protected abstract void AddStepsToTracker();
 
         /// <summary>
         /// Link workflow steps
         /// </summary>
-        public abstract void LinkSteps();
+        protected abstract void LinkSteps();
 
         #region IExecuteWithProgress
 
