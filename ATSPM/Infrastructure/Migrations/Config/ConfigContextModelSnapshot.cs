@@ -17,7 +17,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1409,6 +1409,54 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         });
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "AreaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserArea");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("JurisdictionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "JurisdictionId");
+
+                    b.HasIndex("JurisdictionId");
+
+                    b.ToTable("UserJurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "RegionId");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("UserRegion");
+                });
+
             modelBuilder.Entity("AreaSignal", b =>
                 {
                     b.Property<int>("AreasId")
@@ -1583,6 +1631,39 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", "Area")
+                        .WithMany("UserAreas")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
+                        .WithMany("UserJurisdictions")
+                        .HasForeignKey("JurisdictionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Region", "Region")
+                        .WithMany("UserRegions")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Region");
+                });
+
             modelBuilder.Entity("AreaSignal", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Area", null)
@@ -1648,6 +1729,11 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     b.Navigation("Detectors");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
+                {
+                    b.Navigation("UserAreas");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
                 {
                     b.Navigation("Signals");
@@ -1670,6 +1756,8 @@ namespace ATSPM.Infrastructure.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserJurisdictions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MenuItem", b =>
@@ -1680,6 +1768,8 @@ namespace ATSPM.Infrastructure.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserRegions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Route", b =>
