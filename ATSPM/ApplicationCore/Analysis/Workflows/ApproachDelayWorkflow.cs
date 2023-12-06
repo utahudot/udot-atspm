@@ -46,7 +46,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public GenerateApproachDelayResults GenerateApproachDelayResults { get; private set; }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
@@ -62,7 +62,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
@@ -78,7 +78,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
