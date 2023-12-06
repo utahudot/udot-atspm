@@ -21,6 +21,8 @@ namespace ATSPM.Data.Models
 
         #endregion
 
+        public virtual ICollection<UserArea> UserAreas { get; set; } = new HashSet<UserArea>();
+
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {Name}";
     }
