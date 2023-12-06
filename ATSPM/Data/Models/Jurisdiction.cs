@@ -30,6 +30,8 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string OtherPartners { get; set; }
 
+        public virtual ICollection<UserJurisdiction> UserJurisdictions { get; set; } = new HashSet<UserJurisdiction>();
+
         #region IRelatedSignals
 
         /// <inheritdoc/>

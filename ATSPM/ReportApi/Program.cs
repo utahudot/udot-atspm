@@ -152,6 +152,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
+    s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
 
     //Chart Services
     s.AddScoped<ApproachDelayService>();
