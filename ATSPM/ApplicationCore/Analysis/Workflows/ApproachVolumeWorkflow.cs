@@ -27,7 +27,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public GenerateApproachVolumeResults GenerateApproachVolumeResults { get; private set; }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredDetectorData = new();
             IdentifyandAdjustVehicleActivations = new();
@@ -37,7 +37,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredDetectorData);
             Steps.Add(IdentifyandAdjustVehicleActivations);
@@ -47,7 +47,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
