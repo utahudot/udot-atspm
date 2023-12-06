@@ -12,8 +12,8 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             DateTime start,
             DateTime end,
             List<BarStack> stacks,
-            List<AverageSplit> avgSplits,
-            List<ProgrammedSplit> progSplits,
+            List<DataPointForDouble> avgSplits,
+            List<DataPointForDouble> progSplits,
             int phaseNumber,
             string phaseNumberSort) : base(approachId, signalIdentifier, start, end)
         {
@@ -25,8 +25,8 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
         }
 
         public List<BarStack> Bins { get; set; } = new List<BarStack>();
-        public List<AverageSplit> AvgSplits { get; set; } = new List<AverageSplit>();
-        public List<ProgrammedSplit> ProgSplits { get; set; } = new List<ProgrammedSplit>();
+        public List<DataPointForDouble> AvgSplits { get; set; } = new List<DataPointForDouble>();
+        public List<DataPointForDouble> ProgSplits { get; set; } = new List<DataPointForDouble>();
         public int PhaseNumber { get; set; }
         public string PhaseNumberSort { get; set; }
     }
