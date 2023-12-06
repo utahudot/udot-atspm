@@ -100,7 +100,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             var events = new List<CycleEventsDto>();
             if (controllerEventLogs.Any())
             {
-                events = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode)).Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
+                events = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber).Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
             }
             return events;
         }
