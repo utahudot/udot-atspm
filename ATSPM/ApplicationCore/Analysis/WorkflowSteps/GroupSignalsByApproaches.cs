@@ -12,9 +12,9 @@ using System.Threading.Tasks.Dataflow;
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     /// <summary>
-    /// Breaks out <see cref="Approach"/> from <see cref="Signal"/>
-    /// and returns separate Tuples of <see cref="Approach"/>/<see cref="ControllerEventLog"/> pairs.
-    /// Sorted by <see cref="ControllerEventLog.Timestamp"/>.
+    /// Breaks out all <see cref="Approach"/> from <see cref="Signal"/>
+    /// and returns separate Tuples of <see cref="Approach"/>/<see cref="ControllerEventLog"/> pairs
+    /// sorted by <see cref="ControllerEventLog.Timestamp"/>.
     /// </summary>
     public class GroupSignalsByApproaches : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
     {
