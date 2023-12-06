@@ -11,6 +11,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
+    /// <summary>
+    /// Transforms <see cref="ControllerEventLog"/> into <see cref="DetectorEventCountAggregation"/>
+    /// where <see cref="ControllerEventLog.EventCode"/> equals <see cref="DataLoggerEnum.DetectorOn"/>
+    /// and <see cref="ControllerEventLog.EventParam"/> equals <see cref="Detector.DetectorChannel"/>.
+    /// </summary>
     public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<ControllerEventLog>>, IEnumerable<DetectorEventCountAggregation>>
     {
         /// <inheritdoc/>
