@@ -121,3 +121,7 @@ dkms.conf
 /TempReportTests/bin/Debug/net7.0/ReportApi.deps.json
 /TempReportTests/obj/Debug/net7.0/TempReportTests.genruntimeconfig.cache
 /TempReportTests/bin/Debug/net7.0/TempReportTests.deps.json
+/ATSPM/ReportsTests/bin/Release/net6.0
+/WatchDog/obj/Release/net6.0
+/WatchDogTests/bin/Release/net6.0
+/WatchDogTests/obj/Release/net6.0
