@@ -31,7 +31,7 @@ namespace Identity.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || AreValuesNull(model))
             {
                 return BadRequest(ModelState);
             }
@@ -61,6 +61,11 @@ namespace Identity.Controllers
             //if error in any processes above can just send back the result since identity service also handles the errors or success message
 
             return Ok(result);
+        }
+
+        private bool AreValuesNull(RegisterViewModel model)
+        {
+            return string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password);
         }
 
         [HttpPost("login")]

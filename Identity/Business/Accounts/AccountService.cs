@@ -35,11 +35,11 @@ namespace Identity.Business.Accounts
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var info = await _signInManager.UserManager.FindByEmailAsync(user.Email);
                 var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles.ToArray(), user.Agency);
+                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
 
                 if (info != null)
                 {
-                    return new AccountResult(user, roles.ToList(), token, StatusCodes.Status200OK, "");
+                    return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
                 }
                 else
                 {
@@ -59,9 +59,9 @@ namespace Identity.Business.Accounts
             {
                 var user = await _signInManager.UserManager.FindByEmailAsync(email);
                 var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles.ToArray(), user.Agency);
+                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
 
-                return new AccountResult(user, roles.ToList(), token, StatusCodes.Status200OK, "");
+                return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
             }
 
             return new AccountResult(null, null, "", StatusCodes.Status400BadRequest, "Incorrect username or password");

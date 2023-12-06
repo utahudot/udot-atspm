@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using static IdentityModel.OidcConstants;
 
 namespace ATSPM.Infrastructure.Migrations.Identity
 {
@@ -63,11 +62,18 @@ namespace ATSPM.Infrastructure.Migrations.Identity
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new List<IdentityResource>
-    {
-        //new IdentityResources.OpenId(),
-        //new IdentityResources.Profile(),
-        // ... other identity resources ...
-    };
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                //new IdentityResource(
+                //    name: "openid",
+                //    userClaims: new[] { "sub" },
+                //    displayName: "Your user identifier"),
+                //new IdentityResource(
+                //    name: "profile",
+                //    userClaims: new[] { "name", "email", "website" },
+                //    displayName: "Your profile data")
+            };
         }
 
         public static IEnumerable<Client> GetClients()
@@ -106,7 +112,7 @@ namespace ATSPM.Infrastructure.Migrations.Identity
                 new Secret("PostmanTest".ToSha256())
             },
             RedirectUris = { "https://127.0.0.1:44357" },
-            AllowedGrantTypes = new List<string> {  GrantTypes.ClientCredentials },
+            AllowedGrantTypes = GrantTypes.ClientCredentials,
             AllowedScopes = { "reports.public","reports.private","config.admin","config.public","admin.utility" },
             RequireConsent = false,
             RequirePkce = false,

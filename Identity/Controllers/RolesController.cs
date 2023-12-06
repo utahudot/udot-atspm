@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Controllers
 {
-    [Authorize()]
+    //[Authorize()]
     [ApiController]
     [Route("api/roles")]
     public class RolesController : ControllerBase
@@ -28,7 +28,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CreateRoles")]
+        //[Authorize(Policy = "CreateRoles")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (!ModelState.IsValid)

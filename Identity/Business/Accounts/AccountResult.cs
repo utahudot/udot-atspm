@@ -4,7 +4,10 @@
     {
         public AccountResult(ApplicationUser user, List<string> roles, string token, int code, string? error)
         {
-            User = new UserResult(user.FirstName, user.LastName, user.Email, user.Agency);
+            if(user != null)
+            {
+                User = new UserResult(user.FirstName, user.LastName, user.Email, user.Agency);
+            }
             Roles = roles;
             Token = token;
             Code = code;

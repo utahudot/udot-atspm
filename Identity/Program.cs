@@ -10,9 +10,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddDbContext<IdentityContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    services.AddNpgAtspmDbContext(host);
+    //services.AddDbContext<IdentityContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    //services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+    //services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
@@ -36,6 +37,7 @@ builder.Host.ConfigureServices((host, services) =>
             options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
         })
         // other configurations, like adding a signing credential...
+        .AddAspNetIdentity<ApplicationUser>()
         .AddDeveloperSigningCredential();
 
     services.AddScoped<IAgencyService, AgencyService>();

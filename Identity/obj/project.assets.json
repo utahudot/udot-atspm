@@ -99,6 +99,25 @@
           "Microsoft.AspNetCore.App"
         ]
       },
+      "Duende.IdentityServer.AspNetIdentity/6.3.6": {
+        "type": "package",
+        "dependencies": {
+          "Duende.IdentityServer": "6.3.6"
+        },
+        "compile": {
+          "lib/net7.0/Duende.IdentityServer.AspNetIdentity.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Duende.IdentityServer.AspNetIdentity.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Duende.IdentityServer.EntityFramework/6.3.6": {
         "type": "package",
         "dependencies": {
@@ -2997,6 +3016,7 @@
         "dependencies": {
           "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
+          "Duende.IdentityServer.EntityFramework": "6.3.6",
           "FluentFTP": "44.0.1",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "7.0.0",
@@ -3113,6 +3133,23 @@
         "lib/net6.0/Duende.IdentityServer.xml",
         "lib/net7.0/Duende.IdentityServer.dll",
         "lib/net7.0/Duende.IdentityServer.xml"
+      ]
+    },
+    "Duende.IdentityServer.AspNetIdentity/6.3.6": {
+      "sha512": "4uGK5e74YICN7fJqL42oAu4/l+Rc84Qr8pftUJUH1wHRV6h/LDRp+l3ytly8E1ptYF3gkCViaqUrCtueDih7Kw==",
+      "type": "package",
+      "path": "duende.identityserver.aspnetidentity/6.3.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "duende.identityserver.aspnetidentity.6.3.6.nupkg.sha512",
+        "duende.identityserver.aspnetidentity.nuspec",
+        "icon.png",
+        "lib/net6.0/Duende.IdentityServer.AspNetIdentity.dll",
+        "lib/net6.0/Duende.IdentityServer.AspNetIdentity.xml",
+        "lib/net7.0/Duende.IdentityServer.AspNetIdentity.dll",
+        "lib/net7.0/Duende.IdentityServer.AspNetIdentity.xml"
       ]
     },
     "Duende.IdentityServer.EntityFramework/6.3.6": {
@@ -8131,6 +8168,7 @@
     "net7.0": [
       "ATSPM.Data >= 1.0.0",
       "ATSPM.Infrastructure >= 1.0.0",
+      "Duende.IdentityServer.AspNetIdentity >= 6.3.6",
       "Duende.IdentityServer.EntityFramework >= 6.3.6",
       "Duende.IdentityServer.EntityFramework.Storage >= 6.3.6",
       "Microsoft.AspNetCore.Authentication.Google >= 7.0.14",
@@ -8186,6 +8224,10 @@
       "net7.0": {
         "targetAlias": "net7.0",
         "dependencies": {
+          "Duende.IdentityServer.AspNetIdentity": {
+            "target": "Package",
+            "version": "[6.3.6, )"
+          },
           "Duende.IdentityServer.EntityFramework": {
             "target": "Package",
             "version": "[6.3.6, )"

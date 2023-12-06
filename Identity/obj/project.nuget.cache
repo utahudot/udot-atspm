@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8aJl2nnY959rrBcv+GTsOHRZ9rLgJXzWm9NwmZnh/AVLw8LI4GtQi3cMAYoemfQEWlOI281lDvi7xNtS/nNKeg==",
+  "dgSpecHash": "5Nct59zZtvXd6Sazjywc0tw5PMwWmhx4GhxQhMJ3jjXY5G6/LguCjk6+UmcIdH/6oss9gViJ7wt2IowhbjjLMg==",
   "success": true,
   "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\Identity\\Identity.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "C:\\Users\\jbhatia\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\dotmorten.microsoft.sqlserver.types\\1.5.0\\dotmorten.microsoft.sqlserver.types.1.5.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver\\6.3.6\\duende.identityserver.6.3.6.nupkg.sha512",
+    "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.aspnetidentity\\6.3.6\\duende.identityserver.aspnetidentity.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.entityframework\\6.3.6\\duende.identityserver.entityframework.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.entityframework.storage\\6.3.6\\duende.identityserver.entityframework.storage.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.storage\\6.3.6\\duende.identityserver.storage.6.3.6.nupkg.sha512",
