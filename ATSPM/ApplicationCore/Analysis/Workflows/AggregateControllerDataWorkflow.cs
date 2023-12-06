@@ -26,6 +26,7 @@ namespace ATSPM.Application.Analysis.Workflows
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
 
+        /// <inheritdoc/>
         public AggregationWorkflowBase(AggregationWorkflowOptions options = default) : base(new DataflowBlockOptions() { CancellationToken = options.CancellationToken})
         {
             workflowOptions = options;
@@ -50,7 +51,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredDetectorData);
             Steps.Add(GroupApproachesForDetectors);
@@ -59,7 +60,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredDetectorData = new(blockOptions);
             GroupApproachesForDetectors = new(executionBlockOptions);
@@ -68,7 +69,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -97,7 +98,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public AggregatePhaseTerminationEvents AggregatePhaseTerminationEvents { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredTerminations);
             Steps.Add(GroupApproachesForTerminations);
@@ -107,7 +108,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredTerminations = new(blockOptions);
             GroupApproachesForTerminations = new(executionBlockOptions);
@@ -117,7 +118,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredTerminations, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -143,7 +144,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public AggregateSignalPlans AggregateSignalPlans { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredPlanData);
             Steps.Add(GroupSignalPlans);
@@ -152,7 +153,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredPlanData = new(blockOptions);
             GroupSignalPlans = new(executionBlockOptions);
@@ -161,7 +162,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -185,7 +186,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredPreemptionData);
             Steps.Add(GroupPreemptNumber);
@@ -193,7 +194,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredPreemptionData = new(blockOptions);
             GroupPreemptNumber = new(executionBlockOptions);
@@ -201,7 +202,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -224,7 +225,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilterPriorityData);
             Steps.Add(GroupPriorityNumber);
@@ -232,7 +233,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilterPriorityData = new(blockOptions);
             GroupPriorityNumber = new(executionBlockOptions);
@@ -240,7 +241,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             Input.LinkTo(FilterPriorityData, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -283,7 +284,7 @@ namespace ATSPM.Application.Analysis.Workflows
         //public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             //aggregate detector events
             //Steps.Add(FilteredDetectorData);
@@ -316,7 +317,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             //aggregate detector events
             //FilteredDetectorData = new();
@@ -349,7 +350,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
             //link input to event filters
             //Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
