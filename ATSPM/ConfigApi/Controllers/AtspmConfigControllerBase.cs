@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -149,9 +150,11 @@ namespace ATSPM.ConfigApi.Controllers
 
             item.Patch(i);
 
+            Console.WriteLine($"patching: {i}");
+
             await _repository.UpdateAsync(i);
 
-            return Updated(item);
+            return Updated(i);
         }
 
         /// <summary>

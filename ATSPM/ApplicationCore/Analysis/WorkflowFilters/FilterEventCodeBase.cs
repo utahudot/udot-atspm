@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Base class for filter controller event log data used in process workflows
     /// </summary>
-    public abstract class FilterStepBase : ProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
+    public abstract class FilterEventCodeBase : ProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<ControllerEventLog>>
     {
         /// <summary>
         /// List of filtered event codes
@@ -18,7 +18,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         protected List<int> filteredList = new();
 
         /// <inheritdoc/>
-        public FilterStepBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        public FilterEventCodeBase(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
             workflowProcess = new BroadcastBlock<IEnumerable<ControllerEventLog>>(f => f.Where(l => filteredList.Contains(l.EventCode)), options);
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!!"));

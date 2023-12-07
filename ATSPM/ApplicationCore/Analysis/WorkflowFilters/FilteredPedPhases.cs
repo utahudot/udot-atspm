@@ -11,7 +11,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPedPhases : FilterStepBase
+    public class FilteredPedPhases : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredPedPhases(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
