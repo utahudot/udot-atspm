@@ -13,9 +13,10 @@ namespace ATSPM.ConfigApi.Configuration
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MenuItem>("Menu")
+            var model = builder.EntitySet<MenuItem>("MenuItems")
                 .EntityType
-                .Page(default, default);
+                .Page(default, default)
+                .Expand(2, SelectExpandType.Automatic, new string[] { "children" });
 
             switch (apiVersion.MajorVersion)
             {
