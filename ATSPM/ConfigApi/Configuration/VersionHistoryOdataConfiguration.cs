@@ -6,14 +6,14 @@ using Microsoft.OData.ModelBuilder;
 namespace ATSPM.ConfigApi.Configuration
 {
     /// <summary>
-    /// Menu items oData configuration
+    /// Version history oData configuration
     /// </summary>
-    public class MenuItemsOdataConfiguration : IModelConfiguration
+    public class VersionHistoryOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<MenuItem>("MenuItems")
+            var model = builder.EntitySet<VersionHistory>("VersionHistory")
                 .EntityType
                 .Page(default, default)
                 .Expand(2, SelectExpandType.Automatic, new string[] { "children" });
@@ -23,10 +23,11 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.Name).IsRequired();
+                        model.Property(p => p.Date).IsRequired();
+                        model.Property(p => p.Version).IsRequired();
 
-                        model.Property(p => p.Name).MaxLength = 24;
-                        model.Property(p => p.Icon).MaxLength = 1024;
-                        //model.Property(p => p.Link).MaxLength = 512;
+                        model.Property(p => p.Name).MaxLength = 64;
+                        model.Property(p => p.Notes).MaxLength = 512;
 
                         break;
                     }
