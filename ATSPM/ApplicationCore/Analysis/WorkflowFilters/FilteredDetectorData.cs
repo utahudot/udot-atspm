@@ -1,6 +1,10 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Workflows;
+using System.Collections.Generic;
+using System;
 using System.Threading.Tasks.Dataflow;
+using System.Linq;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
@@ -11,7 +15,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredDetectorData : FilterStepBase
+    public class FilteredDetectorData : FilterEventCodeSignalBase
     {
         /// <inheritdoc/>
         public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
