@@ -3,8 +3,8 @@ using System;
 using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,32 +17,33 @@ namespace ATSPM.Infrastructure.Migrations.Speed
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ATSPM.Data.Models.SpeedEvent", b =>
                 {
                     b.Property<string>("DetectorId")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("Mph")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Kph")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("DetectorId", "Mph", "Kph", "Timestamp");
+                    b.HasKey("DetectorId", "Mph", "Kph", "TimeStamp");
 
-                    b.ToTable("SpeedEvents");
-
-                    b.HasComment("Speed Event Data");
+                    b.ToTable("SpeedEvents", t =>
+                        {
+                            t.HasComment("Speed Event Data");
+                        });
                 });
 #pragma warning restore 612, 618
         }
