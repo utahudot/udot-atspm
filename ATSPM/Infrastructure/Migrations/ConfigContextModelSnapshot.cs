@@ -3,12 +3,12 @@ using System;
 using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.Migrations
+namespace ATSPM.Infrastructure.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
     partial class ConfigContextModelSnapshot : ModelSnapshot
@@ -17,53 +17,53 @@ namespace ATSPM.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "7.0.14")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ATSPM.Data.Models.Approach", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("DirectionTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsPedestrianPhaseOverlap")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPermissivePhaseOverlap")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsProtectedPhaseOverlap")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("Mph")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("PedestrianDetectors")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("PedestrianPhaseNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("PermissivePhaseNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProtectedPhaseNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SignalId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -81,14 +81,14 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -102,24 +102,24 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Directory")
                         .HasMaxLength(1024)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Firmware")
                         .HasMaxLength(32)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<long>("Port")
                         .ValueGeneratedOnAdd()
@@ -130,24 +130,24 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasColumnType("character varying(12)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("SearchTerm")
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -160,21 +160,21 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -246,54 +246,61 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApproachId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("DateAdded")
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateDisabled")
                         .HasColumnType("datetime2");
+=======
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DateDisabled")
+                        .HasColumnType("timestamp");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
 
                     b.Property<int?>("DecisionPoint")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("DectectorIdentifier")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("DetectionHardware")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("DetectorChannel")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("DistanceFromStopBar")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("LaneNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("LaneType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<double>("LatencyCorrection")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<int?>("MinSpeedFilter")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("MovementDelay")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MovementType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -309,21 +316,25 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<int>("DetectorId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
                         .HasColumnType("datetime2");
+=======
+                        .HasColumnType("timestamp");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
 
                     b.HasKey("Id");
 
@@ -450,20 +461,20 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(5)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                        .HasColumnType("character varying(5)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(30)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -542,24 +553,24 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(64)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(64)");
+                        .HasColumnType("character varying(64)");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
@@ -652,24 +663,24 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasMaxLength(8000)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(8000)");
+                        .HasColumnType("character varying(8000)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Header")
                         .IsRequired()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -832,29 +843,29 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CountyParish")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Mpo")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("OtherPartners")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -868,23 +879,27 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .HasMaxLength(255)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("TimeStamp")
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
                         .HasColumnType("datetime2");
+=======
+                        .HasColumnType("timestamp");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
 
                     b.HasKey("Id");
 
@@ -900,22 +915,22 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("MeasureTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Option")
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("Value")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.HasKey("Id");
 
@@ -931,28 +946,28 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Abbreviation")
                         .HasMaxLength(8)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(8)");
+                        .HasColumnType("character varying(8)");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<bool>("ShowOnAggregationSite")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("ShowOnWebsite")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -1265,33 +1280,33 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<byte[]>("Document")
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Icon")
                         .HasMaxLength(1024)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Link")
                         .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(24)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(24)");
+                        .HasColumnType("character varying(24)");
 
                     b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1350,14 +1365,14 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -1371,14 +1386,14 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -1392,39 +1407,39 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsOpposingOverlap")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPrimaryOverlap")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("OpposingDirectionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("OpposingPhase")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Order")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PrimaryDirectionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PrimaryPhase")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RouteId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.HasKey("Id");
 
@@ -1447,21 +1462,21 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Setting")
                         .IsRequired()
                         .HasMaxLength(32)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
+                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.HasKey("Id");
 
@@ -1478,76 +1493,80 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("ChartEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("ControllerTypeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Ipaddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
+                        .HasColumnType("character varying(15)")
                         .HasDefaultValueSql("('10.0.0.1')");
 
                     b.Property<int>("JurisdictionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((0))");
 
                     b.Property<double>("Latitude")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Note")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(256)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(256)")
+                        .HasColumnType("character varying(256)")
                         .HasDefaultValueSql("('Initial')");
 
                     b.Property<bool>("Pedsare1to1")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PrimaryName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasDefaultValueSql("('')");
 
                     b.Property<int>("RegionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("SecondaryName")
                         .HasMaxLength(100)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("SignalIdentifier")
                         .IsRequired()
                         .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("Start")
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
                         .HasColumnType("datetime2");
+=======
+                        .HasColumnType("timestamp");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasDefaultValueSql("((10))");
 
                     b.HasKey("Id");
@@ -1564,6 +1583,7 @@ namespace ATSPM.Infrastructure.Migrations
                         });
                 });
 
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -1602,15 +1622,63 @@ namespace ATSPM.Infrastructure.Migrations
                         {
                             t.HasComment("Version History");
                         });
+=======
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "AreaId");
+
+                    b.HasIndex("AreaId");
+
+                    b.ToTable("UserArea");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("JurisdictionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "JurisdictionId");
+
+                    b.HasIndex("JurisdictionId");
+
+                    b.ToTable("UserJurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.Property<string>("UserId")
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "RegionId");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("UserRegion");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
                 });
 
             modelBuilder.Entity("AreaSignal", b =>
                 {
                     b.Property<int>("AreasId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SignalsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("AreasId", "SignalsId");
 
@@ -1622,10 +1690,10 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("DetectionTypeDetector", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("DetectorsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("DetectionTypesId", "DetectorsId");
 
@@ -1637,10 +1705,10 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("DetectionTypeMeasureType", b =>
                 {
                     b.Property<int>("DetectionTypesId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("DetectionTypesId", "MeasureTypesId");
 
@@ -1652,10 +1720,10 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("MeasureCommentMeasureType", b =>
                 {
                     b.Property<int>("MeasureCommentsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("MeasureTypesId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("MeasureCommentsId", "MeasureTypesId");
 
@@ -1808,6 +1876,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Region");
                 });
 
+<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.VersionHistory", "Parent")
@@ -1816,6 +1885,39 @@ namespace ATSPM.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Parent");
+=======
+            modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Area", "Area")
+                        .WithMany("UserAreas")
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserJurisdiction", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
+                        .WithMany("UserJurisdictions")
+                        .HasForeignKey("JurisdictionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Jurisdiction");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Region", "Region")
+                        .WithMany("UserRegions")
+                        .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Region");
+>>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
                 });
 
             modelBuilder.Entity("AreaSignal", b =>
@@ -1883,6 +1985,11 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Detectors");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
+                {
+                    b.Navigation("UserAreas");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
                 {
                     b.Navigation("Signals");
@@ -1910,6 +2017,8 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Jurisdiction", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserJurisdictions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MenuItem", b =>
@@ -1920,6 +2029,8 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
                     b.Navigation("Signals");
+
+                    b.Navigation("UserRegions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Route", b =>

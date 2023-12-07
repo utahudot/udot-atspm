@@ -22,10 +22,10 @@ namespace ATSPM.ReportApi.Business.PedDelay
         }
         public enum PhaseType
         {
-            [Description("Protected Only")]
-            ProtectedOnly,
-            [Description("Permissive Only")]
-            PermissiveOnly,
+            [Description("Protected")]
+            Protected,
+            [Description("Permissive")]
+            Permissive,
             [Description("Protected/Permissive")]
             ProtectedPermissive
         }
@@ -63,12 +63,12 @@ namespace ATSPM.ReportApi.Business.PedDelay
 
             if (protectedPhaseNumber > 0 && permissivePhaseNumber == null)
             {
-                return PhaseType.ProtectedOnly;
+                return PhaseType.Protected;
             }
 
             if (protectedPhaseNumber == 0 && permissivePhaseNumber > 0)
             {
-                return PhaseType.PermissiveOnly;
+                return PhaseType.Permissive;
             }
 
             return PhaseType.ProtectedPermissive;

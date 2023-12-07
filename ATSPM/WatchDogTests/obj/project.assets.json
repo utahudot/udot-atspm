@@ -1,6 +1,7 @@
 {
   "version": 3,
   "targets": {
+<<<<<<< HEAD
     "net6.0": {
       "AutoFixture/4.17.0": {
         "type": "package",
@@ -96,12 +97,16 @@
           }
         }
       },
+=======
+    "net7.0": {
+>>>>>>> main
       "coverlet.collector/3.2.0": {
         "type": "package",
         "build": {
           "build/netstandard1.0/coverlet.collector.targets": {}
         }
       },
+<<<<<<< HEAD
       "dotMorten.Microsoft.SqlServer.Types/1.4.0": {
         "type": "package",
         "dependencies": {
@@ -953,6 +958,9 @@
         }
       },
       "Microsoft.CodeCoverage/17.5.0": {
+=======
+      "Microsoft.CodeCoverage/17.6.0": {
+>>>>>>> main
         "type": "package",
         "compile": {
           "lib/netcoreapp3.1/Microsoft.VisualStudio.CodeCoverage.Shim.dll": {}
@@ -965,6 +973,7 @@
           "build/netstandard2.0/Microsoft.CodeCoverage.targets": {}
         }
       },
+<<<<<<< HEAD
       "Microsoft.CSharp/4.7.0": {
         "type": "package",
         "compile": {
@@ -1725,6 +1734,13 @@
         "dependencies": {
           "Microsoft.CodeCoverage": "17.5.0",
           "Microsoft.TestPlatform.TestHost": "17.5.0"
+=======
+      "Microsoft.NET.Test.Sdk/17.6.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CodeCoverage": "17.6.0",
+          "Microsoft.TestPlatform.TestHost": "17.6.0"
+>>>>>>> main
         },
         "compile": {
           "lib/netcoreapp3.1/_._": {}
@@ -1740,7 +1756,11 @@
           "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
         }
       },
+<<<<<<< HEAD
       "Microsoft.NETCore.Platforms/5.0.0": {
+=======
+      "Microsoft.NETCore.Platforms/1.1.0": {
+>>>>>>> main
         "type": "package",
         "compile": {
           "lib/netstandard1.0/_._": {}
@@ -1758,6 +1778,7 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+<<<<<<< HEAD
       "Microsoft.OpenApi/1.2.3": {
         "type": "package",
         "compile": {
@@ -1785,6 +1806,9 @@
         }
       },
       "Microsoft.TestPlatform.ObjectModel/17.5.0": {
+=======
+      "Microsoft.TestPlatform.ObjectModel/17.6.0": {
+>>>>>>> main
         "type": "package",
         "dependencies": {
           "NuGet.Frameworks": "5.11.0",
@@ -1881,10 +1905,17 @@
           }
         }
       },
+<<<<<<< HEAD
       "Microsoft.TestPlatform.TestHost/17.5.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.TestPlatform.ObjectModel": "17.5.0",
+=======
+      "Microsoft.TestPlatform.TestHost/17.6.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.TestPlatform.ObjectModel": "17.6.0",
+>>>>>>> main
           "Newtonsoft.Json": "13.0.1"
         },
         "compile": {
@@ -2047,6 +2078,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "Microsoft.Win32.Registry/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -2148,6 +2180,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "NETStandard.Library/1.6.1": {
         "type": "package",
         "dependencies": {
@@ -2197,6 +2231,7 @@
           "System.Xml.XDocument": "4.3.0"
         }
       },
+<<<<<<< HEAD
       "NetTopologySuite/2.0.0": {
         "type": "package",
         "dependencies": {
@@ -2204,15 +2239,26 @@
         },
         "compile": {
           "lib/netstandard2.0/NetTopologySuite.dll": {
+=======
+      "Newtonsoft.Json/13.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+>>>>>>> main
             "related": ".xml"
           }
         },
         "runtime": {
+<<<<<<< HEAD
           "lib/netstandard2.0/NetTopologySuite.dll": {
+=======
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+>>>>>>> main
             "related": ".xml"
           }
         }
       },
+<<<<<<< HEAD
       "NetTopologySuite.IO.SqlServerBytes/2.1.0": {
         "type": "package",
         "dependencies": {
@@ -2273,6 +2319,8 @@
           "lib/net6.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
         }
       },
+=======
+>>>>>>> main
       "NuGet.Frameworks/5.11.0": {
         "type": "package",
         "compile": {
@@ -2286,6 +2334,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "OData.Swagger/1.0.0": {
         "type": "package",
         "dependencies": {
@@ -2333,6 +2382,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -2373,6 +2424,7 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+<<<<<<< HEAD
       "runtime.native.System.Data.SqlClient.sni/4.7.0": {
         "type": "package",
         "dependencies": {
@@ -2381,6 +2433,8 @@
           "runtime.win-x86.runtime.native.System.Data.SqlClient.sni": "4.4.0"
         }
       },
+=======
+>>>>>>> main
       "runtime.native.System.IO.Compression/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2512,6 +2566,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "runtime.win-arm64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
         "type": "package",
         "runtimeTargets": {
@@ -2643,6 +2698,8 @@
           "Microsoft.AspNetCore.App"
         ]
       },
+=======
+>>>>>>> main
       "System.AppContext/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2657,6 +2714,7 @@
           "lib/netstandard1.6/System.AppContext.dll": {}
         }
       },
+<<<<<<< HEAD
       "System.Buffers/4.5.1": {
         "type": "package",
         "compile": {
@@ -2664,6 +2722,22 @@
         },
         "runtime": {
           "lib/netcoreapp2.0/_._": {}
+=======
+      "System.Buffers/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Diagnostics.Debug": "4.3.0",
+          "System.Diagnostics.Tracing": "4.3.0",
+          "System.Resources.ResourceManager": "4.3.0",
+          "System.Runtime": "4.3.0",
+          "System.Threading": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard1.1/_._": {}
+        },
+        "runtime": {
+          "lib/netstandard1.1/System.Buffers.dll": {}
+>>>>>>> main
         }
       },
       "System.Collections/4.3.0": {
@@ -2702,6 +2776,7 @@
           "lib/netstandard1.3/System.Collections.Concurrent.dll": {}
         }
       },
+<<<<<<< HEAD
       "System.ComponentModel/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2757,6 +2832,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Console/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2772,6 +2849,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Data.SqlClient/4.8.3": {
         "type": "package",
         "dependencies": {
@@ -2800,6 +2878,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Diagnostics.Debug/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2813,6 +2893,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Diagnostics.DiagnosticSource/6.0.0": {
         "type": "package",
         "dependencies": {
@@ -2882,16 +2963,34 @@
           "System.Globalization": "4.3.0",
           "System.IO": "4.3.0",
           "System.Resources.ResourceManager": "4.3.0",
+=======
+      "System.Diagnostics.DiagnosticSource/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.3.0",
+          "System.Diagnostics.Tracing": "4.3.0",
+          "System.Reflection": "4.3.0",
+>>>>>>> main
           "System.Runtime": "4.3.0",
           "System.Threading": "4.3.0"
         },
         "compile": {
+<<<<<<< HEAD
           "ref/netstandard1.3/System.Diagnostics.TextWriterTraceListener.dll": {
+=======
+          "lib/netstandard1.3/_._": {
+>>>>>>> main
             "related": ".xml"
           }
         },
         "runtime": {
+<<<<<<< HEAD
           "lib/netstandard1.3/System.Diagnostics.TextWriterTraceListener.dll": {}
+=======
+          "lib/netstandard1.3/System.Diagnostics.DiagnosticSource.dll": {
+            "related": ".xml"
+          }
+>>>>>>> main
         }
       },
       "System.Diagnostics.Tools/4.3.0": {
@@ -2907,6 +3006,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Diagnostics.TraceSource/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2936,6 +3036,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Diagnostics.Tracing/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2949,6 +3051,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Drawing.Common/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -2988,6 +3091,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Globalization/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3041,6 +3146,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.IdentityModel.Tokens.Jwt/6.21.0": {
         "type": "package",
         "dependencies": {
@@ -3058,6 +3164,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.IO/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3210,6 +3318,7 @@
           "lib/netstandard1.6/System.Linq.Expressions.dll": {}
         }
       },
+<<<<<<< HEAD
       "System.Memory/4.5.4": {
         "type": "package",
         "compile": {
@@ -3236,6 +3345,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Net.Http/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3312,6 +3423,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Numerics.Vectors/4.5.0": {
         "type": "package",
         "compile": {
@@ -3321,6 +3433,8 @@
           "lib/netcoreapp2.0/_._": {}
         }
       },
+=======
+>>>>>>> main
       "System.ObjectModel/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3354,6 +3468,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Reflection.Emit/4.7.0": {
         "type": "package",
         "compile": {
@@ -3361,6 +3476,24 @@
         },
         "runtime": {
           "lib/netcoreapp2.0/_._": {}
+=======
+      "System.Reflection.Emit/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.IO": "4.3.0",
+          "System.Reflection": "4.3.0",
+          "System.Reflection.Emit.ILGeneration": "4.3.0",
+          "System.Reflection.Primitives": "4.3.0",
+          "System.Runtime": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard1.1/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.3/System.Reflection.Emit.dll": {}
+>>>>>>> main
         }
       },
       "System.Reflection.Emit.ILGeneration/4.3.0": {
@@ -3478,6 +3611,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Runtime.Caching/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -3516,6 +3650,8 @@
           "buildTransitive/netcoreapp3.1/_._": {}
         }
       },
+=======
+>>>>>>> main
       "System.Runtime.Extensions/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3601,6 +3737,7 @@
           "lib/netstandard1.3/System.Runtime.Numerics.dll": {}
         }
       },
+<<<<<<< HEAD
       "System.Security.AccessControl/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -3624,6 +3761,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Security.Cryptography.Algorithms/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3660,6 +3799,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Security.Cryptography.Cng/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -3677,6 +3817,32 @@
         },
         "runtimeTargets": {
           "runtimes/win/lib/netcoreapp3.0/System.Security.Cryptography.Cng.dll": {
+=======
+      "System.Security.Cryptography.Cng/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0",
+          "System.IO": "4.3.0",
+          "System.Resources.ResourceManager": "4.3.0",
+          "System.Runtime": "4.3.0",
+          "System.Runtime.Extensions": "4.3.0",
+          "System.Runtime.Handles": "4.3.0",
+          "System.Runtime.InteropServices": "4.3.0",
+          "System.Security.Cryptography.Algorithms": "4.3.0",
+          "System.Security.Cryptography.Encoding": "4.3.0",
+          "System.Security.Cryptography.Primitives": "4.3.0",
+          "System.Text.Encoding": "4.3.0"
+        },
+        "compile": {
+          "ref/netstandard1.6/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/unix/lib/netstandard1.6/System.Security.Cryptography.Cng.dll": {
+            "assetType": "runtime",
+            "rid": "unix"
+          },
+          "runtimes/win/lib/netstandard1.6/System.Security.Cryptography.Cng.dll": {
+>>>>>>> main
             "assetType": "runtime",
             "rid": "win"
           }
@@ -3793,6 +3959,7 @@
           "lib/netstandard1.3/System.Security.Cryptography.Primitives.dll": {}
         }
       },
+<<<<<<< HEAD
       "System.Security.Cryptography.ProtectedData/5.0.0": {
         "type": "package",
         "compile": {
@@ -3812,6 +3979,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Security.Cryptography.X509Certificates/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3857,6 +4026,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Security.Permissions/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -3897,6 +4067,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Text.Encoding/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3910,6 +4082,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Text.Encoding.CodePages/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -3932,6 +4105,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Text.Encoding.Extensions/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -3946,6 +4121,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Text.Encodings.Web/7.0.0": {
         "type": "package",
         "dependencies": {
@@ -3991,6 +4167,8 @@
           "buildTransitive/net6.0/System.Text.Json.targets": {}
         }
       },
+=======
+>>>>>>> main
       "System.Text.RegularExpressions/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -4031,6 +4209,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Threading.Tasks.Extensions/4.5.4": {
         "type": "package",
         "compile": {
@@ -4038,6 +4217,24 @@
         },
         "runtime": {
           "lib/netcoreapp2.1/_._": {}
+=======
+      "System.Threading.Tasks.Extensions/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Collections": "4.3.0",
+          "System.Runtime": "4.3.0",
+          "System.Threading.Tasks": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard1.0/_._": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.0/System.Threading.Tasks.Extensions.dll": {
+            "related": ".xml"
+          }
+>>>>>>> main
         }
       },
       "System.Threading.Timer/4.3.0": {
@@ -4053,6 +4250,7 @@
           }
         }
       },
+<<<<<<< HEAD
       "System.Windows.Extensions/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -4075,6 +4273,8 @@
           }
         }
       },
+=======
+>>>>>>> main
       "System.Xml.ReaderWriter/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -4229,6 +4429,7 @@
           "build/netcoreapp3.1/xunit.runner.visualstudio.props": {}
         }
       },
+<<<<<<< HEAD
       "ApplicationCore/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
@@ -4330,6 +4531,15 @@
           "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
           "Reports": "1.0.0"
+=======
+      "WatchDog/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": "1.0.0",
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj": "1.0.0",
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj": "1.0.0"
+>>>>>>> main
         },
         "compile": {
           "bin/placeholder/WatchDog.dll": {}
@@ -4341,6 +4551,7 @@
     }
   },
   "libraries": {
+<<<<<<< HEAD
     "AutoFixture/4.17.0": {
       "sha512": "efMRCG3Epc4QDELwdmQGf6/caQUleRXPRCnLAq5gLMpTuOTcOQWV12vEJ8qo678Rj97/TjjxHYu/34rGkXdVAA==",
       "type": "package",
@@ -4440,6 +4651,8 @@
         "readme.txt"
       ]
     },
+=======
+>>>>>>> main
     "coverlet.collector/3.2.0": {
       "sha512": "xjY8xBigSeWIYs4I7DgUHqSNoGqnHi7Fv7/7RZD02rvZyG3hlsjnQKiVKVWKgr9kRKgmV+dEfu8KScvysiC0Wg==",
       "type": "package",
@@ -4493,6 +4706,7 @@
         "coverlet.collector.nuspec"
       ]
     },
+<<<<<<< HEAD
     "dotMorten.Microsoft.SqlServer.Types/1.4.0": {
       "sha512": "MYxVbuBguObk8QFNTuBZ+ZEC/m1zbvG774FbFvwiDZjc0RYq/co27THrHN5Dyd52ie0R5bt2uxSZj4tIb3lYFg==",
       "type": "package",
@@ -5332,6 +5546,12 @@
       "sha512": "6FQo0O6LKDqbCiIgVQhJAf810HSjFlOj7FunWaeOGDKxy8DAbpHzPk4SfBTXz9ytaaceuIIeR6hZgplt09m+ig==",
       "type": "package",
       "path": "microsoft.codecoverage/17.5.0",
+=======
+    "Microsoft.CodeCoverage/17.6.0": {
+      "sha512": "5v2GwzpR7JEuQUzupjx3zLwn2FutADW/weLzLt726DR3WXxsM+ICPoJG6pxuKFsumtZp890UrVuudTUhsE8Qyg==",
+      "type": "package",
+      "path": "microsoft.codecoverage/17.6.0",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -5369,6 +5589,10 @@
         "build/netstandard2.0/Microsoft.CodeCoverage.Interprocess.dll",
         "build/netstandard2.0/Microsoft.CodeCoverage.props",
         "build/netstandard2.0/Microsoft.CodeCoverage.targets",
+<<<<<<< HEAD
+=======
+        "build/netstandard2.0/Microsoft.DiaSymReader.dll",
+>>>>>>> main
         "build/netstandard2.0/Microsoft.VisualStudio.TraceDataCollector.dll",
         "build/netstandard2.0/Mono.Cecil.Pdb.dll",
         "build/netstandard2.0/Mono.Cecil.Rocks.dll",
@@ -5389,6 +5613,7 @@
         "build/netstandard2.0/zh-Hant/Microsoft.VisualStudio.TraceDataCollector.resources.dll",
         "lib/net462/Microsoft.VisualStudio.CodeCoverage.Shim.dll",
         "lib/netcoreapp3.1/Microsoft.VisualStudio.CodeCoverage.Shim.dll",
+<<<<<<< HEAD
         "microsoft.codecoverage.17.5.0.nupkg.sha512",
         "microsoft.codecoverage.nuspec"
       ]
@@ -6637,6 +6862,16 @@
       "sha512": "IJ4eSPcsRbwbAZehh1M9KgejSy0u3d0wAdkJytfCh67zOaCl5U3ltruUEe15MqirdRqGmm/ngbjeaVeGapSZxg==",
       "type": "package",
       "path": "microsoft.net.test.sdk/17.5.0",
+=======
+        "microsoft.codecoverage.17.6.0.nupkg.sha512",
+        "microsoft.codecoverage.nuspec"
+      ]
+    },
+    "Microsoft.NET.Test.Sdk/17.6.0": {
+      "sha512": "tHyg4C6c89QvLv6Utz3xKlba4EeoyJyIz59Q1NrjRENV7gfGnSE6I+sYPIbVOzQttoo2zpHDgOK/p6Hw2OlD7A==",
+      "type": "package",
+      "path": "microsoft.net.test.sdk/17.6.0",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6652,6 +6887,7 @@
         "buildMultiTargeting/Microsoft.NET.Test.Sdk.props",
         "lib/net462/_._",
         "lib/netcoreapp3.1/_._",
+<<<<<<< HEAD
         "microsoft.net.test.sdk.17.5.0.nupkg.sha512",
         "microsoft.net.test.sdk.nuspec"
       ]
@@ -6672,6 +6908,25 @@
         "runtime.json",
         "useSharedDesignerContext.txt",
         "version.txt"
+=======
+        "microsoft.net.test.sdk.17.6.0.nupkg.sha512",
+        "microsoft.net.test.sdk.nuspec"
+      ]
+    },
+    "Microsoft.NETCore.Platforms/1.1.0": {
+      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "type": "package",
+      "path": "microsoft.netcore.platforms/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/netstandard1.0/_._",
+        "microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+        "microsoft.netcore.platforms.nuspec",
+        "runtime.json"
+>>>>>>> main
       ]
     },
     "Microsoft.NETCore.Targets/1.1.0": {
@@ -6689,6 +6944,7 @@
         "runtime.json"
       ]
     },
+<<<<<<< HEAD
     "Microsoft.OpenApi/1.2.3": {
       "sha512": "Nug3rO+7Kl5/SBAadzSMAVgqDlfGjJZ0GenQrLywJ84XGKO0uRqkunz5Wyl0SDwcR71bAATXvSdbdzPrYRYKGw==",
       "type": "package",
@@ -6728,6 +6984,12 @@
       "sha512": "QwiBJcC/oEA1kojOaB0uPWOIo4i6BYuTBBYJVhUvmXkyYqZ2Ut/VZfgi+enf8LF8J4sjO98oRRFt39MiRorcIw==",
       "type": "package",
       "path": "microsoft.testplatform.objectmodel/17.5.0",
+=======
+    "Microsoft.TestPlatform.ObjectModel/17.6.0": {
+      "sha512": "AA/rrf5zwC5/OBLEOajkhjbVTM3SvxRXy8kcQ8e4mJKojbyZvqqhpfNg362N9vXU94DLg9NUTFOAnoYVT0pTJw==",
+      "type": "package",
+      "path": "microsoft.testplatform.objectmodel/17.6.0",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6820,6 +7082,7 @@
         "lib/netstandard2.0/zh-Hans/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
         "lib/netstandard2.0/zh-Hant/Microsoft.TestPlatform.CoreUtilities.resources.dll",
         "lib/netstandard2.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+<<<<<<< HEAD
         "microsoft.testplatform.objectmodel.17.5.0.nupkg.sha512",
         "microsoft.testplatform.objectmodel.nuspec"
       ]
@@ -6828,6 +7091,16 @@
       "sha512": "X86aikwp9d4SDcBChwzQYZihTPGEtMdDk+9t64emAl7N0Tq+OmlLAoW+Rs+2FB2k6QdUicSlT4QLO2xABRokaw==",
       "type": "package",
       "path": "microsoft.testplatform.testhost/17.5.0",
+=======
+        "microsoft.testplatform.objectmodel.17.6.0.nupkg.sha512",
+        "microsoft.testplatform.objectmodel.nuspec"
+      ]
+    },
+    "Microsoft.TestPlatform.TestHost/17.6.0": {
+      "sha512": "7YdgUcIeCPVKLC7n7LNKDiEHWc7z3brkkYPdUbDnFsvf6WvY9UfzS0VSUJ8P2NgN0CDSD223GCJFSjSBLZRqOQ==",
+      "type": "package",
+      "path": "microsoft.testplatform.testhost/17.6.0",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -6890,7 +7163,11 @@
         "lib/netcoreapp3.1/zh-Hant/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
         "lib/netcoreapp3.1/zh-Hant/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
         "lib/netcoreapp3.1/zh-Hant/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+<<<<<<< HEAD
         "microsoft.testplatform.testhost.17.5.0.nupkg.sha512",
+=======
+        "microsoft.testplatform.testhost.17.6.0.nupkg.sha512",
+>>>>>>> main
         "microsoft.testplatform.testhost.nuspec"
       ]
     },
@@ -6932,6 +7209,7 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
+<<<<<<< HEAD
     "Microsoft.Win32.Registry/5.0.0": {
       "sha512": "dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg==",
       "type": "package",
@@ -7383,6 +7661,8 @@
         "mysqlconnector.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "NETStandard.Library/1.6.1": {
       "sha512": "WcSp3+vP+yHNgS8EV5J7pZ9IRpeDuARBPN28by8zqff1wJQXm26PVU8L3/fYLBJVU7BtDyqNVWq2KlCVvSSR4A==",
       "type": "package",
@@ -7396,6 +7676,7 @@
         "netstandard.library.nuspec"
       ]
     },
+<<<<<<< HEAD
     "NetTopologySuite/2.0.0": {
       "sha512": "3ajBClEI9wx2/DjjGmV52sHW1m52vLg8sdz1pJbTf5ySj1X90qehQs3v1DRwGo0F8UKj/Z2SjNhRN/6LroAkqg==",
       "type": "package",
@@ -7427,11 +7708,20 @@
       "sha512": "R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg==",
       "type": "package",
       "path": "newtonsoft.json/13.0.2",
+=======
+    "Newtonsoft.Json/13.0.1": {
+      "sha512": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A==",
+      "type": "package",
+      "path": "newtonsoft.json/13.0.1",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE.md",
+<<<<<<< HEAD
         "README.md",
+=======
+>>>>>>> main
         "lib/net20/Newtonsoft.Json.dll",
         "lib/net20/Newtonsoft.Json.xml",
         "lib/net35/Newtonsoft.Json.dll",
@@ -7440,19 +7730,27 @@
         "lib/net40/Newtonsoft.Json.xml",
         "lib/net45/Newtonsoft.Json.dll",
         "lib/net45/Newtonsoft.Json.xml",
+<<<<<<< HEAD
         "lib/net6.0/Newtonsoft.Json.dll",
         "lib/net6.0/Newtonsoft.Json.xml",
+=======
+>>>>>>> main
         "lib/netstandard1.0/Newtonsoft.Json.dll",
         "lib/netstandard1.0/Newtonsoft.Json.xml",
         "lib/netstandard1.3/Newtonsoft.Json.dll",
         "lib/netstandard1.3/Newtonsoft.Json.xml",
         "lib/netstandard2.0/Newtonsoft.Json.dll",
         "lib/netstandard2.0/Newtonsoft.Json.xml",
+<<<<<<< HEAD
         "newtonsoft.json.13.0.2.nupkg.sha512",
+=======
+        "newtonsoft.json.13.0.1.nupkg.sha512",
+>>>>>>> main
         "newtonsoft.json.nuspec",
         "packageIcon.png"
       ]
     },
+<<<<<<< HEAD
     "Npgsql/6.0.6": {
       "sha512": "IIwnoJp0sFkhAydT/KKe/0NhlJKhYPIrXSE95AuU/2dqHNI9alxvjClJSGL+QE8NGqq1SFn+NenxVtm/JYsrJg==",
       "type": "package",
@@ -7490,6 +7788,8 @@
         "postgresql.png"
       ]
     },
+=======
+>>>>>>> main
     "NuGet.Frameworks/5.11.0": {
       "sha512": "eaiXkUjC4NPcquGWzAGMXjuxvLwc6XGKMptSyOGQeT0X70BUZObuybJFZLA0OfTdueLd3US23NBPTBb6iF3V1Q==",
       "type": "package",
@@ -7508,6 +7808,7 @@
         "nuget.frameworks.nuspec"
       ]
     },
+<<<<<<< HEAD
     "OData.Swagger/1.0.0": {
       "sha512": "uTw44vJVSGWg8A1pP5B04jvk06phwwCI2DS4evpPajJp4T+N4s57ZiY0VE8tRlKvzhC8UoK3DgUtPNE8reKPPg==",
       "type": "package",
@@ -7555,6 +7856,8 @@
         "pomelo.entityframeworkcore.mysql.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "sha512": "HdSSp5MnJSsg08KMfZThpuLPJpPwE5hBXvHwoKWosyHHfe8Mh5WKT0ylEOf6yNzX6Ngjxe4Whkafh5q7Ymac4Q==",
       "type": "package",
@@ -7611,6 +7914,7 @@
         "runtime.native.system.nuspec"
       ]
     },
+<<<<<<< HEAD
     "runtime.native.System.Data.SqlClient.sni/4.7.0": {
       "sha512": "9kyFSIdN3T0qjDQ2R0HRXYIhS3l5psBzQi6qqhdLz+SzFyEy4sVxNOke+yyYv8Cu8rPER12c3RDjLT8wF3WBYQ==",
       "type": "package",
@@ -7626,6 +7930,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "runtime.native.System.IO.Compression/4.3.0": {
       "sha512": "INBPonS5QPEgn7naufQFXJEp3zX6L4bwHgJ/ZH78aBTpeNfQMtf7C6VrAFhlq2xxWBveIOWyFzQjJ8XzHMhdOQ==",
       "type": "package",
@@ -7794,6 +8100,7 @@
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
       ]
     },
+<<<<<<< HEAD
     "runtime.win-arm64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
       "sha512": "LbrynESTp3bm5O/+jGL8v0Qg5SJlTV08lpIpFesXjF6uGNMWqFnUQbYBJwZTeua6E/Y7FIM1C54Ey1btLWupdg==",
       "type": "package",
@@ -8008,6 +8315,8 @@
         "swashbuckle.aspnetcore.swaggerui.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "System.AppContext/4.3.0": {
       "sha512": "fKC+rmaLfeIzUhagxY17Q9siv/sPrjjKcfNg1Ic8IlQkZLipo8ljcaZQu4VtI4Jqbzjc2VTjzGLF6WmsRXAEgA==",
       "type": "package",
@@ -8063,6 +8372,7 @@
         "system.appcontext.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Buffers/4.5.1": {
       "sha512": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
       "type": "package",
@@ -8092,6 +8402,21 @@
         "system.buffers.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+=======
+    "System.Buffers/4.3.0": {
+      "sha512": "ratu44uTIHgeBeI0dE8DWvmXVBSo4u7ozRZZHOMmK/JPpYyo0dAfgSiHlpiObMQ5lEtEyIXA40sKRYg5J6A8uQ==",
+      "type": "package",
+      "path": "system.buffers/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/netstandard1.1/.xml",
+        "lib/netstandard1.1/System.Buffers.dll",
+        "system.buffers.4.3.0.nupkg.sha512",
+        "system.buffers.nuspec"
+>>>>>>> main
       ]
     },
     "System.Collections/4.3.0": {
@@ -8230,6 +8555,7 @@
         "system.collections.concurrent.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.ComponentModel/4.3.0": {
       "sha512": "VyGn1jGRZVfxnh8EdvDCi71v3bMXrsu8aYJOwoV7SNDLVhiEqwP86pPMyRGsDsxhXAm2b3o9OIqeETfN5qfezw==",
       "type": "package",
@@ -8392,6 +8718,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Console/4.3.0": {
       "sha512": "DHDrIxiqk1h03m6khKWV2X8p/uvN79rgSqpilL6uzpmSfxfU5ng8VcPtW4qsDsQDHiTv6IPV9TmD5M/vElPNLg==",
       "type": "package",
@@ -8430,6 +8758,7 @@
         "system.console.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Data.SqlClient/4.8.3": {
       "sha512": "yERfVLXAY0QbylAgaGLByYN0hFxX28aeEQ0hUgJO+Ntn1AfmWl5HHUoYJA0Yl9HhIUUJHVaS/Sw/RLZr5aaC+A==",
       "type": "package",
@@ -8516,6 +8845,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Diagnostics.Debug/4.3.0": {
       "sha512": "ZUhUOdqmaG5Jk3Xdb8xi5kIyQYAA4PnTNlHx1mu9ZY3qv4ELIdKbnL/akbGaKi2RnNUWaZsAs31rvzFdewTj2g==",
       "type": "package",
@@ -8584,6 +8915,7 @@
         "system.diagnostics.debug.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Diagnostics.DiagnosticSource/6.0.0": {
       "sha512": "frQDfv0rl209cKm1lnwTgFPzNigy2EKk1BS3uAvHvlBVKe5cymGyHO+Sj+NLv5VF/AhHsqPIUUwya5oV4CHMUw==",
       "type": "package",
@@ -8644,11 +8976,18 @@
       "sha512": "BiHg0vgtd35/DM9jvtaC1eKRpWZxr0gcQd643ABG7GnvSlf5pOkY2uyd42mMOJoOmKvnpNj0F4tuoS1pacTwYw==",
       "type": "package",
       "path": "system.diagnostics.stacktrace/4.3.0",
+=======
+    "System.Diagnostics.DiagnosticSource/4.3.0": {
+      "sha512": "tD6kosZnTAGdrEa0tZSuFyunMbt/5KYDnHdndJYGqZoNy00XVXyACd5d6KnE1YgYv3ne2CjtAfNXo/fwEhnKUA==",
+      "type": "package",
+      "path": "system.diagnostics.diagnosticsource/4.3.0",
+>>>>>>> main
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
+<<<<<<< HEAD
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
         "lib/net46/System.Diagnostics.StackTrace.dll",
@@ -8717,6 +9056,18 @@
         "ref/xamarinwatchos10/_._",
         "system.diagnostics.textwritertracelistener.4.3.0.nupkg.sha512",
         "system.diagnostics.textwritertracelistener.nuspec"
+=======
+        "lib/net46/System.Diagnostics.DiagnosticSource.dll",
+        "lib/net46/System.Diagnostics.DiagnosticSource.xml",
+        "lib/netstandard1.1/System.Diagnostics.DiagnosticSource.dll",
+        "lib/netstandard1.1/System.Diagnostics.DiagnosticSource.xml",
+        "lib/netstandard1.3/System.Diagnostics.DiagnosticSource.dll",
+        "lib/netstandard1.3/System.Diagnostics.DiagnosticSource.xml",
+        "lib/portable-net45+win8+wpa81/System.Diagnostics.DiagnosticSource.dll",
+        "lib/portable-net45+win8+wpa81/System.Diagnostics.DiagnosticSource.xml",
+        "system.diagnostics.diagnosticsource.4.3.0.nupkg.sha512",
+        "system.diagnostics.diagnosticsource.nuspec"
+>>>>>>> main
       ]
     },
     "System.Diagnostics.Tools/4.3.0": {
@@ -8776,6 +9127,7 @@
         "system.diagnostics.tools.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Diagnostics.TraceSource/4.3.0": {
       "sha512": "VnYp1NxGx8Ww731y2LJ1vpfb/DKVNKEZ8Jsh5SgQTZREL/YpWRArgh9pI8CDLmgHspZmLL697CaLvH85qQpRiw==",
       "type": "package",
@@ -8817,6 +9169,8 @@
         "system.diagnostics.tracesource.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "System.Diagnostics.Tracing/4.3.0": {
       "sha512": "rswfv0f/Cqkh78rA5S8eN8Neocz234+emGCtTF3lxPY96F+mmmUen6tbn0glN6PMvlKQb9bPAY5e9u7fgPTkKw==",
       "type": "package",
@@ -8907,6 +9261,7 @@
         "system.diagnostics.tracing.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Drawing.Common/5.0.0": {
       "sha512": "SztFwAnpfKC8+sEKXAFxCBWhKQaEd97EiOL7oZJZP56zbqnLpmxACWA8aGseaUExciuEAUuR9dY8f7HkTRAdnw==",
       "type": "package",
@@ -8969,6 +9324,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Globalization/4.3.0": {
       "sha512": "kYdVd2f2PAdFGblzFswE4hkNANJBKRmsfa2X5LG2AcWE1c7/4t0pYae1L8vfZ5xvE2nK/R9JprtToA61OSHWIg==",
       "type": "package",
@@ -9116,6 +9473,7 @@
         "system.globalization.extensions.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.IdentityModel.Tokens.Jwt/6.21.0": {
       "sha512": "JRD8AuypBE+2zYxT3dMJomQVsPYsCqlyZhWel3J1d5nzQokSRyTueF+Q4ID3Jcu6zSZKuzOdJ1MLTkbQsDqcvQ==",
       "type": "package",
@@ -9137,6 +9495,8 @@
         "system.identitymodel.tokens.jwt.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "System.IO/4.3.0": {
       "sha512": "3qjaHvxQPDpSOYICjUoTsmoq5u6QJAFRUITgeT/4gqkF1bajbSmb1kwSxEA8AHlofqgcKJcM8udgieRNhaJ5Cg==",
       "type": "package",
@@ -9561,6 +9921,7 @@
         "system.linq.expressions.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Memory/4.5.4": {
       "sha512": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw==",
       "type": "package",
@@ -9602,6 +9963,8 @@
         "system.memory.data.nuspec"
       ]
     },
+=======
+>>>>>>> main
     "System.Net.Http/4.3.0": {
       "sha512": "sYg+FtILtRQuYWSIAuNOELwVuVsxVyJGWQyOnlAzhV4xvhyFnON1bAzYYC+jjRW8JREM45R0R5Dgi8MTC5sEwA==",
       "type": "package",
@@ -9801,6 +10164,7 @@
         "system.net.sockets.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Numerics.Vectors/4.5.0": {
       "sha512": "QQTlPTl06J/iiDbJCiepZ4H//BVraReU4O4EoRw1U02H5TLUIT7xn3GnDp9AXPSlJUDyFs4uWjWafNX6WrAojQ==",
       "type": "package",
@@ -9848,6 +10212,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.ObjectModel/4.3.0": {
       "sha512": "bdX+80eKv9bN6K4N+d77OankKHGn6CH711a6fcOpMQu2Fckp/Ft4L/kW9WznHpyR0NRAvJutzOMHNNlBGvxQzQ==",
       "type": "package",
@@ -9999,6 +10365,7 @@
         "system.reflection.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Reflection.Emit/4.7.0": {
       "sha512": "VR4kk8XLKebQ4MZuKuIni/7oh+QGFmZW3qORd1GvBq/8026OpW501SzT/oypwiQl4TvT8ErnReh/NzY9u+C6wQ==",
       "type": "package",
@@ -10019,14 +10386,34 @@
         "lib/netstandard2.0/System.Reflection.Emit.dll",
         "lib/netstandard2.0/System.Reflection.Emit.xml",
         "lib/netstandard2.1/_._",
+=======
+    "System.Reflection.Emit/4.3.0": {
+      "sha512": "228FG0jLcIwTVJyz8CLFKueVqQK36ANazUManGaJHkO0icjiIypKW7YLWLIWahyIkdh5M7mV2dJepllLyA1SKg==",
+      "type": "package",
+      "path": "system.reflection.emit/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/monotouch10/_._",
+        "lib/net45/_._",
+        "lib/netcore50/System.Reflection.Emit.dll",
+        "lib/netstandard1.3/System.Reflection.Emit.dll",
+>>>>>>> main
         "lib/xamarinios10/_._",
         "lib/xamarinmac20/_._",
         "lib/xamarintvos10/_._",
         "lib/xamarinwatchos10/_._",
         "ref/MonoAndroid10/_._",
+<<<<<<< HEAD
         "ref/MonoTouch10/_._",
         "ref/net45/_._",
         "ref/netcoreapp2.0/_._",
+=======
+        "ref/net45/_._",
+>>>>>>> main
         "ref/netstandard1.1/System.Reflection.Emit.dll",
         "ref/netstandard1.1/System.Reflection.Emit.xml",
         "ref/netstandard1.1/de/System.Reflection.Emit.xml",
@@ -10038,6 +10425,7 @@
         "ref/netstandard1.1/ru/System.Reflection.Emit.xml",
         "ref/netstandard1.1/zh-hans/System.Reflection.Emit.xml",
         "ref/netstandard1.1/zh-hant/System.Reflection.Emit.xml",
+<<<<<<< HEAD
         "ref/netstandard2.0/System.Reflection.Emit.dll",
         "ref/netstandard2.0/System.Reflection.Emit.xml",
         "ref/netstandard2.1/_._",
@@ -10051,6 +10439,11 @@
         "system.reflection.emit.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+=======
+        "ref/xamarinmac20/_._",
+        "system.reflection.emit.4.3.0.nupkg.sha512",
+        "system.reflection.emit.nuspec"
+>>>>>>> main
       ]
     },
     "System.Reflection.Emit.ILGeneration/4.3.0": {
@@ -10481,6 +10874,7 @@
         "system.runtime.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Runtime.Caching/5.0.0": {
       "sha512": "30D6MkO8WF9jVGWZIP0hmCN8l9BTY4LCsAzLIe4xFSXzs+AjDotR7DpSmj27pFskDURzUvqYYY0ikModgBTxWw==",
       "type": "package",
@@ -10543,6 +10937,8 @@
         "useSharedDesignerContext.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Runtime.Extensions/4.3.0": {
       "sha512": "guW0uK0fn5fcJJ1tJVXYd7/1h5F+pea1r7FLSOz/f8vPEqbR2ZAknuRDvTQ8PzAilDveOxNjSfr0CHfIQfFk8g==",
       "type": "package",
@@ -10847,6 +11243,7 @@
         "system.runtime.numerics.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Security.AccessControl/5.0.0": {
       "sha512": "dagJ1mHZO3Ani8GH0PHpPEe/oYO+rVdbQjvjJkBRNQkX4t0r1iaeGn8+/ybkSLEan3/slM0t59SVdHzuHf2jmw==",
       "type": "package",
@@ -10894,6 +11291,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Security.Cryptography.Algorithms/4.3.0": {
       "sha512": "W1kd2Y8mYSCgc3ULTAZ0hOP2dSdG5YauTb1089T0/kRcN2MpSAW1izOFROrJgxSlMn3ArsgHXagigyi+ibhevg==",
       "type": "package",
@@ -10935,6 +11334,7 @@
         "system.security.cryptography.algorithms.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Security.Cryptography.Cng/5.0.0": {
       "sha512": "jIMXsKn94T9JY7PvPq/tMfqa6GAaHpElRDpmG+SuL+D3+sTw2M8VhnibKnN8Tq+4JqbPJ/f+BwtLeDMEnzAvRg==",
       "type": "package",
@@ -11014,6 +11414,34 @@
         "system.security.cryptography.cng.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+=======
+    "System.Security.Cryptography.Cng/4.3.0": {
+      "sha512": "03idZOqFlsKRL4W+LuCpJ6dBYDUWReug6lZjBa3uJWnk5sPCUXckocevTaUA8iT/MFSrY/2HXkOt753xQ/cf8g==",
+      "type": "package",
+      "path": "system.security.cryptography.cng/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/net46/System.Security.Cryptography.Cng.dll",
+        "lib/net461/System.Security.Cryptography.Cng.dll",
+        "lib/net463/System.Security.Cryptography.Cng.dll",
+        "ref/net46/System.Security.Cryptography.Cng.dll",
+        "ref/net461/System.Security.Cryptography.Cng.dll",
+        "ref/net463/System.Security.Cryptography.Cng.dll",
+        "ref/netstandard1.3/System.Security.Cryptography.Cng.dll",
+        "ref/netstandard1.4/System.Security.Cryptography.Cng.dll",
+        "ref/netstandard1.6/System.Security.Cryptography.Cng.dll",
+        "runtimes/unix/lib/netstandard1.6/System.Security.Cryptography.Cng.dll",
+        "runtimes/win/lib/net46/System.Security.Cryptography.Cng.dll",
+        "runtimes/win/lib/net461/System.Security.Cryptography.Cng.dll",
+        "runtimes/win/lib/net463/System.Security.Cryptography.Cng.dll",
+        "runtimes/win/lib/netstandard1.4/System.Security.Cryptography.Cng.dll",
+        "runtimes/win/lib/netstandard1.6/System.Security.Cryptography.Cng.dll",
+        "system.security.cryptography.cng.4.3.0.nupkg.sha512",
+        "system.security.cryptography.cng.nuspec"
+>>>>>>> main
       ]
     },
     "System.Security.Cryptography.Csp/4.3.0": {
@@ -11134,6 +11562,7 @@
         "system.security.cryptography.primitives.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Security.Cryptography.ProtectedData/5.0.0": {
       "sha512": "HGxMSAFAPLNoxBvSfW08vHde0F9uh7BjASwu6JF9JnXuEPhCY3YUqURn0+bQV/4UWeaqymmrHWV+Aw9riQCtCA==",
       "type": "package",
@@ -11180,6 +11609,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Security.Cryptography.X509Certificates/4.3.0": {
       "sha512": "t2Tmu6Y2NtJ2um0RtcuhP7ZdNNxXEgUm2JeoA/0NvlMjAhKCnM1NX07TDl3244mVp3QU6LPEhT3HTtH1uF7IYw==",
       "type": "package",
@@ -11236,6 +11667,7 @@
         "system.security.cryptography.x509certificates.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Security.Permissions/5.0.0": {
       "sha512": "uE8juAhEkp7KDBCdjDIE3H9R1HJuEHqeqX8nLX9gmYKWwsqk3T5qZlPx8qle5DPKimC/Fy3AFTdV7HamgCh9qQ==",
       "type": "package",
@@ -11323,6 +11755,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Text.Encoding/4.3.0": {
       "sha512": "BiIg+KWaSDOITze6jGQynxg64naAPtqGHBwDrLaCtixsa5bKiR8dpPOHA7ge3C0JJQizJE+sfkz1wV+BAKAYZw==",
       "type": "package",
@@ -11391,6 +11825,7 @@
         "system.text.encoding.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Text.Encoding.CodePages/5.0.0": {
       "sha512": "NyscU59xX6Uo91qvhOs2Ccho3AR2TnZPomo1Z0K6YpyztBPM/A5VbkzOO19sy3A3i1TtEnTxA7bCe3Us+r5MWg==",
       "type": "package",
@@ -11432,6 +11867,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Text.Encoding.Extensions/4.3.0": {
       "sha512": "YVMK0Bt/A43RmwizJoZ22ei2nmrhobgeiYwFzC4YAN+nue8RF6djXDMog0UCn+brerQoYVyaS+ghy9P/MUVcmw==",
       "type": "package",
@@ -11500,6 +11937,7 @@
         "system.text.encoding.extensions.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Text.Encodings.Web/7.0.0": {
       "sha512": "OP6umVGxc0Z0MvZQBVigj4/U31Pw72ITihDWP9WiWDm+q5aoe0GaJivsfYGq53o6dxH7DcXWiCTl7+0o2CGdmg==",
       "type": "package",
@@ -11602,6 +12040,8 @@
         "useSharedDesignerContext.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Text.RegularExpressions/4.3.0": {
       "sha512": "RpT2DA+L660cBt1FssIE9CAGpLFdFPuheB7pLpKpn6ZXNby7jDERe8Ua/Ne2xGiwLVG2JOqziiaVCGDon5sKFA==",
       "type": "package",
@@ -11825,6 +12265,7 @@
         "system.threading.tasks.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Threading.Tasks.Extensions/4.5.4": {
       "sha512": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
       "type": "package",
@@ -11860,6 +12301,23 @@
         "system.threading.tasks.extensions.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
+=======
+    "System.Threading.Tasks.Extensions/4.3.0": {
+      "sha512": "npvJkVKl5rKXrtl1Kkm6OhOUaYGEiF9wFbppFRWSMoApKzt2PiPHT2Bb8a5sAWxprvdOAtvaARS9QYMznEUtug==",
+      "type": "package",
+      "path": "system.threading.tasks.extensions/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/netstandard1.0/System.Threading.Tasks.Extensions.dll",
+        "lib/netstandard1.0/System.Threading.Tasks.Extensions.xml",
+        "lib/portable-net45+win8+wp8+wpa81/System.Threading.Tasks.Extensions.dll",
+        "lib/portable-net45+win8+wp8+wpa81/System.Threading.Tasks.Extensions.xml",
+        "system.threading.tasks.extensions.4.3.0.nupkg.sha512",
+        "system.threading.tasks.extensions.nuspec"
+>>>>>>> main
       ]
     },
     "System.Threading.Timer/4.3.0": {
@@ -11917,6 +12375,7 @@
         "system.threading.timer.nuspec"
       ]
     },
+<<<<<<< HEAD
     "System.Windows.Extensions/5.0.0": {
       "sha512": "c1ho9WU9ZxMZawML+ssPKZfdnrg/OjR3pe0m9v8230z3acqphwvPJqzAkH54xRYm5ntZHGG1EPP3sux9H3qSPg==",
       "type": "package",
@@ -11939,6 +12398,8 @@
         "version.txt"
       ]
     },
+=======
+>>>>>>> main
     "System.Xml.ReaderWriter/4.3.0": {
       "sha512": "GrprA+Z0RUXaR4N7/eW71j1rgMnEnEVlgii49GZyAjTH7uliMnrOU3HNFBr6fEDBCJCIdlVNq9hHbaDR621XBA==",
       "type": "package",
@@ -12226,6 +12687,7 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
+<<<<<<< HEAD
     "ApplicationCore/1.0.0": {
       "type": "project",
       "path": "../ATSPM/ApplicationCore/ApplicationCore.csproj",
@@ -12251,6 +12713,8 @@
       "path": "../ATSPM/Reports/Reports.csproj",
       "msbuildProject": "../ATSPM/Reports/Reports.csproj"
     },
+=======
+>>>>>>> main
     "WatchDog/1.0.0": {
       "type": "project",
       "path": "../WatchDog/WatchDog.csproj",
@@ -12258,11 +12722,16 @@
     }
   },
   "projectFileDependencyGroups": {
+<<<<<<< HEAD
     "net6.0": [
       "MSTest.TestAdapter >= 2.2.10",
       "MSTest.TestFramework >= 2.2.10",
       "Microsoft.NET.Test.Sdk >= 17.5.0",
       "Moq >= 4.18.2",
+=======
+    "net7.0": [
+      "Microsoft.NET.Test.Sdk >= 17.6.0",
+>>>>>>> main
       "WatchDog >= 1.0.0",
       "coverlet.collector >= 3.2.0",
       "xunit >= 2.4.2",
@@ -12270,11 +12739,16 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "C:\\Users\\christianbaker\\.nuget\\packages\\": {}
+=======
+    "C:\\Users\\jbhatia\\.nuget\\packages\\": {}
+>>>>>>> main
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
       "projectName": "WatchDogTests",
       "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
@@ -12287,17 +12761,39 @@
       ],
       "originalTargetFrameworks": [
         "net6.0"
+=======
+      "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\WatchDogTests.csproj",
+      "projectName": "WatchDogTests",
+      "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\WatchDogTests.csproj",
+      "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net7.0"
+>>>>>>> main
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
+<<<<<<< HEAD
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
             "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\WatchDog\\WatchDog.csproj": {
               "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\WatchDog\\WatchDog.csproj"
+=======
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "projectReferences": {
+            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj": {
+              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj"
+>>>>>>> main
             }
           }
         }
@@ -12309,6 +12805,7 @@
       }
     },
     "frameworks": {
+<<<<<<< HEAD
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
@@ -12329,6 +12826,18 @@
             "version": "[4.18.2, )"
           },
           "coverlet.collector": {
+=======
+      "net7.0": {
+        "targetAlias": "net7.0",
+        "dependencies": {
+          "Microsoft.NET.Test.Sdk": {
+            "target": "Package",
+            "version": "[17.6.0, )"
+          },
+          "coverlet.collector": {
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+>>>>>>> main
             "target": "Package",
             "version": "[3.2.0, )"
           },
@@ -12337,6 +12846,11 @@
             "version": "[2.4.2, )"
           },
           "xunit.runner.visualstudio": {
+<<<<<<< HEAD
+=======
+            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+            "suppressParent": "All",
+>>>>>>> main
             "target": "Package",
             "version": "[2.4.5, )"
           }
@@ -12357,12 +12871,17 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+>>>>>>> main
       }
     }
   },
   "logs": [
     {
+<<<<<<< HEAD
       "code": "NU1608",
       "level": "Warning",
       "warningLevel": 1,
@@ -12370,6 +12889,32 @@
       "libraryId": "Microsoft.EntityFrameworkCore.Relational",
       "targetGraphs": [
         "net6.0"
+=======
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj",
+      "targetGraphs": [
+        "net7.0"
+>>>>>>> main
       ]
     }
   ]
