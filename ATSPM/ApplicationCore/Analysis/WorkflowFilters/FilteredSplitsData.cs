@@ -8,7 +8,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> through <see cref="DataLoggerEnum.Split16Change"/>
     /// </summary>
-    public class FilteredSplitsData : FilterStepBase
+    public class FilteredSplitsData : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredSplitsData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

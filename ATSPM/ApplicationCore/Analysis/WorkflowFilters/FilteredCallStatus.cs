@@ -11,7 +11,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseCallDropped"/></item>
     /// </list>
     /// </summary>
-    public class FilteredCallStatus : FilterStepBase
+    public class FilteredCallStatus : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredCallStatus(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
