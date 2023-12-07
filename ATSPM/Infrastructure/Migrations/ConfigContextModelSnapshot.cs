@@ -254,10 +254,10 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("int");
@@ -323,7 +323,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -332,6 +332,118 @@ namespace ATSPM.Infrastructure.Migrations
                     b.ToTable("DetectorComments", t =>
                         {
                             t.HasComment("Detector Comments");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Device", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DeviceConfigurationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeviceStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)")
+                        .HasDefaultValue("Unknown");
+
+                    b.Property<string>("Ipaddress")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
+                        .HasDefaultValueSql("('10.0.0.1')");
+
+                    b.Property<bool>("LoggingEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<int>("SignalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceConfigurationId");
+
+                    b.HasIndex("SignalId");
+
+                    b.ToTable("Devices", t =>
+                        {
+                            t.HasComment("Devices");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DeviceConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Directory")
+                        .HasMaxLength(1024)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(1024)");
+
+                    b.Property<string>("Firmware")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("Password")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<long>("Port")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValueSql("((0))");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Protocol")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)")
+                        .HasDefaultValue("Unknown");
+
+                    b.Property<string>("SearchTerm")
+                        .HasMaxLength(128)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("DeviceConfiguration", t =>
+                        {
+                            t.HasComment("DeviceConfiguration");
                         });
                 });
 
@@ -772,7 +884,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -1191,6 +1303,49 @@ namespace ATSPM.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeviceType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)")
+                        .HasDefaultValue("Unknown");
+
+                    b.Property<string>("Manufacturer")
+                        .IsRequired()
+                        .HasMaxLength(48)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(48)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(48)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(48)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("WebPage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products", t =>
+                        {
+                            t.HasComment("Products");
+                        });
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.Region", b =>
                 {
                     b.Property<int>("Id")
@@ -1388,7 +1543,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -1419,8 +1574,8 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValue(new DateTime(2023, 12, 7, 9, 57, 34, 158, DateTimeKind.Local).AddTicks(3495));
+                        .HasColumnType("datetime2")
+                        .HasDefaultValue(new DateTime(2023, 12, 7, 12, 55, 53, 809, DateTimeKind.Local).AddTicks(6025));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1548,6 +1703,36 @@ namespace ATSPM.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Detector");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.Device", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.DeviceConfiguration", "DeviceConfiguration")
+                        .WithMany("Devices")
+                        .HasForeignKey("DeviceConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ATSPM.Data.Models.Signal", "Signal")
+                        .WithMany("Devices")
+                        .HasForeignKey("SignalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeviceConfiguration");
+
+                    b.Navigation("Signal");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.DeviceConfiguration", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MeasureOption", b =>
@@ -1708,6 +1893,11 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("DetectorComments");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.DeviceConfiguration", b =>
+                {
+                    b.Navigation("Devices");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.DirectionType", b =>
                 {
                     b.Navigation("Approaches");
@@ -1740,6 +1930,8 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
                 {
                     b.Navigation("Approaches");
+
+                    b.Navigation("Devices");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
