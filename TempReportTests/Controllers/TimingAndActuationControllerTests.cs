@@ -8,6 +8,7 @@ using Moq;
 using System.Globalization;
 using System.Net;
 using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Extensions;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
