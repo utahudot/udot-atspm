@@ -419,6 +419,32 @@
         <member name="P:ATSPM.Application.Analysis.PurdueCoordination.PurdueCoordinationResult.TotalVolume">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Application.Analysis.ReportServices.IReportService`2">
+            <summary>
+            Report service
+            </summary>
+            <typeparam name="Tin"></typeparam>
+            <typeparam name="Tout"></typeparam>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2">
+            <summary>
+            Base for report services
+            </summary>
+            <typeparam name="Tin"></typeparam>
+            <typeparam name="Tout"></typeparam>
+        </member>
+        <member name="E:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.ExecuteAsync(`0,System.IProgress{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowBase`2">
             <summary>
             Used as a base to create complex, inter-linkable, parallel workflows
@@ -493,6 +519,14 @@
             </summary>
         </member>
         <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilteredDetectorData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="F:ATSPM.Application.Analysis.WorkflowFilters.TestFilteredDetectorData.filteredList">
+            <summary>
+            List of filtered event codes
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.TestFilteredDetectorData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilteredIndicationData">

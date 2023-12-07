@@ -15,79 +15,117 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Text.Json;
+using static ATSPM.Application.Analysis.Workflows.PreemptiveStuff;
 
 namespace ATSPM.Application.Analysis.Workflows
 {
+    public class InputOnValue : PreempDetailValueBase { }
+
+
+
+
+    public class CreatePreemptCycleResult : TransformProcessStepBase<IEnumerable<PreemptCycle>, IEnumerable<PreemptCycleResult>>
+    {
+        public CreatePreemptCycleResult(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+        protected override Task<IEnumerable<PreemptCycleResult>> Process(IEnumerable<PreemptCycle> input, CancellationToken cancelToken = default)
+        {
+            var result = input.Select(s => new PreemptCycleResult()
+            {
+                CallMaxOut = s.TimeToCallMaxOut,
+                Delay = s.Delay,
+                TimeToService = s.TimeToService,
+                DwellTime = s.DwellTime,
+                TrackClear = s.TimeToTrackClear
+            });
+
+            return Task.FromResult(result);
+        }
+    }
+
+    //public class PreemptiveTestStep : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<PreemptCycle>>
+    //{
+    //    public PreemptiveTestStep(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+    //    protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+    //    {
+    //        var cycles = PreemptDetailRange<PreemptCycle>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+
+    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptCallInputOff, DataLoggerEnum.PreemptionBeginExitInterval);
+
+    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
+    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
+    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
+    //        var delay = PreemptDetailRange<DelayTimeValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
+    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
+    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+
+    //        var result = new List<PreemptCycle>();
+
+    //        foreach (var c in cycles)
+    //        {
+    //            result.Add(new PreemptCycle()
+    //            {
+    //                StartInputOn = c.Start,
+    //                BeginExitInterval = c.End,
+    //                BeginDwellService = dwell.FirstOrDefault(w => c.InRange(w))?.Start,
+    //                BeginTrackClearance = trackclear.FirstOrDefault(w => c.InRange(w))?.Start,
+    //                EntryStarted = 
+
+    //                TimeToService = timetoservice.FirstOrDefault(w => c.InRange(w))?.Seconds.TotalSeconds ?? 0,
+    //                Delay = delay.FirstOrDefault(w => c.InRange(w))?.Seconds.TotalSeconds ?? 0,
+    //                TimeToGateDown = gatedown.FirstOrDefault(w => c.InRange(w))?.Seconds.TotalSeconds ?? 0,
+    //                TimeToTrackClear = trackclear.FirstOrDefault(w => c.InRange(w))?.Seconds.TotalSeconds ?? 0
+
+    //            });
+
+    //            //c.DwellTime = dwell.FirstOrDefault(w => c.InRange(w));
+    //            //c.TrackClearTime = trackclear.FirstOrDefault(w => c.InRange(w));
+    //            //c.ServiceTime = timetoservice.FirstOrDefault(w => c.InRange(w));
+    //            //c.Delay = delay.FirstOrDefault(w => c.InRange(w));
+    //            //c.GateDownTime = gatedown.FirstOrDefault(w => c.InRange(w));
+    //            //c.CallMaxOutTime = maxout.FirstOrDefault(w => c.InRange(w));
+
+    //            //_output.WriteLine($"c: {c}");
+    //        }
+
+    //        return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
+    //    }
+
+    //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+    //    {
+    //        var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+    //        l1.GroupBy(g => g.EventParam, (preempt, l2) =>
+    //        l2.TimeSpanFromConsecutiveCodes(first, second)
+    //        .Select(s => new T()
+    //        {
+    //            SignalIdentifier = signal,
+    //            PreemptNumber = preempt,
+    //            Start = s.Item1[0].Timestamp,
+    //            End = s.Item1[1].Timestamp,
+    //            Seconds = s.Item2
+    //        })).SelectMany(m => m)).SelectMany(m => m);
+
+    //        return result;
+    //    }
+    //}
+
+
     public class PreemptiveStuff : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<PreemptCycle>>
     {
         public PreemptiveStuff(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            var result = CreatePreemptCycle(input.ToList());
+            var result = input
+                .GroupBy(g => g.SignalIdentifier, (signal, l1) => l1
+                .GroupBy(g => g.EventParam, (preempt, l2) =>
+                CreatePreemptCycle(l2.OrderBy(o => o.Timestamp).ToList())))
+                .SelectMany(m => m)
+                .SelectMany(m => m).ToList();
 
             return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
         }
-
-
-
-        //protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
-        //{
-        //    //var result = TimeSpanFromConsecutiveCodes(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval)
-        //    //    .Select(s => new PreemptCycle() { Start = s.Start, End = s.End }).ToList();
-
-        //    //foreach (var r in result)
-        //    //{
-        //    //    r.GateDown = (DateTime)(input.FirstOrDefault(w => w.EventCode == 103 && r.InRange(w.Timestamp))?.Timestamp);
-        //    //    //r. = input.FirstOrDefault(w => w.EventCode == 104 && r.InRange(w.Timestamp)).Timestamp;
-        //    //    r.EntryStarted = (DateTime)input.FirstOrDefault(w => w.EventCode == 105 && r.InRange(w.Timestamp))?.Timestamp;
-        //    //    r.BeginTrackClearance = (DateTime)input.FirstOrDefault(w => w.EventCode == 106 && r.InRange(w.Timestamp))?.Timestamp;
-        //    //    r.BeginDwellService = (DateTime)input.FirstOrDefault(w => w.EventCode == 107 && r.InRange(w.Timestamp))?.Timestamp;
-        //    //    r.MaxPresenceExceeded = (DateTime)input.FirstOrDefault(w => w.EventCode == 110 && r.InRange(w.Timestamp))?.Timestamp;
-        //    //}
-
-        //    var result = new List<PreemptCycle>();
-
-        //    var logs = input.ToList();
-
-        //    for(int i = 0; i < logs.Count; i++)
-        //    {
-        //        if (logs[i].EventCode == 102)
-        //        {
-        //            var cycle = new PreemptCycle() { Start = logs[i].Timestamp };
-        //            var on = logs.FindIndex(i + 1, p => p.EventCode == 102);
-        //            //var entry = logs.FindIndex(i + 1, p => p.EventCode == 105);
-        //            var off = logs.FindIndex(i + 1 , p => p.EventCode == 104);
-        //            var end = logs.FindIndex(i + 1, p => p.EventCode == 111);
-
-        //            //check to see if the next 102 event is after the 111, otherwise need to end it
-        //            if (on == -1 || on > end)
-        //            {
-        //                //make sure there is an 111 event
-        //                if (end != -1)
-        //                {
-        //                    cycle.End = logs[end].Timestamp;
-        //                    ////see if there is a 105 inbetween start and end
-        //                    //if (entry > 0 && entry < end)
-        //                    //{
-        //                    //    cycle.EntryStarted = logs[entry].Timestamp;
-        //                    //}
-        //                }
-        //            }
-
-        //            //if there is a 102 before the 111
-        //            if (on > -1 && on < end)
-        //            {
-        //                cycle.End = logs[on].Timestamp;
-        //            }
-
-        //            result.Add(cycle);
-        //        }
-        //    }
-
-
-        //    return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
-        //}
 
         public List<PreemptCycle> CreatePreemptCycle(List<ControllerEventLog> preemptEvents)
         {
@@ -116,7 +154,7 @@ namespace ATSPM.Application.Analysis.Workflows
                     case 102:
 
                         //if (cycle != null)
-                            //cycle.InputOn.Add(preemptEvents[x].Timestamp);
+                        //cycle.InputOn.Add(preemptEvents[x].Timestamp);
 
                         if (cycle == null && preemptEvents[x].Timestamp != preemptEvents[x + 1].Timestamp &&
                             preemptEvents[x + 1].EventCode == 105)
@@ -135,7 +173,7 @@ namespace ATSPM.Application.Analysis.Workflows
                     case 104:
 
                         //if (cycle != null)
-                            //cycle.InputOff.Add(preemptEvents[x].Timestamp);
+                        //cycle.InputOff.Add(preemptEvents[x].Timestamp);
 
                         break;
 
@@ -423,7 +461,30 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class PreemptCycle : StartEndRange
+    public class PreemptCycleResult
+    {
+        public DateTime InputOff { get; set; }
+
+        public DateTime InputOn { get; set; }
+
+        public DateTime GateDown { get; set; }
+
+        public double CallMaxOut { get; set; }
+
+        public double Delay { get; set; }
+
+        public double TimeToService { get; set; }
+
+        public double DwellTime { get; set; }
+
+        public double TrackClear { get; set; }
+    }
+
+
+
+
+
+    public class PreemptCycle : PreempDetailValueBase
     {
 
         public PreemptCycle()
@@ -434,22 +495,14 @@ namespace ATSPM.Application.Analysis.Workflows
         }
         // public enum CycleState { InputOn, GateDown, InputOff, BeginTrackClearance, EntryStarted  };
         //public List<DateTime> InputOff { get; set; }
-       // public List<DateTime> InputOn { get; set; }
+        // public List<DateTime> InputOn { get; set; }
         //public List<DateTime> OtherPreemptStart { get; set; }
-        
-        
-        /// <summary>
-        /// 102
-        /// </summary>
+        public List<DateTime?> InputOff { get; set; }
+        public List<DateTime?> InputOn { get; set; }
+        public List<DateTime?> OtherPreemptStart { get; set; }
         public DateTime? StartInputOn { get; set; }
-        
-        /// <summary>
-        /// start of cycle, either from 102 or 105
-        /// </summary>
-        //public DateTime CycleStart { get; set; }
-        
-        
-        //public DateTime CycleEnd { get; set; }
+        public DateTime? CycleStart { get; set; }
+        public DateTime? CycleEnd { get; set; }
         public DateTime? GateDown { get; set; }
         public DateTime? EntryStarted { get; set; }
         public DateTime? BeginTrackClearance { get; set; }
@@ -458,16 +511,14 @@ namespace ATSPM.Application.Analysis.Workflows
         public DateTime? LinkActive { get; set; }
         public DateTime? LinkInactive { get; set; }
         public DateTime? MaxPresenceExceeded { get; set; }
-
-        //
         public bool HasDelay { get; set; }
-        //public double Delay { get; set; }
-        //public double TimeToService { get; set; }
-        //public double DwellTime { get; set; }
-        //public double TimeToCallMaxOut { get; set; }
-        //public double TimeToEndOfEntryDelay { get; set; }
-        //public double TimeToTrackClear { get; set; }
-        //public double TimeToGateDown { get; set; }
+        public double Delay { get; set; }
+        public double TimeToService { get; set; }
+        public double DwellTime { get; set; }
+        public double TimeToCallMaxOut { get; set; }
+        public double TimeToEndOfEntryDelay { get; set; }
+        public double TimeToTrackClear { get; set; }
+        public double TimeToGateDown { get; set; }
 
         public override string ToString()
         {
@@ -503,7 +554,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public GeneratePreemptDetailResults GeneratePreemptDetailResults { get; private set; }
 
         /// <inheritdoc/>
-        public override void InstantiateSteps()
+        protected override void InstantiateSteps()
         {
             FilteredPreemptionData = new();
 
@@ -523,7 +574,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void AddStepsToTracker()
+        protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredPreemptionData);
             Steps.Add(CalculateDwellTime);
@@ -540,30 +591,30 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         /// <inheritdoc/>
-        public override void LinkSteps()
+        protected override void LinkSteps()
         {
-            Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
+            //Input.LinkTo(FilteredPreemptionData, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilteredPreemptionData.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPreemptionData.LinkTo(CalculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
+            //FilteredPreemptionData.LinkTo(CalculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            joinOne.LinkTo(joinThree.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            joinTwo.LinkTo(joinThree.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            //joinOne.LinkTo(joinThree.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            //joinTwo.LinkTo(joinThree.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            CalculateDwellTime.LinkTo(joinOne.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTrackClearTime.LinkTo(joinOne.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToService.LinkTo(joinOne.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateDelay.LinkTo(joinTwo.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToGateDown.LinkTo(joinTwo.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimeToCallMaxOut.LinkTo(joinTwo.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateDwellTime.LinkTo(joinOne.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateTrackClearTime.LinkTo(joinOne.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateTimeToService.LinkTo(joinOne.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateDelay.LinkTo(joinTwo.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateTimeToGateDown.LinkTo(joinTwo.Target2, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateTimeToCallMaxOut.LinkTo(joinTwo.Target3, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            joinThree.LinkTo(mergePreemptionTimes, new DataflowLinkOptions() { PropagateCompletion = true });
-            mergePreemptionTimes.LinkTo(GeneratePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
-            GeneratePreemptDetailResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            //joinThree.LinkTo(mergePreemptionTimes, new DataflowLinkOptions() { PropagateCompletion = true });
+            //mergePreemptionTimes.LinkTo(GeneratePreemptDetailResults, new DataflowLinkOptions() { PropagateCompletion = true });
+            //GeneratePreemptDetailResults.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 

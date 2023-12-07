@@ -13,7 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPedPhaseData : FilterStepBase
+    public class FilteredPedPhaseData : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredPedPhaseData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
