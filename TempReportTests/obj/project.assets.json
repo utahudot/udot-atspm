@@ -198,6 +198,43 @@
           }
         }
       },
+      "Duende.IdentityServer/6.3.6": {
+        "type": "package",
+        "dependencies": {
+          "Duende.IdentityServer.Storage": "6.3.6",
+          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "7.0.0"
+        },
+        "compile": {
+          "lib/net7.0/Duende.IdentityServer.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Duende.IdentityServer.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "Duende.IdentityServer.EntityFramework/6.3.6": {
+        "type": "package",
+        "dependencies": {
+          "Duende.IdentityServer": "6.3.6",
+          "Duende.IdentityServer.EntityFramework.Storage": "6.3.6"
+        },
+        "compile": {
+          "lib/net7.0/Duende.IdentityServer.EntityFramework.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Duende.IdentityServer.EntityFramework.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Duende.IdentityServer.EntityFramework.Storage/6.3.6": {
         "type": "package",
         "dependencies": {
@@ -669,6 +706,25 @@
             "related": ".xml"
           }
         }
+      },
+      "Microsoft.AspNetCore.Authentication.OpenIdConnect/7.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.15.1"
+        },
+        "compile": {
+          "lib/net7.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "Microsoft.AspNetCore.Authorization/2.2.0": {
         "type": "package",
@@ -4308,6 +4364,7 @@
         "dependencies": {
           "ATSPM.Data": "1.0.0",
           "ApplicationCore": "1.0.0",
+          "Duende.IdentityServer.EntityFramework": "6.3.6",
           "FluentFTP": "44.0.1",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "7.0.0",
@@ -4622,6 +4679,40 @@
         "lib/netstandard2.0/Microsoft.SqlServer.Types.dll",
         "lib/netstandard2.0/Microsoft.SqlServer.Types.pdb",
         "lib/netstandard2.0/Microsoft.SqlServer.Types.xml"
+      ]
+    },
+    "Duende.IdentityServer/6.3.6": {
+      "sha512": "KQekGpJxb4fENF6zBOU10KTWHxw/Bs8CP3+YXUlz4d/ePxvo/dVU7o/1xlTlDjne7SDqfx06IHMG9Z3mZl9U9Q==",
+      "type": "package",
+      "path": "duende.identityserver/6.3.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "duende.identityserver.6.3.6.nupkg.sha512",
+        "duende.identityserver.nuspec",
+        "icon.png",
+        "lib/net6.0/Duende.IdentityServer.dll",
+        "lib/net6.0/Duende.IdentityServer.xml",
+        "lib/net7.0/Duende.IdentityServer.dll",
+        "lib/net7.0/Duende.IdentityServer.xml"
+      ]
+    },
+    "Duende.IdentityServer.EntityFramework/6.3.6": {
+      "sha512": "zw8DNSPoBqMNjJdHXRN/uXcKH5uCJTXpyS4Wv3dsK6CBBCWv5fvtybgnBQB9gUZhjR6xg0cDvTVN682MJHeFwQ==",
+      "type": "package",
+      "path": "duende.identityserver.entityframework/6.3.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "duende.identityserver.entityframework.6.3.6.nupkg.sha512",
+        "duende.identityserver.entityframework.nuspec",
+        "icon.png",
+        "lib/net6.0/Duende.IdentityServer.EntityFramework.dll",
+        "lib/net6.0/Duende.IdentityServer.EntityFramework.xml",
+        "lib/net7.0/Duende.IdentityServer.EntityFramework.dll",
+        "lib/net7.0/Duende.IdentityServer.EntityFramework.xml"
       ]
     },
     "Duende.IdentityServer.EntityFramework.Storage/6.3.6": {
@@ -5164,6 +5255,21 @@
         "lib/netstandard2.0/Microsoft.AspNetCore.Authentication.Core.xml",
         "microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
         "microsoft.aspnetcore.authentication.core.nuspec"
+      ]
+    },
+    "Microsoft.AspNetCore.Authentication.OpenIdConnect/7.0.0": {
+      "sha512": "hAPVV6xD9KQaf0je+YhhPBvGv421DRthL7qBsKxmjL2ELB4cbogD2FcHg9z80hy6P1ABZ09leKknJ2xRkXFCMA==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.authentication.openidconnect/7.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net7.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll",
+        "lib/net7.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.xml",
+        "microsoft.aspnetcore.authentication.openidconnect.7.0.0.nupkg.sha512",
+        "microsoft.aspnetcore.authentication.openidconnect.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Authorization/2.2.0": {

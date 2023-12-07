@@ -299,6 +299,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Duende.IdentityServer.EntityFramework": {
+              "target": "Package",
+              "version": "[6.3.6, )"
+            },
             "FluentFTP": {
               "target": "Package",
               "version": "[44.0.1, )"

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "swdGB9JRSBJqrMIpyqQTgxwbRf6WeskQVekM9SGBbAfAhJpVvXFbZVbCX4N018Nr/pPqFX3zoMzN3Zww0k/DHg==",
+  "dgSpecHash": "5jV1LJYOSs9v7DmX6rD6IxIBgtRSm9qavw0xx19YXmcvMqGya1ngg2S+5LeumiviQ0TQO7zWD/ZO1ZsAby5dOA==",
   "success": true,
   "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
   "expectedPackageFiles": [
@@ -16,6 +16,8 @@
     "C:\\Users\\jbhatia\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\dotmorten.microsoft.sqlserver.types\\1.5.0\\dotmorten.microsoft.sqlserver.types.1.5.0.nupkg.sha512",
+    "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver\\6.3.6\\duende.identityserver.6.3.6.nupkg.sha512",
+    "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.entityframework\\6.3.6\\duende.identityserver.entityframework.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.entityframework.storage\\6.3.6\\duende.identityserver.entityframework.storage.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\duende.identityserver.storage\\6.3.6\\duende.identityserver.storage.6.3.6.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\efcore.bulkextensions\\7.1.6\\efcore.bulkextensions.7.1.6.nupkg.sha512",
@@ -44,6 +46,7 @@
     "C:\\Users\\jbhatia\\.nuget\\packages\\medalliontopologicalsort\\1.0.0\\medalliontopologicalsort.1.0.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.2.0\\microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
+    "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.authentication.openidconnect\\7.0.0\\microsoft.aspnetcore.authentication.openidconnect.7.0.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.authorization\\2.2.0\\microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.authorization.policy\\2.2.0\\microsoft.aspnetcore.authorization.policy.2.2.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\7.0.14\\microsoft.aspnetcore.cryptography.internal.7.0.14.nupkg.sha512",
