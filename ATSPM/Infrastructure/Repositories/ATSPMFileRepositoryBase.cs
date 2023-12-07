@@ -1,11 +1,7 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
-using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -13,10 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Repositories
