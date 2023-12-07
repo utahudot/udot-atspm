@@ -1,12 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
-using ATSPM.Data;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -92,7 +84,8 @@ namespace ATSPM.Infrastructure.Repositories
         public Signal GetLatestVersionOfSignal(string signalIdentifier)
         {
             var result = BaseQuery()
-                .Include(i => i.Approaches)
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
+                .Include(i => i.Approaches).ThenInclude(i => i.DirectionType)
                 .Include(i => i.Areas)
                 .FromSpecification(new SignalIdSpecification(signalIdentifier))
                 .FromSpecification(new ActiveSignalSpecification())

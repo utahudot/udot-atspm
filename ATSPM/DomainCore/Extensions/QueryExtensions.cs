@@ -85,7 +85,38 @@ namespace ATSPM.Domain.Extensions
         /// <param name="pass">query to return if <paramref name="condition"/> passes</param>
         /// <param name="fail">query to return if <paramref name="condition"/> should fail</param>
         /// <returns></returns>
-        public static IQueryable<T> IfCondition<T>(this IQueryable<T> query, Func<bool> condition, Expression<Func<IQueryable<T>, IQueryable<T>>> pass, Expression<Func<IQueryable<T>, IQueryable<T>>> fail = null)
+        public static IQueryable<T> IfCondition<T>(
+            this IQueryable<T> query,
+            Func<bool> condition,
+            Expression<Func<IQueryable<T>, IQueryable<T>>> pass,
+            Expression<Func<IQueryable<T>, IQueryable<T>>> fail = null)
+        {
+            if (condition.Invoke())
+            {
+                return pass.Compile().Invoke(query);
+            }
+            else if (fail != null)
+            {
+                return fail.Compile().Invoke(query);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Use to create an if statement on an linline linq query
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="condition">Condition that will pass or fail</param>
+        /// <param name="pass">query to return if <paramref name="condition"/> passes</param>
+        /// <param name="fail">query to return if <paramref name="condition"/> should fail</param>
+        /// <returns></returns>
+        public static IEnumerable<T> IfCondition<T>(
+            this IEnumerable<T> query,
+            Func<bool> condition,
+            Expression<Func<IEnumerable<T>, IEnumerable<T>>> pass,
+            Expression<Func<IEnumerable<T>, IEnumerable<T>>> fail = null)
         {
             if (condition.Invoke())
             {
