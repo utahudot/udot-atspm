@@ -125,3 +125,4 @@ dkms.conf
 /WatchDog/obj/Release/net6.0
 /WatchDogTests/bin/Release/net6.0
 /WatchDogTests/obj/Release/net6.0
+/IdentityTests/obj/Release/net7.0
