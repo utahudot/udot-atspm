@@ -18,6 +18,7 @@ namespace ATSPM.Data
         public AggregationContext(DbContextOptions<AggregationContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<ApproachPcdAggregation> ApproachPcdAggregations { get; set; }
