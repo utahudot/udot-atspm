@@ -37,8 +37,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "ConfigApi\Conf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportApi", "ReportApi\ReportApi.csproj", "{B5C6DE21-2BCB-4F09-BCB0-0E4375E0DA29}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TempReportTests", "..\TempReportTests\TempReportTests.csproj", "{BF219D28-6045-4E35-9EB9-9EAB10800D62}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{B728C433-A46F-441B-9339-D0A238F06244}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityTests", "IdentityTests\IdentityTests.csproj", "{0B05F5AA-72D4-4D9B-8CA5-1007E06AB7FD}"
@@ -105,10 +103,6 @@ Global
 		{B5C6DE21-2BCB-4F09-BCB0-0E4375E0DA29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C6DE21-2BCB-4F09-BCB0-0E4375E0DA29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5C6DE21-2BCB-4F09-BCB0-0E4375E0DA29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Release|Any CPU.ActiveCfg = Release|Any CPU
