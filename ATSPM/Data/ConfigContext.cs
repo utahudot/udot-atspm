@@ -4,7 +4,11 @@ using ATSPM.Data.Configuration;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Linq.Expressions;
 using System.Net;
+using System.Reflection.Emit;
 
 namespace ATSPM.Data
 {
@@ -120,7 +124,6 @@ namespace ATSPM.Data
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().AreUnicode(false);
-            configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
             configurationBuilder.Properties<SignalVersionActions>().HaveConversion<int>();
@@ -129,6 +132,11 @@ namespace ATSPM.Data
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
             configurationBuilder.Properties<DetectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
+
+            if (Database.IsNpgsql())
+                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            else
+                configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>
@@ -153,7 +161,7 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
             modelBuilder.ApplyConfiguration(new SignalConfiguration());
-
+            
             OnModelCreatingPartial(modelBuilder);
             //TODO: call based class when using IdentityContext
         }
