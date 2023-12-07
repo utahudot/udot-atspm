@@ -47,6 +47,16 @@ namespace ATSPM.Data
         public virtual DbSet<DetectorComment> DetectorComments { get; set; }
 
         /// <summary>
+        /// Device table
+        /// </summary>
+        public virtual DbSet<Device> Devices { get; set; }
+
+        /// <summary>
+        /// Device configuration table
+        /// </summary>
+        public virtual DbSet<DeviceConfiguration> DeviceConfiguration { get; set; }
+
+        /// <summary>
         /// Detectors table
         /// </summary>
         public virtual DbSet<Detector> Detectors { get; set; }
@@ -72,6 +82,11 @@ namespace ATSPM.Data
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
 
         /// <summary>
+        /// Menu table
+        /// </summary>
+        public virtual DbSet<MenuItem> MenuItems { get; set; }
+
+        /// <summary>
         /// Measure comments table
         /// </summary>
         public virtual DbSet<MeasureComment> MeasureComments { get; set; }
@@ -87,10 +102,10 @@ namespace ATSPM.Data
         public virtual DbSet<MeasureType> MeasureType { get; set; }
 
         /// <summary>
-        /// Menu table
+        /// Products table
         /// </summary>
-        public virtual DbSet<MenuItem> MenuItems { get; set; }
-        
+        public virtual DbSet<Product> Products { get; set; }
+
         /// <summary>
         /// Regions table
         /// </summary>
@@ -133,11 +148,13 @@ namespace ATSPM.Data
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
             configurationBuilder.Properties<DetectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
+            configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
+            configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
 
-            if (Database.IsNpgsql())
-                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
-            else
-                configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
+            //if (Database.IsNpgsql())
+            //    configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            //else
+            //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>
@@ -150,6 +167,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());
+            modelBuilder.ApplyConfiguration(new DevicesConfiguration());
+            modelBuilder.ApplyConfiguration(new DeviceConfigConfiguration());
             modelBuilder.ApplyConfiguration(new DirectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
@@ -158,6 +177,7 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureOptionsConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());

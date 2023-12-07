@@ -133,7 +133,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Comment = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
                 },
@@ -187,6 +187,24 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Menu Items");
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Manufacturer = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
+                    Model = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
+                    DeviceType = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    WebPage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                },
+                comment: "Products");
+
+            migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new
                 {
@@ -237,7 +255,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 12, 7, 9, 57, 34, 158, DateTimeKind.Local).AddTicks(3495)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 7, 12, 55, 53, 809, DateTimeKind.Local).AddTicks(6025)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -323,6 +341,34 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Measure Options");
 
             migrationBuilder.CreateTable(
+                name: "DeviceConfiguration",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Firmware = table.Column<string>(type: "varchar(16)", unicode: false, maxLength: 16, nullable: false),
+                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
+                    Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
+                    Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
+                    UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeviceConfiguration", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeviceConfiguration_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "DeviceConfiguration");
+
+            migrationBuilder.CreateTable(
                 name: "Signal",
                 columns: table => new
                 {
@@ -337,7 +383,7 @@ namespace ATSPM.Infrastructure.Migrations
                     LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
                     VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
-                    Start = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Pedsare1to1 = table.Column<bool>(type: "bit", nullable: false),
                     SignalIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     ControllerTypeId = table.Column<int>(type: "int", nullable: false),
@@ -469,6 +515,37 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Devices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
+                    DeviceStatus = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
+                    SignalId = table.Column<int>(type: "int", nullable: false),
+                    DeviceConfigurationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Devices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Devices_DeviceConfiguration_DeviceConfigurationId",
+                        column: x => x.DeviceConfigurationId,
+                        principalTable: "DeviceConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Devices_Signal_SignalId",
+                        column: x => x.SignalId,
+                        principalTable: "Signal",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                },
+                comment: "Devices");
+
+            migrationBuilder.CreateTable(
                 name: "Detectors",
                 columns: table => new
                 {
@@ -478,8 +555,8 @@ namespace ATSPM.Infrastructure.Migrations
                     DetectorChannel = table.Column<int>(type: "int", nullable: false),
                     DistanceFromStopBar = table.Column<int>(type: "int", nullable: true),
                     MinSpeedFilter = table.Column<int>(type: "int", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime", nullable: false),
-                    DateDisabled = table.Column<DateTime>(type: "datetime", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateDisabled = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LaneNumber = table.Column<int>(type: "int", nullable: true),
                     MovementType = table.Column<int>(type: "int", nullable: false),
                     LaneType = table.Column<int>(type: "int", nullable: false),
@@ -531,7 +608,7 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Comment = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
                     DetectorId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -700,6 +777,21 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "ApproachId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeviceConfiguration_ProductId",
+                table: "DeviceConfiguration",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Devices_DeviceConfigurationId",
+                table: "Devices",
+                column: "DeviceConfigurationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Devices_SignalId",
+                table: "Devices",
+                column: "SignalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MeasureCommentMeasureType_MeasureTypesId",
                 table: "MeasureCommentMeasureType",
                 column: "MeasureTypesId");
@@ -783,6 +875,9 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "DetectorComments");
 
             migrationBuilder.DropTable(
+                name: "Devices");
+
+            migrationBuilder.DropTable(
                 name: "ExternalLinks");
 
             migrationBuilder.DropTable(
@@ -816,6 +911,9 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Detectors");
 
             migrationBuilder.DropTable(
+                name: "DeviceConfiguration");
+
+            migrationBuilder.DropTable(
                 name: "MeasureComments");
 
             migrationBuilder.DropTable(
@@ -826,6 +924,9 @@ namespace ATSPM.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Approaches");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "DirectionTypes");
