@@ -231,3 +231,6 @@ C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\bin\Debug\net7.0
 C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\bin\Debug\net7.0\TestFiles\Split_Failure_NL.csv
 C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\bin\Debug\net7.0\TestFiles\TMCEventcodes.csv
 C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\bin\Debug\net7.0\CsvHelper.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\refint\TempReportTests.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.pdb
