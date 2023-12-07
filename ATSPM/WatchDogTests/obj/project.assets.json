@@ -1712,6 +1712,21 @@
         "build": {
           "build/netcoreapp3.1/xunit.runner.visualstudio.props": {}
         }
+      },
+      "WatchDog/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": "1.0.0",
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj": "1.0.0",
+          "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/WatchDog.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/WatchDog.dll": {}
+        }
       }
     }
   },
@@ -5507,11 +5522,17 @@
         "xunit.runner.visualstudio.2.4.5.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "WatchDog/1.0.0": {
+      "type": "project",
+      "path": "../WatchDog/WatchDog.csproj",
+      "msbuildProject": "../WatchDog/WatchDog.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
       "Microsoft.NET.Test.Sdk >= 17.6.0",
+      "WatchDog >= 1.0.0",
       "coverlet.collector >= 3.2.0",
       "xunit >= 2.4.2",
       "xunit.runner.visualstudio >= 2.4.5"
@@ -5523,11 +5544,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
+      "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\WatchDogTests.csproj",
       "projectName": "WatchDogTests",
-      "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
+      "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\WatchDogTests.csproj",
       "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\obj\\",
+      "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -5543,7 +5564,11 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj": {
+              "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -5596,5 +5621,34 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
