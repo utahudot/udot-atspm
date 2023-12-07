@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
@@ -12,15 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.3.6" />
     <PackageReference Include="FluentFTP" Version="44.0.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
     <PackageReference Include="OData.Swagger" Version="1.0.0" />
     <PackageReference Include="Parquet.Net" Version="3.10.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\Aggregation\" />
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Speed\" />
