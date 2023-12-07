@@ -40,7 +40,7 @@ namespace ATSPM.Application.ValueObjects
 
             testObject.Results = results;
 
-            testObject.Signal = _signalRepo.GetLatestVersionOfSignal(signal);
+            //testObject.Signal = _signalRepo.GetLatestVersionOfSignal(signal);
 
             if (logFile.Exists)
             {

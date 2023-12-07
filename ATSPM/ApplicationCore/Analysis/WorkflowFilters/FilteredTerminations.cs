@@ -10,9 +10,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseGapOut"/></item>
     /// <item><see cref="DataLoggerEnum.PhaseMaxOut"/></item>
     /// <item><see cref="DataLoggerEnum.PhaseForceOff"/></item>
+    /// <item><see cref="DataLoggerEnum.PhaseGreenTermination"/></item>
     /// </list>
     /// </summary>
-    public class FilteredTerminations : FilterStepBase
+    public class FilteredTerminations : FilterEventCodeSignalBase
     {
         /// <inheritdoc/>
         public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
@@ -20,6 +21,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
             filteredList.Add((int)DataLoggerEnum.PhaseGapOut);
             filteredList.Add((int)DataLoggerEnum.PhaseMaxOut);
             filteredList.Add((int)DataLoggerEnum.PhaseForceOff);
+            filteredList.Add((int)DataLoggerEnum.PhaseGreenTermination);
         }
     }
 }
