@@ -2,6 +2,7 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
+using Google.Apis.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,28 +12,67 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
+    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>, int>, T> where T : PreempDetailValueBase, new()
     {
         protected DataLoggerEnum first;
         protected DataLoggerEnum second;
 
         public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<T>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>, int> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => g.SignalIdentifier)
-                .SelectMany(s => s.GroupBy(g => g.EventParam)
-                .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
+            //var result = Tuple.Create(input.Item1, input.Item2
+            //    .Where(w => w.SignalIdentifier == input.Item1.SignalIdentifier)
+            //    .Where(w => w.EventParam == input.Item3)
+            //    .TimeSpanFromConsecutiveCodes(first, second)
+            //    .Select(s => new T()
+            //    {
+            //        SignalIdentifier = input.Item1.SignalIdentifier,
+            //        PreemptNumber = input.Item3,
+            //        Start = s.Item1[0].Timestamp,
+            //        End = s.Item1[1].Timestamp,
+            //        Seconds = s.Item2
+            //    }), input.Item3);
+
+            var result = input.Item2
+                .Where(w => w.SignalIdentifier == input.Item1.SignalIdentifier)
+                .Where(w => w.EventParam == input.Item3)
+                .TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
                 {
-                    SignalIdentifier = s.Item1[0].SignalIdentifier == s.Item1[1].SignalIdentifier ? s.Item1[0].SignalIdentifier : string.Empty,
-                    PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
+                    SignalIdentifier = input.Item1.SignalIdentifier,
+                    PreemptNumber = input.Item3,
                     Start = s.Item1[0].Timestamp,
                     End = s.Item1[1].Timestamp,
                     Seconds = s.Item2
-                })));
+                });
 
             return Task.FromResult(result);
         }
     }
+
+    //public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
+    //{
+    //    protected DataLoggerEnum first;
+    //    protected DataLoggerEnum second;
+
+    //    public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+
+    //    protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+    //    {
+    //        var result = input.GroupBy(g => g.SignalIdentifier)
+    //            .SelectMany(s => s.GroupBy(g => g.EventParam)
+    //            .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
+    //            .Select(s => new T()
+    //            {
+    //                SignalIdentifier = s.Item1[0].SignalIdentifier == s.Item1[1].SignalIdentifier ? s.Item1[0].SignalIdentifier : string.Empty,
+    //                PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
+    //                Start = s.Item1[0].Timestamp,
+    //                End = s.Item1[1].Timestamp,
+    //                Seconds = s.Item2
+    //            })));
+
+    //        return Task.FromResult(result);
+    //    }
+    //}
 }

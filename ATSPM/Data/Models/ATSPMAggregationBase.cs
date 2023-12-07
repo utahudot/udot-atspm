@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Data.Models
 {
-    public abstract class ATSPMAggregationBase
+    public abstract class ATSPMAggregationBase : StartEndRange
     {
         public DateTime BinStartTime { get; set; }
     }

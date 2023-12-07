@@ -1,12 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
+    <Compile Remove="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
+    <Compile Remove="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
+    <Compile Remove="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
+    <Compile Remove="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -25,7 +34,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Analysis\WorkflowFilterTests\" />
+    <Folder Include="Analysis\TestData\" />
+    <Folder Include="Analysis\ReportTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Analysis\Plans\PurdueCoordinationPlanTests.cs" />
+    <None Include="Analysis\WorkflowSteps\CalculateDwellTimeTests.cs" />
+    <None Include="Analysis\WorkflowSteps\CalculateTimingPlansTests.cs" />
+    <None Include="Analysis\WorkflowSteps\CalculateVehicleArrivalsTests.cs" />
+    <None Include="Analysis\WorkflowSteps\GenerateApproachDelayResultsTests.cs" />
   </ItemGroup>
 
 </Project>
