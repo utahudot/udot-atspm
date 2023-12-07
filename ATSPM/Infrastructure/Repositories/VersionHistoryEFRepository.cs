@@ -8,27 +8,27 @@ using System.Linq;
 namespace ATSPM.Infrastructure.Repositories
 {
     /// <summary>
-    /// Menu item entity framework repository
+    /// Version history entity framework repository
     /// </summary>
-    public class MenuItemEFRepository : ATSPMRepositoryEFBase<MenuItem>, IMenuItemReposiotry
+    public class VersionHistoryEFRepository : ATSPMRepositoryEFBase<VersionHistory>, IVersionHistoryRepository
     {
         /// <inheritdoc/>
-        public MenuItemEFRepository(ConfigContext db, ILogger<MenuItemEFRepository> log) : base(db, log) { }
+        public VersionHistoryEFRepository(ConfigContext db, ILogger<VersionHistoryEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
         /// <inheritdoc/>
-        public override IQueryable<MenuItem> GetList()
+        public override IQueryable<VersionHistory> GetList()
         {
             return base.GetList()
                 .Include(i => i.Parent)
                 .Include(i => i.Children)
-                .OrderBy(o => o.DisplayOrder);
+                .OrderBy(o => o.Version);
         }
 
         #endregion
 
-        #region IMenuItemReposiotry
+        #region IVersionHistoryRepository
 
         #endregion
     }

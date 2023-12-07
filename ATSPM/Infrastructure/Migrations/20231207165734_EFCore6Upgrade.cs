@@ -230,6 +230,30 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Application Settings");
 
             migrationBuilder.CreateTable(
+                name: "VersionHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
+                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime", nullable: false, defaultValue: new DateTime(2023, 12, 7, 9, 57, 34, 158, DateTimeKind.Local).AddTicks(3495)),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VersionHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VersionHistory_VersionHistory_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "VersionHistory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                },
+                comment: "Version History");
+
+            migrationBuilder.CreateTable(
                 name: "DetectionTypeMeasureType",
                 columns: table => new
                 {
@@ -299,7 +323,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Measure Options");
 
             migrationBuilder.CreateTable(
-                name: "Signals",
+                name: "Signal",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -322,21 +346,21 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Signals", x => x.Id);
+                    table.PrimaryKey("PK_Signal", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Signals_ControllerTypes_ControllerTypeId",
+                        name: "FK_Signal_ControllerTypes_ControllerTypeId",
                         column: x => x.ControllerTypeId,
                         principalTable: "ControllerTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Signals_Jurisdictions_JurisdictionId",
+                        name: "FK_Signal_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "Jurisdictions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Signals_Regions_RegionId",
+                        name: "FK_Signal_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
                         principalColumn: "Id",
@@ -412,9 +436,9 @@ namespace ATSPM.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Approaches_Signals_SignalId",
+                        name: "FK_Approaches_Signal_SignalId",
                         column: x => x.SignalId,
-                        principalTable: "Signals",
+                        principalTable: "Signal",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 },
@@ -437,9 +461,9 @@ namespace ATSPM.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AreaSignal_Signals_SignalsId",
+                        name: "FK_AreaSignal_Signal_SignalsId",
                         column: x => x.SignalsId,
-                        principalTable: "Signals",
+                        principalTable: "Signal",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -723,19 +747,24 @@ namespace ATSPM.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Signals_ControllerTypeId",
-                table: "Signals",
+                name: "IX_Signal_ControllerTypeId",
+                table: "Signal",
                 column: "ControllerTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Signals_JurisdictionId",
-                table: "Signals",
+                name: "IX_Signal_JurisdictionId",
+                table: "Signal",
                 column: "JurisdictionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Signals_RegionId",
-                table: "Signals",
+                name: "IX_Signal_RegionId",
+                table: "Signal",
                 column: "RegionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VersionHistory_ParentId",
+                table: "VersionHistory",
+                column: "ParentId");
         }
 
         /// <inheritdoc />
@@ -775,6 +804,9 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Settings");
 
             migrationBuilder.DropTable(
+                name: "VersionHistory");
+
+            migrationBuilder.DropTable(
                 name: "Areas");
 
             migrationBuilder.DropTable(
@@ -799,7 +831,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "DirectionTypes");
 
             migrationBuilder.DropTable(
-                name: "Signals");
+                name: "Signal");
 
             migrationBuilder.DropTable(
                 name: "ControllerTypes");
