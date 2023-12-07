@@ -18,6 +18,7 @@ namespace ATSPM.Data
         public AggregationContext(DbContextOptions<AggregationContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<ApproachPcdAggregation> ApproachPcdAggregations { get; set; }
@@ -38,7 +39,7 @@ namespace ATSPM.Data
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().AreUnicode(false);
-            configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            //configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
