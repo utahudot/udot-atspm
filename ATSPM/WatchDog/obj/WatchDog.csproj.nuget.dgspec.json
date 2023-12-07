@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj": {}
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
-        "projectName": "WatchDogTests",
-        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj",
+        "projectName": "WatchDog",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj",
         "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\obj\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -27,7 +27,17 @@
         "frameworks": {
           "net7.0": {
             "targetAlias": "net7.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj"
+              },
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -39,28 +49,6 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "dependencies": {
-            "Microsoft.NET.Test.Sdk": {
-              "target": "Package",
-              "version": "[17.6.0, )"
-            },
-            "coverlet.collector": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[3.2.0, )"
-            },
-            "xunit": {
-              "target": "Package",
-              "version": "[2.4.2, )"
-            },
-            "xunit.runner.visualstudio": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.4.5, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UOg1qe8+yBG9IPVT6EMMXRFcjm3QJ6VBPMzUfIkb25aAu2VLA4E7BlFFp5jk6tRvAUO5DJNgE5R+WjHDoFA+Dw==",
-  "success": true,
-  "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\WatchDogTests\\WatchDogTests.csproj",
+  "dgSpecHash": "gjMTJpxwpeops7xBwo+jlE9/8ZmSQyNo5DG2G2ec8wvIGRjAus8GNUgN3IIOXjcEWR0IKXx5cfFu4F4EqcZh1Q==",
+  "success": false,
+  "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDogTests\\WatchDogTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jbhatia\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\microsoft.codecoverage\\17.6.0\\microsoft.codecoverage.17.6.0.nupkg.sha512",
@@ -94,5 +94,33 @@
     "C:\\Users\\jbhatia\\.nuget\\packages\\xunit.extensibility.execution\\2.4.2\\xunit.extensibility.execution.2.4.2.nupkg.sha512",
     "C:\\Users\\jbhatia\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.5\\xunit.runner.visualstudio.2.4.5.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
