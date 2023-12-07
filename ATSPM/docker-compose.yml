@@ -1,12 +1,18 @@
-version: '3.4'
+version: '3.8'
 
 services:
-  signalcontrollerlogger:
-    image: ${DOCKER_REGISTRY-}signalcontrollerlogger
-    network_mode: "host"
-    build:
-      context: .
-      dockerfile: SignalControllerLogger/Dockerfile
-    tty: true
+#   signalcontrollerlogger:
+#     image: ${DOCKER_REGISTRY-}signalcontrollerlogger
+#     network_mode: "host"
+#     build:
+#       context: .
+#       dockerfile: SignalControllerLogger/Dockerfile
+#     tty: true
 
- 
+ report_api:    
+    build:
+      context: .   # This sets the context to the ProjectRoot
+      dockerfile: ReportApi/Dockerfile
+    image: reportapi:v1
+    ports:
+      - "8080:80"
