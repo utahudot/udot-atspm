@@ -4,6 +4,7 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ATSPM.Application
 {
@@ -123,11 +124,24 @@ namespace ATSPM.Application
             return timestamp.AddSeconds(distanceFromStopBar / (approachSpeed * 1.467)).AddSeconds(latencyCorrection * -1);
         }
 
-        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : VolumeBase
+        public static IReadOnlyList<T> GetPeakVolumes<T>(this IEnumerable<T> volumes, int chunks) where T : IDetectorCount
         {
             return volumes.Where((w, i) => i <= volumes.Count() - chunks)
                 .Select((s, i) => volumes.Skip(i).Take(chunks))
                 .Aggregate((a, b) => a.Sum(s => s.DetectorCount) >= b.Sum(s => s.DetectorCount) ? a : b).ToList();
+        }
+
+        //HACK: this is not working right!
+        public static IReadOnlyList<ControllerEventLog> GetLastConsecutiveEvent(this IEnumerable<ControllerEventLog> events, int consecutiveCount = 2)
+        {
+            return events
+                .OrderBy(o => o.Timestamp)
+                .Skip(consecutiveCount - 1)
+                .Where((w, i) => events
+                .Skip(i - consecutiveCount)
+                .Take(consecutiveCount)
+                .All(a => a.EventCode == w.EventCode))
+                .ToList();
         }
     }
 }

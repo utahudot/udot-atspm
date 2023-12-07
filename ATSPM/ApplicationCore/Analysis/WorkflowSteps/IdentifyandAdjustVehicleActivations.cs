@@ -19,27 +19,27 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// Timestamps for detector on events may need to be adjusted to represent vehicle arrivals at the stop bar
     /// rather than at the detector location or toadjust based on possible detector latency differences.
     /// </summary>
-    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>, IReadOnlyList<CorrectedDetectorEvent>>
+    public class IdentifyandAdjustVehicleActivations : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>>
     {
         /// <inheritdoc/>
         public IdentifyandAdjustVehicleActivations(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IReadOnlyList<CorrectedDetectorEvent>> Process(IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input
-                .Select(s =>
-                Tuple.Create(s.Item1, s.Item2.Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn && s.Item1.Approach?.Signal?.SignalIdentifier == w.SignalIdentifier && w.EventParam == s.Item1.DetectorChannel)))
-                .Select(s => s
-                .Item2.Select(c =>
-                new CorrectedDetectorEvent(s.Item1)
-                {
-                    CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(c.Timestamp, s.Item1?.Approach?.Mph ?? 0, s.Item1.DistanceFromStopBar ?? 0, s.Item1.LatencyCorrection)
-                }))
-            .SelectMany(s => s)
-            .ToList();
+            var result = Tuple.Create(input.Item1, input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
+            i.Where(w => w.SignalIdentifier == input.Item1?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
+            .Select(s => new CorrectedDetectorEvent()
+            {
+                SignalIdentifier = s.SignalIdentifier,
+                PhaseNumber = o.Approach.ProtectedPhaseNumber,
+                Direction = o.Approach.DirectionTypeId,
+                DetectorChannel = o.DetectorChannel,
+                Timestamp = AtspmMath.AdjustTimeStamp(s.Timestamp, input.Item1?.Mph ?? 0, o?.DistanceFromStopBar ?? 0, o?.LatencyCorrection ?? 0)
+            }))
+            .SelectMany(m => m));
 
-            return Task.FromResult<IReadOnlyList<CorrectedDetectorEvent>>(result);
+            return Task.FromResult(result);
         }
     }
 }

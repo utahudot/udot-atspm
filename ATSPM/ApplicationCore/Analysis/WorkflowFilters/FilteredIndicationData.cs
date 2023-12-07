@@ -11,7 +11,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseBeginRedClearance"/></item>
     /// </list>
     /// </summary>
-    public class FilteredIndicationData : FilterStepBase
+    public class FilteredIndicationData : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredIndicationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
