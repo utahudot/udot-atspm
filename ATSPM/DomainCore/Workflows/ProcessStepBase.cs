@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -9,11 +11,8 @@ namespace ATSPM.Domain.Workflows
     /// </summary>
     /// <typeparam name="T1">Input data type</typeparam>
     /// <typeparam name="T2">Output data type</typeparam>
-    public abstract class ProcessStepBase<T1, T2> : IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>
+    public abstract class ProcessStepBase<T1, T2> : IPropagatorBlock<T1, T2>, IDataflowBlock, ISourceBlock<T2>, ITargetBlock<T1>, IReceivableSourceBlock<T2>
     {
-        /// <inheritdoc/>
-        public event EventHandler CanExecuteChanged;
-
         protected IPropagatorBlock<T1, T2> workflowProcess;
         protected DataflowBlockOptions options;
 
@@ -82,6 +81,26 @@ namespace ATSPM.Domain.Workflows
         }
 
         #endregion
+
+        #endregion
+
+        #region IReceivableSourceBlock
+
+        /// <inheritdoc/>
+        public bool TryReceive(Predicate<T2> filter, [MaybeNullWhen(false)] out T2 item)
+        {
+            var process = (IReceivableSourceBlock<T2>)workflowProcess;
+
+            return process.TryReceive(filter, out item);
+        }
+
+        /// <inheritdoc/>
+        public bool TryReceiveAll([NotNullWhen(true)] out IList<T2> items)
+        {
+            var process = (IReceivableSourceBlock<T2>)workflowProcess;
+
+            return process.TryReceiveAll(out items);
+        }
 
         #endregion
     }

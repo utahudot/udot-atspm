@@ -36,12 +36,16 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IReadOnlyList<CycleArrivals>> Process(Tuple<IEnumerable<CorrectedDetectorEvent>, IEnumerable<RedToRedCycle>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Item2.Select(s => new CycleArrivals(s)
-            {
-                Vehicles = input.Item1.Where(w => w.Detector.Approach?.Signal?.SignalIdentifier == s.SignalIdentifier && s.InRange(w.CorrectedTimeStamp))
-                .Select(v => new Vehicle(v, s))
-                .ToList()
-            }).ToList();
+            //had to remove this to compile
+            //var result = input.Item2.Select(s => new CycleArrivals(s)
+            //{
+            //    Vehicles = input.Item1.Where(w => w.Detector.Approach?.Signal?.SignalIdentifier == s.SignalIdentifier && s.InRange(w.CorrectedTimeStamp))
+            //    .Select(v => new Vehicle(v, s))
+            //    .ToList()
+            //}).ToList();
+
+            //this is temp
+            var result = new List<CycleArrivals>();
 
             return Task.FromResult<IReadOnlyList<CycleArrivals>>(result);
         }

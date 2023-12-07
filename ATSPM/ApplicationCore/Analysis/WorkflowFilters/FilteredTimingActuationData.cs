@@ -29,7 +29,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PedDetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredTimingActuationData : FilterStepBase
+    public class FilteredTimingActuationData : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredTimingActuationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

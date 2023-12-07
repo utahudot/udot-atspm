@@ -8,7 +8,7 @@ namespace ATSPM.Application.Analysis.Common
     /// which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
     /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
     /// </summary>
-    public interface ICycle : IStartEndRange
+    public interface ICycleTotal : IStartEndRange
     {
         /// <summary>
         /// The total green time is defined as the time from start of <see cref="DataLoggerEnum.PhaseBeginGreen"/> to the start of <see cref="DataLoggerEnum.PhaseBeginYellowChange"/> in seconds
