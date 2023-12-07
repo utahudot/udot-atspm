@@ -1,5 +1,6 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "dgSpecHash": "HafLOO4IDjmkhPoegBzFbhm1cx4aOoRjnnA5sDh1pZOvfIre7AlKrueiIacUPbdVfwiv5DAPhT7Ya7gWKqHi9w==",
   "success": true,
   "projectFilePath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\WatchDog\\WatchDog.csproj",
@@ -235,6 +236,38 @@
       "libraryId": "Microsoft.EntityFrameworkCore.Relational",
       "targetGraphs": [
         "net6.0"
+=======
+  "dgSpecHash": "kjDhhZiBdGmmhWEZLl6KoWY6sMO2wJoWWGa0mNX5OXLh5HnuvGs0tU6aLIdb64OuASFC1KpXQcZ/ipDBpxGt7Q==",
+  "success": false,
+  "projectFilePath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\WatchDog\\WatchDog.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ReportApi\\ReportApi.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    },
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ATSPM\\Data\\Data.csproj",
+      "targetGraphs": [
+        "net7.0"
+>>>>>>> main
       ]
     }
   ]

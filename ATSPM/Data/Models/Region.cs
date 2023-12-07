@@ -14,6 +14,8 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Description { get; set; }
 
+        public virtual ICollection<UserRegion> UserRegions { get; set; } = new HashSet<UserRegion>();
+
         #region IRelatedSignals
 
         /// <inheritdoc/>
