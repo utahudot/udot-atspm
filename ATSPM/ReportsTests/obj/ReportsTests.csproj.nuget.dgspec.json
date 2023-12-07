@@ -1,38 +1,38 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj": {}
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
         "projectName": "ApplicationCore",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
               },
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -44,8 +44,8 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
             "Google.Cloud.Diagnostics.Common": {
               "target": "Package",
@@ -86,36 +86,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
         "projectName": "ATSPM.Data",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj"
               }
             }
           }
@@ -127,40 +127,42 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
+            "Duende.IdentityServer.EntityFramework.Storage": {
+              "target": "Package",
+              "version": "[6.3.6, )"
+            },
             "EFCore.BulkExtensions": {
               "target": "Package",
-              "version": "[6.5.6, )"
-            },
-            "IdentityServer4.EntityFramework": {
-              "target": "Package",
-              "version": "[4.1.2, )"
+              "version": "[7.1.6, )"
             },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[6.0.8, )"
+              "version": "[7.0.14, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[7.0.14, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[7.0.11, )"
             },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[7.0.14, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
             }
           },
           "imports": [
@@ -179,33 +181,33 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
         "projectName": "DomainCore",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\DomainCore.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\DomainCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {}
           }
         },
@@ -216,8 +218,8 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
             "Microsoft.CodeAnalysis.NetAnalyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -250,39 +252,39 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
         "projectName": "ATSPM.Infrastructure",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
               },
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
               }
             }
           }
@@ -294,9 +296,13 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
+            "Duende.IdentityServer.EntityFramework": {
+              "target": "Package",
+              "version": "[6.3.6, )"
+            },
             "FluentFTP": {
               "target": "Package",
               "version": "[44.0.1, )"
@@ -311,10 +317,6 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[7.0.2, )"
-            },
             "Microsoft.Extensions.Hosting.Abstractions": {
               "target": "Package",
               "version": "[7.0.0, )"
@@ -322,6 +324,10 @@
             "Microsoft.Extensions.Logging.Abstractions": {
               "target": "Package",
               "version": "[7.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
             },
             "OData.Swagger": {
               "target": "Package",
@@ -352,36 +358,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj": {
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj",
-        "projectName": "ReportsTests",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ReportsTests\\ReportsTests.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ReportsTests\\obj\\",
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj",
+        "projectName": "ReportApi",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net7.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\Reports.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\Reports.csproj"
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -393,106 +399,17 @@
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
-            "CsvHelper": {
+            "Asp.Versioning.Mvc": {
               "target": "Package",
-              "version": "[30.0.1, )"
+              "version": "[7.1.0, )"
             },
-            "MSTest.TestAdapter": {
+            "Asp.Versioning.Mvc.ApiExplorer": {
               "target": "Package",
-              "version": "[2.2.10, )"
+              "version": "[7.1.0, )"
             },
-            "MSTest.TestFramework": {
-              "target": "Package",
-              "version": "[2.2.10, )"
-            },
-            "Microsoft.NET.Test.Sdk": {
-              "target": "Package",
-              "version": "[17.5.0, )"
-            },
-            "Moq": {
-              "target": "Package",
-              "version": "[4.18.2, )"
-            },
-            "coverlet.collector": {
-              "target": "Package",
-              "version": "[3.2.0, )"
-            },
-            "xunit": {
-              "target": "Package",
-              "version": "[2.4.2, )"
-            },
-            "xunit.runner.visualstudio": {
-              "target": "Package",
-              "version": "[2.4.5, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\Reports.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\Reports.csproj",
-        "projectName": "Reports",
-        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\Reports.csproj",
-        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Reports\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net6.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.306\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
-            "projectReferences": {
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
-              },
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Infrastructure\\Infrastructure.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
-          "dependencies": {
             "AutoFixture": {
               "target": "Package",
               "version": "[4.17.0, )"
@@ -501,35 +418,19 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[7.0.13, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
+            "Moq": {
               "target": "Package",
-              "version": "[7.0.10, )"
+              "version": "[4.18.2, )"
             },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[6.0.8, )"
-            },
-            "Newtonsoft.Json": {
-              "target": "Package",
-              "version": "[13.0.2, )"
+              "version": "[7.0.11, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
-            },
-            "xunit": {
-              "target": "Package",
-              "version": "[2.4.2, )"
-            },
-            "xunit.runner.visualstudio": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[2.4.5, )"
             }
           },
           "imports": [
@@ -551,7 +452,92 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
+        "projectName": "TempReportTests",
+        "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\TempReportTests.csproj",
+        "packagesPath": "C:\\Users\\jbhatia\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\TempReportTests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\jbhatia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj": {
+                "projectPath": "C:\\Users\\jbhatia\\source\\repos\\udot-atspm\\ATSPM\\ReportApi\\ReportApi.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "CsvHelper": {
+              "target": "Package",
+              "version": "[30.0.1, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.5.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
