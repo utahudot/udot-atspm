@@ -4,6 +4,7 @@ using ATSPM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    partial class ConfigContextModelSnapshot : ModelSnapshot
+    [Migration("20231207165734_EFCore6Upgrade")]
+    partial class EFCore6Upgrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1403,9 +1406,49 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Signals", t =>
+                    b.ToTable("Signal", t =>
                         {
                             t.HasComment("Signal Controllers");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValue(new DateTime(2023, 12, 7, 9, 57, 34, 158, DateTimeKind.Local).AddTicks(3495));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("VersionHistory", t =>
+                        {
+                            t.HasComment("Version History");
                         });
                 });
 
@@ -1583,6 +1626,16 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.VersionHistory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("AreaSignal", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Area", null)
@@ -1690,6 +1743,11 @@ namespace ATSPM.Infrastructure.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Signal", b =>
                 {
                     b.Navigation("Approaches");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
+                {
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }
