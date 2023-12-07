@@ -11,12 +11,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 
-// Configure Kestrel to listen on the port defined by the PORT environment variable
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var builder = WebApplication.CreateBuilder(args);
-//builder.WebHost.UseUrls($"http://*:{port}");
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 
 builder.Host.ConfigureServices((h, s) =>
 {
@@ -41,16 +36,6 @@ builder.Host.ConfigureServices((h, s) =>
     });
 
     s.AddProblemDetails();
-    s.AddCors(options =>
-    {
-        options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
-    });
 
     //https://github.com/dotnet/aspnet-api-versioning/wiki/OData-Versioned-Metadata
     s.AddApiVersioning(o =>
@@ -58,7 +43,7 @@ builder.Host.ConfigureServices((h, s) =>
         o.ReportApiVersions = true;
         o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
-
+        
         //Sunset policies
         o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
         //o.Policies.Sunset(0.9).Effective(DateTimeOffset.Now.AddDays(60)).Link("policy.html").Title("Versioning Policy").Type("text/html");
@@ -90,8 +75,7 @@ builder.Host.ConfigureServices((h, s) =>
             o.IncludeXmlComments(filePath);
         });
 
-    //s.AddAtspmDbContext(h);
-    s.AddNpgAtspmDbContext(h);
+    s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
 
 
@@ -108,7 +92,7 @@ builder.Host.ConfigureServices((h, s) =>
 });
 
 var app = builder.Build();
-app.UseCors("AllowAll");
+
 if (app.Environment.IsDevelopment())
 {
     // navigate to ~/$odata to determine whether any endpoints did not match an odata route template
