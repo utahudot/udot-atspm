@@ -4,9 +4,9 @@ using ATSPM.Domain.Services;
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// External Links Repository
+    /// Version history repository
     /// </summary>
-    public interface IExternalLinksRepository : IAsyncRepository<ExternalLink>
+    public interface IVersionHistoryRepository : IAsyncRepository<VersionHistory>
     {
     }
 }
