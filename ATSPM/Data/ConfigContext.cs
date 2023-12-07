@@ -4,11 +4,7 @@ using ATSPM.Data.Configuration;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System.Linq.Expressions;
 using System.Net;
-using System.Reflection.Emit;
 
 namespace ATSPM.Data
 {
@@ -120,6 +116,11 @@ namespace ATSPM.Data
         /// </summary>
         public virtual DbSet<Signal> Signals { get; set; }
 
+        /// <summary>
+        /// Version history table
+        /// </summary>
+        public virtual DbSet<Signal> VersionHistory { get; set; }
+
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -161,7 +162,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
             modelBuilder.ApplyConfiguration(new SignalConfiguration());
-            
+            modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
+
             OnModelCreatingPartial(modelBuilder);
             //TODO: call based class when using IdentityContext
         }
