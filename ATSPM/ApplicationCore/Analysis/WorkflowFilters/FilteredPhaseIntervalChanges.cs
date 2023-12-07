@@ -1,6 +1,10 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Workflows;
+using System.Collections.Generic;
+using System;
 using System.Threading.Tasks.Dataflow;
+using System.Linq;
 
 namespace ATSPM.Application.Analysis.WorkflowFilters
 {
@@ -13,7 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPhaseIntervalChanges : FilterStepBase
+    public class FilteredPhaseIntervalChanges : FilterEventCodeSignalBase
     {
         /// <inheritdoc/>
         public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

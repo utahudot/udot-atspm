@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseGreenTermination"/></item>
     /// </list>
     /// </summary>
-    public class FilteredTerminationStatus : FilterStepBase
+    public class FilteredTerminationStatus : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredTerminationStatus(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

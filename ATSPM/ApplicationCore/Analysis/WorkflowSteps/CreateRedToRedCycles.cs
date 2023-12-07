@@ -56,18 +56,22 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// 
     /// </list>
     /// </summary>
-    public class CreateRedToRedCycles : TransformProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<RedToRedCycle>>
+    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach,IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
     {
         /// <inheritdoc/>
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
-        protected override Task<IReadOnlyList<RedToRedCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Approach, IEnumerable<RedToRedCycle>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input.Where(l => l.EventCode == 1 || l.EventCode == 8 || l.EventCode == 9)
+            //TODO: get the correct phase from approach here
+            var result = Tuple.Create(input.Item1, input.Item2?
+                .Where(w => w.SignalIdentifier == input?.Item1?.Signal.SignalIdentifier)
+                .Where(w => w.EventParam == input?.Item1?.ProtectedPhaseNumber)
+                .Where(w => w.EventCode == (int)DataLoggerEnum.PhaseBeginGreen || w.EventCode == (int)DataLoggerEnum.PhaseBeginYellowChange || w.EventCode == (int)DataLoggerEnum.PhaseEndYellowChange)
                 .OrderBy(o => o.Timestamp)
                 .GroupBy(g => g.SignalIdentifier, (s, x) => x
-                .GroupBy(g => g.EventParam, (p, y) => y    
+                .GroupBy(g => g.EventParam, (p, y) => y
                 .Where((w, i) => y.Count() > 3 && i <= y.Count() - 3)
                 .Where((w, i) => w.EventCode == 9 && y.ElementAt(i + 1).EventCode == 1 && y.ElementAt(i + 2).EventCode == 8 && y.ElementAt(i + 3).EventCode == 9)
                 .Select((s, i) => y.Skip(y.ToList().IndexOf(s)).Take(4))
@@ -81,10 +85,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     SignalIdentifier = s
                 }))
                 .SelectMany(m => m))
-                .SelectMany(m => m)
-                .ToList();
+                .SelectMany(m => m)) ?? Tuple.Create<Approach, IEnumerable<RedToRedCycle>>(null, new List<RedToRedCycle>());
 
-            return Task.FromResult<IReadOnlyList<RedToRedCycle>>(result);
+            return Task.FromResult(result);
         }
     }
 }

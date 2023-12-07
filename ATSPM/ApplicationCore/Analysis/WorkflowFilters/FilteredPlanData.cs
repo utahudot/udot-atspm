@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.CoordPatternChange"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPlanData : FilterStepBase
+    public class FilteredPlanData : FilterEventCodeSignalBase
     {
         /// <inheritdoc/>
         public FilteredPlanData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
