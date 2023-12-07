@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
 using System;
@@ -78,7 +79,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             //}
 
             var bins = new List<BarStack>();
-            var averageSplits = new List<AverageSplit>();
+            var averageSplits = new List<DataPointForDouble>();
             int xAxisBinNumber = 0;
             //loop for each Agg bin
             for (var StartBinTime = options.Start; StartBinTime < options.End; StartBinTime = StartBinTime.AddMinutes(options.XAxisBinSize), xAxisBinNumber++)
@@ -168,7 +169,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 }
 
                 createStack(bins, BinValueList, cycleCount, xAxisBinNumber);
-                averageSplits.Add(new AverageSplit(StartBinTime, greenDurationList));
+                averageSplits.Add(new DataPointForDouble(StartBinTime, greenDurationList.Average()));
             }
 
             //get plans
@@ -189,7 +190,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 options.End,
                 bins,
                 averageSplits,
-                programmedSplits,
+                programmedSplits.Select(p => new DataPointForDouble(p.Timestamp, p.ProgValue)).ToList(),
                 phaseDetail.PhaseNumber,
                 phaseNumberSort
                 );
