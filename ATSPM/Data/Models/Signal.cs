@@ -18,7 +18,8 @@ namespace ATSPM.Data.Models
         IRelatedJurisdiction, 
         IRelatedRegion, 
         IRelatedApproaches, 
-        IRelatedAreas
+        IRelatedAreas,
+        IRelatedDevices
     {
         /// <summary>
         /// Latitude of signal
@@ -125,6 +126,13 @@ namespace ATSPM.Data.Models
 
         /// <inheritdoc/>
         public virtual ICollection<Area> Areas { get; set; } = new HashSet<Area>();
+
+        #endregion
+
+        #region IRelatedDevices
+
+        /// <inheritdoc/>
+        public virtual ICollection<Device> Devices { get; set; } = new HashSet<Device>();
 
         #endregion
 
