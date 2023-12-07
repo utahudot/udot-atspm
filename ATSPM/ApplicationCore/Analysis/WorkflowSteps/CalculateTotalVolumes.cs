@@ -1,72 +1,49 @@
 ﻿using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.Workflows;
 using ATSPM.Application.Common;
+using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
+using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Workflows;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
+using ATSPM.Application.Extensions;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculateTotalVolumes : TransformManyProcessStepBase<IEnumerable<CorrectedDetectorEvent>, TotalVolumes>
+    public class CalculateTotalVolumes : TransformProcessStepBase<Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>>, Tuple<Approach, TotalVolumes>>
     {
-        private readonly TimelineOptions _options;
-
-        public CalculateTotalVolumes(TimelineOptions options, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        protected override Task<Tuple<Approach, TotalVolumes>> Process(Tuple<Tuple<Approach, Volumes>, Tuple<Approach, Volumes>> input, CancellationToken cancelToken = default)
         {
-            _options = options;
-        }
+            var p = input.Item1.Item1;
+            var o = input.Item2.Item1;
 
-        protected override Task<IEnumerable<TotalVolumes>> Process(IEnumerable<CorrectedDetectorEvent> input, CancellationToken cancelToken = default)
-        {
-            var result = new List<TotalVolumes>();
-
-            var test = input.GroupBy(g => g.Detector.Approach);
-
-            foreach (var t in test)
+            if (p.DirectionTypeId == new OpposingDirection(o.DirectionTypeId) && p.Signal.SignalIdentifier == o.Signal.SignalIdentifier)
             {
-                var total = new TotalVolumes(_options);
+                var start1 = input.Item1.Item2.Start;
+                var start2 = input.Item2.Item2.Start;
 
-                var c = new OpposingDirection(t.Key.DirectionTypeId);
 
-                var o = test.Where(w => w.Key.DirectionTypeId == c).FirstOrDefault();
 
-                total.ForEach(f =>
+                var volumes = input.Item1.Item2.Segments.Union(input.Item2.Item2.Segments);
+
+                var result = new TotalVolumes(volumes, TimeSpan.FromMinutes(15))
                 {
-                    f.Primary = new Volume()
-                    {
-                        Start = f.Start,
-                        End = f.End,
-                        Direction = t.Key.DirectionTypeId,
-                        Phase = t.Key.ProtectedPhaseNumber,
-                        DetectorCount = t.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
-                    };
+                    SignalIdentifier = p.Signal.SignalIdentifier,
+                };
 
-                    f.Opposing = new Volume()
-                    {
-                        Start = f.Start,
-                        End = f.End,
-                        Direction = o.Key.DirectionTypeId,
-                        Phase = o.Key.ProtectedPhaseNumber,
-                        DetectorCount = o.Where(w => f.InRange(w.CorrectedTimeStamp)).Count()
-                    };
+                result.Segments.ToList().ForEach(f =>
+                {
+                    f.SignalIdentifier = p.Signal.SignalIdentifier;
+                    f.Primary = input.Item1.Item2.Segments.FirstOrDefault(d => f.InRange(d));
+                    f.Opposing = input.Item2.Item2.Segments.FirstOrDefault(d => f.InRange(d));
                 });
 
-                result.Add(total);
-
-                foreach (var a in total)
-                {
-                    Console.WriteLine($"p: {a.Primary}");
-                    Console.WriteLine($"o: {a.Opposing}");
-                }
+                return Task.FromResult(Tuple.Create(p, result));
             }
 
-            return Task.FromResult<IEnumerable<TotalVolumes>>(result);
+            return Task.FromResult(Tuple.Create<Approach, TotalVolumes>(null, null));
         }
     }
 }

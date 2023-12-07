@@ -6,7 +6,7 @@ namespace ATSPM.Application.Analysis.Common
     /// <summary>
     /// Defines <see cref="DataLoggerEnum.DetectorOn"/> event arrivals for cycle
     /// </summary>
-    public interface ICycleArrivals : ICycle, ICycleVolume //: ICycleVolume
+    public interface ICycleArrivals : ICycleTotal, ICycleVolume //: ICycleVolume
     {
 
         /// <summary>
