@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
 using System;
