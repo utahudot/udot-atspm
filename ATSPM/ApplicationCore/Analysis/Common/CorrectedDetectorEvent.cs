@@ -1,26 +1,45 @@
 ﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using System;
+using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class CorrectedDetectorEvent
+    /// <summary>
+    /// Events that coorelate to <see cref="DataLoggerEnum.DetectorOn"/>
+    /// and that have been timestamp corrected for detector distances and latency
+    /// using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
+    /// </summary>
+    public class CorrectedDetectorEvent : IDetectorEvent
     {
-        public CorrectedDetectorEvent(Detector detector)
-        {
-            Detector = detector;
-            //CorrectedTimeStamp = AtspmMath.AdjustTimeStamp(timeStamp,
-            //                                              Detector.Approach?.Mph ?? 0,
-            //                                               Detector.DistanceFromStopBar ?? 0,
-            //                                               Detector.LatencyCorrection);
-        }
-        public DateTime CorrectedTimeStamp { get; set; }
+        #region IDetectorEvent
 
-        public Detector Detector { get; internal set; }
+        #region ISignalPhaseLayer
 
+        /// <inheritdoc/>
+        public string SignalIdentifier { get; set; }
+
+        /// <inheritdoc/>
+        public int PhaseNumber { get; set; }
+
+        #endregion
+
+        /// <inheritdoc/>
+        public int DetectorChannel { get; set; }
+
+        /// <inheritdoc/>
+        public DirectionTypes Direction { get; set; }
+
+        /// <summary>
+        /// Coreected timestamp of event using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
+        /// </summary>
+        public DateTime Timestamp { get; set; }
+        
+        #endregion
+
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Detector.Approach.Signal.SignalIdentifier}-{Detector.DetectorChannel}-{CorrectedTimeStamp:yyyy-MM-dd'T'HH:mm:ss.f}";
+            return JsonSerializer.Serialize(this);
         }
     }
 }

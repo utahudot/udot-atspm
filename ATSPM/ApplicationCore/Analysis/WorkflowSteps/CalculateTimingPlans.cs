@@ -1,40 +1,33 @@
-﻿using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.Plans;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Analysis.Plans;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculateTimingPlans<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IReadOnlyList<T>> where T : IPlan, new()
+    public class CalculateTimingPlans<T> : TransformProcessStepBase<Tuple<Signal, int, IEnumerable<ControllerEventLog>>, Tuple<Signal, int, IEnumerable<T>>> where T : IPlan, new()
     {
         public CalculateTimingPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<IReadOnlyList<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Signal, int, IEnumerable<T>>> Process(Tuple<Signal, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var result = input
-                .Where(w => w.EventCode == (int)DataLoggerEnum.CoordPatternChange)
-                .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalIdentifier, (k, i) => i
-                .GroupBy(p => p.EventParam, (n, c) => c
-                .Where((w, i) => i < c.Count() - 1)
-                .Select((s, i) => new T() { SignalIdentifier = k, PlanNumber = n, Start = c.ElementAt(i).Timestamp, End = c.ElementAt(i + 1).Timestamp }))
-                .SelectMany(s => s).ToList());
+            var result = Tuple.Create(input.Item1, input.Item2, input.Item3
+                .GroupBy(g => g.EventCode, (k, l) => 
+                l.Select((s, i) => new T()
+                {
+                    SignalIdentifier = input.Item1.SignalIdentifier,
+                    PlanNumber = input.Item2,
+                    Start = l.ElementAt(i).Timestamp,
+                    End = i < l.Count() - 1 ? l.ElementAt(i + 1).Timestamp : default
+                }))
+                .SelectMany(m => m));
 
-            if (result.Count() == 0)
-                result = new List<List<T>>() { new List<T>() };
-
-
-            return Task.FromResult<IEnumerable<IReadOnlyList<T>>>(result);
+            return Task.FromResult(result);
         }
     }
 }
