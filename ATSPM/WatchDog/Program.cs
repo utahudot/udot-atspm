@@ -14,33 +14,48 @@ using WatchDog.Services;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
             .Build();
 
 
-        var serviceProvider = new ServiceCollection()
+        var serviceCollection = new ServiceCollection()
             .AddDbContext<ConfigContext>(db => db.UseNpgsql(configuration.GetConnectionString("ConfigContext")))
             .AddDbContext<IdentityContext>(db => db.UseNpgsql(configuration.GetConnectionString("IdentityContext")))
             .AddDbContext<EventLogContext>(db => db.UseNpgsql(configuration.GetConnectionString("EventLogContext")))
+
             .AddScoped<ISignalRepository, SignalEFRepository>()
             .AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>()
             .AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>()
+            .AddScoped<IRegionsRepository, RegionEFRepository>()
+            .AddScoped<IJurisdictionRepository, JurisdictionEFRepository>()
+            .AddScoped<IAreaRepository, AreaEFRepository>()
+            .AddScoped<IUserAreaRepository, UserAreaEFRepository>()
+            .AddScoped<IUserRegionRepository, UserRegionEFRepository>()
+            .AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>()
             .AddScoped<WatchDogLogService>()
             .AddScoped<EmailService>()
             .AddScoped<ScanService>()
             .AddScoped<PlanService>()
             .AddScoped<AnalysisPhaseCollectionService>()
             .AddScoped<AnalysisPhaseService>()
-            .AddScoped<UserManager<ApplicationUser>>()
+            .AddScoped<PhaseService>()
+            //.AddScoped<UserManager<ApplicationUser>>()
+            //.AddScoped<RoleManager<IdentityRole>>()
             .AddLogging(builder =>
             {
                 builder.AddConsole(); // Use Console logger provider
-            })
-            .BuildServiceProvider();
+            });
+
+        serviceCollection
+             .AddIdentity<ApplicationUser, IdentityRole>() // Add this line to register Identity
+                .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
+                .AddDefaultTokenProviders();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
 
         using (var scope = serviceProvider.CreateScope())
         {
@@ -50,6 +65,7 @@ class Program
             var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
             var scanService = scope.ServiceProvider.GetRequiredService<ScanService>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            var phaseService = scope.ServiceProvider.GetRequiredService<PhaseService>();
 
 
             try
@@ -66,7 +82,7 @@ class Program
                     PercentThreshold = 0.9,
                     PreviousDayPMPeakEnd = 17,
                     PreviousDayPMPeakStart = 18,
-                    ScanDate = new DateTime(2023, 8, 24),
+                    ScanDate = new DateTime(2023, 12, 8),
                     ScanDayEndHour = 5,
                     ScanDayStartHour = 1,
                     WeekdayOnly = false
@@ -75,7 +91,7 @@ class Program
                 {
                     PreviousDayPMPeakEnd = 17,
                     PreviousDayPMPeakStart = 18,
-                    ScanDate = new DateTime(2023, 8, 24),
+                    ScanDate = new DateTime(2023, 12, 8),
                     ScanDayEndHour = 5,
                     ScanDayStartHour = 1,
                     WeekdayOnly = false,
@@ -88,7 +104,7 @@ class Program
                     EmailAllErrors = true
                 };
 
-                scanService.StartScan(options, emailOptions);
+                await scanService.StartScan(options, emailOptions);
             }
             catch (Exception ex)
             {
