@@ -2,10 +2,10 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.TempExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
-using ATSPM.ReportApi.TempExtensions;
 
 namespace WatchDog.Services
 {
@@ -164,32 +164,36 @@ namespace WatchDog.Services
                 //Parallel.ForEach(APcollection.Items, options,phase =>
                 {
                     var taskList = new List<Task>();
-                    try
+                    var approach = signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault();
+                    if (approach != null)
                     {
-                        taskList.Add(CheckForMaxOut(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
-                    }
+                        try
+                        {
+                            taskList.Add(CheckForMaxOut(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
+                        }
 
-                    try
-                    {
+                        try
+                        {
 
-                        taskList.Add(CheckForForceOff(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
-                    }
+                            taskList.Add(CheckForForceOff(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
+                        }
 
-                    try
-                    {
-                        taskList.Add(CheckForStuckPed(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                        try
+                        {
+                            taskList.Add(CheckForStuckPed(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                        }
                     }
                     await Task.WhenAll(taskList);
                 }
