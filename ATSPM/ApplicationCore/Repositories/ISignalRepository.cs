@@ -29,6 +29,7 @@ namespace ATSPM.Application.Repositories
         /// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
         /// <returns>List of <see cref="Signal"/> with newest start date</returns>
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
+        List<Signal> GetLatestVersionOfAllSignals(DateTime startDate);
 
 
         /// <summary>
