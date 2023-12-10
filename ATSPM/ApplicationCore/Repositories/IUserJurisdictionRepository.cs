@@ -1,18 +1,15 @@
 ﻿using ATSPM.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using ATSPM.Domain.Services;
 
 namespace ATSPM.Application.Repositories
 {
-    public interface IUserJurisdictionRepository
+    public interface IUserJurisdictionRepository : IAsyncRepository<UserJurisdiction>
     {
-        Task<IEnumerable<UserJurisdiction>> GetAllAsync();
-        Task<UserJurisdiction> GetByIdAsync(string userId, int jurisdictionId);
-        Task<IEnumerable<UserJurisdiction>> FindAsync(Expression<Func<UserJurisdiction, bool>> predicate);
-        Task AddAsync(UserJurisdiction userJurisdiction);
-        Task UpdateAsync(UserJurisdiction userJurisdiction);
-        Task RemoveAsync(UserJurisdiction userJurisdiction);
+        //Task<IEnumerable<UserJurisdiction>> GetAllAsync();
+        //Task<UserJurisdiction> GetByIdAsync(string userId, int jurisdictionId);
+        //Task<IEnumerable<UserJurisdiction>> FindAsync(Expression<Func<UserJurisdiction, bool>> predicate);
+        //Task AddAsync(UserJurisdiction userJurisdiction);
+        //Task UpdateAsync(UserJurisdiction userJurisdiction);
+        //Task RemoveAsync(UserJurisdiction userJurisdiction);
     }
 }
