@@ -7,35 +7,54 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var builder = WebApplication.CreateBuilder(args);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
+});
+
 builder.Host.ConfigureServices((host, services) =>
 {
     services.AddNpgAtspmDbContext(host);
-    //services.AddDbContext<IdentityContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    //services.AddDbContext<IdentityConfigurationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-    //services.AddDbContext<IdentityOperationalContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.EnableRetryOnFailure().MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
+
     services.AddIdentityServer()
-    //For production
-    //(options =>
-    //{
-    //    options.AccessTokenLifetime = TimeSpan.FromHours(1);   // Default: 1 hour
-    //    options.IdentityTokenLifetime = TimeSpan.FromMinutes(20);  // Default: 20 minutes
-    //    options.RefreshTokenExpiration = TokenExpiration.Absolute;
-    //    options.RefreshTokenUsage = TokenUsage.OneTimeOnly;
-    //    options.RefreshTokenLifetime = TimeSpan.FromDays(30);  // Default: 15 days
-    //                                                           // ... other options ...
-    //})
-        .AddConfigurationStore<IdentityConfigurationContext>(options =>
-        {
-            options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        })
-        .AddOperationalStore<IdentityOperationalContext>(options =>
-        {
-            options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        })
+    .AddOperationalStore<IdentityOperationalContext>(options =>
+    {
+        options.ConfigureDbContext = builder =>
+            builder.UseNpgsql(
+                host.Configuration.GetConnectionString(nameof(IdentityContext)),
+                sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
+    })
+     .AddConfigurationStore<IdentityConfigurationContext>(options =>
+     {
+         options.ConfigureDbContext = builder =>
+             builder.UseNpgsql(
+                 host.Configuration.GetConnectionString(nameof(IdentityContext)),
+                 sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
+     })
+        //For production
+        //(options =>
+        //{
+        //    options.AccessTokenLifetime = TimeSpan.FromHours(1);   // Default: 1 hour
+        //    options.IdentityTokenLifetime = TimeSpan.FromMinutes(20);  // Default: 20 minutes
+        //    options.RefreshTokenExpiration = TokenExpiration.Absolute;
+        //    options.RefreshTokenUsage = TokenUsage.OneTimeOnly;
+        //    options.RefreshTokenLifetime = TimeSpan.FromDays(30);  // Default: 15 days
+        //                                                           // ... other options ...
+        //})
+        //.AddConfigurationStore<IdentityConfigurationContext>(options =>
+        //{
+        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
+        //})
+        //.AddOperationalStore<IdentityOperationalContext>(options =>
+        //{
+        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
+        //})
         // other configurations, like adding a signing credential...
         .AddAspNetIdentity<ApplicationUser>()
         .AddDeveloperSigningCredential();
@@ -157,13 +176,7 @@ builder.Host.ConfigureServices((host, services) =>
 });
 
 var app = builder.Build();
-app.UseCors(builder =>
-{
-    builder
-        .WithOrigins("*") // Allow all origins
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
+app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
@@ -174,12 +187,17 @@ if (app.Environment.IsDevelopment())
 
         try
         {
-            // Get the configuration context
             var configContext = services.GetRequiredService<IdentityConfigurationContext>();
 
-            // Run the seed method
+            // Get UserManager and RoleManager instances
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Run the seed method for configuration data
             ConfigurationSeedData.Seed(configContext);
-            //await SeedAdminRoleAndClaims.SeedAdminUser(services);
+
+            // Run the seed method for users and roles
+            await ConfigurationSeedData.SeedUsersAndRoles(userManager, roleManager);
         }
         catch (Exception ex)
         {
