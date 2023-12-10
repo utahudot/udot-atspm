@@ -131,6 +131,8 @@ namespace ATSPM.Data
         /// </summary>
         public virtual DbSet<UserArea> UserRegions { get; set; }
 
+        public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
+
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {

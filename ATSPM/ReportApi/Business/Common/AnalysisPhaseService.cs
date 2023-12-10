@@ -42,8 +42,17 @@ namespace ATSPM.ReportApi.Business.Common
             Signal signal
             )
         {
+            if (signal.Approaches.IsNullOrEmpty())
+            {
+                return null;
+            }
             var analysisPhaseData = new AnalysisPhaseData();
-            analysisPhaseData.PhaseDescription = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phasenumber).Approach.Description;
+            var phase = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phasenumber);
+            if (phase == null)
+            {
+                return null;
+            }
+            analysisPhaseData.PhaseDescription = phase.Approach.Description;
             analysisPhaseData.PhaseNumber = phasenumber;
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
