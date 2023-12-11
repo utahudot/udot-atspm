@@ -38,12 +38,12 @@ COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["ReportAPI/ReportApi.csproj", "ReportAPI/"]
-RUN dotnet restore "ReportAPI/ReportApi.csproj"
+COPY ["ReportApi/ReportApi.csproj", "ReportApi/"]
+RUN dotnet restore "ReportApi/ReportApi.csproj"
 COPY . .
 RUN echo "Contents of /src:"
 RUN ls /src
-WORKDIR "/src/ReportAPI"
+WORKDIR "/src/ReportApi"
 ENV DOTNET_BUILD_SUPPRESS_WARNINGS=CS1591
 RUN dotnet build "ReportApi.csproj" -c Release -o /app/build
 

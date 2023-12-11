@@ -70,38 +70,49 @@ class Program
 
             try
             {
+                var scanDate = args.Length == 0 ? DateTime.Today.AddDays(-1) : Convert.ToDateTime(args[0]);
+                var prviousDayPMPeakStart = Convert.ToInt32(configuration["PreviousDayPMPeakStart"]);
+                var prviousDayPMPeakEnd = Convert.ToInt32(configuration["PreviousDayPMPeakEnd"]);
+                var weekdayOnly = Convert.ToBoolean(configuration["WeekdayOnly"]);
+                var scanDayEndHour = Convert.ToInt32(configuration["ScanDayEndHour"]);
+                var scanDayStartHour = Convert.ToInt32(configuration["ScanDayStartHour"]);
+                if (weekdayOnly && (scanDate.DayOfWeek == DayOfWeek.Saturday || scanDate.DayOfWeek == DayOfWeek.Sunday))
+                {
+                    return;
+                }
+
                 // Call the StartScan method with appropriate LoggingOptions
                 var options = new LoggingOptions
                 {
-                    ConsecutiveCount = 3, // Set your options here
-                    LowHitThreshold = 50, // Set your options here
-                    MaxDegreeOfParallelism = 5, // Set your options here
-                    MaximumPedestrianEvents = 200, // Set your opti
-                    MinimumRecords = 500,
-                    MinPhaseTerminations = 50,
-                    PercentThreshold = 0.9,
-                    PreviousDayPMPeakEnd = 17,
-                    PreviousDayPMPeakStart = 18,
-                    ScanDate = new DateTime(2023, 12, 8),
-                    ScanDayEndHour = 5,
-                    ScanDayStartHour = 1,
-                    WeekdayOnly = false
+                    ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]), // Set your options here
+                    LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]), // Set your options here
+                    MaxDegreeOfParallelism = Convert.ToInt32(configuration["MaxDegreeOfParallelism"]), // Set your options here
+                    MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]), // Set your opti
+                    MinimumRecords = Convert.ToInt32(configuration["MinimumRecords"]),
+                    MinPhaseTerminations = Convert.ToInt32(configuration["MinPhaseTerminations"]),
+                    PercentThreshold = Convert.ToDouble(configuration["PercentThreshold"]),
+                    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = prviousDayPMPeakStart,
+                    ScanDate = scanDate,
+                    ScanDayEndHour = scanDayEndHour,
+                    ScanDayStartHour = scanDayStartHour,
+                    WeekdayOnly = weekdayOnly
                 };
                 var emailOptions = new EmailOptions
                 {
-                    PreviousDayPMPeakEnd = 17,
-                    PreviousDayPMPeakStart = 18,
-                    ScanDate = new DateTime(2023, 12, 8),
-                    ScanDayEndHour = 5,
-                    ScanDayStartHour = 1,
-                    WeekdayOnly = false,
-                    EmailServer = "smtp.freesmtpservers.com",
-                    //UserName = "241b4c03c87968",
-                    //Password = "0f894391e4e8d3",
-                    Port = 25,
-                    //EnableSsl = true,
-                    DefaultEmailAddress = "derekjlowe@gmail.com",
-                    EmailAllErrors = true
+                    PreviousDayPMPeakEnd = prviousDayPMPeakEnd,
+                    PreviousDayPMPeakStart = prviousDayPMPeakStart,
+                    ScanDate = scanDate,
+                    ScanDayEndHour = scanDayStartHour,
+                    ScanDayStartHour = scanDayEndHour,
+                    WeekdayOnly = weekdayOnly,
+                    EmailServer = configuration["EmailServer"],
+                    UserName = configuration["UserName"],
+                    Password = configuration["Password"],
+                    Port = Convert.ToInt32(configuration["Port"]),
+                    EnableSsl = Convert.ToBoolean(configuration["EnableSsl"]),
+                    DefaultEmailAddress = configuration["DefaultEmailAddress"],
+                    EmailAllErrors = Convert.ToBoolean(configuration["EmailAllErrors"])
                 };
 
                 await scanService.StartScan(options, emailOptions);
