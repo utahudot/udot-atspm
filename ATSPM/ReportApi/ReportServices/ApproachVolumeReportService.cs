@@ -50,13 +50,13 @@ namespace ATSPM.ReportApi.ReportServices
 
             var tasks = new List<Task<ApproachVolumeResult>>();
             var nbSbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nbSbApproaches);
+            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nbSbApproaches, DirectionTypes.NB, DirectionTypes.SB);
             var ebWbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.EB || a.DirectionTypeId == DirectionTypes.WB)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, ebWbApproaches);
+            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, ebWbApproaches, DirectionTypes.EB, DirectionTypes.WB);
             var nwbSebApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NW || a.DirectionTypeId == DirectionTypes.SE)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nwbSebApproaches);
+            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nwbSebApproaches, DirectionTypes.NW, DirectionTypes.SE);
             var nebSwbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NE || a.DirectionTypeId == DirectionTypes.SW)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nebSwbApproaches);
+            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nebSwbApproaches, DirectionTypes.NE, DirectionTypes.SW);
             var results = await Task.WhenAll(tasks);
 
             var finalResultcheck = results.Where(result => result != null).ToList();
@@ -70,22 +70,39 @@ namespace ATSPM.ReportApi.ReportServices
             return finalResultcheck;
         }
 
-        private void GetApproachVolume(ApproachVolumeOptions options, Signal signal, List<ControllerEventLog> controllerEventLogs, List<Task<ApproachVolumeResult>> tasks, List<Approach> approaches)
+        private void GetApproachVolume(
+            ApproachVolumeOptions options,
+            Signal signal,
+            List<ControllerEventLog> controllerEventLogs,
+            List<Task<ApproachVolumeResult>> tasks,
+            List<Approach> approaches,
+            DirectionTypes primaryDirection,
+            DirectionTypes opposingDirection
+            )
         {
             if (approaches.Any())
             {
                 var detectionTypes = approaches.SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).SelectMany(d => d.DetectionTypes).Distinct().ToList();
-                foreach (var detectionType in detectionTypes)
+                foreach (var detectionType in detectionTypes.Where(d => d.Id == DetectionTypes.AC || d.Id == DetectionTypes.LLC))
                 {
-                    GetAppoachVolumeForApproaches(options, signal, controllerEventLogs, tasks, approaches, detectionType);
+                    GetAppoachVolumeForApproaches(options, signal, controllerEventLogs, tasks, approaches, detectionType, primaryDirection, opposingDirection);
                 }
             }
         }
 
-        private void GetAppoachVolumeForApproaches(ApproachVolumeOptions options, Signal signal, List<ControllerEventLog> controllerEventLogs, List<Task<ApproachVolumeResult>> tasks, List<Approach> nbSbApproaches, DetectionType detectionType)
+        private void GetAppoachVolumeForApproaches(
+            ApproachVolumeOptions options,
+            Signal signal,
+            List<ControllerEventLog> controllerEventLogs,
+            List<Task<ApproachVolumeResult>> tasks,
+            List<Approach> approaches,
+            DetectionType detectionType,
+            DirectionTypes primaryDirection,
+            DirectionTypes opposingDirection
+            )
         {
-            var primaryApproaches = nbSbApproaches.Where(a => a.DirectionTypeId == DirectionTypes.NB && a.Detectors.SelectMany(d => d.DetectionTypes).Contains(detectionType)).ToList();
-            var opposingApproaches = nbSbApproaches.Where(a => a.DirectionTypeId == DirectionTypes.SB && a.Detectors.SelectMany(d => d.DetectionTypes).Contains(detectionType)).ToList();
+            var primaryApproaches = approaches.Where(a => a.DirectionTypeId == primaryDirection && a.Detectors.SelectMany(d => d.DetectionTypes).Contains(detectionType)).ToList();
+            var opposingApproaches = approaches.Where(a => a.DirectionTypeId == opposingDirection && a.Detectors.SelectMany(d => d.DetectionTypes).Contains(detectionType)).ToList();
             tasks.Add(GetApproachVolumeByDetectionType(
                 options,
                 signal,
@@ -120,7 +137,10 @@ namespace ATSPM.ReportApi.ReportServices
                 signal,
                 primaryDetectorEvents,
                 opposingDetectorEvents,
-                primaryDistanceFromStopBar);
+                primaryApproaches,
+                opposingApproaches,
+                primaryDistanceFromStopBar,
+                detectionType);
             viewModel.SignalDescription = signal.SignalDescription();
             return viewModel;
         }
@@ -135,7 +155,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var detectors = approaches
                 .SelectMany(a => a.Detectors)
-                .Where(d => d.DetectionTypes.Any(dt => dt.Id == options.DetectionType) && (d.LaneType == LaneTypes.V || d.LaneType == LaneTypes.NA))
+                .Where(d => d.DetectionTypes.Any(dt => dt.Id == detectionType.Id) && (d.LaneType == LaneTypes.V || d.LaneType == LaneTypes.NA))
                 .ToList();
             distanceFromStopBar = 0;
             if (detectors.Any())
