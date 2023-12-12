@@ -1,9 +1,7 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories
 {
