@@ -165,7 +165,7 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddATSPMDbContext(h);
 
 //        //repositories
-//        s.AddScoped<ISignalRepository, SignalEFRepository>();
+//        s.AddScoped<ILocationRepository, LocationEFRepository>();
 //        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 //        //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 

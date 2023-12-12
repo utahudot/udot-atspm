@@ -45,7 +45,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
@@ -62,7 +62,7 @@ namespace InfrastructureTests.RepositoryTests
 
             await _repo.AddAsync(signal);
 
-            var collection = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var collection = await _repo.GetListAsync(i => i.locationId == signal.locationId);
 
             Assert.Collection(collection,
                 new Action<Signal>[]
@@ -83,7 +83,7 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -118,7 +118,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
@@ -135,13 +135,13 @@ namespace InfrastructureTests.RepositoryTests
 
             await _repo.AddAsync(signal);
 
-            var actual = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var actual = await _repo.GetListAsync(i => i.locationId == signal.locationId);
 
-            Assert.Equal(expected: signal.SignalId, actual: actual.First().SignalId);
+            Assert.Equal(expected: signal.locationId, actual: actual.First().locationId);
 
             _repo.Remove(signal);
 
-            Assert.True(_repo.GetList(i => i.SignalId == signal.SignalId).Count() == 0);
+            Assert.True(_repo.GetList(i => i.locationId == signal.locationId).Count() == 0);
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -196,7 +196,7 @@ namespace InfrastructureTests.RepositoryTests
             {
                 var signal = new Signal()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -232,7 +232,7 @@ namespace InfrastructureTests.RepositoryTests
         {
             var signal = new Signal()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
                 PrimaryName = "Test Signal",
@@ -251,7 +251,7 @@ namespace InfrastructureTests.RepositoryTests
 
             var result = await _repo.LookupAsync(signal);
 
-            Assert.Equal(signal.SignalId, result.SignalId);
+            Assert.Equal(signal.locationId, result.locationId);
         }
 
         public void Dispose()

@@ -23,9 +23,9 @@ namespace ATSPM.Application.ValueObjects
 
     public class TestDataUtility
     {
-        private readonly ISignalRepository _signalRepo;
+        private readonly ILocationRepository _signalRepo;
 
-        public TestDataUtility(ISignalRepository signalRepo)
+        public TestDataUtility(ILocationRepository signalRepo)
         {
             _signalRepo = signalRepo;
         }

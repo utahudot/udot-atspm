@@ -56,13 +56,13 @@ namespace InfrastructureTests
         {
             await SeedData();
 
-            var SignalId = "1001";
+            var locationId = "1001";
             var startTime = DateTime.Today;
             var endTime = DateTime.Today.AddDays(1);
 
 
             var expected = codes.OrderBy(o => o).ToList();
-            var actual = _repo.GetAllAggregationCodes(SignalId, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
+            var actual = _repo.GetAllAggregationCodes(locationId, startTime, endTime).Select(s => s.EventCode).Distinct().OrderBy(o => o).ToList();
 
             _output.WriteLine($"expected: {expected.Count}");
             _output.WriteLine($"actual: {actual.Count}");
@@ -201,7 +201,7 @@ namespace InfrastructureTests
             {
                 for (int z = 0; z <= 4; z++)
                 {
-                    var controlLogArchive = new ControllerLogArchive() { SignalId = (x + 1000).ToString(), ArchiveDate = DateTime.Today.AddDays(z) };
+                    var controlLogArchive = new ControllerLogArchive() { locationId = (x + 1000).ToString(), ArchiveDate = DateTime.Today.AddDays(z) };
 
                     controlLogArchive.LogData = new List<ControllerEventLog>();
 
@@ -216,9 +216,9 @@ namespace InfrastructureTests
 
             await _db.SaveChangesAsync();
 
-            //await foreach (var i in _db.Set<ControllerLogArchive>().OrderBy(o => o.SignalId).AsAsyncEnumerable())
+            //await foreach (var i in _db.Set<ControllerLogArchive>().OrderBy(o => o.locationId).AsAsyncEnumerable())
             //{
-            //    _output.WriteLine($"item: {i.SignalId} : {i.ArchiveDate} : {i.LogData.Count()}");
+            //    _output.WriteLine($"item: {i.locationId} : {i.ArchiveDate} : {i.LogData.Count()}");
             //}
         }
     }

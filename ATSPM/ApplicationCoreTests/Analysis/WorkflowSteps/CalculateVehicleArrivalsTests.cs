@@ -27,7 +27,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new RedToRedCycle()
                 {
-                    SignalIdentifier = "1001",
+                    locationIdentifier = "1001",
                     PhaseNumber = 1,
                     Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
@@ -48,7 +48,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     Mph = 45,
                     Signal = new Signal()
                     {
-                        SignalIdentifier = "1001"
+                        locationIdentifier = "1001"
                     }
                 }
             };
@@ -78,7 +78,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var sut = new CalculateVehicleArrivals();
 
-            _redCycles[0].SignalIdentifier = "1002";
+            _redCycles[0].locationIdentifier = "1002";
 
             var testEvents = new List<CorrectedDetectorEvent>
             {

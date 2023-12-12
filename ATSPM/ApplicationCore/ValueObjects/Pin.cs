@@ -16,7 +16,7 @@ namespace ATSPM.Application.ValueObjects
 
         protected string region;
 
-        protected string _signalId;
+        protected string _locationId;
 
 
         /// <summary>
@@ -44,9 +44,9 @@ namespace ATSPM.Application.ValueObjects
         //    SortedDictionary<int, bool> reports = FindReports(hasPCD,hasSpeed, hasPhase, hasTMC, hasRLM, hasSplitFail);
         //    box = new InfoBox(LocationId, description, reports);
         //}
-        public Pin(string signalId, string lat, string Long, string desc, string Region)
+        public Pin(string locationId, string lat, string Long, string desc, string Region)
         {
-            _signalId = signalId;
+            _locationId = locationId;
             latitude = lat;
             longitude = Long;
             description = desc;
@@ -56,7 +56,7 @@ namespace ATSPM.Application.ValueObjects
             //box = new InfoBox(LocationId, description, reports);
         }
 
-        public string SignalId => _signalId;
+        public string locationId => _locationId;
 
         public string Region => region;
 
@@ -121,14 +121,14 @@ namespace ATSPM.Application.ValueObjects
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             var y = (Pin)obj;
-            return this != null && y != null && SignalId == y.SignalId
+            return this != null && y != null && locationId == y.locationId
                 ;
         }
 
 
         public override int GetHashCode()
         {
-            return this == null ? 0 : SignalId.GetHashCode() ^ Region.GetHashCode();
+            return this == null ? 0 : locationId.GetHashCode() ^ Region.GetHashCode();
         }
     }
 }

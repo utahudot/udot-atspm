@@ -330,12 +330,12 @@ namespace WatchDog.Services
             var errorMessage = "";
             foreach (var signal in sortedSignals)
             {
-                foreach (var error in issues.Where(e => e.SignalId == signal.Id))
+                foreach (var error in issues.Where(e => e.locationId == signal.Id))
                 {
                     if (options.EmailAllErrors || !logsFromPreviousDay.Contains(error))
                     {
                         //   Add to email if it was not failing yesterday
-                        errorMessage += $"<tr><td>{error.SignalIdentifier}</td><td>{signal.PrimaryName} & {signal.SecondaryName}</td>";
+                        errorMessage += $"<tr><td>{error.locationIdentifier}</td><td>{signal.PrimaryName} & {signal.SecondaryName}</td>";
 
                         if (error.Phase > 0)
                         {

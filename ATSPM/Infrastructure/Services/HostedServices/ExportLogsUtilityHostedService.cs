@@ -115,7 +115,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 var path = Path.Combine(dir.FullName, $"{archive.LocationIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
 
-                await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
+                await File.WriteAllLinesAsync(path, new string[] { "locationId, Timestamp, EventCode, EventParam" });
 
                 var csv = archive.LogData.Select(x => $"{archive.LocationIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
 
