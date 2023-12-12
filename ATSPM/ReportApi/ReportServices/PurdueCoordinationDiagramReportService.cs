@@ -17,7 +17,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PurdueCoordinationDiagramService perdueCoordinationDiagramService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly SignalPhaseService signalPhaseService;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.ReportServices
             PurdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
             SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<PurdueCoordinationDiagramResult>> ExecuteAsync(PurdueCoordinationDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");

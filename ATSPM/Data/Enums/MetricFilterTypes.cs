@@ -13,7 +13,7 @@ namespace ATSPM.Data.Enums
         [Display(Name = "Unknown", Order = 0)]
         Unknown,
         [Display(Name = "Signal Id", Order = 1)]
-        SignalId,
+        locationId,
         [Display(Name = "Primary Name", Order = 2)]
         PrimaryName,
         [Display(Name = "Secondary Name", Order = 3)]

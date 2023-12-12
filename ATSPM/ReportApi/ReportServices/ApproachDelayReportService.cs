@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly ApproachDelayService _approachDelayService;
         private readonly SignalPhaseService _signalPhaseService;
-        private readonly ISignalRepository _signalRepository;
+        private readonly ILocationRepository _signalRepository;
         private readonly IControllerEventLogRepository _controllerEventLogRepository;
         private readonly PhaseService _phaseService;
 
@@ -24,7 +24,7 @@ namespace ATSPM.ReportApi.ReportServices
         public ApproachDelayReportService(
             ApproachDelayService approachDelayService,
             SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             IControllerEventLogRepository controllerEventLogRepository,
             PhaseService phaseService
             )
@@ -39,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachDelayResult>> ExecuteAsync(ApproachDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = _signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = _signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {

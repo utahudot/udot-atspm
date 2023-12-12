@@ -18,7 +18,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
         private readonly ISpeedEventRepository speedEventRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.ReportServices
             IControllerEventLogRepository controllerEventLogRepository,
             IApproachRepository approachRepository,
             ISpeedEventRepository speedEventRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService)
         {
             this.approachSpeedService = approachSpeedService;
@@ -41,7 +41,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachSpeedResult>> ExecuteAsync(ApproachSpeedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             
             if (controllerEventLogs.IsNullOrEmpty())

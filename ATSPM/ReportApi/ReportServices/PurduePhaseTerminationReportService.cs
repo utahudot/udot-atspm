@@ -15,13 +15,13 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
 
         /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository)
+            ILocationRepository signalRepository)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.controllerEventLogRepository = controllerEventLogRepository;
@@ -31,7 +31,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PhaseTerminationResult> ExecuteAsync(PurduePhaseTerminationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");
@@ -70,7 +70,7 @@ namespace ATSPM.ReportApi.ReportServices
             GC.Collect();
 
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                parameter.SignalIdentifier,
+                parameter.locationIdentifier,
                 parameter.Start,
                 parameter.End,
                 planEvents,
@@ -95,7 +95,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var plans = phaseCollectionData.Plans.Select(p => new Plan(p.PlanNumber.ToString(), p.Start, p.End)).ToList();
             var result = new PhaseTerminationResult(
-                phaseCollectionData.SignalId,
+                phaseCollectionData.locationId,
                 parameter.Start,
                 parameter.End,
                 parameter.SelectedConsecutiveCount,

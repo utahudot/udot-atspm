@@ -42,7 +42,7 @@ namespace ATSPM.Data
             //    builder.Property(e => e.LocationId)
             //            .IsRequired()
             //            .HasMaxLength(10)
-            //            .HasColumnName("SignalID");
+            //            .HasColumnName("locationId");
             //});
 
             OnModelCreatingPartial(modelBuilder);

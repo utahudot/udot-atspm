@@ -18,10 +18,10 @@ namespace ATSPM.ConfigApi.Controllers
     [ApiVersion(1.0)]
     public class SignalController : AtspmConfigControllerBase<Location, int>
     {
-        private readonly ISignalRepository _repository;
+        private readonly ILocationRepository _repository;
 
         /// <inheritdoc/>
-        public SignalController(ISignalRepository repository) : base(repository)
+        public SignalController(ILocationRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -186,7 +186,7 @@ namespace ATSPM.ConfigApi.Controllers
         public IActionResult GetSignalsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
             var result = _repository.GetList()
-                .FromSpecification(new ActiveSignalSpecification())
+                .FromSpecification(new ActiveLocationSpecification())
 
                 .Where(w => jurisdictionId == null || w.JurisdictionId == jurisdictionId)
                 .Where(w => regionId == null || w.RegionId == regionId)
@@ -197,7 +197,7 @@ namespace ATSPM.ConfigApi.Controllers
                 {
                     Id = s.Id,
                     Start = s.Start,
-                    SignalIdentifier = s.LocationIdentifier,
+                    locationIdentifier = s.LocationIdentifier,
                     PrimaryName = s.PrimaryName,
                     SecondaryName = s.SecondaryName,
                     RegionId = s.RegionId,
@@ -209,7 +209,7 @@ namespace ATSPM.ConfigApi.Controllers
                     Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id))))
                 })
 
-                .GroupBy(r => r.SignalIdentifier)
+                .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
 

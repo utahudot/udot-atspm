@@ -16,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public SplitFailReportService(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService
             )
         {
@@ -36,7 +36,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<SplitFailsResult>> ExecuteAsync(SplitFailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {
@@ -136,7 +136,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents,
                 phaseDetail.Approach);
             var result = new SplitFailsResult(
-                options.SignalIdentifier,
+                options.locationIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.PhaseNumber,
                 options.Start,
@@ -176,7 +176,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.SignalIdentifier;
+                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetectorChannel;
@@ -187,7 +187,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.SignalIdentifier;
+                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetectorChannel;

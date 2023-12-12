@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly ArrivalOnRedService arrivalOnRedService;
         private readonly SignalPhaseService signalPhaseService;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.ReportServices
             ArrivalOnRedService arrivalOnRedService,
             SignalPhaseService signalPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService
             )
         {
@@ -39,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ArrivalOnRedResult>> ExecuteAsync(ArrivalOnRedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");

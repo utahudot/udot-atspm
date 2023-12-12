@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     {
         public DateTime BinStartTime { get; set; }
 
-        public string SignalId { get; set; }
+        public string locationId { get; set; }
 
         public int ApproachId { get; set; }
 

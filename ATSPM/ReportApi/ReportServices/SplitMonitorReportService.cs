@@ -13,13 +13,13 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly SplitMonitorService splitMonitorService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
 
         /// <inheritdoc/>
         public SplitMonitorReportService(
             SplitMonitorService splitMonitorService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository)
+            ILocationRepository signalRepository)
         {
             this.splitMonitorService = splitMonitorService;
             this.controllerEventLogRepository = controllerEventLogRepository;
@@ -29,7 +29,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<SplitMonitorResult>> ExecuteAsync(SplitMonitorOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {

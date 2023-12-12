@@ -22,7 +22,7 @@ namespace ATSPM.Application.Extensions
         #region Obsolete
 
         [Obsolete("Related collection to Signal model")]
-        public static IReadOnlyList<Area> GetListOfAreasForSignal(this IAreaRepository repo, string signalId)
+        public static IReadOnlyList<Area> GetListOfAreasForSignal(this IAreaRepository repo, string locationId)
         {
             throw new NotImplementedException();
         }

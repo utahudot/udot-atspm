@@ -10,12 +10,12 @@ namespace ATSPM.ReportApi.Business.PhaseTermination;
 public class PhaseTerminationResult : SignalResult
 {
     public PhaseTerminationResult(
-        string signalId,
+        string locationId,
         DateTime start,
         DateTime end,
         int consecutiveCount,
         ICollection<Plan> plans,
-        ICollection<Phase> phases) : base(signalId, start, end)
+        ICollection<Phase> phases) : base(locationId, start, end)
     {
         ConsecutiveCount = consecutiveCount;
         Plans = plans;
