@@ -115,13 +115,25 @@ namespace WatchDog.Services
 
             var message = new MailMessage();
             SetupMailMessage(options, areaSpecificMessage, users, message);
-            List<WatchDogLogEvent> missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs;
-            GetEventsByIssueType(eventsContainer, out missingErrorsLogs, out forceErrorsLogs, out maxErrorsLogs, out countErrorsLogs, out stuckpedErrorsLogs);
-            AddMessageBody(options, signals, logsFromPreviousDay, message, missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs);
+            List<WatchDogLogEvent> missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs;
+            GetEventsByIssueType(eventsContainer, out missingErrorsLogs, out forceErrorsLogs, out maxErrorsLogs, out countErrorsLogs, out stuckpedErrorsLogs, out configurationErrorsLogs, out unconfiguredDetectorErrorsLogs);
+            AddMessageBody(options, signals, logsFromPreviousDay, message, missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs);
             SendMessage(message, smtp);
         }
 
-        private void AddMessageBody(EmailOptions options, List<Signal> signals, List<WatchDogLogEvent> logsFromPreviousDay, MailMessage message, List<WatchDogLogEvent> missingErrorsLogs, List<WatchDogLogEvent> forceErrorsLogs, List<WatchDogLogEvent> maxErrorsLogs, List<WatchDogLogEvent> countErrorsLogs, List<WatchDogLogEvent> stuckpedErrorsLogs)
+        private void AddMessageBody(
+            EmailOptions options,
+            List<Signal> signals,
+            List<WatchDogLogEvent> logsFromPreviousDay,
+            MailMessage message,
+            List<WatchDogLogEvent> missingErrorsLogs,
+            List<WatchDogLogEvent> forceErrorsLogs,
+            List<WatchDogLogEvent> maxErrorsLogs,
+            List<WatchDogLogEvent> countErrorsLogs,
+            List<WatchDogLogEvent> stuckpedErrorsLogs,
+            List<WatchDogLogEvent> configurationErrorsLogs,
+            List<WatchDogLogEvent> unconfiguredDetectorErrorsLogs
+            )
         {
             message.Body += "<style>\r\n  .atspm-table {\r\n    border: solid 2px #DDEEEE;\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n    font: normal 14px Roboto, sans-serif;\r\n  }\r\n\r\n  .atspm-table thead th {\r\n    background-color: #DDEFEF;\r\n    border: solid 1px #DDEEEE;\r\n    color: #336B6B;\r\n    padding: 10px;\r\n    text-align: left;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n\r\n  .atspm-table tbody td {\r\n    border: solid 1px #DDEEEE;\r\n    color: #333;\r\n    padding: 10px;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n</style>";
 
@@ -196,6 +208,32 @@ namespace WatchDog.Services
                 message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
+            if (configurationErrorsLogs.Any())
+            {
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals have unconfigured approaches</th></tr>";
+                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(signals, configurationErrorsLogs, options, logsFromPreviousDay);
+                message.Body += "</table></br>";
+            }
+            else
+            {
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new unconfigured approaches \n";
+                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += "</table></br>";
+            }
+            if (unconfiguredDetectorErrorsLogs.Any())
+            {
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals have unconfigured detectors</th></tr>";
+                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(signals, unconfiguredDetectorErrorsLogs, options, logsFromPreviousDay);
+                message.Body += "</table></br>";
+            }
+            else
+            {
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new unconfigured detectors \n";
+                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
+                message.Body += "</table></br>";
+            }
             //if (eventsContainer.CannotFtpFiles.Count > 0 && ftpErrors != "")
             //{
             //    message.Body += " \n --The following signals have had FTP problems.  central was not able to delete the file on the controller between  " +
@@ -211,13 +249,24 @@ namespace WatchDog.Services
             //}
         }
 
-        private static void GetEventsByIssueType(List<WatchDogLogEvent> eventsContainer, out List<WatchDogLogEvent> missingErrorsLogs, out List<WatchDogLogEvent> forceErrorsLogs, out List<WatchDogLogEvent> maxErrorsLogs, out List<WatchDogLogEvent> countErrorsLogs, out List<WatchDogLogEvent> stuckpedErrorsLogs)
+        private static void GetEventsByIssueType(
+            List<WatchDogLogEvent> eventsContainer,
+            out List<WatchDogLogEvent> missingErrorsLogs,
+            out List<WatchDogLogEvent> forceErrorsLogs,
+            out List<WatchDogLogEvent> maxErrorsLogs,
+            out List<WatchDogLogEvent> countErrorsLogs,
+            out List<WatchDogLogEvent> stuckpedErrorsLogs,
+            out List<WatchDogLogEvent> configurationErrorsLogs,
+            out List<WatchDogLogEvent> unconfiguredDetectorErrorsLogs
+            )
         {
             missingErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.RecordCount).ToList();
             forceErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.ForceOffThreshold).ToList();
             maxErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.MaxOutThreshold).ToList();
             countErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.LowDetectorHits).ToList();
             stuckpedErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.StuckPed).ToList();
+            configurationErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.UnconfiguredApproach).ToList();
+            unconfiguredDetectorErrorsLogs = eventsContainer.Where(e => e.IssueType == ATSPM.Data.Enums.WatchDogIssueType.UnconfiguredDetector).ToList();
         }
 
         private void SetupMailMessage(EmailOptions options, string areaSpecificMessage, List<ApplicationUser> users, MailMessage message)
@@ -286,7 +335,7 @@ namespace WatchDog.Services
                     if (options.EmailAllErrors || !logsFromPreviousDay.Contains(error))
                     {
                         //   Add to email if it was not failing yesterday
-                        errorMessage += $"<td>{error.SignalIdentifier}</td><td>{signal.PrimaryName} & {signal.SecondaryName}</td>";
+                        errorMessage += $"<tr><td>{error.SignalIdentifier}</td><td>{signal.PrimaryName} & {signal.SecondaryName}</td>";
 
                         if (error.Phase > 0)
                         {
@@ -297,7 +346,7 @@ namespace WatchDog.Services
                             errorMessage += $"<td>{error.ComponentId}</td>";
                         }
 
-                        errorMessage += $"<td>{error.Details}</td>";
+                        errorMessage += $"<td>{error.Details}</td></tr>";
                     }
                 }
             }

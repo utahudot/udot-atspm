@@ -63,6 +63,12 @@ namespace ATSPM.ReportApi.ReportServices
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
+            var terminationEvents = controllerEventLogs.Where(e =>
+                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                && e.Timestamp >= parameter.Start
+                && e.Timestamp <= parameter.End).ToList();
+
+
             controllerEventLogs = null;
 
             var results = await splitMonitorService.GetChartData(
@@ -71,6 +77,7 @@ namespace ATSPM.ReportApi.ReportServices
                cycleEvents,
                pedEvents,
                splitsEvents,
+               terminationEvents,
                signal);
 
             var finalResultcheck = results.Where(result => result != null).ToList();

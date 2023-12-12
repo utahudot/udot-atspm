@@ -107,8 +107,8 @@ builder.Host.ConfigureServices((h, s) =>
         });
     });
 
-    //s.AddNpgAtspmDbContext(h);
-    s.AddAtspmDbContext(h);
+    s.AddNpgAtspmDbContext(h);
+    //s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
