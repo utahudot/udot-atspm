@@ -24,6 +24,20 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
+        //HACK: this is only temporary
+        public static IServiceCollection AddNpgAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
+        {
+            services.AddDbContext<ConfigContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<AggregationContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(AggregationContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<EventLogContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<SpeedContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<IdentityContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<IdentityConfigurationContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<IdentityOperationalContext>(db => db.UseNpgsql(host.Configuration.GetConnectionString(nameof(IdentityContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+
+            return services;
+        }
+
         public static IServiceCollection ConfigureSignalControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
             services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
