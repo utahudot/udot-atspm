@@ -63,7 +63,7 @@ namespace ATSPM.ReportApi.Business.Common
             {
                 analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents);
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, terminationEvents.ToList());
             if (!terminationEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
@@ -76,8 +76,8 @@ namespace ATSPM.ReportApi.Business.Common
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(analysisPhaseData.TerminationEvents) ?? new List<ControllerEventLog>();
-            analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount);
-            analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount);
+            analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
+            analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
             analysisPhaseData.Signal = signal;
             return analysisPhaseData;
@@ -90,23 +90,23 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="phasenumber"></param>
         /// <param name="signalID"></param>
         /// <param name="CycleEventsTable"></param>
-        public AnalysisPhaseData GetAnalysisPhaseData(
-            int phasenumber,
-            Signal signal,
-            List<ControllerEventLog> CycleEventsTable)
-        {
-            var analysisPhaseData = new AnalysisPhaseData();
-            analysisPhaseData.PhaseNumber = phasenumber;
-            analysisPhaseData.SignalIdentifier = signal.SignalIdentifier;
-            analysisPhaseData.IsOverlap = false;
-            var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
-            var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
-            var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
-            analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
-            analysisPhaseData.Signal = signal;
-            return analysisPhaseData;
-        }
+        //public AnalysisPhaseData GetAnalysisPhaseData(
+        //    int phasenumber,
+        //    Signal signal,
+        //    List<ControllerEventLog> CycleEventsTable)
+        //{
+        //    var analysisPhaseData = new AnalysisPhaseData();
+        //    analysisPhaseData.PhaseNumber = phasenumber;
+        //    analysisPhaseData.SignalIdentifier = signal.SignalIdentifier;
+        //    analysisPhaseData.IsOverlap = false;
+        //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
+        //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
+        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
+        //    var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
+        //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
+        //    analysisPhaseData.Signal = signal;
+        //    return analysisPhaseData;
+        //}
 
         public List<ControllerEventLog> FindTerminationEvents(IReadOnlyList<ControllerEventLog> terminationeventstable,
             int phasenumber)
@@ -169,16 +169,15 @@ namespace ATSPM.ReportApi.Business.Common
             // Order the events by datestamp
             var eventsInOrder = terminationEvents.OrderBy(TerminationEvent => TerminationEvent.Timestamp);
             foreach (var termEvent in eventsInOrder)
-                if (termEvent.EventCode != 7)
-                {
-                    if (termEvent.EventCode == eventtype)
-                        runningConsecCount++;
-                    else
-                        runningConsecCount = 0;
+            {
+                if (termEvent.EventCode == eventtype)
+                    runningConsecCount++;
+                else
+                    runningConsecCount = 0;
 
-                    if (runningConsecCount >= consecutiveCount)
-                        ConsecutiveEvents.Add(termEvent);
-                }
+                if (runningConsecCount >= consecutiveCount)
+                    ConsecutiveEvents.Add(termEvent);
+            }
             return ConsecutiveEvents;
         }
 
@@ -188,8 +187,7 @@ namespace ATSPM.ReportApi.Business.Common
         }
 
 
-        private double FindPercentageConsecutiveEvents(List<ControllerEventLog> terminationEvents, int eventtype,
-            int consecutiveCount)
+        private double FindPercentageConsecutiveEvents(List<ControllerEventLog> terminationEvents, int eventtype)
         {
             double percentile = 0;
             double total = terminationEvents.Count(t => t.EventCode != 7);
