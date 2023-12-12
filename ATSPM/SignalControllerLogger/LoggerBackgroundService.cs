@@ -29,7 +29,7 @@ namespace SignalControllerLogger
             //while (!stoppingToken.IsCancellationRequested)
             //{
 
-            List<Signal> signals;
+            List<Location> signals;
 
             try
             {

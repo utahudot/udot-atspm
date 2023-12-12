@@ -56,7 +56,7 @@
 //                .Where(d => d.LaneTypeId == LaneTypes.V).ToList();
 
 //            var detectorEvents = detectors.SelectMany(d => controllerEventLogRepository.GetEventsByEventCodesParam(
-//                                d.Approach.SignalId,
+//                                d.Approach.LocationId,
 //                                options.Start,
 //                                options.End,
 //                                new List<int> { 82 },
@@ -312,7 +312,7 @@
 ////                        {
 ////                            Detectors.Add(detector);
 ////                            detectorEvents.AddRange(_controllerEventLogRepository.GetEventsByEventCodesParam(
-////                                detector.Approach.SignalId,
+////                                detector.Approach.LocationId,
 ////                                _approachVolumeOptions.StartDate,
 ////                                _approachVolumeOptions.EndDate,
 ////                                new List<int> { 82 },

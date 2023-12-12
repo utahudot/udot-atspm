@@ -44,7 +44,7 @@ namespace ATSPM.Application.Common
                 .Select(x => x.Split(','))
                    .Select(x => new ControllerEventLog
                    {
-                       SignalIdentifier = x[0],
+                       LocationIdentifier = x[0],
                        Timestamp = DateTime.Parse(x[1]),
                        EventCode = int.Parse(x[2]),
                        EventParam = int.Parse(x[3])

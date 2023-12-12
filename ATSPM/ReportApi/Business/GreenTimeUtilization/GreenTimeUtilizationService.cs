@@ -185,7 +185,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
 
             GreenTimeUtilizationResult result = new GreenTimeUtilizationResult(
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 bins,
@@ -195,7 +195,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 phaseNumberSort
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
-            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            result.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
             return result;
         }
 

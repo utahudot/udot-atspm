@@ -14,7 +14,7 @@ namespace ATSPM.Application.Analysis.Plans
         #region IPlan
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PlanNumber { get; set; }

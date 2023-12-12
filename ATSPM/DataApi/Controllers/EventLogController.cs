@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 namespace ATSPM.DataApi.Controllers
 {
     /// <summary>
-    /// Signal controller event log data
+    /// Location controller event log data
     /// </summary>
     [ApiController]
 
@@ -31,7 +31,7 @@ namespace ATSPM.DataApi.Controllers
         /// <summary>
         /// Get signal events between dates
         /// </summary>
-        /// <param name="signalIdentifier">Signal identifier</param>
+        /// <param name="signalIdentifier">Location identifier</param>
         /// <param name="start">Date/time of first event. Example: <c>2023-02-09T08:15:30.0</c></param>
         /// <param name="end">Date/time of last event. Example: <c>2023-02-09T11:59:59.5</c></param>
         /// <returns>List of ControllerEventLogs</returns>
@@ -62,7 +62,7 @@ namespace ATSPM.DataApi.Controllers
         /// <summary>
         /// Get signal events between dates with event code
         /// </summary>
-        /// <param name="signalIdentifier">Signal identifier</param>
+        /// <param name="signalIdentifier">Location identifier</param>
         /// <param name="start">date/time of first event</param>
         /// <param name="end">date/time of last event</param>
         /// <returns>List of ControllerEventLogs</returns>

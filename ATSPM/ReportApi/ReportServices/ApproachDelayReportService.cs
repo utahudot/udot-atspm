@@ -43,11 +43,11 @@ namespace ATSPM.ReportApi.ReportServices
 
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Signal not found"));
             }
 
-            var controllerEventLogs = _controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = _controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {

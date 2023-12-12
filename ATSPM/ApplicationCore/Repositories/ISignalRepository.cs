@@ -6,70 +6,70 @@ using System.Collections.Generic;
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// Signal Controller Repository
+    /// Location Controller Repository
     /// </summary>
-    public interface ISignalRepository : IAsyncRepository<Signal>
+    public interface ISignalRepository : IAsyncRepository<Location>
     {
         /// <summary>
-        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
+        /// Get all active <see cref="Location"/> and related entities that match <paramref name="signalIdentifier"/>
         /// </summary>
-        /// <param name="signalIdentifier">Signal controller identifier</param>
-        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
-        IReadOnlyList<Signal> GetAllVersionsOfSignal(string signalIdentifier);
+        /// <param name="signalIdentifier">Location controller identifier</param>
+        /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
+        IReadOnlyList<Location> GetAllVersionsOfSignal(string signalIdentifier);
 
         /// <summary>
-        /// Get latest version of all <see cref="Signal"/> and related entities
+        /// Get latest version of all <see cref="Location"/> and related entities
         /// </summary>
-        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
-        IReadOnlyList<Signal> GetLatestVersionOfAllSignals();
+        /// <returns>List of <see cref="Location"/> with newest start date</returns>
+        IReadOnlyList<Location> GetLatestVersionOfAllSignals();
 
         /// <summary>
-        /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="ControllerType"/>
+        /// Get latest version of all <see cref="Location"/> and related entities by <see cref="ControllerType"/>
         /// </summary>
         /// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
-        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
-        IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
+        /// <returns>List of <see cref="Location"/> with newest start date</returns>
+        IReadOnlyList<Location> GetLatestVersionOfAllSignals(int controllerTypeId);
 
         /// <summary>
-        /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="DateTime"/>
+        /// Get latest version of all <see cref="Location"/> and related entities by <see cref="DateTime"/>
         /// </summary>
-        /// <param name="startDate">Signals starting  from <see cref="DateTime"/> to filter</param>
-        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
-        IReadOnlyList<Signal> GetLatestVersionOfAllSignals(DateTime startDate);
+        /// <param name="startDate">Locations starting  from <see cref="DateTime"/> to filter</param>
+        /// <returns>List of <see cref="Location"/> with newest start date</returns>
+        IReadOnlyList<Location> GetLatestVersionOfAllSignals(DateTime startDate);
 
 
         /// <summary>
-        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
+        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="signalIdentifier"/>
         /// </summary>
-        /// <param name="signalIdentifier">Signal controller identifier</param>
-        /// <returns>Lastest <see cref="Signal"/> version</returns>
-        Signal GetLatestVersionOfSignal(string signalIdentifier);
+        /// <param name="signalIdentifier">Location controller identifier</param>
+        /// <returns>Lastest <see cref="Location"/> version</returns>
+        Location GetLatestVersionOfSignal(string signalIdentifier);
 
         /// <summary>
-        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
+        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="signalIdentifier"/>
         /// and begin at or before <paramref name="startDate"/>
         /// </summary>
-        /// <param name="signalIdentifier">Signal controller identifier</param>
-        /// <param name="startDate">Starting date of Signal controllers</param>
-        /// <returns>Lastest <see cref="Signal"/> version</returns>
-        Signal GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate);
+        /// <param name="signalIdentifier">Location controller identifier</param>
+        /// <param name="startDate">Starting date of Location controllers</param>
+        /// <returns>Lastest <see cref="Location"/> version</returns>
+        Location GetLatestVersionOfSignal(string signalIdentifier, DateTime startDate);
 
         /// <summary>
-        /// Get all active <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>
+        /// Get all active <see cref="Location"/> and related entities that match <paramref name="signalIdentifier"/>
         /// and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
         /// </summary>
-        /// <param name="signalIdentifier">Signal controller identifier</param>
+        /// <param name="signalIdentifier">Location controller identifier</param>
         /// <param name="startDate">Date controllers are older than</param>
         /// <param name="endDate">Date controllers are newer than</param>
-        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
-        IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate);
+        /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
+        IReadOnlyList<Location> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate);
 
 
-        //ReadOnlyList<Signal> GetSignalsForMetricType(int metricTypeId);
+        //ReadOnlyList<Location> GetSignalsForMetricType(int metricTypeId);
 
         #region ExtensionMethods
 
-        //Signal CopySignalToNewVersion(int id);
+        //Location CopySignalToNewVersion(int id);
 
         //void SetSignalToDeleted(int id);
 
@@ -80,52 +80,52 @@ namespace ATSPM.Application.Repositories
         #region Obsolete
 
         //[Obsolete("This method isn't currently being used")]
-        //void AddList(List<Signal> signals);
+        //void AddList(List<Location> signals);
 
         //[Obsolete("Use the add in respository base class")]
-        //void AddOrUpdate(Signal signal);
+        //void AddOrUpdate(Location signal);
 
         //[Obsolete("This method isn't currently being used")]
-        //int CheckVersionWithFirstDate(string SignalId);
+        //int CheckVersionWithFirstDate(string LocationId);
 
         //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        //IReadOnlyList<Signal> EagerLoadAllSignals();
+        //IReadOnlyList<Location> EagerLoadAllSignals();
 
         //[Obsolete("Not Required anymore")]
-        //bool Exists(string SignalId);
+        //bool Exists(string LocationId);
 
         //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        //IReadOnlyList<Signal> GetAllEnabledSignals();
+        //IReadOnlyList<Location> GetAllEnabledSignals();
 
         //[Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        //IList<Signal> GetAllSignals();
+        //IList<Location> GetAllSignals();
 
         //[Obsolete("Use GetAllVersionsOfSignal")]
-        //IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(string SignalId);
+        //IReadOnlyList<Location> GetAllVersionsOfSignalBySignalId(string LocationId);
 
         //[Obsolete("This method isn't currently being used")]
-        //IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId);
+        //IReadOnlyList<Location> GetLatestVerionOfAllSignalsByControllerType(int ControllerTypeId);
 
         //[Obsolete("Just get whole object")]
-        //string GetSignalDescription(string SignalId);
+        //string GetSignalDescription(string LocationId);
 
         //[Obsolete("Use GetLatestVersionOfSignal")]
-        //Signal GetLatestVersionOfSignalBySignalId(string SignalId);
+        //Location GetLatestVersionOfSignalBySignalId(string LocationId);
 
         //[Obsolete("This should not be in respository")]
         //IReadOnlyList<Pin> GetPinInfo();
 
         //[Obsolete("Use GetLatestVersionOfSignal")]
-        //string GetSignalLocation(string SignalId);
+        //string GetSignalLocation(string LocationId);
 
         //[Obsolete("Use Lookup instead")]
-        //Signal GetSignalVersionByVersionId(int versionId);
+        //Location GetSignalVersionByVersionId(int versionId);
 
         //[Obsolete("Use GetLatestVersionOfSignal")]
-        //Signal GetVersionOfSignalByDate(string SignalId, DateTime startDate);
+        //Location GetVersionOfSignalByDate(string LocationId, DateTime startDate);
 
         //[Obsolete("Use GetLatestVersionOfSignal")]
-        //Signal GetVersionOfSignalByDateWithDetectionTypes(string SignalId, DateTime startDate);
+        //Location GetVersionOfSignalByDateWithDetectionTypes(string LocationId, DateTime startDate);
 
         //[Obsolete("Use SetSignalToDeleted")]
         //void SetAllVersionsOfASignalToDeleted(string id);
@@ -135,8 +135,8 @@ namespace ATSPM.Application.Repositories
 
         #endregion
 
-        //IReadOnlyList<Signal> GetLatestVersionOfAllSignalsForFtp();
-        //SignalFTPInfo GetSignalFTPInfoByID(string SignalId);
+        //IReadOnlyList<Location> GetLatestVersionOfAllSignalsForFtp();
+        //SignalFTPInfo GetSignalFTPInfoByID(string LocationId);
         //List<SignalFTPInfo> GetSignalFTPInfoForAllFTPSignals();
     }
 }

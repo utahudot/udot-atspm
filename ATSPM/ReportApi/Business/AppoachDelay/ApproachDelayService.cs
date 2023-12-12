@@ -42,7 +42,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
             var plans = GetPlans(signalPhase.Plans);
             return new ApproachDelayResult(
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 phaseDetail.PhaseNumber,
                 phaseDetail.Approach.Description,
                 options.Start,

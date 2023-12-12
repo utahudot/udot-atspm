@@ -11,10 +11,10 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Detector event cout aggregation
     /// </summary>
-    public partial class DetectorEventCountAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class DetectorEventCountAggregation : ATSPMAggregationBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         
         /// <summary>
         /// Approach dd

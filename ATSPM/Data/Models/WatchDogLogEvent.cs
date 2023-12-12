@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
         public int SignalId { get; set; }               // ID of the signal that the event is associated with
         public string SignalIdentifier { get; set; }
         public DateTime Timestamp { get; set; }         // Time when the event was logged
-        public WatchDogComponentType ComponentType { get; set; } // 'Signal', 'Approach', or 'Detector'
+        public WatchDogComponentType ComponentType { get; set; } // 'Location', 'Approach', or 'Detector'
         public int ComponentId { get; set; }         // Specific identifier for the component (like signal ID)
         public WatchDogIssueType IssueType { get; set; }
         public string Details { get; set; }              // Additional details about the issue

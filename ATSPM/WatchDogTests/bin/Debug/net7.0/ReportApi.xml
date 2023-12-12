@@ -22,7 +22,7 @@
             <param name="phasenumber"></param>
             <param name="starttime"></param>
         </member>
-        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseCycleCollection.#ctor(System.Int32,System.String,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
+        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseCycleCollection.#ctor(System.Int32,System.String,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
             <summary>
                 Collection of phase events primarily used for the split monitor and Phase Termination Chart
             </summary>
@@ -30,7 +30,7 @@
             <param name="signalid"></param>
             <param name="CycleEventsTable"></param>
         </member>
-        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseService.GetAnalysisPhaseData(System.Int32,ATSPM.Data.Models.Signal,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
+        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseService.FindTerminationEvents(System.Collections.Generic.IReadOnlyList{ATSPM.Data.Models.ControllerEventLog},System.Int32)">
             <summary>
                 Constructor Used for Split monitor
             </summary>

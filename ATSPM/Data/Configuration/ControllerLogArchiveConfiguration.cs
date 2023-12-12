@@ -16,11 +16,11 @@ namespace ATSPM.Data.Configuration
             
             builder.HasComment("Compressed Event Log Data");
 
-            builder.HasKey(e => new { e.SignalIdentifier, e.ArchiveDate });
+            builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate });
 
             //builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
-            builder.Property(e => e.SignalIdentifier)
+            builder.Property(e => e.LocationIdentifier)
                     .IsRequired()
                     .HasMaxLength(10);
 
@@ -28,7 +28,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.LogData)
                     .HasConversion<byte[]>(
-                    v => JsonSerializer.Serialize(v.Select(c => new { c.SignalIdentifier, c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
+                    v => JsonSerializer.Serialize(v.Select(c => new { c.LocationIdentifier, c.EventCode, c.EventParam, c.Timestamp }), new JsonSerializerOptions()).GZipCompressToByte(),
                     v => JsonSerializer.Deserialize<List<ControllerEventLog>>(v.GZipDecompressToString(), new JsonSerializerOptions()),
 
                     new ValueComparer<ICollection<ControllerEventLog>>((c1, c2) => c1.SequenceEqual(c2),

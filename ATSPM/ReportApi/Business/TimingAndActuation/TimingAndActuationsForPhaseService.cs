@@ -52,13 +52,13 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             }
             if (options.PhaseEventCodesList != null)
             {
-                phaseCustomEvents = GetPhaseCustomEvents(phaseDetail.Approach.Signal.SignalIdentifier, phaseDetail.PhaseNumber, options, controllerEventLogs);
+                phaseCustomEvents = GetPhaseCustomEvents(phaseDetail.Approach.Location.LocationIdentifier, phaseDetail.PhaseNumber, options, controllerEventLogs);
             }
             var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs);
             var phaseNumberSort = GetPhaseSort(phaseDetail);
             var timingAndActuationsForPhaseData = new TimingAndActuationsForPhaseResult(
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 phaseDetail.PhaseNumber,
@@ -141,7 +141,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         var forceEventsForAllLanes = new List<ControllerEventLog>();
                         var tempEvent1 = new ControllerEventLog()
                         {
-                            SignalIdentifier = signalIdentifier,
+                            LocationIdentifier = signalIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = phaseNumber,
                             Timestamp = options.Start.AddSeconds(-10)
@@ -149,7 +149,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new ControllerEventLog()
                         {
-                            SignalIdentifier = signalIdentifier,
+                            LocationIdentifier = signalIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = phaseNumber,
                             Timestamp = options.Start.AddSeconds(-9)
@@ -227,8 +227,8 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             List<ControllerEventLog> controllerEventLogs)
         {
             var pedestrianEvents = new List<DetectorEventDto>();
-            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Signal.Pedsare1to1 && approach.IsProtectedPhaseOverlap
-                || !approach.Signal.Pedsare1to1 && approach.PedestrianPhaseNumber.HasValue)
+            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.Pedsare1to1 && approach.IsProtectedPhaseOverlap
+                || !approach.Location.Pedsare1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
             var pedEventCodes = new List<int> { 89, 90 };
             foreach (var pedDetector in approach.Detectors)

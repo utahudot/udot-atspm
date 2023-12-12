@@ -40,6 +40,16 @@
             Detector comments table
             </summary>
         </member>
+        <member name="P:ATSPM.Data.ConfigContext.Devices">
+            <summary>
+            Device table
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.ConfigContext.DeviceConfiguration">
+            <summary>
+            Device configuration table
+            </summary>
+        </member>
         <member name="P:ATSPM.Data.ConfigContext.Detectors">
             <summary>
             Detectors table
@@ -65,6 +75,11 @@
             Jurisdiction table
             </summary>
         </member>
+        <member name="P:ATSPM.Data.ConfigContext.MenuItems">
+            <summary>
+            Menu table
+            </summary>
+        </member>
         <member name="P:ATSPM.Data.ConfigContext.MeasureComments">
             <summary>
             Measure comments table
@@ -80,9 +95,9 @@
             Measure type table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.MenuItems">
+        <member name="P:ATSPM.Data.ConfigContext.Products">
             <summary>
-            Menu table
+            Products table
             </summary>
         </member>
         <member name="P:ATSPM.Data.ConfigContext.Regions">
@@ -107,7 +122,7 @@
         </member>
         <member name="P:ATSPM.Data.ConfigContext.Signals">
             <summary>
-            Signals table
+            Locations table
             </summary>
         </member>
         <member name="P:ATSPM.Data.ConfigContext.UserAreas">
@@ -123,6 +138,11 @@
         <member name="P:ATSPM.Data.ConfigContext.UserRegions">
             <summary>
             User regions table
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.ConfigContext.VersionHistory">
+            <summary>
+            Version history table
             </summary>
         </member>
         <member name="M:ATSPM.Data.ConfigContext.ConfigureConventions(Microsoft.EntityFrameworkCore.ModelConfigurationBuilder)">
@@ -177,6 +197,22 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Configuration.DetectorConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Detector})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Configuration.DeviceConfigConfiguration">
+            <summary>
+            Device configuration configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.DeviceConfigConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.DeviceConfiguration})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Configuration.DevicesConfiguration">
+            <summary>
+            Device configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.DevicesConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Device})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Configuration.DirectionTypeConfiguration">
@@ -241,6 +277,14 @@
         <member name="M:ATSPM.Data.Configuration.MenuItemConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.MenuItem})">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Data.Configuration.ProductConfiguration">
+            <summary>
+            Product configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.ProductConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Product})">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Configuration.RegionConfiguration">
             <summary>
             Region configuration
@@ -275,10 +319,18 @@
         </member>
         <member name="T:ATSPM.Data.Configuration.SignalConfiguration">
             <summary>
-            Signal configuration
+            Location configuration
             </summary>
         </member>
-        <member name="M:ATSPM.Data.Configuration.SignalConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Signal})">
+        <member name="M:ATSPM.Data.Configuration.SignalConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Location})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Configuration.VersionHistoryConfiguration">
+            <summary>
+            Version history configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.VersionHistoryConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.VersionHistory})">
             <inheritdoc/>
         </member>
         <!-- Badly formed XML comment ignored for member "T:ATSPM.Data.Enums.DataLoggerEnum" -->
@@ -416,7 +468,7 @@
         <member name="F:ATSPM.Data.Enums.DataLoggerEnum.ExtendedPedestrianChangeInterval">
             <summary>
             Set when extended pedestrian change interval is requested by pressing the pedestrian push button for two (2) seconds.
-            See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Signals and Detectors - Extended Pushbutton Press Features for more details
+            See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Locations and Detectors - Extended Pushbutton Press Features for more details
             </summary>
         </member>
         <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OversizedPedestrianServed">
@@ -792,7 +844,7 @@
         <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split1Change">
             <summary>
             Split change events shall be populated upon selection of a new coordination pattern
-            as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+            as well as during a split change to an active pattern via Location Control and Prioritization (SCP),
             Adaptive Control System (ACS) Lite or other adaptive control system
             </summary>
         </member>
@@ -996,7 +1048,7 @@
         </member>
         <member name="F:ATSPM.Data.Enums.DataLoggerEnum.Split17Change">
             <summary>
-            Split change events shall be populated upon selection of a new coordination pattern as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+            Split change events shall be populated upon selection of a new coordination pattern as well as during a split change to an active pattern via Location Control and Prioritization (SCP),
             Adaptive Control System (ACS) Lite or other adaptive control system
             </summary>
         </member>
@@ -1075,37 +1127,37 @@
             Split 32 Change
             </summary>
         </member>
-        <member name="T:ATSPM.Data.Enums.SignalVersionActions">
+        <member name="T:ATSPM.Data.Enums.LocationVersionActions">
             <summary>
-            Signal version actions
+            Location version actions
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.Unknown">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.Unknown">
             <summary>
             Version is unknown
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.New">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.New">
             <summary>
             Version is new
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.Edit">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.Edit">
             <summary>
             Version is in edit mode
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.Delete">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.Delete">
             <summary>
             Version has been deleted
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.NewVersion">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.NewVersion">
             <summary>
             New version has been copied
             </summary>
         </member>
-        <member name="F:ATSPM.Data.Enums.SignalVersionActions.Initial">
+        <member name="F:ATSPM.Data.Enums.LocationVersionActions.Initial">
             <summary>
             Initial version
             </summary>
@@ -1140,6 +1192,36 @@
             Supports HTTP Protocol
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Interfaces.ILocationDetectorLayer">
+            <summary>
+            For objects in the location and detector layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ILocationDetectorLayer.DetectorChannel">
+            <summary>
+            Detector channel assigned to <see cref="P:ATSPM.Data.Interfaces.ILocationLayer.LocationIdentifier"/>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Interfaces.ILocationLayer">
+            <summary>
+            For objects in the location layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ILocationLayer.LocationIdentifier">
+            <summary>
+            Identifier of location
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Interfaces.ILocationPhaseLayer">
+            <summary>
+            For objects in the location and phase layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ILocationPhaseLayer.PhaseNumber">
+            <summary>
+            Phase number assigned to <see cref="P:ATSPM.Data.Interfaces.ILocationLayer.LocationIdentifier"/>
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Interfaces.IPlanLayer">
             <summary>
             For objects in the plan layer
@@ -1147,27 +1229,7 @@
         </member>
         <member name="P:ATSPM.Data.Interfaces.IPlanLayer.PlanNumber">
             <summary>
-            Plan number as derrived from the event parameter on <see cref="!:DataLoggerEnum.CoordPatternChange"/> event
-            </summary>
-        </member>
-        <member name="T:ATSPM.Data.Interfaces.ISignalLayer">
-            <summary>
-            For objects in the signal layer
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier">
-            <summary>
-            Identifier of signal controller
-            </summary>
-        </member>
-        <member name="T:ATSPM.Data.Interfaces.ISignalPhaseLayer">
-            <summary>
-            For objects in the signal and phase layer
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Interfaces.ISignalPhaseLayer.PhaseNumber">
-            <summary>
-            Phase number assigned to <see cref="P:ATSPM.Data.Interfaces.ISignalLayer.SignalIdentifier"/>
+            Plan number as derrived from the event parameter on <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> event
             </summary>
         </member>
         <member name="T:ATSPM.Data.Models.Approach">
@@ -1220,10 +1282,10 @@
             PedestrianDetectors
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Approach.SignalId">
+        <member name="P:ATSPM.Data.Models.Approach.LocationId">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.Approach.Signal">
+        <member name="P:ATSPM.Data.Models.Approach.Location">
             <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.Approach.DirectionTypeId">
@@ -1248,7 +1310,7 @@
             Area name
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Area.Signals">
+        <member name="P:ATSPM.Data.Models.Area.Locations">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.Area.ToString">
@@ -1267,7 +1329,7 @@
         </member>
         <member name="T:ATSPM.Data.Models.ControllerType">
             <summary>
-            Signal controller types
+            Location controller types
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.ControllerType.Product">
@@ -1311,7 +1373,7 @@
             Password
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.ControllerType.Signals">
+        <member name="P:ATSPM.Data.Models.ControllerType.Locations">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.ControllerType.ToString">
@@ -1455,6 +1517,130 @@
         <member name="M:ATSPM.Data.Models.DetectorComment.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Data.Models.DetectorEventCountAggregation">
+            <summary>
+            Detector event cout aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.ApproachId">
+            <summary>
+            Approach dd
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.DetectorPrimaryId">
+            <summary>
+            Detector id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.EventCount">
+            <summary>
+            Sum of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.DetectorEventCountAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.Device">
+            <summary>
+            Device that can be assigned to <see cref="P:ATSPM.Data.Models.Device.Location"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.LoggingEnabled">
+            <summary>
+            Enable signal to be logged
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.Ipaddress">
+            <summary>
+            Ipaddress of signal
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.DeviceStatus">
+            <summary>
+            Device status
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.Notes">
+            <summary>
+            Device notes
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.LocationId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.Location">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.DeviceConfigurationId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Device.DeviceConfiguration">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.Device.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.DeviceConfiguration">
+            <summary>
+            Device configuration
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Firmware">
+            <summary>
+            Firmware version
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Notes">
+            <summary>
+            Configuration notes
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Protocol">
+            <summary>
+            Transport protocol for controller logging
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Port">
+            <summary>
+            Logging communication port
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Directory">
+            <summary>
+            Path to log directory
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.SearchTerm">
+            <summary>
+            Log search term to find log in directory
+            Can be a query string or file extension
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.UserName">
+            <summary>
+            Username
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.ProductId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Product">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.Devices">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.DeviceConfiguration.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Models.DirectionType">
             <summary>
             Direction type
@@ -1562,10 +1748,103 @@
             Other partners
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Jurisdiction.Signals">
+        <member name="P:ATSPM.Data.Models.Jurisdiction.Locations">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.Jurisdiction.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.Location">
+            <summary>
+            Location that data is being logged and monitored
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Latitude">
+            <summary>
+            Latitude of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Longitude">
+            <summary>
+            Longitude of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.PrimaryName">
+            <summary>
+            Priamry name of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.SecondaryName">
+            <summary>
+            Secondary name of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Ipaddress">
+            <summary>
+            Ipaddress of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.ChartEnabled">
+            <summary>
+            Enable location to be charted
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.LoggingEnabled">
+            <summary>
+            Enable location to be logged
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.VersionAction">
+            <summary>
+            Version action of location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Note">
+            <summary>
+            Note
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Start">
+            <summary>
+            Start date location became active
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Pedsare1to1">
+            <summary>
+            Pedsare1to1
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.ControllerTypeId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.ControllerType">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.JurisdictionId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Jurisdiction">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.RegionId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Region">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Approaches">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Areas">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.Devices">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.Location.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.MeasureComment">
@@ -1583,7 +1862,7 @@
             Comment value
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.MeasureComment.SignalIdentifier">
+        <member name="P:ATSPM.Data.Models.MeasureComment.LocationIdentifier">
             <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.MeasureComment.MeasureTypes">
@@ -1710,6 +1989,130 @@
         <member name="M:ATSPM.Data.Models.MenuItem.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Data.Models.PhaseTerminationAggregation">
+            <summary>
+            Phase termination aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.PhaseNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.GapOuts">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.ForceOffs">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.MaxOuts">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.Unknown">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/> events
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.PhaseTerminationAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.PreemptionAggregation">
+            <summary>
+            Preemption aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PreemptionAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptNumber">
+            <summary>
+            Prempt number
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptRequests">
+            <summary>
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOn"/> Set when preemption input is activated
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptServices">
+            <summary>
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted"/> Set when preemption delay expires
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.PreemptionAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.PriorityAggregation">
+            <summary>
+            Priority request aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PriorityAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityNumber">
+            <summary>
+            Priority number
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityRequests">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/> Set when request for priority is received
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityServiceEarlyGreen">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityServiceExtendedGreen">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.PriorityAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.Product">
+            <summary>
+            Products
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Product.Manufacturer">
+            <summary>
+            Manufacturer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Product.Model">
+            <summary>
+            Model
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Product.DeviceType">
+            <summary>
+            Product type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Product.WebPage">
+            <summary>
+            Product web page
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Product.Notes">
+            <summary>
+            Configuration notes
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.Product.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Models.Region">
             <summary>
             Region
@@ -1720,7 +2123,7 @@
             Region description
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Region.Signals">
+        <member name="P:ATSPM.Data.Models.Region.Locations">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.Region.ToString">
@@ -1749,7 +2152,7 @@
         </member>
         <member name="P:ATSPM.Data.Models.RouteSignal.Order">
             <summary>
-            Signal order on route
+            Location order on route
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.RouteSignal.PrimaryPhase">
@@ -1792,7 +2195,7 @@
             Is opposing overlap
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.SignalIdentifier">
+        <member name="P:ATSPM.Data.Models.RouteSignal.LocationIdentifier">
             <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.RouteSignal.RouteId">
@@ -1822,94 +2225,58 @@
         <member name="M:ATSPM.Data.Models.Settings.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.Signal">
+        <member name="T:ATSPM.Data.Models.SignalPlanAggregation">
             <summary>
-            Traffic signal controller
+            Location plan aggregation
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.Latitude">
-            <summary>
-            Latitude of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.Longitude">
-            <summary>
-            Longitude of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.PrimaryName">
-            <summary>
-            Priamry name of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.SecondaryName">
-            <summary>
-            Secondary name of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.Ipaddress">
-            <summary>
-            Ipaddress of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.ChartEnabled">
-            <summary>
-            Enable signal to be charted
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.LoggingEnabled">
-            <summary>
-            Enable signal to be logged
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.VersionAction">
-            <summary>
-            Version action of signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.Note">
-            <summary>
-            Note
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.Start">
-            <summary>
-            Start date signal became active
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.Pedsare1to1">
-            <summary>
-            Pedsare1to1
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Signal.SignalIdentifier">
+        <member name="P:ATSPM.Data.Models.SignalPlanAggregation.LocationIdentifier">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.ControllerTypeId">
+        <member name="P:ATSPM.Data.Models.SignalPlanAggregation.PlanNumber">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.ControllerType">
-            <inheritdoc/>
+        <member name="T:ATSPM.Data.Models.VersionHistory">
+            <summary>
+            Version history
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.JurisdictionId">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.Name">
+            <summary>
+            Version name
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.Jurisdiction">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.Notes">
+            <summary>
+            Version notes
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.RegionId">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.Date">
+            <summary>
+            Version date
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.Region">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.Version">
+            <summary>
+            Version number
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.Approaches">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.ParentId">
+            <summary>
+            Item parent id
+            </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Signal.Areas">
-            <inheritdoc/>
+        <member name="P:ATSPM.Data.Models.VersionHistory.Parent">
+            <summary>
+            Parent version
+            </summary>
         </member>
-        <member name="M:ATSPM.Data.Models.Signal.ToString">
+        <member name="P:ATSPM.Data.Models.VersionHistory.Children">
+            <summary>
+            Chile versions
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.VersionHistory.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedApproach">
@@ -2017,6 +2384,31 @@
             Collection of detectors
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedDeviceConfiguration">
+            <summary>
+            Related device configuration
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedDeviceConfiguration.DeviceConfigurationId">
+            <summary>
+            Related Id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedDeviceConfiguration.DeviceConfiguration">
+            <summary>
+            Related device configuration
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedDevices">
+            <summary>
+            Related devices
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedDevices.Devices">
+            <summary>
+            Collection of devices
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedDirectionType">
             <summary>
             Related direction type
@@ -2047,6 +2439,31 @@
             Jurisdiction
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedLocation">
+            <summary>
+            Related location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedLocation.LocationId">
+            <summary>
+            Related location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedLocation.Location">
+            <summary>
+            Location
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedLocations">
+            <summary>
+            Related locations
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedLocations.Locations">
+            <summary>
+            Collection of locations
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedMeasureComments">
             <summary>
             Related measure comments
@@ -2075,6 +2492,21 @@
         <member name="P:ATSPM.Data.Relationships.IRelatedMeasureTypes.MeasureTypes">
             <summary>
             Collection of measure types
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedProduct">
+            <summary>
+            Related product
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedProduct.ProductId">
+            <summary>
+            Product Id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedProduct.Product">
+            <summary>
+            Product
             </summary>
         </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedRegion">
@@ -2115,31 +2547,6 @@
         <member name="P:ATSPM.Data.Relationships.IRelatedRouteSignals.RouteSignals">
             <summary>
             Collection of route signals
-            </summary>
-        </member>
-        <member name="T:ATSPM.Data.Relationships.IRelatedSignal">
-            <summary>
-            Related signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Relationships.IRelatedSignal.SignalId">
-            <summary>
-            Related signal
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Relationships.IRelatedSignal.Signal">
-            <summary>
-            Signal
-            </summary>
-        </member>
-        <member name="T:ATSPM.Data.Relationships.IRelatedSignals">
-            <summary>
-            Related signals
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Relationships.IRelatedSignals.Signals">
-            <summary>
-            Collection of signals
             </summary>
         </member>
     </members>

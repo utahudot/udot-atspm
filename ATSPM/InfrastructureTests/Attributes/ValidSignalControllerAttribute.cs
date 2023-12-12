@@ -14,12 +14,12 @@ namespace InfrastructureTests.Attributes
         {
             yield return new object[]
             {
-                new Signal()
+                new Location()
                 {
                     Ipaddress = new IPAddress(new byte[] { 10,209,2,120 }),
                     ChartEnabled = true,
                     PrimaryName = "Maxtime Test",
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     ControllerTypeId = 4,
                     ControllerType = new ControllerType() { Id = 4 }
                 }
@@ -27,12 +27,12 @@ namespace InfrastructureTests.Attributes
 
             yield return new object[]
             {
-                new Signal()
+                new Location()
                 {
                     Ipaddress = new IPAddress(new byte[] { 10,209,2,108 }),
                     ChartEnabled = true,
                     PrimaryName = "Cobalt Test",
-                    SignalIdentifier = "9731",
+                    LocationIdentifier = "9731",
                     ControllerTypeId = 2,
                     ControllerType = new ControllerType() { Id = 2 }
                 }

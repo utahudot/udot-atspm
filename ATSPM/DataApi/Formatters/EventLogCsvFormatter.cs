@@ -22,7 +22,7 @@ namespace ATSPM.DataApi.Formatters
                 context.HttpContext.Request.Headers.TryGetValue("X-Timestamp-Format", out StringValues timestampFormat);
                 timestampFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat;
 
-                var csv = result.Select(x => $"{x.SignalIdentifier},{x.Timestamp.ToString(timestampFormat)},{x.EventCode},{x.EventParam}").ToList();
+                var csv = result.Select(x => $"{x.LocationIdentifier},{x.Timestamp.ToString(timestampFormat)},{x.EventCode},{x.EventParam}").ToList();
                 csv.Insert(0, "SignalID,Timestamp,EventCode,EventParam");
 
                 return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);

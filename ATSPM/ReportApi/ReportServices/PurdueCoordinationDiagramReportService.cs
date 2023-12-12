@@ -41,10 +41,10 @@ namespace ATSPM.ReportApi.ReportServices
             var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("Signal not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for signal");
@@ -94,7 +94,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return null;
             }
             PurdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, phaseDetail.Approach, signalPhase);
-            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

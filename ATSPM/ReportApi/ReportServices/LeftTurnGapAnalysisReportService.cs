@@ -34,12 +34,12 @@ namespace ATSPM.ReportApi.ReportServices
             var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<LeftTurnGapAnalysisResult>>(new NullReferenceException("Signal not found"));
             }
             var eventCodes = new List<int> { 1, 10, 81 };
             var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(
-                signal.SignalIdentifier,
+                signal.LocationIdentifier,
                 parameter.Start,
                 parameter.End)
                 .ToList();

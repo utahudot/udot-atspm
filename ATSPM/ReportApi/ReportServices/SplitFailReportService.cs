@@ -40,11 +40,11 @@ namespace ATSPM.ReportApi.ReportServices
 
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("Signal not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -161,7 +161,7 @@ namespace ATSPM.ReportApi.ReportServices
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
-            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            result.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
             return result;
         }
 
@@ -176,7 +176,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.SignalIdentifier;
+                    newDetectorOn.LocationIdentifier = options.SignalIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetectorChannel;
@@ -187,7 +187,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.SignalIdentifier;
+                    newDetectorOn.LocationIdentifier = options.SignalIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetectorChannel;

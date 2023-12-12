@@ -21,7 +21,7 @@ namespace ATSPM.ReportApi.Business.Common
         public List<ControllerEventLog> PedestrianEvents { get; set; }
         public List<ControllerEventLog> TerminationEvents { get; set; }
         public List<ControllerEventLog> UnknownTermination { get; set; }
-        public Signal Signal { get; set; }
+        public Location Signal { get; set; }
     }
 
     public class AnalysisPhaseService
@@ -39,7 +39,7 @@ namespace ATSPM.ReportApi.Business.Common
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
             int consecutiveCount,
-            Signal signal
+            Location signal
             )
         {
             if (signal.Approaches.IsNullOrEmpty())
@@ -92,7 +92,7 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
         //    int phasenumber,
-        //    Signal signal,
+        //    Location signal,
         //    List<ControllerEventLog> CycleEventsTable)
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
@@ -104,7 +104,7 @@ namespace ATSPM.ReportApi.Business.Common
         //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
         //    var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
-        //    analysisPhaseData.Signal = signal;
+        //    analysisPhaseData.Location = signal;
         //    return analysisPhaseData;
         //}
 
