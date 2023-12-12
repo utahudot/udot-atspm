@@ -254,17 +254,10 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateAdded")
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("datetime2");
-=======
-                        .HasColumnType("timestamp");
-
-                    b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("timestamp");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("integer");
@@ -330,11 +323,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-                        .HasColumnType("datetime2");
-=======
-                        .HasColumnType("timestamp");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -350,37 +339,37 @@ namespace ATSPM.Infrastructure.Migrations.Config
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DeviceConfigurationId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasColumnType("character varying(12)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
+                        .HasColumnType("character varying(15)")
                         .HasDefaultValueSql("('10.0.0.1')");
 
                     b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<int>("SignalId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -398,30 +387,30 @@ namespace ATSPM.Infrastructure.Migrations.Config
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Directory")
                         .HasMaxLength(1024)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Firmware")
                         .IsRequired()
                         .HasMaxLength(16)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(16)");
+                        .HasColumnType("character varying(16)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<long>("Port")
                         .ValueGeneratedOnAdd()
@@ -429,24 +418,24 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasDefaultValueSql("((0))");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasColumnType("character varying(12)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("SearchTerm")
                         .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -895,11 +884,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("TimeStamp")
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-                        .HasColumnType("datetime2");
-=======
-                        .HasColumnType("timestamp");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -1322,36 +1307,36 @@ namespace ATSPM.Infrastructure.Migrations.Config
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasColumnType("character varying(12)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(48)");
+                        .HasColumnType("character varying(48)");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(48)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(48)");
+                        .HasColumnType("character varying(48)");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("WebPage")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1558,11 +1543,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("Start")
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-                        .HasColumnType("datetime2");
-=======
-                        .HasColumnType("timestamp");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -1583,46 +1564,6 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         });
                 });
 
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 7, 12, 55, 53, 809, DateTimeKind.Local).AddTicks(6025));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(512)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(512)");
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.ToTable("VersionHistory", t =>
-                        {
-                            t.HasComment("Version History");
-                        });
-=======
             modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
                 {
                     b.Property<string>("UserId")
@@ -1669,7 +1610,87 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     b.HasIndex("RegionId");
 
                     b.ToTable("UserRegion");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValue(new DateTime(2023, 12, 12, 13, 7, 0, 670, DateTimeKind.Local).AddTicks(3879));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(512)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("VersionHistory", t =>
+                        {
+                            t.HasComment("Version History");
+                        });
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.WatchDogLogEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ComponentType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<int>("IssueType")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Phase")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SignalId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SignalIdentifier")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WatchDogLogEvents");
                 });
 
             modelBuilder.Entity("AreaSignal", b =>
@@ -1876,16 +1897,6 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     b.Navigation("Region");
                 });
 
-<<<<<<< HEAD:ATSPM/Infrastructure/Migrations/ConfigContextModelSnapshot.cs
-            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
-                {
-                    b.HasOne("ATSPM.Data.Models.VersionHistory", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Parent");
-=======
             modelBuilder.Entity("ATSPM.Data.Models.UserArea", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.Area", "Area")
@@ -1917,7 +1928,16 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .IsRequired();
 
                     b.Navigation("Region");
->>>>>>> main:ATSPM/Infrastructure/Migrations/Config/ConfigContextModelSnapshot.cs
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
+                {
+                    b.HasOne("ATSPM.Data.Models.VersionHistory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("AreaSignal", b =>

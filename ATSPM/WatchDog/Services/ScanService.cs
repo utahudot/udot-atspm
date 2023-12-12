@@ -20,13 +20,13 @@ namespace WatchDog.Services
         private readonly IUserAreaRepository userAreaRepository;
 
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly WatchDogLogService logService;
         private readonly EmailService emailService;
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
             ISignalRepository signalRepository,
-            IWatchDogLogEventRepository watchDogEventRepository,
             IWatchDogLogEventRepository watchDogLogEventRepository,
             IRegionsRepository regionsRepository,
             IJurisdictionRepository jurisdictionRepository,
@@ -35,6 +35,7 @@ namespace WatchDog.Services
             IUserJurisdictionRepository userJurisdictionRepository,
             IUserAreaRepository userAreaRepository,
             UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
             WatchDogLogService logService,
             EmailService emailService,
             ILogger<ScanService> logger)
@@ -48,17 +49,27 @@ namespace WatchDog.Services
             this.userJurisdictionRepository = userJurisdictionRepository;
             this.userAreaRepository = userAreaRepository;
             this.userManager = userManager;
+            this.roleManager = roleManager;
             this.logService = logService;
             this.emailService = emailService;
             this.logger = logger;
         }
-        public async void StartScan(
+        public async Task StartScan(
             LoggingOptions loggingOptions,
             EmailOptions emailOptions)
         {
             //need a version of this that gets the signal version for date of the scan
-            var signals = signalRepository.GetLatestVersionOfAllSignals().ToList();
-            var errors = await logService.GetWatchDogIssues(loggingOptions, signals);
+            var signals = signalRepository.GetLatestVersionOfAllSignals(emailOptions.ScanDate).ToList();
+            var errors = new List<WatchDogLogEvent>();
+            if (watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).Any())
+            {
+                errors = watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).ToList();
+            }
+            else
+            {
+                errors = await logService.GetWatchDogIssues(loggingOptions, signals);
+                SaveErrorLogs(errors);
+            }
             if (emailOptions != null)
             {
                 SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
@@ -70,15 +81,15 @@ namespace WatchDog.Services
                     smtp.EnableSsl = emailOptions.EnableSsl.Value;
 
                 var regions = regionsRepository.GetList().ToList();
-                var userRegions = await userRegionRepository.GetAllAsync();
+                var userRegions = userRegionRepository.GetList();
 
                 var areas = areaRepository.GetList().ToList();
-                var userAreas = await userAreaRepository.GetAllAsync();
+                var userAreas = userAreaRepository.GetList().ToList();
 
                 var jurisdictions = jurisdictionRepository.GetList().ToList();
-                var userJurisdictions = await userJurisdictionRepository.GetAllAsync();
+                var userJurisdictions = userJurisdictionRepository.GetList();
 
-                var users = GetUsersWithWatchDogClaim();
+                var users = await GetUsersWithWatchDogClaimAsync();
 
 
                 var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
@@ -112,24 +123,42 @@ namespace WatchDog.Services
             }
         }
 
-
-
-        public List<ApplicationUser> GetUsersWithWatchDogClaim()
+        public void SaveErrorLogs(List<WatchDogLogEvent> errors)
         {
-            // Define the claim type and value you want to search for
+            watchDogLogEventRepository.AddRange(errors);
+        }
+
+        public async Task<List<ApplicationUser>> GetUsersWithWatchDogClaimAsync()
+        {
+            // Define the claim type you are looking for
             const string claimType = "Admin:WatchDog";
+
+            var usersWithWatchDogClaim = new List<ApplicationUser>();
 
             // Get all users
             var allUsers = userManager.Users.ToList();
 
-            // Filter users with the specified claim
-            var usersWithWatchDogClaim = allUsers
-                .Where(user => userManager.GetClaimsAsync(user).Result
-                    .Any(claim => claim.Type == claimType))
-                .ToList();
+            foreach (var user in allUsers)
+            {
+                var userRoles = await userManager.GetRolesAsync(user);
+
+                foreach (var role in userRoles)
+                {
+                    var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
+
+                    if (roleClaims.Any(claim => claim.Value == claimType))
+                    {
+                        usersWithWatchDogClaim.Add(user);
+                        break; // Once we find the claim in one of the user's roles, no need to check further
+                    }
+                }
+            }
 
             return usersWithWatchDogClaim;
         }
+
+
+
 
 
 
