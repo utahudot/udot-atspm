@@ -86,7 +86,7 @@ namespace ApplicationCoreTests.Analysis
             ////var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
             //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            //var signal = JsonConvert.DeserializeObject<Signal>(json);
+            //var signal = JsonConvert.DeserializeObject<Location>(json);
 
 
 
@@ -269,7 +269,7 @@ namespace ApplicationCoreTests.Analysis
 
             //var filteredPreemptionData = new FilteredPreemptionData();
             //var groupEventLogsByParameter = new GroupEventLogsByParameter();
-            //var filterLogsBySignalAndParamter = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>, int>>(f =>
+            //var filterLogsBySignalAndParamter = new BroadcastBlock<Tuple<Location, IEnumerable<ControllerEventLog>, int>>(f =>
             //{
             //    return Tuple.Create(f.Item1, f.Item2.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(f.Item1, f.Item3)), f.Item3);
             //});
@@ -382,7 +382,7 @@ namespace ApplicationCoreTests.Analysis
             //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json", json);
 
             //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            //var signal = JsonConvert.DeserializeObject<Signal>(json);
+            //var signal = JsonConvert.DeserializeObject<Location>(json);
 
             //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
             //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
@@ -420,7 +420,7 @@ namespace ApplicationCoreTests.Analysis
         //               EventParam = int.Parse(x[3])
         //           }).ToList();
 
-        //    var signal = new Signal()
+        //    var signal = new Location()
         //    {
         //        SignalIdentifier = "7573",
         //        PrimaryName = "Test Controller"

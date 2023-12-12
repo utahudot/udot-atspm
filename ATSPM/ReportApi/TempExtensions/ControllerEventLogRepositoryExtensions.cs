@@ -31,7 +31,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 return new List<ControllerEventLog>();
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
-                    approach.Signal.SignalIdentifier,
+                    approach.Location.LocationIdentifier,
                     start,
                     end,
                     eventCodes,
@@ -90,7 +90,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -120,7 +120,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0

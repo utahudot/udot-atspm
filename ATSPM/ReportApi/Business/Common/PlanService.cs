@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.Business.Common
         public List<PurdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
             DateTime endDate, Approach approach, List<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events.OrderBy(e => e.Timestamp).ToList());
+            var planEvents = GetPlanEvents(startDate, endDate, approach.Location.LocationIdentifier, events.OrderBy(e => e.Timestamp).ToList());
             var plans = new List<PurdueCoordinationPlan>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)
@@ -61,7 +61,7 @@ namespace ATSPM.ReportApi.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new ControllerEventLog { SignalIdentifier = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new ControllerEventLog { LocationIdentifier = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -115,7 +115,7 @@ namespace ATSPM.ReportApi.Business.Common
                     Timestamp = startDate,
                     EventCode = 131,
                     EventParam = 0,
-                    SignalIdentifier = signalId
+                    LocationIdentifier = signalId
                 };
                 planEvents.Insert(0, firstPlanEvent);
             }
@@ -135,7 +135,7 @@ namespace ATSPM.ReportApi.Business.Common
         //            Timestamp = startDate,
         //            EventCode = 131,
         //            EventParam = 0,
-        //            SignalId = signalId
+        //            LocationId = signalId
         //        };
         //        planEvents.Insert(0, firstPlanEvent);
         //    }
@@ -217,7 +217,7 @@ namespace ATSPM.ReportApi.Business.Common
             {
                 return new List<SpeedPlan>();
             }
-            var planEvents = GetPlanEvents(startDate, endDate, approach.Signal.SignalIdentifier, events);
+            var planEvents = GetPlanEvents(startDate, endDate, approach.Location.LocationIdentifier, events);
             var plans = new List<SpeedPlan>();
             try
             {
@@ -342,7 +342,7 @@ namespace ATSPM.ReportApi.Business.Common
             Approach approach,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(options.Start, options.End, approach.Signal.SignalIdentifier, events.ToList());
+            var planEvents = GetPlanEvents(options.Start, options.End, approach.Location.LocationIdentifier, events.ToList());
             var plans = planEvents.Select((x, i) =>
             {
                 var planCycles = cycles.Where(c => c.StartTime >= x.Timestamp && c.StartTime < (i + 1 < planEvents.Count ? planEvents[i + 1].Timestamp : options.End)).ToList();

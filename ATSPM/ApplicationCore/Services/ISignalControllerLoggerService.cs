@@ -10,7 +10,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Services
 {
-    public interface ISignalControllerLoggerService : IExecuteAsyncWithProgress<IList<Signal>, bool, int>, ISupportInitializeNotification, IDisposable
+    public interface ISignalControllerLoggerService : IExecuteAsyncWithProgress<IList<Location>, bool, int>, ISupportInitializeNotification, IDisposable
     {
         List<IDataflowBlock> Steps { get; set; }
     }

@@ -93,7 +93,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
             }
 
             return new PedDelayResult(
-                pedPhase.Approach.Signal.SignalIdentifier,
+                pedPhase.Approach.Location.LocationIdentifier,
                 pedPhase.Approach.Id,
                 pedPhase.Approach.ProtectedPhaseNumber,
                 pedPhase.Approach.Description,

@@ -7,17 +7,17 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Area
     /// </summary>
-    public partial class Area : AtspmConfigModelBase<int>, IRelatedSignals
+    public partial class Area : AtspmConfigModelBase<int>, IRelatedLocations
     {
         /// <summary>
         /// Area name
         /// </summary>
         public string Name { get; set; }
 
-        #region IRelatedSignals
+        #region IRelatedLocations
 
         /// <inheritdoc/>
-        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         #endregion
 

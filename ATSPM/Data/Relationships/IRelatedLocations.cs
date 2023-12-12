@@ -3,13 +3,13 @@
 namespace ATSPM.Data.Relationships
 {
     /// <summary>
-    /// Related signals
+    /// Related locations
     /// </summary>
-    public interface IRelatedSignals
+    public interface IRelatedLocations
     {
         /// <summary>
-        /// Collection of signals
+        /// Collection of locations
         /// </summary>
-        ICollection<Signal> Signals { get; set; }
+        ICollection<Location> Locations { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace ATSPM.Application.Analysis.Common
         /// <inheritdoc/>
         public Vehicle(IDetectorEvent detectorEvent, IRedToRedCycle redToRedCycle)
         {
-            SignalIdentifier = detectorEvent.SignalIdentifier;
+            LocationIdentifier = detectorEvent.LocationIdentifier;
             PhaseNumber = detectorEvent.PhaseNumber;
             DetectorChannel = detectorEvent.DetectorChannel;
             Direction = detectorEvent.Direction;

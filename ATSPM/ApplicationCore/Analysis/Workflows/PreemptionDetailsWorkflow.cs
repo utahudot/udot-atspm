@@ -118,7 +118,7 @@ namespace ATSPM.Application.Analysis.Workflows
         protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input
-                .GroupBy(g => g.SignalIdentifier, (signal, l1) => l1
+                .GroupBy(g => g.LocationIdentifier, (signal, l1) => l1
                 .GroupBy(g => g.EventParam, (preempt, l2) =>
                 CreatePreemptCycle(l2.OrderBy(o => o.Timestamp).ToList())))
                 .SelectMany(m => m)

@@ -16,9 +16,9 @@ namespace ATSPM.Data.Configuration
 
             builder.HasIndex(e => e.RouteId);
 
-            builder.HasIndex(p => new { p.RouteId, p.SignalIdentifier }).IsUnique();
+            builder.HasIndex(p => new { p.RouteId, p.LocationIdentifier }).IsUnique();
 
-            builder.Property(e => e.SignalIdentifier)
+            builder.Property(e => e.LocationIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
 

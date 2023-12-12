@@ -8,7 +8,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Approach
     /// </summary>
-    public partial class Approach : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDirectionType, IRelatedDetectors
+    public partial class Approach : AtspmConfigModelBase<int>, IRelatedLocation, IRelatedDirectionType, IRelatedDetectors
     {
         /// <summary>
         /// Approach description
@@ -57,13 +57,13 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string PedestrianDetectors { get; set; }
 
-        #region IRelatedSignal
+        #region IRelatedLocation
 
         /// <inheritdoc/>
-        public int SignalId { get; set; }
+        public int LocationId { get; set; }
 
         /// <inheritdoc/>
-        public virtual Signal Signal { get; set; }
+        public virtual Location Location { get; set; }
 
         #endregion
 

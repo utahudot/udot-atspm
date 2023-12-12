@@ -12,7 +12,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
         public PedActuationResult GetPedestrianPercentage(
-            Signal signal,
+            Location signal,
             Approach approach,
             DateTime start,
             DateTime end,

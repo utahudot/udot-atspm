@@ -16,7 +16,7 @@ namespace ATSPM.Application.ValueObjects
     public class ReportServiceData<Tin, Tout>
     {
         public Tin Options { get; set; }
-        public Signal Signal { get; set; }
+        public Location Signal { get; set; }
         public List<ControllerEventLog> Logs { get; set; }
         public Tout Results { get; set; }
     }
@@ -40,7 +40,7 @@ namespace ATSPM.Application.ValueObjects
 
             testObject.Results = results;
 
-            //testObject.Signal = _signalRepo.GetLatestVersionOfSignal(signal);
+            //testObject.Location = _signalRepo.GetLatestVersionOfSignal(signal);
 
             if (logFile.Exists)
             {
@@ -49,7 +49,7 @@ namespace ATSPM.Application.ValueObjects
                    .Select(x => x.Split(','))
                    .Select(x => new ControllerEventLog
                    {
-                       SignalIdentifier = x[0],
+                       LocationIdentifier = x[0],
                        Timestamp = DateTime.Parse(x[1]),
                        EventCode = int.Parse(x[2]),
                        EventParam = int.Parse(x[3])

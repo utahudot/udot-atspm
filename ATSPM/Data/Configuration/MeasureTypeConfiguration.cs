@@ -215,7 +215,7 @@ namespace ATSPM.Data.Configuration
                 new MeasureType
                 {
                     Id = 24,
-                    Name = "Signal Priority", // "Transit Signal Priority",
+                    Name = "Signal Priority", // "Transit Location Priority",
                     Abbreviation = "TSPA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,

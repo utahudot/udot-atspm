@@ -37,10 +37,10 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             IReadOnlyList<ControllerEventLog> pedEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Signal signal)
+            Location signal)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.SignalIdentifier,
+                signal.LocationIdentifier,
                 options.Start,
                 options.End,
                 planEvents,

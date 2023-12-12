@@ -43,7 +43,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             };
 
             //create steps
-            var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
+            var downloader = CreateTransformManyStep<Location, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
             var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
             var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, token), "DecodeEventLogsStep", stepOptions);
             var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = token, NameFormat = "Archive Batch" });
@@ -60,7 +60,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             base.Initialize();
         }
 
-        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Signal signal, CancellationToken cancellationToken = default)
+        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Location signal, CancellationToken cancellationToken = default)
         {
             var fileList = new List<FileInfo>();
 

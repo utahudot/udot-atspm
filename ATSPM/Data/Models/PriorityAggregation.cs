@@ -9,10 +9,10 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Priority request aggregation
     /// </summary>
-    public partial class PriorityAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class PriorityAggregation : ATSPMAggregationBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Priority number
