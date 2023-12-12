@@ -2,7 +2,6 @@
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories

@@ -2,14 +2,12 @@
 #nullable disable
 using ATSPM.Data.Enums;
 using ATSPM.Data.Relationships;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
+    [Obsolete($"use {nameof(SignalVersionActions)} instead")]
     public partial class VersionAction : AtspmConfigModelBase<SignalVersionActions>, IRelatedSignals
     {
-        //public SignaVersionActions Id { get; set; }
         public string Description { get; set; }
 
         public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
