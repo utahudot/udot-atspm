@@ -21,7 +21,7 @@ namespace WatchDog.Services
         public async Task SendAllEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Signal> signals,
+            List<Location> signals,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -42,7 +42,7 @@ namespace WatchDog.Services
         private async Task SendJurisdictionEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Signal> signals,
+            List<Location> signals,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -63,7 +63,7 @@ namespace WatchDog.Services
         private async Task SendAreaEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Signal> signals,
+            List<Location> signals,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Area> areas,
@@ -84,7 +84,7 @@ namespace WatchDog.Services
         private async Task SendRegionEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Signal> signals,
+            List<Location> signals,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Region> regions,
@@ -106,7 +106,7 @@ namespace WatchDog.Services
         public async Task CreateAndSendEmail(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Signal> signals,
+            List<Location> signals,
             SmtpClient smtp,
             string areaSpecificMessage,
             List<ApplicationUser> users,
@@ -123,7 +123,7 @@ namespace WatchDog.Services
 
         private void AddMessageBody(
             EmailOptions options,
-            List<Signal> signals,
+            List<Location> signals,
             List<WatchDogLogEvent> logsFromPreviousDay,
             MailMessage message,
             List<WatchDogLogEvent> missingErrorsLogs,
@@ -316,7 +316,7 @@ namespace WatchDog.Services
 
 
         private string SortAndAddToMessage(
-            List<Signal> signals,
+            List<Location> signals,
             List<WatchDogLogEvent> issues,
             EmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
@@ -326,7 +326,7 @@ namespace WatchDog.Services
                 logger.LogError("Null parameter passed to SortAndAddToMessage");
                 return String.Empty;
             }
-            var sortedSignals = signals.OrderBy(x => x.SignalIdentifier).ToList();
+            var sortedSignals = signals.OrderBy(x => x.LocationIdentifier).ToList();
             var errorMessage = "";
             foreach (var signal in sortedSignals)
             {

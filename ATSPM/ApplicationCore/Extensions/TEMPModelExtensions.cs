@@ -25,9 +25,9 @@ namespace ATSPM.Application.Extensions
             foreach(var detector in item.Detectors)
             {
                 detector.DetectorChannel = detChannel;
-                if (item is IRelatedSignal s)
+                if (item is IRelatedLocation s)
                 {
-                    detector.DectectorIdentifier = $"{s.Signal.SignalIdentifier} {detector.DetectorChannel}";
+                    detector.DectectorIdentifier = $"{s.Location.LocationIdentifier} {detector.DetectorChannel}";
                 }
             }
 

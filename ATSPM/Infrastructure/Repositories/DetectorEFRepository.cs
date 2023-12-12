@@ -49,7 +49,7 @@ namespace ATSPM.Infrastructure.Repositories
         public int GetMaximumDetectorChannel(int id)
         {
             return _db.Set<Approach>()
-                .Where(a => a.SignalId == id)
+                .Where(a => a.LocationId == id)
                 .SelectMany(a => a.Detectors)
                 .Max(m => m.DetectorChannel);
         }

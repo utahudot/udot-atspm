@@ -6,7 +6,7 @@ namespace ATSPM.ReportApi.Business.Common
 {
     public class PhaseService
     {
-        public virtual List<PhaseDetail> GetPhases(Signal signal)
+        public virtual List<PhaseDetail> GetPhases(Location signal)
         {
             if (signal.Approaches == null || signal.Approaches.Count == 0)
             {

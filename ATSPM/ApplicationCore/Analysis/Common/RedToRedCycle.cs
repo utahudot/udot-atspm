@@ -11,7 +11,7 @@ namespace ATSPM.Application.Analysis.Common
     /// A cycle which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
     /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
     /// </summary>
-    public interface IRedToRedCycle : IStartEndRange, ISignalPhaseLayer, ICycleTotal
+    public interface IRedToRedCycle : IStartEndRange, ILocationPhaseLayer, ICycleTotal
     {
         /// <summary>
         /// Timestamp of <see cref="DataLoggerEnum.PhaseBeginGreen"/> event
@@ -38,10 +38,10 @@ namespace ATSPM.Application.Analysis.Common
         /// <inheritdoc/>
         public DateTime YellowEvent { get; set; }
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

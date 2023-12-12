@@ -11,7 +11,7 @@ namespace ATSPM.Application.Repositories
     public interface IDetectorRepository : IAsyncRepository<Detector>
     {
         //TODO: this needs to be moved out of this repo
-        //TODO: Figure out why SignalId isn't being used in the implmentation
+        //TODO: Figure out why LocationId isn't being used in the implmentation
         /// <summary>
         /// Gets a list of <see cref="Detector"/> that match <paramref name="directionType"/> and <paramref name="movementTypeIds"/>
         /// </summary>
@@ -25,7 +25,7 @@ namespace ATSPM.Application.Repositories
         /// <summary>
         /// Get maximum detector channel from signal controller
         /// </summary>
-        /// <param name="id">Signal controller id</param>
+        /// <param name="id">Location controller id</param>
         /// <returns></returns>
         int GetMaximumDetectorChannel(int id);
 

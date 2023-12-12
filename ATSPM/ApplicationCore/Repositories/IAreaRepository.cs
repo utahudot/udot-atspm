@@ -16,7 +16,7 @@ namespace ATSPM.Application.Repositories
 
         #region Obsolete
 
-        //[Obsolete("Related collection to Signal model")]
+        //[Obsolete("Related collection to Location model")]
         //IReadOnlyList<Area> GetListOfAreasForSignal(string signalId);
 
         //[Obsolete("Use GetList instead")]

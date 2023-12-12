@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace ATSPM.Data.Configuration
 {
     /// <summary>
-    /// Signal configuration
+    /// Location configuration
     /// </summary>
-    public class SignalConfiguration : IEntityTypeConfiguration<Signal>
+    public class SignalConfiguration : IEntityTypeConfiguration<Location>
     {
         /// <inheritdoc/>
-        public void Configure(EntityTypeBuilder<Signal> builder)
+        public void Configure(EntityTypeBuilder<Location> builder)
         {
             builder.HasComment("Signal Controllers");
 
@@ -46,7 +46,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.SecondaryName)
                 .HasMaxLength(100);
 
-            builder.Property(e => e.SignalIdentifier)
+            builder.Property(e => e.LocationIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
 

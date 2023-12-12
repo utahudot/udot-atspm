@@ -47,15 +47,15 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
             var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -65,7 +65,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new RedToRedCycle()
                 {
-                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    LocationIdentifier = _testApproach.Location.LocationIdentifier,
                     PhaseNumber = _testApproach.ProtectedPhaseNumber,
                     Start = DateTime.Parse("4/17/2023 8:00:00"),
                     End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -102,19 +102,19 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         //{
         //    var correctDetectorEvents = new List<CorrectedDetectorEvent>
         //    {
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = 2},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = 2},
 
         //    }.AsEnumerable();
 
         //    var incorrectDetectorEvents = new List<CorrectedDetectorEvent>
         //    {
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = inccorect.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = inccorect.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = inccorect.DetectorChannel},
-        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:02:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:00"), DetectorChannel = inccorect.DetectorChannel},
+        //        new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:00"), DetectorChannel = inccorect.DetectorChannel},
 
         //    }.AsEnumerable();
 
@@ -128,7 +128,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         //    {
         //        new RedToRedCycle()
         //        {
-        //            SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+        //            SignalIdentifier = _testApproach.Location.SignalIdentifier,
         //            PhaseNumber = _testApproach.ProtectedPhaseNumber,
         //            Start = DateTime.Parse("4/17/2023 8:00:00"),
         //            End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -165,9 +165,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 7:59:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:00:00"), DetectorChannel = 2},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 7:59:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:00:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -177,7 +177,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new RedToRedCycle()
                 {
-                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    LocationIdentifier = _testApproach.Location.LocationIdentifier,
                     PhaseNumber = _testApproach.ProtectedPhaseNumber,
                     Start = DateTime.Parse("4/17/2023 8:00:00"),
                     End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -216,9 +216,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:10:00"), DetectorChannel = detector.DetectorChannel},
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:11:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:10:00"), DetectorChannel = detector.DetectorChannel},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:11:00"), DetectorChannel = detector.DetectorChannel},
 
             }.AsEnumerable();
 
@@ -228,7 +228,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new RedToRedCycle()
                 {
-                    SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                    LocationIdentifier = _testApproach.Location.LocationIdentifier,
                     PhaseNumber = _testApproach.ProtectedPhaseNumber,
                     Start = DateTime.Parse("4/17/2023 8:00:00"),
                     End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -265,7 +265,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -273,7 +273,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testCycle = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -301,7 +301,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var expected = new Vehicle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Timestamp = DateTime.Parse("4/17/2023 8:01:00"),
                 DetectorChannel = 2,
@@ -389,7 +389,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -397,7 +397,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testCycle = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -436,7 +436,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:08:30"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:08:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -444,7 +444,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testCycle = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -483,7 +483,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, PhaseNumber = 2, Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -491,7 +491,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testCycle = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:10:00"),
@@ -549,7 +549,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var detectorEvents = new List<CorrectedDetectorEvent>
             {
-                new CorrectedDetectorEvent() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
+                new CorrectedDetectorEvent() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:09:30"), DetectorChannel = 2},
 
             }.AsEnumerable();
 
@@ -557,7 +557,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testCycle = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:00:00"),
                 End = DateTime.Parse("4/17/2023 8:10:00"),

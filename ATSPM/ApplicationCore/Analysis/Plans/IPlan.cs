@@ -12,7 +12,7 @@ namespace ATSPM.Application.Analysis.Plans
     /// <summary>
     /// Definition for signal controller plans which are derrived from <see cref="DataLoggerEnum.CoordPatternChange"/> events
     /// </summary>
-    public interface IPlan : IStartEndRange, ISignalLayer, IPlanLayer
+    public interface IPlan : IStartEndRange, ILocationLayer, IPlanLayer
     {
         /// <summary>
         /// Tries to assign an <see cref="IStartEndRange"/> object to the plan

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PhaseLeftTurnGapAggregation : ATSPMAggregationBase, ISignalPhaseLayer
+    public partial class PhaseLeftTurnGapAggregation : ATSPMAggregationBase, ILocationPhaseLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public int GapCount1 { get; set; }

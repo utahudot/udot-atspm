@@ -33,7 +33,7 @@ namespace ApplicationCoreTests.Analysis.Workflows
         [AnalysisTestData<DetectorEventCountAggregationTestData>]
         [Trait(nameof(DetectorEventCountAggregationWorkflow), "From File")]
         //public void DetectorEventCountAggregationWorkflowTestsFromFile(object stuff)
-        public void DetectorEventCountAggregationWorkflowTestsFromFile(Signal config, List<ControllerEventLog> input, List<DetectorEventCountAggregation> output)
+        public void DetectorEventCountAggregationWorkflowTestsFromFile(Location config, List<ControllerEventLog> input, List<DetectorEventCountAggregation> output)
         {
             _output.WriteLine($"{config} - {input} - {output}");
         }
@@ -42,7 +42,7 @@ namespace ApplicationCoreTests.Analysis.Workflows
         public void CreateTestFile()
         {
             var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            var signal = JsonConvert.DeserializeObject<Signal>(json);
+            var signal = JsonConvert.DeserializeObject<Location>(json);
 
             var test = new DetectorEventCountAggregationTestData()
             {
