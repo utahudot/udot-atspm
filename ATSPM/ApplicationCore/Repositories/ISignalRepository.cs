@@ -30,6 +30,13 @@ namespace ATSPM.Application.Repositories
         /// <returns>List of <see cref="Signal"/> with newest start date</returns>
         IReadOnlyList<Signal> GetLatestVersionOfAllSignals(int controllerTypeId);
 
+        /// <summary>
+        /// Get latest version of all <see cref="Signal"/> and related entities by <see cref="DateTime"/>
+        /// </summary>
+        /// <param name="startDate">Signals starting  from <see cref="DateTime"/> to filter</param>
+        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
+        IReadOnlyList<Signal> GetLatestVersionOfAllSignals(DateTime startDate);
+
 
         /// <summary>
         /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="signalIdentifier"/>

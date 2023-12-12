@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.ReportApi.Business.Common;
 
 namespace ATSPM.ReportApi.Business.ApproachVolume
 {
@@ -12,8 +11,6 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
         public bool ShowSbWbVolume { get; set; }
         public bool ShowTMCDetection { get; set; }
         public bool ShowAdvanceDetection { get; set; }
-        public DirectionTypes Direction { get; set; }
-        public DetectionTypes DetectionType { get; set; }
         public int MetricTypeId { get; internal set; } = 7;
     }
 }
