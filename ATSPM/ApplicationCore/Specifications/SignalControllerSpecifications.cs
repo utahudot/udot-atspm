@@ -8,16 +8,16 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
-    public class ActiveSignalSpecification : BaseSpecification<Signal>
+    public class ActiveSignalSpecification : BaseSpecification<Location>
     {
-        public ActiveSignalSpecification() : base(s => s.VersionAction != SignalVersionActions.Delete) 
+        public ActiveSignalSpecification() : base(s => s.VersionAction != LocationVersionActions.Delete) 
         {
             ApplyOrderByDescending(o => o.Start);
         }
     }
 
-    public class SignalIdSpecification : BaseSpecification<Signal>
+    public class SignalIdSpecification : BaseSpecification<Location>
     {
-        public SignalIdSpecification(string signalId) : base(s => s.SignalIdentifier == signalId) { }
+        public SignalIdSpecification(string signalId) : base(s => s.LocationIdentifier == signalId) { }
     }
 }

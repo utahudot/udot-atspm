@@ -3,18 +3,18 @@
 namespace ATSPM.Data.Relationships
 {
     /// <summary>
-    /// Related signal
+    /// Related location
     /// </summary>
-    public interface IRelatedSignal
+    public interface IRelatedLocation
     {
         /// <summary>
-        /// Related signal
+        /// Related location
         /// </summary>
-        int SignalId { get; set; }
+        int LocationId { get; set; }
         
         /// <summary>
-        /// Signal
+        /// Location
         /// </summary>
-        Signal Signal { get; set; }
+        Location Location { get; set; }
     }
 }

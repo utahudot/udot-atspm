@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace ATSPM.Infrastructure.Repositories
 {
     /// <summary>
-    /// Signal controller type entity framework repository
+    /// Location controller type entity framework repository
     /// </summary>
     public class ControllerTypeEFRepository : ATSPMRepositoryEFBase<ControllerType>, IControllerTypeRepository
     {
@@ -18,7 +18,7 @@ namespace ATSPM.Infrastructure.Repositories
         //public override IQueryable<ControllerType> GetList()
         //{
         //    return base.GetList()
-        //        .Include(i => i.Signals);
+        //        .Include(i => i.Locations);
         //}
 
         #endregion

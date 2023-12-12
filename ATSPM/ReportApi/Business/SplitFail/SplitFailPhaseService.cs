@@ -190,7 +190,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
                     Timestamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetectorChannel,
-                    SignalIdentifier = options.SignalIdentifier
+                    LocationIdentifier = options.SignalIdentifier
                 });
         }
 
@@ -203,7 +203,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
                     Timestamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetectorChannel,
-                    SignalIdentifier = options.SignalIdentifier
+                    LocationIdentifier = options.SignalIdentifier
                 });
         }
     }

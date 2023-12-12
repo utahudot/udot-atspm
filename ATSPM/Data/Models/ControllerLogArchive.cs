@@ -6,16 +6,16 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ControllerLogArchive : ISignalLayer
+    public partial class ControllerLogArchive : ILocationLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public DateTime ArchiveDate { get; set; }
 
         public ICollection<ControllerEventLog> LogData { get; set; } = new List<ControllerEventLog>();
 
         public override string ToString()
         {
-            return $"{SignalIdentifier}-{ArchiveDate:dd/MM/yyyy}-{LogData.Count}";
+            return $"{LocationIdentifier}-{ArchiveDate:dd/MM/yyyy}-{LogData.Count}";
         }
     }
 }

@@ -4,7 +4,7 @@ using ATSPM.Domain.Services;
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// Signal Controller Type Repository
+    /// Location Controller Type Repository
     /// </summary>
     public interface IControllerTypeRepository : IAsyncRepository<ControllerType>
     {

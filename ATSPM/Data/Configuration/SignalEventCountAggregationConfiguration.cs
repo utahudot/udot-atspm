@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Signal Event Count Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

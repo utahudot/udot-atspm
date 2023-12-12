@@ -31,18 +31,18 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             };
 
             var incorrect = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             };
 
             var testLogs = correct.Union(incorrect);
@@ -65,8 +65,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"cycle: {l}");
             }
 
-            var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
-            var actual = result.Item2.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
+            var expected = correct.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
+            var actual = result.Item2.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
             _output.WriteLine($"actual: {actual}");
@@ -80,18 +80,18 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             };
 
             var incorrect = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 5 },
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 5 },
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = 5 },
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = 5 },
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = 5 },
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = 5 },
             };
 
             var testLogs = correct.Union(incorrect);
@@ -129,18 +129,18 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             };
 
             var incorrect = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 101, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 102, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 103, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 104, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 101, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 102, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 103, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 104, EventParam = _testApproach.ProtectedPhaseNumber},
             };
 
             var testLogs = correct.Union(incorrect);
@@ -188,10 +188,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -210,7 +210,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var actual = result.Item2.First();
             var expected = new RedToRedCycle()
             {
-                SignalIdentifier = _testApproach.Signal.SignalIdentifier,
+                LocationIdentifier = _testApproach.Location.LocationIdentifier,
                 PhaseNumber = _testApproach.ProtectedPhaseNumber,
                 Start = DateTime.Parse("4/17/2023 8:01:48.8"),
                 GreenEvent = DateTime.Parse("4/17/2023 8:03:11.7"),
@@ -230,10 +230,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -273,10 +273,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -307,10 +307,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -341,10 +341,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -375,10 +375,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                //new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                //new ControllerEventLog() { SignalIdentifier = _testApproach.Location.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -409,10 +409,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
-                new ControllerEventLog() { SignalIdentifier = _testApproach.Signal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:48.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:03:11.7"), EventCode = 1, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:13.7"), EventCode = 8, EventParam = _testApproach.ProtectedPhaseNumber},
+                new ControllerEventLog() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:04:18.8"), EventCode = 9, EventParam = _testApproach.ProtectedPhaseNumber},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testApproach, testLogs);
@@ -462,7 +462,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = "1001",
+                LocationIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = Random.Shared.Next(1, 50),
                 EventParam = 5

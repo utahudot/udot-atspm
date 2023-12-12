@@ -16,13 +16,13 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = new List<PreemptDetailResult>();
 
-            foreach (var signal in input.GroupBy(g => g.SignalIdentifier))
+            foreach (var signal in input.GroupBy(g => g.LocationIdentifier))
             {
                 foreach (var item in signal.GroupBy(g => g.PreemptNumber))
                 {
                     result.Add(new PreemptDetailResult()
                     {
-                        SignalIdentifier = signal.Key,
+                        LocationIdentifier = signal.Key,
                         PreemptNumber = item.Key,
                         Start = item.Min(m => m.Start),
                         End = item.Max(m => m.End),

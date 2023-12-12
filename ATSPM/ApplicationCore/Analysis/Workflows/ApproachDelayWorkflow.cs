@@ -19,7 +19,7 @@ namespace ATSPM.Application.Analysis.Workflows
     /// Approach delay is a measure that integrates individual vehicle delay with
     /// volume to get an estimated sum of all vehicle delay on an approach.
     /// </summary>
-    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
+    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
     {
         private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();

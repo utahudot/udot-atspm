@@ -6,9 +6,9 @@ using ATSPM.Data.Relationships;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Signal controller types
+    /// Location controller types
     /// </summary>
-    public partial class ControllerType : AtspmConfigModelBase<int>, IRelatedSignals
+    public partial class ControllerType : AtspmConfigModelBase<int>, IRelatedLocations
     {
         /// <summary>
         /// Product type description
@@ -51,10 +51,10 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Password { get; set; }
 
-        #region IRelatedSignals
+        #region IRelatedLocations
 
         /// <inheritdoc/>
-        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         #endregion
 

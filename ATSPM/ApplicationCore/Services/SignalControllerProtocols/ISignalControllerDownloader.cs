@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ATSPM.Application.Services.SignalControllerProtocols
 {
-    public interface ISignalControllerDownloader : IExecuteWithProgress<Signal, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
+    public interface ISignalControllerDownloader : IExecuteWithProgress<Location, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
     {
         int ControllerType { get; }
 

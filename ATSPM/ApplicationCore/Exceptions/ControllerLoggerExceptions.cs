@@ -11,12 +11,12 @@ namespace ATSPM.Application.Exceptions
 {
     public class InvalidSignalControllerIpAddressException : ATSPMException
     {
-        public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalIdentifier} address {signal.Ipaddress} is either invalid or can't be reached")
+        public InvalidSignalControllerIpAddressException(Location signal) : base($"{signal.LocationIdentifier} address {signal.Ipaddress} is either invalid or can't be reached")
         {
             SignalController = signal;
         }
 
-        public Signal SignalController { get; private set; }
+        public Location SignalController { get; private set; }
     }
 
     public abstract class ControllerLoggerException : ATSPMException
@@ -65,17 +65,17 @@ namespace ATSPM.Application.Exceptions
     {
         public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message) : base(message)
         {
-            //Signal = signal;
+            //Location = signal;
             DownloaderClient = downloaderClient;
         }
 
         public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(message, innerException)
         {
-            //Signal = signal;
+            //Location = signal;
             DownloaderClient = downloaderClient;
         }
 
-        //public Signal Signal { get; private set; }
+        //public Location Location { get; private set; }
 
         public IDownloaderClient DownloaderClient { get; private set; }
     }

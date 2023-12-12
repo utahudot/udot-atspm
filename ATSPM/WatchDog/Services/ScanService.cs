@@ -173,8 +173,8 @@ namespace WatchDog.Services
     //    public ConcurrentBag<WatchDogLogEvent> MissingRecords = new ConcurrentBag<WatchDogLogEvent>();
     //    public ConcurrentBag<WatchDogLogEvent> CannotFtpFiles = new ConcurrentBag<WatchDogLogEvent>();
     //    public List<WatchDogLogEvent> RecordsFromTheDayBefore = new List<WatchDogLogEvent>();
-    //    public ConcurrentBag<Signal> SignalsNoRecords = new ConcurrentBag<Signal>();
-    //    public ConcurrentBag<Signal> SignalsWithRecords = new ConcurrentBag<Signal>();
+    //    public ConcurrentBag<Location> SignalsNoRecords = new ConcurrentBag<Location>();
+    //    public ConcurrentBag<Location> SignalsWithRecords = new ConcurrentBag<Location>();
     //    public ConcurrentBag<WatchDogLogEvent> StuckPedErrors = new ConcurrentBag<WatchDogLogEvent>();
     //}
 

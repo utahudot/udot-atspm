@@ -20,7 +20,7 @@ namespace ATSPM.Application.Extensions
         public static IReadOnlyList<CorrectedDetectorEvent> FilterCorrectedDetectorEvents(Approach approach, IEnumerable<CorrectedDetectorEvent> events)
         {
             return events?
-                .Where(w => w.SignalIdentifier == approach?.Signal.SignalIdentifier && approach.Detectors
+                .Where(w => w.LocationIdentifier == approach?.Location.LocationIdentifier && approach.Detectors
                 .Select(s => s.DetectorChannel)
                 .Contains(w.DetectorChannel))
                 .ToList();
@@ -33,7 +33,7 @@ namespace ATSPM.Application.Extensions
 
 
         //    return input.Item2?
-        //        .Where(w => w.SignalIdentifier == input.Item1?.Signal.SignalIdentifier && input.Item1.Detectors
+        //        .Where(w => w.SignalIdentifier == input.Item1?.Location.SignalIdentifier && input.Item1.Detectors
         //        .Select(s => s.DetectorChannel)
         //        .Contains(w.DetectorChannel))
         //        .ToList();

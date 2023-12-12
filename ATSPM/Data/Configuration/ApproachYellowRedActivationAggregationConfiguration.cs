@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Approach Yellow Red Activation Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.PhaseNumber, e.IsProtectedPhase });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PhaseNumber, e.IsProtectedPhase });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

@@ -32,17 +32,17 @@ namespace ATSPM.Application.ValueObjects
         /// <param name="hasTMC"></param>
         /// <param name="Region"></param>
 
-        //public Pin(string SignalId, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
+        //public Pin(string LocationId, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
         //{
 
-        //    SignalId = SignalId;
+        //    LocationId = LocationId;
         //    latitude = lat;
         //    longitude = Long;
         //    description = desc;
         //    region = Region;
 
         //    SortedDictionary<int, bool> reports = FindReports(hasPCD,hasSpeed, hasPhase, hasTMC, hasRLM, hasSplitFail);
-        //    box = new InfoBox(SignalId, description, reports);
+        //    box = new InfoBox(LocationId, description, reports);
         //}
         public Pin(string signalId, string lat, string Long, string desc, string Region)
         {
@@ -53,7 +53,7 @@ namespace ATSPM.Application.ValueObjects
             region = Region;
 
 
-            //box = new InfoBox(SignalId, description, reports);
+            //box = new InfoBox(LocationId, description, reports);
         }
 
         public string SignalId => _signalId;

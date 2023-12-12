@@ -26,7 +26,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         protected override string GenerateFileName(ControllerLogArchive item)
         {
-            return $"{item.GetType().Name}_{item.SignalIdentifier}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
+            return $"{item.GetType().Name}_{item.LocationIdentifier}_{item.ArchiveDate.ToString("dd-MM-yyyy")}{_fileTranscoder.FileExtension}";
         }
 
         protected override string GenerateFilePath(ControllerLogArchive item)

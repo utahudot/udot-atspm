@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace ATSPM.Data.Interfaces
 {
     /// <summary>
-    /// For objects in the signal layer
+    /// For objects in the location layer
     /// </summary>
-    public interface ISignalLayer
+    public interface ILocationLayer
     {
         /// <summary>
-        /// Identifier of signal controller
+        /// Identifier of location
         /// </summary>
-        string SignalIdentifier { get; set; }
+        string LocationIdentifier { get; set; }
     }
 }
