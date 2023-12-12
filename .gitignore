@@ -81,8 +81,8 @@ dkms.conf
 /ATSPM/ReportAPI/bin
 /ATSPM/SignalControllerLogger/obj
 /ATSPM/SignalControllerLogger/bin
-/ATSPM/WatchDog/obj
-/ATSPM/WatchDog/bin
-/ATSPM/WatchDogTests/obj
-/ATSPM/WatchDogTests/bin
+/ATSPM/WatchDog/obj/
+/ATSPM/WatchDog/bin/
+/ATSPM/WatchDogTests/obj/
+/ATSPM/WatchDogTests/bin/
 
