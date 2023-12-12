@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Application.Analysis.Common
 {
-    public class PhaseTerminations : ISignalPhaseLayer
+    public class PhaseTerminations : ILocationPhaseLayer
     {
         public PhaseTerminations() { }
 
@@ -16,7 +16,7 @@ namespace ATSPM.Application.Analysis.Common
             TerminationEvents.AddRange(terminationEvents);
         }
 
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         public int PhaseNumber { get; set; }
 

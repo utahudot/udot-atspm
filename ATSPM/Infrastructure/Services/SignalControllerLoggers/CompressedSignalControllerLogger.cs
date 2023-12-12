@@ -43,7 +43,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             };
 
             //create steps
-            var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
+            var downloader = CreateTransformManyStep<Location, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
             var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
             var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, token), "DecodeEventLogsStep", stepOptions);
             var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = token, NameFormat = "Archive Batch" });
@@ -62,7 +62,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             base.Initialize();
         }
 
-        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Signal signal, CancellationToken cancellationToken = default)
+        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Location signal, CancellationToken cancellationToken = default)
         {
             var fileList = new List<FileInfo>();
 
@@ -106,7 +106,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
         {
             HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
 
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier)).Select(s => new ControllerLogArchive() { LocationIdentifier = s.Key.LocationIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)

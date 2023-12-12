@@ -10,9 +10,9 @@ namespace ATSPM.Application.Specifications
 {
     public class ControllerLogSignalFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalFilterSpecification(Signal signal) : base()
+        public ControllerLogSignalFilterSpecification(Location signal) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier;
+            base.Criteria = c => c.LocationIdentifier == signal.LocationIdentifier;
 
             ApplyOrderBy(o => o.Timestamp);
         }
@@ -20,9 +20,9 @@ namespace ATSPM.Application.Specifications
 
     public class ControllerLogSignalAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalAndParamterFilterSpecification(Signal signal, int param) : base()
+        public ControllerLogSignalAndParamterFilterSpecification(Location signal, int param) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier && c.EventParam == param;
+            base.Criteria = c => c.LocationIdentifier == signal.LocationIdentifier && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }
@@ -32,7 +32,7 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.LocationIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -87,7 +87,7 @@ namespace ATSPM.Application.Specifications
 
         public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.LocationIdentifier == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
 
             ApplyOrderBy(o => o.Timestamp);
         }

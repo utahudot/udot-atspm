@@ -175,7 +175,7 @@ namespace ATSPM.Application.Extensions
 
             //HACK: this should come from IServiceLocator
             //ISignalRepository sr = new SignalEFRepository(db, (ILogger<SignalEFRepository>)log);
-            //Signal signal = sr.GetVersionOfSignalByDate(signalId, startDate);
+            //Location signal = sr.GetVersionOfSignalByDate(signalId, startDate);
             //var graphDetectors = signal.GetDetectorsForSignalByPhaseNumber(phase);
 
 

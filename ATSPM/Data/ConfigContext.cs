@@ -127,9 +127,9 @@ namespace ATSPM.Data
         public virtual DbSet<Settings> Settings { get; set; }
 
         /// <summary>
-        /// Signals table
+        /// Locations table
         /// </summary>
-        public virtual DbSet<Signal> Signals { get; set; }
+        public virtual DbSet<Location> Signals { get; set; }
 
         /// <summary>
         /// User areas table
@@ -149,7 +149,7 @@ namespace ATSPM.Data
         /// <summary>
         /// Version history table
         /// </summary>
-        public virtual DbSet<Signal> VersionHistory { get; set; }
+        public virtual DbSet<Location> VersionHistory { get; set; }
 
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
 
@@ -159,7 +159,7 @@ namespace ATSPM.Data
             configurationBuilder.Properties<string>().AreUnicode(false);
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
-            configurationBuilder.Properties<SignalVersionActions>().HaveConversion<int>();
+            configurationBuilder.Properties<LocationVersionActions>().HaveConversion<int>();
             configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();

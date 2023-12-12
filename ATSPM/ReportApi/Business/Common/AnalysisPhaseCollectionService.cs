@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.Business.Common
         public int MaxPhaseInUse { get; set; }
         public string SignalId { get; set; }
         public List<AnalysisPhaseData> AnalysisPhases { get; set; }
-        public Signal Signal { get; internal set; }
+        public Location Signal { get; internal set; }
     }
 
     public class AnalysisPhaseCollectionService
@@ -43,20 +43,20 @@ namespace ATSPM.ReportApi.Business.Common
         //{
         //    var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
         //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-        //    analysisPhaseCollectionData.SignalId = signalId;
+        //    analysisPhaseCollectionData.LocationId = signalId;
         //    var ptedt = controllerEventLogRepository.GetSignalEventsByEventCodes(
-        //        analysisPhaseCollectionData.SignalId,
+        //        analysisPhaseCollectionData.LocationId,
         //        startTime,
         //        endTime,
         //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
         //    var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(
-        //        analysisPhaseCollectionData.SignalId,
+        //        analysisPhaseCollectionData.LocationId,
         //        startTime,
         //        endTime,
         //        new List<int> { 1 });
         //    ptedt = ptedt.OrderByDescending(i => i.TimeStamp).ToList();
         //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
-        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
+        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.LocationId);
         //    foreach (var row in phasesInUse)
         //    {
         //        var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, signal);
@@ -76,7 +76,7 @@ namespace ATSPM.ReportApi.Business.Common
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> pedestrianEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Signal signal,
+            Location signal,
             int consecutiveCount)
         {
             if (signal.Approaches.IsNullOrEmpty())

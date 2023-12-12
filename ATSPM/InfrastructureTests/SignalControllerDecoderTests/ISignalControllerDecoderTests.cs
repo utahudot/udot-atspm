@@ -248,7 +248,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
             var condition = collection?.Count > 0;
 
             Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+            Assert.All(collection, l => Assert.Equal(expected, l.LocationId));
         }
 
         [Fact]

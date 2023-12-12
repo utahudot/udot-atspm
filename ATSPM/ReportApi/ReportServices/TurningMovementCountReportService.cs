@@ -41,11 +41,11 @@ namespace ATSPM.ReportApi.ReportServices
 
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("Signal not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -83,7 +83,7 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
-            Signal signal,
+            Location signal,
             LaneTypes laneType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> controllerEventLogs,
@@ -119,7 +119,7 @@ namespace ATSPM.ReportApi.ReportServices
                             movementTypeDetectors,
                             movementType,
                             laneType,
-                            signal.SignalIdentifier,
+                            signal.LocationIdentifier,
                             signal.SignalDescription(),
                             direction));
                     }

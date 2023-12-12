@@ -15,21 +15,21 @@ namespace ATSPM.Application.Extensions
     public static class SignalRepositoryExtensions
     {
         /// <summary>
-        /// Copies <see cref="Signal"/> and associated <see cref="Approach"/> to new version
+        /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
         /// and archives old version
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="id">Signal version to copy</param>
-        /// <returns>New version of copied <see cref="Signal"/></returns>
-        public static async Task<Signal> CopySignalToNewVersion(this ISignalRepository repo, int id)
+        /// <param name="id">Location version to copy</param>
+        /// <returns>New version of copied <see cref="Location"/></returns>
+        public static async Task<Location> CopySignalToNewVersion(this ISignalRepository repo, int id)
         {
-            Signal signal = await repo.LookupAsync(id);
+            Location signal = await repo.LookupAsync(id);
 
             if (signal != null)
             {
-                var newVersion = (Signal)signal.Clone();
+                var newVersion = (Location)signal.Clone();
 
-                newVersion.VersionAction = SignalVersionActions.NewVersion;
+                newVersion.VersionAction = LocationVersionActions.NewVersion;
                 newVersion.Start = DateTime.Today;
                 newVersion.Note = $"Copy of {signal.Note}";
 
@@ -50,19 +50,19 @@ namespace ATSPM.Application.Extensions
         }
 
         /// <summary>
-        /// Marks <see cref="Signal"/> to deleted
+        /// Marks <see cref="Location"/> to deleted
         /// </summary>
         /// <param name="repo"></param>
-        /// <param name="id">Id of <see cref="Signal"/> to mark as deleted</param>
+        /// <param name="id">Id of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">id is not a valid signal</exception>
         public static async Task SetSignalToDeleted(this ISignalRepository repo, int id)
         {
-            Signal signal = await repo.LookupAsync(id);
+            Location signal = await repo.LookupAsync(id);
 
             if (signal != null)
             {
-                signal.VersionAction = SignalVersionActions.Delete;
+                signal.VersionAction = LocationVersionActions.Delete;
                 await repo.UpdateAsync(signal);
             }
             else
@@ -74,13 +74,13 @@ namespace ATSPM.Application.Extensions
         #region Obsolete
 
         [Obsolete("This method isn't currently being used")]
-        public static void AddList(this ISignalRepository repo, List<Signal> signals)
+        public static void AddList(this ISignalRepository repo, List<Location> signals)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use the add in respository base class")]
-        public static void AddOrUpdate(this ISignalRepository repo, Signal signal)
+        public static void AddOrUpdate(this ISignalRepository repo, Location signal)
         {
             throw new NotImplementedException();
         }
@@ -92,7 +92,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Redundant to GetAllSignals")]
-        public static IReadOnlyList<Signal> EagerLoadAllSignals(this ISignalRepository repo)
+        public static IReadOnlyList<Location> EagerLoadAllSignals(this ISignalRepository repo)
         {
             throw new NotImplementedException();
         }
@@ -104,25 +104,25 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        public static IReadOnlyList<Signal> GetAllEnabledSignals(this ISignalRepository repo)
+        public static IReadOnlyList<Location> GetAllEnabledSignals(this ISignalRepository repo)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Redundant to GetLatestVersionOfAllSignals")]
-        public static IList<Signal> GetAllSignals(this ISignalRepository repo)
+        public static IList<Location> GetAllSignals(this ISignalRepository repo)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public static IReadOnlyList<Signal> GetAllVersionsOfSignalBySignalId(this ISignalRepository repo, string signalId)
+        public static IReadOnlyList<Location> GetAllVersionsOfSignalBySignalId(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use overload of GetLatestVersionOfAllSignals")]
-        public static IReadOnlyList<Signal> GetLatestVerionOfAllSignalsByControllerType(this ISignalRepository repo, int controllerTypeId)
+        public static IReadOnlyList<Location> GetLatestVerionOfAllSignalsByControllerType(this ISignalRepository repo, int controllerTypeId)
         {
             throw new NotImplementedException();
         }
@@ -134,7 +134,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetLatestVersionOfSignalBySignalId(this ISignalRepository repo, string signalId)
+        public static Location GetLatestVersionOfSignalBySignalId(this ISignalRepository repo, string signalId)
         {
             throw new NotImplementedException();
         }
@@ -152,19 +152,19 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("Use Lookup instead")]
-        public static Signal GetSignalVersionByVersionId(this ISignalRepository repo, int versionId)
+        public static Location GetSignalVersionByVersionId(this ISignalRepository repo, int versionId)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetVersionOfSignalByDate(this ISignalRepository repo, string signalId, DateTime startDate)
+        public static Location GetVersionOfSignalByDate(this ISignalRepository repo, string signalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }
 
         [Obsolete("Use GetLatestVersionOfSignal")]
-        public static Signal GetVersionOfSignalByDateWithDetectionTypes(this ISignalRepository repo, string signalId, DateTime startDate)
+        public static Location GetVersionOfSignalByDateWithDetectionTypes(this ISignalRepository repo, string signalId, DateTime startDate)
         {
             throw new NotImplementedException();
         }

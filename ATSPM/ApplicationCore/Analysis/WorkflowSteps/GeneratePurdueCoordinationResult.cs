@@ -21,17 +21,17 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         /// <inheritdoc/>
         protected override Task<IEnumerable<PurdueCoordinationResult>> Process(IReadOnlyList<CycleArrivals> input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => g.SignalIdentifier, (signal, x) =>
+            var result = input.GroupBy(g => g.LocationIdentifier, (signal, x) =>
             x.GroupBy(g => g.PhaseNumber, (phase, y) => new PurdueCoordinationResult()
             {
-                SignalIdentifier = signal,
+                LocationIdentifier = signal,
                 PhaseNumber = phase,
                 Start = y.Min(m => m.Start),
                 End = y.Max(m => m.End),
                 Plans = new List<PurdueCoordinationPlan>() {
                     new PurdueCoordinationPlan()
                     {
-                        SignalIdentifier = signal,
+                        LocationIdentifier = signal,
                         Start = y.Min(m => m.Start),
                         End = y.Max(m => m.End),
                         ArrivalCycles = y.ToList()

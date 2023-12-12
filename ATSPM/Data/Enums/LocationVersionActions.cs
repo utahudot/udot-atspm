@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace ATSPM.Data.Enums
 {
     /// <summary>
-    /// Signal version actions
+    /// Location version actions
     /// </summary>
-    public enum SignalVersionActions
+    public enum LocationVersionActions
     {
         /// <summary>
         /// Version is unknown

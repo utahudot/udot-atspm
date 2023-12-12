@@ -13,11 +13,11 @@ using ATSPM.Application.Specifications;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AggregatePreemptCodes : TransformProcessStepBase<Tuple<Signal, int, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
+    public class AggregatePreemptCodes : TransformProcessStepBase<Tuple<Location, int, IEnumerable<ControllerEventLog>>, IEnumerable<PreemptionAggregation>>
     {
         public AggregatePreemptCodes(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<PreemptionAggregation>> Process(Tuple<Signal, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<PreemptionAggregation>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var signal = input.Item1;
             var preempt = input.Item2;
@@ -27,7 +27,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             tl.Segments.ToList().ForEach(f =>
             {
-                f.SignalIdentifier = signal.SignalIdentifier;
+                f.LocationIdentifier = signal.LocationIdentifier;
                 f.PreemptNumber = preempt;
                 f.PreemptServices = logs.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptCallInputOn && f.InRange(c));
                 f.PreemptServices = logs.Count(c => c.EventCode == (int)DataLoggerEnum.PreemptEntryStarted && f.InRange(c));

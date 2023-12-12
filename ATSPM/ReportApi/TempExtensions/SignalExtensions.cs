@@ -5,12 +5,12 @@ namespace ATSPM.ReportApi.TempExtensions
 {
     public static class SignalExtensions
     {
-        public static string SignalDescription(this Signal signal)
+        public static string SignalDescription(this Location signal)
         {
-            return $"#{signal.SignalIdentifier} - {signal.PrimaryName} & {signal.SecondaryName}";
+            return $"#{signal.LocationIdentifier} - {signal.PrimaryName} & {signal.SecondaryName}";
         }
 
-        public static List<Approach> GetApproachesForSignalThatSupportMetric(this Signal signal, int metricTypeID)
+        public static List<Approach> GetApproachesForSignalThatSupportMetric(this Location signal, int metricTypeID)
         {
             var approachesForMeticType = new List<Approach>();
             foreach (var a in signal.Approaches)
@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 .ToList();
         }
 
-        public static List<Detector> GetDetectorsForSignalThatSupportMetric(this Signal signal, int metricTypeID)
+        public static List<Detector> GetDetectorsForSignalThatSupportMetric(this Location signal, int metricTypeID)
         {
             var detectorsForMetricType = new List<Detector>();
             foreach (var a in signal.Approaches)
@@ -39,7 +39,7 @@ namespace ATSPM.ReportApi.TempExtensions
             return detectorsForMetricType;
         }
 
-        public static List<Detector> GetDetectorsForSignal(this Signal signal)
+        public static List<Detector> GetDetectorsForSignal(this Location signal)
         {
             var detectors = new List<Detector>();
             if (signal.Approaches != null)

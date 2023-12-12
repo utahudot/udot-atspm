@@ -9,11 +9,11 @@ using System.Text.Json.Serialization;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Traffic signal controller
+    /// Location that data is being logged and monitored
     /// </summary>
-    public partial class Signal :
+    public partial class Location :
         AtspmConfigModelBase<int>,
-        ISignalLayer,
+        ILocationLayer,
         IRelatedControllerType, 
         IRelatedJurisdiction, 
         IRelatedRegion, 
@@ -22,45 +22,45 @@ namespace ATSPM.Data.Models
         IRelatedDevices
     {
         /// <summary>
-        /// Latitude of signal
+        /// Latitude of location
         /// </summary>
         public double Latitude { get; set; }
 
         /// <summary>
-        /// Longitude of signal
+        /// Longitude of location
         /// </summary>
         public double Longitude { get; set; }
 
         /// <summary>
-        /// Priamry name of signal
+        /// Priamry name of location
         /// </summary>
         public string PrimaryName { get; set; }
         
         /// <summary>
-        /// Secondary name of signal
+        /// Secondary name of location
         /// </summary>
         public string SecondaryName { get; set; }
 
         /// <summary>
-        /// Ipaddress of signal
+        /// Ipaddress of location
         /// </summary>
         [JsonIgnore]
         public IPAddress Ipaddress { get; set; }
         
         /// <summary>
-        /// Enable signal to be charted
+        /// Enable location to be charted
         /// </summary>
         public bool ChartEnabled { get; set; }
         
         /// <summary>
-        /// Enable signal to be logged
+        /// Enable location to be logged
         /// </summary>
         public bool LoggingEnabled { get; set; }
         
         /// <summary>
-        /// Version action of signal
+        /// Version action of location
         /// </summary>
-        public SignalVersionActions VersionAction { get; set; }
+        public LocationVersionActions VersionAction { get; set; }
         
         /// <summary>
         /// Note
@@ -68,7 +68,7 @@ namespace ATSPM.Data.Models
         public string Note { get; set; }
         
         /// <summary>
-        /// Start date signal became active
+        /// Start date location became active
         /// </summary>
         public DateTime Start { get; set; }
 
@@ -78,10 +78,10 @@ namespace ATSPM.Data.Models
         /// </summary>
         public bool Pedsare1to1 { get; set; }
 
-        #region ISignalLayer
+        #region IlocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 
@@ -137,6 +137,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {SignalIdentifier} - {PrimaryName} {SecondaryName}";
+        public override string ToString() => $"{Id} - {LocationIdentifier} - {PrimaryName} {SecondaryName}";
     }
 }
