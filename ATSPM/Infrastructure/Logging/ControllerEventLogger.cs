@@ -77,7 +77,7 @@ namespace ATSPM.Infrastructure.Logging
             {
                 ControllerEventLog logEvent = new ControllerEventLog()
                 {
-                    LocationIdentifier = parameters.Where(k => k.Key == "SignalId")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
+                    LocationIdentifier = parameters.Where(k => k.Key == "locationId")?.Select(v => v.Value)?.FirstOrDefault()?.ToString() ?? string.Empty,
                     Timestamp = DateTime.Now,
                     EventCode = eventId.Id,
                     EventParam = Convert.ToInt32(parameters.Where(k => k.Key == "EventParam")?.Select(v => v.Value)?.FirstOrDefault() ?? 0)

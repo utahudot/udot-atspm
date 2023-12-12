@@ -33,7 +33,7 @@ namespace ATSPM.Application.Extensions
 
 
         //    return input.Item2?
-        //        .Where(w => w.SignalIdentifier == input.Item1?.Location.SignalIdentifier && input.Item1.Detectors
+        //        .Where(w => w.locationIdentifier == input.Item1?.Location.locationIdentifier && input.Item1.Detectors
         //        .Select(s => s.DetectorChannel)
         //        .Contains(w.DetectorChannel))
         //        .ToList();

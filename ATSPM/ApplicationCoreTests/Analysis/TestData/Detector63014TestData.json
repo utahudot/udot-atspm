@@ -98,7 +98,7 @@
     "pedestrianPhaseNumber": null,
     "isPedestrianPhaseOverlap": false,
     "pedestrianDetectors": null,
-    "signalId": 1680,
+    "locationId": 1680,
     "directionTypeId": "NB",
     "id": 2880,
     "signal": {
@@ -106,7 +106,7 @@
       "longitude": -111.9387819,
       "note": "Initial",
       "primaryName": "Redwood Road",
-      "signalIdentifier": "7115",
+      "locationIdentifier": "7115",
       "secondaryName": "7000 South",
       "jurisdictionId": 35,
       "chartEnabled": true,

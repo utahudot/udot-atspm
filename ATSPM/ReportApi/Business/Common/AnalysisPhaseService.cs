@@ -7,8 +7,8 @@ namespace ATSPM.ReportApi.Business.Common
     {
         public int PhaseNumber { get; set; }
         public string PhaseDescription { get; set; }
-        public string SignalId { get; set; }
-        public string SignalIdentifier { get; set; }
+        public string locationId { get; set; }
+        public string locationIdentifier { get; set; }
         public double PercentMaxOuts { get; set; }
         public double PercentForceOffs { get; set; }
         public int TotalPhaseTerminations { get; set; }
@@ -63,7 +63,7 @@ namespace ATSPM.ReportApi.Business.Common
             {
                 analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, terminationEvents.ToList());
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, terminationEvents.ToList());
             if (!terminationEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
@@ -88,7 +88,7 @@ namespace ATSPM.ReportApi.Business.Common
         ///     Constructor Used for Split monitor
         /// </summary>
         /// <param name="phasenumber"></param>
-        /// <param name="signalID"></param>
+        /// <param name="locationId"></param>
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
         //    int phasenumber,
@@ -97,11 +97,11 @@ namespace ATSPM.ReportApi.Business.Common
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
         //    analysisPhaseData.PhaseNumber = phasenumber;
-        //    analysisPhaseData.SignalIdentifier = signal.SignalIdentifier;
+        //    analysisPhaseData.locationIdentifier = signal.locationIdentifier;
         //    analysisPhaseData.IsOverlap = false;
         //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
         //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.SignalIdentifier, phaseEvents, pedEvents);
+        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, pedEvents);
         //    var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
         //    analysisPhaseData.Location = signal;

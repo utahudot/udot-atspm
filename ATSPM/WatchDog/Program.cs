@@ -28,7 +28,7 @@ class Program
             .AddDbContext<IdentityContext>(db => db.UseNpgsql(configuration.GetConnectionString("IdentityContext")))
             .AddDbContext<EventLogContext>(db => db.UseNpgsql(configuration.GetConnectionString("EventLogContext")))
 
-            .AddScoped<ISignalRepository, SignalEFRepository>()
+            .AddScoped<ILocationRepository, LocationEFRepository>()
             .AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>()
             .AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>()
             .AddScoped<IRegionsRepository, RegionEFRepository>()

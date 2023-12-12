@@ -10,7 +10,7 @@ namespace WatchDog.Services
 {
     public class ScanService
     {
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly IWatchDogLogEventRepository watchDogLogEventRepository;
         private readonly IRegionsRepository regionsRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
@@ -26,7 +26,7 @@ namespace WatchDog.Services
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             IWatchDogLogEventRepository watchDogLogEventRepository,
             IRegionsRepository regionsRepository,
             IJurisdictionRepository jurisdictionRepository,

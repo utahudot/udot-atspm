@@ -8,8 +8,8 @@ namespace ATSPM.ReportApi.Business.PreempDetail
     {
         public List<RequestAndServices> RequestAndServices { get; set; }
 
-        public PreemptRequestAndServices(string signalId,
+        public PreemptRequestAndServices(string locationId,
             DateTime start,
-            DateTime end) : base(signalId, start, end) { }
+            DateTime end) : base(locationId, start, end) { }
     }
 }

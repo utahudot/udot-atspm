@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
     public class TurningMovementCountsResult
     {
         public TurningMovementCountsResult(
-            string signalIdentifier,
+            string locationIdentifier,
             string signalDescription,
             DateTime start,
             DateTime end,
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             double? laneUtilizationFactor
             )
         {
-            SignalIdentifier = signalIdentifier;
+            locationIdentifier = locationIdentifier;
             SignalDescription = signalDescription;
             Start = start;
             End = end;
@@ -44,7 +44,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             LaneUtilizationFactor = laneUtilizationFactor;
         }
 
-        public string SignalIdentifier { get; set; }
+        public string locationIdentifier { get; set; }
         public string SignalDescription { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

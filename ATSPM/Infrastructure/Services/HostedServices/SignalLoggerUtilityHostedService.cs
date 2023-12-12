@@ -32,7 +32,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
+                    var signalRepository = scope.ServiceProvider.GetService<ILocationRepository>();
                     var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
                     var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.ChartEnabled);

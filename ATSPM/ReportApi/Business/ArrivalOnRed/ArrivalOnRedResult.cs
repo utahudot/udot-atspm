@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
     public class ArrivalOnRedResult : ApproachResult
     {
         public ArrivalOnRedResult(
-            string signalId,
+            string locationId,
             int approachId,
             int phaseNumber,
             string phaseDescription,
@@ -22,7 +22,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
             ICollection<ArrivalOnRedPlan> plans,
             ICollection<DataPointForDouble> percentArrivalsOnRed,
             ICollection<DataPointForDouble> totalVehicles,
-            ICollection<DataPointForDouble> arrivalsOnRed) : base(approachId, signalId, start, end)
+            ICollection<DataPointForDouble> arrivalsOnRed) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;

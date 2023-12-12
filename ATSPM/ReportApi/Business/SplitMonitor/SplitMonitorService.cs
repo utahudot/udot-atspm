@@ -9,7 +9,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public AnalysisPhaseCollectionData Phases { get; set; }
-        public string SignalID { get; set; }
+        public string locationId { get; set; }
     }
 
     public class SplitMonitorService
@@ -74,7 +74,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
 
-            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.SignalIdentifier, options.Start, options.End)
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items

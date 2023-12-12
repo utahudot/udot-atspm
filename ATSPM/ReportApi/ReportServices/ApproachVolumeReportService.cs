@@ -14,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class ApproachVolumeReportService : ReportServiceBase<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>
     {
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ApproachVolumeService approachVolumeService;
 
         /// <inheritdoc/>
         public ApproachVolumeReportService(
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             IControllerEventLogRepository controllerEventLogRepository,
             ApproachVolumeService approachVolumeService)
         {
@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachVolumeResult>> ExecuteAsync(ApproachVolumeOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {
