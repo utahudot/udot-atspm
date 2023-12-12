@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly WaitTimeService waitTimeService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -24,7 +24,7 @@ namespace ATSPM.ReportApi.ReportServices
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             WaitTimeService waitTimeService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService
             )
         {
@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<WaitTimeResult>> ExecuteAsync(WaitTimeOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {
@@ -58,7 +58,7 @@ namespace ATSPM.ReportApi.ReportServices
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var phaseEvents = controllerEventLogRepository.GetSignalEventsByEventCodes(
-            parameter.SignalIdentifier,
+            parameter.locationIdentifier,
             parameter.Start,
                 parameter.End,
                 new List<int>() {

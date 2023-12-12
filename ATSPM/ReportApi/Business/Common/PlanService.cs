@@ -45,23 +45,23 @@ namespace ATSPM.ReportApi.Business.Common
         public IReadOnlyList<ControllerEventLog> GetPlanEvents(
             DateTime startDate,
             DateTime endDate,
-            string signalId,
+            string locationId,
             List<ControllerEventLog> tempPlanEvents)
         {
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
             if (tempPlanEvents.Any() && tempPlanEvents.First().Timestamp != startDate)
             {
-                SetFirstPlan(startDate, signalId, tempPlanEvents);
+                SetFirstPlan(startDate, locationId, tempPlanEvents);
             }
             else if (!tempPlanEvents.Any())
             {
-                SetFirstPlan(startDate, signalId, tempPlanEvents);
+                SetFirstPlan(startDate, locationId, tempPlanEvents);
             }
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new ControllerEventLog { LocationIdentifier = signalId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new ControllerEventLog { LocationIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -91,7 +91,7 @@ namespace ATSPM.ReportApi.Business.Common
             }
         }
 
-        private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
+        private void SetFirstPlan(DateTime startDate, string locationId, List<ControllerEventLog> planEvents)
         {
             var firstPlanEvent = planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
 
@@ -115,14 +115,14 @@ namespace ATSPM.ReportApi.Business.Common
                     Timestamp = startDate,
                     EventCode = 131,
                     EventParam = 0,
-                    LocationIdentifier = signalId
+                    LocationIdentifier = locationId
                 };
                 planEvents.Insert(0, firstPlanEvent);
             }
         }
-        //private void SetFirstPlan(DateTime startDate, string signalId, List<ControllerEventLog> planEvents)
+        //private void SetFirstPlan(DateTime startDate, string locationId, List<ControllerEventLog> planEvents)
         //{
-        //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(signalId, 131, startDate);
+        //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(locationId, 131, startDate);
         //    if (firstPlanEvent != null)
         //    {
         //        firstPlanEvent.TimeStamp = startDate;
@@ -135,7 +135,7 @@ namespace ATSPM.ReportApi.Business.Common
         //            Timestamp = startDate,
         //            EventCode = 131,
         //            EventParam = 0,
-        //            LocationId = signalId
+        //            LocationId = locationId
         //        };
         //        planEvents.Insert(0, firstPlanEvent);
         //    }
@@ -144,10 +144,10 @@ namespace ATSPM.ReportApi.Business.Common
         public IReadOnlyList<Plan> GetBasicPlans(
             DateTime startDate,
             DateTime endDate,
-            string signalId,
+            string locationId,
             IReadOnlyList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
+            var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
             var plans = planEvents.Select((x, i) => i == planEvents.Count - 1
                                         ? new Plan(x.EventParam.ToString(), x.Timestamp, endDate)
                                         : new Plan(x.EventParam.ToString(), x.Timestamp, planEvents[i + 1].Timestamp))
@@ -159,14 +159,14 @@ namespace ATSPM.ReportApi.Business.Common
             DateTime startDate,
             DateTime endDate,
             List<YellowRedActivationsCycle> cycles,
-            string signalIdentifier,
+            string locationIdentifier,
             double severeRedLightViolationSeconds,
             IReadOnlyList<ControllerEventLog> planEvents)
         {
             var plans = GetBasicPlans(
                 startDate,
                 endDate,
-                signalIdentifier,
+                locationIdentifier,
                 planEvents).ToList();
             if (plans.Count == 0)
                 plans.Add(new Plan("0", startDate, endDate));
@@ -181,10 +181,10 @@ namespace ATSPM.ReportApi.Business.Common
         public IReadOnlyList<PlanSplitMonitorData> GetSplitMonitorPlans(
             DateTime startDate,
             DateTime endDate,
-            string signalId,
+            string locationId,
             IList<ControllerEventLog> events)
         {
-            var planEvents = GetPlanEvents(startDate, endDate, signalId, events.ToList());
+            var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
             var plans = new List<PlanSplitMonitorData>();
             for (var i = 0; i < planEvents.Count; i++)
                 if (planEvents.Count - 1 == i)

@@ -8,7 +8,7 @@ namespace ATSPM.Application.Repositories
     /// <summary>
     /// Location Controller Repository
     /// </summary>
-    public interface ISignalRepository : IAsyncRepository<Location>
+    public interface ILocationRepository : IAsyncRepository<Location>
     {
         /// <summary>
         /// Get all active <see cref="Location"/> and related entities that match <paramref name="signalIdentifier"/>

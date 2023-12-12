@@ -9,12 +9,12 @@ namespace ATSPM.ReportApi.Business.Common
                 
         }
 
-        public string SignalIdentifier { get; set; }
+        public string locationIdentifier { get; set; }
         public string SignalDescription { get; set; }
 
-        public SignalResult(string signalId, DateTime start, DateTime end) : base(start, end)
+        public SignalResult(string locationId, DateTime start, DateTime end) : base(start, end)
         {
-            SignalIdentifier = signalId;
+            locationIdentifier = locationId;
         }
     }
 }

@@ -16,11 +16,11 @@ namespace ATSPM.Application.Repositories
         /// <summary>
         /// Get all controller event logs by <c>LocationId</c> and date range
         /// </summary>
-        /// <param name="signalId">Location controller identifier</param>
+        /// <param name="locationId">Location controller identifier</param>
         /// <param name="startTime">Start time</param>
         /// <param name="endTime">End time</param>
         /// <returns></returns>
-        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime);
+        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
 
         #region ExtensionMethods
 
@@ -60,7 +60,7 @@ namespace ATSPM.Application.Repositories
 
         #region Obsolete
 
-        //[Obsolete("Use GetSignalEventsBetweenDates(signalId, startTime, endTime).Count()", true)]
+        //[Obsolete("Use GetSignalEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
         //int GetSignalEventsCountBetweenDates(string LocationId, DateTime startTime, DateTime endTime);
 
         //[Obsolete("This method isn't currently being used")]

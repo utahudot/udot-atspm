@@ -26,17 +26,17 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IRouteSignalsRepository
 
-        public RouteSignal GetByRouteSignalId(int id)
+        public RouteSignal GetByRoutelocationId(int id)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MoveRouteSignalDown(int routeId, int routeSignalId)
+        public void MoveRouteSignalDown(int routeId, int routelocationId)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MoveRouteSignalUp(int routeId, int routeSignalId)
+        public void MoveRouteSignalUp(int routeId, int routelocationId)
         {
             throw new System.NotImplementedException();
         }

@@ -14,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly PreemptServiceService preemptServiceService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
 
         /// <inheritdoc/>
         public PreemptServiceReportService(
             PreemptServiceService preemptServiceService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository
+            ILocationRepository signalRepository
             )
         {
             this.preemptServiceService = preemptServiceService;
@@ -31,13 +31,13 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PreemptServiceResult> ExecuteAsync(PreemptServiceOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");
                 return await Task.FromException<PreemptServiceResult>(new NullReferenceException("Signal not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(parameter.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(parameter.locationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for signal");

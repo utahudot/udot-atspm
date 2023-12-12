@@ -30,9 +30,9 @@ namespace ATSPM.Application.Specifications
 
     public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     {
-        public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -85,9 +85,9 @@ namespace ATSPM.Application.Specifications
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateTimeRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.LocationIdentifier == locationId && c.Timestamp >= startDate && c.Timestamp <= endDate;
 
             ApplyOrderBy(o => o.Timestamp);
         }

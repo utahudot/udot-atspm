@@ -7,12 +7,12 @@ namespace ATSPM.Data.Configuration
     /// <summary>
     /// Location configuration
     /// </summary>
-    public class SignalConfiguration : IEntityTypeConfiguration<Location>
+    public class LocationConfiguration : IEntityTypeConfiguration<Location>
     {
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Location> builder)
         {
-            builder.HasComment("Signal Controllers");
+            builder.HasComment("Location Controllers");
 
             builder.HasIndex(e => e.ControllerTypeId);
 

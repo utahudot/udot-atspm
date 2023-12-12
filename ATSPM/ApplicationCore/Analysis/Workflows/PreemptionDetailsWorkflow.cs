@@ -94,12 +94,12 @@ namespace ATSPM.Application.Analysis.Workflows
 
     //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
     //    {
-    //        var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+    //        var result = items.GroupBy(g => g.locationIdentifier, (signal, l1) =>
     //        l1.GroupBy(g => g.EventParam, (preempt, l2) =>
     //        l2.TimeSpanFromConsecutiveCodes(first, second)
     //        .Select(s => new T()
     //        {
-    //            SignalIdentifier = signal,
+    //            locationIdentifier = signal,
     //            PreemptNumber = preempt,
     //            Start = s.Item1[0].Timestamp,
     //            End = s.Item1[1].Timestamp,
