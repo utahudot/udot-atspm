@@ -10,11 +10,11 @@ namespace ATSPM.ReportApi.Business.PreemptServiceRequest
     public class PreemptServiceRequestResult : SignalResult
     {
         public PreemptServiceRequestResult(string chartName,
-            string signalId,
+            string locationId,
             DateTime start,
             DateTime end,
             IReadOnlyList<Plan> plans,
-            IReadOnlyList<DataPointForInt> preemptRequests) : base(signalId, start, end)
+            IReadOnlyList<DataPointForInt> preemptRequests) : base(locationId, start, end)
         {
             Plans = plans;
             PreemptRequests = preemptRequests;

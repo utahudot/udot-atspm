@@ -16,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly YellowRedActivationsService yellowRedActivationsService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public YellowRedActivationsReportService(
             YellowRedActivationsService yellowRedActivationsService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService)
         {
             this.yellowRedActivationsService = yellowRedActivationsService;
@@ -35,7 +35,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<YellowRedActivationsResult>> ExecuteAsync(YellowRedActivationsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {

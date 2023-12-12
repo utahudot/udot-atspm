@@ -24,7 +24,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return true;
         }
 
-        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default)
+        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, CancellationToken cancelToken = default)
         {
             throw new NotImplementedException();
         }

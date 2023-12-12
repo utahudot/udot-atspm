@@ -35,7 +35,7 @@ namespace SignalControllerLogger
             {
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var signalRepository = scope.ServiceProvider.GetService<ISignalRepository>();
+                    var signalRepository = scope.ServiceProvider.GetService<ILocationRepository>();
                     var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
 
                     //signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.ChartEnabled && w.ControllerTypeId == 4).ToList();

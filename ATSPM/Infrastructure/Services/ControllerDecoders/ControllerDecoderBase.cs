@@ -154,7 +154,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }

@@ -116,7 +116,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests that only events with a SignalIdentifier matching the test signal are forwarded
+        /// Tests that only events with a locationIdentifier matching the test signal are forwarded
         /// </summary>
         [Fact]
         [Trait(nameof(GroupDetectorsByDetectorEvent), "Signal")]

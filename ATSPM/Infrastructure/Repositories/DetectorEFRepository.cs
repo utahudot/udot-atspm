@@ -36,7 +36,7 @@ namespace ATSPM.Infrastructure.Repositories
         #region IDetectorRepository
 
         //TODO: this needs to be moved out of this repo
-        public IReadOnlyList<Detector> GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(string signalId, DirectionTypes directionType, List<MovementTypes> movementTypeIds)
+        public IReadOnlyList<Detector> GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(string locationId, DirectionTypes directionType, List<MovementTypes> movementTypeIds)
         {
             return _db.Set<Approach>()
                 .Where(a => a.DirectionTypeId == directionType)

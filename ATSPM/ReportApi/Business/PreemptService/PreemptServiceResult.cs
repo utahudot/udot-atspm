@@ -10,11 +10,11 @@ namespace ATSPM.ReportApi.Business.PreemptService
     public class PreemptServiceResult : SignalResult
     {
         public PreemptServiceResult(
-            string signalId,
+            string locationId,
             DateTime start,
             DateTime end,
             ICollection<PreemptPlan> plans,
-            ICollection<DataPointForInt> preemptServiceEvents) : base(signalId, start, end)
+            ICollection<DataPointForInt> preemptServiceEvents) : base(locationId, start, end)
         {
             Plans = plans;
             PreemptServiceEvents = preemptServiceEvents;

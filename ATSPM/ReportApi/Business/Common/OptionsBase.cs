@@ -28,6 +28,6 @@ namespace ATSPM.ReportApi.Business.Common
                 _end = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
             }
         }
-        public string SignalIdentifier { get; set; }
+        public string locationIdentifier { get; set; }
     }
 }

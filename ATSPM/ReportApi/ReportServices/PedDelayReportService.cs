@@ -18,7 +18,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PedPhaseService pedPhaseService;
         private readonly CycleService cycleService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.ReportServices
             PedPhaseService pedPhaseService,
             CycleService cycleService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PhaseService phaseService)
         {
             this.pedDelayService = pedDelayService;
@@ -41,7 +41,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<PedDelayResult>> ExecuteAsync(PedDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");

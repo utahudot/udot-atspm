@@ -33,7 +33,7 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
             var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointForDouble(d.TimeStamp, d.YPointSeconds)));
 
             return new PurdueCoordinationDiagramResult(
-                options.SignalIdentifier,
+                options.locationIdentifier,
                 approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,

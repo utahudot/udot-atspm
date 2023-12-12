@@ -97,7 +97,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
-                options.SignalIdentifier,
+                options.locationIdentifier,
                 options.Start,
                 options.End,
                 detectionType.Id.GetDisplayAttribute()?.Name,

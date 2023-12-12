@@ -69,8 +69,8 @@ namespace ATSPM.SignalControllerLogger
                     s.AddHostedService<LoggerBackgroundService>();
 
                     //repositories
-                    s.AddScoped<ISignalRepository, SignalEFRepository>();
-                    //s.AddScoped<ISignalRepository, SignalFileRepository>();
+                    s.AddScoped<ILocationRepository, LocationEFRepository>();
+                    //s.AddScoped<ILocationRepository, SignalFileRepository>();
                     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
                     //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 

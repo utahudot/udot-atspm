@@ -12,7 +12,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
         public Approach Approach { get; set; }
         public int ApproachId { get; set; }
         public int PhaseNumber { get; set; }
-        public string SignalId { get; set; }
+        public string locationId { get; set; }
         public List<PedCycle> Cycles { get; set; }
         public List<PedPlan> Plans { get; set; }
         public List<DataPointForDouble> HourlyTotals { get; set; }

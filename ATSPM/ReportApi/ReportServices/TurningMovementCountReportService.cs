@@ -17,14 +17,14 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
         private readonly PlanService planService;
 
         /// <inheritdoc/>
         public TurningMovementCountReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             PlanService planService
             )
         {
@@ -37,7 +37,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<TurningMovementCountsResult>> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
 
             if (signal == null)
             {
@@ -56,7 +56,7 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.SignalIdentifier, planEvents);
+            var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.locationIdentifier, planEvents);
             var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
@@ -138,7 +138,7 @@ namespace ATSPM.ReportApi.ReportServices
             List<Detector> detectors,
             MovementTypes movementType,
             LaneTypes laneType,
-            string signalIdentifier,
+            string locationIdentifier,
             string signalDescription,
             DirectionTypes directionType)
         {
@@ -161,7 +161,7 @@ namespace ATSPM.ReportApi.ReportServices
                 options,
                 detectorEvents,
                 planEvents,
-                signalIdentifier,
+                locationIdentifier,
                 signalDescription);
 
             return await result;
