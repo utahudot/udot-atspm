@@ -2,10 +2,10 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
+using ATSPM.ReportApi.TempExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
-using ATSPM.ReportApi.TempExtensions;
 
 namespace WatchDog.Services
 {
@@ -13,14 +13,17 @@ namespace WatchDog.Services
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
+        private readonly PhaseService phaseService;
         private readonly ILogger<WatchDogLogService> logger;
 
         public WatchDogLogService(IControllerEventLogRepository controllerEventLogRepository,
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
+            PhaseService phaseService,
             ILogger<WatchDogLogService> logger)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
+            this.phaseService = phaseService;
             this.logger = logger;
         }
 
@@ -50,7 +53,7 @@ namespace WatchDog.Services
                     }
                     var tasks = new List<Task>();
                     tasks.Add(CheckSignalForPhaseErrors(signal, options, signalEvents, errors));
-                    tasks.Add(CheckForLowDetectorHits(signal, options, signalEvents, errors));
+                    tasks.Add(CheckDetectors(signal, options, signalEvents, errors));
                     //CheckApplicationEvents(signals, options);
                     await Task.WhenAll(tasks);
                 }
@@ -58,7 +61,14 @@ namespace WatchDog.Services
             }
         }
 
-        private async Task CheckForLowDetectorHits(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        private async Task CheckDetectors(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        {
+            var detectorEventCodes = new List<int> { 81, 82 };
+            CheckForUnconfiguredDetectors(signal, options, signalEvents, errors, detectorEventCodes);
+            CheckForLowDetectorHits(signal, options, signalEvents, errors, detectorEventCodes);
+        }
+
+        private void CheckForLowDetectorHits(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
         {
             var detectors = signal.GetDetectorsForSignalThatSupportMetric(6);
             //Parallel.ForEach(detectors, options, detector =>
@@ -81,7 +91,6 @@ namespace WatchDog.Services
                             start = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakStart);
                             end = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakEnd);
                         }
-                        var detectorEventCodes = new List<int> { 81, 82 };
                         var currentVolume = signalEvents.Where(e => e.EventParam == detector.DetectorChannel && detectorEventCodes.Contains(e.EventCode)).Count();
                         //Compare collected hits to low hit threshold, 
                         if (currentVolume < Convert.ToInt32(options.LowHitThreshold))
@@ -104,6 +113,29 @@ namespace WatchDog.Services
                 {
                     logger.LogError($"CheckForLowDetectorHits {detector.Id} {ex.Message}");
                 }
+        }
+
+        private static void CheckForUnconfiguredDetectors(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
+        {
+            var detectorChannelsFromEvents = signalEvents.Where(e => detectorEventCodes.Contains(e.EventCode)).Select(e => e.EventParam).Distinct().ToList();
+            var detectorChannelsFromDetectors = signal.GetDetectorsForSignal().Select(d => d.DetectorChannel).Distinct().ToList();
+            foreach (var channel in detectorChannelsFromEvents)
+            {
+                if (!detectorChannelsFromDetectors.Contains(channel))
+                {
+                    var error = new WatchDogLogEvent(
+                                signal.Id,
+                                signal.SignalIdentifier,
+                                options.ScanDate,
+                                WatchDogComponentType.Detector,
+                                -1,
+                                WatchDogIssueType.UnconfiguredDetector,
+                                $"Unconfigured detector channel-{channel}",
+                                null);
+                    if (!errors.Contains(error))
+                        errors.Add(error);
+                }
+            }
         }
 
         private async Task CheckSignalForPhaseErrors(
@@ -137,6 +169,8 @@ namespace WatchDog.Services
             && e.Timestamp <= options.AnalysisEnd).ToList();
             signalEvents = null;
 
+            CheckForUnconfiguredApproaches(signal, options, errors, cycleEvents);
+
             AnalysisPhaseCollectionData analysisPhaseCollection = null;
             try
             {
@@ -164,34 +198,66 @@ namespace WatchDog.Services
                 //Parallel.ForEach(APcollection.Items, options,phase =>
                 {
                     var taskList = new List<Task>();
-                    try
+                    var approach = signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault();
+                    if (approach != null)
                     {
-                        taskList.Add(CheckForMaxOut(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
-                    }
+                        try
+                        {
+                            taskList.Add(CheckForMaxOut(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
+                        }
 
-                    try
-                    {
+                        try
+                        {
 
-                        taskList.Add(CheckForForceOff(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
-                    }
+                            taskList.Add(CheckForForceOff(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
+                        }
 
-                    try
-                    {
-                        taskList.Add(CheckForStuckPed(phase, signal.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault(), options, errors));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                        try
+                        {
+                            taskList.Add(CheckForStuckPed(phase, approach, options, errors));
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                        }
                     }
                     await Task.WhenAll(taskList);
+                }
+            }
+        }
+
+        private void CheckForUnconfiguredApproaches(Signal signal, LoggingOptions options, ConcurrentBag<WatchDogLogEvent> errors, List<ControllerEventLog> cycleEvents)
+        {
+            var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
+            foreach (var phaseNumber in phasesInUse)
+            {
+                var phase = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phaseNumber);
+                if (phase == null)
+                {
+                    var error = new WatchDogLogEvent
+                    (
+                        signal.Id,
+                        signal.SignalIdentifier,
+                        options.ScanDate,
+                        WatchDogComponentType.Approach,
+                        -1,
+                        WatchDogIssueType.UnconfiguredApproach,
+                        $"No corresponding approach configured",
+                        phaseNumber
+                    );
+                    if (!errors.Contains(error))
+                    {
+                        logger.LogDebug($"Signal {signal.SignalIdentifier} {phaseNumber} Not Configured");
+                        errors.Add(error);
+                    }
                 }
             }
         }

@@ -118,6 +118,30 @@ namespace ATSPM.Infrastructure.Repositories
         }
 
         /// <inheritdoc/>
+        public IReadOnlyList<Signal> GetLatestVersionOfAllSignals(DateTime startDate)
+        {
+            var result = BaseQuery()
+                 .Include(s => s.Approaches)
+                    .ThenInclude(a => a.DirectionType)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectorComments)
+                .Include(s => s.Approaches)
+                    .ThenInclude(a => a.Detectors)
+                        .ThenInclude(d => d.DetectionTypes)
+                            .ThenInclude(d => d.MeasureTypes)
+                .Where(signal => signal.Start <= startDate)
+                .FromSpecification(new ActiveSignalSpecification())
+                .GroupBy(r => r.SignalIdentifier)
+                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+                .ToList();
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public IReadOnlyList<Signal> GetSignalsBetweenDates(string signalIdentifier, DateTime startDate, DateTime endDate)
         {
             var result = BaseQuery()
