@@ -1,11 +1,6 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.ReportApi.Business.SplitMonitor
 {
@@ -41,6 +36,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> pedEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
+            IReadOnlyList<ControllerEventLog> terminationEvents,
             Signal signal)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
@@ -51,7 +47,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 cycleEvents,
                 splitsEvents,
                 pedEvents,
-                new List<ControllerEventLog>(),
+                terminationEvents,
                 signal,
                 1
                 );
@@ -108,11 +104,10 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                     Start = p.Start,
                     End = p.End,
                     AverageSplit = p.AverageSplit,
-                    HighCycleCount = p.HighCycleCount,
-                    PercentSkips = p.PercentSkips,
-                    PercentGapOuts = p.PercentGapOuts,
-                    PercentMaxOuts = p.PercentMaxOuts,
-                    PercentForceOffs = p.PercentForceOffs,
+                    PercentSkips = p.PercentSkips * 100,
+                    PercentGapOuts = p.PercentGapOuts * 100,
+                    PercentMaxOuts = p.PercentMaxOuts * 100,
+                    PercentForceOffs = p.PercentForceOffs * 100,
                     PercentileSplit = p.PercentileSplit,
 
                 }).ToList(),
