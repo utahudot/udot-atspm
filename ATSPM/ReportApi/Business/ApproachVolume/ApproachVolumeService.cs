@@ -1,13 +1,10 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Domain.Extensions;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using ATSPM.Domain.Extensions;
 
 namespace ATSPM.ReportApi.Business.ApproachVolume
 {
@@ -31,13 +28,13 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             Signal signal,
             List<ControllerEventLog> primaryDetectorEvents,
             List<ControllerEventLog> opposingDetectorEvents,
-            int distanceFromStopBar
+            List<Approach> primaryApproaches,
+            List<Approach> opposingApproaches,
+            int distanceFromStopBar,
+            DetectionType detectionType
             )
         {
             int binSizeMultiplier = 60 / options.SelectedBinSize;
-            DirectionTypes opposingDirection = GetOpposingDirection(options);
-            var primaryApproaches = signal.Approaches.Where(a => a.DirectionTypeId == options.Direction).ToList();
-            var opposingApproaches = signal.Approaches.Where(a => a.DirectionTypeId == opposingDirection).ToList();
             var primaryDirectionVolume = new VolumeCollection(
                 options.Start,
                 options.End,
@@ -97,13 +94,13 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             double opposingDirectionPeakHourFactor = GetPeakHourFactor(opposingDirectionPeakHourItem.Value, opposingDirectionPeakHourlyValueInHour);
             double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, primaryDirectionVolume, binSizeMultiplier);
             string opposingDirectionPeakHourString = opposingDirectionPeakHourItem.Key.ToShortTimeString() + " - " + opposingDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
-            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(options.DetectionType).FirstOrDefault();
+            var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
                 options.SignalIdentifier,
                 options.Start,
                 options.End,
-                options.DetectionType.GetDisplayAttribute()?.Name,
+                detectionType.Id.GetDisplayAttribute()?.Name,
                 distanceFromStopBar,
                 primaryApproaches.First().DirectionType.Description,
                 direction1VolumesSeries,
@@ -151,10 +148,10 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
         //        options.SelectedBinSize);
         //}
 
-        public static DirectionTypes GetOpposingDirection(ApproachVolumeOptions options)
+        public static DirectionTypes GetOpposingDirection(DirectionTypes direction)
         {
-            var opposingDirection = options.Direction;
-            switch (options.Direction)
+            var opposingDirection = direction;
+            switch (direction)
             {
                 case DirectionTypes.EB:
                     opposingDirection = DirectionTypes.WB;

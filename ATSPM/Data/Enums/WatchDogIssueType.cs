@@ -7,6 +7,8 @@
         StuckPed = 3,
         ForceOffThreshold = 4,
         MaxOutThreshold = 5,
+        UnconfiguredApproach = 6,
+        UnconfiguredDetector = 7,
 
     }
 
