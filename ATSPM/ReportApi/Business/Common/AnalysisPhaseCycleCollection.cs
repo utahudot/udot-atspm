@@ -1,8 +1,5 @@
 ﻿using ATSPM.Data.Models;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.Common
 {
@@ -16,8 +13,13 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="phasenumber"></param>
         /// <param name="signalid"></param>
         /// <param name="CycleEventsTable"></param>
-        public AnalysisPhaseCycleCollection(int phasenumber, string signalId,
-            List<ControllerEventLog> CycleEventsTable, List<ControllerEventLog> PedEvents)
+        public AnalysisPhaseCycleCollection(
+            int phasenumber,
+            string signalId,
+            List<ControllerEventLog> CycleEventsTable,
+            List<ControllerEventLog> PedEvents,
+            List<ControllerEventLog> terminationEvents
+            )
         {
             AnalysisPhaseCycle Cycle = null;
             SignalID = signalId;
