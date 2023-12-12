@@ -79,6 +79,10 @@ namespace ATSPM.ReportApi.Business.Common
             Signal signal,
             int consecutiveCount)
         {
+            if (signal.Approaches.IsNullOrEmpty())
+            {
+                return null;
+            }
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.SignalId = signalIdentifier;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
@@ -94,7 +98,7 @@ namespace ATSPM.ReportApi.Business.Common
                     signal);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
-            analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
+            analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.Where(a => a != null).OrderBy(i => i.PhaseNumber).ToList();
             analysisPhaseCollectionData.MaxPhaseInUse = FindMaxPhase(analysisPhaseCollectionData.AnalysisPhases);
             analysisPhaseCollectionData.Signal = signal;
             if (analysisPhaseCollectionData.Plans.Count > 0)

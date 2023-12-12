@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ATSPM.ReportApi.Business.SplitMonitor
+﻿namespace ATSPM.ReportApi.Business.SplitMonitor
 {
     public class PlanSplitMonitorDTO
     {
@@ -9,7 +7,6 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
         public string PlanDescription { get; internal set; }
         public DateTime Start { get; internal set; }
         public DateTime End { get; internal set; }
-        public int HighCycleCount { get; set; }
         public double PercentSkips { get; set; }
         public double PercentGapOuts { get; set; }
         public double PercentMaxOuts { get; set; }

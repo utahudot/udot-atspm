@@ -2,9 +2,11 @@
 using Duende.IdentityServer.Models;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Migrations.Identity
 {
@@ -171,44 +173,58 @@ namespace ATSPM.Infrastructure.Migrations.Identity
                     context.ApiScopes.Add(scope.ToEntity());
                 }
                 context.SaveChanges();
-            }
+            }// Seed ApiScopes
+
 
             // ... similar logic for seeding clients, identity resources, etc. ...
         }
-
-        private static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedUsersAndRoles(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            // Define your roles
-            string[] roles = new string[]
-            {
-        "Admin",
-        "User",
-                // Add other roles as needed
-            };
+            await SeedRoles(roleManager);
+            await SeedAdminUser(userManager);
+        }
+
+        private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            string[] roles = new string[] { "Admin", "User" };
+            // Add other roles as needed
 
             foreach (var roleName in roles)
             {
-                // Check if the role already exists
-                if (!roleManager.RoleExistsAsync(roleName).Result)
+                if (!await roleManager.RoleExistsAsync(roleName))
                 {
-                    // Create the role
                     var role = new IdentityRole(roleName);
-                    var result = roleManager.CreateAsync(role).Result;
-
-                    if (result.Succeeded)
+                    try
                     {
-                        // Add claims to the role
-                        AddClaimsToRole(roleManager, roleName);
+                        var result = await roleManager.CreateAsync(role);
+                        if (result.Succeeded)
+                        {
+                            var claims = CustomClaims.GetAllClaimsFromCustomClaims();
+                            if (role != null)
+                            {
+                                foreach (var claim in claims)
+                                {
+                                    roleManager.AddClaimAsync(role, new Claim(ClaimTypes.Role, claim)).Wait();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Log or handle the failure
+                            // Example: LogError(result.Errors);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // Handle role creation failure
+                        // Handle the exception
+                        // Example: LogException(ex);
                     }
                 }
             }
         }
 
-        private static void AddClaimsToRole(RoleManager<IdentityRole> roleManager, string roleName)
+
+        private static async Task AddClaimsToRole(RoleManager<IdentityRole> roleManager, string roleName)
         {
             var claims = CustomClaims.GetAllClaimsFromCustomClaims();
 
@@ -221,6 +237,32 @@ namespace ATSPM.Infrastructure.Migrations.Identity
                 }
             }
         }
+
+        private static async Task SeedAdminUser(UserManager<ApplicationUser> userManager)
+        {
+            // Check if there are any users in the database
+            if (!userManager.Users.Any())
+            {
+                var adminEmail = "admin@atspm.com";
+                var adminUser = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    Agency = "Admin",
+                    // Other properties if needed
+                };
+
+                var createUserResult = userManager.CreateAsync(adminUser, "Identity23!").Result; // Use a strong password
+                if (createUserResult.Succeeded)
+                {
+                    userManager.AddToRoleAsync(adminUser, "Admin").Wait();
+                }
+                // Optionally handle failure case
+            }
+        }
+
 
 
 
