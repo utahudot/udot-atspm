@@ -78,7 +78,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IRouteRepository, RouteEFRepository>();
             services.AddScoped<IRouteSignalsRepository, RouteSignalEFRepository>();
             services.AddScoped<ISettingsRepository, SettingsEFRepository>();
-            services.AddScoped<ISignalRepository, SignalEFRepository>();
+            services.AddScoped<ILocationRepository, LocationEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
 
             return services;

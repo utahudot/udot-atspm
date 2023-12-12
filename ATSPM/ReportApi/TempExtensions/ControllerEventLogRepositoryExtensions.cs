@@ -43,12 +43,12 @@ namespace ATSPM.ReportApi.TempExtensions
 
         public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
            this IControllerEventLogRepository repo,
-           string signalId,
+           string locationId,
            DateTime start,
            DateTime end)
         {
             var events = repo.GetSignalEventsByEventCode(
-                signalId,
+                locationId,
                 start.AddHours(-12),
                 end.AddHours(12),
                 131)

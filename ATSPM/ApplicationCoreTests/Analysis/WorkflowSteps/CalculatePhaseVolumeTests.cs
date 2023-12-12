@@ -153,7 +153,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             //var expected = new Volumes()
             //{
-            //    SignalIdentifier = _testApproach.Location.SignalIdentifier,
+            //    locationIdentifier = _testApproach.Location.locationIdentifier,
             //    PhaseNumber = _testApproach.ProtectedPhaseNumber,
             //    Direction = _testApproach.DirectionTypeId,
             //    Start = DateTime.Parse("4/17/2023 8:00:00"),

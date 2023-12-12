@@ -11,16 +11,16 @@ namespace ATSPM.ReportApi.Business.ApproachVolume;
 public class ApproachVolumeResult : SignalResult
 {
     public ApproachVolumeResult(
-        string signalId,
+        string locationId,
         DateTime start,
         DateTime end,
-        DirectionTypes directionType) : base(signalId, start, end)
+        DirectionTypes directionType) : base(locationId, start, end)
     {
         PrimaryDirectionName = directionType.ToString();
     }
 
     public ApproachVolumeResult(
-        string signalIdentifier,
+        string locationIdentifier,
         DateTime start,
         DateTime end,
         string detectorType,
@@ -46,7 +46,7 @@ public class ApproachVolumeResult : SignalResult
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume) : base(signalIdentifier, start, end)
+        int opposingTotalVolume) : base(locationIdentifier, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;

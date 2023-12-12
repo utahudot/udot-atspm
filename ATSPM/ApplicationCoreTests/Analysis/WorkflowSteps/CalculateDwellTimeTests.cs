@@ -34,11 +34,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -49,7 +49,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var expected = new DwellTimeValue()
             {
-                SignalIdentifier = _testSignal.SignalIdentifier,
+                locationIdentifier = _testSignal.locationIdentifier,
                 PreemptNumber = param,
                 Seconds = TimeSpan.FromSeconds(42),
                 Start = DateTime.Parse("2023-04-17T00:02:25.5"),
@@ -67,11 +67,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -82,7 +82,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var expected = new DwellTimeValue()
             {
-                SignalIdentifier = _testSignal.SignalIdentifier,
+                locationIdentifier = _testSignal.locationIdentifier,
                 PreemptNumber = param,
                 Seconds = TimeSpan.FromSeconds(42),
                 Start = DateTime.Parse("2023-04-17T00:02:25.5"),
@@ -100,16 +100,16 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:14.5"), EventCode = 102, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:20.5"), EventCode = 105, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:25.5"), EventCode = 107, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:01.3"), EventCode = 104, EventParam = 2},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:07.5"), EventCode = 111, EventParam = 2},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:14.5"), EventCode = 102, EventParam = 2},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:20.5"), EventCode = 105, EventParam = 2},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:02:25.5"), EventCode = 107, EventParam = 2},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:01.3"), EventCode = 104, EventParam = 2},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 01:03:07.5"), EventCode = 111, EventParam = 2},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -129,16 +129,16 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 10:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -162,11 +162,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                //new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                //new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();
@@ -188,11 +188,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
-                new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
-                //new ControllerEventLog() { SignalIdentifier = _testSignal.SignalIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 102, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 105, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 107, EventParam = param},
+                new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 104, EventParam = param},
+                //new ControllerEventLog() { locationIdentifier = _testSignal.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 111, EventParam = param},
             }.AsEnumerable();
 
             var sut = new CalculateDwellTime();

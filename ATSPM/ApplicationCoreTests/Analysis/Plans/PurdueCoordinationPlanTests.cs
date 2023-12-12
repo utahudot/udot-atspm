@@ -32,7 +32,7 @@ namespace ApplicationCoreTests.Analysis.Plans
 
             //var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             //{
-            //    SignalId = "1001",
+            //    locationId = "1001",
             //    EventCode = (int)DataLoggerEnum.CoordPatternChange,
             //    EventParam = 1,
             //    Timestamp = DateTime.Now.AddSeconds(s)

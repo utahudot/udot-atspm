@@ -14,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly PreemptDetailService preemptDetailService;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
 
         /// <inheritdoc/>
         public PreemptDetailReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             PreemptDetailService preemptDetailService,
-            ISignalRepository signalRepository)
+            ILocationRepository signalRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.preemptDetailService = preemptDetailService;
@@ -30,7 +30,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PreemptDetailResult> ExecuteAsync(PreemptDetailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");
@@ -42,7 +42,7 @@ namespace ATSPM.ReportApi.ReportServices
                 codes.Add(i);
 
             var events = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                parameter.SignalIdentifier,
+                parameter.locationIdentifier,
                 parameter.Start,
                 parameter.End,
                 codes).ToList();

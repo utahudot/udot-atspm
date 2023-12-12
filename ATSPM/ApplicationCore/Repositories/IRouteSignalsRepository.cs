@@ -15,21 +15,21 @@ namespace ATSPM.Application.Repositories
         /// </summary>
         /// <param name="id">id of signal</param>
         /// <returns></returns>
-        RouteSignal GetByRouteSignalId(int id);
+        RouteSignal GetByRoutelocationId(int id);
         
         /// <summary>
         /// Moves signal up in route order
         /// </summary>
         /// <param name="routeId">id of route</param>
-        /// <param name="routeSignalId">id of signal route</param>
-        void MoveRouteSignalUp(int routeId, int routeSignalId);
+        /// <param name="routelocationId">id of signal route</param>
+        void MoveRouteSignalUp(int routeId, int routelocationId);
         
         /// <summary>
         /// Moves signal down in route order
         /// </summary>
         /// <param name="routeId">id of route</param>
-        /// <param name="routeSignalId">id of signal route</param>
-        void MoveRouteSignalDown(int routeId, int routeSignalId);
+        /// <param name="routelocationId">id of signal route</param>
+        void MoveRouteSignalDown(int routeId, int routelocationId);
 
         #region Obsolete
 
@@ -46,7 +46,7 @@ namespace ATSPM.Application.Repositories
         //void DeleteById(int id);
 
         //[Obsolete("Use Update in the BaseClass")]
-        //void UpdateByRouteAndApproachID(int routeID, string signalId, int newOrderNumber);
+        //void UpdateByRouteAndApproachID(int routeID, string locationId, int newOrderNumber);
 
         //[Obsolete("Use Add in the BaseClass")]
         //void Add(RouteSignal newRouteDetail);

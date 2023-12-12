@@ -198,7 +198,7 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
             modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
-            modelBuilder.ApplyConfiguration(new SignalConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationConfiguration());
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());

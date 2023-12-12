@@ -39,7 +39,7 @@ namespace WatchDog.Services
             {
                 var errors = new ConcurrentBag<WatchDogLogEvent>();
 
-                foreach (var signal in signals)//.Where(s => s.SignalIdentifier == "7115"))
+                foreach (var signal in signals)//.Where(s => s.locationIdentifier == "7115"))
                 {
                     var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(
                         signal.LocationIdentifier,
@@ -207,7 +207,7 @@ namespace WatchDog.Services
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
+                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Max Out Error {e.Message}");
                         }
 
                         try
@@ -217,7 +217,7 @@ namespace WatchDog.Services
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
+                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Force Off Error {e.Message}");
                         }
 
                         try
@@ -226,7 +226,7 @@ namespace WatchDog.Services
                         }
                         catch (Exception e)
                         {
-                            logger.LogError($"{phase.SignalIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
+                            logger.LogError($"{phase.locationIdentifier} {phase.PhaseNumber} - Stuck Ped Error {e.Message}");
                         }
                     }
                     await Task.WhenAll(taskList);

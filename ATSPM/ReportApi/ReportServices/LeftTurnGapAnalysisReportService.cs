@@ -13,14 +13,14 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly LeftTurnGapAnalysisService leftTurnGapAnalysisService;
         private readonly IApproachRepository approachRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository signalRepository;
 
         /// <inheritdoc/>
         public LeftTurnGapAnalysisReportService(
             LeftTurnGapAnalysisService leftTurnGapAnalysisService,
             IApproachRepository approachRepository,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository)
+            ILocationRepository signalRepository)
         {
             this.leftTurnGapAnalysisService = leftTurnGapAnalysisService;
             this.approachRepository = approachRepository;
@@ -31,7 +31,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<LeftTurnGapAnalysisResult>> ExecuteAsync(LeftTurnGapAnalysisOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
             if (signal == null)
             {
                 //return BadRequest("Location not found");
