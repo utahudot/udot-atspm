@@ -35,11 +35,11 @@ namespace ATSPM.Data
                 
             //    builder.HasComment("Old Log Data Table");
 
-            //    builder.HasKey(e => new { e.SignalId, e.Timestamp, e.EventCode, e.EventParam });
+            //    builder.HasKey(e => new { e.LocationId, e.Timestamp, e.EventCode, e.EventParam });
 
             //    //builder.Property(e => e.ArchiveDate).Metadata.AddAnnotation("KeyNameFormat", "dd-MM-yyyy");
 
-            //    builder.Property(e => e.SignalId)
+            //    builder.Property(e => e.LocationId)
             //            .IsRequired()
             //            .HasMaxLength(10)
             //            .HasColumnName("SignalID");

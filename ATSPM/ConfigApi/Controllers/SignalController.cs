@@ -13,10 +13,10 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// Signal Controller
+    /// Location Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class SignalController : AtspmConfigControllerBase<Signal, int>
+    public class SignalController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ISignalRepository _repository;
 
@@ -61,12 +61,12 @@ namespace ATSPM.ConfigApi.Controllers
         #region Actions
 
         /// <summary>
-        /// Copies <see cref="Signal"/> and associated <see cref="Approach"/> to new version
+        /// Copies <see cref="Location"/> and associated <see cref="Approach"/> to new version
         /// </summary>
-        /// <param name="key">Signal version to copy</param>
-        /// <returns>New version of copied <see cref="Signal"/></returns>
+        /// <param name="key">Location version to copy</param>
+        /// <returns>New version of copied <see cref="Location"/></returns>
         [HttpPost]
-        [ProducesResponseType(typeof(Signal), Status200OK)]
+        [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CopySignalToNewVersion(int key)
         {
@@ -81,9 +81,9 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Marks <see cref="Signal"/> to deleted
+        /// Marks <see cref="Location"/> to deleted
         /// </summary>
-        /// <param name="key">Key of <see cref="Signal"/> to mark as deleted</param>
+        /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(Status200OK)]
@@ -107,13 +107,13 @@ namespace ATSPM.ConfigApi.Controllers
         #region Functions
 
         /// <summary>
-        /// Get latest version of <see cref="Signal"/> and related entities that match <paramref name="identifier"/>
+        /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="identifier"/>
         /// </summary>
-        /// <param name="identifier">Signal controller identifier</param>
-        /// <returns>Lastest <see cref="Signal"/> version</returns>
+        /// <param name="identifier">Location controller identifier</param>
+        /// <returns>Lastest <see cref="Location"/> version</returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Expand | Select, MaxExpansionDepth = 4)]
-        [ProducesResponseType(typeof(Signal), Status200OK)]
+        [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         public IActionResult GetLatestVersionOfSignal(string identifier)
         {
@@ -139,13 +139,13 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Get all active <see cref="Signal"/> that match <paramref name="identifier"/>
+        /// Get all active <see cref="Location"/> that match <paramref name="identifier"/>
         /// </summary>
-        /// <param name="identifier">Signal controller identifier</param>
-        /// <returns>List of <see cref="Signal"/> in decescing order of start date</returns>
+        /// <param name="identifier">Location controller identifier</param>
+        /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<Signal>), Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
         public IActionResult GetAllVersionsOfSignal(string identifier)
         {
@@ -160,12 +160,12 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// Get latest version of all <see cref="Signal"/>
+        /// Get latest version of all <see cref="Location"/>
         /// </summary>
-        /// <returns>List of <see cref="Signal"/> with newest start date</returns>
+        /// <returns>List of <see cref="Location"/> with newest start date</returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<Signal>), Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
         public IActionResult GetLatestVersionOfAllSignals()
         {
             return Ok(_repository.GetLatestVersionOfAllSignals());
@@ -174,10 +174,10 @@ namespace ATSPM.ConfigApi.Controllers
         /// <summary>
         /// Gets an optimized list of <see cref="SearchSignal"/> to use for signal selection
         /// </summary>
-        /// <param name="areaId">Signals by area</param>
-        /// <param name="regionId">Signals by region</param>
-        /// <param name="jurisdictionId">Signals by jurisdiction</param>
-        /// <param name="metricTypeId">Signals by chart type</param>
+        /// <param name="areaId">Locations by area</param>
+        /// <param name="regionId">Locations by region</param>
+        /// <param name="jurisdictionId">Locations by jurisdiction</param>
+        /// <param name="metricTypeId">Locations by chart type</param>
         /// <returns></returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
@@ -197,7 +197,7 @@ namespace ATSPM.ConfigApi.Controllers
                 {
                     Id = s.Id,
                     Start = s.Start,
-                    SignalIdentifier = s.SignalIdentifier,
+                    SignalIdentifier = s.LocationIdentifier,
                     PrimaryName = s.PrimaryName,
                     SecondaryName = s.SecondaryName,
                     RegionId = s.RegionId,

@@ -22,7 +22,7 @@ namespace ATSPM.ConfigApi.Configuration
                 case 1:
                     {
                         model.Property(p => p.Comment).MaxLength = 255;
-                        model.Property(p => p.SignalIdentifier).MaxLength = 10;
+                        model.Property(p => p.LocationIdentifier).MaxLength = 10;
 
                         break;
                     }

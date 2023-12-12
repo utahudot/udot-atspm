@@ -11,11 +11,11 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class GroupSignalByParameter : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Signal, int, IEnumerable<ControllerEventLog>>>
+    public class GroupSignalByParameter : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Location, int, IEnumerable<ControllerEventLog>>>
     {
         public GroupSignalByParameter(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<Tuple<Signal, int, IEnumerable<ControllerEventLog>>>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<Tuple<Location, int, IEnumerable<ControllerEventLog>>>> Process(Tuple<Location, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2
                 .FromSpecification(new ControllerLogSignalFilterSpecification(input.Item1))

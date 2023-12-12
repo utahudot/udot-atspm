@@ -33,7 +33,7 @@ namespace ATSPM.ReportApi.ReportServices
             var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
             if (signal == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
                 return await Task.FromException<PreemptDetailResult>(new NullReferenceException("Signal not found"));
             }
             var codes = new List<int>();

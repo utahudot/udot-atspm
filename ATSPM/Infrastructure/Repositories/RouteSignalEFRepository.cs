@@ -7,7 +7,7 @@ using System.Linq;
 namespace ATSPM.Infrastructure.Repositories
 {
     /// <summary>
-    /// Signal route entity framework repository
+    /// Location route entity framework repository
     /// </summary>
     public class RouteSignalEFRepository : ATSPMRepositoryEFBase<RouteSignal>, IRouteSignalsRepository
     {

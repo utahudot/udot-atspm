@@ -29,7 +29,7 @@ namespace WatchDog.Services
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
             LoggingOptions options,
-            List<Signal> signals)
+            List<Location> signals)
         {
             if (signals.IsNullOrEmpty())
             {
@@ -42,7 +42,7 @@ namespace WatchDog.Services
                 foreach (var signal in signals)//.Where(s => s.SignalIdentifier == "7115"))
                 {
                     var signalEvents = controllerEventLogRepository.GetSignalEventsBetweenDates(
-                        signal.SignalIdentifier,
+                        signal.LocationIdentifier,
                         options.AnalysisStart,
                         options.AnalysisEnd).ToList();
                     var recordsError = await CheckSignalRecordCount(options.ScanDate, signal, options, signalEvents);
@@ -61,14 +61,14 @@ namespace WatchDog.Services
             }
         }
 
-        private async Task CheckDetectors(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        private async Task CheckDetectors(Location signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors)
         {
             var detectorEventCodes = new List<int> { 81, 82 };
             CheckForUnconfiguredDetectors(signal, options, signalEvents, errors, detectorEventCodes);
             CheckForLowDetectorHits(signal, options, signalEvents, errors, detectorEventCodes);
         }
 
-        private void CheckForLowDetectorHits(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
+        private void CheckForLowDetectorHits(Location signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
         {
             var detectors = signal.GetDetectorsForSignalThatSupportMetric(6);
             //Parallel.ForEach(detectors, options, detector =>
@@ -97,7 +97,7 @@ namespace WatchDog.Services
                         {
                             var error = new WatchDogLogEvent(
                                 signal.Id,
-                                signal.SignalIdentifier,
+                                signal.LocationIdentifier,
                                 options.ScanDate,
                                 WatchDogComponentType.Detector,
                                 detector.Id,
@@ -115,7 +115,7 @@ namespace WatchDog.Services
                 }
         }
 
-        private static void CheckForUnconfiguredDetectors(Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
+        private static void CheckForUnconfiguredDetectors(Location signal, LoggingOptions options, List<ControllerEventLog> signalEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
         {
             var detectorChannelsFromEvents = signalEvents.Where(e => detectorEventCodes.Contains(e.EventCode)).Select(e => e.EventParam).Distinct().ToList();
             var detectorChannelsFromDetectors = signal.GetDetectorsForSignal().Select(d => d.DetectorChannel).Distinct().ToList();
@@ -125,7 +125,7 @@ namespace WatchDog.Services
                 {
                     var error = new WatchDogLogEvent(
                                 signal.Id,
-                                signal.SignalIdentifier,
+                                signal.LocationIdentifier,
                                 options.ScanDate,
                                 WatchDogComponentType.Detector,
                                 -1,
@@ -139,7 +139,7 @@ namespace WatchDog.Services
         }
 
         private async Task CheckSignalForPhaseErrors(
-            Signal signal,
+            Location signal,
             LoggingOptions options,
             List<ControllerEventLog> signalEvents,
             ConcurrentBag<WatchDogLogEvent> errors)
@@ -175,7 +175,7 @@ namespace WatchDog.Services
             try
             {
                 analysisPhaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                    signal.SignalIdentifier,
+                    signal.LocationIdentifier,
                     options.AnalysisStart,
                     options.AnalysisEnd,
                     planEvents,
@@ -189,7 +189,7 @@ namespace WatchDog.Services
             }
             catch (Exception e)
             {
-                logger.LogError($"Unable to get analysis phase for signal {signal.SignalIdentifier}");
+                logger.LogError($"Unable to get analysis phase for signal {signal.LocationIdentifier}");
             }
 
             if (analysisPhaseCollection != null)
@@ -234,7 +234,7 @@ namespace WatchDog.Services
             }
         }
 
-        private void CheckForUnconfiguredApproaches(Signal signal, LoggingOptions options, ConcurrentBag<WatchDogLogEvent> errors, List<ControllerEventLog> cycleEvents)
+        private void CheckForUnconfiguredApproaches(Location signal, LoggingOptions options, ConcurrentBag<WatchDogLogEvent> errors, List<ControllerEventLog> cycleEvents)
         {
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
             foreach (var phaseNumber in phasesInUse)
@@ -245,7 +245,7 @@ namespace WatchDog.Services
                     var error = new WatchDogLogEvent
                     (
                         signal.Id,
-                        signal.SignalIdentifier,
+                        signal.LocationIdentifier,
                         options.ScanDate,
                         WatchDogComponentType.Approach,
                         -1,
@@ -255,7 +255,7 @@ namespace WatchDog.Services
                     );
                     if (!errors.Contains(error))
                     {
-                        logger.LogDebug($"Signal {signal.SignalIdentifier} {phaseNumber} Not Configured");
+                        logger.LogDebug($"Signal {signal.LocationIdentifier} {phaseNumber} Not Configured");
                         errors.Add(error);
                     }
                 }
@@ -268,8 +268,8 @@ namespace WatchDog.Services
             {
                 var error = new WatchDogLogEvent
                 (
-                    approach.Signal.Id,
-                    approach.Signal.SignalIdentifier,
+                    approach.Location.Id,
+                    approach.Location.LocationIdentifier,
                     options.ScanDate,
                     WatchDogComponentType.Approach,
                     approach.Id,
@@ -279,7 +279,7 @@ namespace WatchDog.Services
                 );
                 if (!errors.Contains(error))
                 {
-                    logger.LogDebug($"Signal {approach.Signal.SignalIdentifier} {phase.PedestrianEvents.Count} Pedestrian Activations");
+                    logger.LogDebug($"Signal {approach.Location.LocationIdentifier} {phase.PedestrianEvents.Count} Pedestrian Activations");
                     errors.Add(error);
                 }
             }
@@ -292,8 +292,8 @@ namespace WatchDog.Services
             {
                 var error = new WatchDogLogEvent
                 (
-                    approach.Signal.Id,
-                    approach.Signal.SignalIdentifier,
+                    approach.Location.Id,
+                    approach.Location.LocationIdentifier,
                     options.ScanDate,
                     WatchDogComponentType.Approach,
                     approach.Id,
@@ -303,7 +303,7 @@ namespace WatchDog.Services
                 );
                 if (!errors.Contains(error))
                 {
-                    logger.LogDebug($"Signal {approach.Signal.SignalIdentifier} Has ForceOff Errors");
+                    logger.LogDebug($"Signal {approach.Location.LocationIdentifier} Has ForceOff Errors");
                     errors.Add(error);
                 }
             }
@@ -316,8 +316,8 @@ namespace WatchDog.Services
             {
                 var error = new WatchDogLogEvent
                 (
-                    approach.Signal.Id,
-                    approach.Signal.SignalIdentifier,
+                    approach.Location.Id,
+                    approach.Location.LocationIdentifier,
                     options.ScanDate,
                     WatchDogComponentType.Approach,
                     approach.Id,
@@ -327,25 +327,25 @@ namespace WatchDog.Services
                 );
                 if (errors.Count == 0 || !errors.Contains(error))
                 {
-                    logger.LogDebug($"Signal {approach.Signal.SignalIdentifier} Has MaxOut Errors");
+                    logger.LogDebug($"Signal {approach.Location.LocationIdentifier} Has MaxOut Errors");
                     errors.Add(error);
                 }
             }
         }
 
-        private async Task<WatchDogLogEvent> CheckSignalRecordCount(DateTime dateToCheck, Signal signal, LoggingOptions options, List<ControllerEventLog> signalEvents)
+        private async Task<WatchDogLogEvent> CheckSignalRecordCount(DateTime dateToCheck, Location signal, LoggingOptions options, List<ControllerEventLog> signalEvents)
         {
             if (signalEvents.Count > options.MinimumRecords)
             {
-                logger.LogDebug($"Signal {signal.SignalIdentifier} has {signalEvents.Count} records");
+                logger.LogDebug($"Signal {signal.LocationIdentifier} has {signalEvents.Count} records");
                 return null;
             }
             else
             {
-                logger.LogDebug($"Signal {signal.SignalIdentifier} Does Not Have Sufficient records");
+                logger.LogDebug($"Signal {signal.LocationIdentifier} Does Not Have Sufficient records");
                 return new WatchDogLogEvent(
                     signal.Id,
-                    signal.SignalIdentifier,
+                    signal.LocationIdentifier,
                     options.ScanDate,
                     WatchDogComponentType.Signal,
                     signal.Id,

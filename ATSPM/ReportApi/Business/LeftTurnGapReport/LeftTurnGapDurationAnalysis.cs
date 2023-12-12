@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             TimeSpan startTime,
             TimeSpan endTime,
             int[] daysOfWeek,
-            Signal signal,
+            Location signal,
             int totalActivations,
             List<PhaseLeftTurnGapAggregation> phaseLeftTurnGapAggregations,
             int opposingPhase)
@@ -109,7 +109,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
 
 
 
-        public int GetNumberOfOpposingLanes(Signal signal, int opposingPhase)
+        public int GetNumberOfOpposingLanes(Location signal, int opposingPhase)
         {
             List<MovementTypes> thruMovements = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
             return signal
@@ -119,7 +119,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                 .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 
-        public string GetOpposingPhaseDirection(Signal signal, int opposingPhase)
+        public string GetOpposingPhaseDirection(Location signal, int opposingPhase)
         {
             return signal
                 .Approaches

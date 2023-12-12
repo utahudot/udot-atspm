@@ -26,7 +26,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .SelectMany(m => m.LogData)
                 .Select(s => new ControllerEventLog()
                 {
-                    SignalIdentifier = signalId,
+                    LocationIdentifier = signalId,
                     Timestamp = s.Timestamp,
                     EventCode = s.EventCode,
                     EventParam = s.EventParam

@@ -9,10 +9,10 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Route signal
     /// </summary>
-    public partial class RouteSignal : AtspmConfigModelBase<int>, ISignalLayer, IRelatedRoute
+    public partial class RouteSignal : AtspmConfigModelBase<int>, ILocationLayer, IRelatedRoute
     {
         /// <summary>
-        /// Signal order on route
+        /// Location order on route
         /// </summary>
         public int Order { get; set; }
 
@@ -56,10 +56,10 @@ namespace ATSPM.Data.Models
         /// </summary>
         public bool IsOpposingOverlap { get; set; }
 
-        #region ISignalLayer
+        #region ILocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 
@@ -74,6 +74,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Order} - {SignalIdentifier}";
+        public override string ToString() => $"{Id} - {Order} - {LocationIdentifier}";
     }
 }

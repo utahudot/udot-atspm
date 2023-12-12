@@ -12,14 +12,14 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Signal, IEnumerable<ControllerEventLog>, int>, T> where T : PreempDetailValueBase, new()
+    public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>, int>, T> where T : PreempDetailValueBase, new()
     {
         protected DataLoggerEnum first;
         protected DataLoggerEnum second;
 
         public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<T>> Process(Tuple<Signal, IEnumerable<ControllerEventLog>, int> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<T>> Process(Tuple<Location, IEnumerable<ControllerEventLog>, int> input, CancellationToken cancelToken = default)
         {
             //var result = Tuple.Create(input.Item1, input.Item2
             //    .Where(w => w.SignalIdentifier == input.Item1.SignalIdentifier)
@@ -35,12 +35,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             //    }), input.Item3);
 
             var result = input.Item2
-                .Where(w => w.SignalIdentifier == input.Item1.SignalIdentifier)
+                .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
                 .Where(w => w.EventParam == input.Item3)
                 .TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()
                 {
-                    SignalIdentifier = input.Item1.SignalIdentifier,
+                    LocationIdentifier = input.Item1.LocationIdentifier,
                     PreemptNumber = input.Item3,
                     Start = s.Item1[0].Timestamp,
                     End = s.Item1[1].Timestamp,

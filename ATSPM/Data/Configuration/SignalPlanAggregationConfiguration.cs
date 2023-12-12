@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Signal Plan Aggregation");
 
-            builder.HasKey(e => new { e.SignalIdentifier, e.Start, e.End });
+            builder.HasKey(e => new { e.LocationIdentifier, e.Start, e.End });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

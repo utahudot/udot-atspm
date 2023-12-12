@@ -8,14 +8,14 @@ using System.Net;
 namespace ATSPM.ConfigApi.Configuration
 {
     /// <summary>
-    /// Signal oData configuration
+    /// Location oData configuration
     /// </summary>
     public class SignalOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Signal>("Signal").EntityType;
+            var model = builder.EntitySet<Location>("Signal").EntityType;
             model.Page(default, default);
             model.Expand(1, SelectExpandType.Automatic, new string[] { "controllerType", "jurisdiction", "region" });
 
@@ -39,11 +39,11 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.Longitude).IsRequired();
                         model.Property(p => p.Note).IsRequired();
                         model.Property(p => p.PrimaryName).IsRequired();
-                        model.Property(p => p.SignalIdentifier).IsRequired();
+                        model.Property(p => p.LocationIdentifier).IsRequired();
 
                         model.Property(p => p.PrimaryName).MaxLength = 100;
                         model.Property(p => p.SecondaryName).MaxLength = 100;
-                        model.Property(p => p.SignalIdentifier).MaxLength = 10;
+                        model.Property(p => p.LocationIdentifier).MaxLength = 10;
                         model.Property(p => p.Note).MaxLength = 256;
 
                         model.Property(p => p.JurisdictionId).DefaultValueString = "0";
@@ -53,17 +53,17 @@ namespace ATSPM.ConfigApi.Configuration
 
                         var a = model.Collection.Function("GetAllVersionsOfSignal");
                         a.Parameter<string>("identifier");
-                        a.ReturnsCollectionFromEntitySet<Signal>("Signals");
+                        a.ReturnsCollectionFromEntitySet<Location>("Signals");
 
                         var b = model.Collection.Function("GetLatestVersionOfAllSignals");
-                        b.ReturnsCollectionFromEntitySet<Signal>("Signals");
+                        b.ReturnsCollectionFromEntitySet<Location>("Signals");
 
                         var c = model.Collection.Function("GetLatestVersionOfSignal");
                         c.Parameter<string>("identifier");
-                        c.ReturnsFromEntitySet<Signal>("Signal");
+                        c.ReturnsFromEntitySet<Location>("Signal");
 
                         var d = model.Action("CopySignalToNewVersion");
-                        d.ReturnsFromEntitySet<Signal>("Signal");
+                        d.ReturnsFromEntitySet<Location>("Signal");
 
                         var e = model.Action("SetSignalToDeleted");
 

@@ -78,7 +78,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalIdentifier = SignalId };
+                        var log = new ControllerEventLog() { LocationIdentifier = SignalId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {
