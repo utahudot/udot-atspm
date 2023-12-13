@@ -4,7 +4,12 @@ using ATSPM.Data.Configuration;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sqlite.Infrastructure.Internal;
+using Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal;
 using System.Net;
+using System.Reflection;
 
 namespace ATSPM.Data
 {
@@ -178,7 +183,24 @@ namespace ATSPM.Data
             configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
 
-            //if (Database.IsNpgsql())
+            Console.WriteLine($"{Database.ProviderName}");
+            Console.WriteLine($"{typeof(MySqlOptionsExtension).GetTypeInfo().Assembly.GetName().Name}");
+            Console.WriteLine($"{typeof(NpgsqlOptionsExtension).GetTypeInfo().Assembly.GetName().Name}");
+            Console.WriteLine($"{typeof(SqliteOptionsExtension).Assembly.GetName().Name}");
+            Console.WriteLine($"{typeof(SqlServerOptionsExtension).Assembly.GetName().Name}");
+
+//            Microsoft.EntityFrameworkCore.SqlServer
+//Pomelo.EntityFrameworkCore.MySql
+//Npgsql.EntityFrameworkCore.PostgreSQL
+//Microsoft.EntityFrameworkCore.Sqlite
+//Microsoft.EntityFrameworkCore.SqlServer
+
+            Database.IsMySql();
+            Database.IsNpgsql();
+            Database.IsSqlite();
+            Database.IsSqlServer();
+
+            //if (Database.IsSqlServer())
             //    configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
             //else
             //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");

@@ -283,8 +283,11 @@
               "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
                 "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
               },
-              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
-                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj"
+              },
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj"
               }
             }
           }
@@ -342,6 +345,65 @@
               "version": "[2020.0.2, )"
             }
           },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj",
+        "projectName": "ATSPM.Infrastructure.PostgreSQLDatabaseProvider",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
           "imports": [
             "net461",
             "net462",
@@ -449,6 +511,65 @@
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
             },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj",
+        "projectName": "ATSPM.Infrastructure.SqlDatabaseProvider",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
