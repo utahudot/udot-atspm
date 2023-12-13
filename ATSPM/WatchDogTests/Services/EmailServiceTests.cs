@@ -52,7 +52,7 @@ namespace WatchDog.Services.Tests
             region1MockLocation.Object.VersionAction = LocationVersionActions.Initial;
             region1MockLocation.Object.Note = "Initial - WAS #6500";
             region1MockLocation.Object.Start = new System.DateTime(1900, 1, 1);
-            region1MockLocation.Object.Pedsare1to1 = true;
+            region1MockLocation.Object.PedsAre1to1 = true;
 
             region1MockLocation.Setup(s => s.Jurisdiction).Returns(new Jurisdiction { Id = 1, Name = "Jurisdiction 1" });
 
