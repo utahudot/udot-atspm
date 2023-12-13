@@ -238,7 +238,7 @@ namespace InfrastructureTests.RepositoryTests
             _output.WriteLine($"Compare: {Location.Note} - {actual.Note}");
             _output.WriteLine($"Compare: {Location.Start} - {actual.Start}");
             _output.WriteLine($"Compare: {Location.JurisdictionId} - {actual.JurisdictionId}");
-            _output.WriteLine($"Compare: {Location.Pedsare1to1} - {actual.Pedsare1to1}");
+            _output.WriteLine($"Compare: {Location.PedsAre1to1} - {actual.PedsAre1to1}");
 
             Assert.NotEqual(expected: Location.Id, actual: actual.Id);
             Assert.Equal(expected: Location.LocationIdentifier, actual: actual.LocationIdentifier);
@@ -254,7 +254,7 @@ namespace InfrastructureTests.RepositoryTests
             Assert.Contains("Copy of", actual.Note);
             Assert.Equal(expected: DateTime.Today, actual: actual.Start);
             Assert.Equal(expected: Location.JurisdictionId, actual: actual.JurisdictionId);
-            Assert.Equal(expected: Location.Pedsare1to1, actual: actual.Pedsare1to1);
+            Assert.Equal(expected: Location.PedsAre1to1, actual: actual.PedsAre1to1);
             Assert.True(actual.Start > Location.Start);
         }
 

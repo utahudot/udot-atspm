@@ -75,9 +75,9 @@ namespace ATSPM.Data.Models
 
         //TODO: update comment
         /// <summary>
-        /// Pedsare1to1
+        /// PedsAre1to1
         /// </summary>
-        public bool Pedsare1to1 { get; set; }
+        public bool PedsAre1to1 { get; set; }
 
         #region IlocationLayer
 

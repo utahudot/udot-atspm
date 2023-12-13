@@ -54,7 +54,7 @@ namespace ATSPM.Data
         /// <summary>
         /// Device configuration table
         /// </summary>
-        public virtual DbSet<DeviceConfiguration> DeviceConfiguration { get; set; }
+        public virtual DbSet<DeviceConfiguration> DeviceConfigurations { get; set; }
 
         /// <summary>
         /// Detectors table
@@ -134,7 +134,7 @@ namespace ATSPM.Data
         /// <summary>
         /// Route Locations table
         /// </summary>
-        public virtual DbSet<RouteLocation> RouteLocations { get; set; }
+        public virtual DbSet<RouteLocation> RouteLocationss { get; set; }
 
         /// <summary>
         /// Settings table
@@ -149,17 +149,17 @@ namespace ATSPM.Data
         /// <summary>
         /// User jurisdictions table
         /// </summary>
-        public virtual DbSet<UserArea> UserJurisdictions { get; set; }
+        public virtual DbSet<UserJurisdiction> UserJurisdictions { get; set; }
 
         /// <summary>
         /// User regions table
         /// </summary>
-        public virtual DbSet<UserArea> UserRegions { get; set; }
+        public virtual DbSet<UserRegion> UserRegions { get; set; }
 
         /// <summary>
         /// Version history table
         /// </summary>
-        public virtual DbSet<Location> VersionHistory { get; set; }
+        public virtual DbSet<VersionHistory> VersionHistory { get; set; }
 
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
 
