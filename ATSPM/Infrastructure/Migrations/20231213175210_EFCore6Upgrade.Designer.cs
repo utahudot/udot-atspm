@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231213173244_EFCore6Upgrade")]
+    [Migration("20231213175210_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -444,7 +444,7 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("DeviceConfiguration", t =>
+                    b.ToTable("DeviceConfigurations", t =>
                         {
                             t.HasComment("DeviceConfiguration");
                         });
@@ -919,7 +919,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .HasColumnType("varchar(256)")
                         .HasDefaultValueSql("('Initial')");
 
-                    b.Property<bool>("Pedsare1to1")
+                    b.Property<bool>("PedsAre1to1")
                         .HasColumnType("bit");
 
                     b.Property<string>("PrimaryName")
@@ -956,7 +956,7 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("Location", t =>
+                    b.ToTable("Locations", t =>
                         {
                             t.HasComment("Locations");
                         });
@@ -1606,7 +1606,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.HasIndex("RouteId", "LocationIdentifier")
                         .IsUnique();
 
-                    b.ToTable("RouteLocations", t =>
+                    b.ToTable("RouteLocationss", t =>
                         {
                             t.HasComment("Route Locations");
                         });
@@ -1705,7 +1705,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 10, 32, 44, 487, DateTimeKind.Local).AddTicks(5546));
+                        .HasDefaultValue(new DateTime(2023, 12, 13, 10, 52, 10, 700, DateTimeKind.Local).AddTicks(6561));
 
                     b.Property<string>("Name")
                         .IsRequired()
