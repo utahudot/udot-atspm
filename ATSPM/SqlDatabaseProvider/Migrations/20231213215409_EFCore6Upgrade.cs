@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ATSPM.Infrastructure.Migrations
+namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
 {
     /// <inheritdoc />
     public partial class EFCore6Upgrade : Migration
@@ -286,7 +286,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 10, 52, 10, 700, DateTimeKind.Local).AddTicks(6561)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 14, 54, 9, 612, DateTimeKind.Local).AddTicks(3189)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -323,7 +323,7 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserArea",
+                name: "UserAreas",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
@@ -331,9 +331,9 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserArea", x => new { x.UserId, x.AreaId });
+                    table.PrimaryKey("PK_UserAreas", x => new { x.UserId, x.AreaId });
                     table.ForeignKey(
-                        name: "FK_UserArea_Areas_AreaId",
+                        name: "FK_UserAreas_Areas_AreaId",
                         column: x => x.AreaId,
                         principalTable: "Areas",
                         principalColumn: "Id",
@@ -342,7 +342,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "UserAreas");
 
             migrationBuilder.CreateTable(
-                name: "UserJurisdiction",
+                name: "UserJurisdictions",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
@@ -350,9 +350,9 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserJurisdiction", x => new { x.UserId, x.JurisdictionId });
+                    table.PrimaryKey("PK_UserJurisdictions", x => new { x.UserId, x.JurisdictionId });
                     table.ForeignKey(
-                        name: "FK_UserJurisdiction_Jurisdictions_JurisdictionId",
+                        name: "FK_UserJurisdictions_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "Jurisdictions",
                         principalColumn: "Id",
@@ -510,7 +510,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Locations");
 
             migrationBuilder.CreateTable(
-                name: "UserRegion",
+                name: "UserRegions",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
@@ -518,9 +518,9 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRegion", x => new { x.UserId, x.RegionId });
+                    table.PrimaryKey("PK_UserRegions", x => new { x.UserId, x.RegionId });
                     table.ForeignKey(
-                        name: "FK_UserRegion_Regions_RegionId",
+                        name: "FK_UserRegions_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
                         principalColumn: "Id",
@@ -1002,18 +1002,18 @@ namespace ATSPM.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserArea_AreaId",
-                table: "UserArea",
+                name: "IX_UserAreas_AreaId",
+                table: "UserAreas",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserJurisdiction_JurisdictionId",
-                table: "UserJurisdiction",
+                name: "IX_UserJurisdictions_JurisdictionId",
+                table: "UserJurisdictions",
                 column: "JurisdictionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRegion_RegionId",
-                table: "UserRegion",
+                name: "IX_UserRegions_RegionId",
+                table: "UserRegions",
                 column: "RegionId");
 
             migrationBuilder.CreateIndex(
@@ -1062,13 +1062,13 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Settings");
 
             migrationBuilder.DropTable(
-                name: "UserArea");
+                name: "UserAreas");
 
             migrationBuilder.DropTable(
-                name: "UserJurisdiction");
+                name: "UserJurisdictions");
 
             migrationBuilder.DropTable(
-                name: "UserRegion");
+                name: "UserRegions");
 
             migrationBuilder.DropTable(
                 name: "VersionHistory");

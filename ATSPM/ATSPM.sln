@@ -47,6 +47,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WatchDogTests", "WatchDogTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportApi", "ReportApi\ReportApi.csproj", "{803EAFDD-E25A-4D22-906F-67676BEBDE80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseProviders", "DatabaseProviders", "{EA135084-6954-488E-8E0F-86480ACD9803}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabaseProvider", "SqlDatabaseProvider\SqlDatabaseProvider.csproj", "{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLDatabaseProvider", "PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj", "{66B69A6E-EB9F-49F2-AE89-5018556563F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,9 +131,21 @@ Global
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5} = {EA135084-6954-488E-8E0F-86480ACD9803}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}
