@@ -286,7 +286,7 @@ namespace ATSPM.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 10, 32, 44, 487, DateTimeKind.Local).AddTicks(5546)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 10, 52, 10, 700, DateTimeKind.Local).AddTicks(6561)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -429,7 +429,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "Measure Options");
 
             migrationBuilder.CreateTable(
-                name: "DeviceConfiguration",
+                name: "DeviceConfigurations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -446,9 +446,9 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeviceConfiguration", x => x.Id);
+                    table.PrimaryKey("PK_DeviceConfigurations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DeviceConfiguration_Products_ProductId",
+                        name: "FK_DeviceConfigurations_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
@@ -457,7 +457,7 @@ namespace ATSPM.Infrastructure.Migrations
                 comment: "DeviceConfiguration");
 
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Locations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -472,7 +472,7 @@ namespace ATSPM.Infrastructure.Migrations
                     VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Pedsare1to1 = table.Column<bool>(type: "bit", nullable: false),
+                    PedsAre1to1 = table.Column<bool>(type: "bit", nullable: false),
                     LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     ControllerTypeId = table.Column<int>(type: "int", nullable: false),
                     JurisdictionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((0))"),
@@ -481,27 +481,27 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Location", x => x.Id);
+                    table.PrimaryKey("PK_Locations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Location_ControllerTypes_ControllerTypeId",
+                        name: "FK_Locations_ControllerTypes_ControllerTypeId",
                         column: x => x.ControllerTypeId,
                         principalTable: "ControllerTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Location_Jurisdictions_JurisdictionId",
+                        name: "FK_Locations_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "Jurisdictions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Location_LocationTypes_LocationTypeId",
+                        name: "FK_Locations_LocationTypes_LocationTypeId",
                         column: x => x.LocationTypeId,
                         principalTable: "LocationTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Location_Regions_RegionId",
+                        name: "FK_Locations_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
                         principalColumn: "Id",
@@ -528,7 +528,7 @@ namespace ATSPM.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RouteLocations",
+                name: "RouteLocationss",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -547,33 +547,33 @@ namespace ATSPM.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RouteLocations", x => x.Id);
+                    table.PrimaryKey("PK_RouteLocationss", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RouteLocations_DirectionTypes_OpposingDirectionId",
+                        name: "FK_RouteLocationss_DirectionTypes_OpposingDirectionId",
                         column: x => x.OpposingDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocations_DirectionTypes_PrimaryDirectionId",
+                        name: "FK_RouteLocationss_DirectionTypes_PrimaryDirectionId",
                         column: x => x.PrimaryDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocations_RouteDistances_NextLocationDistanceId",
+                        name: "FK_RouteLocationss_RouteDistances_NextLocationDistanceId",
                         column: x => x.NextLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocations_RouteDistances_PreviousLocationDistanceId",
+                        name: "FK_RouteLocationss_RouteDistances_PreviousLocationDistanceId",
                         column: x => x.PreviousLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocations_Routes_RouteId",
+                        name: "FK_RouteLocationss_Routes_RouteId",
                         column: x => x.RouteId,
                         principalTable: "Routes",
                         principalColumn: "Id",
@@ -609,9 +609,9 @@ namespace ATSPM.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Approaches_Location_LocationId",
+                        name: "FK_Approaches_Locations_LocationId",
                         column: x => x.LocationId,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 },
@@ -634,9 +634,9 @@ namespace ATSPM.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AreaLocation_Location_LocationsId",
+                        name: "FK_AreaLocation_Locations_LocationsId",
                         column: x => x.LocationsId,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -658,15 +658,15 @@ namespace ATSPM.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Devices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Devices_DeviceConfiguration_DeviceConfigurationId",
+                        name: "FK_Devices_DeviceConfigurations_DeviceConfigurationId",
                         column: x => x.DeviceConfigurationId,
-                        principalTable: "DeviceConfiguration",
+                        principalTable: "DeviceConfigurations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Devices_Location_LocationId",
+                        name: "FK_Devices_Locations_LocationId",
                         column: x => x.LocationId,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 },
@@ -904,8 +904,8 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "ApproachId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeviceConfiguration_ProductId",
-                table: "DeviceConfiguration",
+                name: "IX_DeviceConfigurations_ProductId",
+                table: "DeviceConfigurations",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
@@ -919,23 +919,23 @@ namespace ATSPM.Infrastructure.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Location_ControllerTypeId",
-                table: "Location",
+                name: "IX_Locations_ControllerTypeId",
+                table: "Locations",
                 column: "ControllerTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Location_JurisdictionId",
-                table: "Location",
+                name: "IX_Locations_JurisdictionId",
+                table: "Locations",
                 column: "JurisdictionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Location_LocationTypeId",
-                table: "Location",
+                name: "IX_Locations_LocationTypeId",
+                table: "Locations",
                 column: "LocationTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Location_RegionId",
-                table: "Location",
+                name: "IX_Locations_RegionId",
+                table: "Locations",
                 column: "RegionId");
 
             migrationBuilder.CreateIndex(
@@ -965,33 +965,33 @@ namespace ATSPM.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_NextLocationDistanceId",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_NextLocationDistanceId",
+                table: "RouteLocationss",
                 column: "NextLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_OpposingDirectionId",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_OpposingDirectionId",
+                table: "RouteLocationss",
                 column: "OpposingDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_PreviousLocationDistanceId",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_PreviousLocationDistanceId",
+                table: "RouteLocationss",
                 column: "PreviousLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_PrimaryDirectionId",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_PrimaryDirectionId",
+                table: "RouteLocationss",
                 column: "PrimaryDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_RouteId",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_RouteId",
+                table: "RouteLocationss",
                 column: "RouteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocations_RouteId_LocationIdentifier",
-                table: "RouteLocations",
+                name: "IX_RouteLocationss_RouteId_LocationIdentifier",
+                table: "RouteLocationss",
                 columns: new[] { "RouteId", "LocationIdentifier" },
                 unique: true);
 
@@ -1056,7 +1056,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
-                name: "RouteLocations");
+                name: "RouteLocationss");
 
             migrationBuilder.DropTable(
                 name: "Settings");
@@ -1083,7 +1083,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "Detectors");
 
             migrationBuilder.DropTable(
-                name: "DeviceConfiguration");
+                name: "DeviceConfigurations");
 
             migrationBuilder.DropTable(
                 name: "MeasureComments");
@@ -1110,7 +1110,7 @@ namespace ATSPM.Infrastructure.Migrations
                 name: "DirectionTypes");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "ControllerTypes");
