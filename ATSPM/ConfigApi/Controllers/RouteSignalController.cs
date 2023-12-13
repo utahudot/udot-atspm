@@ -5,15 +5,15 @@ using ATSPM.Data.Models;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// Route signal controller
+    /// Route Location controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RouteSignalController : AtspmConfigControllerBase<RouteSignal, int>
+    public class RouteLocationController : AtspmConfigControllerBase<RouteLocation, int>
     {
-        private readonly IRouteSignalsRepository _repository;
+        private readonly IRouteLocationsRepository _repository;
 
         /// <inheritdoc/>
-        public RouteSignalController(IRouteSignalsRepository repository) : base(repository)
+        public RouteLocationController(IRouteLocationsRepository repository) : base(repository)
         {
             _repository = repository;
         }

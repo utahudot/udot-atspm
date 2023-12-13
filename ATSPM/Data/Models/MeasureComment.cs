@@ -6,7 +6,7 @@ using ATSPM.Data.Relationships;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Measure comment for tracking signal measures
+    /// Measure comment for tracking Location measures
     /// </summary>
     public partial class MeasureComment : AtspmConfigModelBase<int>, IRelatedMeasureTypes, ILocationLayer
     {

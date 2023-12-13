@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -19,17 +19,17 @@ using Microsoft.Extensions.Logging;
 
 namespace InfrastructureTests.Attributes
 {
-    public class SignalControllerDownloadersAttribute : DataAttribute
+    public class LocationControllerDownloadersAttribute : DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>();
+            var mockConfig = Mock.Of<IOptionsSnapshot<LocationControllerDownloaderConfiguration>>();
 
-            yield return new object[] { typeof(ASC3SignalControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<ASC3SignalControllerDownloader>(), mockConfig };
-            yield return new object[] { typeof(CobaltSignalControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<CobaltSignalControllerDownloader>(), mockConfig };
-            yield return new object[] { typeof(MaxTimeSignalControllerDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<MaxTimeSignalControllerDownloader>(), mockConfig };
-            yield return new object[] { typeof(EOSSignalControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<EOSSignalControllerDownloader>(), mockConfig };
-            yield return new object[] { typeof(NewCobaltSignalControllerDownloader), Mock.Of<ISFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<NewCobaltSignalControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(ASC3LocationControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<ASC3LocationControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(CobaltLocationControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<CobaltLocationControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(MaxTimeLocationControllerDownloader), Mock.Of<IHTTPDownloaderClient>(MockBehavior.Strict), new NullLogger<MaxTimeLocationControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(EOSLocationControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<EOSLocationControllerDownloader>(), mockConfig };
+            yield return new object[] { typeof(NewCobaltLocationControllerDownloader), Mock.Of<ISFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<NewCobaltLocationControllerDownloader>(), mockConfig };
         }
     }
 }

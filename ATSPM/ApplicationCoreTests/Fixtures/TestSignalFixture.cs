@@ -5,15 +5,15 @@ using System.IO;
 
 namespace ApplicationCoreTests.Fixtures
 {
-    public class TestSignalFixture : IDisposable
+    public class TestLocationFixture : IDisposable
     {
-        public TestSignalFixture()
+        public TestLocationFixture()
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            TestSignal = JsonConvert.DeserializeObject<Location>(json);
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            TestLocation = JsonConvert.DeserializeObject<Location>(json);
         }
 
-        public Location TestSignal { get; set; }
+        public Location TestLocation { get; set; }
 
         public void Dispose()
         {

@@ -13,12 +13,12 @@ namespace ATSPM.Data.Models
     public partial class Device : AtspmConfigModelBase<int>, IRelatedLocation, IRelatedDeviceConfiguration
     {
         /// <summary>
-        /// Enable signal to be logged
+        /// Enable Location to be logged
         /// </summary>
         public bool LoggingEnabled { get; set; }
 
         /// <summary>
-        /// Ipaddress of signal
+        /// Ipaddress of Location
         /// </summary>
         [JsonIgnore]
         public IPAddress Ipaddress { get; set; }

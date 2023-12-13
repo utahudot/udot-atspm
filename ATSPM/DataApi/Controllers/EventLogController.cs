@@ -29,7 +29,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get signal events between dates
+        /// Get Location events between dates
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">Date/time of first event. Example: <c>2023-02-09T08:15:30.0</c></param>
@@ -44,14 +44,14 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<ControllerEventLog>> GetSignalEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end)
+        public ActionResult<List<ControllerEventLog>> GetLocationEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end)
         {
-            _log.LogDebug("signal: {signal} start: {start} end: {end}", locationIdentifier, start, end);
+            _log.LogDebug("Location: {Location} start: {start} end: {end}", locationIdentifier, start, end);
 
             if (start == DateTime.MinValue || end == DateTime.MinValue)
                 return BadRequest("Invalid datetime range on start/end");
             
-            var result = _repository.GetSignalEventsBetweenDates(locationIdentifier, start, end);
+            var result = _repository.GetLocationEventsBetweenDates(locationIdentifier, start, end);
 
             if (result == null)
                 return NotFound();
@@ -60,7 +60,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get signal events between dates with event code
+        /// Get Location events between dates with event code
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
         /// <param name="start">date/time of first event</param>
@@ -75,18 +75,18 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<ControllerEventLog>> GetSignalEventsByEventCode(string locationIdentifier, DateTime start, DateTime end, [FromQuery] IEnumerable<int> eventCode)
+        public ActionResult<List<ControllerEventLog>> GetLocationEventsByEventCode(string locationIdentifier, DateTime start, DateTime end, [FromQuery] IEnumerable<int> eventCode)
         {
             //var eventCode = new List<int>();
             
-            _log.LogDebug("signal: {signal} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
+            _log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
 
             Console.WriteLine($"events: {eventCode.Count()}");
 
             if (start == DateTime.MinValue || end == DateTime.MinValue)
                 return BadRequest("Invalid datetime range on start/end");
 
-            var result = _repository.GetSignalEventsByEventCode(locationIdentifier, start, end, eventCode.First());
+            var result = _repository.GetLocationEventsByEventCode(locationIdentifier, start, end, eventCode.First());
 
             if (result == null)
                 return NotFound();
@@ -95,7 +95,7 @@ namespace ATSPM.DataApi.Controllers
         }
 
         /// <summary>
-        /// Get signal events between dates with list of event codes and parameters
+        /// Get Location events between dates with list of event codes and parameters
         /// </summary>
         /// <param name="locationIdentifier"></param>
         /// <param name="start">date/time of first event</param>
@@ -112,7 +112,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<List<ControllerEventLog>> GetRecordsByParameterAndEvent(string locationIdentifier, DateTime start, DateTime end, [FromBody] TestInput body)
         {
-            _log.LogDebug("signal: {signal} start: {start} end: {end}", locationIdentifier, start, end);
+            _log.LogDebug("Location: {Location} start: {start} end: {end}", locationIdentifier, start, end);
 
             if (start == DateTime.MinValue || end == DateTime.MinValue)
                 return BadRequest("Invalid datetime range on start/end");

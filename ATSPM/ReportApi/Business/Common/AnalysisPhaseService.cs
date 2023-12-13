@@ -21,7 +21,7 @@ namespace ATSPM.ReportApi.Business.Common
         public List<ControllerEventLog> PedestrianEvents { get; set; }
         public List<ControllerEventLog> TerminationEvents { get; set; }
         public List<ControllerEventLog> UnknownTermination { get; set; }
-        public Location Signal { get; set; }
+        public Location Location { get; set; }
     }
 
     public class AnalysisPhaseService
@@ -39,15 +39,15 @@ namespace ATSPM.ReportApi.Business.Common
             IReadOnlyList<ControllerEventLog> cycleEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
             int consecutiveCount,
-            Location signal
+            Location Location
             )
         {
-            if (signal.Approaches.IsNullOrEmpty())
+            if (Location.Approaches.IsNullOrEmpty())
             {
                 return null;
             }
             var analysisPhaseData = new AnalysisPhaseData();
-            var phase = phaseService.GetPhases(signal).Find(p => p.PhaseNumber == phasenumber);
+            var phase = phaseService.GetPhases(Location).Find(p => p.PhaseNumber == phasenumber);
             if (phase == null)
             {
                 return null;
@@ -79,7 +79,7 @@ namespace ATSPM.ReportApi.Business.Common
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
-            analysisPhaseData.Signal = signal;
+            analysisPhaseData.Location = Location;
             return analysisPhaseData;
         }
 
@@ -92,19 +92,19 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="CycleEventsTable"></param>
         //public AnalysisPhaseData GetAnalysisPhaseData(
         //    int phasenumber,
-        //    Location signal,
+        //    Location Location,
         //    List<ControllerEventLog> CycleEventsTable)
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
         //    analysisPhaseData.PhaseNumber = phasenumber;
-        //    analysisPhaseData.locationIdentifier = signal.locationIdentifier;
+        //    analysisPhaseData.locationIdentifier = Location.locationIdentifier;
         //    analysisPhaseData.IsOverlap = false;
         //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
         //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
         //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, pedEvents);
-        //    var approach = signal.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
+        //    var approach = Location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
-        //    analysisPhaseData.Location = signal;
+        //    analysisPhaseData.Location = Location;
         //    return analysisPhaseData;
         //}
 

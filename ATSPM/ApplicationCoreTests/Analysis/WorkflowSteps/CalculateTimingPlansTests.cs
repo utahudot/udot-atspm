@@ -46,8 +46,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateTimingPlansTests), "SignalGrouping")]
-        public async void CalculateTimingPlansSignalGroupingTest()
+        [Trait(nameof(CalculateTimingPlansTests), "LocationGrouping")]
+        public async void CalculateTimingPlansLocationGroupingTest()
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 

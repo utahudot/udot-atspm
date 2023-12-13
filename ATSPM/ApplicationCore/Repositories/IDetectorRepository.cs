@@ -23,7 +23,7 @@ namespace ATSPM.Application.Repositories
 
         //TODO: this needs to be moved out of this repo
         /// <summary>
-        /// Get maximum detector channel from signal controller
+        /// Get maximum detector channel from Location controller
         /// </summary>
         /// <param name="id">Location controller id</param>
         /// <returns></returns>
