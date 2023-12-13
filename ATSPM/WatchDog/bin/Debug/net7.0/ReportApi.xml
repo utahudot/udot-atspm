@@ -18,7 +18,7 @@
             <summary>
                 Phase Objects primarily for the split monitor and terminaiton chart
             </summary>
-            <param name="signalid"></param>
+            <param name="locationId"></param>
             <param name="phasenumber"></param>
             <param name="starttime"></param>
         </member>
@@ -27,7 +27,7 @@
                 Collection of phase events primarily used for the split monitor and Phase Termination Chart
             </summary>
             <param name="phasenumber"></param>
-            <param name="signalid"></param>
+            <param name="locationId"></param>
             <param name="CycleEventsTable"></param>
         </member>
         <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseService.FindTerminationEvents(System.Collections.Generic.IReadOnlyList{ATSPM.Data.Models.ControllerEventLog},System.Int32)">
@@ -35,12 +35,12 @@
                 Constructor Used for Split monitor
             </summary>
             <param name="phasenumber"></param>
-            <param name="signalID"></param>
+            <param name="locationId"></param>
             <param name="CycleEventsTable"></param>
         </member>
         <member name="T:ATSPM.ReportApi.Business.Common.CyclePcd">
             <summary>
-                Data that represents a red to red cycle for a signal phase
+                Data that represents a red to red cycle for a Location phase
             </summary>
         </member>
         <member name="M:ATSPM.ReportApi.Business.Common.CycleService.GetRedToRedCycles(System.DateTime,System.DateTime,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
@@ -98,10 +98,10 @@
         </member>
         <member name="T:ATSPM.ReportApi.Business.Common.RedToRedCycle">
             <summary>
-                Data that represents a red to red cycle for a signal phase
+                Data that represents a red to red cycle for a Location phase
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.Business.Common.SignalPhaseService.GetSignalPhaseData(ATSPM.ReportApi.Business.Common.PhaseDetail,System.DateTime,System.DateTime,System.Boolean,System.Nullable{System.Int32},System.Int32,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
+        <member name="M:ATSPM.ReportApi.Business.Common.LocationPhaseService.GetLocationPhaseData(ATSPM.ReportApi.Business.Common.PhaseDetail,System.DateTime,System.DateTime,System.Boolean,System.Nullable{System.Int32},System.Int32,System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog},System.Collections.Generic.List{ATSPM.Data.Models.ControllerEventLog})">
             <summary>
             Needs event codes 1,8,9,61,63,64,131,82
             </summary>
@@ -184,7 +184,7 @@
         </member>
         <member name="T:ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivationsCycle">
             <summary>
-                Data that represents a red to red cycle for a signal phase
+                Data that represents a red to red cycle for a Location phase
             </summary>
         </member>
         <member name="F:ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivationsCycle.endTime">
@@ -433,7 +433,7 @@
             Approach delay report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.ApproachDelayReportService.#ctor(ATSPM.ReportApi.Business.AppoachDelay.ApproachDelayService,ATSPM.ReportApi.Business.Common.SignalPhaseService,ATSPM.Application.Repositories.ISignalRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.ApproachDelayReportService.#ctor(ATSPM.ReportApi.Business.AppoachDelay.ApproachDelayService,ATSPM.ReportApi.Business.Common.LocationPhaseService,ATSPM.Application.Repositories.ILocationRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.ApproachDelayReportService.ExecuteAsync(ATSPM.ReportApi.Business.AppoachDelay.ApproachDelayOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -444,7 +444,7 @@
             Approach speed report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.#ctor(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.IApproachRepository,ATSPM.Application.Repositories.ISpeedEventRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.#ctor(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.IApproachRepository,ATSPM.Application.Repositories.ISpeedEventRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.ExecuteAsync(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -455,7 +455,7 @@
             Approach delay report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.ApproachVolumeReportService.#ctor(ATSPM.Application.Repositories.ISignalRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.ApproachVolume.ApproachVolumeService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.ApproachVolumeReportService.#ctor(ATSPM.Application.Repositories.ILocationRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.ApproachVolume.ApproachVolumeService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.ApproachVolumeReportService.ExecuteAsync(ATSPM.ReportApi.Business.ApproachVolume.ApproachVolumeOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -466,7 +466,7 @@
             Arrival on red report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.ArrivalOnRedReportService.#ctor(ATSPM.ReportApi.Business.ArrivalOnRed.ArrivalOnRedService,ATSPM.ReportApi.Business.Common.SignalPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.ArrivalOnRedReportService.#ctor(ATSPM.ReportApi.Business.ArrivalOnRed.ArrivalOnRedService,ATSPM.ReportApi.Business.Common.LocationPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.ArrivalOnRedReportService.ExecuteAsync(ATSPM.ReportApi.Business.ArrivalOnRed.ArrivalOnRedOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -477,7 +477,7 @@
             Green time utilization report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.GreenTimeUtilizationReportService.#ctor(ATSPM.ReportApi.Business.GreenTimeUtilization.GreenTimeUtilizationService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.GreenTimeUtilizationReportService.#ctor(ATSPM.ReportApi.Business.GreenTimeUtilization.GreenTimeUtilizationService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.GreenTimeUtilizationReportService.ExecuteAsync(ATSPM.ReportApi.Business.GreenTimeUtilization.GreenTimeUtilizationOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -488,7 +488,7 @@
             Left turn gap analysis report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.LeftTurnGapAnalysisReportService.#ctor(ATSPM.ReportApi.Business.LeftTurnGapAnalysis.LeftTurnGapAnalysisService,ATSPM.Application.Repositories.IApproachRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.LeftTurnGapAnalysisReportService.#ctor(ATSPM.ReportApi.Business.LeftTurnGapAnalysis.LeftTurnGapAnalysisService,ATSPM.Application.Repositories.IApproachRepository,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.LeftTurnGapAnalysisReportService.ExecuteAsync(ATSPM.ReportApi.Business.LeftTurnGapAnalysis.LeftTurnGapAnalysisOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -499,7 +499,7 @@
             Ped delay report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PedDelayReportService.#ctor(ATSPM.ReportApi.Business.PedDelay.PedDelayService,ATSPM.ReportApi.Business.PedDelay.PedPhaseService,ATSPM.ReportApi.Business.Common.CycleService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PedDelayReportService.#ctor(ATSPM.ReportApi.Business.PedDelay.PedDelayService,ATSPM.ReportApi.Business.PedDelay.PedPhaseService,ATSPM.ReportApi.Business.Common.CycleService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PedDelayReportService.ExecuteAsync(ATSPM.ReportApi.Business.PedDelay.PedDelayOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -510,7 +510,7 @@
             Preempt detail report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PreemptDetailReportService.#ctor(ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.PreempDetail.PreemptDetailService,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PreemptDetailReportService.#ctor(ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.PreempDetail.PreemptDetailService,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PreemptDetailReportService.ExecuteAsync(ATSPM.ReportApi.Business.PreempDetail.PreemptDetailOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -521,7 +521,7 @@
             Preempt request report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PreemptRequestReportService.#ctor(ATSPM.ReportApi.Business.PreemptServiceRequest.PreemptServiceRequestService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PreemptRequestReportService.#ctor(ATSPM.ReportApi.Business.PreemptServiceRequest.PreemptServiceRequestService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PreemptRequestReportService.ExecuteAsync(ATSPM.ReportApi.Business.PreemptServiceRequest.PreemptServiceRequestOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -532,7 +532,7 @@
             Approach delay report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PreemptServiceReportService.#ctor(ATSPM.ReportApi.Business.PreemptService.PreemptServiceService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PreemptServiceReportService.#ctor(ATSPM.ReportApi.Business.PreemptService.PreemptServiceService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PreemptServiceReportService.ExecuteAsync(ATSPM.ReportApi.Business.PreemptService.PreemptServiceOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -543,7 +543,7 @@
             Purdue coordination diagram report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PurdueCoordinationDiagramReportService.#ctor(ATSPM.ReportApi.Business.PurdueCoordinationDiagram.PurdueCoordinationDiagramService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.Common.SignalPhaseService,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PurdueCoordinationDiagramReportService.#ctor(ATSPM.ReportApi.Business.PurdueCoordinationDiagram.PurdueCoordinationDiagramService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.Common.LocationPhaseService,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PurdueCoordinationDiagramReportService.ExecuteAsync(ATSPM.ReportApi.Business.PurdueCoordinationDiagram.PurdueCoordinationDiagramOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -554,7 +554,7 @@
             Purdue phase termination report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.PurduePhaseTerminationReportService.#ctor(ATSPM.ReportApi.Business.Common.AnalysisPhaseCollectionService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.PurduePhaseTerminationReportService.#ctor(ATSPM.ReportApi.Business.Common.AnalysisPhaseCollectionService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.PurduePhaseTerminationReportService.ExecuteAsync(ATSPM.ReportApi.Business.PhaseTermination.PurduePhaseTerminationOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -565,7 +565,7 @@
             Split fail report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.SplitFailReportService.#ctor(ATSPM.ReportApi.Business.SplitFail.SplitFailPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.SplitFailReportService.#ctor(ATSPM.ReportApi.Business.SplitFail.SplitFailPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.SplitFailReportService.ExecuteAsync(ATSPM.ReportApi.Business.SplitFail.SplitFailOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -576,7 +576,7 @@
             Split monitor report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.SplitMonitorReportService.#ctor(ATSPM.ReportApi.Business.SplitMonitor.SplitMonitorService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository)">
+        <member name="M:ATSPM.ReportApi.ReportServices.SplitMonitorReportService.#ctor(ATSPM.ReportApi.Business.SplitMonitor.SplitMonitorService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.SplitMonitorReportService.ExecuteAsync(ATSPM.ReportApi.Business.SplitMonitor.SplitMonitorOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -595,7 +595,7 @@
             Timing and actuation report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.TimingAndActuactionReportService.#ctor(ATSPM.ReportApi.Business.TimingAndActuation.TimingAndActuationsForPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.TimingAndActuactionReportService.#ctor(ATSPM.ReportApi.Business.TimingAndActuation.TimingAndActuationsForPhaseService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.TimingAndActuactionReportService.ExecuteAsync(ATSPM.ReportApi.Business.TimingAndActuation.TimingAndActuationsOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -606,7 +606,7 @@
             Turning movement count report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.TurningMovementCountReportService.#ctor(ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.TurningMovementCounts.TurningMovementCountsService,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PlanService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.TurningMovementCountReportService.#ctor(ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.ReportApi.Business.TurningMovementCounts.TurningMovementCountsService,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PlanService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.TurningMovementCountReportService.ExecuteAsync(ATSPM.ReportApi.Business.TurningMovementCounts.TurningMovementCountsOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -617,7 +617,7 @@
             Wait time report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.WaitTimeReportService.#ctor(ATSPM.ReportApi.Business.Common.AnalysisPhaseCollectionService,ATSPM.ReportApi.Business.WaitTime.WaitTimeService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.WaitTimeReportService.#ctor(ATSPM.ReportApi.Business.Common.AnalysisPhaseCollectionService,ATSPM.ReportApi.Business.WaitTime.WaitTimeService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.WaitTimeReportService.ExecuteAsync(ATSPM.ReportApi.Business.WaitTime.WaitTimeOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
@@ -628,7 +628,7 @@
             Yellow and red activations report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.YellowRedActivationsReportService.#ctor(ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivationsService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ISignalRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.YellowRedActivationsReportService.#ctor(ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivationsService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.YellowRedActivationsReportService.ExecuteAsync(ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivationsOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">

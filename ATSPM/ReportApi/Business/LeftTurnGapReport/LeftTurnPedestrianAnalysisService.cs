@@ -12,7 +12,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
         }
         public PedActuationResult GetPedestrianPercentage(
-            Location signal,
+            Location Location,
             Approach approach,
             DateTime start,
             DateTime end,
@@ -62,7 +62,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             }
             result.PercentCyclesWithPedsList = cycleList;
             result.Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType;
-            result.OpposingDirection = signal.Approaches.Where(a => a.ProtectedPhaseNumber == opposingPhase).FirstOrDefault()?.DirectionType.Abbreviation;
+            result.OpposingDirection = Location.Approaches.Where(a => a.ProtectedPhaseNumber == opposingPhase).FirstOrDefault()?.DirectionType.Abbreviation;
 
             return result;
         }

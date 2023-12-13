@@ -7,7 +7,7 @@ namespace ATSPM.ReportApi.Business.PhaseTermination;
 /// <summary>
 /// Phase Termination chart
 /// </summary>
-public class PhaseTerminationResult : SignalResult
+public class PhaseTerminationResult : LocationResult
 {
     public PhaseTerminationResult(
         string locationId,

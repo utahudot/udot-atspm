@@ -16,49 +16,49 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly YellowRedActivationsService yellowRedActivationsService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public YellowRedActivationsReportService(
             YellowRedActivationsService yellowRedActivationsService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
             this.yellowRedActivationsService = yellowRedActivationsService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<YellowRedActivationsResult>> ExecuteAsync(YellowRedActivationsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
 
-            if (signal == null)
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<YellowRedActivationsResult>>();
             foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phaseDetail, controllerEventLogs, planEvents, signal.SignalDescription()));
+                tasks.Add(GetChartDataForApproach(parameter, phaseDetail, controllerEventLogs, planEvents, Location.LocationDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -79,7 +79,7 @@ namespace ATSPM.ReportApi.ReportServices
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
-            string signalDescription)
+            string LocationDescription)
         {
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
                 options.Start.AddSeconds(-900),
@@ -102,7 +102,7 @@ namespace ATSPM.ReportApi.ReportServices
                 cycleEvents,
                 detectorEvents,
                 planEvents);
-            viewModel.SignalDescription = signalDescription;
+            viewModel.LocationDescription = LocationDescription;
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

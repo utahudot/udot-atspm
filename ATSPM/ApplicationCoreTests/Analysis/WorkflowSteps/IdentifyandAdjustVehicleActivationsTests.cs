@@ -27,8 +27,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(IdentifyandAdjustVehicleActivations), "Signal Filter")]
-        public async void IdentifyandAdjustVehicleActivationsSignalFilterTest()
+        [Trait(nameof(IdentifyandAdjustVehicleActivations), "Location Filter")]
+        public async void IdentifyandAdjustVehicleActivationsLocationFilterTest()
         {
             var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {

@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<Route> builder)
         {
-            builder.HasComment("Signal Routes");
+            builder.HasComment("Location Routes");
 
             builder.Property(e => e.Name).HasMaxLength(50);
         }

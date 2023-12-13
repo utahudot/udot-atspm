@@ -7,9 +7,9 @@ using ATSPM.Data.Relationships;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Route signal
+    /// Route Location
     /// </summary>
-    public partial class RouteSignal : AtspmConfigModelBase<int>, ILocationLayer, IRelatedRoute
+    public partial class RouteLocation : AtspmConfigModelBase<int>, ILocationLayer, IRelatedRoute
     {
         /// <summary>
         /// Location order on route
@@ -30,7 +30,7 @@ namespace ATSPM.Data.Models
         /// Related primary direction
         /// </summary>
         public DirectionTypes PrimaryDirectionId { get; set; }
-        
+
         /// <summary>
         /// Related opposing direction
         /// </summary>
@@ -50,11 +50,31 @@ namespace ATSPM.Data.Models
         /// Is primary overlap
         /// </summary>
         public bool IsPrimaryOverlap { get; set; }
-        
+
         /// <summary>
         /// Is opposing overlap
         /// </summary>
         public bool IsOpposingOverlap { get; set; }
+
+        /// <summary>
+        /// Related previous location distance
+        /// </summary>
+        public int? PreviousLocationDistanceId { get; set; }
+        
+        /// <summary>
+        /// Previous location distance
+        /// </summary>
+        public RouteDistance PreviousLocationDistance {get; set;}
+
+        /// <summary>
+        /// Related next location distance
+        /// </summary>
+        public int? NextLocationDistanceId { get; set; }
+        
+        /// <summary>
+        /// Next location distance
+        /// </summary>
+        public RouteDistance NextLocationDistance { get; set; }
 
         #region ILocationLayer
 

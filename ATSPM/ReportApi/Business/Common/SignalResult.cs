@@ -2,17 +2,17 @@
 
 namespace ATSPM.ReportApi.Business.Common
 {
-    public class SignalResult : BaseResult
+    public class LocationResult : BaseResult
     {
-        public SignalResult()
+        public LocationResult()
         {
                 
         }
 
         public string locationIdentifier { get; set; }
-        public string SignalDescription { get; set; }
+        public string LocationDescription { get; set; }
 
-        public SignalResult(string locationId, DateTime start, DateTime end) : base(start, end)
+        public LocationResult(string locationId, DateTime start, DateTime end) : base(start, end)
         {
             locationIdentifier = locationId;
         }

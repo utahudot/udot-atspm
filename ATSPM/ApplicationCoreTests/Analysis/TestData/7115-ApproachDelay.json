@@ -1,6 +1,6 @@
 {
-  "Signal": {
-    "@odata.context": "https://localhost:7267/api/v1/$metadata#Signal(controllerType(),jurisdiction(),region(),approaches(directionType(),detectors(detectionTypes(measureTypes()),approach(signal(),directionType())),signal(),directionType()))/$entity",
+  "Location": {
+    "@odata.context": "https://localhost:7267/api/v1/$metadata#Location(controllerType(),jurisdiction(),region(),approaches(directionType(),detectors(detectionTypes(measureTypes()),approach(Location(),directionType())),Location(),directionType()))/$entity",
     "latitude": 40.62398502,
     "longitude": -111.9387819,
     "note": "Initial",
@@ -122,7 +122,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -210,7 +210,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -282,7 +282,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -370,7 +370,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -458,7 +458,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -530,7 +530,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2879,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -556,7 +556,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -657,7 +657,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -745,7 +745,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -833,7 +833,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -921,7 +921,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1009,7 +1009,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1097,7 +1097,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1185,7 +1185,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1313,7 +1313,7 @@
               "locationId": 1680,
               "directionTypeId": "NB",
               "id": 2880,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1339,7 +1339,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -1440,7 +1440,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1528,7 +1528,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1616,7 +1616,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1704,7 +1704,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1776,7 +1776,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1848,7 +1848,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2881,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -1874,7 +1874,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -1975,7 +1975,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2063,7 +2063,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2151,7 +2151,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2239,7 +2239,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2327,7 +2327,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2415,7 +2415,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2503,7 +2503,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2631,7 +2631,7 @@
               "locationId": 1680,
               "directionTypeId": "SB",
               "id": 2882,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2657,7 +2657,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -2758,7 +2758,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2846,7 +2846,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -2934,7 +2934,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3022,7 +3022,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3094,7 +3094,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3166,7 +3166,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2883,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3192,7 +3192,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -3293,7 +3293,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3381,7 +3381,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3469,7 +3469,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3557,7 +3557,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3645,7 +3645,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3773,7 +3773,7 @@
               "locationId": 1680,
               "directionTypeId": "EB",
               "id": 2884,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3799,7 +3799,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -3900,7 +3900,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -3988,7 +3988,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4060,7 +4060,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4132,7 +4132,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4220,7 +4220,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4308,7 +4308,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2885,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4334,7 +4334,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",
@@ -4435,7 +4435,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4523,7 +4523,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4611,7 +4611,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4699,7 +4699,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4787,7 +4787,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4915,7 +4915,7 @@
               "locationId": 1680,
               "directionTypeId": "WB",
               "id": 2886,
-              "signal": {
+              "Location": {
                 "latitude": 40.62398502,
                 "longitude": -111.9387819,
                 "note": "Initial",
@@ -4941,7 +4941,7 @@
             }
           }
         ],
-        "signal": {
+        "Location": {
           "latitude": 40.62398502,
           "longitude": -111.9387819,
           "note": "Initial",

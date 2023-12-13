@@ -27,8 +27,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CreatePreemptiveCyclesTests), "Signal Grouping")]
-        public async void CreatePreemptiveCyclesTestsSignalGrouping()
+        [Trait(nameof(CreatePreemptiveCyclesTests), "Location Grouping")]
+        public async void CreatePreemptiveCyclesTestsLocationGrouping()
         {
             Assert.False(true);
         }

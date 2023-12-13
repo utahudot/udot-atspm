@@ -17,7 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPhaseIntervalChanges : FilterEventCodeSignalBase
+    public class FilteredPhaseIntervalChanges : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

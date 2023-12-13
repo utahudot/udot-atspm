@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ATSPM.Application.Services.SignalControllerProtocols
+namespace ATSPM.Application.Services.LocationControllerProtocols
 {
     /// <summary>
     /// Client for connecting to services and interacting with their file directories

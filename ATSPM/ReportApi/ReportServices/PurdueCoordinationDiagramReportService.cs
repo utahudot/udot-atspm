@@ -16,45 +16,45 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly PurdueCoordinationDiagramService perdueCoordinationDiagramService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly ILocationRepository signalRepository;
+        private readonly LocationPhaseService LocationPhaseService;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public PurdueCoordinationDiagramReportService(
             PurdueCoordinationDiagramService perdueCoordinationDiagramService,
             IControllerEventLogRepository controllerEventLogRepository,
-            SignalPhaseService signalPhaseService,
-            ILocationRepository signalRepository,
+            LocationPhaseService LocationPhaseService,
+            ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
             this.perdueCoordinationDiagramService = perdueCoordinationDiagramService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalPhaseService = signalPhaseService;
-            this.signalRepository = signalRepository;
+            this.LocationPhaseService = LocationPhaseService;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<PurdueCoordinationDiagramResult>> ExecuteAsync(PurdueCoordinationDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<PurdueCoordinationDiagramResult>>();
             foreach (var phase in phaseDetails)
             {
@@ -80,7 +80,7 @@ namespace ATSPM.ReportApi.ReportServices
             IReadOnlyList<ControllerEventLog> controllerEventLogs,
             IReadOnlyList<ControllerEventLog> planEvents)
         {
-            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+            var LocationPhase = await LocationPhaseService.GetLocationPhaseData(
                 phaseDetail,
                 options.Start,
                 options.End,
@@ -89,12 +89,12 @@ namespace ATSPM.ReportApi.ReportServices
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
                 options.ShowVolumes);
-            if (signalPhase == null)
+            if (LocationPhase == null)
             {
                 return null;
             }
-            PurdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, phaseDetail.Approach, signalPhase);
-            viewModel.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
+            PurdueCoordinationDiagramResult viewModel = perdueCoordinationDiagramService.GetChartData(options, phaseDetail.Approach, LocationPhase);
+            viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

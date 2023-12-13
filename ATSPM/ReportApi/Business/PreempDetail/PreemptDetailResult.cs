@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Business.PreempDetail
         public PreemptRequestAndServices Summary { get; set; }
     }
 
-    public class PreemptDetail : SignalResult
+    public class PreemptDetail : LocationResult
     {
         public PreemptDetail(
             string locationId,

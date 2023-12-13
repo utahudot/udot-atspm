@@ -19,9 +19,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<IEnumerable<PriorityAggregation>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var signal = input.Item1;
+            var Location = input.Item1;
             var priority = input.Item2;
-            var logs = input.Item3.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(signal, priority));
+            var logs = input.Item3.FromSpecification(new ControllerLogLocationAndParamterFilterSpecification(Location, priority));
 
             var tl = new Timeline<PriorityAggregation>(logs, TimeSpan.FromMinutes(15));
 

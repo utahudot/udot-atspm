@@ -41,12 +41,12 @@ namespace ApplicationCoreTests.Analysis.Workflows
         [Fact(Skip = "only run when you need to create test data")]
         public void CreateTestFile()
         {
-            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            var signal = JsonConvert.DeserializeObject<Location>(json);
+            var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            var Location = JsonConvert.DeserializeObject<Location>(json);
 
             var test = new DetectorEventCountAggregationTestData()
             {
-                Configuration = signal,
+                Configuration = Location,
                 Input = new List<ControllerEventLog>(),
                 Output = new List<DetectorEventCountAggregation>()
             };

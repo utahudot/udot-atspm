@@ -19,7 +19,7 @@ namespace ATSPM.Application.Analysis.PreemptionDetails
 
 
         //public string ChartName { get; set; }
-        //public string SignalLocation { get; set; }
+        //public string LocationLocation { get; set; }
 
         //public ICollection<Plan> Plans { get; set; }
 

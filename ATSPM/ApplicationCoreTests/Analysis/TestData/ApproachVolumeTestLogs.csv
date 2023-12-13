@@ -1,4 +1,4 @@
-Signal Id,Timestamp,Event Code,Event Parameter
+Location Id,Timestamp,Event Code,Event Parameter
 7115,4/17/2023 8:00:0.20,82,2
 7115,4/17/2023 8:00:2.30,82,2
 7115,4/17/2023 8:00:6.30,82,2
