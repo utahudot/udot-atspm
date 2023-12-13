@@ -28,7 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />
+    <ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>

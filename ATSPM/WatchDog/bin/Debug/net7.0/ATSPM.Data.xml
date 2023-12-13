@@ -45,7 +45,7 @@
             Device table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.DeviceConfiguration">
+        <member name="P:ATSPM.Data.ConfigContext.DeviceConfigurations">
             <summary>
             Device configuration table
             </summary>
@@ -125,7 +125,7 @@
             Route distances table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.RouteLocations">
+        <member name="P:ATSPM.Data.ConfigContext.RouteLocationss">
             <summary>
             Route Locations table
             </summary>
@@ -1835,9 +1835,9 @@
             Start date location became active
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Location.Pedsare1to1">
+        <member name="P:ATSPM.Data.Models.Location.PedsAre1to1">
             <summary>
-            Pedsare1to1
+            PedsAre1to1
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.Location.LocationIdentifier">

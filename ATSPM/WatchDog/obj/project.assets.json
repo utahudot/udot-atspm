@@ -4087,7 +4087,8 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
-          "ATSPM.Data": "1.0.0",
+          "ATSPM.Infrastructure.PostgreSQLDatabaseProvider": "1.0.0",
+          "ATSPM.Infrastructure.SqlDatabaseProvider": "1.0.0",
           "ApplicationCore": "1.0.0",
           "Duende.IdentityServer.EntityFramework": "6.3.6",
           "FluentFTP": "44.0.1",
@@ -4104,6 +4105,32 @@
         },
         "runtime": {
           "bin/placeholder/ATSPM.Infrastructure.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "ATSPM.Data": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "dependencies": {
+          "ATSPM.Data": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/ATSPM.Infrastructure.SqlDatabaseProvider.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ATSPM.Infrastructure.SqlDatabaseProvider.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -11414,6 +11441,16 @@
       "type": "project",
       "path": "../Infrastructure/Infrastructure.csproj",
       "msbuildProject": "../Infrastructure/Infrastructure.csproj"
+    },
+    "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+      "type": "project",
+      "path": "../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj",
+      "msbuildProject": "../PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj"
+    },
+    "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
+      "type": "project",
+      "path": "../SqlDatabaseProvider/SqlDatabaseProvider.csproj",
+      "msbuildProject": "../SqlDatabaseProvider/SqlDatabaseProvider.csproj"
     },
     "DomainCore/1.0.0": {
       "type": "project",
