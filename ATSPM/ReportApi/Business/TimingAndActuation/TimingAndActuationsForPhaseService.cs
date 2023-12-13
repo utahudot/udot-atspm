@@ -227,8 +227,8 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             List<ControllerEventLog> controllerEventLogs)
         {
             var pedestrianEvents = new List<DetectorEventDto>();
-            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.Pedsare1to1 && approach.IsProtectedPhaseOverlap
-                || !approach.Location.Pedsare1to1 && approach.PedestrianPhaseNumber.HasValue)
+            if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.PedsAre1to1 && approach.IsProtectedPhaseOverlap
+                || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
             var pedEventCodes = new List<int> { 89, 90 };
             foreach (var pedDetector in approach.Detectors)
