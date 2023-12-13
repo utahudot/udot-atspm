@@ -10,7 +10,7 @@ namespace WatchDog.Services
 {
     public class ScanService
     {
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly IWatchDogLogEventRepository watchDogLogEventRepository;
         private readonly IRegionsRepository regionsRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
@@ -26,7 +26,7 @@ namespace WatchDog.Services
         private readonly ILogger<ScanService> logger;
 
         public ScanService(
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             IWatchDogLogEventRepository watchDogLogEventRepository,
             IRegionsRepository regionsRepository,
             IJurisdictionRepository jurisdictionRepository,
@@ -40,7 +40,7 @@ namespace WatchDog.Services
             EmailService emailService,
             ILogger<ScanService> logger)
         {
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.watchDogLogEventRepository = watchDogLogEventRepository;
             this.regionsRepository = regionsRepository;
             this.jurisdictionRepository = jurisdictionRepository;
@@ -58,8 +58,8 @@ namespace WatchDog.Services
             LoggingOptions loggingOptions,
             EmailOptions emailOptions)
         {
-            //need a version of this that gets the signal version for date of the scan
-            var signals = signalRepository.GetLatestVersionOfAllSignals(emailOptions.ScanDate).ToList();
+            //need a version of this that gets the Location version for date of the scan
+            var Locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
             var errors = new List<WatchDogLogEvent>();
             if (watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).Any())
             {
@@ -67,7 +67,7 @@ namespace WatchDog.Services
             }
             else
             {
-                errors = await logService.GetWatchDogIssues(loggingOptions, signals);
+                errors = await logService.GetWatchDogIssues(loggingOptions, Locations);
                 SaveErrorLogs(errors);
             }
             if (emailOptions != null)
@@ -110,7 +110,7 @@ namespace WatchDog.Services
                 await emailService.SendAllEmails(
                     emailOptions,
                     errors,
-                    signals,
+                    Locations,
                     smtp,
                     users,
                     jurisdictions,
@@ -173,8 +173,8 @@ namespace WatchDog.Services
     //    public ConcurrentBag<WatchDogLogEvent> MissingRecords = new ConcurrentBag<WatchDogLogEvent>();
     //    public ConcurrentBag<WatchDogLogEvent> CannotFtpFiles = new ConcurrentBag<WatchDogLogEvent>();
     //    public List<WatchDogLogEvent> RecordsFromTheDayBefore = new List<WatchDogLogEvent>();
-    //    public ConcurrentBag<Location> SignalsNoRecords = new ConcurrentBag<Location>();
-    //    public ConcurrentBag<Location> SignalsWithRecords = new ConcurrentBag<Location>();
+    //    public ConcurrentBag<Location> LocationsNoRecords = new ConcurrentBag<Location>();
+    //    public ConcurrentBag<Location> LocationsWithRecords = new ConcurrentBag<Location>();
     //    public ConcurrentBag<WatchDogLogEvent> StuckPedErrors = new ConcurrentBag<WatchDogLogEvent>();
     //}
 

@@ -16,46 +16,46 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public SplitFailReportService(
             SplitFailPhaseService splitFailPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService
             )
         {
             this.splitFailPhaseService = splitFailPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<SplitFailsResult>> ExecuteAsync(SplitFailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
 
-            if (signal == null)
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
             foreach (var phase in phaseDetails)
             {
@@ -161,7 +161,7 @@ namespace ATSPM.ReportApi.ReportServices
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
-            result.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
+            result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             return result;
         }
 

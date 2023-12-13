@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace ATSPM.Application.Services.SignalControllerProtocols
+namespace ATSPM.Application.Services.LocationControllerProtocols
 {
-    public interface ISignalControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>, IDisposable
+    public interface ILocationControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>, IDisposable
     {
         bool IsCompressed(Stream stream);
 

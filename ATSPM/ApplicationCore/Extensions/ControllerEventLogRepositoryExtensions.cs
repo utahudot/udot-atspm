@@ -12,7 +12,7 @@ namespace ATSPM.Application.Extensions
     {
         public static IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, param))
 
                 //this orderby was in the original version but it's always the same param so ordering is pointless
@@ -50,7 +50,7 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<ControllerEventLog> GetRecordsByParameterAndEvent(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<int> eventCodes)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes, eventParameters))
                 .OrderBy(o => o.EventParam)
                 .ToList();
@@ -67,7 +67,7 @@ namespace ATSPM.Application.Extensions
         {
             var codes = new List<int> { 150, 114, 113, 112, 105, 102, 1 };
 
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(codes))
                 .ToList();
 
@@ -89,7 +89,7 @@ namespace ATSPM.Application.Extensions
 
         public static int GetDetectorActivationCount(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, int detectorChannel)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(82, detectorChannel))
                 .ToList().Count;
 
@@ -110,7 +110,7 @@ namespace ATSPM.Application.Extensions
             //    .OrderBy(o => o.EventParam)
             //    .ToList();
 
-            //use GetSignalEventsByEventCode() here!!!
+            //use GetLocationEventsByEventCode() here!!!
 
             //return result;
 
@@ -139,9 +139,9 @@ namespace ATSPM.Application.Extensions
             //return lastEvent;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, int eventCode)
+        public static IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCode(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, int eventCode)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCode))
                 .OrderBy(o => o.EventParam)
                 .ToList();
@@ -149,9 +149,9 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCodes(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes)
+        public static IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCodes(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new ControllerLogCodeAndParamSpecification(eventCodes))
                 .OrderBy(o => o.EventParam)
                 .ToList();
@@ -161,7 +161,7 @@ namespace ATSPM.Application.Extensions
 
         public static IReadOnlyList<ControllerEventLog> GetSplitEvents(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
         {
-            var result = repo.GetSignalEventsBetweenDates(locationId, startTime, endTime)
+            var result = repo.GetLocationEventsBetweenDates(locationId, startTime, endTime)
                 .Where(i => i.EventCode > 130 && i.EventCode < 150)
                 .OrderBy(o => o.EventParam)
                 .ToList();
@@ -174,9 +174,9 @@ namespace ATSPM.Application.Extensions
             throw new NotImplementedException();
 
             //HACK: this should come from IServiceLocator
-            //ILocationRepository sr = new SignalEFRepository(db, (ILogger<SignalEFRepository>)log);
-            //Location signal = sr.GetVersionOfSignalByDate(locationId, startDate);
-            //var graphDetectors = signal.GetDetectorsForSignalByPhaseNumber(phase);
+            //ILocationRepository sr = new LocationEFRepository(db, (ILogger<LocationEFRepository>)log);
+            //Location Location = sr.GetVersionOfLocationByDate(locationId, startDate);
+            //var graphDetectors = Location.GetDetectorsForLocationByPhaseNumber(phase);
 
 
 
@@ -214,7 +214,7 @@ namespace ATSPM.Application.Extensions
             //    .Take(top).ToList();
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetTopNumberOfSignalEventsBetweenDates(this IControllerEventLogRepository repo, string locationId, int numberOfRecords, DateTime startTime, DateTime endTime)
+        public static IReadOnlyList<ControllerEventLog> GetTopNumberOfLocationEventsBetweenDates(this IControllerEventLogRepository repo, string locationId, int numberOfRecords, DateTime startTime, DateTime endTime)
         {
             throw new NotImplementedException();
 
@@ -233,8 +233,8 @@ namespace ATSPM.Application.Extensions
 
         #region Obsolete
 
-        [Obsolete("Use GetSignalEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
-        public static int GetSignalEventsCountBetweenDates(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
+        [Obsolete("Use GetLocationEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
+        public static int GetLocationEventsCountBetweenDates(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
         {
             throw new NotImplementedException();
         }
@@ -266,7 +266,7 @@ namespace ATSPM.Application.Extensions
         [Obsolete("This method isn't currently being used")]
         public static IReadOnlyList<ControllerEventLog> GetEventsBetweenDates(this IControllerEventLogRepository repo, DateTime startTime, DateTime endTime)
         {
-            return repo.GetSignalEventsBetweenDates(null, startTime, endTime).ToList();
+            return repo.GetLocationEventsBetweenDates(null, startTime, endTime).ToList();
         }
 
         [Obsolete("This method isn't currently being used")]
@@ -275,10 +275,10 @@ namespace ATSPM.Application.Extensions
             throw new NotImplementedException();
         }
 
-        [Obsolete("Use GetSignalEventsCountBetweenDates instead", true)]
+        [Obsolete("Use GetLocationEventsCountBetweenDates instead", true)]
         public static int GetRecordCount(this IControllerEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
         {
-            return repo.GetSignalEventsBetweenDates(locationId, startTime, endTime).ToList().Count;
+            return repo.GetLocationEventsBetweenDates(locationId, startTime, endTime).ToList().Count;
         }
 
         [Obsolete("Depreciated, use a specification instead")]

@@ -42,8 +42,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CreateVehicle), "Signal Filter")]
-        public async void CreateVehicleSignalFilterTest()
+        [Trait(nameof(CreateVehicle), "Location Filter")]
+        public async void CreateVehicleLocationFilterTest()
         {
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {

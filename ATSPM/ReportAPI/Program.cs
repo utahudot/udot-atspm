@@ -177,7 +177,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     //Common Services
     s.AddScoped<PlanService>();
-    s.AddScoped<SignalPhaseService>();
+    s.AddScoped<LocationPhaseService>();
     s.AddScoped<CycleService>();
     s.AddScoped<PedPhaseService>();
     s.AddScoped<AnalysisPhaseCollectionService>();

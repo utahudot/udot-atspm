@@ -5,11 +5,11 @@ namespace ATSPM.Data.Models
     public class WatchDogLogEvent
     {
         public int Id { get; set; }                     // Unique ID for the event
-        public int locationId { get; set; }               // ID of the signal that the event is associated with
+        public int locationId { get; set; }               // ID of the Location that the event is associated with
         public string locationIdentifier { get; set; }
         public DateTime Timestamp { get; set; }         // Time when the event was logged
         public WatchDogComponentType ComponentType { get; set; } // 'Location', 'Approach', or 'Detector'
-        public int ComponentId { get; set; }         // Specific identifier for the component (like signal ID)
+        public int ComponentId { get; set; }         // Specific identifier for the component (like Location ID)
         public WatchDogIssueType IssueType { get; set; }
         public string Details { get; set; }              // Additional details about the issue
         public int? Phase { get; set; }

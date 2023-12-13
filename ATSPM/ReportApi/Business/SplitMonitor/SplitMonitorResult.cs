@@ -7,7 +7,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor;
 /// <summary>
 /// Split Monitor chart
 /// </summary>
-public class SplitMonitorResult : SignalResult
+public class SplitMonitorResult : LocationResult
 {
     public SplitMonitorResult(int phaseNumber, string phaseDescription, string locationId, DateTime start, DateTime end) : base(locationId, start, end)
     {

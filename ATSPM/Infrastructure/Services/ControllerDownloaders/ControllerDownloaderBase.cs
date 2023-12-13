@@ -2,7 +2,7 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
@@ -21,7 +21,7 @@ using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public abstract class ControllerDownloaderBase : ServiceObjectBase, ISignalControllerDownloader
+    public abstract class ControllerDownloaderBase : ServiceObjectBase, ILocationControllerDownloader
     {
         public event EventHandler CanExecuteChanged;
 
@@ -29,13 +29,13 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         protected IDownloaderClient _client;
         protected ILogger _log;
-        //protected readonly IOptions<SignalControllerDownloaderConfiguration> _options;
-        protected readonly SignalControllerDownloaderConfiguration _options;
+        //protected readonly IOptions<LocationControllerDownloaderConfiguration> _options;
+        protected readonly LocationControllerDownloaderConfiguration _options;
 
 
         #endregion
 
-        public ControllerDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options)
+        public ControllerDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> options)
         {
             _client = client;
             _log = log;
@@ -69,18 +69,18 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidSignalControllerIPAddressException"></exception>
+        /// <exception cref="InvalidLocationControllerIPAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
         public async IAsyncEnumerable<FileInfo> Execute(Location parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             if (parameter == null)
-                throw new ArgumentNullException(nameof(parameter), $"Signal parameter can not be null");
+                throw new ArgumentNullException(nameof(parameter), $"Location parameter can not be null");
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
                 if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
-                    throw new InvalidSignalControllerIpAddressException(parameter);
+                    throw new InvalidLocationControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
                 using (_client)
@@ -181,7 +181,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             }
                             else
                             {
-                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationIdentifier)), "File failed to download on {signal} file name: {file}", parameter.LocationIdentifier, file);
+                                _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationIdentifier)), "File failed to download on {Location} file name: {file}", parameter.LocationIdentifier, file);
                             }
                         }
 

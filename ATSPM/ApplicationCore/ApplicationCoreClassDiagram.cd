@@ -42,18 +42,18 @@
       <FileName>Configuration\FileRepositoryConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Configuration.SignalControllerDownloaderConfiguration" Collapsed="true">
+  <Class Name="ATSPM.Application.Configuration.LocationControllerDownloaderConfiguration" Collapsed="true">
     <Position X="21.75" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABAAAIAAAAAEAAAAAAAAAAAAACAQAAAAAgAAAAAAAAA=</HashCode>
-      <FileName>Configuration\SignalControllerDownloaderConfiguration.cs</FileName>
+      <FileName>Configuration\LocationControllerDownloaderConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Configuration.SignalControllerLoggerConfiguration" Collapsed="true">
+  <Class Name="ATSPM.Application.Configuration.LocationControllerLoggerConfiguration" Collapsed="true">
     <Position X="23.5" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAQgg=</HashCode>
-      <FileName>Configuration\SignalControllerLoggerConfiguration.cs</FileName>
+      <FileName>Configuration\LocationControllerLoggerConfiguration.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ATSPM.Application.Exceptions.ATSPMExceptionBase" Collapsed="true">
@@ -266,11 +266,11 @@
       <FileName>Models\ControllerType.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.DatabaseArchiveExcludedSignal" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.DatabaseArchiveExcludedLocation" Collapsed="true">
     <Position X="27" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
-      <FileName>Models\DatabaseArchiveExcludedSignal.cs</FileName>
+      <FileName>Models\DatabaseArchiveExcludedLocation.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ATSPM.Application.Models.DetectionHardware" Collapsed="true">
@@ -469,39 +469,39 @@
       <FileName>Models\RoutePhaseDirection.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.RouteSignal" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.RouteLocation" Collapsed="true">
     <Position X="20" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAECAAAABAAAAAAAAEAAAAAAAAAAAAAABAAAAACAAAA=</HashCode>
-      <FileName>Models\RouteSignal.cs</FileName>
+      <FileName>Models\RouteLocation.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.Signal" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.Location" Collapsed="true">
     <Position X="7.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAEAAAIgHAAAIAkAACKAAAAAAIAAAAABEAAAAEAAAA=</HashCode>
-      <FileName>Models\Signal.cs</FileName>
+      <FileName>Models\Location.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.SignalEventCountAggregation" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.LocationEventCountAggregation" Collapsed="true">
     <Position X="25.25" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAQAAAAAAAAAAAAAACAAAAAAAAABAAAAAAAAAA=</HashCode>
-      <FileName>Models\SignalEventCountAggregation.cs</FileName>
+      <FileName>Models\LocationEventCountAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.SignalPlanAggregation" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.LocationPlanAggregation" Collapsed="true">
     <Position X="27" Y="9.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAAAAAACAAAAAAAAAAAAAAAAAAAAAABAAAIAAAAAA=</HashCode>
-      <FileName>Models\SignalPlanAggregation.cs</FileName>
+      <FileName>Models\LocationPlanAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ATSPM.Application.Models.SignalToAggregate" Collapsed="true">
+  <Class Name="ATSPM.Application.Models.LocationToAggregate" Collapsed="true">
     <Position X="13" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
-      <FileName>Models\SignalToAggregate.cs</FileName>
+      <FileName>Models\LocationToAggregate.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ATSPM.Application.Models.SpeedEvent" Collapsed="true">
@@ -623,60 +623,60 @@
       <FileName>Repositories\IDetectionTypeRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Repositories.ISignalRepository" Collapsed="true">
+  <Interface Name="ATSPM.Application.Repositories.ILocationRepository" Collapsed="true">
     <Position X="21.75" Y="12.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQAACAAAABAABgQBAAAkAAEABAAAACAgAAAAIAMCAhA=</HashCode>
-      <FileName>Repositories\ISignalRepository.cs</FileName>
+      <FileName>Repositories\ILocationRepository.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IDownloaderClient" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient" Collapsed="true">
     <Position X="2.75" Y="10.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAEAAAAAAAAAABAAAAAAAABAAgEAAAAAAAAABAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\IDownloaderClient.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IFTPDownloaderClient" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.IFTPDownloaderClient" Collapsed="true">
     <Position X="0.5" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\IDownloaderClient.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISFTPDownloaderClient" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.ISFTPDownloaderClient" Collapsed="true">
     <Position X="2.75" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\IDownloaderClient.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.IHTTPDownloaderClient" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.IHTTPDownloaderClient" Collapsed="true">
     <Position X="5" Y="11.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\IDownloaderClient.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\IDownloaderClient.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISignalControllerDecoder" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.ILocationControllerDecoder" Collapsed="true">
     <Position X="18.25" Y="12.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAMAAAgAAAAAAKAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\ISignalControllerDecoder.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\ILocationControllerDecoder.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="ATSPM.Application.Services.SignalControllerProtocols.ISignalControllerDownloader" Collapsed="true">
+  <Interface Name="ATSPM.Application.Services.LocationControllerProtocols.ILocationControllerDownloader" Collapsed="true">
     <Position X="20" Y="12.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAIAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Services\SignalControllerProtocols\ISignalControllerDownloader.cs</FileName>
+      <FileName>Services\LocationControllerProtocols\ILocationControllerDownloader.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="ATSPM.Application.Enums.SignalControllerType" Collapsed="true">
+  <Enum Name="ATSPM.Application.Enums.LocationControllerType" Collapsed="true">
     <Position X="13" Y="13.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>MAAAAAAABAAEAAAAIAAAABAAIAAAAACAAAAAAEAAABA=</HashCode>
-      <FileName>Enums\SignalControllerTypeEnum.cs</FileName>
+      <FileName>Enums\LocationControllerTypeEnum.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Font Name="Segoe UI" Size="9" />

@@ -15,33 +15,33 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ILocationRepository signalRepository)
+            ILocationRepository LocationRepository)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
         }
 
         /// <inheritdoc/>
         public override async Task<PhaseTerminationResult> ExecuteAsync(PurduePhaseTerminationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
@@ -78,7 +78,7 @@ namespace ATSPM.ReportApi.ReportServices
                 splitsEvents,
             pedEvents,
                 terminationEvents,
-                signal,
+                Location,
                 parameter.SelectedConsecutiveCount);
             var phases = new List<Phase>();
             foreach (var phase in phaseCollectionData.AnalysisPhases)
@@ -102,7 +102,7 @@ namespace ATSPM.ReportApi.ReportServices
                 plans,
                 phases
                 );
-            result.SignalDescription = signal.SignalDescription();
+            result.LocationDescription = Location.LocationDescription();
             //return Ok(result);
 
             return result;

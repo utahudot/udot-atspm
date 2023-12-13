@@ -1,6 +1,6 @@
 ﻿namespace ATSPM.ConfigApi.Models
 {
-    public class SearchSignal
+    public class SearchLocation
     {
         public int Id { get; set; }
         public string locationIdentifier { get; set; }

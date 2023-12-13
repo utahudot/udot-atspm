@@ -318,7 +318,7 @@ namespace ATSPM.Data.Enums
         ///<summary>
         ///Set when overlap becomes green.
         ///Do not set repeatedly when overlap is flashing green.
-        ///Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual signal head colors
+        ///Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual Location head colors
         ///</summary>
         [Display(Name = "Overlap Begin Green")]
         OverlapBeginGreen = 61,

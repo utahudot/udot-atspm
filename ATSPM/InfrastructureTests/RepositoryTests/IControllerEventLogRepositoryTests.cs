@@ -69,7 +69,7 @@ namespace InfrastructureTests.RepositoryTests
         #region IControllerEventLogRepository
 
         [Fact]
-        public void IControllerEventLogRepositoryGetSignalEventsBetweenDates()
+        public void IControllerEventLogRepositoryGetLocationEventsBetweenDates()
         {
             var locationId = "1001";
             var start = DateTime.Today.AddDays(-2);
@@ -77,7 +77,7 @@ namespace InfrastructureTests.RepositoryTests
 
             _output.WriteLine($"date range: {start} - {end}");
 
-            var result = _repo.GetSignalEventsBetweenDates(locationId, start, end);
+            var result = _repo.GetLocationEventsBetweenDates(locationId, start, end);
 
             foreach (var r in result)
             {
@@ -115,7 +115,7 @@ namespace InfrastructureTests.RepositoryTests
 
 
         //    var sut = new Mock<IControllerEventLogRepository>();
-        //    sut.Setup(r => r.GetSignalEventsBetweenDates(locationId, start, end)).Returns(() => eventLogs);
+        //    sut.Setup(r => r.GetLocationEventsBetweenDates(locationId, start, end)).Returns(() => eventLogs);
 
         //    _output.WriteLine($"date range: {start} - {end}");
 

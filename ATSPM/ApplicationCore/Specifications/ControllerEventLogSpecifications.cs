@@ -8,21 +8,21 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
-    public class ControllerLogSignalFilterSpecification : BaseSpecification<ControllerEventLog>
+    public class ControllerLogLocationFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalFilterSpecification(Location signal) : base()
+        public ControllerLogLocationFilterSpecification(Location Location) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == signal.LocationIdentifier;
+            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
 
             ApplyOrderBy(o => o.Timestamp);
         }
     }
 
-    public class ControllerLogSignalAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
+    public class ControllerLogLocationAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalAndParamterFilterSpecification(Location signal, int param) : base()
+        public ControllerLogLocationAndParamterFilterSpecification(Location Location, int param) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == signal.LocationIdentifier && c.EventParam == param;
+            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }

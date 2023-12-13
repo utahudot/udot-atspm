@@ -23,9 +23,9 @@ using ATSPM.Data.Models;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public class SignalInfoCommand : Command, ICommandOption<EventLogSignalInfoConfiguration>
+    public class LocationInfoCommand : Command, ICommandOption<EventLogLocationInfoConfiguration>
     {
-        public SignalInfoCommand() : base("signal-info", "Gets information about signal controllers")
+        public LocationInfoCommand() : base("Location-info", "Gets information about Location controllers")
         {
             IncludeOption.AddValidator(r =>
             {
@@ -43,15 +43,15 @@ namespace ATSPM.EventLogUtility.Commands
             AddOption(TypeOption);
         }
 
-        public SignalIncludeCommandOption IncludeOption { get; set; } = new();
+        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
 
-        public SignalExcludeCommandOption ExcludeOption { get; set; } = new();
+        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
 
-        public SignalTypeCommandOption TypeOption { get; set; } = new();
+        public LocationTypeCommandOption TypeOption { get; set; } = new();
 
-        public ModelBinder<EventLogSignalInfoConfiguration> GetOptionsBinder()
+        public ModelBinder<EventLogLocationInfoConfiguration> GetOptionsBinder()
         {
-            var binder = new ModelBinder<EventLogSignalInfoConfiguration>();
+            var binder = new ModelBinder<EventLogLocationInfoConfiguration>();
 
             binder.BindMemberFromValue(b => b.Included, IncludeOption);
             binder.BindMemberFromValue(b => b.Excluded, ExcludeOption);
@@ -63,7 +63,7 @@ namespace ATSPM.EventLogUtility.Commands
         public void BindCommandOptions(IServiceCollection services)
         {
             services.AddSingleton(GetOptionsBinder());
-            services.AddOptions<EventLogSignalInfoConfiguration>().BindCommandLine();
+            services.AddOptions<EventLogLocationInfoConfiguration>().BindCommandLine();
             services.AddHostedService<SignaInfoHostedService>();
         }
     }
@@ -72,9 +72,9 @@ namespace ATSPM.EventLogUtility.Commands
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
-        private IOptions<EventLogSignalInfoConfiguration> _options;
+        private IOptions<EventLogLocationInfoConfiguration> _options;
 
-        public SignaInfoHostedService(ILogger<SignaInfoHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogSignalInfoConfiguration> options) =>
+        public SignaInfoHostedService(ILogger<SignaInfoHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLocationInfoConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -83,10 +83,10 @@ namespace ATSPM.EventLogUtility.Commands
             {
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var signalRepository = scope.ServiceProvider.GetService<ILocationRepository>();
-                    var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
+                    var LocationRepository = scope.ServiceProvider.GetService<ILocationRepository>();
+                    var controllerLoggingService = scope.ServiceProvider.GetService<ILocationControllerLoggerService>();
 
-                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.ChartEnabled);
+                    var LocationQuery = LocationRepository.GetLatestVersionOfAllLocations().Where(s => s.ChartEnabled);
 
                     if (_options.Value.ControllerTypes != null)
                     {
@@ -95,32 +95,32 @@ namespace ATSPM.EventLogUtility.Commands
                             _log.LogInformation("Including Event Logs for Types(s): {type}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
+                        LocationQuery = LocationQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
                     }
 
                     if (_options.Value.Included != null)
                     {
                         foreach (var s in _options.Value.Included)
                         {
-                            _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.LocationIdentifier == d));
+                        LocationQuery = LocationQuery.Where(i => _options.Value.Included.Any(d => i.LocationIdentifier == d));
                     }
 
                     if (_options.Value.Excluded != null)
                     {
                         foreach (var s in _options.Value.Excluded)
                         {
-                            _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.LocationIdentifier));
+                        LocationQuery = LocationQuery.Where(i => !_options.Value.Excluded.Contains(i.LocationIdentifier));
                     }
 
-                    var signals = signalQuery.ToList();
+                    var Locations = LocationQuery.ToList();
 
-                    foreach (var s in signals)
+                    foreach (var s in Locations)
                     {
                         PrintInfo(s);
                     }
@@ -143,21 +143,21 @@ namespace ATSPM.EventLogUtility.Commands
             return Task.CompletedTask;
         }
 
-        private void PrintInfo(Location signal)
+        private void PrintInfo(Location Location)
         {
             Console.WriteLine();
             Console.WriteLine($"-------------------------------------------------------------");
 
-            Console.WriteLine($"key: {signal.Id}");
-            Console.WriteLine($"id: {signal.LocationIdentifier}");
-            Console.WriteLine($"primary name: {signal.PrimaryName}");
-            Console.WriteLine($"secondary name: {signal.SecondaryName}");
-            Console.WriteLine($"ip address: {signal.Ipaddress}");
-            Console.WriteLine($"controller type: {signal.ControllerType}");
-            Console.WriteLine($"enabled: {signal.ChartEnabled}");
-            Console.WriteLine($"jurisdiction: {signal.Jurisdiction}");
-            Console.WriteLine($"region: {signal.Region}");
-            Console.WriteLine($"long/lat: {signal.Longitude}/{signal.Latitude}");
+            Console.WriteLine($"key: {Location.Id}");
+            Console.WriteLine($"id: {Location.LocationIdentifier}");
+            Console.WriteLine($"primary name: {Location.PrimaryName}");
+            Console.WriteLine($"secondary name: {Location.SecondaryName}");
+            Console.WriteLine($"ip address: {Location.Ipaddress}");
+            Console.WriteLine($"controller type: {Location.ControllerType}");
+            Console.WriteLine($"enabled: {Location.ChartEnabled}");
+            Console.WriteLine($"jurisdiction: {Location.Jurisdiction}");
+            Console.WriteLine($"region: {Location.Region}");
+            Console.WriteLine($"long/lat: {Location.Longitude}/{Location.Latitude}");
 
             Console.WriteLine($"-------------------------------------------------------------");
         }

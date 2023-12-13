@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.LogMessages
 {
-    public partial class SignalControllerLoggerLogMessages
+    public partial class LocationControllerLoggerLogMessages
     {
         private readonly ILogger _logger;
 
-        public SignalControllerLoggerLogMessages(ILogger logger)
+        public LocationControllerLoggerLogMessages(ILogger logger)
         {
             //_logger = logger.WithAddedLabels(new Dictionary<string, string>()
             //{
@@ -22,7 +22,7 @@ namespace ATSPM.Application.LogMessages
             _logger = logger;
         }
 
-        [LoggerMessage(EventId = 1001, EventName = "Logger has started", Level = LogLevel.Information, Message = "Logger has started at {time} signal count: {count}")]
+        [LoggerMessage(EventId = 1001, EventName = "Logger has started", Level = LogLevel.Information, Message = "Logger has started at {time} Location count: {count}")]
         public partial void LoggerStartedMessage(DateTime time, int count);
 
         [LoggerMessage(EventId = 1002, EventName = "Logger has completed", Level = LogLevel.Information, Message = "Logger has completed at {time} duration: {duration}")]

@@ -10,7 +10,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Location plan aggregation
     /// </summary>
-    public partial class SignalPlanAggregation : ATSPMAggregationBase, ILocationLayer, IPlanLayer
+    public partial class LocationPlanAggregation : ATSPMAggregationBase, ILocationLayer, IPlanLayer
     {
         /// <inheritdoc/>
         public string LocationIdentifier { get; set; }

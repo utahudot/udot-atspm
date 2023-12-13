@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ATSPM.Application.Configuration
 {
-    public class SignalControllerLoggerConfiguration
+    public class LocationControllerLoggerConfiguration
     {
         public int SaveToDatabaseBatchSize { get; set; }
         public int MaxDegreeOfParallelism { get; set; }

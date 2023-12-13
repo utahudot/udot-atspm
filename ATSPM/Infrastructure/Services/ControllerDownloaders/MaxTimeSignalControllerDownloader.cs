@@ -1,14 +1,14 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public class MaxTimeSignalControllerDownloader : ControllerDownloaderBase
+    public class MaxTimeLocationControllerDownloader : ControllerDownloaderBase
     {
-        public MaxTimeSignalControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public MaxTimeLocationControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeLocationControllerDownloader> log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

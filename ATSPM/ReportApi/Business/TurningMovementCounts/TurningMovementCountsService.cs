@@ -30,7 +30,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             List<ControllerEventLog> detectorEvents,
             List<Plan> plans,
             string locationIdentifier,
-            string signalDescription)
+            string LocationDescription)
         {
             //var plans = planService.GetBasicPlans(options.Start, options.End, locationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
@@ -81,7 +81,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
 
             return new TurningMovementCountsResult(
                 locationIdentifier,
-                signalDescription,
+                LocationDescription,
                 options.Start,
                 options.End,
                 directionType.GetDisplayName(),

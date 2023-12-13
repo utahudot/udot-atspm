@@ -8,7 +8,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume;
 /// <summary>
 /// Approach Volume Chart
 /// </summary>
-public class ApproachVolumeResult : SignalResult
+public class ApproachVolumeResult : LocationResult
 {
     public ApproachVolumeResult(
         string locationId,
