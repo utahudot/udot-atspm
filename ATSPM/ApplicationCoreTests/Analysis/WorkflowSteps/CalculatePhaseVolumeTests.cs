@@ -29,8 +29,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculatePhaseVolume), "Signal Filter")]
-        public async void CalculatePhaseVolumeSignalFilterTest()
+        [Trait(nameof(CalculatePhaseVolume), "Location Filter")]
+        public async void CalculatePhaseVolumeLocationFilterTest()
         {
             var correctDetectorEvents = new List<CorrectedDetectorEvent>
             {

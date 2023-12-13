@@ -13,7 +13,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<ControllerType> builder)
         {
-            builder.HasComment("Signal Controller Types");
+            builder.HasComment("Location Controller Types");
 
             builder.Property(e => e.Product)
                 .IsRequired()

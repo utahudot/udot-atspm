@@ -101,7 +101,7 @@
     "locationId": 1680,
     "directionTypeId": "NB",
     "id": 2880,
-    "signal": {
+    "Location": {
       "latitude": 40.62398502,
       "longitude": -111.9387819,
       "note": "Initial",

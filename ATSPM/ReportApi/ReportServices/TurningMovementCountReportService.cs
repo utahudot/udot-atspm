@@ -17,40 +17,40 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PlanService planService;
 
         /// <inheritdoc/>
         public TurningMovementCountReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             PlanService planService
             )
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.turningMovementCountsService = turningMovementCountsService;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.planService = planService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<TurningMovementCountsResult>> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
 
-            if (signal == null)
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
@@ -62,7 +62,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 tasks.Add(
                     GetChartDataForLaneType(
-                    signal,
+                    Location,
                 (LaneTypes)laneType,
                     parameter,
                     controllerEventLogs,
@@ -83,17 +83,17 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
-            Location signal,
+            Location Location,
             LaneTypes laneType,
             TurningMovementCountsOptions options,
             List<ControllerEventLog> controllerEventLogs,
             List<Plan> plans)
         {
-            var directions = signal.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
+            var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
             var tasks = new List<Task<TurningMovementCountsResult>>();
             foreach (var direction in directions)
             {
-                var detectorsForDirection = signal.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
+                var detectorsForDirection = Location.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
 
                 var movementTypesSorted = new List<MovementTypes> { MovementTypes.L, MovementTypes.T, MovementTypes.R };
                 foreach (var movementType in movementTypesSorted)
@@ -119,8 +119,8 @@ namespace ATSPM.ReportApi.ReportServices
                             movementTypeDetectors,
                             movementType,
                             laneType,
-                            signal.LocationIdentifier,
-                            signal.SignalDescription(),
+                            Location.LocationIdentifier,
+                            Location.LocationDescription(),
                             direction));
                     }
                 }
@@ -139,7 +139,7 @@ namespace ATSPM.ReportApi.ReportServices
             MovementTypes movementType,
             LaneTypes laneType,
             string locationIdentifier,
-            string signalDescription,
+            string LocationDescription,
             DirectionTypes directionType)
         {
             var detectorEvents = new List<ControllerEventLog>();
@@ -162,7 +162,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents,
                 planEvents,
                 locationIdentifier,
-                signalDescription);
+                LocationDescription);
 
             return await result;
         }

@@ -17,15 +17,15 @@ using Xunit.Abstractions;
 
 namespace ApplicationCoreTests.Analysis.WorkflowSteps
 {
-    public class CalculateTotalVolumesTests : IClassFixture<TestSignalFixture>, IDisposable
+    public class CalculateTotalVolumesTests : IClassFixture<TestLocationFixture>, IDisposable
     {
         private readonly ITestOutputHelper _output;
-        private readonly Location _testSignal;
+        private readonly Location _testLocation;
 
-        public CalculateTotalVolumesTests(ITestOutputHelper output, TestSignalFixture testSignal)
+        public CalculateTotalVolumesTests(ITestOutputHelper output, TestLocationFixture testLocation)
         {
             _output = output;
-            _testSignal = testSignal.TestSignal;
+            _testLocation = testLocation.TestLocation;
         }
 
         private Volumes GenerateVolumes(string locationIdentifier, int phaseNumber, int detectorChannel, DirectionTypes direction, DateTime start, DateTime end, int count)
@@ -61,8 +61,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateTotalVolumes), "Signal Filter")]
-        public async void CalculateTotalVolumesSignalFilterTest()
+        [Trait(nameof(CalculateTotalVolumes), "Location Filter")]
+        public async void CalculateTotalVolumesLocationFilterTest()
         {
             Assert.True(false);
         }
@@ -81,11 +81,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             //var start = DateTime.Parse("4/17/2023 8:00:00");
             //var end = DateTime.Parse("4/17/2023 9:00:00");
 
-            //var approachP = _testSignal.Approaches.FirstOrDefault(f => f.Id == 2880);
-            //var approachO = _testSignal.Approaches.FirstOrDefault(f => f.Id == 2882);
+            //var approachP = _testLocation.Approaches.FirstOrDefault(f => f.Id == 2880);
+            //var approachO = _testLocation.Approaches.FirstOrDefault(f => f.Id == 2882);
 
-            //var primaryVolumes = GenerateVolumes(_testSignal.locationIdentifier, approachP.ProtectedPhaseNumber, 2, approachP.DirectionTypeId, start, end, 10);
-            //var opposingVolumes = GenerateVolumes(_testSignal.locationIdentifier, approachO.ProtectedPhaseNumber, 6, approachO.DirectionTypeId, start, end, 10);
+            //var primaryVolumes = GenerateVolumes(_testLocation.locationIdentifier, approachP.ProtectedPhaseNumber, 2, approachP.DirectionTypeId, start, end, 10);
+            //var opposingVolumes = GenerateVolumes(_testLocation.locationIdentifier, approachO.ProtectedPhaseNumber, 6, approachO.DirectionTypeId, start, end, 10);
 
             //var t1 = Tuple.Create(approachP, primaryVolumes);
             //var t2 = Tuple.Create(approachO, opposingVolumes);

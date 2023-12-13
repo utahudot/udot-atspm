@@ -33,7 +33,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<Location>> GetSignals([FromRoute] int key)
+        public ActionResult<IEnumerable<Location>> GetLocations([FromRoute] int key)
         {
             return GetNavigationProperty<IEnumerable<Location>>(key);
         }

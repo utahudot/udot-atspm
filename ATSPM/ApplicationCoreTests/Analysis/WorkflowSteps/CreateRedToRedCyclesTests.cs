@@ -26,8 +26,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CreateRedToRedCycles), "Signal Filter")]
-        public async void CreateRedToRedCyclesSignalFilterTest()
+        [Trait(nameof(CreateRedToRedCycles), "Location Filter")]
+        public async void CreateRedToRedCyclesLocationFilterTest()
         {
             var correct = new List<ControllerEventLog>
             {

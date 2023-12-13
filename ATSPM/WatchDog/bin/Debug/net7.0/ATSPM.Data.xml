@@ -75,6 +75,16 @@
             Jurisdiction table
             </summary>
         </member>
+        <member name="P:ATSPM.Data.ConfigContext.Locations">
+            <summary>
+            Locations table
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.ConfigContext.LocationTypes">
+            <summary>
+            Location types table
+            </summary>
+        </member>
         <member name="P:ATSPM.Data.ConfigContext.MenuItems">
             <summary>
             Menu table
@@ -110,19 +120,19 @@
             Routes table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.RouteSignals">
+        <member name="P:ATSPM.Data.ConfigContext.RouteDistances">
             <summary>
-            Route signals table
+            Route distances table
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.ConfigContext.RouteLocations">
+            <summary>
+            Route Locations table
             </summary>
         </member>
         <member name="P:ATSPM.Data.ConfigContext.Settings">
             <summary>
             Settings table
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.ConfigContext.Signals">
-            <summary>
-            Locations table
             </summary>
         </member>
         <member name="P:ATSPM.Data.ConfigContext.UserAreas">
@@ -245,6 +255,22 @@
         <member name="M:ATSPM.Data.Configuration.JurisdictionConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Jurisdiction})">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Data.Configuration.LocationConfiguration">
+            <summary>
+            Location configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.LocationConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Location})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Configuration.LocationTypeConfiguration">
+            <summary>
+            Location type configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.LocationTypeConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.LocationType})">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Configuration.MeasureCommentConfiguration">
             <summary>
             Measure comment configuration
@@ -301,12 +327,20 @@
         <member name="M:ATSPM.Data.Configuration.RouteConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Route})">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Configuration.RouteSignalConfiguration">
+        <member name="T:ATSPM.Data.Configuration.RouteDistanceConfiguration">
             <summary>
-            Route signal configuration
+            Route distance configuration
             </summary>
         </member>
-        <member name="M:ATSPM.Data.Configuration.RouteSignalConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.RouteSignal})">
+        <member name="M:ATSPM.Data.Configuration.RouteDistanceConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.RouteDistance})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Configuration.RouteLocationConfiguration">
+            <summary>
+            Route Location configuration
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Configuration.RouteLocationConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.RouteLocation})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Configuration.SettingsConfiguration">
@@ -315,14 +349,6 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Configuration.SettingsConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Settings})">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Configuration.SignalConfiguration">
-            <summary>
-            Location configuration
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Configuration.SignalConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Location})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Configuration.VersionHistoryConfiguration">
@@ -588,7 +614,7 @@
             <summary>
             Set when overlap becomes green.
             Do not set repeatedly when overlap is flashing green.
-            Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual signal head colors
+            Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual Location head colors
             </summary>
         </member>
         <member name="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginTrailingGreenExtension">
@@ -1550,12 +1576,12 @@
         </member>
         <member name="P:ATSPM.Data.Models.Device.LoggingEnabled">
             <summary>
-            Enable signal to be logged
+            Enable Location to be logged
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.Device.Ipaddress">
             <summary>
-            Ipaddress of signal
+            Ipaddress of Location
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.Device.DeviceStatus">
@@ -1663,12 +1689,12 @@
         </member>
         <member name="P:ATSPM.Data.Models.DirectionType.PrimaryDirections">
             <summary>
-            Primary directions on <see cref="T:ATSPM.Data.Models.RouteSignal"/>
+            Primary directions on <see cref="T:ATSPM.Data.Models.RouteLocation"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.DirectionType.OpposingDirections">
             <summary>
-            Opposing directions on <see cref="T:ATSPM.Data.Models.RouteSignal"/>
+            Opposing directions on <see cref="T:ATSPM.Data.Models.RouteLocation"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.DirectionType.Approaches">
@@ -1829,6 +1855,12 @@
         <member name="P:ATSPM.Data.Models.Location.Jurisdiction">
             <inheritdoc/>
         </member>
+        <member name="P:ATSPM.Data.Models.Location.LocationTypeId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.Location.LocationType">
+            <inheritdoc/>
+        </member>
         <member name="P:ATSPM.Data.Models.Location.RegionId">
             <inheritdoc/>
         </member>
@@ -1847,9 +1879,22 @@
         <member name="M:ATSPM.Data.Models.Location.ToString">
             <inheritdoc/>
         </member>
+        <member name="P:ATSPM.Data.Models.LocationType.Name">
+            <summary>
+            Name of location type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.LocationType.Icon">
+            <summary>
+            Icon for disquinguishing location type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.LocationType.Locations">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Models.MeasureComment">
             <summary>
-            Measure comment for tracking signal measures
+            Measure comment for tracking Location measures
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.MeasureComment.TimeStamp">
@@ -2139,72 +2184,122 @@
             Route name
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.Route.RouteSignals">
+        <member name="P:ATSPM.Data.Models.Route.RouteLocations">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.Route.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.RouteSignal">
+        <member name="T:ATSPM.Data.Models.RouteDistance">
             <summary>
-            Route signal
+            Route distance
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.Order">
+        <member name="P:ATSPM.Data.Models.RouteDistance.Distance">
+            <summary>
+            Distance between <see cref="!:RouteLocationA"/> and <see cref="!:RouteLocationB"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteDistance.LocationIdentifierA">
+            <summary>
+            Related location A
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteDistance.LocationIdentifierB">
+            <summary>
+            Related location B
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteDistance.PreviousLocations">
+            <summary>
+            Related route locations
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteDistance.NextLocations">
+            <summary>
+            Related route locations
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Models.RouteLocation">
+            <summary>
+            Route Location
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteLocation.Order">
             <summary>
             Location order on route
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.PrimaryPhase">
+        <member name="P:ATSPM.Data.Models.RouteLocation.PrimaryPhase">
             <summary>
             Primary phase number
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.OpposingPhase">
+        <member name="P:ATSPM.Data.Models.RouteLocation.OpposingPhase">
             <summary>
             Opposing phase number
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.PrimaryDirectionId">
+        <member name="P:ATSPM.Data.Models.RouteLocation.PrimaryDirectionId">
             <summary>
             Related primary direction
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.OpposingDirectionId">
+        <member name="P:ATSPM.Data.Models.RouteLocation.OpposingDirectionId">
             <summary>
             Related opposing direction
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.PrimaryDirection">
+        <member name="P:ATSPM.Data.Models.RouteLocation.PrimaryDirection">
             <summary>
             Primary direction
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.OpposingDirection">
+        <member name="P:ATSPM.Data.Models.RouteLocation.OpposingDirection">
             <summary>
             Opposing direction
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.IsPrimaryOverlap">
+        <member name="P:ATSPM.Data.Models.RouteLocation.IsPrimaryOverlap">
             <summary>
             Is primary overlap
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.IsOpposingOverlap">
+        <member name="P:ATSPM.Data.Models.RouteLocation.IsOpposingOverlap">
             <summary>
             Is opposing overlap
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.LocationIdentifier">
+        <member name="P:ATSPM.Data.Models.RouteLocation.PreviousLocationDistanceId">
+            <summary>
+            Related previous location distance
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteLocation.PreviousLocationDistance">
+            <summary>
+            Previous location distance
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteLocation.NextLocationDistanceId">
+            <summary>
+            Related next location distance
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteLocation.NextLocationDistance">
+            <summary>
+            Next location distance
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.RouteLocation.LocationIdentifier">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.RouteId">
+        <member name="P:ATSPM.Data.Models.RouteLocation.RouteId">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.RouteSignal.Route">
+        <member name="P:ATSPM.Data.Models.RouteLocation.Route">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Data.Models.RouteSignal.ToString">
+        <member name="M:ATSPM.Data.Models.RouteLocation.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.Settings">
@@ -2225,15 +2320,15 @@
         <member name="M:ATSPM.Data.Models.Settings.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.SignalPlanAggregation">
+        <member name="T:ATSPM.Data.Models.LocationPlanAggregation">
             <summary>
             Location plan aggregation
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.SignalPlanAggregation.LocationIdentifier">
+        <member name="P:ATSPM.Data.Models.LocationPlanAggregation.LocationIdentifier">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.SignalPlanAggregation.PlanNumber">
+        <member name="P:ATSPM.Data.Models.LocationPlanAggregation.PlanNumber">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.VersionHistory">
@@ -2464,6 +2559,21 @@
             Collection of locations
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Relationships.IRelatedLocationType">
+            <summary>
+            Related location type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedLocationType.LocationTypeId">
+            <summary>
+            Related location type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Relationships.IRelatedLocationType.LocationType">
+            <summary>
+            Location type
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedMeasureComments">
             <summary>
             Related measure comments
@@ -2539,14 +2649,14 @@
             Route
             </summary>
         </member>
-        <member name="T:ATSPM.Data.Relationships.IRelatedRouteSignals">
+        <member name="T:ATSPM.Data.Relationships.IRelatedRouteLocations">
             <summary>
-            Related route signals
+            Related route Locations
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Relationships.IRelatedRouteSignals.RouteSignals">
+        <member name="P:ATSPM.Data.Relationships.IRelatedRouteLocations.RouteLocations">
             <summary>
-            Collection of route signals
+            Collection of route Locations
             </summary>
         </member>
     </members>

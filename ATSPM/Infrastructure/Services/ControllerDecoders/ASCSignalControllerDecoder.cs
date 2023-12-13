@@ -13,9 +13,9 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class ASCSignalControllerDecoder : ControllerDecoderBase
+    public class ASCLocationControllerDecoder : ControllerDecoderBase
     {
-        public ASCSignalControllerDecoder(ILogger<ASCSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 

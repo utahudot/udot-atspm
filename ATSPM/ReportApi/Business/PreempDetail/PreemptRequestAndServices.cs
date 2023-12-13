@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.PreempDetail
 {
-    public class PreemptRequestAndServices : SignalResult
+    public class PreemptRequestAndServices : LocationResult
     {
         public List<RequestAndServices> RequestAndServices { get; set; }
 

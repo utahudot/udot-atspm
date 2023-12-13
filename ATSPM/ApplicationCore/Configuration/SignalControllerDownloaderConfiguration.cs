@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ATSPM.Application.Configuration
 {
-    public class SignalControllerDownloaderConfiguration
+    public class LocationControllerDownloaderConfiguration
     {
         public string LocalPath { get; set; }
         

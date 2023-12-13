@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Processes
 {
-    public class DownloadSignalControllerData
+    public class DownloadLocationControllerData
     {
     }
 }

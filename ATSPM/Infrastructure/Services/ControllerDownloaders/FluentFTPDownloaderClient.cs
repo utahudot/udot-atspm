@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Domain.BaseClasses;
 using FluentFTP;
 using Google.Apis.Logging;

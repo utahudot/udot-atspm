@@ -9,34 +9,34 @@ namespace ATSPM.Infrastructure.Repositories
     /// <summary>
     /// Location route entity framework repository
     /// </summary>
-    public class RouteSignalEFRepository : ATSPMRepositoryEFBase<RouteSignal>, IRouteSignalsRepository
+    public class RouteLocationEFRepository : ATSPMRepositoryEFBase<RouteLocation>, IRouteLocationsRepository
     {
         /// <inheritdoc/>
-        public RouteSignalEFRepository(ConfigContext db, ILogger<RouteSignalEFRepository> log) : base(db, log) { }
+        public RouteLocationEFRepository(ConfigContext db, ILogger<RouteLocationEFRepository> log) : base(db, log) { }
 
         #region Overrides
 
         /// <inheritdoc/>
-        public override IQueryable<RouteSignal> GetList()
+        public override IQueryable<RouteLocation> GetList()
         {
             return base.GetList().OrderBy(o => o.Order);
         }
 
         #endregion
 
-        #region IRouteSignalsRepository
+        #region IRouteLocationsRepository
 
-        public RouteSignal GetByRoutelocationId(int id)
+        public RouteLocation GetByRoutelocationId(int id)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MoveRouteSignalDown(int routeId, int routelocationId)
+        public void MoveRouteLocationDown(int routeId, int routelocationId)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MoveRouteSignalUp(int routeId, int routelocationId)
+        public void MoveRouteLocationUp(int routeId, int routelocationId)
         {
             throw new System.NotImplementedException();
         }

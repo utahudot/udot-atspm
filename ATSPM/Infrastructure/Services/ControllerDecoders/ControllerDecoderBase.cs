@@ -3,7 +3,7 @@ using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
@@ -21,19 +21,19 @@ using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public abstract class ControllerDecoderBase : ServiceObjectBase, ISignalControllerDecoder
+    public abstract class ControllerDecoderBase : ServiceObjectBase, ILocationControllerDecoder
     {
         public event EventHandler CanExecuteChanged;
 
         #region Fields
 
         private readonly ILogger _log;
-        //protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
-        protected readonly SignalControllerDecoderConfiguration _options;
+        //protected readonly IOptions<LocationControllerDecoderConfiguration> _options;
+        protected readonly LocationControllerDecoderConfiguration _options;
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options)
+        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options)
         {
             _log = log;
             _options = options?.Get(this.GetType().Name) ?? options?.Value;

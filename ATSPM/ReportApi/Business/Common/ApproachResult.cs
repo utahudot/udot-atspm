@@ -3,7 +3,7 @@ using System;
 
 namespace ATSPM.ReportApi.Business.Common
 {
-    public class ApproachResult : SignalResult
+    public class ApproachResult : LocationResult
     {
         public ApproachResult()
         {

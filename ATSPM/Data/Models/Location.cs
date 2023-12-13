@@ -14,7 +14,8 @@ namespace ATSPM.Data.Models
     public partial class Location :
         AtspmConfigModelBase<int>,
         ILocationLayer,
-        IRelatedControllerType, 
+        IRelatedControllerType,
+        IRelatedLocationType,
         IRelatedJurisdiction, 
         IRelatedRegion, 
         IRelatedApproaches, 
@@ -102,6 +103,16 @@ namespace ATSPM.Data.Models
 
         /// <inheritdoc/>
         public virtual Jurisdiction Jurisdiction { get; set; }
+
+        #endregion
+
+        #region IRelatedLocationType
+
+        /// <inheritdoc/>
+        public int LocationTypeId { get; set; }
+
+        /// <inheritdoc/>
+        public virtual LocationType LocationType { get; set; }
 
         #endregion
 

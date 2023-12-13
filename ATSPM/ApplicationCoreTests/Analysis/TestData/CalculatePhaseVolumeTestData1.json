@@ -10,7 +10,7 @@
     "IsPedestrianPhaseOverlap": false,
     "PedestrianDetectors": null,
     "locationId": 1680,
-    "Signal": {
+    "Location": {
       "Latitude": 40.62398502,
       "Longitude": -111.9387819,
       "PrimaryName": "Redwood Road",
@@ -79,7 +79,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -215,7 +215,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -351,7 +351,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -487,7 +487,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -623,7 +623,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -759,7 +759,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -895,7 +895,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",
@@ -1031,7 +1031,7 @@
           "IsPedestrianPhaseOverlap": false,
           "PedestrianDetectors": null,
           "locationId": 1680,
-          "Signal": {
+          "Location": {
             "Latitude": 40.62398502,
             "Longitude": -111.9387819,
             "PrimaryName": "Redwood Road",

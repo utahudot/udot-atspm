@@ -17,7 +17,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
 
         public ArrivalOnRedResult GetChartData(
             ArrivalOnRedOptions options,
-            SignalPhase signalPhase,
+            LocationPhase LocationPhase,
             Approach approach
             )
         {
@@ -28,17 +28,17 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
             List<DataPointForDouble> percentArrivalsOnReds = new List<DataPointForDouble>();
             List<DataPointForDouble> totalVehicles = new List<DataPointForDouble>();
             List<DataPointForDouble> arrivalsOnReds = new List<DataPointForDouble>();
-            if (signalPhase.Cycles.Count > 0)
+            if (LocationPhase.Cycles.Count > 0)
             {
-                var dt = signalPhase.StartDate;
-                while (dt < signalPhase.EndDate)
+                var dt = LocationPhase.StartDate;
+                while (dt < LocationPhase.EndDate)
                 {
                     double binTotalStops = 0;
                     double binPercentAoR = 0;
                     double binDetectorHits = 0;
                     // Get cycles that start and end within the bin, and the cycle that starts before and ends
                     // within the bin, and the cycle that starts within and ends after the bin
-                    var cycles = signalPhase.Cycles
+                    var cycles = LocationPhase.Cycles
                         .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize))
                         .ToList();
                     //|| c.StartTime < dt && c.EndTime >= dt
@@ -71,7 +71,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
             if (totalDetectorHits > 0)
                 totalPercentAoR = totalAoR / totalCars * 100;
 
-            var plans = GetArrivalOnRedPlans(signalPhase.Plans, options.ShowPlanStatistics);
+            var plans = GetArrivalOnRedPlans(LocationPhase.Plans, options.ShowPlanStatistics);
             return new ArrivalOnRedResult(
                 approach.Location.LocationIdentifier,
                 approach.Id,

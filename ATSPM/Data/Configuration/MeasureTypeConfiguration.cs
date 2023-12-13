@@ -206,7 +206,7 @@ namespace ATSPM.Data.Configuration
                 new MeasureType
                 {
                     Id = 22,
-                    Name = "Signal Preemption", //"Preemption",
+                    Name = "Location Preemption", //"Preemption",
                     Abbreviation = "PreemptA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
@@ -215,7 +215,7 @@ namespace ATSPM.Data.Configuration
                 new MeasureType
                 {
                     Id = 24,
-                    Name = "Signal Priority", // "Transit Location Priority",
+                    Name = "Location Priority", // "Transit Location Priority",
                     Abbreviation = "TSPA",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
@@ -242,7 +242,7 @@ namespace ATSPM.Data.Configuration
                 new MeasureType
                 {
                     Id = 27,
-                    Name = "Signal Event Count",
+                    Name = "Location Event Count",
                     Abbreviation = "SEC",
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,

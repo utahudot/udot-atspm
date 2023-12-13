@@ -151,22 +151,22 @@ namespace InfrastructureTests
         }
 
         [Fact(Skip = "Not ready yet")]
-        public void GetSignalEventsBetweenDates()
+        public void GetLocationEventsBetweenDates()
         {
         }
 
         [Fact(Skip = "Not ready yet")]
-        public void GetSignalEventsByEventCode()
+        public void GetLocationEventsByEventCode()
         {
         }
 
         [Fact(Skip = "Not ready yet")]
-        public void GetSignalEventsByEventCodes()
+        public void GetLocationEventsByEventCodes()
         {
         }
 
         [Fact(Skip = "Not ready yet")]
-        public void GetSignalEventsCountBetweenDates()
+        public void GetLocationEventsCountBetweenDates()
         {
         }
 
@@ -186,7 +186,7 @@ namespace InfrastructureTests
         }
 
         [Fact(Skip = "Not ready yet")]
-        public void GetTopNumberOfSignalEventsBetweenDates()
+        public void GetTopNumberOfLocationEventsBetweenDates()
         {
         }
 

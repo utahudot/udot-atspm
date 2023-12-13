@@ -20,7 +20,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
                 .GroupBy(g => g.LocationIdentifier)
-                .Select(signal => signal.AsEnumerable()
+                .Select(Location => Location.AsEnumerable()
                 .GroupBy(g => g.EventParam)
                     .Select(s => Tuple.Create(new Detector()
                     {
@@ -30,7 +30,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                         Approach = new Approach()
                         {
                             Mph = 45,
-                            Location = new Location() { LocationIdentifier = signal.Key }
+                            Location = new Location() { LocationIdentifier = Location.Key }
                         }
                     }, s.AsEnumerable())))
                 .SelectMany(s => s);

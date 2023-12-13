@@ -25,7 +25,7 @@ namespace ATSPM.ConfigApi.Controllers
         #region NavigationProperties
 
         /// <summary>
-        /// <see cref="RouteSignal"/> navigation property action
+        /// <see cref="RouteLocation"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -33,9 +33,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<RouteSignal>> GetRouteSignals([FromRoute] int key)
+        public ActionResult<IEnumerable<RouteLocation>> GetRouteLocations([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<RouteSignal>>(key);
+            return GetNavigationProperty<IEnumerable<RouteLocation>>(key);
         }
 
         #endregion
