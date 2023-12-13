@@ -134,7 +134,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Comment = table.Column<string>(type: "character varying(255)", unicode: false, maxLength: 255, nullable: true),
                     SignalIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false)
                 },
@@ -256,7 +256,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2023, 12, 12, 13, 7, 0, 670, DateTimeKind.Local).AddTicks(3879)),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, defaultValue: new DateTime(2023, 12, 12, 15, 59, 57, 316, DateTimeKind.Local).AddTicks(2632)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -280,7 +280,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SignalId = table.Column<int>(type: "integer", nullable: false),
                     SignalIdentifier = table.Column<string>(type: "text", unicode: false, nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ComponentType = table.Column<int>(type: "integer", nullable: false),
                     ComponentId = table.Column<int>(type: "integer", nullable: false),
                     IssueType = table.Column<int>(type: "integer", nullable: false),
@@ -440,7 +440,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     VersionAction = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
-                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Start = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Pedsare1to1 = table.Column<bool>(type: "boolean", nullable: false),
                     SignalIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
                     ControllerTypeId = table.Column<int>(type: "integer", nullable: false),
@@ -630,8 +630,8 @@ namespace ATSPM.Infrastructure.Migrations.Config
                     DetectorChannel = table.Column<int>(type: "integer", nullable: false),
                     DistanceFromStopBar = table.Column<int>(type: "integer", nullable: true),
                     MinSpeedFilter = table.Column<int>(type: "integer", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DateDisabled = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DateDisabled = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     LaneNumber = table.Column<int>(type: "integer", nullable: true),
                     MovementType = table.Column<int>(type: "integer", nullable: false),
                     LaneType = table.Column<int>(type: "integer", nullable: false),
@@ -683,7 +683,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Comment = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false),
                     DetectorId = table.Column<int>(type: "integer", nullable: false)
                 },

@@ -71,8 +71,8 @@ dkms.conf
 /ATSPM/DomainCoreTests/bin
 /ATSPM/EventLogUtility/obj
 /ATSPM/EventLogUtility/bin
-/ATSPM/Identity/obj
-/ATSPM/IdentityTests/obj
+/ATSPM/Identity/obj/
+/ATSPM/IdentityTests/obj/
 /ATSPM/Infrastructure/obj
 /ATSPM/Infrastructure/bin
 /ATSPM/InfrastructureTests/obj

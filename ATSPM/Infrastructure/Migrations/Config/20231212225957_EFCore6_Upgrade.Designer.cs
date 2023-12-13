@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231212200700_EFCore6_Upgrade")]
+    [Migration("20231212225957_EFCore6_Upgrade")]
     partial class EFCore6_Upgrade
     {
         /// <inheritdoc />
@@ -257,10 +257,10 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("integer");
@@ -326,7 +326,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -887,7 +887,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -1546,7 +1546,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -1625,8 +1625,8 @@ namespace ATSPM.Infrastructure.Migrations.Config
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2023, 12, 12, 13, 7, 0, 670, DateTimeKind.Local).AddTicks(3879));
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValue(new DateTime(2023, 12, 12, 15, 59, 57, 316, DateTimeKind.Local).AddTicks(2632));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1689,7 +1689,7 @@ namespace ATSPM.Infrastructure.Migrations.Config
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
