@@ -21,7 +21,7 @@ namespace WatchDog.Services
         public async Task SendAllEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Location> signals,
+            List<Location> Locations,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -32,17 +32,17 @@ namespace WatchDog.Services
             List<UserRegion> userRegions,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            await SendRegionEmails(options, eventsContainer, signals, smtp, users, regions, userRegions, logsFromPreviousDay);
-            await SendJurisdictionEmails(options, eventsContainer, signals, smtp, users, jurisdictions, userJurisdictions, logsFromPreviousDay);
-            await SendAreaEmails(options, eventsContainer, signals, smtp, users, areas, userAreas, logsFromPreviousDay);
-            await CreateAndSendEmail(options, eventsContainer, signals, smtp, "All Signals", users, logsFromPreviousDay);
+            await SendRegionEmails(options, eventsContainer, Locations, smtp, users, regions, userRegions, logsFromPreviousDay);
+            await SendJurisdictionEmails(options, eventsContainer, Locations, smtp, users, jurisdictions, userJurisdictions, logsFromPreviousDay);
+            await SendAreaEmails(options, eventsContainer, Locations, smtp, users, areas, userAreas, logsFromPreviousDay);
+            await CreateAndSendEmail(options, eventsContainer, Locations, smtp, "All Locations", users, logsFromPreviousDay);
 
         }
 
         private async Task SendJurisdictionEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Location> signals,
+            List<Location> Locations,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Jurisdiction> jurisdictions,
@@ -55,15 +55,15 @@ namespace WatchDog.Services
                 if (userIdsByJurisdiction.IsNullOrEmpty())
                     continue;
                 var usersByJurisdiction = users.Where(u => userIdsByJurisdiction.Any(uj => uj.UserId == u.Id)).ToList();
-                var signalsByJurisdiction = signals.Where(s => s.JurisdictionId == jurisdiction.Id).ToList();
-                if (!userIdsByJurisdiction.IsNullOrEmpty() && !signalsByJurisdiction.IsNullOrEmpty())
-                    CreateAndSendEmail(options, eventsContainer, signalsByJurisdiction, smtp, jurisdiction.Name, usersByJurisdiction, logsFromPreviousDay);
+                var LocationsByJurisdiction = Locations.Where(s => s.JurisdictionId == jurisdiction.Id).ToList();
+                if (!userIdsByJurisdiction.IsNullOrEmpty() && !LocationsByJurisdiction.IsNullOrEmpty())
+                    CreateAndSendEmail(options, eventsContainer, LocationsByJurisdiction, smtp, jurisdiction.Name, usersByJurisdiction, logsFromPreviousDay);
             }
         }
         private async Task SendAreaEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Location> signals,
+            List<Location> Locations,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Area> areas,
@@ -76,15 +76,15 @@ namespace WatchDog.Services
                 if (userIdsByArea.IsNullOrEmpty())
                     continue;
                 var usersByArea = users.Where(u => userIdsByArea.Any(ua => ua.UserId == u.Id)).ToList();
-                var signalsByArea = signals.Where(s => s.RegionId == area.Id).ToList();
-                if (!userIdsByArea.IsNullOrEmpty() && !signalsByArea.IsNullOrEmpty())
-                    CreateAndSendEmail(options, eventsContainer, signalsByArea, smtp, area.Name, usersByArea, logsFromPreviousDay);
+                var LocationsByArea = Locations.Where(s => s.RegionId == area.Id).ToList();
+                if (!userIdsByArea.IsNullOrEmpty() && !LocationsByArea.IsNullOrEmpty())
+                    CreateAndSendEmail(options, eventsContainer, LocationsByArea, smtp, area.Name, usersByArea, logsFromPreviousDay);
             }
         }
         private async Task SendRegionEmails(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Location> signals,
+            List<Location> Locations,
             SmtpClient smtp,
             List<ApplicationUser> users,
             List<Region> regions,
@@ -97,16 +97,16 @@ namespace WatchDog.Services
                 if (userIdsByRegion.IsNullOrEmpty())
                     continue;
                 var usersByRegion = users.Where(u => userIdsByRegion.Any(ur => ur.UserId == u.Id)).ToList();
-                var signalsByRegion = signals.Where(s => s.RegionId == region.Id).ToList();
-                if (!userIdsByRegion.IsNullOrEmpty() && !signalsByRegion.IsNullOrEmpty())
-                    CreateAndSendEmail(options, eventsContainer, signalsByRegion, smtp, region.Description, usersByRegion, logsFromPreviousDay);
+                var LocationsByRegion = Locations.Where(s => s.RegionId == region.Id).ToList();
+                if (!userIdsByRegion.IsNullOrEmpty() && !LocationsByRegion.IsNullOrEmpty())
+                    CreateAndSendEmail(options, eventsContainer, LocationsByRegion, smtp, region.Description, usersByRegion, logsFromPreviousDay);
             }
         }
 
         public async Task CreateAndSendEmail(
             EmailOptions options,
             List<WatchDogLogEvent> eventsContainer,
-            List<Location> signals,
+            List<Location> Locations,
             SmtpClient smtp,
             string areaSpecificMessage,
             List<ApplicationUser> users,
@@ -117,13 +117,13 @@ namespace WatchDog.Services
             SetupMailMessage(options, areaSpecificMessage, users, message);
             List<WatchDogLogEvent> missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs;
             GetEventsByIssueType(eventsContainer, out missingErrorsLogs, out forceErrorsLogs, out maxErrorsLogs, out countErrorsLogs, out stuckpedErrorsLogs, out configurationErrorsLogs, out unconfiguredDetectorErrorsLogs);
-            AddMessageBody(options, signals, logsFromPreviousDay, message, missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs);
+            AddMessageBody(options, Locations, logsFromPreviousDay, message, missingErrorsLogs, forceErrorsLogs, maxErrorsLogs, countErrorsLogs, stuckpedErrorsLogs, configurationErrorsLogs, unconfiguredDetectorErrorsLogs);
             SendMessage(message, smtp);
         }
 
         private void AddMessageBody(
             EmailOptions options,
-            List<Location> signals,
+            List<Location> Locations,
             List<WatchDogLogEvent> logsFromPreviousDay,
             MailMessage message,
             List<WatchDogLogEvent> missingErrorsLogs,
@@ -137,106 +137,106 @@ namespace WatchDog.Services
         {
             message.Body += "<style>\r\n  .atspm-table {\r\n    border: solid 2px #DDEEEE;\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n    font: normal 14px Roboto, sans-serif;\r\n  }\r\n\r\n  .atspm-table thead th {\r\n    background-color: #DDEFEF;\r\n    border: solid 1px #DDEEEE;\r\n    color: #336B6B;\r\n    padding: 10px;\r\n    text-align: left;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n\r\n  .atspm-table tbody td {\r\n    border: solid 1px #DDEEEE;\r\n    color: #333;\r\n    padding: 10px;\r\n    text-shadow: 1px 1px 1px #fff;\r\n  }\r\n</style>";
 
-            //var ftpErrors = SortAndAddToMessage(signals, eventsContainer.CannotFtpFiles, options);
+            //var ftpErrors = SortAndAddToMessage(Locations, eventsContainer.CannotFtpFiles, options);
             if (missingErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='3'>The following signals had too few records in the database on {options.ScanDate.Date.ToShortDateString()}</th></tr>";
-                message.Body += $"<tr><thead><th>Signal</th><th>Signal Description</th><th>Issue Details</th></thead></tr></thead>";
-                message.Body += SortAndAddToMessage(signals, missingErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='3'>The following Locations had too few records in the database on {options.ScanDate.Date.ToShortDateString()}</th></tr>";
+                message.Body += $"<tr><thead><th>Location</th><th>Location Description</th><th>Issue Details</th></thead></tr></thead>";
+                message.Body += SortAndAddToMessage(Locations, missingErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='3'>No new missing record errors were found on {options.ScanDate.Date.ToShortDateString()}</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
 
             if (forceErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
-                message.Body += SortAndAddToMessage(signals, forceErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations had too many force off occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
+                message.Body += SortAndAddToMessage(Locations, forceErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new force off errors were found between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
                 message.Body += "</table></br>";
             }
 
             if (maxErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
-                message.Body += SortAndAddToMessage(signals, maxErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations had too many max out occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr></thead>";
+                message.Body += SortAndAddToMessage(Locations, maxErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new max out errors were found between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
 
             if (countErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}";
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations had unusually low advanced detection counts on {options.ScanDate.Date.ToShortDateString()}";
                 message.Body += $"{options.PreviousDayPMPeakStart}:00 and {options.PreviousDayPMPeakEnd}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
-                message.Body += SortAndAddToMessage(signals, countErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(Locations, countErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new low advanced detection count errors on {options.ScanDate.Date.ToShortDateString()}";
                 message.Body += $"{options.PreviousDayPMPeakStart}:00 and {options.PreviousDayPMPeakEnd}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
             if (stuckpedErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
-                message.Body += SortAndAddToMessage(signals, stuckpedErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations have high pedestrian activation occurrences between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00</th></tr>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(Locations, stuckpedErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new high pedestrian activation errors between {options.ScanDayStartHour}:00 and {options.ScanDayEndHour}:00: \n";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
             if (configurationErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals have unconfigured approaches</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
-                message.Body += SortAndAddToMessage(signals, configurationErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations have unconfigured approaches</th></tr>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(Locations, configurationErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new unconfigured approaches \n";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Phase</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
             if (unconfiguredDetectorErrorsLogs.Any())
             {
-                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following signals have unconfigured detectors</th></tr>";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
-                message.Body += SortAndAddToMessage(signals, unconfiguredDetectorErrorsLogs, options, logsFromPreviousDay);
+                message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>The following Locations have unconfigured detectors</th></tr>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
+                message.Body += SortAndAddToMessage(Locations, unconfiguredDetectorErrorsLogs, options, logsFromPreviousDay);
                 message.Body += "</table></br>";
             }
             else
             {
                 message.Body += $"<table class='atspm-table'><thead><tr><th colspan='4'>No new unconfigured detectors \n";
-                message.Body += $"<tr><th>Signal</th><th>Signal Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
+                message.Body += $"<tr><th>Location</th><th>Location Description</th><th>Detector Id</th><th>Issue Details</th></tr><thead>";
                 message.Body += "</table></br>";
             }
             //if (eventsContainer.CannotFtpFiles.Count > 0 && ftpErrors != "")
             //{
-            //    message.Body += " \n --The following signals have had FTP problems.  central was not able to delete the file on the controller between  " +
+            //    message.Body += " \n --The following Locations have had FTP problems.  central was not able to delete the file on the controller between  " +
             //                    options.ScanDayStartHour + ":00 and " +
             //                    options.ScanDayEndHour + ":00: \n";
             //    message.Body += ftpErrors;
@@ -316,26 +316,26 @@ namespace WatchDog.Services
 
 
         private string SortAndAddToMessage(
-            List<Location> signals,
+            List<Location> Locations,
             List<WatchDogLogEvent> issues,
             EmailOptions options,
             List<WatchDogLogEvent> logsFromPreviousDay)
         {
-            if (signals is null || issues is null || options is null || logsFromPreviousDay is null)
+            if (Locations is null || issues is null || options is null || logsFromPreviousDay is null)
             {
                 logger.LogError("Null parameter passed to SortAndAddToMessage");
                 return String.Empty;
             }
-            var sortedSignals = signals.OrderBy(x => x.LocationIdentifier).ToList();
+            var sortedLocations = Locations.OrderBy(x => x.LocationIdentifier).ToList();
             var errorMessage = "";
-            foreach (var signal in sortedSignals)
+            foreach (var Location in sortedLocations)
             {
-                foreach (var error in issues.Where(e => e.locationId == signal.Id))
+                foreach (var error in issues.Where(e => e.locationId == Location.Id))
                 {
                     if (options.EmailAllErrors || !logsFromPreviousDay.Contains(error))
                     {
                         //   Add to email if it was not failing yesterday
-                        errorMessage += $"<tr><td>{error.locationIdentifier}</td><td>{signal.PrimaryName} & {signal.SecondaryName}</td>";
+                        errorMessage += $"<tr><td>{error.locationIdentifier}</td><td>{Location.PrimaryName} & {Location.SecondaryName}</td>";
 
                         if (error.Phase > 0)
                         {

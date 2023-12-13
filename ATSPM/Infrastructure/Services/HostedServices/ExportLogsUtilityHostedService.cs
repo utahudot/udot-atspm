@@ -49,7 +49,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     {
                         foreach (var s in _options.Value.Included)
                         {
-                            _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.LocationIdentifier == d));
@@ -59,7 +59,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     {
                         foreach (var s in _options.Value.Excluded)
                         {
-                            _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.LocationIdentifier));

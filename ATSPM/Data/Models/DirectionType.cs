@@ -26,14 +26,14 @@ namespace ATSPM.Data.Models
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Primary directions on <see cref="RouteSignal"/>
+        /// Primary directions on <see cref="RouteLocation"/>
         /// </summary>
-        public virtual ICollection<RouteSignal> PrimaryDirections { get; set; } = new HashSet<RouteSignal>();
+        public virtual ICollection<RouteLocation> PrimaryDirections { get; set; } = new HashSet<RouteLocation>();
 
         /// <summary>
-        /// Opposing directions on <see cref="RouteSignal"/>
+        /// Opposing directions on <see cref="RouteLocation"/>
         /// </summary>
-        public virtual ICollection<RouteSignal> OpposingDirections { get; set; } = new HashSet<RouteSignal>();
+        public virtual ICollection<RouteLocation> OpposingDirections { get; set; } = new HashSet<RouteLocation>();
 
         #region IRelatedApproaches
 

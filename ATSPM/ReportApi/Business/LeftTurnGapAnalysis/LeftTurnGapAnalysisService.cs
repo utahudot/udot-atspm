@@ -57,7 +57,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
             {
                 var result = GetData(phaseEvents, options, detectionTypeStr, approach);
                 result.ApproachDescription = approach.Description;
-                result.SignalDescription = approach.Location.SignalDescription();
+                result.LocationDescription = approach.Location.LocationDescription();
                 return result;
             }
             return null;

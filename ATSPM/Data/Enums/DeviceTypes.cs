@@ -3,7 +3,7 @@
     public enum DeviceTypes
     {
         Unknown,
-        SignalController,
+        LocationController,
         RampController,
         AICamera,
         FIRCamera

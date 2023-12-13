@@ -10,12 +10,12 @@ namespace ATSPM.ConfigApi.Configuration
     /// <summary>
     /// Location oData configuration
     /// </summary>
-    public class SignalOdataConfiguration : IModelConfiguration
+    public class LocationOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<Location>("Signal").EntityType;
+            var model = builder.EntitySet<Location>("Location").EntityType;
             model.Page(default, default);
             model.Expand(1, SelectExpandType.Automatic, new string[] { "controllerType", "jurisdiction", "region" });
 
@@ -51,28 +51,28 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.Note).DefaultValueString = "Initial";
 
 
-                        var a = model.Collection.Function("GetAllVersionsOfSignal");
+                        var a = model.Collection.Function("GetAllVersionsOfLocation");
                         a.Parameter<string>("identifier");
-                        a.ReturnsCollectionFromEntitySet<Location>("Signals");
+                        a.ReturnsCollectionFromEntitySet<Location>("Locations");
 
-                        var b = model.Collection.Function("GetLatestVersionOfAllSignals");
-                        b.ReturnsCollectionFromEntitySet<Location>("Signals");
+                        var b = model.Collection.Function("GetLatestVersionOfAllLocations");
+                        b.ReturnsCollectionFromEntitySet<Location>("Locations");
 
-                        var c = model.Collection.Function("GetLatestVersionOfSignal");
+                        var c = model.Collection.Function("GetLatestVersionOfLocation");
                         c.Parameter<string>("identifier");
-                        c.ReturnsFromEntitySet<Location>("Signal");
+                        c.ReturnsFromEntitySet<Location>("Location");
 
-                        var d = model.Action("CopySignalToNewVersion");
-                        d.ReturnsFromEntitySet<Location>("Signal");
+                        var d = model.Action("CopyLocationToNewVersion");
+                        d.ReturnsFromEntitySet<Location>("Location");
 
-                        var e = model.Action("SetSignalToDeleted");
+                        var e = model.Action("SetLocationToDeleted");
 
-                        var f = model.Collection.Function("GetSignalsForSearch");
+                        var f = model.Collection.Function("GetLocationsForSearch");
                         //f.Parameter<int>("areaId");
                         //f.Parameter<int>("regionId");
                         //f.Parameter<int>("jurisdictionId");
                         //f.Parameter<int>("metricTypeId");
-                        f.ReturnsCollectionFromEntitySet<SearchSignal>("SearchSignals");
+                        f.ReturnsCollectionFromEntitySet<SearchLocation>("SearchLocations");
 
                         break;
                     }

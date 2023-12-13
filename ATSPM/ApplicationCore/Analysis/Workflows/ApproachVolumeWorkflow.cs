@@ -11,7 +11,7 @@ using System.Threading.Tasks.Dataflow;
 namespace ATSPM.Application.Analysis.Workflows
 {
     /// <summary>
-    /// Volume data can be useful when programming signal timing values or 
+    /// Volume data can be useful when programming Location timing values or 
     /// troubleshooting detection issues and is also often collected for planning
     /// purposes.This measure reports the number of vehicles observed on an approach
     ///(1). The number of vehicles is normalized to a flow rate(in vehicles per hour).

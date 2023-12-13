@@ -7,7 +7,7 @@ namespace ATSPM.ReportApi.Business.PreemptServiceRequest
     /// <summary>
     /// Preempt Service Request chart
     /// </summary>
-    public class PreemptServiceRequestResult : SignalResult
+    public class PreemptServiceRequestResult : LocationResult
     {
         public PreemptServiceRequestResult(string chartName,
             string locationId,

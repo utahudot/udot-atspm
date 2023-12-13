@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,27 +16,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using Utah.Gov.Udot.PipelineManager;
 
-namespace ATSPM.SignalControllerLogger
+namespace ATSPM.LocationControllerLogger
 {
     public class ControllerLoggerBackgroundService : BackgroundService
     {
         private readonly ILogger _log;
         private readonly IServiceProvider _serviceProvider;
-        protected readonly IOptions<SignalControllerLoggerConfiguration> _options;
+        protected readonly IOptions<LocationControllerLoggerConfiguration> _options;
 
         PipelineManager _pipelineManager;
 
-        private IReadOnlyList<Signal> _signalList;
+        private IReadOnlyList<Location> _LocationList;
 
-        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<SignalControllerLoggerConfiguration> options) =>
+        public ControllerLoggerBackgroundService(ILogger<ControllerLoggerBackgroundService> log, IServiceProvider serviceProvider, IOptions<LocationControllerLoggerConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         
-        private ISignalControllerDownloader DownloadSelector(Signal signal)
+        private ILocationControllerDownloader DownloadSelector(Location Location)
         {
-            foreach (ISignalControllerDownloader d in _serviceProvider.GetServices<ISignalControllerDownloader>())
+            foreach (ILocationControllerDownloader d in _serviceProvider.GetServices<ILocationControllerDownloader>())
             {
-                if (d.CanExecute(signal))
+                if (d.CanExecute(Location))
                     return d;
             }
 
@@ -48,9 +48,9 @@ namespace ATSPM.SignalControllerLogger
             using (var scope = _serviceProvider.CreateScope())
             {
                 //var db = scope.ServiceProvider.GetRequiredService<DbContext>();
-                //_signalList = db.Set<Signal>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.locationId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
+                //_LocationList = db.Set<Location>().Where(v => v.VersionActionId != 3).Include(i => i.ControllerType).AsNoTracking().AsEnumerable().GroupBy(r => r.locationId).Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault()).ToList();
 
-                _signalList = scope.ServiceProvider.GetService<ISignalRepository>().GetLatestVersionOfAllSignals();
+                _LocationList = scope.ServiceProvider.GetService<ILocationRepository>().GetLatestVersionOfAllLocations();
             }
 
             Progress<PipelineProgress> progress = new Progress<PipelineProgress>(p => Console.Write($"{p}"));
@@ -58,7 +58,7 @@ namespace ATSPM.SignalControllerLogger
             _pipelineManager = new PipelineManager(stoppingToken);
 
             //add steps
-            //_pipelineManager.AddStep<Signal, DirectoryInfo>("FTPToDirectory",(i, c) => DownloadSelector(i).ExecuteAsync(i,c), i => true, i => true);
+            //_pipelineManager.AddStep<Location, DirectoryInfo>("FTPToDirectory",(i, c) => DownloadSelector(i).ExecuteAsync(i,c), i => true, i => true);
             _pipelineManager.AddStep<DirectoryInfo, List<FileInfo>>("GetFilesFromDirectory", (i,c) => GetFilesFromDirectory(i), i => i.Parent.Name == "ControlLogs", i => i.Count > 0);
             _pipelineManager.AddStep<List<FileInfo>, HashSet<ControllerEventLog>> ("DecodeFiles", (i,c) => ConvertFilesToEventLogs(i, c), i => i.Count > 0, i => true);
             _pipelineManager.AddStep<HashSet<ControllerEventLog>, List<ControllerLogArchive>>("CombineEventLogs", (i, c) => CombineEventLogs(i, c), i => true, i => true);
@@ -66,7 +66,7 @@ namespace ATSPM.SignalControllerLogger
             //_pipelineManager.AddStep<List<ControllerLogArchive>, DirectoryInfo>("CleanupDirectories", (i, c) => CleanupDirectories(i, c), i => true, i => true);
 
             //add pipes
-            _pipelineManager.AddPipe<Signal>("SeedPipe", 0);
+            _pipelineManager.AddPipe<Location>("SeedPipe", 0);
             _pipelineManager.AddPipe<DirectoryInfo>("FTPToDirectoryOutput");
             //_pipelineManager.AddPipe<DirectoryInfo>("FTPToDirectoryPostFail");
             _pipelineManager.AddPipe<List<FileInfo>>("FileListToDecoding");
@@ -90,7 +90,7 @@ namespace ATSPM.SignalControllerLogger
             //_pipelineManager["CleanupDirectories"].Input = _pipelineManager.Pipes["MergedControllerLogArchive"];
             //_pipelineManager["CleanupDirectories"].Output = _pipelineManager.Pipes["DeletedDirectories"];
 
-            await SeedPipeline((PipelinePipe<Signal>)_pipelineManager.Pipes["SeedPipe"], _signalList, stoppingToken);
+            await SeedPipeline((PipelinePipe<Location>)_pipelineManager.Pipes["SeedPipe"], _LocationList, stoppingToken);
 
 
             var sw = new System.Diagnostics.Stopwatch();
@@ -140,7 +140,7 @@ namespace ATSPM.SignalControllerLogger
         {
             //var di = Directory.CreateDirectory(Path.Combine(_options.Value.RootPath, "DecodedFiles"));
             HashSet<ControllerEventLog> logList = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
-            var decoder = _serviceProvider.GetService<ISignalControllerDecoder>();
+            var decoder = _serviceProvider.GetService<ILocationControllerDecoder>();
 
             foreach (var value in input)
             {

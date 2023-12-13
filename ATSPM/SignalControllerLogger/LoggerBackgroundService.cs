@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ATSPM.Application.Services;
 
-namespace SignalControllerLogger
+namespace LocationControllerLogger
 {
     public class LoggerBackgroundService : BackgroundService
     {
@@ -29,17 +29,17 @@ namespace SignalControllerLogger
             //while (!stoppingToken.IsCancellationRequested)
             //{
 
-            List<Location> signals;
+            List<Location> Locations;
 
             try
             {
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var signalRepository = scope.ServiceProvider.GetService<ILocationRepository>();
-                    var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
+                    var LocationRepository = scope.ServiceProvider.GetService<ILocationRepository>();
+                    var controllerLoggingService = scope.ServiceProvider.GetService<ILocationControllerLoggerService>();
 
-                    //signals = signalRepository.GetLatestVersionOfAllSignals().Where(w => w.ChartEnabled && w.ControllerTypeId == 4).ToList();
-                    //await controllerLoggingService.ExecuteAsync(signals, stoppingToken);
+                    //Locations = LocationRepository.GetLatestVersionOfAllLocations().Where(w => w.ChartEnabled && w.ControllerTypeId == 4).ToList();
+                    //await controllerLoggingService.ExecuteAsync(Locations, stoppingToken);
                 }
             }
             catch (Exception e)

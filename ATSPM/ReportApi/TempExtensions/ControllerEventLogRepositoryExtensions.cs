@@ -47,7 +47,7 @@ namespace ATSPM.ReportApi.TempExtensions
            DateTime start,
            DateTime end)
         {
-            var events = repo.GetSignalEventsByEventCode(
+            var events = repo.GetLocationEventsByEventCode(
                 locationId,
                 start.AddHours(-12),
                 end.AddHours(12),

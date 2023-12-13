@@ -49,8 +49,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(GenerateApproachDelayResults), "Signal Grouping")]
-        public async void GenerateApproachDelayResultsSignalGroupingTest()
+        [Trait(nameof(GenerateApproachDelayResults), "Location Grouping")]
+        public async void GenerateApproachDelayResultsLocationGroupingTest()
         {
             var sut = new GenerateApproachDelayResults();
 

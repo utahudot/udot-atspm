@@ -46,7 +46,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     ProtectedPhaseNumber = 2,
                     DirectionTypeId = DirectionTypes.NB,
                     Mph = 45,
-                    Signal = new Signal()
+                    Location = new Location()
                     {
                         locationIdentifier = "1001"
                     }
@@ -55,8 +55,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateVehicleArrivals), "Compare Signal Pass")]
-        public async void CalculateVehicleArrivalsCompareSignalPassTest()
+        [Trait(nameof(CalculateVehicleArrivals), "Compare Location Pass")]
+        public async void CalculateVehicleArrivalsCompareLocationPassTest()
         {
             var sut = new CalculateVehicleArrivals();
 
@@ -73,8 +73,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateVehicleArrivals), "Compare Signal Fail")]
-        public async void CalculateVehicleArrivalsCompareSignalFailTest()
+        [Trait(nameof(CalculateVehicleArrivals), "Compare Location Fail")]
+        public async void CalculateVehicleArrivalsCompareLocationFailTest()
         {
             var sut = new CalculateVehicleArrivals();
 

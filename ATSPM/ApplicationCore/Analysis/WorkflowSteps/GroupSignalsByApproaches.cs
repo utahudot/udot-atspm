@@ -16,18 +16,18 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// and returns separate Tuples of <see cref="Approach"/>/<see cref="ControllerEventLog"/> pairs
     /// sorted by <see cref="ControllerEventLog.Timestamp"/>.
     /// </summary>
-    public class GroupSignalsByApproaches : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
+    public class GroupLocationsByApproaches : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<ControllerEventLog>>>
     {
         /// <inheritdoc/>
-        public GroupSignalsByApproaches(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
+        public GroupLocationsByApproaches(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
         /// <inheritdoc/>
         protected override Task<IEnumerable<Tuple<Approach, IEnumerable<ControllerEventLog>>>> Process(Tuple<Location, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
-            var signal = input.Item1;
+            var Location = input.Item1;
             var logs = input.Item2;
             
-            var result = signal.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new ControllerLogSignalFilterSpecification(signal))));
+            var result = Location.Approaches.Select(s => Tuple.Create(s, logs.FromSpecification(new ControllerLogLocationFilterSpecification(Location))));
 
             return Task.FromResult(result);
         }

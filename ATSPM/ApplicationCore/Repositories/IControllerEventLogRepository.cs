@@ -20,7 +20,7 @@ namespace ATSPM.Application.Repositories
         /// <param name="startTime">Start time</param>
         /// <param name="endTime">End time</param>
         /// <returns></returns>
-        IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
+        IReadOnlyList<ControllerEventLog> GetLocationEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
 
         #region ExtensionMethods
 
@@ -44,9 +44,9 @@ namespace ATSPM.Application.Repositories
 
         //ControllerEventLog GetFirstEventBeforeDateByEventCodeAndParameter(string LocationId, int eventCode, int eventParam, DateTime date);
 
-        //IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCode(string LocationId, DateTime startTime, DateTime endTime, int eventCode);
+        //IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCode(string LocationId, DateTime startTime, DateTime endTime, int eventCode);
 
-        //IReadOnlyList<ControllerEventLog> GetSignalEventsByEventCodes(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes);
+        //IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCodes(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes);
 
         //IReadOnlyList<ControllerEventLog> GetSplitEvents(string LocationId, DateTime startTime, DateTime endTime);
 
@@ -54,14 +54,14 @@ namespace ATSPM.Application.Repositories
 
         //IReadOnlyList<ControllerEventLog> GetTopEventsAfterDateByEventCodesParam(string LocationId, DateTime timestamp, IEnumerable<int> eventCodes, int param, int top);
 
-        //IReadOnlyList<ControllerEventLog> GetTopNumberOfSignalEventsBetweenDates(string LocationId, int numberOfRecords, DateTime startTime, DateTime endTime);
+        //IReadOnlyList<ControllerEventLog> GetTopNumberOfLocationEventsBetweenDates(string LocationId, int numberOfRecords, DateTime startTime, DateTime endTime);
 
         #endregion
 
         #region Obsolete
 
-        //[Obsolete("Use GetSignalEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
-        //int GetSignalEventsCountBetweenDates(string LocationId, DateTime startTime, DateTime endTime);
+        //[Obsolete("Use GetLocationEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
+        //int GetLocationEventsCountBetweenDates(string LocationId, DateTime startTime, DateTime endTime);
 
         //[Obsolete("This method isn't currently being used")]
         //bool CheckForRecords(string LocationId, DateTime startTime, DateTime endTime);
@@ -81,7 +81,7 @@ namespace ATSPM.Application.Repositories
         //[Obsolete("Use GetEventsByEventCodesParam overload", true)]
         //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double offset, double latencyCorrection);
 
-        //[Obsolete("Use GetSignalEventsCountBetweenDates instead", true)]
+        //[Obsolete("Use GetLocationEventsCountBetweenDates instead", true)]
         //int GetRecordCount(string LocationId, DateTime startTime, DateTime endTime);
 
         //[Obsolete("Depreciated, use a specification instead")]

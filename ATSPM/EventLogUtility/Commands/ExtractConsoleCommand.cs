@@ -55,12 +55,12 @@ namespace ATSPM.EventLogUtility.Commands
 
             //    foreach (var s in i)
             //    {
-            //        Console.WriteLine($"Extracting event logs for signal {s}");
+            //        Console.WriteLine($"Extracting event logs for Location {s}");
             //    }
 
             //    foreach (var s in e)
             //    {
-            //        Console.WriteLine($"Excluding event logs for signal {s}");
+            //        Console.WriteLine($"Excluding event logs for Location {s}");
             //    }
 
             //    Console.WriteLine($"Extraction path {p}");
@@ -74,9 +74,9 @@ namespace ATSPM.EventLogUtility.Commands
 
         public DateCommandOption DateOption { get; set; } = new();
 
-        public SignalIncludeCommandOption IncludeOption { get; set; } = new();
+        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
 
-        public SignalExcludeCommandOption ExcludeOption { get; set; } = new();
+        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 

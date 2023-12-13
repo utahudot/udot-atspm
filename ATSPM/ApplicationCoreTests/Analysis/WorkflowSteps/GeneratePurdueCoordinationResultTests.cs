@@ -32,7 +32,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         //[Fact]
         //[Trait(nameof(CreateRedToRedCycles), "Location Grouping")]
-        //public async void CreateRedToRedCyclesSignalGroupingTest()
+        //public async void CreateRedToRedCyclesLocationGroupingTest()
         //{
         //    var sut = new CreateRedToRedCycles();
 

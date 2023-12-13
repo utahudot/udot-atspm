@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
 
         public ApproachVolumeResult GetChartData(
             ApproachVolumeOptions options,
-            Location signal,
+            Location Location,
             List<ControllerEventLog> primaryDetectorEvents,
             List<ControllerEventLog> opposingDetectorEvents,
             List<Approach> primaryApproaches,

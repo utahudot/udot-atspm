@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
-    public class SignalPlanAggregationConfiguration : IEntityTypeConfiguration<SignalPlanAggregation>
+    public class LocationPlanAggregationConfiguration : IEntityTypeConfiguration<LocationPlanAggregation>
     {
-        public void Configure(EntityTypeBuilder<SignalPlanAggregation> builder)
+        public void Configure(EntityTypeBuilder<LocationPlanAggregation> builder)
         {
-            builder.HasComment("Signal Plan Aggregation");
+            builder.HasComment("Location Plan Aggregation");
 
             builder.HasKey(e => new { e.LocationIdentifier, e.Start, e.End });
 

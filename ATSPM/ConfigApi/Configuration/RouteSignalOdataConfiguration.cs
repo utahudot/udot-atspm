@@ -6,14 +6,14 @@ using Microsoft.OData.ModelBuilder;
 namespace ATSPM.ConfigApi.Configuration
 {
     /// <summary>
-    /// Route signal oData configuration
+    /// Route Location oData configuration
     /// </summary>
-    public class RouteSignalOdataConfiguration : IModelConfiguration
+    public class RouteLocationOdataConfiguration : IModelConfiguration
     {
         ///<inheritdoc/>
         public void Apply(ODataModelBuilder builder, ApiVersion apiVersion, string routePrefix)
         {
-            var model = builder.EntitySet<RouteSignal>("RouteSignal")
+            var model = builder.EntitySet<RouteLocation>("RouteLocation")
                 .EntityType
                 .Page(default, default)
                 .Expand(1, SelectExpandType.Automatic, new string[] { "primaryDirection", "opposingDirection", "route" });
