@@ -19,6 +19,33 @@
         <member name="P:ATSPM.Application.Analysis.ApproachDelay.ApproachDelayResult.Vehicles">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent">
+            <summary>
+            Events that coorelate to <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            and that have been timestamp corrected for detector distances and latency
+            using the <see cref="M:ATSPM.Application.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.SignalIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.PhaseNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.DetectorChannel">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.Direction">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.Timestamp">
+            <summary>
+            Coreected timestamp of event using the <see cref="M:ATSPM.Application.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Application.Analysis.Common.CycleArrivals">
             <summary>
             A cycle with <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event arrivals
@@ -78,33 +105,6 @@
         <member name="P:ATSPM.Application.Analysis.Common.IApproachDelay.Vehicles">
             <summary>
             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on red events
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Analysis.Common.ICycle">
-            <summary>
-            Defines the start and end of a red to red cycle
-            which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Common.ICycle.TotalGreenTime">
-            <summary>
-            The total green time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> to the start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> in seconds
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Common.ICycle.TotalYellowTime">
-            <summary>
-            The total yellow time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> to the second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Common.ICycle.TotalRedTime">
-            <summary>
-            The total red time is defined as the first <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> to the <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> in seconds
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Common.ICycle.TotalTime">
-            <summary>
-            The total time is defined as the time between the first and second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.ICycleArrivals">
@@ -177,6 +177,33 @@
             <see cref="T:ATSPM.Application.Analysis.Common.ICycleArrivals"/> that are used to derrive the <see cref="T:ATSPM.Application.Analysis.Common.ICycleRatios"/>
             </summary>
         </member>
+        <member name="T:ATSPM.Application.Analysis.Common.ICycleTotal">
+            <summary>
+            Defines the start and end of a red to red cycle
+            which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalGreenTime">
+            <summary>
+            The total green time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> to the start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> in seconds
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalYellowTime">
+            <summary>
+            The total yellow time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> to the second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalRedTime">
+            <summary>
+            The total red time is defined as the first <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> to the <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> in seconds
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalTime">
+            <summary>
+            The total time is defined as the time between the first and second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
+            </summary>
+        </member>
         <member name="T:ATSPM.Application.Analysis.Common.ICycleVolume">
             <summary>
             Defines <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event volume information for cycles
@@ -194,6 +221,34 @@
             arriving within cycle
             </summary>
         </member>
+        <member name="T:ATSPM.Application.Analysis.Common.IDetectorEvent">
+            <summary>
+            Events that coorelate to <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            and that have been timestamp corrected for detector distances and latency
+            using the <see cref="M:ATSPM.Application.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.IDetectorEvent.Direction">
+            <summary>
+            Direction of travel when the event occured.
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.Common.IRedToRedCycle">
+            <summary>
+            A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.IRedToRedCycle.GreenEvent">
+            <summary>
+            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> event
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.IRedToRedCycle.YellowEvent">
+            <summary>
+            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> event
+            </summary>
+        </member>
         <member name="T:ATSPM.Application.Analysis.Common.RedToRedCycle">
             <summary>
             A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
@@ -201,14 +256,10 @@
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.RedToRedCycle.GreenEvent">
-            <summary>
-            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> event
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.RedToRedCycle.YellowEvent">
-            <summary>
-            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> event
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.RedToRedCycle.SignalIdentifier">
             <inheritdoc/>
@@ -228,13 +279,76 @@
         <member name="P:ATSPM.Application.Analysis.Common.RedToRedCycle.TotalTime">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.Common.RedToRedCycle.InRange(System.DateTime)">
+        <member name="M:ATSPM.Application.Analysis.Common.RedToRedCycle.ToString">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Application.Analysis.Common.Vehicle.SignalIdentifier">
+        <member name="T:ATSPM.Application.Analysis.Common.IVehicle">
+            <summary>
+            Arrival type and dely for vehicle actuation events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.IVehicle.ArrivalType">
+            <summary>
+            Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
+            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/>.
+            The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
+            </summary>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.IVehicle.Delay">
+            <summary>
+            Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
+            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/>.
+            The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.Common.Vehicle">
+            <summary>
+            Compares a <see cref="T:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent"/> to a <see cref="T:ATSPM.Application.Analysis.Common.RedToRedCycle"/> to calculate the <see cref="T:ATSPM.Application.Analysis.Common.IVehicle"/> properties.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.Vehicle.#ctor">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Application.Analysis.Common.Vehicle.PhaseNumber">
+        <member name="M:ATSPM.Application.Analysis.Common.Vehicle.#ctor(ATSPM.Application.Analysis.Common.IDetectorEvent,ATSPM.Application.Analysis.Common.IRedToRedCycle)">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Vehicle.Delay">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Vehicle.ArrivalType">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.Vehicle.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.TotalVolume.SignalIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.TotalVolume.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.TotalVolumes.SignalIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Volume.SignalIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Volume.PhaseNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Volume.DetectorCount">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.Volume.InRange(System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Common.Volume.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Volumes.SignalIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Application.Analysis.Common.Volumes.PhaseNumber">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.Plans.ApproachDelayPlan">
@@ -419,56 +533,38 @@
         <member name="P:ATSPM.Application.Analysis.PurdueCoordination.PurdueCoordinationResult.TotalVolume">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Application.Analysis.WorkflowBase`2">
+        <member name="T:ATSPM.Application.Analysis.ReportServices.IReportService`2">
             <summary>
-            Used as a base to create complex, inter-linkable, parallel workflows
+            Report service
             </summary>
-            <typeparam name="T1">Input data type</typeparam>
-            <typeparam name="T2">Output data type</typeparam>
+            <typeparam name="Tin"></typeparam>
+            <typeparam name="Tout"></typeparam>
         </member>
-        <member name="E:ATSPM.Application.Analysis.WorkflowBase`2.CanExecuteChanged">
+        <member name="T:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2">
+            <summary>
+            Base for report services
+            </summary>
+            <typeparam name="Tin"></typeparam>
+            <typeparam name="Tout"></typeparam>
+        </member>
+        <member name="E:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.CanExecuteChanged">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Application.Analysis.WorkflowBase`2.Steps">
-            <summary>
-            Used for tracking workflow step task completion results
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.WorkflowBase`2.Input">
-            <summary>
-            Can be used to post or send data or link from other workflows
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.WorkflowBase`2.Output">
-            <summary>
-            Can be used to recieve data or link to other workflows
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.Initialize">
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.ExecuteAsync(`0,System.IProgress{System.Int32},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.InstantiateSteps">
-            <summary>
-            Instantiate workflow steps objects
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.AddStepsToTracker">
-            <summary>
-            Add steps to <see cref="P:ATSPM.Application.Analysis.WorkflowBase`2.Steps"/> for step task tracking
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.LinkSteps">
-            <summary>
-            Link workflow steps
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.Execute(`0,System.IProgress{System.Int32},System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.CanExecute(`0)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.CanExecute(`0)">
+        <member name="M:ATSPM.Application.Analysis.ReportServices.ReportServiceBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowBase`2.Execute(`0,System.Threading.CancellationToken)">
+        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterBase">
+            <summary>
+            Base class for <see cref="T:System.Threading.Tasks.Dataflow.BroadcastBlock`1"/> filters used in workflows
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterBase.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilteredCallStatus">
@@ -578,6 +674,7 @@
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptGateDownInputReceived"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOff"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginDwellService"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginExitInterval"/></item>
@@ -603,6 +700,7 @@
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/></item>
             <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/></item>
             </list>
             </summary>
         </member>
@@ -650,17 +748,76 @@
         <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilteredTimingActuationData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterStepBase">
+        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeBase">
             <summary>
             Base class for filter controller event log data used in process workflows
             </summary>
         </member>
-        <member name="F:ATSPM.Application.Analysis.WorkflowFilters.FilterStepBase.filteredList">
+        <member name="F:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeBase.filteredList">
             <summary>
             List of filtered event codes
             </summary>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterStepBase.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeBase.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeSignalBase">
+            <summary>
+            Base class for filter controller event log data used in process workflows
+            </summary>
+        </member>
+        <member name="F:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeSignalBase.filteredList">
+            <summary>
+            List of filtered event codes
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterEventCodeSignalBase.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterPriorityData">
+            <summary>
+            Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
+            <list type="bullet">
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterPriorityData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilterTspPriorityData">
+            <summary>
+            Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
+            <list type="bullet">
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckOut"/></item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilterTspPriorityData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowSteps.AggregateDetectorEvents">
+            <summary>
+            Transforms <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> into <see cref="T:ATSPM.Data.Models.DetectorEventCountAggregation"/>
+            where <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            and <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventParam"/> equals <see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.AggregateDetectorEvents.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.AggregateDetectorEvents.Process(System.Tuple{ATSPM.Data.Models.Detector,System.Int32,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.AggregatePhaseTerminationEvents.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.AggregatePhaseTerminationEvents.Process(System.Tuple{ATSPM.Data.Models.Approach,System.Int32,ATSPM.Application.Analysis.Common.PhaseTerminations},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowSteps.CalculateVehicleArrivals">
@@ -739,7 +896,7 @@
         <member name="M:ATSPM.Application.Analysis.WorkflowSteps.CreateRedToRedCycles.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.CreateRedToRedCycles.Process(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog},System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.CreateRedToRedCycles.Process(System.Tuple{ATSPM.Data.Models.Approach,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowSteps.GeneratePurdueCoordinationResult">
@@ -751,6 +908,34 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Application.Analysis.WorkflowSteps.GeneratePurdueCoordinationResult.Process(System.Collections.Generic.IReadOnlyList{ATSPM.Application.Analysis.Common.CycleArrivals},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent">
+            <summary>
+            Breaks out all the <see cref="T:ATSPM.Data.Models.Detector"/> from <see cref="T:ATSPM.Data.Models.Approach"/>
+            and returns separate Tuples of <see cref="T:ATSPM.Data.Models.Detector"/>/<see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>/<see cref="T:ATSPM.Data.Models.ControllerEventLog"/> sets
+            where the <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            and <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventParam"/> equals <see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>
+            sorted by <see cref="P:ATSPM.Data.Models.ControllerEventLog.Timestamp"/>.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.GroupDetectorsByDetectorEvent.Process(System.Tuple{ATSPM.Data.Models.Approach,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Application.Analysis.WorkflowSteps.GroupSignalsByApproaches">
+            <summary>
+            Breaks out all <see cref="T:ATSPM.Data.Models.Approach"/> from <see cref="T:ATSPM.Data.Models.Signal"/>
+            and returns separate Tuples of <see cref="T:ATSPM.Data.Models.Approach"/>/<see cref="T:ATSPM.Data.Models.ControllerEventLog"/> pairs
+            sorted by <see cref="P:ATSPM.Data.Models.ControllerEventLog.Timestamp"/>.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.GroupSignalsByApproaches.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.GroupSignalsByApproaches.Process(System.Tuple{ATSPM.Data.Models.Signal,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations">
@@ -766,7 +951,79 @@
         <member name="M:ATSPM.Application.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.Process(System.Collections.Generic.IEnumerable{System.Tuple{ATSPM.Data.Models.Detector,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}}},System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Analysis.WorkflowSteps.IdentifyandAdjustVehicleActivations.Process(System.Tuple{ATSPM.Data.Models.Approach,System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog}},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.AggregationWorkflowBase`1.#ctor(ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.DetectorEventCountAggregationWorkflow.#ctor(ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.DetectorEventCountAggregationWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.DetectorEventCountAggregationWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.DetectorEventCountAggregationWorkflow.LinkSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PhaseTerminationAggregationWorkflow.#ctor(System.Int32,ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PhaseTerminationAggregationWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PhaseTerminationAggregationWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PhaseTerminationAggregationWorkflow.LinkSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.SignalPlansAggregationWorkflow.#ctor(ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.SignalPlansAggregationWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.SignalPlansAggregationWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.SignalPlansAggregationWorkflow.LinkSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PreemptCodesAggregationWorkflow.#ctor(ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PreemptCodesAggregationWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PreemptCodesAggregationWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PreemptCodesAggregationWorkflow.LinkSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PriorityCodesAggregationWorkflow.#ctor(ATSPM.Application.Analysis.Workflows.AggregationWorkflowOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PriorityCodesAggregationWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PriorityCodesAggregationWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.PriorityCodesAggregationWorkflow.LinkSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.AggregateControllerDataWorkflow.AddStepsToTracker">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.AggregateControllerDataWorkflow.InstantiateSteps">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Application.Analysis.Workflows.AggregateControllerDataWorkflow.LinkSteps">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.Analysis.Workflows.ApproachDelayWorkflow">
@@ -788,42 +1045,6 @@
         <member name="M:ATSPM.Application.Analysis.Workflows.ApproachDelayWorkflow.LinkSteps">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Application.Analysis.Workflows.ApproachVolumeWorkflow">
-             <summary>
-             Volume data can be useful when programming signal timing values or 
-             troubleshooting detection issues and is also often collected for planning
-             purposes.This measure reports the number of vehicles observed on an approach
-            (1). The number of vehicles is normalized to a flow rate(in vehicles per hour).
-            The data may be aggregated into custom-sized bins, with 15 minutes being the default.
-             </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.ApproachVolumeWorkflow.InstantiateSteps">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.ApproachVolumeWorkflow.AddStepsToTracker">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.ApproachVolumeWorkflow.LinkSteps">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.PhaseCycle.#ctor(System.String,System.Int32,System.DateTime)">
-            <summary>
-                Phase Objects primarily for the split monitor and terminaiton chart
-            </summary>
-            <param name="signalid"></param>
-            <param name="phasenumber"></param>
-            <param name="starttime"></param>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Workflows.PreemptCycle.StartInputOn">
-            <summary>
-            102
-            </summary>
-        </member>
-        <member name="P:ATSPM.Application.Analysis.Workflows.PreemptCycle.GateDown">
-            <summary>
-            start of cycle, either from 102 or 105
-            </summary>
-        </member>
         <member name="T:ATSPM.Application.Analysis.Workflows.PreemptionDetailsWorkflow">
             <summary>
             Preemption is the interruption of normal operations to serve a preferred 
@@ -843,32 +1064,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Application.Analysis.Workflows.PreemptionDetailsWorkflow.LinkSteps">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Application.Analysis.Workflows.PurdueCoordinationWorkflow">
-            <summary>
-            The Purdue Coordination Diagram provides additional details on vehicle 
-            arrivals during the cycle(e.g., during the green phase or red phase for each
-            approach). The percent arrival on green, platoon ratio, and arrival type can help
-            identify locations that would benefit from adjustments to signal timing(i.e., to
-            cycle lengths, splits, offsets, and phase order), and the Purdue Coordination
-            Diagram can help identify the values that should be chosen for those
-            adjustments.It can also be used to monitor general intersection operations.With
-            the cycle length being displayed in the diagram, this measure can be useful for 
-            monitoring advanced applications such as traffic responsive or adaptive control
-            (1). For Purdue Coordination Diagrams ATSPM defines the cycle from the
-            beginning of the red interval to the beginning of the next red interval for the
-            same phase.This measure can only be generated for approaches with advance
-            detection.
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.PurdueCoordinationWorkflow.InstantiateSteps">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.PurdueCoordinationWorkflow.AddStepsToTracker">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Application.Analysis.Workflows.PurdueCoordinationWorkflow.LinkSteps">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Application.AtspmMath">
@@ -956,6 +1151,29 @@
             <param name="distanceFromStopBar">stated distance to stop bar</param>
             <param name="latencyCorrection">latency correction, based on system latency factors</param>
             <returns>adjusted time stamp of arrival time</returns>
+        </member>
+        <member name="T:ATSPM.Application.Common.ControllerEventLogHelper">
+            <summary>
+            Helper methods to help interact with external controller event logs
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Common.ControllerEventLogHelper.ImportLogsFromCsvFile(System.String,System.Boolean)">
+            <summary>
+            Imports controller event logs from .csv file
+            </summary>
+            <param name="file">Path to file</param>
+            <param name="hasHeaders">Skips first line of csv file</param>
+            <returns></returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
+        </member>
+        <member name="M:ATSPM.Application.Common.ControllerEventLogHelper.ImportLogsFromCsvFile(System.IO.FileInfo,System.Boolean)">
+            <summary>
+            Imports controller event logs from .csv file
+            </summary>
+            <param name="file">Path to file</param>
+            <param name="hasHeaders">Skips first line of csv file</param>
+            <returns></returns>
+            <exception cref="T:System.IO.FileNotFoundException"></exception>
         </member>
         <member name="T:ATSPM.Application.Common.OpposingDirection">
             <summary>
@@ -1242,6 +1460,13 @@
             <param name="controllerTypeId">Index of <see cref="T:ATSPM.Data.Models.ControllerType"/> to filter</param>
             <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> with newest start date</returns>
         </member>
+        <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetLatestVersionOfAllSignals(System.DateTime)">
+            <summary>
+            Get latest version of all <see cref="T:ATSPM.Data.Models.Signal"/> and related entities by <see cref="T:System.DateTime"/>
+            </summary>
+            <param name="startDate">Signals starting  from <see cref="T:System.DateTime"/> to filter</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Signal"/> with newest start date</returns>
+        </member>
         <member name="M:ATSPM.Application.Repositories.ISignalRepository.GetLatestVersionOfSignal(System.String)">
             <summary>
             Get latest version of <see cref="T:ATSPM.Data.Models.Signal"/> and related entities that match <paramref name="signalIdentifier"/>
@@ -1271,6 +1496,11 @@
         <member name="T:ATSPM.Application.Repositories.ISpeedEventRepository">
             <summary>
             Speed Event Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.IVersionHistoryRepository">
+            <summary>
+            Version history repository
             </summary>
         </member>
         <member name="M:ATSPM.Application.Services.SignalControllerProtocols.ISignalControllerDecoder.DecodeAsync(System.String,System.IO.Stream,System.Threading.CancellationToken)">
