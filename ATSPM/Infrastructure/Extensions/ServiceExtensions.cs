@@ -8,18 +8,62 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using ATSPM.Infrastructure.SqlDatabaseProvider;
+using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
 
 namespace ATSPM.Infrastructure.Extensions
 {
     public static class ServiceExtensions
     {
+        internal static DbContextOptionsBuilder GetDbProviderInfo(this DbContextOptionsBuilder builder, HostBuilderContext host)
+        {
+            switch (host.Configuration.GetConnectionString("Provider"))
+            {
+                case SqlServerProvider.ProviderName:
+                    {
+                        return builder.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+
+                        break;
+                    }
+
+                case PostgreSQLProvider.ProviderName:
+                    {
+                        return builder.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(PostgreSQLProvider.Migration));
+
+                        break;
+                    }
+
+                default:
+                    {
+                        return builder.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(SqlServerProvider.Migration));
+
+                        break;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Adds database contexts based connection strings and assigns database provider
+        /// <seealso cref="https://learn.microsoft.com/en-us/ef/core/providers/?tabs=dotnet-core-cli"/>
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
         public static IServiceCollection AddAtspmDbContext(this IServiceCollection services, HostBuilderContext host)
         {
-            services.AddDbContext<ConfigContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            services.AddDbContext<ConfigContext>(db => db.GetDbProviderInfo(host).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<AggregationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(AggregationContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<EventLogContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<SpeedContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<LegacyEventLogContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(LegacyEventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+
+
+            //services.AddDbContext<ConfigContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(ConfigContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<AggregationContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(AggregationContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<EventLogContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(EventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<SpeedContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(SpeedContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<LegacyEventLogContext>(db => db.UseSqlServer(host.Configuration.GetConnectionString(nameof(LegacyEventLogContext)), opt => opt.MigrationsAssembly(typeof(ServiceExtensions).Assembly.FullName)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
 
             return services;
         }

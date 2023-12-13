@@ -288,3 +288,7 @@ C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.genruntimeconfig.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\ref\WatchDog.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ATSPM.Infrastructure.SqlDatabaseProvider.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ATSPM.Infrastructure.SqlDatabaseProvider.pdb
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ATSPM.Infrastructure.PostgreSQLDatabaseProvider.pdb

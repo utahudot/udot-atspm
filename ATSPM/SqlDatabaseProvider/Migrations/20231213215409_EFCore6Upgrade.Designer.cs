@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.Migrations
+namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231213175210_EFCore6Upgrade")]
+    [Migration("20231213215409_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -1656,7 +1656,7 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("AreaId");
 
-                    b.ToTable("UserArea", t =>
+                    b.ToTable("UserAreas", t =>
                         {
                             t.HasComment("UserAreas");
                         });
@@ -1675,7 +1675,7 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("JurisdictionId");
 
-                    b.ToTable("UserJurisdiction");
+                    b.ToTable("UserJurisdictions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.UserRegion", b =>
@@ -1691,7 +1691,7 @@ namespace ATSPM.Infrastructure.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("UserRegion");
+                    b.ToTable("UserRegions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.VersionHistory", b =>
@@ -1705,7 +1705,7 @@ namespace ATSPM.Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 10, 52, 10, 700, DateTimeKind.Local).AddTicks(6561));
+                        .HasDefaultValue(new DateTime(2023, 12, 13, 14, 54, 9, 612, DateTimeKind.Local).AddTicks(3189));
 
                     b.Property<string>("Name")
                         .IsRequired()
