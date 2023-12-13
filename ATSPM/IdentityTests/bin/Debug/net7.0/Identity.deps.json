@@ -19,7 +19,9 @@
           "Microsoft.EntityFrameworkCore.Design": "7.0.14",
           "Swashbuckle.AspNetCore": "6.5.0",
           "ATSPM.Data.Reference": "1.0.0.0",
-          "ATSPM.Infrastructure.Reference": "1.0.0.0"
+          "ATSPM.Infrastructure.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.SqlDatabaseProvider.Reference": "1.0.0.0"
         },
         "runtime": {
           "Identity.dll": {}
@@ -1727,7 +1729,8 @@
       },
       "ATSPM.Infrastructure/1.0.0": {
         "dependencies": {
-          "ATSPM.Data": "1.0.0",
+          "ATSPM.Infrastructure.PostgreSQLDatabaseProvider": "1.0.0",
+          "ATSPM.Infrastructure.SqlDatabaseProvider": "1.0.0",
           "ApplicationCore": "1.0.0",
           "Duende.IdentityServer.EntityFramework": "6.3.6",
           "FluentFTP": "44.0.1",
@@ -1741,6 +1744,22 @@
         },
         "runtime": {
           "ATSPM.Infrastructure.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0"
+        },
+        "runtime": {
+          "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0"
+        },
+        "runtime": {
+          "ATSPM.Infrastructure.SqlDatabaseProvider.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -1763,6 +1782,22 @@
       "ATSPM.Infrastructure.Reference/1.0.0.0": {
         "runtime": {
           "ATSPM.Infrastructure.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference/1.0.0.0": {
+        "runtime": {
+          "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ATSPM.Infrastructure.SqlDatabaseProvider.Reference/1.0.0.0": {
+        "runtime": {
+          "ATSPM.Infrastructure.SqlDatabaseProvider.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -3037,6 +3072,16 @@
       "serviceable": false,
       "sha512": ""
     },
+    "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "DomainCore/1.0.0": {
       "type": "project",
       "serviceable": false,
@@ -3048,6 +3093,16 @@
       "sha512": ""
     },
     "ATSPM.Infrastructure.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.SqlDatabaseProvider.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
