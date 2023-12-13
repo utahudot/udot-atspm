@@ -82,6 +82,16 @@ namespace ATSPM.Data
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
 
         /// <summary>
+        /// Locations table
+        /// </summary>
+        public virtual DbSet<Location> Locations { get; set; }
+
+        /// <summary>
+        /// Location types table
+        /// </summary>
+        public virtual DbSet<LocationType> LocationTypes { get; set; }
+
+        /// <summary>
         /// Menu table
         /// </summary>
         public virtual DbSet<MenuItem> MenuItems { get; set; }
@@ -115,21 +125,21 @@ namespace ATSPM.Data
         /// Routes table
         /// </summary>
         public virtual DbSet<Route> Routes { get; set; }
+
+        /// <summary>
+        /// Route distances table
+        /// </summary>
+        public virtual DbSet<RouteDistance> RouteDistances { get; set; }
         
         /// <summary>
-        /// Route signals table
+        /// Route Locations table
         /// </summary>
-        public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
         /// Settings table
         /// </summary>
         public virtual DbSet<Settings> Settings { get; set; }
-
-        /// <summary>
-        /// Locations table
-        /// </summary>
-        public virtual DbSet<Location> Signals { get; set; }
 
         /// <summary>
         /// User areas table
@@ -189,6 +199,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new DirectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationTypeConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
@@ -197,8 +209,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
-            modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
-            modelBuilder.ApplyConfiguration(new LocationConfiguration());
+            modelBuilder.ApplyConfiguration(new RouteDistanceConfiguration());
+            modelBuilder.ApplyConfiguration(new RouteLocationConfiguration());
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());

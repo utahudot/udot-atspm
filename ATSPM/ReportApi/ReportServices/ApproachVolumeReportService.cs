@@ -14,17 +14,17 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class ApproachVolumeReportService : ReportServiceBase<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>
     {
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ApproachVolumeService approachVolumeService;
 
         /// <inheritdoc/>
         public ApproachVolumeReportService(
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             IControllerEventLogRepository controllerEventLogRepository,
             ApproachVolumeService approachVolumeService)
         {
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.approachVolumeService = approachVolumeService;
         }
@@ -32,31 +32,31 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachVolumeResult>> ExecuteAsync(ApproachVolumeOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
 
-            if (signal == null)
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<ApproachVolumeResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<ApproachVolumeResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<ApproachVolumeResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<ApproachVolumeResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var tasks = new List<Task<ApproachVolumeResult>>();
-            var nbSbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nbSbApproaches, DirectionTypes.NB, DirectionTypes.SB);
-            var ebWbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.EB || a.DirectionTypeId == DirectionTypes.WB)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, ebWbApproaches, DirectionTypes.EB, DirectionTypes.WB);
-            var nwbSebApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NW || a.DirectionTypeId == DirectionTypes.SE)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nwbSebApproaches, DirectionTypes.NW, DirectionTypes.SE);
-            var nebSwbApproaches = signal.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NE || a.DirectionTypeId == DirectionTypes.SW)).ToList();
-            GetApproachVolume(parameter, signal, controllerEventLogs, tasks, nebSwbApproaches, DirectionTypes.NE, DirectionTypes.SW);
+            var nbSbApproaches = Location.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NB || a.DirectionTypeId == DirectionTypes.SB)).ToList();
+            GetApproachVolume(parameter, Location, controllerEventLogs, tasks, nbSbApproaches, DirectionTypes.NB, DirectionTypes.SB);
+            var ebWbApproaches = Location.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.EB || a.DirectionTypeId == DirectionTypes.WB)).ToList();
+            GetApproachVolume(parameter, Location, controllerEventLogs, tasks, ebWbApproaches, DirectionTypes.EB, DirectionTypes.WB);
+            var nwbSebApproaches = Location.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NW || a.DirectionTypeId == DirectionTypes.SE)).ToList();
+            GetApproachVolume(parameter, Location, controllerEventLogs, tasks, nwbSebApproaches, DirectionTypes.NW, DirectionTypes.SE);
+            var nebSwbApproaches = Location.Approaches.Where(a => a.ProtectedPhaseNumber != 0 && (a.DirectionTypeId == DirectionTypes.NE || a.DirectionTypeId == DirectionTypes.SW)).ToList();
+            GetApproachVolume(parameter, Location, controllerEventLogs, tasks, nebSwbApproaches, DirectionTypes.NE, DirectionTypes.SW);
             var results = await Task.WhenAll(tasks);
 
             var finalResultcheck = results.Where(result => result != null).ToList();
@@ -72,7 +72,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private void GetApproachVolume(
             ApproachVolumeOptions options,
-            Location signal,
+            Location Location,
             List<ControllerEventLog> controllerEventLogs,
             List<Task<ApproachVolumeResult>> tasks,
             List<Approach> approaches,
@@ -85,14 +85,14 @@ namespace ATSPM.ReportApi.ReportServices
                 var detectionTypes = approaches.SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).SelectMany(d => d.DetectionTypes).Distinct().ToList();
                 foreach (var detectionType in detectionTypes.Where(d => d.Id == DetectionTypes.AC || d.Id == DetectionTypes.LLC))
                 {
-                    GetAppoachVolumeForApproaches(options, signal, controllerEventLogs, tasks, approaches, detectionType, primaryDirection, opposingDirection);
+                    GetAppoachVolumeForApproaches(options, Location, controllerEventLogs, tasks, approaches, detectionType, primaryDirection, opposingDirection);
                 }
             }
         }
 
         private void GetAppoachVolumeForApproaches(
             ApproachVolumeOptions options,
-            Location signal,
+            Location Location,
             List<ControllerEventLog> controllerEventLogs,
             List<Task<ApproachVolumeResult>> tasks,
             List<Approach> approaches,
@@ -105,7 +105,7 @@ namespace ATSPM.ReportApi.ReportServices
             var opposingApproaches = approaches.Where(a => a.DirectionTypeId == opposingDirection && a.Detectors.SelectMany(d => d.DetectionTypes).Contains(detectionType)).ToList();
             tasks.Add(GetApproachVolumeByDetectionType(
                 options,
-                signal,
+                Location,
                 controllerEventLogs,
                 primaryApproaches,
                 opposingApproaches,
@@ -114,7 +114,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private async Task<ApproachVolumeResult> GetApproachVolumeByDetectionType(
             ApproachVolumeOptions options,
-            Location signal,
+            Location Location,
             List<ControllerEventLog> controllerEventLogs,
             List<Approach> primaryApproaches,
             List<Approach> opposingApproaches,
@@ -130,18 +130,18 @@ namespace ATSPM.ReportApi.ReportServices
             List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, out opposingDistanceFromStopBar, controllerEventLogs, opposingApproaches, detectionType);
             if (primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
             {
-                return new ApproachVolumeResult(signal.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId);
+                return new ApproachVolumeResult(Location.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId);
             }
             ApproachVolumeResult viewModel = approachVolumeService.GetChartData(
                 options,
-                signal,
+                Location,
                 primaryDetectorEvents,
                 opposingDetectorEvents,
                 primaryApproaches,
                 opposingApproaches,
                 primaryDistanceFromStopBar,
                 detectionType);
-            viewModel.SignalDescription = signal.SignalDescription();
+            viewModel.LocationDescription = Location.LocationDescription();
             return viewModel;
         }
 

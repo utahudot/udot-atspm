@@ -20,12 +20,12 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             TimeSpan startTime,
             TimeSpan endTime,
             int[] daysOfWeek,
-            Location signal,
+            Location Location,
             int totalActivations,
             List<PhaseLeftTurnGapAggregation> phaseLeftTurnGapAggregations,
             int opposingPhase)
         {
-            int numberOfOposingLanes = GetNumberOfOpposingLanes(signal, opposingPhase);
+            int numberOfOposingLanes = GetNumberOfOpposingLanes(Location, opposingPhase);
             double criticalGap = GetCriticalGap(numberOfOposingLanes);
 
             var gapDurationResult = new GapDurationResult
@@ -34,7 +34,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                 AcceptableGaps = GetGapsList(start, end, startTime, endTime, criticalGap, daysOfWeek, phaseLeftTurnGapAggregations),
                 Demand = CalculateGapDemand(criticalGap, totalActivations),
                 Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType,
-                OpposingDirection = GetOpposingPhaseDirection(signal, opposingPhase)
+                OpposingDirection = GetOpposingPhaseDirection(Location, opposingPhase)
             };
             if (gapDurationResult.Capacity == 0)
                 throw new ArithmeticException("Gap Count cannot be zero");
@@ -109,19 +109,19 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
 
 
 
-        public int GetNumberOfOpposingLanes(Location signal, int opposingPhase)
+        public int GetNumberOfOpposingLanes(Location Location, int opposingPhase)
         {
             List<MovementTypes> thruMovements = new List<MovementTypes>() { MovementTypes.T, MovementTypes.TR, MovementTypes.TL };
-            return signal
+            return Location
                 .Approaches
                 .SelectMany(a => a.Detectors)
                 .Where(d => d.DetectionTypes.First().Id == DetectionTypes.LLC && thruMovements.Contains(d.MovementType))
                 .Count(d => d.Approach.ProtectedPhaseNumber == opposingPhase);
         }
 
-        public string GetOpposingPhaseDirection(Location signal, int opposingPhase)
+        public string GetOpposingPhaseDirection(Location Location, int opposingPhase)
         {
-            return signal
+            return Location
                 .Approaches
                 .Where(d => d.ProtectedPhaseNumber == opposingPhase)
                 .FirstOrDefault()?.DirectionType.Abbreviation;

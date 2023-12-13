@@ -15,7 +15,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
     /// </list>
     /// </summary>
-    public class FilteredDetectorData : FilterEventCodeSignalBase
+    public class FilteredDetectorData : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

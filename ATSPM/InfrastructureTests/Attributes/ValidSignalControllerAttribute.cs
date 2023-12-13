@@ -8,7 +8,7 @@ using Xunit.Sdk;
 
 namespace InfrastructureTests.Attributes
 {
-    public class ValidSignalControllerAttribute : DataAttribute
+    public class ValidLocationControllerAttribute : DataAttribute
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {

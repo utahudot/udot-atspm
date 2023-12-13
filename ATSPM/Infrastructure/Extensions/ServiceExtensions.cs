@@ -38,21 +38,21 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureSignalControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureLocationControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltSignalControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeSignalControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltSignalControllerDownloader)}"));
+            services.Configure<LocationControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
+            services.Configure<LocationControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+            services.Configure<LocationControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+            services.Configure<LocationControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
+            services.Configure<LocationControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
             return services;
         }
 
-        public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureLocationControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCSignalControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCSignalControllerDecoder)}"));
-            services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeSignalControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeSignalControllerDecoder)}"));
+            services.Configure<LocationControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+            services.Configure<LocationControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
             return services;
         }
@@ -76,7 +76,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
             services.AddScoped<IRegionsRepository, RegionEFRepository>();
             services.AddScoped<IRouteRepository, RouteEFRepository>();
-            services.AddScoped<IRouteSignalsRepository, RouteSignalEFRepository>();
+            services.AddScoped<IRouteLocationsRepository, RouteLocationEFRepository>();
             services.AddScoped<ISettingsRepository, SettingsEFRepository>();
             services.AddScoped<ILocationRepository, LocationEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();

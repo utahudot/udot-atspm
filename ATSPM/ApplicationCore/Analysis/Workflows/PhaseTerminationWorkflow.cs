@@ -118,7 +118,7 @@ namespace ATSPM.Application.Analysis.Workflows
     {
         public string ChartName { get; internal set; }
         public string locationId { get; internal set; }
-        public string SignalLocation { get; internal set; }
+        public string LocationLocation { get; internal set; }
         public DateTime Start { get; internal set; }
         public DateTime End { get; internal set; }
         public int ConsecutiveCount { get; internal set; }

@@ -37,10 +37,10 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             IReadOnlyList<ControllerEventLog> pedEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Location signal)
+            Location Location)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.LocationIdentifier,
+                Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 planEvents,
@@ -48,7 +48,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splitsEvents,
                 pedEvents,
                 terminationEvents,
-                signal,
+                Location,
                 1
                 );
 
@@ -111,7 +111,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                     PercentileSplit = p.PercentileSplit,
 
                 }).ToList(),
-                SignalDescription = phase.Signal.SignalDescription()
+                LocationDescription = phase.Location.LocationDescription()
             };
 
             return splitMonitorResult;

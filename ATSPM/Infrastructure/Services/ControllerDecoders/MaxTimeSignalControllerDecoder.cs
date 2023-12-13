@@ -3,7 +3,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
@@ -25,9 +25,9 @@ using System.Xml.Linq;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class MaxTimeSignalControllerDecoder : ControllerDecoderBase
+    public class MaxTimeLocationControllerDecoder : ControllerDecoderBase
     {
-        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 

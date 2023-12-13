@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Infrastructure.Services.HostedServices
 {
-    public class SignalLoggerUtilityHostedService : IHostedService
+    public class LocationLoggerUtilityHostedService : IHostedService
     {
         private readonly ILogger _log;
         private IServiceProvider _serviceProvider;
         private IOptions<EventLogLoggingConfiguration> _options;
 
-        public SignalLoggerUtilityHostedService(ILogger<SignalLoggerUtilityHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLoggingConfiguration> options) =>
+        public LocationLoggerUtilityHostedService(ILogger<LocationLoggerUtilityHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLoggingConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -32,10 +32,10 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
-                    var signalRepository = scope.ServiceProvider.GetService<ILocationRepository>();
-                    var controllerLoggingService = scope.ServiceProvider.GetService<ISignalControllerLoggerService>();
+                    var LocationRepository = scope.ServiceProvider.GetService<ILocationRepository>();
+                    var controllerLoggingService = scope.ServiceProvider.GetService<ILocationControllerLoggerService>();
 
-                    var signalQuery = signalRepository.GetLatestVersionOfAllSignals().Where(s => s.ChartEnabled);
+                    var LocationQuery = LocationRepository.GetLatestVersionOfAllLocations().Where(s => s.ChartEnabled);
 
                     if (_options.Value.ControllerTypes != null)
                     {
@@ -44,34 +44,34 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                             _log.LogInformation("Including Event Logs for Types(s): {type}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
+                        LocationQuery = LocationQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
                     }
 
                     if (_options.Value.Included != null)
                     {
                         foreach (var s in _options.Value.Included)
                         {
-                            _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => _options.Value.Included.Any(d => i.LocationIdentifier == d));
+                        LocationQuery = LocationQuery.Where(i => _options.Value.Included.Any(d => i.LocationIdentifier == d));
                     }
 
                     if (_options.Value.Excluded != null)
                     {
                         foreach (var s in _options.Value.Excluded)
                         {
-                            _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                         }
 
-                        signalQuery = signalQuery.Where(i => !_options.Value.Excluded.Contains(i.LocationIdentifier));
+                        LocationQuery = LocationQuery.Where(i => !_options.Value.Excluded.Contains(i.LocationIdentifier));
                     }
 
-                    var signals = signalQuery.ToList();
+                    var Locations = LocationQuery.ToList();
 
-                    _log.LogInformation("Number of Signals to Process: {count}", signals.Count);
+                    _log.LogInformation("Number of Locations to Process: {count}", Locations.Count);
 
-                    await controllerLoggingService.ExecuteAsync(signals, cancellationToken);
+                    await controllerLoggingService.ExecuteAsync(Locations, cancellationToken);
                 }
             }
             catch (Exception e)

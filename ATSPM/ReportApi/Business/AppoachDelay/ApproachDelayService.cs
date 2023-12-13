@@ -16,16 +16,16 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
         public virtual ApproachDelayResult GetChartData(
             ApproachDelayOptions options,
             PhaseDetail phaseDetail,
-            SignalPhase signalPhase)
+            LocationPhase LocationPhase)
         {
-            var dt = signalPhase.StartDate;
+            var dt = LocationPhase.StartDate;
             var approachDelayDataPoints = new List<DataPointForDouble>();
             var approachDelayPerVehicleDataPoints = new List<DataPointForDouble>();
-            while (dt < signalPhase.EndDate)
+            while (dt < LocationPhase.EndDate)
             {
                 var endDt = dt.AddMinutes(options.BinSize);
-                var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Where(d => d.TimeStamp >= dt && d.TimeStamp < endDt)).ToList();
-                //var pcdsInBin = signalPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
+                var detectorEvents = LocationPhase.Cycles.SelectMany(c => c.DetectorEvents.Where(d => d.TimeStamp >= dt && d.TimeStamp < endDt)).ToList();
+                //var pcdsInBin = LocationPhase.Cycles.Where(c => c.StartTime >= dt && c.StartTime < endDt).ToList();
                 var binDelay = detectorEvents.Where(d => d.ArrivalType == ArrivalType.ArrivalOnRed).Sum(d => d.DelaySeconds);
                 //var binVolume = pcdsInBin.Sum(d => d.TotalVolume);
                 double bindDelaypervehicle = 0;
@@ -39,7 +39,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
                 approachDelayDataPoints.Add(new DataPointForDouble(dt, bindDelayperhour));
                 dt = dt.AddMinutes(options.BinSize);
             }
-            var plans = GetPlans(signalPhase.Plans);
+            var plans = GetPlans(LocationPhase.Plans);
             return new ApproachDelayResult(
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Location.LocationIdentifier,
@@ -47,8 +47,8 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
                 phaseDetail.Approach.Description,
                 options.Start,
                 options.End,
-                signalPhase.AvgDelaySeconds,
-                signalPhase.TotalDelaySeconds,
+                LocationPhase.AvgDelaySeconds,
+                LocationPhase.TotalDelaySeconds,
                 plans,
                 approachDelayDataPoints,
                 approachDelayPerVehicleDataPoints);

@@ -16,42 +16,42 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly GreenTimeUtilizationService greenTimeUtilizationService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ILocationRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public GreenTimeUtilizationReportService(
             GreenTimeUtilizationService GreenTimeUtilizationService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ILocationRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
             greenTimeUtilizationService = GreenTimeUtilizationService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<GreenTimeUtilizationResult>> ExecuteAsync(GreenTimeUtilizationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.locationIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<GreenTimeUtilizationResult>>();
             foreach (var phase in phaseDetails)
             {
@@ -89,7 +89,7 @@ namespace ATSPM.ReportApi.ReportServices
                 planEvents.ToList(),
                 controllerEventLogs.ToList()
                 );
-            viewModel.SignalDescription = phaseDetail.Approach.Location.SignalDescription();
+            viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

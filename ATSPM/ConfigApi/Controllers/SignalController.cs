@@ -16,12 +16,12 @@ namespace ATSPM.ConfigApi.Controllers
     /// Location Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class SignalController : AtspmConfigControllerBase<Location, int>
+    public class LocationController : AtspmConfigControllerBase<Location, int>
     {
         private readonly ILocationRepository _repository;
 
         /// <inheritdoc/>
-        public SignalController(ILocationRepository repository) : base(repository)
+        public LocationController(ILocationRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -68,11 +68,11 @@ namespace ATSPM.ConfigApi.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CopySignalToNewVersion(int key)
+        public async Task<IActionResult> CopyLocationToNewVersion(int key)
         {
             try
             {
-                return Ok(await _repository.CopySignalToNewVersion(key));
+                return Ok(await _repository.CopyLocationToNewVersion(key));
             }
             catch (ArgumentException e)
             {
@@ -88,11 +88,11 @@ namespace ATSPM.ConfigApi.Controllers
         [HttpPost]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SetSignalToDeleted(int key)
+        public async Task<IActionResult> SetLocationToDeleted(int key)
         {
             try
             {
-                await _repository.SetSignalToDeleted(key);
+                await _repository.SetLocationToDeleted(key);
             }
             catch (ArgumentException e)
             {
@@ -115,7 +115,7 @@ namespace ATSPM.ConfigApi.Controllers
         [EnableQuery(AllowedQueryOptions = Expand | Select, MaxExpansionDepth = 4)]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public IActionResult GetLatestVersionOfSignal(string identifier)
+        public IActionResult GetLatestVersionOfLocation(string identifier)
         {
             //https://learn.microsoft.com/en-us/odata/webapi-8/fundamentals/query-options?tabs=net60
             //options.Request.ODataFeature().SelectExpandClause = new SelectExpandQueryOption(null, "Approaches", options.Context, new ODataQueryOptionParser(
@@ -128,7 +128,7 @@ namespace ATSPM.ConfigApi.Controllers
             //    },
             //    container: options.Context.RequestContainer)).SelectExpandClause;
 
-            var result = _repository.GetLatestVersionOfSignal(identifier);
+            var result = _repository.GetLatestVersionOfLocation(identifier);
 
             if (result == null)
             {
@@ -147,9 +147,9 @@ namespace ATSPM.ConfigApi.Controllers
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
-        public IActionResult GetAllVersionsOfSignal(string identifier)
+        public IActionResult GetAllVersionsOfLocation(string identifier)
         {
-            var result = _repository.GetAllVersionsOfSignal(identifier);
+            var result = _repository.GetAllVersionsOfLocation(identifier);
 
             if (!result.Any())
             {
@@ -166,13 +166,13 @@ namespace ATSPM.ConfigApi.Controllers
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
-        public IActionResult GetLatestVersionOfAllSignals()
+        public IActionResult GetLatestVersionOfAllLocations()
         {
-            return Ok(_repository.GetLatestVersionOfAllSignals());
+            return Ok(_repository.GetLatestVersionOfAllLocations());
         }
 
         /// <summary>
-        /// Gets an optimized list of <see cref="SearchSignal"/> to use for signal selection
+        /// Gets an optimized list of <see cref="SearchLocation"/> to use for Location selection
         /// </summary>
         /// <param name="areaId">Locations by area</param>
         /// <param name="regionId">Locations by region</param>
@@ -181,9 +181,9 @@ namespace ATSPM.ConfigApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
-        [ProducesResponseType(typeof(IEnumerable<SearchSignal>), Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<SearchLocation>), Status200OK)]
         [ProducesResponseType(Status400BadRequest)]
-        public IActionResult GetSignalsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
+        public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
             var result = _repository.GetList()
                 .FromSpecification(new ActiveLocationSpecification())
@@ -193,7 +193,7 @@ namespace ATSPM.ConfigApi.Controllers
                 .Where(w => areaId == null || w.Areas.Any(a => a.Id == areaId))
                 .Where(w => metricTypeId == null || w.Approaches.Any(m => m.Detectors.Any(d => d.DetectionTypes.Any(t => t.MeasureTypes.Any(a => a.Id == metricTypeId)))))
 
-                .Select(s => new SearchSignal()
+                .Select(s => new SearchLocation()
                 {
                     Id = s.Id,
                     Start = s.Start,

@@ -11,7 +11,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
     {
         public TurningMovementCountsResult(
             string locationIdentifier,
-            string signalDescription,
+            string LocationDescription,
             DateTime start,
             DateTime end,
             string direction,
@@ -28,7 +28,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             )
         {
             locationIdentifier = locationIdentifier;
-            SignalDescription = signalDescription;
+            LocationDescription = LocationDescription;
             Start = start;
             End = end;
             Direction = direction;
@@ -45,7 +45,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
         }
 
         public string locationIdentifier { get; set; }
-        public string SignalDescription { get; set; }
+        public string LocationDescription { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public string Direction { get; set; }

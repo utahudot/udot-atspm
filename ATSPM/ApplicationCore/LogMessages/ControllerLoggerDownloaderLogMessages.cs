@@ -12,14 +12,14 @@ namespace ATSPM.Application.LogMessages
     {
         private readonly ILogger _logger;
 
-        public ControllerLoggerDownloaderLogMessages(ILogger logger, Location signal)
+        public ControllerLoggerDownloaderLogMessages(ILogger logger, Location Location)
         {
             _logger = logger.WithAddedLabels(new Dictionary<string, string>()
             {
-                { "locationId", signal?.LocationIdentifier },
-                { "SignalName", signal?.PrimaryName },
-                { "SignalTypeID", signal?.ControllerType?.Id.ToString() },
-                { "IPAddress", signal?.Ipaddress.ToString() },
+                { "locationId", Location?.LocationIdentifier },
+                { "LocationName", Location?.PrimaryName },
+                { "LocationTypeID", Location?.ControllerType?.Id.ToString() },
+                { "IPAddress", Location?.Ipaddress.ToString() },
             });
         }
 

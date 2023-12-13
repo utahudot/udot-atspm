@@ -15,14 +15,14 @@ using Xunit.Abstractions;
 namespace InfrastructureTests.RepositoryTests
 {
     //[TestCaseOrderer("InfrastructureTests.Orderers.TraitValueTestCaseOrderer", "InfrastructureTests")]
-    public class ISignalRepositoryTests : RepositoryTestBase<Location, ILocationRepository, ConfigContext, int>
+    public class ILocationRepositoryTests : RepositoryTestBase<Location, ILocationRepository, ConfigContext, int>
     {
         private const int ItemCount = 4;
         private const int ControllerTypeId = 1;
 
-        private List<Location> _signalList = new List<Location>();
+        private List<Location> _LocationList = new List<Location>();
 
-        public ISignalRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output) : base(dbFixture, output) { }
+        public ILocationRepositoryTests(EFContextFixture<ConfigContext> dbFixture, ITestOutputHelper output) : base(dbFixture, output) { }
 
         protected override async void SeedTestData()
         {
@@ -45,31 +45,31 @@ namespace InfrastructureTests.RepositoryTests
                 }
             }
 
-            _signalList = _repo.GetList().ToList();
+            _LocationList = _repo.GetList().ToList();
 
-            foreach (var s in _signalList)
+            foreach (var s in _LocationList)
             {
                 _output.WriteLine($"Seed Data: {s.Id} - {s.LocationIdentifier} - {s.PrimaryName} - {s.VersionAction} - {s.Start} - {s.ControllerTypeId}");
             }
         }
 
-        #region ISignalRepository
+        #region ILocationRepository
 
         [Theory]
         [InlineData("1")]
         [InlineData("2")]
         [InlineData("3")]
         [InlineData("4")]
-        public void ISignalRepositoryGetAllVersionsOfSignal(string locationId)
+        public void ILocationRepositoryGetAllVersionsOfLocation(string locationId)
         {
-            var result = _repo.GetAllVersionsOfSignal(locationId);
+            var result = _repo.GetAllVersionsOfLocation(locationId);
 
             foreach (var s in result)
             {
                 _output.WriteLine($"result: {s.Id} - {s.LocationIdentifier} - {s.PrimaryName} - {s.VersionAction} - {s.Start}");
             }
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(!result.Select(s => s.VersionAction).Contains(LocationVersionActions.Delete));
 
             //all values should be locationId
@@ -84,20 +84,20 @@ namespace InfrastructureTests.RepositoryTests
         [InlineData("2")]
         [InlineData("3")]
         [InlineData("4")]
-        public void ISignalRepositoryGetLatestVersionOfSignal(string locationId)
+        public void ILocationRepositoryGetLatestVersionOfLocation(string locationId)
         {
-            var result = _repo.GetLatestVersionOfSignal(locationId);
+            var result = _repo.GetLatestVersionOfLocation(locationId);
 
             _output.WriteLine($"result: {result.Id} - {result.LocationIdentifier} - {result.PrimaryName} - {result.VersionAction} - {result.Start}");
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(result.VersionAction != LocationVersionActions.Delete);
 
             //all values should be locationId
             Assert.True(result.LocationIdentifier == locationId);
 
             //value should be newest date
-            Assert.Equal(_signalList.Where(w => w.VersionAction != LocationVersionActions.Delete && w.LocationIdentifier == locationId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+            Assert.Equal(_LocationList.Where(w => w.VersionAction != LocationVersionActions.Delete && w.LocationIdentifier == locationId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
         }
 
         [Theory]
@@ -105,15 +105,15 @@ namespace InfrastructureTests.RepositoryTests
         [InlineData("2")]
         [InlineData("3")]
         [InlineData("4")]
-        public void ISignalRepositoryGetLatestVersionOfSignalWithDate(string locationId)
+        public void ILocationRepositoryGetLatestVersionOfLocationWithDate(string locationId)
         {
             var start = DateTime.Today.AddDays(-2);
 
-            var result = _repo.GetLatestVersionOfSignal(locationId, start);
+            var result = _repo.GetLatestVersionOfLocation(locationId, start);
 
             _output.WriteLine($"result: {result.Id} - {result.LocationIdentifier} - {result.PrimaryName} - {result.VersionAction} - {result.Start}");
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(result.VersionAction != LocationVersionActions.Delete);
 
             //all values should be locationId
@@ -123,37 +123,37 @@ namespace InfrastructureTests.RepositoryTests
             Assert.True(result.Start <= start);
 
             //value should be newest date
-            Assert.Equal(_signalList.Where(w => w.VersionAction != LocationVersionActions.Delete && w.LocationIdentifier == locationId && w.Start <= start).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
+            Assert.Equal(_LocationList.Where(w => w.VersionAction != LocationVersionActions.Delete && w.LocationIdentifier == locationId && w.Start <= start).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), result.Start);
         }
 
         [Fact]
-        public void ISignalRepositoryGetLatestVersionOfAllSignals()
+        public void ILocationRepositoryGetLatestVersionOfAllLocations()
         {
-            var result = _repo.GetLatestVersionOfAllSignals();
+            var result = _repo.GetLatestVersionOfAllLocations();
 
             foreach (var r in result)
             {
                 _output.WriteLine($"result: {r.Id} - {r.LocationIdentifier} - {r.PrimaryName} - {r.VersionAction} - {r.Start}");
             }
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(result.All(a => a.VersionAction != LocationVersionActions.Delete));
 
-            //result list should equal signalCount
+            //result list should equal LocationCount
             Assert.True(result.Count == ItemCount);
 
             //value should be newest date
             Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
         }
 
         [Fact]
-        public void ISignalRepositoryGetLatestVersionOfAllSignalsByControllerTypeId()
+        public void ILocationRepositoryGetLatestVersionOfAllLocationsByControllerTypeId()
         {
-            var result = _repo.GetLatestVersionOfAllSignals(ControllerTypeId);
+            var result = _repo.GetLatestVersionOfAllLocations(ControllerTypeId);
 
             foreach (var r in result)
             {
@@ -163,18 +163,18 @@ namespace InfrastructureTests.RepositoryTests
             //controller type should all equal controllerTypeId
             Assert.True(result.All(a => a.ControllerTypeId == ControllerTypeId));
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(result.All(a => a.VersionAction != LocationVersionActions.Delete));
 
-            //result list should equal signalCount
+            //result list should equal LocationCount
             Assert.True(result.Count == ItemCount);
 
             //value should be newest date
             Assert.Collection(result,
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
-                i => Assert.Equal(_signalList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start),
+                i => Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == i.LocationIdentifier && w.VersionAction != LocationVersionActions.Delete && w.ControllerTypeId == ControllerTypeId).Select(s => s.Start).OrderByDescending(o => o).FirstOrDefault(), i.Start));
         }
 
         [Theory]
@@ -182,19 +182,19 @@ namespace InfrastructureTests.RepositoryTests
         [InlineData("2")]
         [InlineData("3")]
         [InlineData("4")]
-        public void ISignalRepositoryGetSignalsBetweenDates(string locationId)
+        public void ILocationRepositoryGetLocationsBetweenDates(string locationId)
         {
             var start = DateTime.Today.AddDays(-2);
             var end = DateTime.Today;
 
-            var result = _repo.GetSignalsBetweenDates(locationId, start, end);
+            var result = _repo.GetLocationsBetweenDates(locationId, start, end);
 
             foreach (var r in result)
             {
                 _output.WriteLine($"result: {r.Id} - {r.LocationIdentifier} - {r.PrimaryName} - {r.VersionAction} - {r.Start}");
             }
 
-            //should not return deleted signals
+            //should not return deleted Locations
             Assert.True(result.All(a => a.VersionAction != LocationVersionActions.Delete));
 
             //should all be locationId
@@ -204,12 +204,12 @@ namespace InfrastructureTests.RepositoryTests
             Assert.True(result.All(a => a.Start > start && a.Start < end));
 
             //compare to initial collection
-            Assert.Equal(_signalList.Where(w => w.LocationIdentifier == locationId && w.VersionAction != LocationVersionActions.Delete && w.Start > start && w.Start < end), result);
+            Assert.Equal(_LocationList.Where(w => w.LocationIdentifier == locationId && w.VersionAction != LocationVersionActions.Delete && w.Start > start && w.Start < end), result);
         }
 
         #endregion
 
-        #region ISignalRepositoryExtensions
+        #region ILocationRepositoryExtensions
 
         //[Theory, AutoDataOmitRecursion]
         //[Trait("Key", "Value")]
@@ -218,54 +218,54 @@ namespace InfrastructureTests.RepositoryTests
         [InlineData("2")]
         [InlineData("3")]
         [InlineData("4")]
-        public async void ISignalRepositoryCopySignalToNewVersion(string locationId)
+        public async void ILocationRepositoryCopyLocationToNewVersion(string locationId)
         {
-            var signal = _repo.GetLatestVersionOfSignal(locationId);
+            var Location = _repo.GetLatestVersionOfLocation(locationId);
 
-            var actual = await _repo.CopySignalToNewVersion(signal.Id);
+            var actual = await _repo.CopyLocationToNewVersion(Location.Id);
 
-            _output.WriteLine($"Compare: {signal.Id} - {actual.Id}");
-            _output.WriteLine($"Compare: {signal.LocationIdentifier} - {actual.LocationIdentifier}");
-            _output.WriteLine($"Compare: {signal.Latitude} - {actual.Latitude}");
-            _output.WriteLine($"Compare: {signal.Longitude} - {actual.Longitude}");
-            _output.WriteLine($"Compare: {signal.PrimaryName} - {actual.PrimaryName}");
-            _output.WriteLine($"Compare: {signal.SecondaryName} - {actual.SecondaryName}");
-            _output.WriteLine($"Compare: {signal.Ipaddress} - {actual.Ipaddress}");
-            _output.WriteLine($"Compare: {signal.RegionId} - {actual.RegionId}");
-            _output.WriteLine($"Compare: {signal.ControllerTypeId} - {actual.ControllerTypeId}");
-            _output.WriteLine($"Compare: {signal.ChartEnabled} - {actual.ChartEnabled}");
-            _output.WriteLine($"Compare: {signal.VersionAction} - {actual.VersionAction}");
-            _output.WriteLine($"Compare: {signal.Note} - {actual.Note}");
-            _output.WriteLine($"Compare: {signal.Start} - {actual.Start}");
-            _output.WriteLine($"Compare: {signal.JurisdictionId} - {actual.JurisdictionId}");
-            _output.WriteLine($"Compare: {signal.Pedsare1to1} - {actual.Pedsare1to1}");
+            _output.WriteLine($"Compare: {Location.Id} - {actual.Id}");
+            _output.WriteLine($"Compare: {Location.LocationIdentifier} - {actual.LocationIdentifier}");
+            _output.WriteLine($"Compare: {Location.Latitude} - {actual.Latitude}");
+            _output.WriteLine($"Compare: {Location.Longitude} - {actual.Longitude}");
+            _output.WriteLine($"Compare: {Location.PrimaryName} - {actual.PrimaryName}");
+            _output.WriteLine($"Compare: {Location.SecondaryName} - {actual.SecondaryName}");
+            _output.WriteLine($"Compare: {Location.Ipaddress} - {actual.Ipaddress}");
+            _output.WriteLine($"Compare: {Location.RegionId} - {actual.RegionId}");
+            _output.WriteLine($"Compare: {Location.ControllerTypeId} - {actual.ControllerTypeId}");
+            _output.WriteLine($"Compare: {Location.ChartEnabled} - {actual.ChartEnabled}");
+            _output.WriteLine($"Compare: {Location.VersionAction} - {actual.VersionAction}");
+            _output.WriteLine($"Compare: {Location.Note} - {actual.Note}");
+            _output.WriteLine($"Compare: {Location.Start} - {actual.Start}");
+            _output.WriteLine($"Compare: {Location.JurisdictionId} - {actual.JurisdictionId}");
+            _output.WriteLine($"Compare: {Location.Pedsare1to1} - {actual.Pedsare1to1}");
 
-            Assert.NotEqual(expected: signal.Id, actual: actual.Id);
-            Assert.Equal(expected: signal.LocationIdentifier, actual: actual.LocationIdentifier);
-            Assert.Equal(expected: signal.Latitude, actual: actual.Latitude);
-            Assert.Equal(expected: signal.Longitude, actual: actual.Longitude);
-            Assert.Equal(expected: signal.PrimaryName, actual: actual.PrimaryName);
-            Assert.Equal(expected: signal.SecondaryName, actual: actual.SecondaryName);
-            Assert.Equal(expected: signal.Ipaddress.ToString(), actual: actual.Ipaddress.ToString());
-            Assert.Equal(expected: signal.RegionId, actual: actual.RegionId);
-            Assert.Equal(expected: signal.ControllerTypeId, actual: actual.ControllerTypeId);
-            Assert.Equal(expected: signal.ChartEnabled, actual: actual.ChartEnabled);
+            Assert.NotEqual(expected: Location.Id, actual: actual.Id);
+            Assert.Equal(expected: Location.LocationIdentifier, actual: actual.LocationIdentifier);
+            Assert.Equal(expected: Location.Latitude, actual: actual.Latitude);
+            Assert.Equal(expected: Location.Longitude, actual: actual.Longitude);
+            Assert.Equal(expected: Location.PrimaryName, actual: actual.PrimaryName);
+            Assert.Equal(expected: Location.SecondaryName, actual: actual.SecondaryName);
+            Assert.Equal(expected: Location.Ipaddress.ToString(), actual: actual.Ipaddress.ToString());
+            Assert.Equal(expected: Location.RegionId, actual: actual.RegionId);
+            Assert.Equal(expected: Location.ControllerTypeId, actual: actual.ControllerTypeId);
+            Assert.Equal(expected: Location.ChartEnabled, actual: actual.ChartEnabled);
             Assert.Equal(expected: LocationVersionActions.NewVersion, actual: actual.VersionAction);
             Assert.Contains("Copy of", actual.Note);
             Assert.Equal(expected: DateTime.Today, actual: actual.Start);
-            Assert.Equal(expected: signal.JurisdictionId, actual: actual.JurisdictionId);
-            Assert.Equal(expected: signal.Pedsare1to1, actual: actual.Pedsare1to1);
-            Assert.True(actual.Start > signal.Start);
+            Assert.Equal(expected: Location.JurisdictionId, actual: actual.JurisdictionId);
+            Assert.Equal(expected: Location.Pedsare1to1, actual: actual.Pedsare1to1);
+            Assert.True(actual.Start > Location.Start);
         }
 
         [Fact]
-        public async void ISignalRepositorySetSignalToDeleted()
+        public async void ILocationRepositorySetLocationToDeleted()
         {
             var expected = _repo.GetList().FirstOrDefault(s => s.VersionAction != LocationVersionActions.Delete);
 
             _output.WriteLine($"Original: {expected.VersionAction}");
 
-            await _repo.SetSignalToDeleted(expected.Id);
+            await _repo.SetLocationToDeleted(expected.Id);
 
             var actual = await _repo.LookupAsync(expected.Id);
 

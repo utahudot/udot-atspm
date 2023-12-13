@@ -62,7 +62,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IControllerEventLogRepository
 
-        public IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
+        public IReadOnlyList<ControllerEventLog> GetLocationEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var range = Enumerable.Range(0, 1 + endTime.Subtract(startTime).Days).Select(o => startTime.AddDays(o)).ToList();
 
