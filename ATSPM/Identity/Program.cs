@@ -16,7 +16,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddNpgAtspmDbContext(host);
+    services.AddAtspmDbContext(host);
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
