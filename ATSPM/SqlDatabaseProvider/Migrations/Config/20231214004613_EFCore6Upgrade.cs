@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
+namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 {
     /// <inheritdoc />
     public partial class EFCore6Upgrade : Migration
@@ -286,7 +286,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 15, 20, 38, 513, DateTimeKind.Local).AddTicks(1557)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 17, 46, 13, 675, DateTimeKind.Local).AddTicks(3446)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
