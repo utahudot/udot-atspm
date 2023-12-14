@@ -42,12 +42,12 @@ namespace WatchDog.Services.Tests
             region1MockLocation.Object.Longitude = -111.724889;
             region1MockLocation.Object.PrimaryName = "1600 N (SR-241)";
             region1MockLocation.Object.SecondaryName = "1200 W";
-            region1MockLocation.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
+            //region1MockLocation.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
             region1MockLocation.Object.RegionId = 1;
             region1MockLocation.Object.Areas = new List<Area>() { new Area { Id = 1, Name = "Area 1" }, new Area { Id = 2, Name = "Area 2" } };
             region1MockLocation.Object.JurisdictionId = 1;
             region1MockLocation.Object.Jurisdiction = new Jurisdiction { Id = 1, Name = "Jurisdiction 1" };
-            region1MockLocation.Object.ControllerTypeId = 2; // Updated ControllerTypeId
+            //region1MockLocation.Object.ControllerTypeId = 2; // Updated ControllerTypeId
             region1MockLocation.Object.ChartEnabled = true;
             region1MockLocation.Object.VersionAction = LocationVersionActions.Initial;
             region1MockLocation.Object.Note = "Initial - WAS #6500";

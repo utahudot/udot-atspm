@@ -17,24 +17,12 @@ namespace ATSPM.ConfigApi.Configuration
         {
             var model = builder.EntitySet<Location>("Location").EntityType;
             model.Page(default, default);
-            model.Expand(1, SelectExpandType.Automatic, new string[] { "controllerType", "jurisdiction", "region" });
-
-            var ip = builder.ComplexType<IPAddress>();
-            //ip.Property(i => i.Address);
-            //ip.Ignore(i => i.AddressFamily);
-            //ip.Ignore(i => i.IsIPv4MappedToIPv6);
-            //ip.Ignore(i => i.IsIPv6LinkLocal);
-            //ip.Ignore(i => i.IsIPv6Multicast);
-            //ip.Ignore(i => i.IsIPv6Teredo);
-            //ip.Ignore(i => i.IsIPv6UniqueLocal);
-            ip.Ignore(i => i.ScopeId);
+            model.Expand(1, SelectExpandType.Automatic, new string[] { "jurisdiction", "region" });
 
             switch (apiVersion.MajorVersion)
             {
                 case 1:
                     {
-                        model.ComplexProperty(p => p.Ipaddress).IsRequired();
-
                         model.Property(p => p.Latitude).IsRequired();
                         model.Property(p => p.Longitude).IsRequired();
                         model.Property(p => p.Note).IsRequired();
@@ -49,7 +37,6 @@ namespace ATSPM.ConfigApi.Configuration
                         model.Property(p => p.JurisdictionId).DefaultValueString = "0";
                         //model.EnumProperty(p => p.VersionAction).DefaultValueString = "10";
                         model.Property(p => p.Note).DefaultValueString = "Initial";
-
 
                         var a = model.Collection.Function("GetAllVersionsOfLocation");
                         a.Parameter<string>("identifier");

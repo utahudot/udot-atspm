@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Configuration
 {
-    public class LocationControllerDecoderConfiguration
+    public class SignalControllerDecoderConfiguration
     {
         public DateTime EarliestAcceptableDate { get; set; }
 

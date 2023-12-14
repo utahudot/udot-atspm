@@ -14,7 +14,6 @@ namespace ATSPM.Data.Models
     public partial class Location :
         AtspmConfigModelBase<int>,
         ILocationLayer,
-        IRelatedControllerType,
         IRelatedLocationType,
         IRelatedJurisdiction, 
         IRelatedRegion, 
@@ -54,11 +53,6 @@ namespace ATSPM.Data.Models
         public bool ChartEnabled { get; set; }
         
         /// <summary>
-        /// Enable location to be logged
-        /// </summary>
-        public bool LoggingEnabled { get; set; }
-        
-        /// <summary>
         /// Version action of location
         /// </summary>
         public LocationVersionActions VersionAction { get; set; }
@@ -83,16 +77,6 @@ namespace ATSPM.Data.Models
 
         /// <inheritdoc/>
         public string LocationIdentifier { get; set; }
-
-        #endregion
-
-        #region IRelatedControllerType
-
-        /// <inheritdoc/>
-        public int ControllerTypeId { get; set; }
-
-        /// <inheritdoc/>
-        public virtual ControllerType ControllerType { get; set; }
 
         #endregion
 
