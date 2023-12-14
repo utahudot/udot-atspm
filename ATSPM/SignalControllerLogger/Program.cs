@@ -102,15 +102,15 @@ namespace ATSPM.LocationControllerLogger
                     s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
 
                     //downloader configurations
-                    s.Configure<LocationControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), h.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
-                    s.Configure<LocationControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-                    s.Configure<LocationControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-                    s.Configure<LocationControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), h.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
-                    s.Configure<LocationControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
+                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
                     //decoder configurations
-                    s.Configure<LocationControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), h.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
-                    s.Configure<LocationControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
+                    s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+                    s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
                     s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })

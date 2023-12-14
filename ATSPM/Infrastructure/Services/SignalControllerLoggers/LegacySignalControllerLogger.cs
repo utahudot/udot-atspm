@@ -68,10 +68,10 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             {
                 var downloader = scope.ServiceProvider.GetServices<ILocationControllerDownloader>().First(c => c.CanExecute(Location));
 
-                await foreach (var file in downloader.Execute(Location, cancellationToken))
-                {
-                    fileList.Add(file);
-                }
+                //await foreach (var file in downloader.Execute(Location, cancellationToken))
+                //{
+                //    fileList.Add(file);
+                //}
             }
 
             return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x, y) => x.FullName == y.FullName));

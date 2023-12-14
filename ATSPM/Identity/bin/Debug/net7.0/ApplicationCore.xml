@@ -1312,11 +1312,6 @@
             <param name="endTime">End time</param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Repositories.IControllerTypeRepository">
-            <summary>
-            Location Controller Type Repository
-            </summary>
-        </member>
         <member name="T:ATSPM.Application.Repositories.IDetectionTypeRepository">
             <summary>
             Detection type repository
@@ -1352,6 +1347,23 @@
             Get maximum detector channel from Location controller
             </summary>
             <param name="id">Location controller id</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.IDeviceConfigurationRepository">
+            <summary>
+            Route distance repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.IDeviceRepository">
+            <summary>
+            Device repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.IDeviceRepository.GetActiveDevicesByLocation(System.Int32)">
+            <summary>
+            Gets all <see cref="T:ATSPM.Data.Models.Device"/> from <paramref name="locationId"/> where <see cref="P:ATSPM.Data.Models.Device.DeviceStatus"/> equals <see cref="F:ATSPM.Data.Enums.DeviceStatus.Active"/>
+            </summary>
+            <param name="locationId">Id of <see cref="T:ATSPM.Data.Models.Location"/> to get assigned <see cref="T:ATSPM.Data.Models.Device"/> from</param>
             <returns></returns>
         </member>
         <member name="T:ATSPM.Application.Repositories.IDirectionTypeRepository">
@@ -1392,13 +1404,6 @@
             </summary>
             <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
         </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfAllLocations(System.Int32)">
-            <summary>
-            Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities by <see cref="T:ATSPM.Data.Models.ControllerType"/>
-            </summary>
-            <param name="controllerTypeId">Index of <see cref="T:ATSPM.Data.Models.ControllerType"/> to filter</param>
-            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
-        </member>
         <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfAllLocations(System.DateTime)">
             <summary>
             Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities by <see cref="T:System.DateTime"/>
@@ -1432,6 +1437,11 @@
             <param name="endDate">Date controllers are newer than</param>
             <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> in decescing order of start date</returns>
         </member>
+        <member name="T:ATSPM.Application.Repositories.ILocationTypeRepository">
+            <summary>
+            Location type repository
+            </summary>
+        </member>
         <member name="T:ATSPM.Application.Repositories.IMeasureCommentRepository">
             <summary>
             Metric Comment Repository
@@ -1452,10 +1462,28 @@
             Menu item repository
             </summary>
         </member>
+        <member name="T:ATSPM.Application.Repositories.IProductRepository">
+            <summary>
+            Products repository
+            </summary>
+        </member>
         <member name="T:ATSPM.Application.Repositories.IRegionsRepository">
             <summary>
             Region Repository
             </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.IRouteDistanceRepository">
+            <summary>
+            Route distance repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.IRouteDistanceRepository.GetRouteDistanceByLocationIdentifiers(System.String,System.String)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Data.Models.RouteDistance"/> that contains <paramref name="locationA"/> and <paramref name="locationB"/> 
+            </summary>
+            <param name="locationA"></param>
+            <param name="locationB"></param>
+            <returns></returns>
         </member>
         <member name="T:ATSPM.Application.Repositories.IRouteRepository">
             <summary>

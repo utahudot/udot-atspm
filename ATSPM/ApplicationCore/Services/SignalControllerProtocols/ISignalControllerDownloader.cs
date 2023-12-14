@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ATSPM.Application.Services.LocationControllerProtocols
 {
-    public interface ILocationControllerDownloader : IExecuteWithProgress<Location, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
+    public interface ILocationControllerDownloader : IExecuteWithProgress<Device, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
     {
         int ControllerType { get; }
 

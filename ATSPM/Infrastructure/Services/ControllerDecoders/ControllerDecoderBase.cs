@@ -28,12 +28,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         #region Fields
 
         private readonly ILogger _log;
-        //protected readonly IOptions<LocationControllerDecoderConfiguration> _options;
-        protected readonly LocationControllerDecoderConfiguration _options;
+        //protected readonly IOptions<SignalControllerDecoderConfiguration> _options;
+        protected readonly SignalControllerDecoderConfiguration _options;
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options)
+        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options)
         {
             _log = log;
             _options = options?.Get(this.GetType().Name) ?? options?.Value;

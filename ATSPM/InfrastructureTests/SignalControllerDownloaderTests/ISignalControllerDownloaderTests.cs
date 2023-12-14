@@ -42,7 +42,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public void CanExecuteValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public void CanExecuteValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var d = (ILocationControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
@@ -61,7 +61,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public void CanExecuteEnabledNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public void CanExecuteEnabledNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var d = (ILocationControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
@@ -80,7 +80,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public void CanExecuteTypeNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public void CanExecuteTypeNotValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             Mock.Get(mockClient).Setup(s => s.Dispose());
 
@@ -99,7 +99,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public async void ExecuteWithNullParameter(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async void ExecuteWithNullParameter(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             Mock.Get(mockClient).Setup(s => s.Dispose());
 
@@ -113,24 +113,24 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public async void ExecuteWithInvalidIPAddress(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async void ExecuteWithInvalidIPAddress(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             Mock.Get(mockClient).Setup(s => s.Dispose());
 
-            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new LocationControllerDownloaderConfiguration() { PingControllerToVerify = false });
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
 
             var d = (ILocationControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 
             var Location = new Location()
             {
-                Ipaddress = null,
+                //Ipaddress = null,
                 ChartEnabled = true,
                 PrimaryName = "Controller",
                 LocationIdentifier = "999",
                 ControllerType = new ControllerType() { Id = d.ControllerType }
             };
 
-            await Assert.ThrowsAsync<InvalidLocationControllerIpAddressException>(async () =>
+            await Assert.ThrowsAsync<InvalidSignalControllerIpAddressException>(async () =>
             {
                 await foreach (var file in d.Execute(Location)) { }
             });
@@ -138,7 +138,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public async Task ExecuteWithFailedCanExecute(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async Task ExecuteWithFailedCanExecute(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             Mock.Get(mockClient).Setup(s => s.Dispose());
 
@@ -160,7 +160,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public async void ExecuteWithControllerConnectionException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async void ExecuteWithControllerConnectionException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var Location = new Location()
             {
@@ -168,7 +168,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
                 ChartEnabled = true
             };
 
-            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new LocationControllerDownloaderConfiguration() { PingControllerToVerify = false });
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration() { PingControllerToVerify = false });
 
             Mock.Get(mockClient).Setup(s => s.ConnectAsync(It.IsAny<NetworkCredential>(), 0, 0, default))
                 .ThrowsAsync(new ControllerConnectionException(It.Is<string>(s => s == Location.Ipaddress.ToString()), mockClient, null))
@@ -190,28 +190,28 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         //[Theory]
         //[LocationControllerDownloaders]
-        //public async void ExecuteWithControllerConnectionTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        //public async void ExecuteWithControllerConnectionTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         //{
 
         //}
 
         //[Theory]
         //[LocationControllerDownloaders]
-        //public async void ExecuteWithControllerDownloadFileException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        //public async void ExecuteWithControllerDownloadFileException(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         //{
 
         //}
 
         //[Theory]
         //[LocationControllerDownloaders]
-        //public async void ExecuteWithControllerDownloadFileTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        //public async void ExecuteWithControllerDownloadFileTokenCancelled(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         //{
 
         //}
 
         [Theory]
         [LocationControllerDownloaders]
-        public async void ExecuteWithControllerDownloadFileSuccess(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async void ExecuteWithControllerDownloadFileSuccess(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var Location = new Location()
             {
@@ -221,7 +221,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
                 LocationIdentifier = "999"
             };
 
-            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new LocationControllerDownloaderConfiguration()
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
             {
                 LocalPath = "C:\\TestPath",
                 PingControllerToVerify = false
@@ -264,7 +264,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public async void ExecuteWithControllerDownloadFileWithProgressValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public async void ExecuteWithControllerDownloadFileWithProgressValid(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var Location = new Location()
             {
@@ -274,7 +274,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
                 LocationIdentifier = "999"
             };
 
-            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new LocationControllerDownloaderConfiguration()
+            Mock.Get(mockConfig).Setup(s => s.Value).Returns(new SignalControllerDownloaderConfiguration()
             {
                 LocalPath = "C:\\TestPath",
                 PingControllerToVerify = false
@@ -330,7 +330,7 @@ namespace InfrastructureTests.LocationControllerDownloaderTests
 
         [Theory]
         [LocationControllerDownloaders]
-        public void IsDisposing(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> mockConfig)
+        public void IsDisposing(Type downloader, IDownloaderClient mockClient, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> mockConfig)
         {
             var d = (ILocationControllerDownloader)Activator.CreateInstance(downloader, new object[] { mockClient, log, mockConfig });
 

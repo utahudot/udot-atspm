@@ -7,7 +7,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class NewCobaltLocationControllerDownloader : ControllerDownloaderBase
     {
-        public NewCobaltLocationControllerDownloader(ISFTPDownloaderClient client, ILogger<NewCobaltLocationControllerDownloader> log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public NewCobaltLocationControllerDownloader(ISFTPDownloaderClient client, ILogger<NewCobaltLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 
