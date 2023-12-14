@@ -37,15 +37,15 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                     var LocationQuery = LocationRepository.GetLatestVersionOfAllLocations().Where(s => s.ChartEnabled);
 
-                    if (_options.Value.ControllerTypes != null)
-                    {
-                        foreach (var s in _options.Value.ControllerTypes)
-                        {
-                            _log.LogInformation("Including Event Logs for Types(s): {type}", s);
-                        }
+                    //if (_options.Value.ControllerTypes != null)
+                    //{
+                    //    foreach (var s in _options.Value.ControllerTypes)
+                    //    {
+                    //        _log.LogInformation("Including Event Logs for Types(s): {type}", s);
+                    //    }
 
-                        LocationQuery = LocationQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
-                    }
+                    //    LocationQuery = LocationQuery.Where(i => _options.Value.ControllerTypes.Any(d => i.ControllerTypeId == d));
+                    //}
 
                     if (_options.Value.Included != null)
                     {

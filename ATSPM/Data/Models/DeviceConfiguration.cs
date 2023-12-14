@@ -39,7 +39,7 @@ namespace ATSPM.Data.Models
         /// Log search term to find log in directory
         /// Can be a query string or file extension
         /// </summary>
-        public string SearchTerm { get; set; }
+        public string[] SearchTerms { get; set; }
 
         /// <summary>
         /// Username

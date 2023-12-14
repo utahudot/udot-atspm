@@ -7,7 +7,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class EOSLocationControllerDownloader : ControllerDownloaderBase
     {
-        public EOSLocationControllerDownloader(IFTPDownloaderClient client, ILogger<EOSLocationControllerDownloader> log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public EOSLocationControllerDownloader(IFTPDownloaderClient client, ILogger<EOSLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

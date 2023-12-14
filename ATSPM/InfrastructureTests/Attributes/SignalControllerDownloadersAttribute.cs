@@ -23,7 +23,7 @@ namespace InfrastructureTests.Attributes
     {
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
         {
-            var mockConfig = Mock.Of<IOptionsSnapshot<LocationControllerDownloaderConfiguration>>();
+            var mockConfig = Mock.Of<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>();
 
             yield return new object[] { typeof(ASC3LocationControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<ASC3LocationControllerDownloader>(), mockConfig };
             yield return new object[] { typeof(CobaltLocationControllerDownloader), Mock.Of<IFTPDownloaderClient>(MockBehavior.Strict), new NullLogger<CobaltLocationControllerDownloader>(), mockConfig };

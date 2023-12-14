@@ -14,16 +14,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Locations");
 
-            //builder.HasIndex(e => e.ControllerTypeId);
-
             builder.HasIndex(e => e.JurisdictionId);
 
             builder.HasIndex(e => e.RegionId);
-
-            builder.Property(e => e.Ipaddress)
-                .IsRequired()
-                .HasMaxLength(15)
-                .HasDefaultValueSql("('10.0.0.1')");
 
             builder.Property(e => e.JurisdictionId).HasDefaultValueSql("((0))");
 

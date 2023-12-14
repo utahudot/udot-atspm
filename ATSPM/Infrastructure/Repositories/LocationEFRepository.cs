@@ -23,7 +23,6 @@ namespace ATSPM.Infrastructure.Repositories
         private IQueryable<Location> BaseQuery()
         {
             return base.GetList()
-                .Include(i => i.ControllerType)
                 .Include(i => i.Jurisdiction)
                 .Include(i => i.Region);
                 //.Include(i => i.VersionAction);
@@ -75,18 +74,17 @@ namespace ATSPM.Infrastructure.Repositories
             return result;
         }
 
-        /// <inheritdoc/>
-        public IReadOnlyList<Location> GetLatestVersionOfAllLocations(int controllerTypeId)
-        {
-            var result = BaseQuery()
-                .Where(w => w.ControllerTypeId == controllerTypeId)
-                .FromSpecification(new ActiveLocationSpecification())
-                .GroupBy(r => r.LocationIdentifier)
-                .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
-                .ToList();
+        //public IReadOnlyList<Location> GetLatestVersionOfAllLocations(int controllerTypeId)
+        //{
+        //    var result = BaseQuery()
+        //        .Where(w => w.ControllerTypeId == controllerTypeId)
+        //        .FromSpecification(new ActiveLocationSpecification())
+        //        .GroupBy(r => r.LocationIdentifier)
+        //        .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
+        //        .ToList();
 
-            return result;
-        }
+        //    return result;
+        //}
 
         /// <inheritdoc/>
         public Location GetLatestVersionOfLocation(string LocationIdentifier)

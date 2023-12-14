@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\MongoDatabaseProvider\MongoDatabaseProvider.csproj" />
     <ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj" />
     <ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj" />
     <ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />

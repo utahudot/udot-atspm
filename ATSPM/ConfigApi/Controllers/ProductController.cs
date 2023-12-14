@@ -9,15 +9,15 @@ using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
-    /// ControllerType Controller
+    /// Product controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class ControllerTypeController : AtspmConfigControllerBase<ControllerType, int>
+    public class ProductController : AtspmConfigControllerBase<Product, int>
     {
-        private readonly IControllerTypeRepository _repository;
+        private readonly IProductRepository _repository;
 
         /// <inheritdoc/>
-        public ControllerTypeController(IControllerTypeRepository repository) : base(repository)
+        public ProductController(IProductRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -25,7 +25,7 @@ namespace ATSPM.ConfigApi.Controllers
         #region NavigationProperties
 
         /// <summary>
-        /// <see cref="Location"/> navigation property action
+        /// <see cref="DeviceConfiguration"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -33,9 +33,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<Location>> GetLocations([FromRoute] int key)
+        public ActionResult<IEnumerable<Device>> GetDeviceConfigurations([FromRoute] int key)
         {
-            return GetNavigationProperty<IEnumerable<Location>>(key);
+            return GetNavigationProperty<IEnumerable<Device>>(key);
         }
 
         #endregion

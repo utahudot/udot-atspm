@@ -9,14 +9,14 @@ using System.Threading.Tasks.Dataflow;
 #nullable enable
 namespace ATSPM.Application.Exceptions
 {
-    public class InvalidLocationControllerIpAddressException : ATSPMException
+    public class InvalidSignalControllerIpAddressException : ATSPMException
     {
-        public InvalidLocationControllerIpAddressException(Location Location) : base($"{Location.LocationIdentifier} address {Location.Ipaddress} is either invalid or can't be reached")
+        public InvalidSignalControllerIpAddressException(Device device) : base($"{device.Location.LocationIdentifier} address {device.Ipaddress} is either invalid or can't be reached")
         {
-            LocationController = Location;
+            SignalController = device;
         }
 
-        public Location LocationController { get; private set; }
+        public Device SignalController { get; private set; }
     }
 
     public abstract class ControllerLoggerException : ATSPMException
