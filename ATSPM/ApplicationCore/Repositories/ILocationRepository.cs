@@ -23,12 +23,12 @@ namespace ATSPM.Application.Repositories
         /// <returns>List of <see cref="Location"/> with newest start date</returns>
         IReadOnlyList<Location> GetLatestVersionOfAllLocations();
 
-        /// <summary>
-        /// Get latest version of all <see cref="Location"/> and related entities by <see cref="ControllerType"/>
-        /// </summary>
-        /// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
-        /// <returns>List of <see cref="Location"/> with newest start date</returns>
-        IReadOnlyList<Location> GetLatestVersionOfAllLocations(int controllerTypeId);
+        ///// <summary>
+        ///// Get latest version of all <see cref="Location"/> and related entities by <see cref="ControllerType"/>
+        ///// </summary>
+        ///// <param name="controllerTypeId">Index of <see cref="ControllerType"/> to filter</param>
+        ///// <returns>List of <see cref="Location"/> with newest start date</returns>
+        //IReadOnlyList<Location> GetLatestVersionOfAllLocations(int controllerTypeId);
 
         /// <summary>
         /// Get latest version of all <see cref="Location"/> and related entities by <see cref="DateTime"/>

@@ -56,6 +56,20 @@ namespace ATSPM.ConfigApi.Controllers
             return GetNavigationProperty<IEnumerable<Area>>(key);
         }
 
+        /// <summary>
+        /// <see cref="Device"/> navigation property action
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        [ProducesResponseType(Status400BadRequest)]
+        public ActionResult<IEnumerable<Device>> GetDevices([FromRoute] int key)
+        {
+            return GetNavigationProperty<IEnumerable<Device>>(key);
+        }
+
         #endregion
 
         #region Actions

@@ -16,7 +16,14 @@ namespace ATSPM.ConfigApi.Configuration
             var model = builder.EntitySet<RouteLocation>("RouteLocation")
                 .EntityType
                 .Page(default, default)
-                .Expand(1, SelectExpandType.Automatic, new string[] { "primaryDirection", "opposingDirection", "route" });
+                .Expand(1, SelectExpandType.Automatic, new string[] 
+                { 
+                    "primaryDirection", 
+                    "opposingDirection", 
+                    "route", 
+                    "previousLocationDistance", 
+                    "nextLocationDistance" 
+                });
 
             switch (apiVersion.MajorVersion)
             {

@@ -90,19 +90,19 @@ namespace ATSPM.Infrastructure.Extensions
 
         public static IServiceCollection ConfigureLocationControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<LocationControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
-            services.Configure<LocationControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-            services.Configure<LocationControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-            services.Configure<LocationControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
-            services.Configure<LocationControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(LocationControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+            services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
+            services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+            services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+            services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
+            services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
             return services;
         }
 
         public static IServiceCollection ConfigureLocationControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<LocationControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
-            services.Configure<LocationControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(LocationControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
+            services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+            services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
             return services;
         }
@@ -112,23 +112,27 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
             services.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
-            services.AddScoped<IControllerTypeRepository, ControllerTypeEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
             services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();
+            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
+            services.AddScoped<IDeviceConfigurationRepository, DeviceConfigurationEFRepository>();
             services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
             services.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
             services.AddScoped<IFaqRepository, FaqEFRepository>();
             services.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
+            services.AddScoped<ILocationRepository, LocationEFRepository>();
+            services.AddScoped<ILocationTypeRepository, LocationTypeEFRepository>();
             services.AddScoped<IMeasureCommentRepository, MeasureCommentEFRepository>();
             services.AddScoped<IMeasureOptionsRepository, MeasureOptionsEFRepository>();
             services.AddScoped<IMeasureTypeRepository, MeasureTypeEFRepository>();
             services.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
+            services.AddScoped<IProductRepository, ProductEFRepository>();
             services.AddScoped<IRegionsRepository, RegionEFRepository>();
             services.AddScoped<IRouteRepository, RouteEFRepository>();
+            services.AddScoped<IRouteDistanceRepository, RouteDistanceEFRepository>();
             services.AddScoped<IRouteLocationsRepository, RouteLocationEFRepository>();
             services.AddScoped<ISettingsRepository, SettingsEFRepository>();
-            services.AddScoped<ILocationRepository, LocationEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
 
             return services;

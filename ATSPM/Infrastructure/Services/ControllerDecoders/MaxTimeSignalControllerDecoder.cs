@@ -27,7 +27,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class MaxTimeLocationControllerDecoder : ControllerDecoderBase
     {
-        public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options) : base(log, options) { }
+        public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 

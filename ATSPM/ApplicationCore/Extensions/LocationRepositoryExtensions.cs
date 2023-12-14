@@ -31,7 +31,7 @@ namespace ATSPM.Application.Extensions
 
                 newVersion.Id = 0;
 
-                newVersion.ControllerType = null;
+                //newVersion.ControllerType = null;
                 newVersion.Jurisdiction = null;
                 newVersion.Region = null;
 
