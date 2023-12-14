@@ -8,7 +8,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     public class MaxTimeLocationControllerDownloader : ControllerDownloaderBase
     {
-        public MaxTimeLocationControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeLocationControllerDownloader> log, IOptionsSnapshot<LocationControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public MaxTimeLocationControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

@@ -212,16 +212,16 @@ var result = await test.ExecuteAsync(testData);
 
 //        //    var opt = cmdOpt.GetOptionsBinder().CreateInstance(h.GetInvocationContext().BindingContext) as EventLogLoggingConfiguration;
 
-//        //    //s.PostConfigureAll<LocationControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
-//        //    //s.PostConfigureAll<LocationControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
-//        //    //s.PostConfigureAll<LocationControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
+//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = opt.Path.FullName);
+//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.PingControllerToVerify = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.PingControllerArg));
+//        //    //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.DeleteFile = h.GetInvocationContext().ParseResult.GetValueForArgument(cmd.DeleteLocalFileArg));
 //        //}
 
 //        ////hosted services
 //        //s.AddHostedService<LocationLoggerUtilityHostedService>();
 //        //s.AddHostedService<TestLocationLoggerHostedService>();
 
-//        //s.PostConfigureAll<LocationControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
+//        //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
 //    });
 //},
 //h =>
@@ -325,7 +325,7 @@ public class TestLocationLoggerHostedService : IHostedService
         {
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
-                foreach (var option in scope.ServiceProvider.GetServices<IOptionsSnapshot<LocationControllerDownloaderConfiguration>>())
+                foreach (var option in scope.ServiceProvider.GetServices<IOptionsSnapshot<SignalControllerDownloaderConfiguration>>())
                 {
                     Console.WriteLine($"------------local path: {option.Value.LocalPath}");
                     Console.WriteLine($"------------ping: {option.Value.PingControllerToVerify}");

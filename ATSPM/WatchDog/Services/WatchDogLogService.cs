@@ -350,7 +350,8 @@ namespace WatchDog.Services
                     WatchDogComponentType.Location,
                     Location.Id,
                     WatchDogIssueType.RecordCount,
-                    "Missing Records - IP: " + Location.Ipaddress,
+                    null,
+                    //"Missing Records - IP: " + Location.Ipaddress,
                     null
                 );
             }

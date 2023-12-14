@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
@@ -19,7 +20,13 @@ namespace ATSPM.Infrastructure.Repositories
         /// <inheritdoc/>
         public override IQueryable<RouteLocation> GetList()
         {
-            return base.GetList().OrderBy(o => o.Order);
+            return base.GetList()
+                .Include(i => i.Route)
+                .Include(i => i.PrimaryDirection)
+                .Include(i => i.OpposingDirection)
+                .Include(i => i.PreviousLocationDistance)
+                .Include(i => i.NextLocationDistance)
+                .OrderBy(o => o.Order);
         }
 
         #endregion

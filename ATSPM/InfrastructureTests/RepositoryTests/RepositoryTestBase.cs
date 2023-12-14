@@ -124,10 +124,10 @@ namespace InfrastructureTests.RepositoryTests
             //this.Customize<ControllerLogArchive>(c => c
             //);
 
-            this.Customize<ControllerType>(c => c
-            .Without(w => w.Id)
-            .Without(w => w.Locations)
-            );
+            //this.Customize<ControllerType>(c => c
+            //.Without(w => w.Id)
+            //.Without(w => w.Locations)
+            //);
 
             this.Customize<DetectorComment>(c => c
             .Without(w => w.Id)
@@ -152,8 +152,8 @@ namespace InfrastructureTests.RepositoryTests
                     .Without(w => w.Region)
                     .With(w => w.JurisdictionId, 0)
                     .Without(w => w.Jurisdiction)
-                    .Without(w => w.ControllerTypeId)
-                    .Without(w => w.ControllerType)
+                    //.Without(w => w.ControllerTypeId)
+                    //.Without(w => w.ControllerType)
                     .Without(w => w.VersionAction)
                     .Without(w => w.Approaches)
                     .Without(w => w.Areas)

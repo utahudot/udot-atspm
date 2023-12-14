@@ -15,7 +15,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
     public class ASCLocationControllerDecoder : ControllerDecoderBase
     {
-        public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<LocationControllerDecoderConfiguration> options) : base(log, options) { }
+        public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
