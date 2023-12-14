@@ -4085,7 +4085,8 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "ATSPM.Data >= 1.0.0"
+      "ATSPM.Data >= 1.0.0",
+      "Npgsql.EntityFrameworkCore.PostgreSQL >= 7.0.11"
     ]
   },
   "packageFolders": {
@@ -4130,6 +4131,12 @@
     "frameworks": {
       "net7.0": {
         "targetAlias": "net7.0",
+        "dependencies": {
+          "Npgsql.EntityFrameworkCore.PostgreSQL": {
+            "target": "Package",
+            "version": "[7.0.11, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",

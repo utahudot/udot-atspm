@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
+namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
     partial class ConfigContextModelSnapshot : ModelSnapshot
@@ -1702,7 +1702,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 14, 54, 9, 612, DateTimeKind.Local).AddTicks(3189));
+                        .HasDefaultValue(new DateTime(2023, 12, 13, 17, 46, 13, 675, DateTimeKind.Local).AddTicks(3446));
 
                     b.Property<string>("Name")
                         .IsRequired()
