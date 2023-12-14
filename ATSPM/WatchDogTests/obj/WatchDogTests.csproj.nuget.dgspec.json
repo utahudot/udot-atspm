@@ -283,11 +283,20 @@
               "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj": {
                 "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\ApplicationCore\\ApplicationCore.csproj"
               },
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj"
+              },
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj"
+              },
               "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj": {
                 "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\PostgreSQLDatabaseProvider\\PostgreSQLDatabaseProvider.csproj"
               },
               "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj": {
                 "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj"
+              },
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj"
               }
             }
           }
@@ -328,10 +337,6 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
-            "Npgsql.EntityFrameworkCore.PostgreSQL": {
-              "target": "Package",
-              "version": "[7.0.11, )"
-            },
             "OData.Swagger": {
               "target": "Package",
               "version": "[1.0.0, )"
@@ -343,6 +348,130 @@
             "SSH.NET": {
               "target": "Package",
               "version": "[2020.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj",
+        "projectName": "ATSPM.Infrastructure.MySqlDatabaseProvider",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\MySqlDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\MySqlDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj",
+        "projectName": "ATSPM.Infrastructure.OracleDatabaseProvider",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\OracleDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\OracleDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Oracle.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.21.12, )"
             }
           },
           "imports": [
@@ -404,6 +533,12 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
+          "dependencies": {
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[7.0.11, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -487,10 +622,6 @@
               "target": "Package",
               "version": "[4.18.2, )"
             },
-            "Npgsql.EntityFrameworkCore.PostgreSQL": {
-              "target": "Package",
-              "version": "[7.0.11, )"
-            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
@@ -527,6 +658,65 @@
         "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\SqlDatabaseProvider.csproj",
         "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlDatabaseProvider\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj": {
+                "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\Data\\Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj",
+        "projectName": "ATSPM.Infrastructure.SqlLiteDatabaseProvider",
+        "projectPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\SqlLiteDatabaseProvider.csproj",
+        "packagesPath": "C:\\Users\\christianbaker\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\christianbaker\\source\\repos\\udot-atspm\\ATSPM\\SqlLiteDatabaseProvider\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\christianbaker\\AppData\\Roaming\\NuGet\\NuGet.Config",
