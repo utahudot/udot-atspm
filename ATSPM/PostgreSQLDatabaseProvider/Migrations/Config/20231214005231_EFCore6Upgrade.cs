@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
+namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 {
     /// <inheritdoc />
     public partial class EFCore6Upgrade : Migration
@@ -17,9 +18,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Areas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,16 +32,16 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "ControllerTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Product = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    Firmware = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: true),
-                    Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Product = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
+                    Firmware = table.Column<string>(type: "character varying(32)", unicode: false, maxLength: 32, nullable: true),
+                    Protocol = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
-                    Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
-                    UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Directory = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    SearchTerm = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
+                    UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,10 +53,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DetectionTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false),
-                    Abbreviation = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: true),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: false),
+                    Abbreviation = table.Column<string>(type: "character varying(5)", unicode: false, maxLength: 5, nullable: true),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,10 +68,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DirectionTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "varchar(30)", unicode: false, maxLength: 30, nullable: true),
-                    Abbreviation = table.Column<string>(type: "varchar(5)", unicode: false, maxLength: 5, nullable: true),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(30)", unicode: false, maxLength: 30, nullable: true),
+                    Abbreviation = table.Column<string>(type: "character varying(5)", unicode: false, maxLength: 5, nullable: true),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,11 +83,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "ExternalLinks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
-                    Url = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
+                    Url = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: false),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,11 +99,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Faqs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Header = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
-                    Body = table.Column<string>(type: "varchar(8000)", unicode: false, maxLength: 8000, nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Header = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false),
+                    Body = table.Column<string>(type: "character varying(8000)", unicode: false, maxLength: 8000, nullable: false),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,12 +115,12 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Jurisdictions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Mpo = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    CountyParish = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    OtherPartners = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Mpo = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    CountyParish = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    OtherPartners = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,10 +132,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "LocationTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
+                    Icon = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -146,11 +147,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "MeasureComments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Comment = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(255)", unicode: false, maxLength: 255, nullable: true),
+                    LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,13 +163,13 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "MeasureType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Abbreviation = table.Column<string>(type: "varchar(8)", unicode: false, maxLength: 8, nullable: true),
-                    ShowOnWebsite = table.Column<bool>(type: "bit", nullable: false),
-                    ShowOnAggregationSite = table.Column<bool>(type: "bit", nullable: false),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Abbreviation = table.Column<string>(type: "character varying(8)", unicode: false, maxLength: 8, nullable: true),
+                    ShowOnWebsite = table.Column<bool>(type: "boolean", nullable: false),
+                    ShowOnAggregationSite = table.Column<bool>(type: "boolean", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,14 +181,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "MenuItems",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(24)", unicode: false, maxLength: 24, nullable: false),
-                    Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    Link = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
-                    Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(24)", unicode: false, maxLength: 24, nullable: false),
+                    Icon = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    DisplayOrder = table.Column<int>(type: "integer", nullable: false),
+                    Link = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Document = table.Column<byte[]>(type: "bytea", nullable: true),
+                    ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,13 +206,13 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Manufacturer = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
-                    Model = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
-                    DeviceType = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
-                    WebPage = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Manufacturer = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
+                    Model = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
+                    DeviceType = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    WebPage = table.Column<string>(type: "text", nullable: true),
+                    Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -223,9 +224,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Regions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -237,11 +238,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "RouteDistances",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Distance = table.Column<double>(type: "float", nullable: false),
-                    LocationIdentifierA = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    LocationIdentifierB = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Distance = table.Column<double>(type: "double precision", nullable: false),
+                    LocationIdentifierA = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
+                    LocationIdentifierB = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,9 +254,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Routes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -267,10 +268,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Settings",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Setting = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: false),
-                    Value = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Setting = table.Column<string>(type: "character varying(32)", unicode: false, maxLength: 32, nullable: false),
+                    Value = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -282,13 +283,13 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "VersionHistory",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
-                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 14, 54, 9, 612, DateTimeKind.Local).AddTicks(3189)),
-                    Version = table.Column<int>(type: "int", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
+                    Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2023, 12, 13, 17, 52, 31, 697, DateTimeKind.Local).AddTicks(3480)),
+                    Version = table.Column<int>(type: "integer", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -306,16 +307,16 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "WatchDogLogEvents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    locationId = table.Column<int>(type: "int", nullable: false),
-                    locationIdentifier = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ComponentType = table.Column<int>(type: "int", nullable: false),
-                    ComponentId = table.Column<int>(type: "int", nullable: false),
-                    IssueType = table.Column<int>(type: "int", nullable: false),
-                    Details = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    Phase = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    locationId = table.Column<int>(type: "integer", nullable: false),
+                    locationIdentifier = table.Column<string>(type: "text", unicode: false, nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ComponentType = table.Column<int>(type: "integer", nullable: false),
+                    ComponentId = table.Column<int>(type: "integer", nullable: false),
+                    IssueType = table.Column<int>(type: "integer", nullable: false),
+                    Details = table.Column<string>(type: "text", unicode: false, nullable: false),
+                    Phase = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -326,8 +327,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "UserAreas",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
-                    AreaId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "text", unicode: false, nullable: false),
+                    AreaId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -345,8 +346,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "UserJurisdictions",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
-                    JurisdictionId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "text", unicode: false, nullable: false),
+                    JurisdictionId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -363,8 +364,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DetectionTypeMeasureType",
                 columns: table => new
                 {
-                    DetectionTypesId = table.Column<int>(type: "int", nullable: false),
-                    MeasureTypesId = table.Column<int>(type: "int", nullable: false)
+                    DetectionTypesId = table.Column<int>(type: "integer", nullable: false),
+                    MeasureTypesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -387,8 +388,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "MeasureCommentMeasureType",
                 columns: table => new
                 {
-                    MeasureCommentsId = table.Column<int>(type: "int", nullable: false),
-                    MeasureTypesId = table.Column<int>(type: "int", nullable: false)
+                    MeasureCommentsId = table.Column<int>(type: "integer", nullable: false),
+                    MeasureTypesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -411,11 +412,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "MeasureOptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Option = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
-                    Value = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    MeasureTypeId = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Option = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
+                    Value = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
+                    MeasureTypeId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -432,17 +433,17 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DeviceConfigurations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Firmware = table.Column<string>(type: "varchar(16)", unicode: false, maxLength: 16, nullable: false),
-                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Firmware = table.Column<string>(type: "character varying(16)", unicode: false, maxLength: 16, nullable: false),
+                    Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
+                    Protocol = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
-                    Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
-                    UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    Directory = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    SearchTerm = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
+                    UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
+                    ProductId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -460,24 +461,24 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Locations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
-                    SecondaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
-                    ChartEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
-                    Note = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
-                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PedsAre1to1 = table.Column<bool>(type: "bit", nullable: false),
-                    LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    ControllerTypeId = table.Column<int>(type: "int", nullable: false),
-                    JurisdictionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((0))"),
-                    LocationTypeId = table.Column<int>(type: "int", nullable: false),
-                    RegionId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    PrimaryName = table.Column<string>(type: "character varying(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
+                    SecondaryName = table.Column<string>(type: "character varying(100)", unicode: false, maxLength: 100, nullable: true),
+                    Ipaddress = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
+                    ChartEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    VersionAction = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((10))"),
+                    Note = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
+                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PedsAre1to1 = table.Column<bool>(type: "boolean", nullable: false),
+                    LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
+                    ControllerTypeId = table.Column<int>(type: "integer", nullable: false),
+                    JurisdictionId = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((0))"),
+                    LocationTypeId = table.Column<int>(type: "integer", nullable: false),
+                    RegionId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -513,8 +514,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "UserRegions",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
-                    RegionId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "text", unicode: false, nullable: false),
+                    RegionId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -531,19 +532,19 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "RouteLocationss",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    PrimaryPhase = table.Column<int>(type: "int", nullable: false),
-                    OpposingPhase = table.Column<int>(type: "int", nullable: false),
-                    PrimaryDirectionId = table.Column<int>(type: "int", nullable: false),
-                    OpposingDirectionId = table.Column<int>(type: "int", nullable: false),
-                    IsPrimaryOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    IsOpposingOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    PreviousLocationDistanceId = table.Column<int>(type: "int", nullable: true),
-                    NextLocationDistanceId = table.Column<int>(type: "int", nullable: true),
-                    LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    RouteId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    PrimaryPhase = table.Column<int>(type: "integer", nullable: false),
+                    OpposingPhase = table.Column<int>(type: "integer", nullable: false),
+                    PrimaryDirectionId = table.Column<int>(type: "integer", nullable: false),
+                    OpposingDirectionId = table.Column<int>(type: "integer", nullable: false),
+                    IsPrimaryOverlap = table.Column<bool>(type: "boolean", nullable: false),
+                    IsOpposingOverlap = table.Column<bool>(type: "boolean", nullable: false),
+                    PreviousLocationDistanceId = table.Column<int>(type: "integer", nullable: true),
+                    NextLocationDistanceId = table.Column<int>(type: "integer", nullable: true),
+                    LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
+                    RouteId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -585,19 +586,19 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Approaches",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    Mph = table.Column<int>(type: "int", nullable: true),
-                    ProtectedPhaseNumber = table.Column<int>(type: "int", nullable: false),
-                    IsProtectedPhaseOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    PermissivePhaseNumber = table.Column<int>(type: "int", nullable: true),
-                    IsPermissivePhaseOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    PedestrianPhaseNumber = table.Column<int>(type: "int", nullable: true),
-                    IsPedestrianPhaseOverlap = table.Column<bool>(type: "bit", nullable: false),
-                    PedestrianDetectors = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
-                    DirectionTypeId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", unicode: false, nullable: true),
+                    Mph = table.Column<int>(type: "integer", nullable: true),
+                    ProtectedPhaseNumber = table.Column<int>(type: "integer", nullable: false),
+                    IsProtectedPhaseOverlap = table.Column<bool>(type: "boolean", nullable: false),
+                    PermissivePhaseNumber = table.Column<int>(type: "integer", nullable: true),
+                    IsPermissivePhaseOverlap = table.Column<bool>(type: "boolean", nullable: false),
+                    PedestrianPhaseNumber = table.Column<int>(type: "integer", nullable: true),
+                    IsPedestrianPhaseOverlap = table.Column<bool>(type: "boolean", nullable: false),
+                    PedestrianDetectors = table.Column<string>(type: "text", unicode: false, nullable: true),
+                    LocationId = table.Column<int>(type: "integer", nullable: false),
+                    DirectionTypeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -621,8 +622,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "AreaLocation",
                 columns: table => new
                 {
-                    AreasId = table.Column<int>(type: "int", nullable: false),
-                    LocationsId = table.Column<int>(type: "int", nullable: false)
+                    AreasId = table.Column<int>(type: "integer", nullable: false),
+                    LocationsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -645,14 +646,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Devices",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
-                    DeviceStatus = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
-                    Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
-                    DeviceConfigurationId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    Ipaddress = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
+                    DeviceStatus = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
+                    LocationId = table.Column<int>(type: "integer", nullable: false),
+                    DeviceConfigurationId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -676,22 +677,22 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "Detectors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DectectorIdentifier = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    DetectorChannel = table.Column<int>(type: "int", nullable: false),
-                    DistanceFromStopBar = table.Column<int>(type: "int", nullable: true),
-                    MinSpeedFilter = table.Column<int>(type: "int", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateDisabled = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LaneNumber = table.Column<int>(type: "int", nullable: true),
-                    MovementType = table.Column<int>(type: "int", nullable: false),
-                    LaneType = table.Column<int>(type: "int", nullable: false),
-                    DetectionHardware = table.Column<int>(type: "int", nullable: false),
-                    DecisionPoint = table.Column<int>(type: "int", nullable: true),
-                    MovementDelay = table.Column<int>(type: "int", nullable: true),
-                    LatencyCorrection = table.Column<double>(type: "float", nullable: false),
-                    ApproachId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DectectorIdentifier = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
+                    DetectorChannel = table.Column<int>(type: "integer", nullable: false),
+                    DistanceFromStopBar = table.Column<int>(type: "integer", nullable: true),
+                    MinSpeedFilter = table.Column<int>(type: "integer", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateDisabled = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LaneNumber = table.Column<int>(type: "integer", nullable: true),
+                    MovementType = table.Column<int>(type: "integer", nullable: false),
+                    LaneType = table.Column<int>(type: "integer", nullable: false),
+                    DetectionHardware = table.Column<int>(type: "integer", nullable: false),
+                    DecisionPoint = table.Column<int>(type: "integer", nullable: true),
+                    MovementDelay = table.Column<int>(type: "integer", nullable: true),
+                    LatencyCorrection = table.Column<double>(type: "double precision", nullable: false),
+                    ApproachId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -709,8 +710,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DetectionTypeDetector",
                 columns: table => new
                 {
-                    DetectionTypesId = table.Column<int>(type: "int", nullable: false),
-                    DetectorsId = table.Column<int>(type: "int", nullable: false)
+                    DetectionTypesId = table.Column<int>(type: "integer", nullable: false),
+                    DetectorsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -733,11 +734,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations
                 name: "DetectorComments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TimeStamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Comment = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false),
-                    DetectorId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false),
+                    DetectorId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

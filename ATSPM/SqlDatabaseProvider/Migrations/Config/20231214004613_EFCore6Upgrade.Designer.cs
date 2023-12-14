@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
+namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231213222038_EFCore6Upgrade")]
+    [Migration("20231214004613_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -1705,7 +1705,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 15, 20, 38, 513, DateTimeKind.Local).AddTicks(1557));
+                        .HasDefaultValue(new DateTime(2023, 12, 13, 17, 46, 13, 675, DateTimeKind.Local).AddTicks(3446));
 
                     b.Property<string>("Name")
                         .IsRequired()
