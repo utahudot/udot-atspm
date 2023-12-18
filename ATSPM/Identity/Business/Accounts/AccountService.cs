@@ -23,8 +23,8 @@ namespace Identity.Business.Accounts
 
         public async Task<AccountResult> CreateUser(ApplicationUser user, string password)
         {
-            var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
-            var agencyExists = await _agencyService.AgencyExistsAsync(user.Agency);
+            //var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
+            //var agencyExists = await _agencyService.AgencyExistsAsync(user.Agency);
             var createUser = await _userManager.CreateAsync(user, password);
 
             // Just add new people as users
@@ -34,37 +34,37 @@ namespace Identity.Business.Accounts
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 var info = await _signInManager.UserManager.FindByEmailAsync(user.Email);
-                var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
+                //var roles = await _signInManager.UserManager.GetRolesAsync(user);
+                //var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
 
                 if (info != null)
                 {
-                    return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
+                    return new AccountResult(user, StatusCodes.Status200OK, "");
                 }
                 else
                 {
-                    return new AccountResult(null, null, "", StatusCodes.Status500InternalServerError, "Server Error");
+                    return new AccountResult(null, StatusCodes.Status500InternalServerError, "Server Error");
                 }
             }
 
-            return new AccountResult(null, null, "", StatusCodes.Status400BadRequest, createUser.Errors.First().Description);
+            return new AccountResult(null, StatusCodes.Status400BadRequest, createUser.Errors.First().Description);
         }
 
         public async Task<AccountResult> Login(string email, string password, bool rememberMe = false)
         {
-            var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
+            //var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
             var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
 
             if (result != null && result.Succeeded)
             {
                 var user = await _signInManager.UserManager.FindByEmailAsync(email);
-                var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
+                //var roles = await _signInManager.UserManager.GetRolesAsync(user);
+                //var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
 
-                return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
+                return new AccountResult(user, StatusCodes.Status200OK, "");
             }
 
-            return new AccountResult(null, null, "", StatusCodes.Status400BadRequest, "Incorrect username or password");
+            return new AccountResult(null, StatusCodes.Status400BadRequest, "Incorrect username or password");
         }
     }
 }
