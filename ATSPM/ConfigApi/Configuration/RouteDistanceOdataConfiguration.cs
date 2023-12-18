@@ -24,8 +24,8 @@ namespace ATSPM.ConfigApi.Configuration
 
                         var c = model.Collection.Function("GetRouteDistanceByLocationIdentifiers");
                         c.Parameter<string>("locationA");
-                        c.Parameter<string>("LocationB");
-                        c.ReturnsFromEntitySet<Device>("RouteDistances");
+                        c.Parameter<string>("locationB");
+                        c.ReturnsFromEntitySet<RouteDistance>("RouteDistance");
 
                         break;
                     }
