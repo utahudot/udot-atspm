@@ -114,12 +114,13 @@ namespace ATSPM.Infrastructure.Migrations.Identity
                 new Secret("PostmanTest".ToSha256())
             },
             RedirectUris = { "https://127.0.0.1:44357" },
-            AllowedGrantTypes = GrantTypes.ClientCredentials,
-            AllowedScopes = { "reports.public","reports.private","config.admin","config.public","admin.utility" },
+            AllowedGrantTypes =  GrantTypes.ResourceOwnerPassword,
+            AccessTokenLifetime = 12 * 60 * 60,
+            AllowedScopes = { "reports.public", "reports.private", "config.admin", "config.public", "admin.utility", "offline_access" },
             RequireConsent = false,
             RequirePkce = false,
         },
-            new Client
+        new Client
         {
             ClientId = "Identity",
                 ClientSecrets =
