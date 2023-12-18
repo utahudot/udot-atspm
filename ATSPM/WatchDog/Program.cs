@@ -22,8 +22,8 @@ class Program
                })
                .ConfigureServices((h, s) =>
                {
-                   s.AddNpgAtspmDbContext(h);
-                   s.AddScoped<ISignalRepository, SignalEFRepository>();
+                   s.AddAtspmDbContext(h);
+                   s.AddScoped<ILocationRepository, LocationEFRepository>();
                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
                    s.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
                    s.AddScoped<IRegionsRepository, RegionEFRepository>();

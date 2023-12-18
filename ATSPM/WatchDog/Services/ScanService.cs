@@ -1,5 +1,10 @@
-﻿using System.Net;
+﻿using ATSPM.Application.Repositories;
+using ATSPM.Data.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Net.Mail;
+using WatchDog.Models;
 
 namespace WatchDog.Services
 {
