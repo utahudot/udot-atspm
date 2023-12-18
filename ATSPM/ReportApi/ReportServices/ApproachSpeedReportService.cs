@@ -18,7 +18,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
         private readonly ISpeedEventRepository speedEventRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -27,37 +27,37 @@ namespace ATSPM.ReportApi.ReportServices
             IControllerEventLogRepository controllerEventLogRepository,
             IApproachRepository approachRepository,
             ISpeedEventRepository speedEventRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
             this.approachSpeedService = approachSpeedService;
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.approachRepository = approachRepository;
             this.speedEventRepository = speedEventRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachSpeedResult>> ExecuteAsync(ApproachSpeedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No data found");
-                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("Location not found"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12),parameter.End.AddHours(12)).ToList();
 
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachSpeedResult>>();
 
             foreach (var phaseDetail in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(parameter, controllerEventLogs, planEvents, phaseDetail, signal.SignalDescription()));
+                tasks.Add(GetChartDataByApproach(parameter, controllerEventLogs, planEvents, phaseDetail, Location.LocationDescription()));
             }
             var results = await Task.WhenAll(tasks);
             var finalResultcheck = results.Where(result => result != null).ToList();
@@ -77,7 +77,7 @@ namespace ATSPM.ReportApi.ReportServices
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
             PhaseDetail phaseDetail,
-            string signalDescription)
+            string LocationDescription)
         {
             var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
             Detector detector;
@@ -109,7 +109,7 @@ namespace ATSPM.ReportApi.ReportServices
                 planEvents,
                 speedEvents,
                 detector);
-            viewModel.SignalDescription = signalDescription;
+            viewModel.LocationDescription = LocationDescription;
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

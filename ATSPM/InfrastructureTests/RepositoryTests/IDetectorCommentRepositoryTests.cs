@@ -29,10 +29,10 @@ namespace InfrastructureTests.RepositoryTests
         {
             if (_repo.GetList().Count() < ItemCount)
             {
-                var s = ModelFixture.Create<Signal>();
+                var s = ModelFixture.Create<Location>();
 
                 var a = ModelFixture.Create<Approach>();
-                a.Signal = s;
+                a.Location = s;
 
                 var d = ModelFixture.Create<Detector>();
                 d.Id = DetectorId;

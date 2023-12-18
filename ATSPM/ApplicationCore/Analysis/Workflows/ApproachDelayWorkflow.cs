@@ -15,11 +15,11 @@ namespace ATSPM.Application.Analysis.Workflows
     /// Vehicle delay is a measure that is commonly modeled by agencies to identify 
     /// whether intersection operations are acceptable.Using high-resolution data, this
     /// measure can be computed directly.For locations with high delay, particularly at
-    /// uncongested locations, signal timing adjustments can help reduce wait times (1).
+    /// uncongested locations, Location timing adjustments can help reduce wait times (1).
     /// Approach delay is a measure that integrates individual vehicle delay with
     /// volume to get an estimated sum of all vehicle delay on an approach.
     /// </summary>
-    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
+    public class ApproachDelayWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, Tuple<Approach, ApproachDelayResult>>
     {
         private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
@@ -36,8 +36,8 @@ namespace ATSPM.Application.Analysis.Workflows
         public FilteredPhaseIntervalChanges FilteredPhaseIntervalChanges { get; private set; }
         public FilteredDetectorData FilteredDetectorData { get; private set; }
 
-        public GroupSignalsByApproaches GroupSignalsByApproaches1 { get; private set; }
-        public GroupSignalsByApproaches GroupSignalsByApproaches2 { get; private set; }
+        public GroupLocationsByApproaches GroupLocationsByApproaches1 { get; private set; }
+        public GroupLocationsByApproaches GroupLocationsByApproaches2 { get; private set; }
 
 
         public CreateRedToRedCycles CreateRedToRedCycles { get; private set; }
@@ -51,8 +51,8 @@ namespace ATSPM.Application.Analysis.Workflows
             FilteredPhaseIntervalChanges = new();
             FilteredDetectorData = new();
 
-            GroupSignalsByApproaches1 = new();
-            GroupSignalsByApproaches2 = new();
+            GroupLocationsByApproaches1 = new();
+            GroupLocationsByApproaches2 = new();
 
             CreateRedToRedCycles = new();
             IdentifyandAdjustVehicleActivations = new();
@@ -67,8 +67,8 @@ namespace ATSPM.Application.Analysis.Workflows
             Steps.Add(FilteredPhaseIntervalChanges);
             Steps.Add(FilteredDetectorData);
 
-            Steps.Add(GroupSignalsByApproaches1);
-            Steps.Add(GroupSignalsByApproaches2);
+            Steps.Add(GroupLocationsByApproaches1);
+            Steps.Add(GroupLocationsByApproaches2);
 
             Steps.Add(CreateRedToRedCycles);
             Steps.Add(IdentifyandAdjustVehicleActivations);
@@ -82,11 +82,11 @@ namespace ATSPM.Application.Analysis.Workflows
         {
             Input.LinkTo(FilteredPhaseIntervalChanges, new DataflowLinkOptions() { PropagateCompletion = true });
             Input.LinkTo(FilteredDetectorData, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredPhaseIntervalChanges.LinkTo(GroupSignalsByApproaches1, new DataflowLinkOptions() { PropagateCompletion = true });
-            FilteredDetectorData.LinkTo(GroupSignalsByApproaches2, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredPhaseIntervalChanges.LinkTo(GroupLocationsByApproaches1, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredDetectorData.LinkTo(GroupLocationsByApproaches2, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            GroupSignalsByApproaches1.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupSignalsByApproaches2.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
+            GroupLocationsByApproaches1.LinkTo(CreateRedToRedCycles, new DataflowLinkOptions() { PropagateCompletion = true });
+            GroupLocationsByApproaches2.LinkTo(IdentifyandAdjustVehicleActivations, new DataflowLinkOptions() { PropagateCompletion = true });
 
             IdentifyandAdjustVehicleActivations.LinkTo(mergeCyclesAndVehicles.Target1, new DataflowLinkOptions() { PropagateCompletion = true });
             CreateRedToRedCycles.LinkTo(mergeCyclesAndVehicles.Target2, new DataflowLinkOptions() { PropagateCompletion = true });

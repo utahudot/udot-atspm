@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class SignalEventCountAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class LocationEventCountAggregation : ATSPMAggregationBase, ILocationLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public int EventCount { get; set; }
     }
 }

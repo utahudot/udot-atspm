@@ -14,49 +14,49 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly PreemptDetailService preemptDetailService;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PreemptDetailReportService(
             IControllerEventLogRepository controllerEventLogRepository,
             PreemptDetailService preemptDetailService,
-            ISignalRepository signalRepository)
+            ILocationRepository LocationRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             this.preemptDetailService = preemptDetailService;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
         }
 
         /// <inheritdoc/>
         public override async Task<PreemptDetailResult> ExecuteAsync(PreemptDetailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
-                //return BadRequest("Signal not found");
-                return await Task.FromException<PreemptDetailResult>(new NullReferenceException("Signal not found"));
+                //return BadRequest("Location not found");
+                return await Task.FromException<PreemptDetailResult>(new NullReferenceException("Location not found"));
             }
             var codes = new List<int>();
 
             for (var i = 101; i <= 111; i++)
                 codes.Add(i);
 
-            var events = controllerEventLogRepository.GetSignalEventsByEventCodes(
-                parameter.SignalIdentifier,
+            var events = controllerEventLogRepository.GetLocationEventsByEventCodes(
+                parameter.locationIdentifier,
                 parameter.Start,
                 parameter.End,
                 codes).ToList();
 
             if (events.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<PreemptDetailResult>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<PreemptDetailResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
 
             var result = preemptDetailService.GetChartData(parameter, events);
-            //viewModel.Details = signal.SignalDescription();
-            result.Summary.SignalDescription = signal.SignalDescription();
+            //viewModel.Details = Location.LocationDescription();
+            result.Summary.LocationDescription = Location.LocationDescription();
             //return Ok(viewModel);
 
             return result;

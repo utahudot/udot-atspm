@@ -62,12 +62,12 @@ namespace ApplicationCoreTests.Analysis
 
         //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
         //{
-        //    var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+        //    var result = items.GroupBy(g => g.locationIdentifier, (Location, l1) =>
         //    l1.GroupBy(g => g.EventParam, (preempt, l2) =>
         //    l2.TimeSpanFromConsecutiveCodes(first, second)
         //    .Select(s => new T()
         //    {
-        //        SignalIdentifier = signal,
+        //        locationIdentifier = Location,
         //        PreemptNumber = preempt,
         //        Start = s.Item1[0].Timestamp,
         //        End = s.Item1[1].Timestamp,
@@ -85,8 +85,8 @@ namespace ApplicationCoreTests.Analysis
             //var logs1 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7115TerminationData.csv"));
             ////var logs2 = ControllerEventLogHelper.ImportLogsFromCsvFile(Path.Combine(filePath, "7706PreemptData.csv"));
 
-            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            //var signal = JsonConvert.DeserializeObject<Signal>(json);
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            //var Location = JsonConvert.DeserializeObject<Location>(json);
 
 
 
@@ -121,15 +121,15 @@ namespace ApplicationCoreTests.Analysis
 
             //var logs = new List<ControllerEventLog>
             //{
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
 
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
             //};
 
 
@@ -247,7 +247,7 @@ namespace ApplicationCoreTests.Analysis
 
             //cycles.ForEach(f =>
             //{
-            //    //f.SignalIdentifier = signal.Key;
+            //    //f.locationIdentifier = Location.Key;
             //    //f.PreemptNumber = item.Key;
             //    //f.Start = item.Min(m => m.Start);
             //    //f.End = item.Max(m => m.End);
@@ -269,9 +269,9 @@ namespace ApplicationCoreTests.Analysis
 
             //var filteredPreemptionData = new FilteredPreemptionData();
             //var groupEventLogsByParameter = new GroupEventLogsByParameter();
-            //var filterLogsBySignalAndParamter = new BroadcastBlock<Tuple<Signal, IEnumerable<ControllerEventLog>, int>>(f =>
+            //var filterLogsByLocationAndParamter = new BroadcastBlock<Tuple<Location, IEnumerable<ControllerEventLog>, int>>(f =>
             //{
-            //    return Tuple.Create(f.Item1, f.Item2.FromSpecification(new ControllerLogSignalAndParamterFilterSpecification(f.Item1, f.Item3)), f.Item3);
+            //    return Tuple.Create(f.Item1, f.Item2.FromSpecification(new ControllerLogLocationAndParamterFilterSpecification(f.Item1, f.Item3)), f.Item3);
             //});
 
             //var options = new ExecutionDataflowBlockOptions()
@@ -301,7 +301,7 @@ namespace ApplicationCoreTests.Analysis
 
             //    return f.Select(s => new PreemptDetailResult()
             //    {
-            //        //SignalIdentifier = signal.Key,
+            //        //locationIdentifier = Location.Key,
             //        //PreemptNumber = item.Key,
             //        //Start = item.Min(m => m.Start),
             //        //End = item.Max(m => m.End),
@@ -324,15 +324,15 @@ namespace ApplicationCoreTests.Analysis
 
 
             //filteredPreemptionData.LinkTo(groupEventLogsByParameter, new DataflowLinkOptions() { PropagateCompletion = true });
-            //groupEventLogsByParameter.LinkTo(filterLogsBySignalAndParamter, new DataflowLinkOptions() { PropagateCompletion = true });
+            //groupEventLogsByParameter.LinkTo(filterLogsByLocationAndParamter, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-            //filterLogsBySignalAndParamter.LinkTo(calculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true, MaxMessages = 3});
-            //filterLogsBySignalAndParamter.LinkTo(calculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
-            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
-            //filterLogsBySignalAndParamter.LinkTo(calculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
-            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
-            //filterLogsBySignalAndParamter.LinkTo(calculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsByLocationAndParamter.LinkTo(calculateDwellTime, new DataflowLinkOptions() { PropagateCompletion = true, MaxMessages = 3});
+            //filterLogsByLocationAndParamter.LinkTo(calculateTrackClearTime, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsByLocationAndParamter.LinkTo(calculateTimeToService, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsByLocationAndParamter.LinkTo(calculateDelay, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsByLocationAndParamter.LinkTo(calculateTimeToGateDown, new DataflowLinkOptions() { PropagateCompletion = true });
+            //filterLogsByLocationAndParamter.LinkTo(calculateTimeToCallMaxOut, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
             //calculateDwellTime.LinkTo(batchPrempt, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -347,7 +347,7 @@ namespace ApplicationCoreTests.Analysis
             //generatePreemptDetailResults.LinkTo(resultAction, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-            //filteredPreemptionData.Post(Tuple.Create(signal1, logs3));
+            //filteredPreemptionData.Post(Tuple.Create(Location1, logs3));
 
             //filteredPreemptionData.Complete();
 
@@ -381,8 +381,8 @@ namespace ApplicationCoreTests.Analysis
 
             //File.WriteAllText(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\ApproachVolumeTestLogs.json", json);
 
-            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Signal7115TestData.json").FullName);
-            //var signal = JsonConvert.DeserializeObject<Signal>(json);
+            //var json = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\Location7115TestData.json").FullName);
+            //var Location = JsonConvert.DeserializeObject<Location>(json);
 
             //var json1 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\RawCycleData.json").FullName);
             //var json2 = File.ReadAllText(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\ApplicationCoreTests\Analysis\TestData\CalculatePhaseVolumeTestData2.json").FullName);
@@ -390,15 +390,15 @@ namespace ApplicationCoreTests.Analysis
             //var data1 = JsonConvert.DeserializeObject<List<ControllerEventLog>>(json1);
             //var data2 = JsonConvert.DeserializeObject<CalculatePhaseVolumeTestData>(json2);
 
-            ////signal.Approaches.Clear();
-            ////signal.Approaches.Add(data1.Configuration);
-            ////signal.Approaches.Add(data2.Configuration);
+            ////Location.Approaches.Clear();
+            ////Location.Approaches.Add(data1.Configuration);
+            ////Location.Approaches.Add(data2.Configuration);
 
 
 
 
 
-            //var t1 = Tuple.Create(signal.Approaches.FirstOrDefault(f => f.Id == 2880), data1.AsEnumerable());
+            //var t1 = Tuple.Create(Location.Approaches.FirstOrDefault(f => f.Id == 2880), data1.AsEnumerable());
             ////var t2 = Tuple.Create(data2.Configuration, data2.Output);
 
 
@@ -414,25 +414,25 @@ namespace ApplicationCoreTests.Analysis
         //           .Select(x => x.Split(','))
         //           .Select(x => new ControllerEventLog
         //           {
-        //               SignalIdentifier = x[0],
+        //               locationIdentifier = x[0],
         //               Timestamp = DateTime.Parse(x[1]),
         //               EventCode = int.Parse(x[2]),
         //               EventParam = int.Parse(x[3])
         //           }).ToList();
 
-        //    var signal = new Signal()
+        //    var Location = new Location()
         //    {
-        //        SignalIdentifier = "7573",
+        //        locationIdentifier = "7573",
         //        PrimaryName = "Test Controller"
         //    };
 
         //    var c = new CalculateDwellTime();
 
-        //    var r = await c.ExecuteAsync(Tuple.Create(signal, logs.AsEnumerable(), 1));
+        //    var r = await c.ExecuteAsync(Tuple.Create(Location, logs.AsEnumerable(), 1));
 
         //    var result = new PreemptiveProcessTestData()
         //    {
-        //        Configuration = signal,
+        //        Configuration = Location,
         //        Input = logs,
         //        Output = r.Item2.Cast<PreempDetailValueBase>().ToList()
         //    };

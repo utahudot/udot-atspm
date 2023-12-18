@@ -22,7 +22,7 @@ namespace ATSPM.Infrastructure.Repositories
         {
             return base.GetList()
                 .Include(i => i.DirectionType)
-                .Include(i => i.Signal);
+                .Include(i => i.Location);
                 //.Include(i => i.Detectors);
         }
 

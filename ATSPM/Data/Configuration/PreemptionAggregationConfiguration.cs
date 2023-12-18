@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Preemption Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.PreemptNumber });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PreemptNumber });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }
