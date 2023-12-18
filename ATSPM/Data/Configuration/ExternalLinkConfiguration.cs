@@ -63,7 +63,7 @@ namespace ATSPM.Data.Configuration
                     Id = 6,
                     Name = "Alabama ATSPM",
                     DisplayOrder = 6,
-                    Url = "http://signalmetrics.ua.edu"
+                    Url = "http://Locationmetrics.ua.edu"
                 },
                 new ExternalLink
                 {

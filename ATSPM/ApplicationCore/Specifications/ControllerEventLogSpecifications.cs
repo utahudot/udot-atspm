@@ -8,21 +8,21 @@ using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
-    public class ControllerLogSignalFilterSpecification : BaseSpecification<ControllerEventLog>
+    public class ControllerLogLocationFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalFilterSpecification(Signal signal) : base()
+        public ControllerLogLocationFilterSpecification(Location Location) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier;
+            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
 
             ApplyOrderBy(o => o.Timestamp);
         }
     }
 
-    public class ControllerLogSignalAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
+    public class ControllerLogLocationAndParamterFilterSpecification : BaseSpecification<ControllerEventLog>
     {
-        public ControllerLogSignalAndParamterFilterSpecification(Signal signal, int param) : base()
+        public ControllerLogLocationAndParamterFilterSpecification(Location Location, int param) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signal.SignalIdentifier && c.EventParam == param;
+            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }
@@ -30,9 +30,9 @@ namespace ATSPM.Application.Specifications
 
     public class ControllerLogDateRangeSpecification : BaseSpecification<ControllerLogArchive>
     {
-        public ControllerLogDateRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -85,9 +85,9 @@ namespace ATSPM.Application.Specifications
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public ControllerLogDateTimeRangeSpecification(string signalId, DateTime startDate, DateTime endDate) : base()
+        public ControllerLogDateTimeRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.SignalIdentifier == signalId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.LocationIdentifier == locationId && c.Timestamp >= startDate && c.Timestamp <= endDate;
 
             ApplyOrderBy(o => o.Timestamp);
         }

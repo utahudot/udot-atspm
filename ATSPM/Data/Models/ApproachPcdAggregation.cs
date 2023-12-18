@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApproachPcdAggregation : ATSPMAggregationBase, ISignalPhaseLayer
+    public partial class ApproachPcdAggregation : ATSPMAggregationBase, ILocationPhaseLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public bool IsProtectedPhase { get; set; }

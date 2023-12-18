@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace ATSPM.Application.Analysis.PreemptionDetails
 {
-    public abstract class PreempDetailValueBase : StartEndRange, ISignalLayer
+    public abstract class PreempDetailValueBase : StartEndRange, ILocationLayer
     {
-        #region ISignalLayer
+        #region ILocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 

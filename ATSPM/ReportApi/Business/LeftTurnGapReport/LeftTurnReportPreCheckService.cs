@@ -41,14 +41,14 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                 volumeCountAggregations);
             int opposingPhase = GetOpposingPhase(approach);
             Dictionary<TimeSpan, double> averageCyles = GetAverageCycles(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 opposingPhase,
                 startDate,
                 endDate,
                 peaks,
                 phaseCycleAggregations);
             Dictionary<TimeSpan, double> averagePedCycles = GetAveragePedCycles(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 opposingPhase,
                 startDate,
                 endDate,
@@ -91,7 +91,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
         }
 
         private Dictionary<TimeSpan, double> GetAveragePedCycles(
-            string signalId,
+            string locationId,
             int phase,
             DateTime startDate,
             DateTime endDate,
@@ -104,11 +104,11 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
                 amAggregations.Add(phasePedAggregations.Where(p =>
-                p.SignalId == signalId
+                p.locationId == locationId
                 && p.PhaseNumber == phase
                 && p.BinStartTime >= tempDate.Date.Add(amPeak)
                 && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
-                //amAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
+                //amAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(a => a.PedCycles));
             }
             if (amAggregations.Count > 0)
                 averagePedCycles.Add(amPeak, amAggregations.Average(a => a));
@@ -120,11 +120,11 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             {
 
                 amAggregations.Add(phasePedAggregations.Where(p =>
-                p.SignalId == signalId
+                p.locationId == locationId
                 && p.PhaseNumber == phase
                 && p.BinStartTime >= tempDate.Date.Add(pmPeak)
                 && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
-                //pmAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
+                //pmAggregations.Add(_phasePedAggregationRepository.GetPhasePedsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(a => a.PedCycles));
             }
             if (pmAggregations.Count > 0)
                 averagePedCycles.Add(pmPeak, pmAggregations.Average(a => a));
@@ -134,7 +134,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
         }
 
         private Dictionary<TimeSpan, double> GetAverageCycles(
-            string signalId,
+            string locationId,
             int phase,
             DateTime startDate,
             DateTime endDate,
@@ -147,16 +147,16 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             var amPeak = peaks.Min(p => p.Key);
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(approachCycleAggregations.Where(a => a.SignalIdentifier == signalId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(amPeak) && a.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)));
-                //amAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
+                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == locationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(amPeak) && a.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1)));
+                //amAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(locationId, phase, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)));
             }
             averageCycles.Add(amPeak, amAggregations.Average(a => a.TotalRedToRedCycles));
             var pmPeak = peaks.Max(p => p.Key);
             List<PhaseCycleAggregation> pmAggregations = new List<PhaseCycleAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                amAggregations.AddRange(approachCycleAggregations.Where(a => a.SignalIdentifier == signalId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(pmPeak) && a.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)));
-                //pmAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBySignalIdPhaseAndDateRange(signalId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
+                amAggregations.AddRange(approachCycleAggregations.Where(a => a.LocationIdentifier == locationId && a.PhaseNumber == phase && a.BinStartTime >= tempDate.Date.Add(pmPeak) && a.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1)));
+                //pmAggregations.AddRange(_approachCycleAggregationRepository.GetApproachCyclesAggregationBylocationIdPhaseAndDateRange(locationId, phase, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)));
             }
             averageCycles.Add(pmPeak, pmAggregations.Average(a => a.TotalRedToRedCycles));
             return averageCycles;
@@ -222,14 +222,14 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                 volumeCountAggregations);
             int phaseNumber = approach.PermissivePhaseNumber ?? approach.ProtectedPhaseNumber;
             var maxCycles = GetMaxCycles(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 phaseNumber,
                 startDate,
                 endDate,
                 peaks,
                 cycleAggregations);
             Dictionary<TimeSpan, double> averageGapOuts = GetAverageGapOutsForPhase(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 phaseNumber,
                 startDate,
                 endDate,
@@ -241,7 +241,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
         }
 
         private Dictionary<TimeSpan, double> GetMaxCycles(
-            string signalId,
+            string locationId,
             int phaseNumber,
             DateTime startDate,
             DateTime endDate,
@@ -255,11 +255,11 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
                 var result = cycleAggregations.Where(c =>
-                c.SignalIdentifier == signalId
+                c.LocationIdentifier == locationId
                 && c.PhaseNumber == phaseNumber
                 && c.BinStartTime >= tempDate.Add(peaks.First().Key)
                 && c.BinStartTime < tempDate.Add(peaks.First().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
-                //var result = _approachCycleAggregationRepository.GetCycleCountBySignalIdAndDateRange(signalId, phaseNumber, tempDate.Add(peaks.First().Key), tempDate.Add(peaks.First().Key).AddHours(1));
+                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(locationId, phaseNumber, tempDate.Add(peaks.First().Key), tempDate.Add(peaks.First().Key).AddHours(1));
                 if (result > amMaxCycle)
                     amMaxCycle = result;
             }
@@ -268,11 +268,11 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             for (var tempDate = startDate; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
                 var result = cycleAggregations.Where(c =>
-                c.SignalIdentifier == signalId
+                c.LocationIdentifier == locationId
                 && c.PhaseNumber == phaseNumber
                 && c.BinStartTime >= tempDate.Add(peaks.Last().Key)
                 && c.BinStartTime < tempDate.Add(peaks.Last().Key).AddHours(1)).Sum(p => p.TotalGreenToGreenCycles);
-                //var result = _approachCycleAggregationRepository.GetCycleCountBySignalIdAndDateRange(signalId, phaseNumber, tempDate.Add(peaks.Last().Key), tempDate.Add(peaks.Last().Key).AddHours(1));
+                //var result = _approachCycleAggregationRepository.GetCycleCountBylocationIdAndDateRange(locationId, phaseNumber, tempDate.Add(peaks.Last().Key), tempDate.Add(peaks.Last().Key).AddHours(1));
                 if (result > pmMaxCycle)
                     pmMaxCycle = result;
             }
@@ -315,7 +315,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
         }
 
         private Dictionary<TimeSpan, double> GetAverageGapOutsForPhase(
-            string signalId,
+            string locationId,
             int phaseNumber,
             DateTime startDate,
             DateTime endDate,
@@ -332,7 +332,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                     p.BinStartTime >= tempDate.Date.Add(amPeak)
                     && p.BinStartTime < tempDate.Date.Add(amPeak).AddHours(1))
                     .Sum(g => g.GapOuts));
-                //amGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(g => g.GapOuts));
+                //amGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phaseNumber, tempDate.Date.Add(amPeak), tempDate.Date.Add(amPeak).AddHours(1)).Sum(g => g.GapOuts));
             }
             LoadGapOutAverages(averages, amPeak, amGapOutCount);
 
@@ -344,7 +344,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
                     p.BinStartTime >= tempDate.Date.Add(pmPeak)
                     && p.BinStartTime < tempDate.Date.Add(pmPeak).AddHours(1))
                     .Sum(g => g.GapOuts));
-                //pmGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBySignalIdPhaseNumberAndDateRange(signalId, phaseNumber, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(g => g.GapOuts));
+                //pmGapOutCount.Add(_phaseTerminationAggregationRepository.GetPhaseTerminationsAggregationBylocationIdPhaseNumberAndDateRange(locationId, phaseNumber, tempDate.Date.Add(pmPeak), tempDate.Date.Add(pmPeak).AddHours(1)).Sum(g => g.GapOuts));
             }
             LoadGapOutAverages(averages, pmPeak, pmGapOutCount);
 

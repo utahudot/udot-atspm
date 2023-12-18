@@ -3,7 +3,7 @@ using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
@@ -21,7 +21,7 @@ using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public abstract class ControllerDecoderBase : ServiceObjectBase, ISignalControllerDecoder
+    public abstract class ControllerDecoderBase : ServiceObjectBase, ILocationControllerDecoder
     {
         public event EventHandler CanExecuteChanged;
 
@@ -154,7 +154,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, CancellationToken cancelToken = default);
 
         #endregion
     }

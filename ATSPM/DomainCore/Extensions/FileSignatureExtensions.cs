@@ -300,7 +300,7 @@ namespace ATSPM.Domain.Extensions
             { new FileSignature(new byte[] { 0xFF, 0xD8, 0xFF, 0xEE }, 0, ".xxx", "", false)},
             { new FileSignature(new byte[] { 0xFF, 0xF2 }, 0, ".xxx", "", false)},
             { new FileSignature(new byte[] { 0xFF, 0xF3 }, 0, ".xxx", "", false)},
-            { new FileSignature(new byte[] { 0x18, 0x95 }, 0, ".eos", "EOS Signal Controller File", true)}
+            { new FileSignature(new byte[] { 0x18, 0x95 }, 0, ".eos", "EOS Location Controller File", true)}
         };
 
         //TODO: this has not been tested

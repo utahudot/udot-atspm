@@ -4,40 +4,40 @@ using ATSPM.Domain.Services;
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// Route signal repository
+    /// Route Location repository
     /// </summary>
-    public interface IRouteSignalsRepository : IAsyncRepository<RouteSignal>
+    public interface IRouteLocationsRepository : IAsyncRepository<RouteLocation>
     {
         //TODO: make sure these are still being used
         
         /// <summary>
-        /// Get route from signal id
+        /// Get route from Location id
         /// </summary>
-        /// <param name="id">id of signal</param>
+        /// <param name="id">id of Location</param>
         /// <returns></returns>
-        RouteSignal GetByRouteSignalId(int id);
+        RouteLocation GetByRoutelocationId(int id);
         
         /// <summary>
-        /// Moves signal up in route order
+        /// Moves Location up in route order
         /// </summary>
         /// <param name="routeId">id of route</param>
-        /// <param name="routeSignalId">id of signal route</param>
-        void MoveRouteSignalUp(int routeId, int routeSignalId);
+        /// <param name="routelocationId">id of Location route</param>
+        void MoveRouteLocationUp(int routeId, int routelocationId);
         
         /// <summary>
-        /// Moves signal down in route order
+        /// Moves Location down in route order
         /// </summary>
         /// <param name="routeId">id of route</param>
-        /// <param name="routeSignalId">id of signal route</param>
-        void MoveRouteSignalDown(int routeId, int routeSignalId);
+        /// <param name="routelocationId">id of Location route</param>
+        void MoveRouteLocationDown(int routeId, int routelocationId);
 
         #region Obsolete
 
         //[Obsolete("Use GetList instead")]
-        //IReadOnlyList<RouteSignal> GetAllRoutesDetails();
+        //IReadOnlyList<RouteLocation> GetAllRoutesDetails();
 
         //[Obsolete("Use Lookup instead")]
-        //IReadOnlyList<RouteSignal> GetByRouteID(int routeID);
+        //IReadOnlyList<RouteLocation> GetByRouteID(int routeID);
 
         //[Obsolete("Use Delete in the BaseClass")]
         //void DeleteByRouteID(int routeID);
@@ -46,10 +46,10 @@ namespace ATSPM.Application.Repositories
         //void DeleteById(int id);
 
         //[Obsolete("Use Update in the BaseClass")]
-        //void UpdateByRouteAndApproachID(int routeID, string signalId, int newOrderNumber);
+        //void UpdateByRouteAndApproachID(int routeID, string locationId, int newOrderNumber);
 
         //[Obsolete("Use Add in the BaseClass")]
-        //void Add(RouteSignal newRouteDetail);
+        //void Add(RouteLocation newRouteDetail);
 
         #endregion
     }

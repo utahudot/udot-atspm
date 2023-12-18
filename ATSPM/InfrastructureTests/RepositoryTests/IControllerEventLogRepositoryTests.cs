@@ -36,14 +36,14 @@ namespace InfrastructureTests.RepositoryTests
                 for (int x = 1; x <= ItemCount; x++)
                 {
                     var f = ModelFixture.Build<ControllerLogArchive>()
-                        .With(w => w.SignalIdentifier, $"{x + 1000}")
+                        .With(w => w.locationIdentifier, $"{x + 1000}")
                         .With(w => w.ArchiveDate, DateTime.Today.AddDays((x - (x * 2)) - 1))
                         .Without(w => w.LogData).Create();
 
                     for (int y = 1; y <= Logount; y++)
                     {
                         f.LogData.Add(ModelFixture.Build<ControllerEventLog>()
-                        .With(w => w.SignalIdentifier, f.SignalIdentifier)
+                        .With(w => w.locationIdentifier, f.locationIdentifier)
                         .With(w => w.TimeStamp, f.ArchiveDate.AddMinutes(y * 10))
                         .Create());
                     }
@@ -55,11 +55,11 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _list)
             {
-                _output.WriteLine($"Seed Data: {s.SignalIdentifier} - {s.ArchiveDate} - {s.LogData.Count}");
+                _output.WriteLine($"Seed Data: {s.locationIdentifier} - {s.ArchiveDate} - {s.LogData.Count}");
 
                 foreach (var l in s.LogData)
                 {
-                    _output.WriteLine($"LogData: {l.SignalIdentifier} - {l.TimeStamp} - {l.EventCode} - {l.EventParam}");
+                    _output.WriteLine($"LogData: {l.locationIdentifier} - {l.TimeStamp} - {l.EventCode} - {l.EventParam}");
 
                 }
 
@@ -69,23 +69,23 @@ namespace InfrastructureTests.RepositoryTests
         #region IControllerEventLogRepository
 
         [Fact]
-        public void IControllerEventLogRepositoryGetSignalEventsBetweenDates()
+        public void IControllerEventLogRepositoryGetLocationEventsBetweenDates()
         {
-            var signalId = "1001";
+            var locationId = "1001";
             var start = DateTime.Today.AddDays(-2);
             var end = start.AddDays(1).AddSeconds(-1);
 
             _output.WriteLine($"date range: {start} - {end}");
 
-            var result = _repo.GetSignalEventsBetweenDates(signalId, start, end);
+            var result = _repo.GetLocationEventsBetweenDates(locationId, start, end);
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.SignalIdentifier} - {r.TimeStamp} - {r.EventCode} - {r.EventParam}");
+                _output.WriteLine($"result: {r.locationIdentifier} - {r.TimeStamp} - {r.EventCode} - {r.EventParam}");
             }
 
-            //SignalId should equal signalId
-            Assert.True(result.All(a => a.SignalIdentifier == signalId));
+            //locationId should equal locationId
+            Assert.True(result.All(a => a.locationIdentifier == locationId));
 
             //timestamp should be between start/end dates
             Assert.True(result.All(a => a.TimeStamp >= start && a.TimeStamp <= end));
@@ -98,7 +98,7 @@ namespace InfrastructureTests.RepositoryTests
         //[Fact]
         //public void IControllerEventLogRepositoryGetEventsByEventCodesParam()
         //{
-        //    var signalId = "1001";
+        //    var locationId = "1001";
         //    var timestamp = DateTime.Now;
         //    var start = timestamp.AddMinutes(-1);
         //    var end = timestamp.AddMinutes(1);
@@ -109,25 +109,25 @@ namespace InfrastructureTests.RepositoryTests
         //    {
         //        for(int y = 1; y <= 100; y++)
         //        {
-        //            eventLogs.Add(new ControllerEventLog() { SignalId = signalId, Timestamp = timestamp, EventCode = x, EventParam = y });
+        //            eventLogs.Add(new ControllerEventLog() { locationId = locationId, Timestamp = timestamp, EventCode = x, EventParam = y });
         //        }
         //    }
 
 
         //    var sut = new Mock<IControllerEventLogRepository>();
-        //    sut.Setup(r => r.GetSignalEventsBetweenDates(signalId, start, end)).Returns(() => eventLogs);
+        //    sut.Setup(r => r.GetLocationEventsBetweenDates(locationId, start, end)).Returns(() => eventLogs);
 
         //    _output.WriteLine($"date range: {start} - {end}");
 
-        //    var result = sut.Object.GetEventsByEventCodesParam(signalId, start, end, Enumerable.Range(1, 5), 1);
+        //    var result = sut.Object.GetEventsByEventCodesParam(locationId, start, end, Enumerable.Range(1, 5), 1);
 
         //    foreach (var r in result)
         //    {
-        //        _output.WriteLine($"result: {r.SignalId} - {r.Timestamp} - {r.EventCode} - {r.EventParam}");
+        //        _output.WriteLine($"result: {r.locationId} - {r.Timestamp} - {r.EventCode} - {r.EventParam}");
         //    }
 
-        //    //SignalId should equal signalId
-        //    Assert.True(result.All(a => a.SignalId == signalId));
+        //    //locationId should equal locationId
+        //    Assert.True(result.All(a => a.locationId == locationId));
 
         //    //timestamp should be between start/end dates
         //    Assert.True(result.All(a => a.Timestamp >= start && a.Timestamp <= end));

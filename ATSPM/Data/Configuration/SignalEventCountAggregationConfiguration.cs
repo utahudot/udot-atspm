@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
-    public class SignalEventCountAggregationConfiguration : IEntityTypeConfiguration<SignalEventCountAggregation>
+    public class LocationEventCountAggregationConfiguration : IEntityTypeConfiguration<LocationEventCountAggregation>
     {
-        public void Configure(EntityTypeBuilder<SignalEventCountAggregation> builder)
+        public void Configure(EntityTypeBuilder<LocationEventCountAggregation> builder)
         {
-            builder.HasComment("Signal Event Count Aggregation");
+            builder.HasComment("Location Event Count Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

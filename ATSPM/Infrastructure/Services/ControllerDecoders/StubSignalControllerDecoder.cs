@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class StubSignalControllerDecoder : ControllerDecoderBase
+    public class StubLocationControllerDecoder : ControllerDecoderBase
     {
-        public StubSignalControllerDecoder(ILogger<StubSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public StubLocationControllerDecoder(ILogger<StubLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -24,7 +24,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return true;
         }
 
-        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, CancellationToken cancelToken = default)
+        public override IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, CancellationToken cancelToken = default)
         {
             throw new NotImplementedException();
         }

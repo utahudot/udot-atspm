@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace ATSPM.ReportApi.Business.Common
 {
-    public class SignalPhaseService
+    public class LocationPhaseService
     {
         private readonly PlanService planService;
         private readonly CycleService cycleService;
-        private readonly ILogger<SignalPhaseService> logger;
+        private readonly ILogger<LocationPhaseService> logger;
 
-        public SignalPhaseService(
+        public LocationPhaseService(
             PlanService planService,
             CycleService cycleService,
-            ILogger<SignalPhaseService> logger
+            ILogger<LocationPhaseService> logger
             )
         {
             this.planService = planService;
@@ -29,10 +29,10 @@ namespace ATSPM.ReportApi.Business.Common
 
 
 
-        public void LinkPivotAddSeconds(SignalPhase signalPhase, int seconds)
+        public void LinkPivotAddSeconds(LocationPhase LocationPhase, int seconds)
         {
-            signalPhase.ResetVolume();
-            foreach (var cyclePcd in signalPhase.Cycles)
+            LocationPhase.ResetVolume();
+            foreach (var cyclePcd in LocationPhase.Cycles)
             {
                 cyclePcd.AddSecondsToDetectorEvents(seconds);
             }
@@ -50,7 +50,7 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="approach"></param>
         /// <param name="events"></param>
         /// <returns></returns>
-        public async Task<SignalPhase> GetSignalPhaseData(
+        public async Task<LocationPhase> GetLocationPhaseData(
             PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
@@ -68,10 +68,10 @@ namespace ATSPM.ReportApi.Business.Common
             }
 
             if (!cycleEvents.Any())
-                return new SignalPhase();
+                return new LocationPhase();
             var cycles = await cycleService.GetPcdCycles(start, end, detectorEvents, cycleEvents, pcdCycleTime);
             var plans = planService.GetPcdPlans(cycles, start, end, phaseDetail.Approach, planEvents);
-            return new SignalPhase(
+            return new LocationPhase(
                 showVolume ? new VolumeCollection(start, end, detectorEvents, binSize) : null,
                 plans,
                 cycles,
@@ -82,7 +82,7 @@ namespace ATSPM.ReportApi.Business.Common
                 );
         }
 
-        public async Task<SignalPhase> GetSignalPhaseData(
+        public async Task<LocationPhase> GetLocationPhaseData(
             PhaseDetail phaseDetail,
             DateTime start,
             DateTime end,
@@ -112,7 +112,7 @@ namespace ATSPM.ReportApi.Business.Common
                 end);
             if (cycleEvents.IsNullOrEmpty())
                 return null;
-            var signalPhase = await GetSignalPhaseData(
+            var LocationPhase = await GetLocationPhaseData(
                 phaseDetail,
                 start,
                 end,
@@ -122,7 +122,7 @@ namespace ATSPM.ReportApi.Business.Common
                 cycleEvents.ToList(),
                 planEvents.ToList(),
                 detectorEvents.ToList());
-            return signalPhase;
+            return LocationPhase;
         }
     }
 }
