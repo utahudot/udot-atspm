@@ -8,8 +8,5 @@ namespace ATSPM.Infrastructure.Repositories
     public class UserAreaEFRepository : ATSPMRepositoryEFBase<UserArea>, IUserAreaRepository
     {
         public UserAreaEFRepository(ConfigContext db, ILogger<UserAreaEFRepository> log) : base(db, log) { }
-
-
-
     }
 }

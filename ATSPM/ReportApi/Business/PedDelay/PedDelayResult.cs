@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
     public class PedDelayResult : ApproachResult
     {
         public PedDelayResult(
-            string signalId,
+            string locationId,
             int approachId,
             int phaseNumber,
             string phaseDescription,
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
             List<DataPointForDouble> cycleLengths,
             List<DataPointForDouble> pedestrianDelay,
             List<DataPointForDouble> startOfWalk,
-            List<DataPointForDouble> percentDelayByCycleLength) : base(approachId, signalId, start, end)
+            List<DataPointForDouble> percentDelayByCycleLength) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;

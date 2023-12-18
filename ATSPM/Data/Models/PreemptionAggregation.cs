@@ -11,10 +11,10 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Preemption aggregation
     /// </summary>
-    public partial class PreemptionAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class PreemptionAggregation : ATSPMAggregationBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Prempt number

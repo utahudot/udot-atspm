@@ -66,11 +66,11 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             //TODO: get the correct phase from approach here
             var result = Tuple.Create(input.Item1, input.Item2?
-                .Where(w => w.SignalIdentifier == input?.Item1?.Signal.SignalIdentifier)
+                .Where(w => w.LocationIdentifier == input?.Item1?.Location.LocationIdentifier)
                 .Where(w => w.EventParam == input?.Item1?.ProtectedPhaseNumber)
                 .Where(w => w.EventCode == (int)DataLoggerEnum.PhaseBeginGreen || w.EventCode == (int)DataLoggerEnum.PhaseBeginYellowChange || w.EventCode == (int)DataLoggerEnum.PhaseEndYellowChange)
                 .OrderBy(o => o.Timestamp)
-                .GroupBy(g => g.SignalIdentifier, (s, x) => x
+                .GroupBy(g => g.LocationIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y
                 .Where((w, i) => y.Count() > 3 && i <= y.Count() - 3)
                 .Where((w, i) => w.EventCode == 9 && y.ElementAt(i + 1).EventCode == 1 && y.ElementAt(i + 2).EventCode == 8 && y.ElementAt(i + 3).EventCode == 9)
@@ -82,7 +82,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     GreenEvent = m.ElementAt(1).Timestamp,
                     YellowEvent = m.ElementAt(2).Timestamp,
                     PhaseNumber = p,
-                    SignalIdentifier = s
+                    LocationIdentifier = s
                 }))
                 .SelectMany(m => m))
                 .SelectMany(m => m)) ?? Tuple.Create<Approach, IEnumerable<RedToRedCycle>>(null, new List<RedToRedCycle>());

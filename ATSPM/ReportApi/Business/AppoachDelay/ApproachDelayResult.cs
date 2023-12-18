@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
 
         public ApproachDelayResult(
             int approachId,
-            string signalId,
+            string locationId,
             int phaseNumber,
             string phaseDescription,
             DateTime start,
@@ -24,7 +24,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
             double totalDelay,
             List<ApproachDelayPlan> plans,
             List<DataPointForDouble> approachDelayDataPoints,
-            List<DataPointForDouble> approachDelayPerVehicleDataPoints) : base(approachId, signalId, start, end)
+            List<DataPointForDouble> approachDelayPerVehicleDataPoints) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;

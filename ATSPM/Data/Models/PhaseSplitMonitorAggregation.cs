@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class PhaseSplitMonitorAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class PhaseSplitMonitorAggregation : ATSPMAggregationBase, ILocationLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int EightyFifthPercentileSplit { get; set; }
         public int SkippedCount { get; set; }

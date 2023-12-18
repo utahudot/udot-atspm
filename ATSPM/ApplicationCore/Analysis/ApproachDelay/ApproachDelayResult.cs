@@ -10,15 +10,15 @@ using System.Text.Json.Serialization;
 
 namespace ATSPM.Application.Analysis.ApproachDelay
 {
-    public class ApproachDelayResult : StartEndRange, IApproachDelay, ISignalPhaseLayer
+    public class ApproachDelayResult : StartEndRange, IApproachDelay, ILocationPhaseLayer
     {
         [JsonIgnore]
         public IReadOnlyList<ApproachDelayPlan> Plans { get; set; }
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

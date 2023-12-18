@@ -35,26 +35,26 @@ namespace WatchDog.Services.Tests
                 EmailAllErrors = true
             };
 
-            var region1MockSignal = new Mock<Signal>();
-            region1MockSignal.Object.Id = 1; // Updated Id
-            region1MockSignal.Object.SignalIdentifier = "1001"; // Updated SignalId
-            region1MockSignal.Object.Latitude = 40.326352;
-            region1MockSignal.Object.Longitude = -111.724889;
-            region1MockSignal.Object.PrimaryName = "1600 N (SR-241)";
-            region1MockSignal.Object.SecondaryName = "1200 W";
-            region1MockSignal.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
-            region1MockSignal.Object.RegionId = 1;
-            region1MockSignal.Object.Areas = new List<Area>() { new Area { Id = 1, Name = "Area 1" }, new Area { Id = 2, Name = "Area 2" } };
-            region1MockSignal.Object.JurisdictionId = 1;
-            region1MockSignal.Object.Jurisdiction = new Jurisdiction { Id = 1, Name = "Jurisdiction 1" };
-            region1MockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            region1MockSignal.Object.ChartEnabled = true;
-            region1MockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            region1MockSignal.Object.Note = "Initial - WAS #6500";
-            region1MockSignal.Object.Start = new System.DateTime(1900, 1, 1);
-            region1MockSignal.Object.Pedsare1to1 = true;
+            var region1MockLocation = new Mock<Location>();
+            region1MockLocation.Object.Id = 1; // Updated Id
+            region1MockLocation.Object.LocationIdentifier = "1001"; // Updated LocationId
+            region1MockLocation.Object.Latitude = 40.326352;
+            region1MockLocation.Object.Longitude = -111.724889;
+            region1MockLocation.Object.PrimaryName = "1600 N (SR-241)";
+            region1MockLocation.Object.SecondaryName = "1200 W";
+            //region1MockLocation.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
+            region1MockLocation.Object.RegionId = 1;
+            region1MockLocation.Object.Areas = new List<Area>() { new Area { Id = 1, Name = "Area 1" }, new Area { Id = 2, Name = "Area 2" } };
+            region1MockLocation.Object.JurisdictionId = 1;
+            region1MockLocation.Object.Jurisdiction = new Jurisdiction { Id = 1, Name = "Jurisdiction 1" };
+            //region1MockLocation.Object.ControllerTypeId = 2; // Updated ControllerTypeId
+            region1MockLocation.Object.ChartEnabled = true;
+            region1MockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            region1MockLocation.Object.Note = "Initial - WAS #6500";
+            region1MockLocation.Object.Start = new System.DateTime(1900, 1, 1);
+            region1MockLocation.Object.PedsAre1to1 = true;
 
-            region1MockSignal.Setup(s => s.Jurisdiction).Returns(new Jurisdiction { Id = 1, Name = "Jurisdiction 1" });
+            region1MockLocation.Setup(s => s.Jurisdiction).Returns(new Jurisdiction { Id = 1, Name = "Jurisdiction 1" });
 
             var directionType = new Mock<DirectionType>();
             directionType.Object.Description = "Westbound";
@@ -64,7 +64,7 @@ namespace WatchDog.Services.Tests
 
             var approach = new Mock<Approach>();
             approach.Object.Id = 11; // Updated Id
-            approach.Object.SignalId = 2840; // Updated SignalId
+            approach.Object.LocationId = 2840; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.WB;
             approach.Object.Description = "WBT Ph2";
             approach.Object.Mph = 35;
@@ -96,14 +96,14 @@ namespace WatchDog.Services.Tests
             mockDetector1.Object.MovementDelay = null;
             //mockDetector1.Object.MovementTypeId = MovementTypes.T;
 
-            approach.Setup(a => a.Signal).Returns(region1MockSignal.Object);
+            approach.Setup(a => a.Location).Returns(region1MockLocation.Object);
             mockDetector1.Setup(a => a.Approach).Returns(approach.Object);
-            region1MockSignal.Setup(a => a.Approaches).Returns(new List<Approach> { approach.Object });
+            region1MockLocation.Setup(a => a.Approaches).Returns(new List<Approach> { approach.Object });
 
 
             var errors = new List<WatchDogLogEvent>
             {
-                new WatchDogLogEvent(1, "1001", DateTime.Now, WatchDogComponentType.Signal, 1, WatchDogIssueType.RecordCount, "Details 1", null),
+                new WatchDogLogEvent(1, "1001", DateTime.Now, WatchDogComponentType.Location, 1, WatchDogIssueType.RecordCount, "Details 1", null),
                 new WatchDogLogEvent(1, "1001", DateTime.Now, WatchDogComponentType.Detector, 11, WatchDogIssueType.LowDetectorHits, "Details 2", null),
                 new WatchDogLogEvent(1, "1001", DateTime.Now, WatchDogComponentType.Approach, 11, WatchDogIssueType.StuckPed, "Details 3", 2),
                 new WatchDogLogEvent(1, "1001", DateTime.Now, WatchDogComponentType.Approach, 11, WatchDogIssueType.ForceOffThreshold, "Details 4", 2),
@@ -156,7 +156,7 @@ namespace WatchDog.Services.Tests
 
             var users = new List<ApplicationUser> { mockUser1.Object, mockUser2.Object };
 
-            var signals = new List<Signal> { region1MockSignal.Object };
+            var Locations = new List<Location> { region1MockLocation.Object };
 
             SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
             if (emailOptions.Port.HasValue)
@@ -170,7 +170,7 @@ namespace WatchDog.Services.Tests
             var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
 
 
-            await emailService.SendAllEmails(emailOptions, errors, signals, smtp, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
+            await emailService.SendAllEmails(emailOptions, errors, Locations, smtp, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
 
             Assert.Equal(1, 1);
         }

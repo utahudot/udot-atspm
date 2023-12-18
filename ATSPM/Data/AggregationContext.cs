@@ -32,8 +32,8 @@ namespace ATSPM.Data
         public virtual DbSet<PhaseTerminationAggregation> PhaseTerminationAggregations { get; set; }
         public virtual DbSet<PreemptionAggregation> PreemptionAggregations { get; set; }
         public virtual DbSet<PriorityAggregation> PriorityAggregations { get; set; }
-        public virtual DbSet<SignalEventCountAggregation> SignalEventCountAggregations { get; set; }
-        public virtual DbSet<SignalPlanAggregation> SignalPlanAggregations { get; set; }
+        public virtual DbSet<LocationEventCountAggregation> LocationEventCountAggregations { get; set; }
+        public virtual DbSet<LocationPlanAggregation> LocationPlanAggregations { get; set; }
 
         //TODO: need to remove date overrides from Configurations and redo EFCore6Upgrade migration
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -66,9 +66,9 @@ namespace ATSPM.Data
 
             modelBuilder.ApplyConfiguration(new PriorityAggregationConfiguration());
 
-            modelBuilder.ApplyConfiguration(new SignalEventCountAggregationConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationEventCountAggregationConfiguration());
 
-            modelBuilder.ApplyConfiguration(new SignalPlanAggregationConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationPlanAggregationConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }

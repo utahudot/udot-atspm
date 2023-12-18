@@ -13,7 +13,7 @@ namespace ATSPM.Application.Analysis.Workflows
     /// The Purdue Coordination Diagram provides additional details on vehicle 
     /// arrivals during the cycle(e.g., during the green phase or red phase for each
     /// approach). The percent arrival on green, platoon ratio, and arrival type can help
-    /// identify locations that would benefit from adjustments to signal timing(i.e., to
+    /// identify locations that would benefit from adjustments to Location timing(i.e., to
     /// cycle lengths, splits, offsets, and phase order), and the Purdue Coordination
     /// Diagram can help identify the values that should be chosen for those
     /// adjustments.It can also be used to monitor general intersection operations.With
