@@ -13,19 +13,19 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailService _emailSender;
+        private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            IEmailService emailSender)
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _accountService = accountService;
-            _emailSender = emailSender;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -171,7 +171,7 @@ namespace Identity.Controllers
                 new { email = user.Email, token },
                 protocol: HttpContext.Request.Scheme);
 
-            await _emailSender.SendEmailAsync(
+            await _emailService.SendEmailAsync(
                 model.Email,
                 "Reset Password",
                 $"Please reset your password by clicking here: {callbackUrl}");
