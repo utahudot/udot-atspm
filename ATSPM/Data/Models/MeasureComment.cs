@@ -6,9 +6,9 @@ using ATSPM.Data.Relationships;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Measure comment for tracking signal measures
+    /// Measure comment for tracking Location measures
     /// </summary>
-    public partial class MeasureComment : AtspmConfigModelBase<int>, IRelatedMeasureTypes, ISignalLayer
+    public partial class MeasureComment : AtspmConfigModelBase<int>, IRelatedMeasureTypes, ILocationLayer
     {
         /// <summary>
         /// Creation timestamp of comment
@@ -20,10 +20,10 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Comment { get; set; }
 
-        #region ISignalLayer
+        #region ILocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 
@@ -35,6 +35,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {SignalIdentifier} - {TimeStamp} - {Comment}";
+        public override string ToString() => $"{Id} - {LocationIdentifier} - {TimeStamp} - {Comment}";
     }
 }

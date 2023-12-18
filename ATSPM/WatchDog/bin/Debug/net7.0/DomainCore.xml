@@ -257,6 +257,13 @@
             <param name="time">Returns true if <see cref="T:System.DateTime"/> is in range</param>
             <returns></returns>
         </member>
+        <member name="M:ATSPM.Domain.Common.IStartEndRange.InRange(ATSPM.Domain.Common.IStartEndRange)">
+            <summary>
+            Checks to see if <see cref="T:ATSPM.Domain.Common.IStartEndRange"/> is in range of <see cref="P:ATSPM.Domain.Common.IStartEndRange.Start"/> and <see cref="P:ATSPM.Domain.Common.IStartEndRange.End"/>
+            </summary>
+            <param name="range">Returns true if <see cref="T:ATSPM.Domain.Common.IStartEndRange"/> is in range</param>
+            <returns></returns>
+        </member>
         <member name="T:ATSPM.Domain.Common.StartEndRange">
             <inheritdoc/>
         </member>
@@ -267,6 +274,9 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Domain.Common.StartEndRange.InRange(System.DateTime)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Common.StartEndRange.InRange(ATSPM.Domain.Common.IStartEndRange)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Domain.Common.IExecuteAsync">
@@ -752,6 +762,17 @@
             <param name="fail">query to return if <paramref name="condition"/> should fail</param>
             <returns></returns>
         </member>
+        <member name="M:ATSPM.Domain.Extensions.QueryExtensions.IfCondition``1(System.Collections.Generic.IEnumerable{``0},System.Func{System.Boolean},System.Linq.Expressions.Expression{System.Func{System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}}},System.Linq.Expressions.Expression{System.Func{System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0}}})">
+            <summary>
+            Use to create an if statement on an linline linq query
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="query"></param>
+            <param name="condition">Condition that will pass or fail</param>
+            <param name="pass">query to return if <paramref name="condition"/> passes</param>
+            <param name="fail">query to return if <paramref name="condition"/> should fail</param>
+            <returns></returns>
+        </member>
         <member name="T:ATSPM.Domain.Extensions.StreamExtensions">
             <summary>
             Stream extensions
@@ -820,9 +841,6 @@
             <typeparam name="T1">Input data type</typeparam>
             <typeparam name="T2">Output data type</typeparam>
         </member>
-        <member name="E:ATSPM.Domain.Workflows.ProcessStepBase`2.CanExecuteChanged">
-            <inheritdoc/>
-        </member>
         <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
             <inheritdoc/>
         </member>
@@ -848,6 +866,12 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.OfferMessage(System.Threading.Tasks.Dataflow.DataflowMessageHeader,`0,System.Threading.Tasks.Dataflow.ISourceBlock{`0},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.TryReceive(System.Predicate{`1},`1@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.ProcessStepBase`2.TryReceiveAll(System.Collections.Generic.IList{`1}@)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Domain.Workflows.TransformManyProcessStepBase`2">
@@ -930,6 +954,9 @@
             <typeparam name="T2">Output data type</typeparam>
         </member>
         <member name="E:ATSPM.Domain.Workflows.WorkflowBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
             <inheritdoc/>
         </member>
         <member name="P:ATSPM.Domain.Workflows.WorkflowBase`2.Steps">

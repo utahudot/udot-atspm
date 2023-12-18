@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
@@ -16,15 +16,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
+namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 {
-    public class CompressedSignalControllerLogger : SignalControllerLoggerBase
+    public class CompressedLocationControllerLogger : LocationControllerLoggerBase
     {
         //private readonly ILogger _log;
-        private readonly IOptions<SignalControllerLoggerConfiguration> _options;
+        private readonly IOptions<LocationControllerLoggerConfiguration> _options;
         private readonly IServiceProvider _serviceProvider;
 
-        public CompressedSignalControllerLogger(ILogger<CompressedSignalControllerLogger> log, IOptions<SignalControllerLoggerConfiguration> options, IServiceProvider serviceProvider) : base(log)
+        public CompressedLocationControllerLogger(ILogger<CompressedLocationControllerLogger> log, IOptions<LocationControllerLoggerConfiguration> options, IServiceProvider serviceProvider) : base(log)
         {
             _options = options;
             _serviceProvider = serviceProvider;
@@ -43,7 +43,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             };
 
             //create steps
-            var downloader = CreateTransformManyStep<Signal, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
+            var downloader = CreateTransformManyStep<Location, DirectoryInfo>(t => DownloadLogs(t, token), "DownloadFilesStep", stepOptions);
             var getFiles = CreateTransformManyStep<DirectoryInfo, FileInfo>(t => GetFiles(t), "GetFilesStep", stepOptions);
             var fileToLogs = CreateTransformManyStep<FileInfo, ControllerEventLog>(t => CreateEventLogs(t, token), "DecodeEventLogsStep", stepOptions);
             var logArchiveBatch = new BatchBlock<ControllerEventLog>(_options.Value.SaveToDatabaseBatchSize, new GroupingDataflowBlockOptions() { CancellationToken = token, NameFormat = "Archive Batch" });
@@ -62,18 +62,18 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             base.Initialize();
         }
 
-        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Signal signal, CancellationToken cancellationToken = default)
+        protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Location Location, CancellationToken cancellationToken = default)
         {
             var fileList = new List<FileInfo>();
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var downloader = scope.ServiceProvider.GetServices<ISignalControllerDownloader>().First(c => c.CanExecute(signal));
+                var downloader = scope.ServiceProvider.GetServices<ILocationControllerDownloader>().First(c => c.CanExecute(Location));
 
-                await foreach (var file in downloader.Execute(signal, cancellationToken))
-                {
-                    fileList.Add(file);
-                }
+                //await foreach (var file in downloader.Execute(Location, cancellationToken))
+                //{
+                //    fileList.Add(file);
+                //}
             }
 
             return fileList.Select(s => s.Directory).Distinct(new LambdaEqualityComparer<DirectoryInfo>((x, y) => x.FullName == y.FullName));
@@ -94,7 +94,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var decoder = scope.ServiceProvider.GetServices<ISignalControllerDecoder>().First(c => c.CanExecute(file));
+                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder>().First(c => c.CanExecute(file));
                 logList = await decoder.ExecuteAsync(file, cancellationToken);
             }
 
@@ -106,7 +106,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
         {
             HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
 
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier)).Select(s => new ControllerLogArchive() { LocationIdentifier = s.Key.LocationIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)

@@ -2,6 +2,7 @@
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 
 namespace ATSPM.Data.Configuration
 {
@@ -23,7 +24,7 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(512);
 
             builder.Property(e => e.Protocol)
-                .HasMaxLength(12)
+                .HasMaxLength(Enum.GetNames(typeof(TransportProtocols)).Max().Length)
                 .HasDefaultValue(TransportProtocols.Unknown);
 
             builder.Property(e => e.Port)
@@ -33,9 +34,12 @@ namespace ATSPM.Data.Configuration
                 .IsRequired(false)
                 .HasMaxLength(1024);
 
-            builder.Property(e => e.SearchTerm)
+            builder.Property(e => e.SearchTerms)
                 .IsRequired(false)
-                .HasMaxLength(128);
+                .HasMaxLength(512)
+                .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<string[]>(v));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)

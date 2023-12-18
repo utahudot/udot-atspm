@@ -7,7 +7,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
     public class SplitFailsResult : ApproachResult
     {
         public SplitFailsResult(
-            string signalId,
+            string locationId,
             int approachId,
             int phaseNumber,
             DateTime start,
@@ -21,7 +21,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
             ICollection<DataPointForDouble> forceOffRedOccupancies,
             ICollection<DataPointForDouble> averageGor,
             ICollection<DataPointForDouble> averageRor,
-            ICollection<DataPointForDouble> percentFails) : base(approachId, signalId, start, end)
+            ICollection<DataPointForDouble> percentFails) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             TotalSplitFails = totalSplitFails;

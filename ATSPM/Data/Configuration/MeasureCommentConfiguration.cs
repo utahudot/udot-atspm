@@ -14,12 +14,12 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Measure Comments");
 
-            builder.HasIndex(e => e.SignalIdentifier);
+            builder.HasIndex(e => e.LocationIdentifier);
 
             builder.Property(e => e.Comment)
                 .HasMaxLength(255);
 
-            builder.Property(e => e.SignalIdentifier)
+            builder.Property(e => e.LocationIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
         }

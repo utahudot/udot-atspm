@@ -19,8 +19,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
-                .GroupBy(g => g.SignalIdentifier)
-                .Select(signal => signal.AsEnumerable()
+                .GroupBy(g => g.LocationIdentifier)
+                .Select(Location => Location.AsEnumerable()
                 .GroupBy(g => g.EventParam)
                     .Select(s => Tuple.Create(new Detector()
                     {
@@ -30,7 +30,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                         Approach = new Approach()
                         {
                             Mph = 45,
-                            Signal = new Signal() { SignalIdentifier = signal.Key }
+                            Location = new Location() { LocationIdentifier = Location.Key }
                         }
                     }, s.AsEnumerable())))
                 .SelectMany(s => s);

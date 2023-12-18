@@ -12,7 +12,7 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
     /// <summary>
     /// Purdue coordination results
     /// </summary>
-    public class PurdueCoordinationResult : StartEndRange, ICycleRatios, ISignalPhaseLayer
+    public class PurdueCoordinationResult : StartEndRange, ICycleRatios, ILocationPhaseLayer
     {
         /// <inheritdoc/>
         public PurdueCoordinationResult() {}
@@ -24,10 +24,10 @@ namespace ATSPM.Application.Analysis.PurdueCoordination
 
         public IReadOnlyList<PurdueCoordinationPlan> Plans { get; set; } = new List<PurdueCoordinationPlan>();
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

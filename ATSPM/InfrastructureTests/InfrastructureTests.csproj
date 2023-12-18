@@ -7,17 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Attributes\ValidSignalControllerAttribute.cs" />
     <Compile Remove="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryAsyncTests.cs" />
     <Compile Remove="RepositoryTests\IRepositoryTests.cs" />
+    <Compile Remove="RepositoryTests\ISignalRepositoryTests.cs" />
     <Compile Remove="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+    <Compile Remove="SignalControllerDownloaderTests\ISignalControllerDownloaderTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Attributes\ValidSignalControllerAttribute.cs" />
     <None Include="RepositoryTests\IControllerEventLogRepositoryTests.cs" />
     <None Include="RepositoryTests\IRepositoryAsyncTests.cs" />
     <None Include="RepositoryTests\IRepositoryTests.cs" />
+    <None Include="RepositoryTests\ISignalRepositoryTests.cs" />
     <None Include="RepositoryTests\RepositoryControllerEventLogTests.cs" />
+    <None Include="SignalControllerDownloaderTests\ISignalControllerDownloaderTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

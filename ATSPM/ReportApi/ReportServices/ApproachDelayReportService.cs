@@ -15,23 +15,23 @@ namespace ATSPM.ReportApi.ReportServices
     public class ApproachDelayReportService : ReportServiceBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>
     {
         private readonly ApproachDelayService _approachDelayService;
-        private readonly SignalPhaseService _signalPhaseService;
-        private readonly ISignalRepository _signalRepository;
+        private readonly LocationPhaseService _LocationPhaseService;
+        private readonly ILocationRepository _LocationRepository;
         private readonly IControllerEventLogRepository _controllerEventLogRepository;
         private readonly PhaseService _phaseService;
 
         /// <inheritdoc/>
         public ApproachDelayReportService(
             ApproachDelayService approachDelayService,
-            SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository,
+            LocationPhaseService LocationPhaseService,
+            ILocationRepository LocationRepository,
             IControllerEventLogRepository controllerEventLogRepository,
             PhaseService phaseService
             )
         {
             _approachDelayService = approachDelayService;
-            _signalPhaseService = signalPhaseService;
-            _signalRepository = signalRepository;
+            _LocationPhaseService = LocationPhaseService;
+            _LocationRepository = LocationRepository;
             _controllerEventLogRepository = controllerEventLogRepository;
             _phaseService = phaseService;
         }
@@ -39,31 +39,31 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<ApproachDelayResult>> ExecuteAsync(ApproachDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = _signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+            var Location = _LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
 
-            if (signal == null)
+            if (Location == null)
             {
-                //return BadRequest("Signal not found");
-                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Signal not found"));
+                //return BadRequest("Location not found");
+                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = _controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = _controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
                 parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = _phaseService.GetPhases(signal);
+            var phaseDetails = _phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachDelayResult>>();
 
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, signal.SignalDescription()));
+                tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -83,9 +83,9 @@ namespace ATSPM.ReportApi.ReportServices
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
-            string signalDescription)
+            string LocationDescription)
         {
-            var signalPhase = await _signalPhaseService.GetSignalPhaseData(
+            var LocationPhase = await _LocationPhaseService.GetLocationPhaseData(
                 phaseDetail,
                 options.Start,
                 options.End,
@@ -94,15 +94,15 @@ namespace ATSPM.ReportApi.ReportServices
                 controllerEventLogs,
                 planEvents,
                 false);
-            if (signalPhase == null)
+            if (LocationPhase == null)
             {
                 return null;
             }
             ApproachDelayResult viewModel = _approachDelayService.GetChartData(
                 options,
                 phaseDetail,
-                signalPhase);
-            viewModel.SignalDescription = signalDescription;
+                LocationPhase);
+            viewModel.LocationDescription = LocationDescription;
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

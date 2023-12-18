@@ -9,7 +9,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public AnalysisPhaseCollectionData Phases { get; set; }
-        public string SignalID { get; set; }
+        public string locationId { get; set; }
     }
 
     public class SplitMonitorService
@@ -37,10 +37,10 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             IReadOnlyList<ControllerEventLog> pedEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Signal signal)
+            Location Location)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.SignalIdentifier,
+                Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 planEvents,
@@ -48,7 +48,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splitsEvents,
                 pedEvents,
                 terminationEvents,
-                signal,
+                Location,
                 1
                 );
 
@@ -74,7 +74,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
 
-            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.SignalIdentifier, options.Start, options.End)
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items
@@ -111,7 +111,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                     PercentileSplit = p.PercentileSplit,
 
                 }).ToList(),
-                SignalDescription = phase.Signal.SignalDescription()
+                LocationDescription = phase.Location.LocationDescription()
             };
 
             return splitMonitorResult;

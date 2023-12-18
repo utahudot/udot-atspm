@@ -8,17 +8,17 @@ using System.Text.Json.Serialization;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Device that can be assigned to <see cref="Signal"/>
+    /// Device that can be assigned to <see cref="Location"/>
     /// </summary>
-    public partial class Device : AtspmConfigModelBase<int>, IRelatedSignal, IRelatedDeviceConfiguration
+    public partial class Device : AtspmConfigModelBase<int>, IRelatedLocation, IRelatedDeviceConfiguration
     {
         /// <summary>
-        /// Enable signal to be logged
+        /// Enable Location to be logged
         /// </summary>
         public bool LoggingEnabled { get; set; }
 
         /// <summary>
-        /// Ipaddress of signal
+        /// Ipaddress of Location
         /// </summary>
         [JsonIgnore]
         public IPAddress Ipaddress { get; set; }
@@ -33,13 +33,13 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Notes { get; set; }
 
-        #region IRelatedSignal
+        #region IRelatedLocation
 
         /// <inheritdoc/>
-        public int SignalId { get; set; }
+        public int LocationId { get; set; }
 
         /// <inheritdoc/>
-        public virtual Signal Signal { get; set; }
+        public virtual Location Location { get; set; }
 
         #endregion
 
@@ -54,6 +54,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Signal?.SignalIdentifier} - {DeviceStatus} - {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceStatus} - {DeviceConfiguration}";
     }
 }

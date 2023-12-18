@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
                 options.Start,
                 options.End,
                 cycles,
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 options.SevereLevelSeconds,
                 planEvents).ToList();
 
@@ -47,7 +47,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             var phaseType = phaseDetail.Approach.GetPhaseType().ToString();
 
             return new YellowRedActivationsResult(
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Description,
                 phaseDetail.PhaseNumber,

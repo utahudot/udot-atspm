@@ -16,7 +16,7 @@ namespace ATSPM.Application.ValueObjects
 
         protected string region;
 
-        protected string _signalId;
+        protected string _locationId;
 
 
         /// <summary>
@@ -32,31 +32,31 @@ namespace ATSPM.Application.ValueObjects
         /// <param name="hasTMC"></param>
         /// <param name="Region"></param>
 
-        //public Pin(string SignalId, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
+        //public Pin(string LocationId, string lat, string Long, string desc, bool hasPCD, bool hasSpeed, bool hasPhase, bool hasTMC, bool hasRLM, bool hasSplitFail, string Region)
         //{
 
-        //    SignalId = SignalId;
+        //    LocationId = LocationId;
         //    latitude = lat;
         //    longitude = Long;
         //    description = desc;
         //    region = Region;
 
         //    SortedDictionary<int, bool> reports = FindReports(hasPCD,hasSpeed, hasPhase, hasTMC, hasRLM, hasSplitFail);
-        //    box = new InfoBox(SignalId, description, reports);
+        //    box = new InfoBox(LocationId, description, reports);
         //}
-        public Pin(string signalId, string lat, string Long, string desc, string Region)
+        public Pin(string locationId, string lat, string Long, string desc, string Region)
         {
-            _signalId = signalId;
+            _locationId = locationId;
             latitude = lat;
             longitude = Long;
             description = desc;
             region = Region;
 
 
-            //box = new InfoBox(SignalId, description, reports);
+            //box = new InfoBox(LocationId, description, reports);
         }
 
-        public string SignalId => _signalId;
+        public string locationId => _locationId;
 
         public string Region => region;
 
@@ -121,14 +121,14 @@ namespace ATSPM.Application.ValueObjects
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             var y = (Pin)obj;
-            return this != null && y != null && SignalId == y.SignalId
+            return this != null && y != null && locationId == y.locationId
                 ;
         }
 
 
         public override int GetHashCode()
         {
-            return this == null ? 0 : SignalId.GetHashCode() ^ Region.GetHashCode();
+            return this == null ? 0 : locationId.GetHashCode() ^ Region.GetHashCode();
         }
     }
 }

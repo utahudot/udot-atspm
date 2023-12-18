@@ -24,12 +24,12 @@ namespace ATSPM.ReportApi.Business.Common
         /// <summary>
         ///     Phase Objects primarily for the split monitor and terminaiton chart
         /// </summary>
-        /// <param name="signalid"></param>
+        /// <param name="locationId"></param>
         /// <param name="phasenumber"></param>
         /// <param name="starttime"></param>
-        public AnalysisPhaseCycle(string signalid, int phasenumber, DateTime starttime)
+        public AnalysisPhaseCycle(string locationId, int phasenumber, DateTime starttime)
         {
-            SignalId = signalid;
+            locationId = locationId;
             PhaseNumber = phasenumber;
             StartTime = starttime;
             HasPed = false;
@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.Business.Common
 
         public int PhaseNumber { get; }
 
-        public string SignalId { get; }
+        public string locationId { get; }
 
         public DateTime StartTime { get; }
 
