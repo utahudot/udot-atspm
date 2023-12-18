@@ -45,6 +45,8 @@ var builder = WebApplication.CreateBuilder(args);
 //{
 //    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
 //});
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
