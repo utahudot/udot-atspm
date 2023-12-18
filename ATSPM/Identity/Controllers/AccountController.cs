@@ -1,4 +1,5 @@
 ﻿using Identity.Business.Accounts;
+using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,20 +13,19 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
-
+        private readonly IEmailService _emailSender;
         private readonly IAccountService _accountService;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration,
-            IAccountService accountService)
+            IAccountService accountService,
+            IEmailService emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _configuration = configuration;
             _accountService = accountService;
+            _emailSender = emailSender;
         }
 
         [HttpPost("register")]
@@ -85,24 +85,6 @@ namespace Identity.Controllers
 
             return BadRequest(result);
         }
-
-        //[HttpPost("forgot-password")]
-        //public async Task<IActionResult> ForgotPassword(LoginViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var result = await _accountService.Login(model.Email, model.Password, model.RememberMe);
-
-        //    if (result.Code == StatusCodes.Status200OK)
-        //    {
-        //        return Ok(result);
-        //    }
-
-        //    return BadRequest(result);
-        //}
 
         [HttpPost("external-login")]
         public IActionResult ExternalLogin(LoginViewModel model)
@@ -176,18 +158,26 @@ namespace Identity.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            if (user == null)
             {
-                // To prevent user enumeration attacks, return a generic error message
-                // instead of providing information whether the user exists or the email is confirmed.
-                return Ok("An email will be sent with the reset instructions.");
+                return Ok();
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            // Send the password reset token to the user's email for further steps.
 
-            return Ok("An email will be sent with the reset instructions");
+            var callbackUrl = Url.Action(
+                "ResetPassword", // Action method to reset password in your web application
+                "Account",
+                new { email = user.Email, token },
+                protocol: HttpContext.Request.Scheme);
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Reset Password",
+                $"Please reset your password by clicking here: {callbackUrl}");
+
+            // You can return a success message or any other relevant information
+            return Ok();
         }
     }
 

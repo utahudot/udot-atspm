@@ -2,6 +2,7 @@ using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Migrations.Identity;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
+using Identity.Business.EmailSender;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,7 @@ builder.Host.ConfigureServices((host, services) =>
 
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
+    services.AddScoped<IEmailService, EmailService>();
 
     //services.AddAuthentication("Bearer")
     //   .AddJwtBearer("Bearer", options =>
