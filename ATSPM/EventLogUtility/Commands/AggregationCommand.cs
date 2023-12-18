@@ -23,11 +23,11 @@ namespace ATSPM.EventLogUtility.Commands
                 "approach-splitfail",
                 "detector-event-count",
                 "left-turn-gap",
-                "signal-event-data",
-                "signal-phase-delay",
-                "signal-phase-termination",
-                "signal-plan",
-                "signal-preempt-priority",
+                "Location-event-data",
+                "Location-phase-delay",
+                "Location-phase-termination",
+                "Location-plan",
+                "Location-preempt-priority",
                 "split-monitor",
                 "yellow-red-activation");
 
@@ -56,9 +56,9 @@ namespace ATSPM.EventLogUtility.Commands
 
         public DateCommandOption DateOption { get; set; } = new();
 
-        public SignalIncludeCommandOption IncludeOption { get; set; } = new();
+        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
 
-        public SignalExcludeCommandOption ExcludeOption { get; set; } = new();
+        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
 
         public ModelBinder<EventLogAggregateConfiguration> GetOptionsBinder()
         {

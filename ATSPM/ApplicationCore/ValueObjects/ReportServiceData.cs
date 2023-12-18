@@ -16,23 +16,23 @@ namespace ATSPM.Application.ValueObjects
     public class ReportServiceData<Tin, Tout>
     {
         public Tin Options { get; set; }
-        public Signal Signal { get; set; }
+        public Location Location { get; set; }
         public List<ControllerEventLog> Logs { get; set; }
         public Tout Results { get; set; }
     }
 
     public class TestDataUtility
     {
-        private readonly ISignalRepository _signalRepo;
+        private readonly ILocationRepository _LocationRepo;
 
-        public TestDataUtility(ISignalRepository signalRepo)
+        public TestDataUtility(ILocationRepository LocationRepo)
         {
-            _signalRepo = signalRepo;
+            _LocationRepo = LocationRepo;
         }
 
         //public FileInfo File { get; set; }
 
-        public FileInfo GenerateTestFile<Tin, Tout>(string signal, Tin options, Tout results, FileInfo logFile)
+        public FileInfo GenerateTestFile<Tin, Tout>(string Location, Tin options, Tout results, FileInfo logFile)
         {
             var testObject = new ReportServiceData<Tin, Tout>();
 
@@ -40,7 +40,7 @@ namespace ATSPM.Application.ValueObjects
 
             testObject.Results = results;
 
-            //testObject.Signal = _signalRepo.GetLatestVersionOfSignal(signal);
+            //testObject.Location = _LocationRepo.GetLatestVersionOfLocation(Location);
 
             if (logFile.Exists)
             {
@@ -49,7 +49,7 @@ namespace ATSPM.Application.ValueObjects
                    .Select(x => x.Split(','))
                    .Select(x => new ControllerEventLog
                    {
-                       SignalIdentifier = x[0],
+                       LocationIdentifier = x[0],
                        Timestamp = DateTime.Parse(x[1]),
                        EventCode = int.Parse(x[2]),
                        EventParam = int.Parse(x[3])
@@ -65,7 +65,7 @@ namespace ATSPM.Application.ValueObjects
                 DefaultIgnoreCondition = JsonIgnoreCondition.Never
             });
 
-            var result = new FileInfo(Path.Combine(logFile.DirectoryName, $"{signal}-{options.GetType().Name}-ReportTestData.json"));
+            var result = new FileInfo(Path.Combine(logFile.DirectoryName, $"{Location}-{options.GetType().Name}-ReportTestData.json"));
 
             File.WriteAllText(result.FullName, json);
 

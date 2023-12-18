@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Phase Split Monitor Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.PhaseNumber });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PhaseNumber });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

@@ -28,12 +28,12 @@ namespace InfrastructureTests.RepositoryTests
             {
                 for (int x = 1; x <= Enum.GetValues(typeof(DirectionTypes)).Length - 1; x++)
                 {
-                    var s = ModelFixture.Create<Signal>();
+                    var s = ModelFixture.Create<Location>();
                     s.Id = x + 1000;
                     
                     var f = ModelFixture.Create<Approach>();
-                    f.SignalId = s.Id;
-                    f.Signal = s;
+                    f.LocationId = s.Id;
+                    f.Location = s;
 
                     await _repo.AddAsync(f);
                 }
@@ -43,7 +43,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var s in _list)
             {
-                _output.WriteLine($"Seed Data: {s.Id} - {s.SignalId} - {s.Description} - {s.DirectionTypeId}");
+                _output.WriteLine($"Seed Data: {s.Id} - {s.LocationId} - {s.Description} - {s.DirectionTypeId}");
             }
         }
 
@@ -60,7 +60,7 @@ namespace InfrastructureTests.RepositoryTests
 
             foreach (var r in result)
             {
-                _output.WriteLine($"result: {r.Id} - {r.SignalId} - {r.Description} - {r.DirectionTypeId}");
+                _output.WriteLine($"result: {r.Id} - {r.LocationId} - {r.Description} - {r.DirectionTypeId}");
             }
 
             //compare to initial collection

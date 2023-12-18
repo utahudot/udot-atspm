@@ -9,7 +9,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
 {
     public static class Approaches
     {
-        public enum SignalHeadType
+        public enum LocationHeadType
         {
             [Description("Protected Only")]
             ProtectedOnly,
@@ -29,20 +29,20 @@ namespace ATSPM.ReportApi.Business.PedDelay
             [Description("Protected/Permissive")]
             ProtectedPermissive
         }
-        public static SignalHeadType GetSignalHeadType(this Approach approach)
+        public static LocationHeadType GetLocationHeadType(this Approach approach)
         {
             int protectedPhaseNumber = approach.ProtectedPhaseNumber;
             int? permissivePhaseNumber = approach.PermissivePhaseNumber;
 
             if (protectedPhaseNumber > 0 && permissivePhaseNumber == null)
             {
-                return SignalHeadType.ProtectedOnly;
+                return LocationHeadType.ProtectedOnly;
 
             }
 
             if (protectedPhaseNumber == 0 && permissivePhaseNumber > 0)
             {
-                return SignalHeadType.PermissiveOnly;
+                return LocationHeadType.PermissiveOnly;
             }
 
             if (protectedPhaseNumber == 1 && permissivePhaseNumber == 6 ||
@@ -50,10 +50,10 @@ namespace ATSPM.ReportApi.Business.PedDelay
                  protectedPhaseNumber == 5 && permissivePhaseNumber == 2 ||
                  protectedPhaseNumber == 7 && permissivePhaseNumber == 4)
             {
-                return SignalHeadType.FiveHead;
+                return LocationHeadType.FiveHead;
             }
 
-            return SignalHeadType.FYA;
+            return LocationHeadType.FYA;
         }
 
         public static PhaseType GetPhaseType(this Approach approach)

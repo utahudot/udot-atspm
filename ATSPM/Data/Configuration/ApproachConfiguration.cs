@@ -16,7 +16,7 @@ namespace ATSPM.Data.Configuration
             
             builder.HasIndex(e => e.DirectionTypeId);
 
-            builder.HasIndex(e => e.SignalId);
+            builder.HasIndex(e => e.LocationId);
         }
     }
 }

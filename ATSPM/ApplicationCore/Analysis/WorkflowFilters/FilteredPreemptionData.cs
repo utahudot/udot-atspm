@@ -17,7 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
     /// </list>
     /// </summary>
-    public class FilteredPreemptionData : FilterEventCodeSignalBase
+    public class FilteredPreemptionData : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

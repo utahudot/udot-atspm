@@ -15,7 +15,7 @@ namespace ATSPM.Application.Repositories
     {
         #region ExtensionMethods
 
-        //MetricComment GetLatestCommentForReport(string signalId, int metricId);
+        //MetricComment GetLatestCommentForReport(string locationId, int metricId);
 
         #endregion
 

@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
 
         public ApproachVolumeResult GetChartData(
             ApproachVolumeOptions options,
-            Signal signal,
+            Location Location,
             List<ControllerEventLog> primaryDetectorEvents,
             List<ControllerEventLog> opposingDetectorEvents,
             List<Approach> primaryApproaches,
@@ -97,7 +97,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
-                options.SignalIdentifier,
+                options.locationIdentifier,
                 options.Start,
                 options.End,
                 detectionType.Id.GetDisplayAttribute()?.Name,

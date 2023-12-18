@@ -7,14 +7,14 @@ using System.Collections.Generic;
 namespace ATSPM.Application.Analysis.Plans
 {
     /// <summary>
-    /// Base for signal controller plans which are derrived from <see cref="DataLoggerEnum.CoordPatternChange"/> events
+    /// Base for Location controller plans which are derrived from <see cref="DataLoggerEnum.CoordPatternChange"/> events
     /// </summary>
     public class Plan : StartEndRange, IPlan
     {
         #region IPlan
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PlanNumber { get; set; }

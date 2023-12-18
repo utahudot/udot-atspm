@@ -28,7 +28,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 PhaseNumber = 1,
                 DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
@@ -40,7 +40,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = sut.ExecuteAsync(testData).Result.First();
 
-            Assert.Equal("1001", result.SignalIdentifier);
+            Assert.Equal("1001", result.locationIdentifier);
             Assert.Equal(1, result.PhaseNumber);
             Assert.Equal(testData.Min(m => m.Start), result.Start);
             Assert.Equal(testData.Max(m => m.End), result.End);
@@ -49,14 +49,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(GenerateApproachDelayResults), "Signal Grouping")]
-        public async void GenerateApproachDelayResultsSignalGroupingTest()
+        [Trait(nameof(GenerateApproachDelayResults), "Location Grouping")]
+        public async void GenerateApproachDelayResultsLocationGroupingTest()
         {
             var sut = new GenerateApproachDelayResults();
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalIdentifier = (1000 + Random.Shared.Next(1, 4)).ToString(),
+                locationIdentifier = (1000 + Random.Shared.Next(1, 4)).ToString(),
                 PhaseNumber = 1,
                 DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
@@ -68,8 +68,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var result = await sut.ExecuteAsync(testData);
 
-            var actual = result.GroupBy(g => g.SignalIdentifier).Select(s => s.Key);
-            var expected = testData.GroupBy(g => g.SignalIdentifier).Select(s => s.Key);
+            var actual = result.GroupBy(g => g.locationIdentifier).Select(s => s.Key);
+            var expected = testData.GroupBy(g => g.locationIdentifier).Select(s => s.Key);
 
             Assert.Equal(expected, actual);
         }
@@ -82,7 +82,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 PhaseNumber = Random.Shared.Next(1, 4),
                 DetectorChannel = 2,
                 Start = GetStaticDateTime(s),
@@ -108,7 +108,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testData = Enumerable.Range(1, 10).Select(s => new Vehicle()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 PhaseNumber = 1,
                 DetectorChannel = Random.Shared.Next(1, 4),
                 Start = GetStaticDateTime(s),

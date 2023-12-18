@@ -22,20 +22,20 @@ namespace InfrastructureTests.RepositoryTests
         //const string connectionString = "Data Source=InMemorySample;Mode=Memory;Cache=Shared";
 
         private readonly ITestOutputHelper _output;
-        private ILogger<SignalEFRepository> _nullLogger;
+        private ILogger<LocationEFRepository> _nullLogger;
         private MOEContext _db;
-        private IRepository<Signal> _repo;
+        private IRepository<Location> _repo;
 
         public IRepositoryTests(ITestOutputHelper output)
         {
             _output = output;
-            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<SignalEFRepository>();
+            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<LocationEFRepository>();
 
             _connection = new SqliteConnection("Datasource=:memory:");
             _connection.Open();
             _db = new MOEContext(new DbContextOptionsBuilder<MOEContext>().EnableSensitiveDataLogging().UseSqlite(_connection).Options);
 
-            _repo = new SignalEFRepository(_db, _nullLogger);
+            _repo = new LocationEFRepository(_db, _nullLogger);
 
             _db.Database.EnsureDeleted();
 
@@ -45,12 +45,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public void IRepositoryAdd()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -62,16 +62,16 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            _repo.Add(signal);
+            _repo.Add(Location);
 
-            var collection = _repo.GetList(i => i.SignalId == signal.SignalId);
+            var collection = _repo.GetList(i => i.locationId == Location.locationId);
 
             Assert.Collection(collection,
-                new Action<Signal>[]
+                new Action<Location>[]
                 {
                     i =>
                     {
-                        Assert.Equal(expected: signal.PrimaryName, actual: i.PrimaryName);
+                        Assert.Equal(expected: Location.PrimaryName, actual: i.PrimaryName);
                     }
                 });
         }
@@ -79,13 +79,13 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public void IRepositoryAddRange()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
             
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -100,10 +100,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            _repo.AddRange(signals);
+            _repo.AddRange(Locations);
 
             var collection = _repo.GetList(i => true);
 
@@ -118,12 +118,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public void IRepositoryRemove()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -135,27 +135,27 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            _repo.Add(signal);
+            _repo.Add(Location);
 
-            var actual = _repo.GetList(i => i.SignalId == signal.SignalId).First();
+            var actual = _repo.GetList(i => i.locationId == Location.locationId).First();
 
-            Assert.Equal(expected: signal.SignalId, actual: actual.SignalId);
+            Assert.Equal(expected: Location.locationId, actual: actual.locationId);
 
-            _repo.Remove(signal);
+            _repo.Remove(Location);
 
-            Assert.True(_repo.GetList(i => i.SignalId == signal.SignalId).Count() == 0);
+            Assert.True(_repo.GetList(i => i.locationId == Location.locationId).Count() == 0);
         }
 
         [Fact]
         public void IRepositoryRemoveRange()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
 
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -170,10 +170,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            _repo.AddRange(signals);
+            _repo.AddRange(Locations);
 
             var collection = _repo.GetList(i => true);
 
@@ -192,13 +192,13 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public void IRepositoryGetListFromExpression()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
 
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -213,10 +213,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            _repo.AddRange(signals);
+            _repo.AddRange(Locations);
 
             Assert.True(_repo.GetList(i => true).Count() > 0);
         }
@@ -230,12 +230,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public void IRepositoryLookup()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -247,11 +247,11 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            _repo.Add(signal);
+            _repo.Add(Location);
 
-            var result = _repo.Lookup(signal);
+            var result = _repo.Lookup(Location);
 
-            Assert.Equal(signal.SignalId, result.SignalId);
+            Assert.Equal(Location.locationId, result.locationId);
         }
 
         public void Dispose()

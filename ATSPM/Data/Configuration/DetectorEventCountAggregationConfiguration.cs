@@ -12,7 +12,7 @@ namespace ATSPM.Data.Configuration
 
             builder.HasKey(e => new { e.BinStartTime, e.DetectorPrimaryId });
 
-            builder.Property(e => e.SignalIdentifier)
+            builder.Property(e => e.LocationIdentifier)
                 .IsRequired()
                 .HasMaxLength(10);
         }

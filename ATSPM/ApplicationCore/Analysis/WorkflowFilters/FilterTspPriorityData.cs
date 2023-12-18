@@ -13,7 +13,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.TSPCheckOut"/></item>
     /// </list>
     /// </summary>
-    public class FilterTspPriorityData : FilterEventCodeSignalBase
+    public class FilterTspPriorityData : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilterTspPriorityData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
