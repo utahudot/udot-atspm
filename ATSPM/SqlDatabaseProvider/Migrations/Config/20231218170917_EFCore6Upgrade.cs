@@ -28,27 +28,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 comment: "Areas");
 
             migrationBuilder.CreateTable(
-                name: "ControllerTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Product = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    Firmware = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: true),
-                    Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
-                    Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
-                    Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
-                    UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ControllerTypes", x => x.Id);
-                },
-                comment: "Location Controller Types");
-
-            migrationBuilder.CreateTable(
                 name: "DetectionTypes",
                 columns: table => new
                 {
@@ -286,7 +265,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 13, 17, 46, 13, 675, DateTimeKind.Local).AddTicks(3446)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 12, 18, 10, 9, 17, 676, DateTimeKind.Local).AddTicks(6928)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -439,7 +418,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     Protocol = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
                     Directory = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
+                    SearchTerms = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     ProductId = table.Column<int>(type: "int", nullable: false)
@@ -466,15 +445,13 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     Longitude = table.Column<double>(type: "float", nullable: false),
                     PrimaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
                     SecondaryName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
+                    Ipaddress = table.Column<string>(type: "nvarchar(45)", nullable: true),
                     ChartEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
                     VersionAction = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "varchar(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PedsAre1to1 = table.Column<bool>(type: "bit", nullable: false),
                     LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    ControllerTypeId = table.Column<int>(type: "int", nullable: false),
                     JurisdictionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((0))"),
                     LocationTypeId = table.Column<int>(type: "int", nullable: false),
                     RegionId = table.Column<int>(type: "int", nullable: false)
@@ -482,12 +459,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Locations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Locations_ControllerTypes_ControllerTypeId",
-                        column: x => x.ControllerTypeId,
-                        principalTable: "ControllerTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Locations_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
@@ -528,7 +499,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 });
 
             migrationBuilder.CreateTable(
-                name: "RouteLocationss",
+                name: "RouteLocations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -547,33 +518,33 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RouteLocationss", x => x.Id);
+                    table.PrimaryKey("PK_RouteLocations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_DirectionTypes_OpposingDirectionId",
+                        name: "FK_RouteLocations_DirectionTypes_OpposingDirectionId",
                         column: x => x.OpposingDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_DirectionTypes_PrimaryDirectionId",
+                        name: "FK_RouteLocations_DirectionTypes_PrimaryDirectionId",
                         column: x => x.PrimaryDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_RouteDistances_NextLocationDistanceId",
+                        name: "FK_RouteLocations_RouteDistances_NextLocationDistanceId",
                         column: x => x.NextLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_RouteDistances_PreviousLocationDistanceId",
+                        name: "FK_RouteLocations_RouteDistances_PreviousLocationDistanceId",
                         column: x => x.PreviousLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_Routes_RouteId",
+                        name: "FK_RouteLocations_Routes_RouteId",
                         column: x => x.RouteId,
                         principalTable: "Routes",
                         principalColumn: "Id",
@@ -919,11 +890,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locations_ControllerTypeId",
-                table: "Locations",
-                column: "ControllerTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Locations_JurisdictionId",
                 table: "Locations",
                 column: "JurisdictionId");
@@ -965,33 +931,33 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_NextLocationDistanceId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_NextLocationDistanceId",
+                table: "RouteLocations",
                 column: "NextLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_OpposingDirectionId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_OpposingDirectionId",
+                table: "RouteLocations",
                 column: "OpposingDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_PreviousLocationDistanceId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_PreviousLocationDistanceId",
+                table: "RouteLocations",
                 column: "PreviousLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_PrimaryDirectionId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_PrimaryDirectionId",
+                table: "RouteLocations",
                 column: "PrimaryDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_RouteId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_RouteId",
+                table: "RouteLocations",
                 column: "RouteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_RouteId_LocationIdentifier",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_RouteId_LocationIdentifier",
+                table: "RouteLocations",
                 columns: new[] { "RouteId", "LocationIdentifier" },
                 unique: true);
 
@@ -1056,7 +1022,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
-                name: "RouteLocationss");
+                name: "RouteLocations");
 
             migrationBuilder.DropTable(
                 name: "Settings");
@@ -1111,9 +1077,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
             migrationBuilder.DropTable(
                 name: "Locations");
-
-            migrationBuilder.DropTable(
-                name: "ControllerTypes");
 
             migrationBuilder.DropTable(
                 name: "Jurisdictions");
