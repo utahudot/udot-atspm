@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\Aggregation\" />
-    <Folder Include="Migrations\Configuration\" />
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Speed\" />
