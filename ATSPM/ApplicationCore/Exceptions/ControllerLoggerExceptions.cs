@@ -1,5 +1,5 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,12 +11,12 @@ namespace ATSPM.Application.Exceptions
 {
     public class InvalidSignalControllerIpAddressException : ATSPMException
     {
-        public InvalidSignalControllerIpAddressException(Signal signal) : base($"{signal.SignalIdentifier} address {signal.Ipaddress} is either invalid or can't be reached")
+        public InvalidSignalControllerIpAddressException(Device device) : base($"{device.Location.LocationIdentifier} address {device.Ipaddress} is either invalid or can't be reached")
         {
-            SignalController = signal;
+            SignalController = device;
         }
 
-        public Signal SignalController { get; private set; }
+        public Device SignalController { get; private set; }
     }
 
     public abstract class ControllerLoggerException : ATSPMException
@@ -26,27 +26,27 @@ namespace ATSPM.Application.Exceptions
         public ControllerLoggerException(string? message, Exception? innerException) : base(message, innerException) { }
     }
 
-    #region SignalControllerLoggerExceptions
+    #region LocationControllerLoggerExceptions
 
     public class ControllerLoggerExecutionException : ControllerLoggerException
     {
-        public ControllerLoggerExecutionException(ISignalControllerLoggerService signalControllerLoggerService, string? message, Exception? innerException) 
-            : base(message ?? $"Exception running Signal Controller Logger Service", 
+        public ControllerLoggerExecutionException(ILocationControllerLoggerService LocationControllerLoggerService, string? message, Exception? innerException) 
+            : base(message ?? $"Exception running Location Controller Logger Service", 
                   innerException)
         {
-            SignalControllerLoggerService = signalControllerLoggerService;
+            LocationControllerLoggerService = LocationControllerLoggerService;
         }
 
-        public ISignalControllerLoggerService SignalControllerLoggerService { get; private set; }
+        public ILocationControllerLoggerService LocationControllerLoggerService { get; private set; }
     }
 
     public class ControllerLoggerStepExecutionException<T> : ControllerLoggerExecutionException
     {
-        public ControllerLoggerStepExecutionException(ISignalControllerLoggerService signalControllerLoggerService,
+        public ControllerLoggerStepExecutionException(ILocationControllerLoggerService LocationControllerLoggerService,
             string step, 
             T item,
-            string? message, Exception? innerException) : base(signalControllerLoggerService,
-                message ?? $"Exception running Signal Controller Logger Service Step {step} on item {item}", 
+            string? message, Exception? innerException) : base(LocationControllerLoggerService,
+                message ?? $"Exception running Location Controller Logger Service Step {step} on item {item}", 
                 innerException)
         {
             Step = step;
@@ -65,17 +65,17 @@ namespace ATSPM.Application.Exceptions
     {
         public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message) : base(message)
         {
-            //Signal = signal;
+            //Location = Location;
             DownloaderClient = downloaderClient;
         }
 
         public ControllerLoggerDownloaderException(IDownloaderClient downloaderClient, string? message, Exception? innerException) : base(message, innerException)
         {
-            //Signal = signal;
+            //Location = Location;
             DownloaderClient = downloaderClient;
         }
 
-        //public Signal Signal { get; private set; }
+        //public Location Location { get; private set; }
 
         public IDownloaderClient DownloaderClient { get; private set; }
     }

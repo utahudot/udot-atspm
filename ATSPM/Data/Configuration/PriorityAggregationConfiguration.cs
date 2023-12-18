@@ -10,9 +10,9 @@ namespace ATSPM.Data.Configuration
         {
             builder.HasComment("Priority Aggregation");
 
-            builder.HasKey(e => new { e.BinStartTime, e.SignalIdentifier, e.PriorityNumber });
+            builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PriorityNumber });
 
-            builder.Property(e => e.SignalIdentifier).HasMaxLength(10);
+            builder.Property(e => e.LocationIdentifier).HasMaxLength(10);
         }
     }
 }

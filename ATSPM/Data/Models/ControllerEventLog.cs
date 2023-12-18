@@ -9,16 +9,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ATSPM.Data.Models
 {
-    public class ControllerEventLog : ISignalLayer, ITimestamp
+    public class ControllerEventLog : ILocationLayer, ITimestamp
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public DateTime Timestamp { get; set; }
         public int EventCode { get; set; }
         public int EventParam { get; set; }
 
         public override string ToString()
         {
-            return $"{SignalIdentifier}-{EventCode}-{EventParam}-{Timestamp}";
+            return $"{LocationIdentifier}-{EventCode}-{EventParam}-{Timestamp}";
         }
     }
 }

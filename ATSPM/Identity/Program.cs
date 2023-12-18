@@ -1,5 +1,4 @@
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Migrations.Identity;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,7 +16,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 
 builder.Host.ConfigureServices((host, services) =>
 {
-    services.AddNpgAtspmDbContext(host);
+    services.AddAtspmDbContext(host);
     services.AddIdentity<ApplicationUser, IdentityRole>() // Use AddDefaultIdentity if you don't need roles
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
@@ -194,10 +193,10 @@ if (app.Environment.IsDevelopment())
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Run the seed method for configuration data
-            ConfigurationSeedData.Seed(configContext);
+            //ConfigurationSeedData.Seed(configContext);
 
             // Run the seed method for users and roles
-            await ConfigurationSeedData.SeedUsersAndRoles(userManager, roleManager);
+            //await ConfigurationSeedData.SeedUsersAndRoles(userManager, roleManager);
         }
         catch (Exception ex)
         {

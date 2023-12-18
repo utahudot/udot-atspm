@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace ATSPM.ReportApi.Business.Common
 {
-    public class SignalPhase
+    public class LocationPhase
     {
 
-        public SignalPhase(
+        public LocationPhase(
             VolumeCollection volume,
             List<PurdueCoordinationPlan> plans,
             List<CyclePcd> cycles,
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.Business.Common
             EndDate = endDate;
         }
 
-        public SignalPhase()
+        public LocationPhase()
         {
         }
 

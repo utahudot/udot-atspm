@@ -7,7 +7,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
     public class ApproachSpeedResult : ApproachResult
     {
         public ApproachSpeedResult(
-            string signalId,
+            string locationId,
             int approachId,
             int phaseNumber,
             string phaseDescription,
@@ -19,7 +19,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             ICollection<SpeedPlan> plans,
             ICollection<DataPointForInt> averageSpeeds,
             ICollection<DataPointForInt> eightyFifthSpeeds,
-            ICollection<DataPointForInt> fifteenthSpeeds) : base(approachId, signalId, start, end)
+            ICollection<DataPointForInt> fifteenthSpeeds) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;

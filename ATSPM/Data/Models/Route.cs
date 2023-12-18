@@ -7,17 +7,17 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Route
     /// </summary>
-    public partial class Route : AtspmConfigModelBase<int>, IRelatedRouteSignals
+    public partial class Route : AtspmConfigModelBase<int>, IRelatedRouteLocations
     {
         /// <summary>
         /// Route name
         /// </summary>
         public string Name { get; set; }
 
-        #region IRelatedRouteSignals
+        #region IRelatedRouteLocations
 
         /// <inheritdoc/>
-        public virtual ICollection<RouteSignal> RouteSignals { get; set; } = new HashSet<RouteSignal>();
+        public virtual ICollection<RouteLocation> RouteLocations { get; set; } = new HashSet<RouteLocation>();
 
         #endregion
 

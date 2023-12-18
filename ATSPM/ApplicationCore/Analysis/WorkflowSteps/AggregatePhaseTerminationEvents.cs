@@ -28,7 +28,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             tl.Segments.ToList().ForEach(f =>
             {
-                f.SignalIdentifier = approach.Signal.SignalIdentifier;
+                f.LocationIdentifier = approach.Location.LocationIdentifier;
                 f.PhaseNumber = phase;
                 f.GapOuts = events.GapOuts.Count(c => f.InRange(c));
                 f.ForceOffs = events.ForceOffs.Count(c => f.InRange(c));

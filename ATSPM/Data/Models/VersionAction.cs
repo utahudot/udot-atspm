@@ -5,11 +5,11 @@ using ATSPM.Data.Relationships;
 
 namespace ATSPM.Data.Models
 {
-    [Obsolete($"use {nameof(SignalVersionActions)} instead")]
-    public partial class VersionAction : AtspmConfigModelBase<SignalVersionActions>, IRelatedSignals
+    [Obsolete($"use {nameof(LocationVersionActions)} instead")]
+    public partial class VersionAction : AtspmConfigModelBase<LocationVersionActions>, IRelatedLocations
     {
         public string Description { get; set; }
 
-        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
     }
 }

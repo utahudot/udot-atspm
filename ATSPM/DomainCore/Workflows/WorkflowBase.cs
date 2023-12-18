@@ -95,14 +95,14 @@ namespace ATSPM.Domain.Workflows
 
                 //logMessages.LoggerStartedMessage(DateTime.Now, parameter.Count);
 
-                //var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
+                //var LocationSender = new BufferBlock<Location>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Location Buffer" });
 
-                //foreach (ITargetBlock<Signal> step in Steps.Where(f => f is ITargetBlock<Signal>))
+                //foreach (ITargetBlock<Location> step in Steps.Where(f => f is ITargetBlock<Location>))
                 //{
-                //    signalSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
+                //    LocationSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
                 //}
 
-                //Steps.Add(signalSender);
+                //Steps.Add(LocationSender);
 
                 try
                 {
@@ -128,7 +128,7 @@ namespace ATSPM.Domain.Workflows
                 }
                 catch (Exception e)
                 {
-                    //logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Signal Controller Logger Service", e));
+                    //logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Location Controller Logger Service", e));
                 }
                 finally
                 {

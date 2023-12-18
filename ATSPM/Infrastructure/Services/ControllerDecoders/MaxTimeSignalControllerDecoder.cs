@@ -3,7 +3,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
@@ -25,9 +25,9 @@ using System.Xml.Linq;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class MaxTimeSignalControllerDecoder : ControllerDecoderBase
+    public class MaxTimeLocationControllerDecoder : ControllerDecoderBase
     {
-        public MaxTimeSignalControllerDecoder(ILogger<MaxTimeSignalControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
+        public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
         #region Properties
 
@@ -40,12 +40,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return parameter.Exists && (parameter.Extension == ".xml" || parameter.Extension == ".XML");
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string SignalId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             //cancelToken.ThrowIfCancellationRequested();
 
-            if (string.IsNullOrEmpty(SignalId))
-                throw new ControllerLoggerDecoderException("SignalId can not be null", new ArgumentNullException(nameof(SignalId)));
+            if (string.IsNullOrEmpty(locationId))
+                throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
@@ -61,7 +61,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
             catch (Exception e)
             {
-                throw new ControllerLoggerDecoderException($"Exception decoding {SignalId}", e);
+                throw new ControllerLoggerDecoderException($"Exception decoding {locationId}", e);
             }
 
             foreach (var l in logs)
@@ -72,7 +72,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 {
                     log = new ControllerEventLog()
                     {
-                        SignalIdentifier = SignalId,
+                        LocationIdentifier = locationId,
                         EventCode = Convert.ToInt32(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToInt32(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
@@ -80,7 +80,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 }
                 catch (Exception e)
                 {
-                    throw new ControllerLoggerDecoderException($"Exception decoding {SignalId}", e);
+                    throw new ControllerLoggerDecoderException($"Exception decoding {locationId}", e);
                 }
 
                 yield return log;

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Data.Models
 {
-    public partial class ApproachSpeedAggregation : ATSPMAggregationBase, ISignalLayer
+    public partial class ApproachSpeedAggregation : ATSPMAggregationBase, ILocationLayer
     {
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public int ApproachId { get; set; }
         public int SummedSpeed { get; set; }
         public int SpeedVolume { get; set; }

@@ -32,11 +32,6 @@ namespace ATSPM.Data
         public virtual DbSet<Area> Areas { get; set; }
 
         /// <summary>
-        /// Controller type table
-        /// </summary>
-        public virtual DbSet<ControllerType> ControllerTypes { get; set; }
-
-        /// <summary>
         /// Detection type table
         /// </summary>
         public virtual DbSet<DetectionType> DetectionTypes { get; set; }
@@ -54,7 +49,7 @@ namespace ATSPM.Data
         /// <summary>
         /// Device configuration table
         /// </summary>
-        public virtual DbSet<DeviceConfiguration> DeviceConfiguration { get; set; }
+        public virtual DbSet<DeviceConfiguration> DeviceConfigurations { get; set; }
 
         /// <summary>
         /// Detectors table
@@ -80,6 +75,16 @@ namespace ATSPM.Data
         /// Jurisdiction table
         /// </summary>
         public virtual DbSet<Jurisdiction> Jurisdictions { get; set; }
+
+        /// <summary>
+        /// Locations table
+        /// </summary>
+        public virtual DbSet<Location> Locations { get; set; }
+
+        /// <summary>
+        /// Location types table
+        /// </summary>
+        public virtual DbSet<LocationType> LocationTypes { get; set; }
 
         /// <summary>
         /// Menu table
@@ -115,21 +120,21 @@ namespace ATSPM.Data
         /// Routes table
         /// </summary>
         public virtual DbSet<Route> Routes { get; set; }
+
+        /// <summary>
+        /// Route distances table
+        /// </summary>
+        public virtual DbSet<RouteDistance> RouteDistances { get; set; }
         
         /// <summary>
-        /// Route signals table
+        /// Route Locations table
         /// </summary>
-        public virtual DbSet<RouteSignal> RouteSignals { get; set; }
+        public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
         /// Settings table
         /// </summary>
         public virtual DbSet<Settings> Settings { get; set; }
-
-        /// <summary>
-        /// Signals table
-        /// </summary>
-        public virtual DbSet<Signal> Signals { get; set; }
 
         /// <summary>
         /// User areas table
@@ -139,17 +144,17 @@ namespace ATSPM.Data
         /// <summary>
         /// User jurisdictions table
         /// </summary>
-        public virtual DbSet<UserArea> UserJurisdictions { get; set; }
+        public virtual DbSet<UserJurisdiction> UserJurisdictions { get; set; }
 
         /// <summary>
         /// User regions table
         /// </summary>
-        public virtual DbSet<UserArea> UserRegions { get; set; }
+        public virtual DbSet<UserRegion> UserRegions { get; set; }
 
         /// <summary>
         /// Version history table
         /// </summary>
-        public virtual DbSet<Signal> VersionHistory { get; set; }
+        public virtual DbSet<VersionHistory> VersionHistory { get; set; }
 
         public virtual DbSet<WatchDogLogEvent> WatchDogLogEvents { get; set; }
 
@@ -159,7 +164,7 @@ namespace ATSPM.Data
             configurationBuilder.Properties<string>().AreUnicode(false);
             configurationBuilder.Properties<IPAddress>().HaveConversion<string>();
             configurationBuilder.Properties<DetectionHardwareTypes>().HaveConversion<int>();
-            configurationBuilder.Properties<SignalVersionActions>().HaveConversion<int>();
+            configurationBuilder.Properties<LocationVersionActions>().HaveConversion<int>();
             configurationBuilder.Properties<DirectionTypes>().HaveConversion<int>();
             configurationBuilder.Properties<LaneTypes>().HaveConversion<int>();
             configurationBuilder.Properties<MovementTypes>().HaveConversion<int>();
@@ -167,11 +172,6 @@ namespace ATSPM.Data
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
-
-            //if (Database.IsNpgsql())
-            //    configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
-            //else
-            //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>
@@ -180,7 +180,6 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new SettingsConfiguration());
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
-            modelBuilder.ApplyConfiguration(new ControllerTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorConfiguration());
             modelBuilder.ApplyConfiguration(new DetectorCommentConfiguration());
@@ -189,6 +188,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new DirectionTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalLinkConfiguration());
             modelBuilder.ApplyConfiguration(new FaqConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationConfiguration());
+            modelBuilder.ApplyConfiguration(new LocationTypeConfiguration());
             modelBuilder.ApplyConfiguration(new JurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new MenuItemConfiguration());
             modelBuilder.ApplyConfiguration(new MeasureCommentConfiguration());
@@ -197,8 +198,8 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new RegionConfiguration());
             modelBuilder.ApplyConfiguration(new RouteConfiguration());
-            modelBuilder.ApplyConfiguration(new RouteSignalConfiguration());
-            modelBuilder.ApplyConfiguration(new SignalConfiguration());
+            modelBuilder.ApplyConfiguration(new RouteDistanceConfiguration());
+            modelBuilder.ApplyConfiguration(new RouteLocationConfiguration());
             modelBuilder.ApplyConfiguration(new UserAreaConfiguration());
             modelBuilder.ApplyConfiguration(new UserJurisdictionConfiguration());
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
