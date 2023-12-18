@@ -129,7 +129,7 @@ namespace ATSPM.Data
         /// <summary>
         /// Route Locations table
         /// </summary>
-        public virtual DbSet<RouteLocation> RouteLocationss { get; set; }
+        public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
         /// Settings table
