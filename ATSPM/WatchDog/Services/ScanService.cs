@@ -157,26 +157,8 @@ namespace WatchDog.Services
             return usersWithWatchDogClaim;
         }
 
-
-
-
-
-
-
     }
 
-    //public class EventsContainer
-    //{
-    //    public ConcurrentBag<WatchDogLogEvent> ForceOffErrors = new ConcurrentBag<WatchDogLogEvent>();
-    //    public ConcurrentBag<WatchDogLogEvent> LowHitCountErrors = new ConcurrentBag<WatchDogLogEvent>();
-    //    public ConcurrentBag<WatchDogLogEvent> MaxOutErrors = new ConcurrentBag<WatchDogLogEvent>();
-    //    public ConcurrentBag<WatchDogLogEvent> MissingRecords = new ConcurrentBag<WatchDogLogEvent>();
-    //    public ConcurrentBag<WatchDogLogEvent> CannotFtpFiles = new ConcurrentBag<WatchDogLogEvent>();
-    //    public List<WatchDogLogEvent> RecordsFromTheDayBefore = new List<WatchDogLogEvent>();
-    //    public ConcurrentBag<Location> LocationsNoRecords = new ConcurrentBag<Location>();
-    //    public ConcurrentBag<Location> LocationsWithRecords = new ConcurrentBag<Location>();
-    //    public ConcurrentBag<WatchDogLogEvent> StuckPedErrors = new ConcurrentBag<WatchDogLogEvent>();
-    //}
 
 
 }
