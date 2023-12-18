@@ -66,8 +66,9 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [EnableQuery(AllowedQueryOptions = Select)]
         [ProducesResponseType(typeof(RouteDistance), Status200OK)]
+        [ProducesResponseType(Status204NoContent)]
         public IActionResult GetRouteDistanceByLocationIdentifiers(string locationA, string locationB)
         {
             return Ok(_repository.GetRouteDistanceByLocationIdentifiers(locationA, locationB));

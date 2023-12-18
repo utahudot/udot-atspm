@@ -98,65 +98,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         });
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Directory")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
-
-                    b.Property<string>("Firmware")
-                        .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(32)");
-
-                    b.Property<string>("Password")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<long>("Port")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValueSql("((0))");
-
-                    b.Property<string>("Product")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Protocol")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
-                        .HasDefaultValue("Unknown");
-
-                    b.Property<string>("SearchTerm")
-                        .HasMaxLength(128)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ControllerTypes", t =>
-                        {
-                            t.HasComment("Location Controller Types");
-                        });
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.DetectionType", b =>
                 {
                     b.Property<int>("Id")
@@ -427,10 +368,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasColumnType("nvarchar(12)")
                         .HasDefaultValue("Unknown");
 
-                    b.Property<string>("SearchTerm")
-                        .HasMaxLength(128)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(128)");
+                    b.Property<string>("SearchTerms")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
@@ -875,15 +815,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ControllerTypeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Ipaddress")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
-                        .HasDefaultValueSql("('10.0.0.1')");
+                        .HasColumnType("nvarchar(45)");
 
                     b.Property<int>("JurisdictionId")
                         .ValueGeneratedOnAdd()
@@ -901,9 +834,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     b.Property<int>("LocationTypeId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("bit");
 
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
@@ -944,8 +874,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasDefaultValueSql("((10))");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ControllerTypeId");
 
                     b.HasIndex("JurisdictionId");
 
@@ -1603,7 +1531,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.HasIndex("RouteId", "LocationIdentifier")
                         .IsUnique();
 
-                    b.ToTable("RouteLocationss", t =>
+                    b.ToTable("RouteLocations", t =>
                         {
                             t.HasComment("Route Locations");
                         });
@@ -1702,7 +1630,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 17, 46, 13, 675, DateTimeKind.Local).AddTicks(3446));
+                        .HasDefaultValue(new DateTime(2023, 12, 18, 10, 9, 17, 676, DateTimeKind.Local).AddTicks(6928));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1905,12 +1833,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
             modelBuilder.Entity("ATSPM.Data.Models.Location", b =>
                 {
-                    b.HasOne("ATSPM.Data.Models.ControllerType", "ControllerType")
-                        .WithMany("Locations")
-                        .HasForeignKey("ControllerTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Locations")
                         .HasForeignKey("JurisdictionId")
@@ -1928,8 +1850,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ControllerType");
 
                     b.Navigation("Jurisdiction");
 
@@ -2109,11 +2029,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
                 {
                     b.Navigation("UserAreas");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
-                {
-                    b.Navigation("Locations");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>
