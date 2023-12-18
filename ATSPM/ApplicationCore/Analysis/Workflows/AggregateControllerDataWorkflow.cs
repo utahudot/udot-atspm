@@ -21,7 +21,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public CancellationToken CancellationToken { get; set; }
     }
     
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : ATSPMAggregationBase
+    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : ATSPMAggregationBase
     {
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
@@ -46,7 +46,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         public FilteredDetectorData FilteredDetectorData { get; private set; }
-        public GroupSignalsByApproaches GroupApproachesForDetectors { get; private set; }
+        public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
         public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
         public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
 
@@ -92,7 +92,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         public FilteredTerminations FilteredTerminations { get; private set; }
-        public GroupSignalsByApproaches GroupApproachesForTerminations { get; private set; }
+        public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
         public GroupApproachesByPhase GroupApproachesByPhase { get; private set; }
         public IdentifyTerminationTypesAndTimes IdentifyTerminationTypesAndTimes { get; private set; }
         public AggregatePhaseTerminationEvents AggregatePhaseTerminationEvents { get; private set; }
@@ -131,34 +131,34 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class SignalPlansAggregationWorkflow : AggregationWorkflowBase<SignalPlanAggregation>
+    public class LocationPlansAggregationWorkflow : AggregationWorkflowBase<LocationPlanAggregation>
     {
         /// <inheritdoc/>
-        public SignalPlansAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
+        public LocationPlansAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
         {
         }
 
         public FilteredPlanData FilteredPlanData { get; private set; }
-        public GroupSignalByParameter GroupSignalPlans { get; private set; }
+        public GroupLocationByParameter GroupLocationPlans { get; private set; }
         public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
-        public AggregateSignalPlans AggregateSignalPlans { get; private set; }
+        public AggregateLocationPlans AggregateLocationPlans { get; private set; }
 
         /// <inheritdoc/>
         protected override void AddStepsToTracker()
         {
             Steps.Add(FilteredPlanData);
-            Steps.Add(GroupSignalPlans);
+            Steps.Add(GroupLocationPlans);
             Steps.Add(CalculateTimingPlans);
-            Steps.Add(AggregateSignalPlans);
+            Steps.Add(AggregateLocationPlans);
         }
 
         /// <inheritdoc/>
         protected override void InstantiateSteps()
         {
             FilteredPlanData = new(blockOptions);
-            GroupSignalPlans = new(executionBlockOptions);
+            GroupLocationPlans = new(executionBlockOptions);
             CalculateTimingPlans = new(executionBlockOptions);
-            AggregateSignalPlans = new(executionBlockOptions);
+            AggregateLocationPlans = new(executionBlockOptions);
         }
 
         /// <inheritdoc/>
@@ -166,11 +166,11 @@ namespace ATSPM.Application.Analysis.Workflows
         {
             Input.LinkTo(FilteredPlanData, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            FilteredPlanData.LinkTo(GroupSignalPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            GroupSignalPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            CalculateTimingPlans.LinkTo(AggregateSignalPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            FilteredPlanData.LinkTo(GroupLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            GroupLocationPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            CalculateTimingPlans.LinkTo(AggregateLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            AggregateSignalPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            AggregateLocationPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }
     }
 
@@ -182,7 +182,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         public FilteredPreemptionData FilteredPreemptionData { get; private set; }
-        public GroupSignalByParameter GroupPreemptNumber { get; private set; }
+        public GroupLocationByParameter GroupPreemptNumber { get; private set; }
         public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
 
         /// <inheritdoc/>
@@ -221,7 +221,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
 
         public FilterPriorityData FilterPriorityData { get; private set; }
-        public GroupSignalByParameter GroupPriorityNumber { get; private set; }
+        public GroupLocationByParameter GroupPriorityNumber { get; private set; }
         public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
 
         /// <inheritdoc/>
@@ -252,35 +252,35 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Signal, IEnumerable<ControllerEventLog>>, IEnumerable<ATSPMAggregationBase>>
+    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<ATSPMAggregationBase>>
     {
         //aggregate detector events
         //public FilteredDetectorData FilteredDetectorData { get; private set; }
-        //public GroupSignalsByApproaches GroupApproachesForDetectors { get; private set; }
+        //public GroupLocationsByApproaches GroupApproachesForDetectors { get; private set; }
         //public GroupDetectorsByDetectorEvent GroupDetectorsByDetectorEvent { get; private set; }
         //public AggregateDetectorEvents AggregateDetectorEvents { get; private set; }
 
         //aggregate termination events
         //public FilteredTerminations FilteredTerminations { get; private set; }
-        //public GroupSignalsByApproaches GroupApproachesForTerminations { get; private set; }
+        //public GroupLocationsByApproaches GroupApproachesForTerminations { get; private set; }
         //public GroupApproachesByPhase GroupApproachesByPhase { get; private set; }
         //public IdentifyTerminationTypesAndTimes IdentifyTerminationTypesAndTimes { get; private set; }
         //public AggregatePhaseTerminationEvents AggregatePhaseTerminationEvents { get; private set; }
 
-        //aggregate signal plans
+        //aggregate Location plans
         //public FilteredPlanData FilteredPlanData { get; private set; }
-        //public GroupSignalByParameter GroupSignalPlans { get; private set; }
+        //public GroupLocationByParameter GroupLocationPlans { get; private set; }
         //public CalculateTimingPlans<Plan> CalculateTimingPlans { get; private set; }
-        //public AggregateSignalPlans AggregateSignalPlans { get; private set; }
+        //public AggregateLocationPlans AggregateLocationPlans { get; private set; }
 
         //aggregate preempt codes
         //public FilteredPreemptionData FilteredPreemptionData { get; private set; }
-        //public GroupSignalByParameter GroupPreemptNumber { get; private set; }
+        //public GroupLocationByParameter GroupPreemptNumber { get; private set; }
         //public AggregatePreemptCodes AggregatePreemptCodes { get; private set; }
 
         //aggregate priority codes
         //public FilterPriorityData FilterPriorityData { get; private set; }
-        //public GroupSignalByParameter GroupPriorityNumber { get; private set; }
+        //public GroupLocationByParameter GroupPriorityNumber { get; private set; }
         //public AggregatePriorityCodes AggregatePriorityCodes { get; private set; }
 
         /// <inheritdoc/>
@@ -299,11 +299,11 @@ namespace ATSPM.Application.Analysis.Workflows
             //Steps.Add(IdentifyTerminationTypesAndTimes);
             //Steps.Add(AggregatePhaseTerminationEvents);
 
-            //AggregateSignalPlans
+            //AggregateLocationPlans
             //Steps.Add(FilteredPlanData);
-            //Steps.Add(GroupSignalPlans);
+            //Steps.Add(GroupLocationPlans);
             //Steps.Add(CalculateTimingPlans);
-            //Steps.Add(AggregateSignalPlans);
+            //Steps.Add(AggregateLocationPlans);
 
             //aggregate preempt codes
             //Steps.Add(FilteredPreemptionData);
@@ -332,11 +332,11 @@ namespace ATSPM.Application.Analysis.Workflows
             //IdentifyTerminationTypesAndTimes = new();
             //AggregatePhaseTerminationEvents = new();
 
-            //AggregateSignalPlans
+            //AggregateLocationPlans
             //FilteredPlanData = new();
-            //GroupSignalPlans = new();
+            //GroupLocationPlans = new();
             //CalculateTimingPlans = new();
-            //AggregateSignalPlans = new();
+            //AggregateLocationPlans = new();
 
             //aggregate preempt codes
             //FilteredPreemptionData = new();
@@ -370,10 +370,10 @@ namespace ATSPM.Application.Analysis.Workflows
             //GroupApproachesByPhase.LinkTo(IdentifyTerminationTypesAndTimes, new DataflowLinkOptions() { PropagateCompletion = true });
             //IdentifyTerminationTypesAndTimes.LinkTo(AggregatePhaseTerminationEvents, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            //AggregateSignalPlans
-            //FilteredPlanData.LinkTo(GroupSignalPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            //GroupSignalPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
-            //CalculateTimingPlans.LinkTo(AggregateSignalPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            //AggregateLocationPlans
+            //FilteredPlanData.LinkTo(GroupLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            //GroupLocationPlans.LinkTo(CalculateTimingPlans, new DataflowLinkOptions() { PropagateCompletion = true });
+            //CalculateTimingPlans.LinkTo(AggregateLocationPlans, new DataflowLinkOptions() { PropagateCompletion = true });
 
             //aggregate preempt codes
             //FilteredPreemptionData.LinkTo(GroupPreemptNumber, new DataflowLinkOptions() { PropagateCompletion = true });
@@ -386,7 +386,7 @@ namespace ATSPM.Application.Analysis.Workflows
             //link output to aggregation results
             //AggregateDetectorEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregatePhaseTerminationEvents.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
-            //AggregateSignalPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+            //AggregateLocationPlans.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregatePreemptCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
             //AggregatePriorityCodes.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
         }

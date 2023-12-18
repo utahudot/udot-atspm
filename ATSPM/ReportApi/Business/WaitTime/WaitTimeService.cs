@@ -99,7 +99,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
                     var exportList = new List<string>();
                     foreach (var row in phaseCallList)
                     {
-                        exportList.Add($"{row.SignalIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
+                        exportList.Add($"{row.LocationIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
                     }
 
                     WaitTimeTracker waitTimeTrackerToFill = null;

@@ -13,10 +13,10 @@ namespace ATSPM.Application.Analysis.Common
     {
         #region IDetectorEvent
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

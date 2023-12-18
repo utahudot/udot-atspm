@@ -41,7 +41,7 @@ namespace ATSPM.Application.Analysis
             };
 
             //create steps
-            var step1 = CreateTransformManyStep<Signal, string>(t => DownloadLogs(t, token), "Determine Phase Termination Time", stepOptions);
+            var step1 = CreateTransformManyStep<Location, string>(t => DownloadLogs(t, token), "Determine Phase Termination Time", stepOptions);
             var step2 = CreateTransformManyStep<string, string>(t => DownloadLogs(t, token), "Determine Unknown Phase Termination", stepOptions);
             var step3 = CreateTransformManyStep<string, string>(t => DownloadLogs(t, token), "Identify Pedestrian Events", stepOptions);
 

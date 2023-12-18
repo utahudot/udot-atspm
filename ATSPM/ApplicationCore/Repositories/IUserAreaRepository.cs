@@ -5,6 +5,5 @@ namespace ATSPM.Application.Repositories
 {
     public interface IUserAreaRepository : IAsyncRepository<UserArea>
     {
-
     }
 }

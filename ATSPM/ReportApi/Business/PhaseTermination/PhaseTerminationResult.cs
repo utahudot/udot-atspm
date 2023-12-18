@@ -7,15 +7,15 @@ namespace ATSPM.ReportApi.Business.PhaseTermination;
 /// <summary>
 /// Phase Termination chart
 /// </summary>
-public class PhaseTerminationResult : SignalResult
+public class PhaseTerminationResult : LocationResult
 {
     public PhaseTerminationResult(
-        string signalId,
+        string locationId,
         DateTime start,
         DateTime end,
         int consecutiveCount,
         ICollection<Plan> plans,
-        ICollection<Phase> phases) : base(signalId, start, end)
+        ICollection<Phase> phases) : base(locationId, start, end)
     {
         ConsecutiveCount = consecutiveCount;
         Plans = plans;

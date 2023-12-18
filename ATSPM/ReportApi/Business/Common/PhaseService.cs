@@ -6,15 +6,15 @@ namespace ATSPM.ReportApi.Business.Common
 {
     public class PhaseService
     {
-        public virtual List<PhaseDetail> GetPhases(Signal signal)
+        public virtual List<PhaseDetail> GetPhases(Location Location)
         {
-            if (signal.Approaches == null || signal.Approaches.Count == 0)
+            if (Location.Approaches == null || Location.Approaches.Count == 0)
             {
                 return new List<PhaseDetail>();
             }
 
             var phaseDetails = new List<PhaseDetail>();
-            foreach (var approach in signal.Approaches)
+            foreach (var approach in Location.Approaches)
             {
                 if (approach.ProtectedPhaseNumber != 0)
                 {

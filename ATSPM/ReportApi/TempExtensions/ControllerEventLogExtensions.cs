@@ -49,7 +49,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -79,7 +79,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -237,7 +237,7 @@ namespace ATSPM.ReportApi.TempExtensions
             Approach approach)
         {
             return events.GetEvents(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 startTime,
                 endTime,
                 approach.GetPedDetectorsFromApproach(),
@@ -246,14 +246,14 @@ namespace ATSPM.ReportApi.TempExtensions
 
         public static IReadOnlyList<ControllerEventLog> GetEvents(
             this IEnumerable<ControllerEventLog> events,
-            string signalIdentifier,
+            string locationIdentifier,
             DateTime startTime,
             DateTime endTime,
             IEnumerable<int> eventParameters,
             IEnumerable<int> eventCodes)
         {
             var result = events
-                .Where(e => e.SignalIdentifier == signalIdentifier
+                .Where(e => e.LocationIdentifier == locationIdentifier
                 && e.Timestamp >= startTime
                 && e.Timestamp < endTime
                 && eventCodes.Contains(e.EventCode)

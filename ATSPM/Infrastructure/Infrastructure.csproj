@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\ConfigContextModelSnapshot.cs" />
-    <Compile Remove="Repositories\SignalFileRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +20,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
     <PackageReference Include="OData.Swagger" Version="1.0.0" />
     <PackageReference Include="Parquet.Net" Version="3.10.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
@@ -29,7 +27,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApplicationCore\ApplicationCore.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\MySqlDatabaseProvider\MySqlDatabaseProvider.csproj" />
+    <ProjectReference Include="..\OracleDatabaseProvider\OracleDatabaseProvider.csproj" />
+    <ProjectReference Include="..\PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj" />
+    <ProjectReference Include="..\SqlDatabaseProvider\SqlDatabaseProvider.csproj" />
+    <ProjectReference Include="..\SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,10 +46,6 @@
     <Folder Include="Migrations\Config\" />
     <Folder Include="Migrations\EventLog\" />
     <Folder Include="Migrations\Speed\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Repositories\SignalFileRepository.cs" />
   </ItemGroup>
 
 </Project>

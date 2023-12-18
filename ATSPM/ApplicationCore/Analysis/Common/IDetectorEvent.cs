@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis.Common
     /// and that have been timestamp corrected for detector distances and latency
     /// using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
     /// </summary>
-    public interface IDetectorEvent : ISignalPhaseLayer, ISignalDetector, ITimestamp
+    public interface IDetectorEvent : ILocationPhaseLayer, ILocationDetectorLayer, ITimestamp
     {
         /// <summary>
         /// Direction of travel when the event occured.

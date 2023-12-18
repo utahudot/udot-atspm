@@ -1,13 +1,13 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public class EOSSignalControllerDownloader : ControllerDownloaderBase
+    public class EOSLocationControllerDownloader : ControllerDownloaderBase
     {
-        public EOSSignalControllerDownloader(IFTPDownloaderClient client, ILogger<EOSSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public EOSLocationControllerDownloader(IFTPDownloaderClient client, ILogger<EOSLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

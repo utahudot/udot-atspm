@@ -41,7 +41,7 @@ namespace ATSPM.Application.Analysis.Plans
         /// <inheritdoc/>
         //public override void AssignToPlan<T>(IEnumerable<T> range)
         //{
-        //    _vehicles.AddRange(range.Cast<Vehicle>().Where(w => InRange(w.Start) && InRange(w.End) && SignalIdentifier == w.SignalIdentifier));
+        //    _vehicles.AddRange(range.Cast<Vehicle>().Where(w => InRange(w.Start) && InRange(w.End) && locationIdentifier == w.locationIdentifier));
         //}
 
         public override void AssignToPlan<T>(IEnumerable<T> range)

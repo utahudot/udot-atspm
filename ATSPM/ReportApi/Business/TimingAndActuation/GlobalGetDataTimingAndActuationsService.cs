@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             this.controllerEventLogRepository = controllerEventLogRepository;
         }
 
-        public Dictionary<string, List<ControllerEventLog>> GetGlobalGetDataTimingAndActuations(string signalId, TimingAndActuationsOptions options)
+        public Dictionary<string, List<ControllerEventLog>> GetGlobalGetDataTimingAndActuations(string locationId, TimingAndActuationsOptions options)
         {
             var globalCustomEventsDictionary = new Dictionary<string, List<ControllerEventLog>>();
             if (options.GlobalEventCodesList != null && options.GlobalEventParamsList != null &&
@@ -28,7 +28,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                     {
                         options.GlobalEventCounter = 1;
                         var globalCustomEvents = controllerEventLogRepository.GetEventsByEventCodesParam
-                        (signalId, options.Start, options.End,
+                        (locationId, options.Start, options.End,
                             new List<int> { globalEventCode }, globalEventParam).ToList();
                         if (globalCustomEvents.Count > 0)
                         {
