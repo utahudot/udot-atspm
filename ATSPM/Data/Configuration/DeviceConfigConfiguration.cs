@@ -24,7 +24,7 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(512);
 
             builder.Property(e => e.Protocol)
-                .HasMaxLength(12)
+                .HasMaxLength(Enum.GetNames(typeof(TransportProtocols)).Max().Length)
                 .HasDefaultValue(TransportProtocols.Unknown);
 
             builder.Property(e => e.Port)

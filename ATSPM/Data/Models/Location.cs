@@ -40,12 +40,6 @@ namespace ATSPM.Data.Models
         /// Secondary name of location
         /// </summary>
         public string SecondaryName { get; set; }
-
-        /// <summary>
-        /// Ipaddress of location
-        /// </summary>
-        [JsonIgnore]
-        public IPAddress Ipaddress { get; set; }
         
         /// <summary>
         /// Enable location to be charted
