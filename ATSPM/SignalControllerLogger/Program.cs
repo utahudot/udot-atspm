@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Threading;
 using static Google.Cloud.Logging.V2.TailLogEntriesResponse.Types.SuppressionInfo.Types;
 using Microsoft.OData.Edm.Csdl;
+using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -66,17 +67,14 @@ namespace ATSPM.LocationControllerLogger
                     s.AddAtspmDbContext(h);
 
                     //background services
-                    s.AddHostedService<LoggerBackgroundService>();
+                    //s.AddHostedService<LoggerBackgroundService>();
 
                     //repositories
-                    s.AddScoped<ILocationRepository, LocationEFRepository>();
-                    //s.AddScoped<ILocationRepository, LocationFileRepository>();
-                    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
-                    //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
+                    s.AddAtspmEFRepositories();
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
-                    s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
+                    //s.AddTransient<IFileTranscoder, CompressedJsonFileTranscoder>();
 
                     ////downloader clients
                     s.AddTransient<IHTTPDownloaderClient, HttpDownloaderClient>();
@@ -84,35 +82,35 @@ namespace ATSPM.LocationControllerLogger
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
-                    s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
-                    s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
-                    s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
-                    s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
-                    s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
+                    //s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
+                    //s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
+                    //s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
+                    //s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
+                    //s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
 
                     //decoders
-                    s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
-                    s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
+                    //s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
+                    //s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
 
                     //LocationControllerDataFlow
                     //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
-                    s.AddScoped<ILocationControllerLoggerService, LegacyLocationControllerLogger>();
+                    //s.AddScoped<ILocationControllerLoggerService, LegacyLocationControllerLogger>();
 
                     //controller logger configuration
-                    s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
+                    //s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
 
                     //downloader configurations
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
-                    s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
+                    //s.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), h.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
                     //decoder configurations
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
-                    s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
+                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
+                    //s.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), h.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
 
-                    s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
+                    //s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
                 })
 
                 .UseConsoleLifetime()
@@ -122,9 +120,23 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetService<IRegionsRepository>();
+                var devices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations();
 
-                var test = repo.GetList().ToList();
+                Console.WriteLine($"{devices.Count()}");
+
+                foreach (var d in devices)
+                {
+                    Console.WriteLine($"{d}");
+
+
+
+                    //foreach (var d in devices.GetActiveDevicesByLocation(l.Id))
+                    //{
+                    //    Console.WriteLine($"{d}");
+                    //}
+                }
+
+
             }
 
             Console.Read();

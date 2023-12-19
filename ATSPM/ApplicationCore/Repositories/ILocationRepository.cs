@@ -37,7 +37,6 @@ namespace ATSPM.Application.Repositories
         /// <returns>List of <see cref="Location"/> with newest start date</returns>
         IReadOnlyList<Location> GetLatestVersionOfAllLocations(DateTime startDate);
 
-
         /// <summary>
         /// Get latest version of <see cref="Location"/> and related entities that match <paramref name="LocationIdentifier"/>
         /// </summary>
