@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
@@ -68,7 +68,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var downloader = scope.ServiceProvider.GetServices<ILocationControllerDownloader>().First(c => c.CanExecute(Location));
+                var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(Location));
 
                 //await foreach (var file in downloader.Execute(Location, cancellationToken))
                 //{

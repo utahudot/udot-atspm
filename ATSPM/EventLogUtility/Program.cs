@@ -179,11 +179,11 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
 //        //downloaders
-//        s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, ASC3LocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, CobaltLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, MaxTimeLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, EOSLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
 
 //        //decoders
 //        s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();

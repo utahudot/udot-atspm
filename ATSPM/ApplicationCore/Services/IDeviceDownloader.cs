@@ -6,9 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ATSPM.Application.Services.LocationControllerProtocols
+namespace ATSPM.Application.Services
 {
-    public interface ILocationControllerDownloader : IExecuteWithProgress<Device, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
+    /// <summary>
+    /// When executed, downloads data from device
+    /// </summary>
+    public interface IDeviceDownloader : IExecuteWithProgress<Device, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
     {
         int ControllerType { get; }
 
