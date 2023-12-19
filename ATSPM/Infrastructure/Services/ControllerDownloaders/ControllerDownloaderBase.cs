@@ -2,7 +2,7 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
@@ -21,7 +21,7 @@ using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public abstract class ControllerDownloaderBase : ServiceObjectBase, ILocationControllerDownloader
+    public abstract class ControllerDownloaderBase : ServiceObjectBase, IDeviceDownloader
     {
         public event EventHandler CanExecuteChanged;
 

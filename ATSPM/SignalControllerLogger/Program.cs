@@ -1,7 +1,6 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
-using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Domain.Common;
 using ATSPM.Infrastructure.Converters;
 using ATSPM.Infrastructure.Extensions;
@@ -82,11 +81,11 @@ namespace ATSPM.LocationControllerLogger
                     s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
                     //downloaders
-                    //s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
-                    //s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
-                    //s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
-                    //s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
-                    //s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
+                    //s.AddScoped<IDeviceDownloader, ASC3LocationControllerDownloader>();
+                    //s.AddScoped<IDeviceDownloader, CobaltLocationControllerDownloader>();
+                    //s.AddScoped<IDeviceDownloader, MaxTimeLocationControllerDownloader>();
+                    //s.AddScoped<IDeviceDownloader, EOSLocationControllerDownloader>();
+                    //s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
 
                     //decoders
                     //s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
@@ -127,13 +126,6 @@ namespace ATSPM.LocationControllerLogger
                 foreach (var d in devices)
                 {
                     Console.WriteLine($"{d}");
-
-
-
-                    //foreach (var d in devices.GetActiveDevicesByLocation(l.Id))
-                    //{
-                    //    Console.WriteLine($"{d}");
-                    //}
                 }
 
 

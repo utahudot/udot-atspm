@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using FluentFTP;
 using Moq;
