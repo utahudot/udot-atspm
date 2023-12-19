@@ -120,7 +120,7 @@
             Route distances table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.RouteLocationss">
+        <member name="P:ATSPM.Data.ConfigContext.RouteLocations">
             <summary>
             Route Locations table
             </summary>
@@ -1175,6 +1175,41 @@
             Device is being staged
             </summary>
         </member>
+        <member name="T:ATSPM.Data.Enums.DeviceTypes">
+            <summary>
+            Device types enum
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.Unknown">
+            <summary>
+            Unknown device type
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.SignalController">
+            <summary>
+            Signal controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.RampController">
+            <summary>
+            Ramp controller
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.AICamera">
+            <summary>
+            A.I. Camera
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.FIRCamera">
+            <summary>
+            F.I.R. Camera
+            </summary>
+        </member>
+        <member name="F:ATSPM.Data.Enums.DeviceTypes.LidarSensor">
+            <summary>
+            LIDAR Sensor
+            </summary>
+        </member>
         <member name="T:ATSPM.Data.Enums.LocationVersionActions">
             <summary>
             Location version actions
@@ -1773,11 +1808,6 @@
         <member name="P:ATSPM.Data.Models.Location.SecondaryName">
             <summary>
             Secondary name of location
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Location.Ipaddress">
-            <summary>
-            Ipaddress of location
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.Location.ChartEnabled">
