@@ -16,5 +16,12 @@ namespace ATSPM.Application.Repositories
         /// <param name="locationId">Id of <see cref="Location"/> to get assigned <see cref="Device"/> from</param>
         /// <returns></returns>
         IReadOnlyList<Device> GetActiveDevicesByLocation(int locationId);
+
+        /// <summary>
+        /// Returns all <see cref="Device"/> from all latest version <see cref="Location"/>
+        /// that are also enabled for logging.
+        /// </summary>
+        /// <returns></returns>
+        IReadOnlyList<Device> GetActiveDevicesByAllLatestLocations();
     }
 }

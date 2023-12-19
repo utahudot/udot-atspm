@@ -54,6 +54,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceStatus} - {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceStatus} --- {DeviceConfiguration}";
     }
 }
