@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

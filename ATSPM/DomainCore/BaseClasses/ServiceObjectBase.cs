@@ -1,46 +1,154 @@
-﻿using System;
+﻿using ATSPM.Domain.Common;
+using ATSPM.Domain.Exceptions;
+using ATSPM.Domain.Services;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Windows.Input;
 
 namespace ATSPM.Domain.BaseClasses
 {
-    /// <summary>
-    /// <c>ServiceObjectBase</c> For services implementing:
-    /// <list type="table">
-    /// 
-    /// <item>
-    /// <term><see cref="INotifyPropertyChanged"/></term>
-    /// <description>Notifies clients that a property value has changed.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="INotifyPropertyChanging"/></term>
-    /// <description>Notifies clients that a property value is changing.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="ISupportInitializeNotification"/></term>
-    /// <description>Allows coordination of initialization for a component and its dependent properties.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="IDisposable"/></term>
-    /// <description>Provides a mechanism for releasing unmanaged resources.</description>
-    /// </item>
-    /// 
-    /// </list>
-    /// </summary>
-    public abstract class ServiceObjectBase : ObservableObjectBase, ISupportInitializeNotification, IDisposable
+    public abstract class ExectuableServiceWithProgressBase<T1, T2, Tp> : ExecutableServiceBase<T1, T2>, IExecutableServiceWithProgress<T1, T2, Tp>
     {
         /// <summary>
-        /// Instantiate new service and calls <see cref="BeginInit"/>
+        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
         /// </summary>
-        public ServiceObjectBase()
+        public ExectuableServiceWithProgressBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecutableServiceWithProgress
+
+        ///<inheritdoc/>
+        public abstract Task<T2> ExecuteAsync(T1 parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+
+        ///<inheritdoc/>
+        public override async Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
         {
-            //intialize object
-            //BeginInit();
+            return await ExecuteAsync(parameter, cancelToken).ConfigureAwait(false);
+        }
+
+        #endregion
+    }
+
+    public abstract class ExecutableServiceBase<T1, T2> : ServiceObjectBase, IExecutableService<T1, T2>
+    {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+        /// </summary>
+        public ExecutableServiceBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecuteAsync
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged;
+
+        /// <inheritdoc/>
+        public virtual bool CanExecute(T1 parameter) => true;
+
+        /// <inheritdoc/>
+        public abstract Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default);
+
+        /// <inheritdoc/>
+        Task IExecuteAsync.ExecuteAsync(object parameter)
+        {
+            if (parameter is T1 p)
+                return Task.Run(() => ExecuteAsync(p, default));
+            return default;
+        }
+
+        /// <inheritdoc/>
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (parameter is T1 p)
+                return CanExecute(p);
+            return default;
+        }
+
+        /// <inheritdoc/>
+        void ICommand.Execute(object parameter)
+        {
+            if (parameter is T1 p)
+                Task.Run(() => ExecuteAsync(p, default));
+        }
+
+        #endregion
+    }
+
+    public abstract class ExecutableServiceWithProgressAsyncBase<T1, T2, Tp> : ExecutableServiceAsyncBase<T1, T2>, IExecutableServiceWithProgressAsync<T1, T2, Tp>
+    {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+        /// </summary>
+        public ExecutableServiceWithProgressAsyncBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecutableServiceWithProgress
+
+        ///<inheritdoc/>
+        public abstract IAsyncEnumerable<T2> Execute(T1 parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+
+        ///<inheritdoc/>
+        public override async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
+            {
+                yield return item;
+            }
+        }
+
+        #endregion
+    }
+
+    public abstract class ExecutableServiceAsyncBase<T1, T2> : ServiceObjectBase, IExecutableServiceAsync<T1, T2>
+    {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+        /// </summary>
+        public ExecutableServiceAsyncBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecuteAsync
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged;
+
+        /// <inheritdoc/>
+        public virtual bool CanExecute(T1 parameter) => true;
+
+        /// <inheritdoc/>
+        public abstract IAsyncEnumerable<T2> Execute(T1 parameter, CancellationToken cancelToken = default);
+
+        /// <inheritdoc/>
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (parameter is T1 p)
+                return CanExecute(p);
+            return false;
+        }
+
+        /// <inheritdoc/>
+        void ICommand.Execute(object parameter)
+        {
+            if (parameter is T1 p)
+                Task.Run(() => Execute(p, default));
+        }
+
+        #endregion
+    }
+
+    /// <inheritdoc/>
+    public abstract class ServiceObjectBase : ObservableObjectBase, IService
+    {
+        /// <summary>
+        /// Instantiate new service and calls <see cref="BeginInit"/> if <paramref name="initialize"/> is true
+        /// </summary>
+        public ServiceObjectBase(bool initialize = false)
+        {
+            if (initialize)
+            {
+                BeginInit();
+            }
         }
 
         /// <summary>
@@ -93,7 +201,11 @@ namespace ATSPM.Domain.BaseClasses
             {
                 _isInitialized = value;
                 RaisePropertyChanged(nameof(IsInitialized));
-                if (_isInitialized) { RaiseInitialized(); }
+                if (_isInitialized) 
+                {
+                    disposedValue = false;
+                    RaiseInitialized(); 
+                }
             }
         }
 
@@ -143,6 +255,7 @@ namespace ATSPM.Domain.BaseClasses
 
                 // // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // // TODO: set large fields to null
+                IsInitialized = false;
                 disposedValue = true;
             }
         }

@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Domain.BaseClasses;
 using Renci.SshNet;
 using Renci.SshNet.Common;
