@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Castle.Core.Logging;
 using Xunit.Abstractions;
 using Microsoft.Extensions.Logging;
+using ATSPM.Application.Services;
 
 namespace InfrastructureTests.Attributes
 {

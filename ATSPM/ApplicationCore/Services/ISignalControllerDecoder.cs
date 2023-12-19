@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace ATSPM.Application.Services.LocationControllerProtocols
+namespace ATSPM.Application.Services
 {
     public interface ILocationControllerDecoder : IExecuteAsyncWithProgress<FileInfo, HashSet<ControllerEventLog>, ControllerDecodeProgress>, IDisposable
     {
