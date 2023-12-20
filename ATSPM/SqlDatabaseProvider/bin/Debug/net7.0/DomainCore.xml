@@ -167,37 +167,77 @@
             </summary>
             <param name="propertyName">Name of property that has changed.</param>
         </member>
-        <member name="T:ATSPM.Domain.BaseClasses.ServiceObjectBase">
+        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.#ctor(System.Boolean)">
             <summary>
-            <c>ServiceObjectBase</c> For services implementing:
-            <list type="table">
-            
-            <item>
-            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
-            <description>Notifies clients that a property value has changed.</description>
-            </item>
-            
-            <item>
-            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
-            <description>Notifies clients that a property value is changing.</description>
-            </item>
-            
-            <item>
-            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
-            <description>Allows coordination of initialization for a component and its dependent properties.</description>
-            </item>
-            
-            <item>
-            <term><see cref="T:System.IDisposable"/></term>
-            <description>Provides a mechanism for releasing unmanaged resources.</description>
-            </item>
-            
-            </list>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
             </summary>
         </member>
-        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.#ctor">
+        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.ExecuteAsync(`0,System.IProgress{`2},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.#ctor(System.Boolean)">
             <summary>
-            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+            </summary>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.ATSPM#Domain#Common#IExecuteAsync#ExecuteAsync(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.System#Windows#Input#ICommand#CanExecute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.System#Windows#Input#ICommand#Execute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.#ctor(System.Boolean)">
+            <summary>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.Execute(`0,System.IProgress{`2},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.Execute(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.#ctor(System.Boolean)">
+            <summary>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
+            </summary>
+        </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.Execute(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.System#Windows#Input#ICommand#CanExecute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.System#Windows#Input#ICommand#Execute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ServiceObjectBase">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.#ctor(System.Boolean)">
+            <summary>
+            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
             </summary>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialize">
@@ -821,6 +861,34 @@
             <param name="maxTasksToRunInParallel">The maximum number of tasks to run in parallel.</param>
             <param name="timeoutInMilliseconds">The maximum milliseconds we should allow the max tasks to run in parallel before allowing another task to start. Specify -1 to wait indefinitely.</param>
             <param name="cancellationToken">The cancellation token.</param>
+        </member>
+        <member name="T:ATSPM.Domain.Services.IService">
+            <summary>
+            <c>ServiceObjectBase</c> For services implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
         </member>
         <member name="T:ATSPM.Domain.Specifications.GenericSpecification`1">
             <summary>
