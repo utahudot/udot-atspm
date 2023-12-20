@@ -39,15 +39,15 @@ namespace Identity.Business.Accounts
 
                 if (info != null)
                 {
-                    return new AccountResult(user, StatusCodes.Status200OK, "");
+                    return new AccountResult(user.UserName, StatusCodes.Status200OK, "");
                 }
                 else
                 {
-                    return new AccountResult(null, StatusCodes.Status500InternalServerError, "Server Error");
+                    return new AccountResult("", StatusCodes.Status500InternalServerError, "Server Error");
                 }
             }
 
-            return new AccountResult(null, StatusCodes.Status400BadRequest, createUser.Errors.First().Description);
+            return new AccountResult("", StatusCodes.Status400BadRequest, createUser.Errors.First().Description);
         }
 
         public async Task<AccountResult> Login(string email, string password, bool rememberMe = false)
@@ -60,11 +60,15 @@ namespace Identity.Business.Accounts
                 var user = await _signInManager.UserManager.FindByEmailAsync(email);
                 //var roles = await _signInManager.UserManager.GetRolesAsync(user);
                 //var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
+                if (user == null)
+                {
+                    return new AccountResult("", StatusCodes.Status400BadRequest, "User not found");
+                }
 
-                return new AccountResult(user, StatusCodes.Status200OK, "");
+                return new AccountResult(user.UserName, StatusCodes.Status200OK, "");
             }
 
-            return new AccountResult(null, StatusCodes.Status400BadRequest, "Incorrect username or password");
+            return new AccountResult("", StatusCodes.Status400BadRequest, "Incorrect username or password");
         }
     }
 }

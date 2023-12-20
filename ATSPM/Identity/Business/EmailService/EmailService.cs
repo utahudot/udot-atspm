@@ -14,7 +14,7 @@ namespace Identity.Business.EmailSender
             {
                 Host = "smtp-server.com",
                 Port = 587,
-                Credentials = new NetworkCredential("support@avenueconsultants.com", "pass"),
+                Credentials = new NetworkCredential(),
                 EnableSsl = true,
             };
         }
