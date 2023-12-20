@@ -2,11 +2,10 @@
 
 namespace Identity.Models.Token
 {
-    public class VerifyTokenViewModel
+    public class VerifyResetTokenViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string Username { get; set; }
 
         [Required]
         public string Token { get; set; }

@@ -2,16 +2,13 @@
 {
     public class AccountResult
     {
-        public AccountResult(ApplicationUser user, int code, string? error)
+        public AccountResult(string username, int code, string? error)
         {
-            if(user != null)
-            {
-                User = new UserResult(user.FirstName, user.LastName, user.Email, user.Agency);
-            }
+            Username = username;
             Code = code;
             Error = error;
         }
-        public UserResult User { get; set; }
+        public string Username { get; set; }
         //public List<string> Roles { get; set; }
         //public string Token { get; set; }
         public int Code { get; }
