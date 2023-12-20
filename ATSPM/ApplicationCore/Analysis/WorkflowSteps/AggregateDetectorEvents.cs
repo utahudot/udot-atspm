@@ -27,7 +27,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var detector = input.Item1;
             var detectorChannel = input.Item2;
             var logs = input.Item3
-                .Where(w => w.LocationIdentifier == detector.Approach?.Location?.LocationIdentifier)
+                .Where(w => w.SignalIdentifier == detector.Approach?.Location?.LocationIdentifier)
                 .Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn)
                 .Where(w => w.EventParam == detectorChannel);
 

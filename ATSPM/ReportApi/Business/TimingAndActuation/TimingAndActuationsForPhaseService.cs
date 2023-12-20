@@ -141,7 +141,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         var forceEventsForAllLanes = new List<ControllerEventLog>();
                         var tempEvent1 = new ControllerEventLog()
                         {
-                            LocationIdentifier = locationIdentifier,
+                            SignalIdentifier = locationIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = phaseNumber,
                             Timestamp = options.Start.AddSeconds(-10)
@@ -149,7 +149,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         forceEventsForAllLanes.Add(tempEvent1);
                         var tempEvent2 = new ControllerEventLog()
                         {
-                            LocationIdentifier = locationIdentifier,
+                            SignalIdentifier = locationIdentifier,
                             EventCode = phaseEventCode,
                             EventParam = phaseNumber,
                             Timestamp = options.Start.AddSeconds(-9)
