@@ -72,7 +72,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 {
                     log = new ControllerEventLog()
                     {
-                        LocationIdentifier = locationId,
+                        SignalIdentifier = locationId,
                         EventCode = Convert.ToInt32(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToInt32(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
