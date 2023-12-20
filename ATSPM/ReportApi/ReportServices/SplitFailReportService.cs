@@ -176,7 +176,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetectorChannel;
@@ -187,7 +187,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetectorChannel;

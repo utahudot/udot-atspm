@@ -79,7 +79,7 @@ namespace ATSPM.Infrastructure.Repositories
         //    var result = BaseQuery()
         //        .Where(w => w.ControllerTypeId == controllerTypeId)
         //        .FromSpecification(new ActiveLocationSpecification())
-        //        .GroupBy(r => r.LocationIdentifier)
+        //        .GroupBy(r => r.SignalIdentifier)
         //        .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
         //        .ToList();
 
