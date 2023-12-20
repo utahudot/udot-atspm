@@ -3,7 +3,6 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Enums;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
