@@ -72,29 +72,32 @@ builder.Host.ConfigureServices((host, services) =>
 
     //       options.Audience = "Identity"; // replace with your API resource name
     //   });
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
     services.AddAuthentication(options =>
     {
         options.DefaultScheme = "Cookies";
         options.DefaultChallengeScheme = "oidc";
     })
-        .AddCookie("Cookie")
-        .AddJwtBearer(options =>
-        {
-            options.Authority = "https://localhost:44357";
-            options.Audience = "Identity";
-        })
-        .AddOpenIdConnect("oidc", options =>
-        {
-            options.Authority = "https://localhost:44357";
-            options.ClientId = "PostmanTest";
-            options.ResponseType = "code";
-            options.Scope.Add("openid");
-            options.Scope.Add("profile");
-            options.SaveTokens = true;
-        });
-    services.AddAuthentication()
-    .AddGoogle(options =>
+    .AddCookie("Cookie")
+    .AddJwtBearer("JwtBearerIdentityApi", options =>
+    {
+        options.Authority = "https://localhost:44346"; // IdentityServer URL
+        options.Audience = "identityApi"; // API resource name
+    })
+    .AddJwtBearer("JwtBearerIdentity", options =>
+    {
+        options.Authority = "https://localhost:44357";
+        options.Audience = "Identity";
+    })
+    .AddOpenIdConnect("oidc", options =>
+    {
+        options.Authority = "https://localhost:44357";
+        options.ClientId = "PostmanTest";
+        options.ResponseType = "code";
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.SaveTokens = true;
+    })
+    .AddGoogle("Google", options =>
     {
         options.ClientId = "768772401068-fho9ccfocp70quikb2p167jj0u9jvqjh.apps.googleusercontent.com";
         options.ClientSecret = "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";
@@ -145,7 +148,11 @@ builder.Host.ConfigureServices((host, services) =>
             policy.RequireAuthenticatedUser();
             policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
         });
-
+        options.AddPolicy("RequireValidToken", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim("scope", "identityApi");
+        });
     });
 
 
