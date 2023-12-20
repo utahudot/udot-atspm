@@ -9,23 +9,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Input;
+using System.Reflection.Metadata;
 
 namespace ATSPM.Domain.BaseClasses
 {
-    public abstract class ExectuableServiceWithProgressBase<T1, T2, Tp> : ExecutableServiceBase<T1, T2>, IExecutableServiceWithProgress<T1, T2, Tp>
+
+    /// <inheritdoc cref="IExecutableServiceWithProgress{Tin, Tout, Tp}"/>
+    public abstract class ExecutableServiceWithProgressBase<Tin, Tout, Tp> : ExecutableServiceBase<Tin, Tout>, IExecutableServiceWithProgress<Tin, Tout, Tp>
     {
-        /// <summary>
-        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-        /// </summary>
-        public ExectuableServiceWithProgressBase(bool initialize = false) : base(initialize) { }
+        /// <inheritdoc/>
+        public ExecutableServiceWithProgressBase(bool initialize = false) : base(initialize) { }
 
         #region IExecutableServiceWithProgress
 
         ///<inheritdoc/>
-        public abstract Task<T2> ExecuteAsync(T1 parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+        public abstract Task<Tout> ExecuteAsync(Tin parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
 
         ///<inheritdoc/>
-        public override async Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default)
+        public override async Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default)
         {
             return await ExecuteAsync(parameter, cancelToken).ConfigureAwait(false);
         }
@@ -33,11 +34,10 @@ namespace ATSPM.Domain.BaseClasses
         #endregion
     }
 
-    public abstract class ExecutableServiceBase<T1, T2> : ServiceObjectBase, IExecutableService<T1, T2>
+    /// <inheritdoc cref="IExecutableService{Tin, Tout}"/>
+    public abstract class ExecutableServiceBase<Tin, Tout> : ServiceObjectBase, IExecutableService<Tin, Tout>
     {
-        /// <summary>
-        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-        /// </summary>
+        /// <inheritdoc/>
         public ExecutableServiceBase(bool initialize = false) : base(initialize) { }
 
         #region IExecuteAsync
@@ -46,15 +46,15 @@ namespace ATSPM.Domain.BaseClasses
         public event EventHandler CanExecuteChanged;
 
         /// <inheritdoc/>
-        public virtual bool CanExecute(T1 parameter) => true;
+        public virtual bool CanExecute(Tin parameter) => IsInitialized;
 
         /// <inheritdoc/>
-        public abstract Task<T2> ExecuteAsync(T1 parameter, CancellationToken cancelToken = default);
+        public abstract Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default);
 
         /// <inheritdoc/>
         Task IExecuteAsync.ExecuteAsync(object parameter)
         {
-            if (parameter is T1 p)
+            if (parameter is Tin p)
                 return Task.Run(() => ExecuteAsync(p, default));
             return default;
         }
@@ -62,7 +62,7 @@ namespace ATSPM.Domain.BaseClasses
         /// <inheritdoc/>
         bool ICommand.CanExecute(object parameter)
         {
-            if (parameter is T1 p)
+            if (parameter is Tin p)
                 return CanExecute(p);
             return default;
         }
@@ -70,27 +70,26 @@ namespace ATSPM.Domain.BaseClasses
         /// <inheritdoc/>
         void ICommand.Execute(object parameter)
         {
-            if (parameter is T1 p)
+            if (parameter is Tin p)
                 Task.Run(() => ExecuteAsync(p, default));
         }
 
         #endregion
     }
 
-    public abstract class ExecutableServiceWithProgressAsyncBase<T1, T2, Tp> : ExecutableServiceAsyncBase<T1, T2>, IExecutableServiceWithProgressAsync<T1, T2, Tp>
+    /// <inheritdoc cref="IExecutableServiceWithProgressAsync{Tin, Tout, Tp}"/>
+    public abstract class ExecutableServiceWithProgressAsyncBase<Tin, Tout, Tp> : ExecutableServiceAsyncBase<Tin, Tout>, IExecutableServiceWithProgressAsync<Tin, Tout, Tp>
     {
-        /// <summary>
-        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-        /// </summary>
+        /// <inheritdoc/>
         public ExecutableServiceWithProgressAsyncBase(bool initialize = false) : base(initialize) { }
 
         #region IExecutableServiceWithProgress
 
         ///<inheritdoc/>
-        public abstract IAsyncEnumerable<T2> Execute(T1 parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<Tout> Execute(Tin parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
 
         ///<inheritdoc/>
-        public override async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<Tout> Execute(Tin parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
             {
@@ -101,11 +100,10 @@ namespace ATSPM.Domain.BaseClasses
         #endregion
     }
 
-    public abstract class ExecutableServiceAsyncBase<T1, T2> : ServiceObjectBase, IExecutableServiceAsync<T1, T2>
+    /// <inheritdoc cref="IExecutableServiceAsync{Tin, Tout}"/>
+    public abstract class ExecutableServiceAsyncBase<Tin, Tout> : ServiceObjectBase, IExecutableServiceAsync<Tin, Tout>
     {
-        /// <summary>
-        /// Instantiate new service and calls <see cref="ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-        /// </summary>
+        /// <inheritdoc/>
         public ExecutableServiceAsyncBase(bool initialize = false) : base(initialize) { }
 
         #region IExecuteAsync
@@ -114,15 +112,15 @@ namespace ATSPM.Domain.BaseClasses
         public event EventHandler CanExecuteChanged;
 
         /// <inheritdoc/>
-        public virtual bool CanExecute(T1 parameter) => true;
+        public virtual bool CanExecute(Tin parameter) => IsInitialized;
 
         /// <inheritdoc/>
-        public abstract IAsyncEnumerable<T2> Execute(T1 parameter, CancellationToken cancelToken = default);
+        public abstract IAsyncEnumerable<Tout> Execute(Tin parameter, CancellationToken cancelToken = default);
 
         /// <inheritdoc/>
         bool ICommand.CanExecute(object parameter)
         {
-            if (parameter is T1 p)
+            if (parameter is Tin p)
                 return CanExecute(p);
             return false;
         }
@@ -130,14 +128,14 @@ namespace ATSPM.Domain.BaseClasses
         /// <inheritdoc/>
         void ICommand.Execute(object parameter)
         {
-            if (parameter is T1 p)
+            if (parameter is Tin p)
                 Task.Run(() => Execute(p, default));
         }
 
         #endregion
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IService"/>
     public abstract class ServiceObjectBase : ObservableObjectBase, IService
     {
         /// <summary>
@@ -155,10 +153,12 @@ namespace ATSPM.Domain.BaseClasses
         /// Initialize service
         /// </summary>
         /// <remarks>Constructor calls <see cref="BeginInit"/> and initializes on instantiation.</remarks>
-        public virtual void Initialize()
+        public virtual Task Initialize()
         {
             //initialize complete
-            EndInit();
+            //EndInit();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -187,10 +187,10 @@ namespace ATSPM.Domain.BaseClasses
 
         #region ISupportInitializeNotification
 
+        ///<inheritdoc/>
         public event EventHandler Initialized;
 
         private bool _isInitialized;
-
 
         //[Newtonsoft.Json.JsonIgnore]
         ///<inheritdoc/>
@@ -212,8 +212,8 @@ namespace ATSPM.Domain.BaseClasses
         ///<inheritdoc/>
         public void BeginInit()
         {
-            if (IsInitialized) { IsInitialized = false; }
-            else { Initialize(); }
+            IsInitialized = false;
+            Task.Run(() => Initialize().ContinueWith(t => EndInit()));
         }
 
         ///<inheritdoc/>
@@ -230,7 +230,7 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IDisposable
 
-        private bool disposedValue;
+        protected bool disposedValue;
 
         ///<inheritdoc/>
         public void Dispose()
@@ -238,26 +238,68 @@ namespace ATSPM.Domain.BaseClasses
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+
+            //show that the service is not Initialized
+            IsInitialized = false;
         }
 
         /// <summary>
         /// Used for IDisposable Pattern
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly or indirectly by a user's code.
+        /// Managed and unmanaged resources can be disposed.
+        /// If disposing equals false, the method has been called by the runtime from inside the finalizer and you should not reference other objects.
+        /// Only unmanaged resources can be disposed.
         /// </summary>
         /// <param name="disposing">Flag for keeping track of disposed state</param>
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
+            // Check to see if Dispose has already been called.
             if (!disposedValue)
             {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
                 if (disposing)
                 {
-                    // // TODO: dispose managed state (managed objects)
+                    // Dispose managed resources.
+                    DisposeManagedCode();
                 }
 
-                // // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // // TODO: set large fields to null
-                IsInitialized = false;
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                // If disposing is false,
+                // only the following code is executed.
+                DisposeUnManagedCode();
+
+                // Note disposing has been done.
                 disposedValue = true;
             }
+        }
+
+        /// <summary>
+        /// Custom implementation of the IDisposable Pattern.
+        /// Override to dispose of Managed Code.
+        /// </summary>
+        protected virtual void DisposeManagedCode() { }
+
+        /// <summary>
+        /// Custom implementation of the IDisposable Pattern.
+        /// Override to dispose of Un-Managed Code.
+        /// </summary>
+        protected virtual void DisposeUnManagedCode() { }
+
+        /// <summary>
+        /// Use C# finalizer syntax for finalization code.
+        /// This finalizer will run only if the Dispose method does not get called.
+        /// It gives your base class the opportunity to finalize.
+        /// Do not provide finalizer in types derived from this class.
+        /// </summary>
+        ~ServiceObjectBase()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
         }
 
         #endregion
@@ -271,14 +313,5 @@ namespace ATSPM.Domain.BaseClasses
 
             Initialized?.Invoke(this, new EventArgs());
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~ServiceObjectBase()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
-        
     }
 }
