@@ -47,7 +47,7 @@ namespace ATSPM.Domain.Workflows
         public BufferBlock<T2> Output { get; set; }
 
         /// <inheritdoc/>
-        public override void Initialize()
+        public override Task Initialize()
         {
             Steps = new();
 
@@ -62,7 +62,9 @@ namespace ATSPM.Domain.Workflows
 
             LinkSteps();
 
-            base.Initialize();
+            //base.Initialize();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
