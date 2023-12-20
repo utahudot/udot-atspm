@@ -61,7 +61,7 @@ namespace ATSPM.ReportApi.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new ControllerEventLog { LocationIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new ControllerEventLog { SignalIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -115,7 +115,7 @@ namespace ATSPM.ReportApi.Business.Common
                     Timestamp = startDate,
                     EventCode = 131,
                     EventParam = 0,
-                    LocationIdentifier = locationId
+                    SignalIdentifier = locationId
                 };
                 planEvents.Insert(0, firstPlanEvent);
             }
