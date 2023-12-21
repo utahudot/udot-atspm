@@ -47,7 +47,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             var stuff = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
             {
-                SignalIdentifier = approach.Signal.SignalIdentifier,
+                LocationIdentifier = approach.Location.LocationIdentifier,
                 PhaseNumber = phase,
             };
 

@@ -1,15 +1,10 @@
-﻿using ATSPM.Data.Interfaces;
-using ATSPM.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using ATSPM.Domain.Common;
 
 #nullable disable
 
 namespace ATSPM.Data.Models
 {
-    public class ControllerEventLog : ISignalLayer, ITimestamp
+    public class ControllerEventLog : ITimestamp
     {
         public string SignalIdentifier { get; set; }
         public DateTime Timestamp { get; set; }

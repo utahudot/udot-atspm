@@ -14,12 +14,12 @@ namespace ATSPM.EventLogUtility.Commands
             this.AddCommand(AggregationCommand);
             this.AddCommand(LogCommand);
             this.AddCommand(ExtractCommand);
-            this.AddCommand(SignalInfoCommand);
+            this.AddCommand(LocationInfoCommand);
         }
 
         public AggregationCommand AggregationCommand { get; set; } = new AggregationCommand();
         public LogConsoleCommand LogCommand { get; set; } = new LogConsoleCommand();
         public ExtractConsoleCommand ExtractCommand { get; set; } = new ExtractConsoleCommand();
-        public SignalInfoCommand SignalInfoCommand { get; set; } = new SignalInfoCommand();
+        public LocationInfoCommand LocationInfoCommand { get; set; } = new LocationInfoCommand();
     }
 }

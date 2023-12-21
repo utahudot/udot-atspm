@@ -19,7 +19,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var p = input.Item1.Item1;
             var o = input.Item2.Item1;
 
-            if (p.DirectionTypeId == new OpposingDirection(o.DirectionTypeId) && p.Signal.SignalIdentifier == o.Signal.SignalIdentifier)
+            if (p.DirectionTypeId == new OpposingDirection(o.DirectionTypeId) && p.Location.LocationIdentifier == o.Location.LocationIdentifier)
             {
                 var start1 = input.Item1.Item2.Start;
                 var start2 = input.Item2.Item2.Start;
@@ -30,12 +30,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
                 var result = new TotalVolumes(volumes, TimeSpan.FromMinutes(15))
                 {
-                    SignalIdentifier = p.Signal.SignalIdentifier,
+                    LocationIdentifier = p.Location.LocationIdentifier,
                 };
 
                 result.Segments.ToList().ForEach(f =>
                 {
-                    f.SignalIdentifier = p.Signal.SignalIdentifier;
+                    f.LocationIdentifier = p.Location.LocationIdentifier;
                     f.Primary = input.Item1.Item2.Segments.FirstOrDefault(d => f.InRange(d));
                     f.Opposing = input.Item2.Item2.Segments.FirstOrDefault(d => f.InRange(d));
                 });

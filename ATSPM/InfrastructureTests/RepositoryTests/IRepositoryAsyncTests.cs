@@ -20,20 +20,20 @@ namespace InfrastructureTests.RepositoryTests
         //const string connectionString = "Data Source=InMemorySample;Mode=Memory;Cache=Shared";
 
         private readonly ITestOutputHelper _output;
-        private ILogger<SignalEFRepository> _nullLogger;
+        private ILogger<LocationEFRepository> _nullLogger;
         private ConfigContext _db;
-        private IAsyncRepository<Signal> _repo;
+        private IAsyncRepository<Location> _repo;
 
         public IAsyncRepositoryTests(ITestOutputHelper output)
         {
             _output = output;
-            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<SignalEFRepository>();
+            _nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<LocationEFRepository>();
 
             _connection = new SqliteConnection("Datasource=:memory:");
             _connection.Open();
             _db = new MOEContext(new DbContextOptionsBuilder<MOEContext>().EnableSensitiveDataLogging().UseSqlite(_connection).Options);
 
-            _repo = new SignalEFRepository(_db, _nullLogger);
+            _repo = new LocationEFRepository(_db, _nullLogger);
 
             _db.Database.EnsureDeleted();
 
@@ -43,12 +43,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public async void IAsyncRepositoryAddAsync()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -60,16 +60,16 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            await _repo.AddAsync(signal);
+            await _repo.AddAsync(Location);
 
-            var collection = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var collection = await _repo.GetListAsync(i => i.locationId == Location.locationId);
 
             Assert.Collection(collection,
-                new Action<Signal>[]
+                new Action<Location>[]
                 {
                     i =>
                     {
-                        Assert.Equal(expected: signal.PrimaryName, actual: i.PrimaryName);
+                        Assert.Equal(expected: Location.PrimaryName, actual: i.PrimaryName);
                     }
                 });
         }
@@ -77,13 +77,13 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public async void IAsyncRepositoryAddRangeAsync()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
 
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -98,10 +98,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            await _repo.AddRangeAsync(signals);
+            await _repo.AddRangeAsync(Locations);
 
             var collection = await _repo.GetListAsync(i => true);
 
@@ -116,12 +116,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public async void IAsyncRepositoryRemoveAsync()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -133,27 +133,27 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            await _repo.AddAsync(signal);
+            await _repo.AddAsync(Location);
 
-            var actual = await _repo.GetListAsync(i => i.SignalId == signal.SignalId);
+            var actual = await _repo.GetListAsync(i => i.locationId == Location.locationId);
 
-            Assert.Equal(expected: signal.SignalId, actual: actual.First().SignalId);
+            Assert.Equal(expected: Location.locationId, actual: actual.First().locationId);
 
-            _repo.Remove(signal);
+            _repo.Remove(Location);
 
-            Assert.True(_repo.GetList(i => i.SignalId == signal.SignalId).Count() == 0);
+            Assert.True(_repo.GetList(i => i.locationId == Location.locationId).Count() == 0);
         }
 
         [Fact]
         public async void IAsyncRepositoryRemoveRangeAsync()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
 
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -168,10 +168,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            await _repo.AddRangeAsync(signals);
+            await _repo.AddRangeAsync(Locations);
 
             var collection = await _repo.GetListAsync(i => true);
 
@@ -190,13 +190,13 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public async void IAsyncRepositoryGetListAsyncFromExpression()
         {
-            List<Signal> signals = new List<Signal>();
+            List<Location> Locations = new List<Location>();
 
             for (int i = 1; i <= 5; i++)
             {
-                var signal = new Signal()
+                var Location = new Location()
                 {
-                    SignalId = i.ToString(),
+                    locationId = i.ToString(),
                     Latitude = " ",
                     Longitude = " ",
                     PrimaryName = $"name:{i}",
@@ -211,10 +211,10 @@ namespace InfrastructureTests.RepositoryTests
                     Start = default
                 };
 
-                signals.Add(signal);
+                Locations.Add(Location);
             }
 
-            _repo.AddRange(signals);
+            _repo.AddRange(Locations);
 
             var list = await _repo.GetListAsync(i => true);
 
@@ -230,12 +230,12 @@ namespace InfrastructureTests.RepositoryTests
         [Fact]
         public async void IAsyncRepositoryLookupAsync()
         {
-            var signal = new Signal()
+            var Location = new Location()
             {
-                SignalId = "1234",
+                locationId = "1234",
                 Latitude = " ",
                 Longitude = " ",
-                PrimaryName = "Test Signal",
+                PrimaryName = "Test Location",
                 SecondaryName = " ",
                 Ipaddress = " ",
                 RegionId = 1,
@@ -247,11 +247,11 @@ namespace InfrastructureTests.RepositoryTests
                 Start = default
             };
 
-            await _repo.AddAsync(signal);
+            await _repo.AddAsync(Location);
 
-            var result = await _repo.LookupAsync(signal);
+            var result = await _repo.LookupAsync(Location);
 
-            Assert.Equal(signal.SignalId, result.SignalId);
+            Assert.Equal(Location.locationId, result.locationId);
         }
 
         public void Dispose()

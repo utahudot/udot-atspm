@@ -2,7 +2,6 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +55,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// 
     /// </list>
     /// </summary>
-    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach,IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
+    public class CreateRedToRedCycles : TransformProcessStepBase<Tuple<Approach, IEnumerable<ControllerEventLog>>, Tuple<Approach, IEnumerable<RedToRedCycle>>>
     {
         /// <inheritdoc/>
         public CreateRedToRedCycles(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
@@ -66,7 +65,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             //TODO: get the correct phase from approach here
             var result = Tuple.Create(input.Item1, input.Item2?
-                .Where(w => w.SignalIdentifier == input?.Item1?.Signal.SignalIdentifier)
+                .Where(w => w.SignalIdentifier == input?.Item1?.Location.LocationIdentifier)
                 .Where(w => w.EventParam == input?.Item1?.ProtectedPhaseNumber)
                 .Where(w => w.EventCode == (int)DataLoggerEnum.PhaseBeginGreen || w.EventCode == (int)DataLoggerEnum.PhaseBeginYellowChange || w.EventCode == (int)DataLoggerEnum.PhaseEndYellowChange)
                 .OrderBy(o => o.Timestamp)
@@ -82,7 +81,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                     GreenEvent = m.ElementAt(1).Timestamp,
                     YellowEvent = m.ElementAt(2).Timestamp,
                     PhaseNumber = p,
-                    SignalIdentifier = s
+                    LocationIdentifier = s
                 }))
                 .SelectMany(m => m))
                 .SelectMany(m => m)) ?? Tuple.Create<Approach, IEnumerable<RedToRedCycle>>(null, new List<RedToRedCycle>());

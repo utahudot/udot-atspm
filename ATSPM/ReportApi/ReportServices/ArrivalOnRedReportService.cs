@@ -15,54 +15,54 @@ namespace ATSPM.ReportApi.ReportServices
     public class ArrivalOnRedReportService : ReportServiceBase<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>
     {
         private readonly ArrivalOnRedService arrivalOnRedService;
-        private readonly SignalPhaseService signalPhaseService;
-        private readonly ISignalRepository signalRepository;
+        private readonly LocationPhaseService LocationPhaseService;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
 
         /// <inheritdoc/>
         public ArrivalOnRedReportService(
             ArrivalOnRedService arrivalOnRedService,
-            SignalPhaseService signalPhaseService,
+            LocationPhaseService LocationPhaseService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService
             )
         {
             this.arrivalOnRedService = arrivalOnRedService;
-            this.signalPhaseService = signalPhaseService;
+            this.LocationPhaseService = LocationPhaseService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<ArrivalOnRedResult>> ExecuteAsync(ArrivalOnRedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
-                //return BadRequest("Signal not found");
+                //return BadRequest("Location not found");
 
-                return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("Signal not found"));
+                return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
+                //return Ok("No Controller Event Logs found for Location");
 
-                return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ArrivalOnRedResult>>();
             foreach (var phase in phaseDetails)
             {
                 tasks.Add(
-                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, signal.SignalDescription())
+                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription())
                 );
             }
 
@@ -84,9 +84,9 @@ namespace ATSPM.ReportApi.ReportServices
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
-            string signalDescription)
+            string LocationDescription)
         {
-            var signalPhase = await signalPhaseService.GetSignalPhaseData(
+            var LocationPhase = await LocationPhaseService.GetLocationPhaseData(
                 phaseDetail,
                 options.Start,
                 options.End,
@@ -96,12 +96,12 @@ namespace ATSPM.ReportApi.ReportServices
                 planEvents,
                 false
                 );
-            if (signalPhase == null)
+            if (LocationPhase == null)
             {
                 return null;
             }
-            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, signalPhase, phaseDetail.Approach);
-            viewModel.SignalDescription = signalDescription;
+            ArrivalOnRedResult viewModel = arrivalOnRedService.GetChartData(options, LocationPhase, phaseDetail.Approach);
+            viewModel.LocationDescription = LocationDescription;
             return viewModel;
         }
     }

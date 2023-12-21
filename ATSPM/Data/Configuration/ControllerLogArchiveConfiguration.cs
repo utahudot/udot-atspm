@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ATSPM.Data.Configuration
 {
@@ -13,7 +12,7 @@ namespace ATSPM.Data.Configuration
         public void Configure(EntityTypeBuilder<ControllerLogArchive> builder)
         {
             //builder.ToTable("Controller_Log_Archive");
-            
+
             builder.HasComment("Compressed Event Log Data");
 
             builder.HasKey(e => new { e.SignalIdentifier, e.ArchiveDate });

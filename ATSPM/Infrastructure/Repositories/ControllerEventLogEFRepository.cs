@@ -17,21 +17,21 @@ namespace ATSPM.Infrastructure.Repositories
 
         #region IControllerEventLogRepository
 
-        public IReadOnlyList<ControllerEventLog> GetSignalEventsBetweenDates(string signalId, DateTime startTime, DateTime endTime)
+        public IReadOnlyList<ControllerEventLog> GetLocationEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new ControllerLogDateRangeSpecification(signalId, startTime, endTime))
+                .FromSpecification(new ControllerLogDateRangeSpecification(locationId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.LogData)
                 .Select(s => new ControllerEventLog()
                 {
-                    SignalIdentifier = signalId,
+                    SignalIdentifier = locationId,
                     Timestamp = s.Timestamp,
                     EventCode = s.EventCode,
                     EventParam = s.EventParam
                 })
-                .FromSpecification(new ControllerLogDateTimeRangeSpecification(signalId, startTime, endTime))
+                .FromSpecification(new ControllerLogDateTimeRangeSpecification(locationId, startTime, endTime))
                 .ToList();
 
             return result;

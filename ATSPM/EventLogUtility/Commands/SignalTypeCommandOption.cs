@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public class SignalTypeCommandOption : Option<IEnumerable<int>>
+    public class LocationTypeCommandOption : Option<IEnumerable<int>>
     {
-        public SignalTypeCommandOption() : base("--controllertype", "List of signal controller types to include")
+        public LocationTypeCommandOption() : base("--controllertype", "List of Location controller types to include")
         {
             AllowMultipleArgumentsPerToken = true;
             AddAlias("-t");

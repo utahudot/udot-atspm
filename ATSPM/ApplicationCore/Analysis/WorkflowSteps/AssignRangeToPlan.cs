@@ -22,9 +22,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             if (input.Item1.Count == 0)
             {
-                plans = input.Item2.Cast<ISignalLayer>().GroupBy(g => g.SignalIdentifier, (s, i) => new T()
+                plans = input.Item2.Cast<ILocationLayer>().GroupBy(g => g.LocationIdentifier, (s, i) => new T()
                 {
-                    SignalIdentifier = s,
+                    LocationIdentifier = s,
                     Start = i.Cast<IStartEndRange>().Min(m => m.Start),
                     End = i.Cast<IStartEndRange>().Max(m => m.End)
                 }).ToList();
