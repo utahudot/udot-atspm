@@ -94,12 +94,12 @@ namespace ATSPM.Application.Analysis.Workflows
 
     //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
     //    {
-    //        var result = items.GroupBy(g => g.SignalIdentifier, (signal, l1) =>
+    //        var result = items.GroupBy(g => g.locationIdentifier, (Location, l1) =>
     //        l1.GroupBy(g => g.EventParam, (preempt, l2) =>
     //        l2.TimeSpanFromConsecutiveCodes(first, second)
     //        .Select(s => new T()
     //        {
-    //            SignalIdentifier = signal,
+    //            locationIdentifier = Location,
     //            PreemptNumber = preempt,
     //            Start = s.Item1[0].Timestamp,
     //            End = s.Item1[1].Timestamp,
@@ -118,7 +118,7 @@ namespace ATSPM.Application.Analysis.Workflows
         protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input
-                .GroupBy(g => g.SignalIdentifier, (signal, l1) => l1
+                .GroupBy(g => g.SignalIdentifier, (Location, l1) => l1
                 .GroupBy(g => g.EventParam, (preempt, l2) =>
                 CreatePreemptCycle(l2.OrderBy(o => o.Timestamp).ToList())))
                 .SelectMany(m => m)

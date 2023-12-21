@@ -15,7 +15,7 @@
     [System.Flags]
     public enum WatchDogComponentType
     {
-        Signal,
+        Location,
         Approach,
         Detector
     }

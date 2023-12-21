@@ -13,26 +13,26 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows.Input;
 
-namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
+namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 {
-    public abstract class SignalControllerLoggerBase : ServiceObjectBase, ISignalControllerLoggerService
+    public abstract class LocationControllerLoggerBase : ServiceObjectBase, ILocationControllerLoggerService
     {
         public event EventHandler CanExecuteChanged;
 
-        protected SignalControllerLoggerLogMessages logMessages;
+        protected LocationControllerLoggerLogMessages logMessages;
         protected CancellationToken token;
 
         //TODO: pass in logger class instead
-        public SignalControllerLoggerBase(ILogger log)
+        public LocationControllerLoggerBase(ILogger log)
         {
-            logMessages = new SignalControllerLoggerLogMessages(log);
+            logMessages = new LocationControllerLoggerLogMessages(log);
         }
 
         public List<IDataflowBlock> Steps { get; set; } = new();
 
         #region IExecuteWithProgress
 
-        public virtual async Task<bool> ExecuteAsync(IList<Signal> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public virtual async Task<bool> ExecuteAsync(IList<Location> parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             token = cancelToken;
 
@@ -46,23 +46,23 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 
                 logMessages.LoggerStartedMessage(DateTime.Now, parameter.Count);
 
-                var signalSender = new BufferBlock<Signal>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Signal Buffer" });
+                var LocationSender = new BufferBlock<Location>(new DataflowBlockOptions() { CancellationToken = cancelToken, NameFormat = "Location Buffer" });
                 
-                foreach (ITargetBlock<Signal> step in Steps.Where(f => f is ITargetBlock<Signal>))
+                foreach (ITargetBlock<Location> step in Steps.Where(f => f is ITargetBlock<Location>))
                 {
-                    signalSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
+                    LocationSender.LinkTo(step, new DataflowLinkOptions() { PropagateCompletion = true });
                 }
 
-                Steps.Add(signalSender);
+                Steps.Add(LocationSender);
 
                 try
                 {
-                    foreach (var signal in parameter)
+                    foreach (var Location in parameter)
                     {
-                        await signalSender.SendAsync(signal);
+                        await LocationSender.SendAsync(Location);
                     }
 
-                    signalSender.Complete();
+                    LocationSender.Complete();
 
                     await Task.WhenAll(Steps.Select(s => s.Completion));
 
@@ -70,7 +70,7 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
                 }
                 catch (Exception e)
                 {
-                    logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Signal Controller Logger Service", e));
+                    logMessages.LoggerExecutionException(new ControllerLoggerExecutionException(this, "Exception running Location Controller Logger Service", e));
                 }
                 finally
                 {
@@ -86,14 +86,14 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
             }
         }
 
-        public virtual bool CanExecute(IList<Signal> parameter)
+        public virtual bool CanExecute(IList<Location> parameter)
         {
             return this.IsInitialized && parameter?.Count > 0;
         }
 
-        public async Task<bool> ExecuteAsync(IList<Signal> parameter, CancellationToken cancelToken = default)
+        public async Task<bool> ExecuteAsync(IList<Location> parameter, CancellationToken cancelToken = default)
         {
-            if (parameter is IList<Signal> p)
+            if (parameter is IList<Location> p)
                 return await ExecuteAsync(p, default, cancelToken);
             else
                 return false;
@@ -101,20 +101,20 @@ namespace ATSPM.Infrastructure.Services.SignalControllerLoggers
 
         public async Task ExecuteAsync(object parameter)
         {
-            if (parameter is IList<Signal> p)
+            if (parameter is IList<Location> p)
                 await ExecuteAsync(p, default, default);
         }
 
         bool ICommand.CanExecute(object parameter)
         {
-            if (parameter is IList<Signal> p)
+            if (parameter is IList<Location> p)
                 return CanExecute(p);
             return false;
         }
 
         void ICommand.Execute(object parameter)
         {
-            if (parameter is IList<Signal> p)
+            if (parameter is IList<Location> p)
                 Task.Run(() => ExecuteAsync(p, default, default));
         }
 

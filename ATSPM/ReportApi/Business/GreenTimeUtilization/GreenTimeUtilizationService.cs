@@ -32,8 +32,8 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             List<ControllerEventLog> controllerEventLogs
             ) // the plans/splits input is still TBD
         {
-            //var signal = signalRepository.GetLatestVersionOfSignal(options.SignalIdentifier, options.Start);
-            //var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            //var Location = LocationRepository.GetLatestVersionOfLocation(options.locationIdentifier, options.Start);
+            //var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.locationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
 
             var isPermissivePhase = phaseDetail.PhaseNumber != phaseDetail.Approach.ProtectedPhaseNumber;
@@ -70,7 +70,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
 
             //get a list of detections for that phase
             //var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
-            //var allDetectionEvents = cel.GetSignalEventsByEventCode(options.SignalIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
+            //var allDetectionEvents = cel.GetLocationEventsByEventCode(options.locationIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
             //var detectionEvents = new List<ControllerEventLog>();
             //foreach (var detector in detectorsToUse)
             //{
@@ -173,7 +173,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             }
 
             //get plans
-            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
+            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.locationIdentifier, planEvents);
             var durYellowRed = GetYellowRedTimeSeconds(options, phaseDetail.PhaseNumber, cycleEvents);
             var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)
@@ -185,7 +185,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
 
             GreenTimeUtilizationResult result = new GreenTimeUtilizationResult(
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Signal.SignalIdentifier,
+                phaseDetail.Approach.Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 bins,
@@ -195,7 +195,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 phaseNumberSort
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
-            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             return result;
         }
 
@@ -238,7 +238,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
         //    SPM db = new SPM();
         //    var cel = ControllerEventLogRepositoryFactory.Create(db);
         //    GetEventCodeForPhase(phaseNumber);
-        //    var tempSplitTimes = cel.GetSignalEventsByEventCode(SignalID, analysisplan.StartTime, analysisEnd, splitLengthEventCode)
+        //    var tempSplitTimes = cel.GetLocationEventsByEventCode(locationId, analysisplan.StartTime, analysisEnd, splitLengthEventCode)
         //        .OrderByDescending(e => e.Timestamp).ToList();
         //    int i = 0;
         //    for (i = 0; tempSplitTimes[i].Timestamp < analysisplan.StartTime; i++)

@@ -27,7 +27,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 new RedToRedCycle()
                 {
-                    SignalIdentifier = "1001",
+                    locationIdentifier = "1001",
                     PhaseNumber = 1,
                     Start = DateTime.Parse("4/17/2023 8:00:0.1"),
                     GreenEvent = DateTime.Parse("4/17/2023 8:00:1.1"),
@@ -46,17 +46,17 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                     ProtectedPhaseNumber = 2,
                     DirectionTypeId = DirectionTypes.NB,
                     Mph = 45,
-                    Signal = new Signal()
+                    Location = new Location()
                     {
-                        SignalIdentifier = "1001"
+                        locationIdentifier = "1001"
                     }
                 }
             };
         }
 
         [Fact]
-        [Trait(nameof(CalculateVehicleArrivals), "Compare Signal Pass")]
-        public async void CalculateVehicleArrivalsCompareSignalPassTest()
+        [Trait(nameof(CalculateVehicleArrivals), "Compare Location Pass")]
+        public async void CalculateVehicleArrivalsCompareLocationPassTest()
         {
             var sut = new CalculateVehicleArrivals();
 
@@ -73,12 +73,12 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateVehicleArrivals), "Compare Signal Fail")]
-        public async void CalculateVehicleArrivalsCompareSignalFailTest()
+        [Trait(nameof(CalculateVehicleArrivals), "Compare Location Fail")]
+        public async void CalculateVehicleArrivalsCompareLocationFailTest()
         {
             var sut = new CalculateVehicleArrivals();
 
-            _redCycles[0].SignalIdentifier = "1002";
+            _redCycles[0].locationIdentifier = "1002";
 
             var testEvents = new List<CorrectedDetectorEvent>
             {

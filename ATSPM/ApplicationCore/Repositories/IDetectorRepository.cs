@@ -11,21 +11,21 @@ namespace ATSPM.Application.Repositories
     public interface IDetectorRepository : IAsyncRepository<Detector>
     {
         //TODO: this needs to be moved out of this repo
-        //TODO: Figure out why SignalId isn't being used in the implmentation
+        //TODO: Figure out why LocationId isn't being used in the implmentation
         /// <summary>
         /// Gets a list of <see cref="Detector"/> that match <paramref name="directionType"/> and <paramref name="movementTypeIds"/>
         /// </summary>
-        /// <param name="signalId">Don't know why but this isn't being used???</param>
+        /// <param name="locationId">Don't know why but this isn't being used???</param>
         /// <param name="directionType">Direction type to match to <see cref="Detector"/></param>
         /// <param name="movementTypeIds">Movement type to match to <see cref="Detector"/></param>
         /// <returns></returns>
-        IReadOnlyList<Detector> GetDetectorsBySignalIdMovementTypeIdDirectionTypeId(string signalId, DirectionTypes directionType, List<MovementTypes> movementTypeIds);
+        IReadOnlyList<Detector> GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(string locationId, DirectionTypes directionType, List<MovementTypes> movementTypeIds);
 
         //TODO: this needs to be moved out of this repo
         /// <summary>
-        /// Get maximum detector channel from signal controller
+        /// Get maximum detector channel from Location controller
         /// </summary>
-        /// <param name="id">Signal controller id</param>
+        /// <param name="id">Location controller id</param>
         /// <returns></returns>
         int GetMaximumDetectorChannel(int id);
 
@@ -36,7 +36,7 @@ namespace ATSPM.Application.Repositories
         #region Obsolete
 
         //[Obsolete("This method is not used", true)]
-        //IReadOnlyList<Detector> GetDetectorsBySignalIDAndMetricType(string signalId, int metricId);
+        //IReadOnlyList<Detector> GetDetectorsBylocationIdAndMetricType(string locationId, int metricId);
 
         //[Obsolete("User CheckReportAvialbility(Detector detector, int metricId) instead", true)]
         //bool CheckReportAvialbility(string detectorID, int metricId);
@@ -45,7 +45,7 @@ namespace ATSPM.Application.Repositories
         //Detector GetDetectorByDetectorID(string DetectorID);
 
         //[Obsolete("User GetList() instead", true)]
-        //IReadOnlyList<Detector> GetDetectorsBySignalID(string SignalID);
+        //IReadOnlyList<Detector> GetDetectorsBylocationId(string locationId);
 
         //[Obsolete("Use Lookup instead", true)]
         //Detector GetDetectorByID(int ID);

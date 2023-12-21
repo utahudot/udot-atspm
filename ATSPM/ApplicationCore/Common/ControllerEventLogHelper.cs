@@ -1,12 +1,9 @@
 ﻿using ATSPM.Data.Models;
-using Google.Cloud.Diagnostics.Common;
+using ATSPM.Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ATSPM.Domain.Extensions;
 
 namespace ATSPM.Application.Common
 {
@@ -38,7 +35,7 @@ namespace ATSPM.Application.Common
         {
             if (!file.Exists)
                 throw new FileNotFoundException($"{file.Name} does not exist");
-            
+
             return File.ReadAllLines(file.FullName)
                 .IfCondition(() => hasHeaders == true, q => q.Skip(1), q => q)
                 .Select(x => x.Split(','))

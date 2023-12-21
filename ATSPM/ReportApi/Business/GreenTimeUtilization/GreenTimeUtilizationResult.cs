@@ -8,14 +8,14 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
     {
         public GreenTimeUtilizationResult(
             int approachId,
-            string signalIdentifier,
+            string locationIdentifier,
             DateTime start,
             DateTime end,
             List<BarStack> stacks,
             List<DataPointForDouble> avgSplits,
             List<DataPointForDouble> progSplits,
             int phaseNumber,
-            string phaseNumberSort) : base(approachId, signalIdentifier, start, end)
+            string phaseNumberSort) : base(approachId, locationIdentifier, start, end)
         {
             Bins = stacks;
             AvgSplits = avgSplits;

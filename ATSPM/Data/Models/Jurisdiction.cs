@@ -7,7 +7,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Jurisdiction
     /// </summary>
-    public partial class Jurisdiction : AtspmConfigModelBase<int>, IRelatedSignals
+    public partial class Jurisdiction : AtspmConfigModelBase<int>, IRelatedLocations
     {
         /// <summary>
         /// Name of jurisdiction
@@ -32,10 +32,10 @@ namespace ATSPM.Data.Models
 
         public virtual ICollection<UserJurisdiction> UserJurisdictions { get; set; } = new HashSet<UserJurisdiction>();
 
-        #region IRelatedSignals
+        #region IRelatedLocations
 
         /// <inheritdoc/>
-        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         #endregion
 

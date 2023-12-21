@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace ATSPM.EventLogUtility.Commands
 {
-    public class SignalIncludeCommandOption : Option<IEnumerable<string>>
+    public class LocationIncludeCommandOption : Option<IEnumerable<string>>
     {
-        public SignalIncludeCommandOption() : base("--include", "List of signal controller numbers to include")
+        public LocationIncludeCommandOption() : base("--include", "List of Location controller numbers to include")
         {
             AllowMultipleArgumentsPerToken = true;
             AddAlias("-i");

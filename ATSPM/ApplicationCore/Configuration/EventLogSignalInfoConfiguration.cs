@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ATSPM.Application.Configuration
 {
-    public class EventLogSignalInfoConfiguration
+    public class EventLogLocationInfoConfiguration
     {
         public IEnumerable<string> Included { get; set; }
         public IEnumerable<string> Excluded { get; set; }

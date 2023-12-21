@@ -46,7 +46,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
                 fifteenthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.FifteenthPercentile));
             }
             return new ApproachSpeedResult(
-                    detector.Approach.Signal.SignalIdentifier,
+                    detector.Approach.Location.LocationIdentifier,
                     detector.ApproachId,
                     detector.Approach.ProtectedPhaseNumber,
                     detector.Approach.Description,

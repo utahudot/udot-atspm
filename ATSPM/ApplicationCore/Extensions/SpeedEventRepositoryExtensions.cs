@@ -24,7 +24,7 @@ namespace ATSPM.Application.Extensions
         #region Obsolete
 
         [Obsolete("This method isn't currently being used")]
-        public static IReadOnlyList<SpeedEvent> GetSpeedEventsBySignal(this ISpeedEventRepository repo, DateTime startDate, DateTime endDate, Approach approach)
+        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByLocation(this ISpeedEventRepository repo, DateTime startDate, DateTime endDate, Approach approach)
         {
             throw new NotImplementedException();
         }

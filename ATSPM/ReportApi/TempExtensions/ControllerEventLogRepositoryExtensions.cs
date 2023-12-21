@@ -31,7 +31,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 return new List<ControllerEventLog>();
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
-                    approach.Signal.SignalIdentifier,
+                    approach.Location.LocationIdentifier,
                     start,
                     end,
                     eventCodes,
@@ -43,12 +43,12 @@ namespace ATSPM.ReportApi.TempExtensions
 
         public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
            this IControllerEventLogRepository repo,
-           string signalId,
+           string locationId,
            DateTime start,
            DateTime end)
         {
-            var events = repo.GetSignalEventsByEventCode(
-                signalId,
+            var events = repo.GetLocationEventsByEventCode(
+                locationId,
                 start.AddHours(-12),
                 end.AddHours(12),
                 131)

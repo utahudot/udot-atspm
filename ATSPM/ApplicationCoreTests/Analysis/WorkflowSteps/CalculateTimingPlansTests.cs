@@ -31,7 +31,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
@@ -46,14 +46,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         [Fact]
-        [Trait(nameof(CalculateTimingPlansTests), "SignalGrouping")]
-        public async void CalculateTimingPlansSignalGroupingTest()
+        [Trait(nameof(CalculateTimingPlansTests), "LocationGrouping")]
+        public async void CalculateTimingPlansLocationGroupingTest()
         {
             var sut = new CalculateTimingPlans<TestPlan>();
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = s % 2 == 0 ? "1001" : "1002",
+                locationIdentifier = s % 2 == 0 ? "1001" : "1002",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
@@ -74,7 +74,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = s % 2 == 0 ? 1 : 2,
                 Timestamp = DateTime.Now.AddSeconds(s)
@@ -95,7 +95,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 EventCode = s % 2 == 0 ? s : (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
@@ -117,7 +117,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testEvents = Enumerable.Range(1, 10).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = "1001",
+                locationIdentifier = "1001",
                 EventCode = (int)DataLoggerEnum.CoordPatternChange,
                 EventParam = 1,
                 Timestamp = DateTime.Now.AddSeconds(s)
