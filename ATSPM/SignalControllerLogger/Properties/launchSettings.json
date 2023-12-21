@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SignalControllerLogger": {
+    "LocationControllerLogger": {
       "commandName": "Project",
       "environmentVariables": {
         "PUBSUB_EMULATOR_HOST": "localhost:8085",

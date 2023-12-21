@@ -8,7 +8,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
     {
         public TimingAndActuationsForPhaseResult(
             int approachId,
-            string signalId,
+            string locationId,
             DateTime start,
             DateTime end,
             int phaseNumber,
@@ -22,7 +22,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             List<DetectorEventDto> advancePresenceEvents,
             List<DetectorEventDto> stopBarEvents,
             List<DetectorEventDto> laneByLanes,
-            Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, signalId, start, end)
+            Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseOrOverlap = phaseOrOverlap;

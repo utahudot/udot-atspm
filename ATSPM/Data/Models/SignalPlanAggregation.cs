@@ -8,12 +8,12 @@ using System.Collections.Generic;
 namespace ATSPM.Data.Models
 {
     /// <summary>
-    /// Signal plan aggregation
+    /// Location plan aggregation
     /// </summary>
-    public partial class SignalPlanAggregation : ATSPMAggregationBase, ISignalLayer, IPlanLayer
+    public partial class LocationPlanAggregation : ATSPMAggregationBase, ILocationLayer, IPlanLayer
     {
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PlanNumber { get; set; }

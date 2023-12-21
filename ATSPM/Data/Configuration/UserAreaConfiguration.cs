@@ -8,6 +8,8 @@ namespace ATSPM.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<UserArea> builder)
         {
+            builder.HasComment("UserAreas");
+
             builder
             .HasKey(ur => new { ur.UserId, ur.AreaId });
 

@@ -12,7 +12,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
     /// </list>
     /// </summary>
-    public class FilterPriorityData : FilterEventCodeSignalBase
+    public class FilterPriorityData : FilterEventCodeLocationBase
     {
         /// <inheritdoc/>
         public FilterPriorityData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)

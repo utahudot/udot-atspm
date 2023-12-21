@@ -3,17 +3,17 @@ using ATSPM.Data.Models;
 
 namespace ATSPM.ReportApi.TempExtensions
 {
-    public static class SignalExtensions
+    public static class LocationExtensions
     {
-        public static string SignalDescription(this Signal signal)
+        public static string LocationDescription(this Location Location)
         {
-            return $"#{signal.SignalIdentifier} - {signal.PrimaryName} & {signal.SecondaryName}";
+            return $"#{Location.LocationIdentifier} - {Location.PrimaryName} & {Location.SecondaryName}";
         }
 
-        public static List<Approach> GetApproachesForSignalThatSupportMetric(this Signal signal, int metricTypeID)
+        public static List<Approach> GetApproachesForLocationThatSupportMetric(this Location Location, int metricTypeID)
         {
             var approachesForMeticType = new List<Approach>();
-            foreach (var a in signal.Approaches)
+            foreach (var a in Location.Approaches)
                 foreach (var d in a.Detectors)
                     if (d.SupportsMetricType(metricTypeID))
                     {
@@ -25,10 +25,10 @@ namespace ATSPM.ReportApi.TempExtensions
                 .ToList();
         }
 
-        public static List<Detector> GetDetectorsForSignalThatSupportMetric(this Signal signal, int metricTypeID)
+        public static List<Detector> GetDetectorsForLocationThatSupportMetric(this Location Location, int metricTypeID)
         {
             var detectorsForMetricType = new List<Detector>();
-            foreach (var a in signal.Approaches)
+            foreach (var a in Location.Approaches)
                 foreach (var d in a.Detectors)
                     if (d.SupportsMetricType(metricTypeID))
                     {
@@ -39,12 +39,12 @@ namespace ATSPM.ReportApi.TempExtensions
             return detectorsForMetricType;
         }
 
-        public static List<Detector> GetDetectorsForSignal(this Signal signal)
+        public static List<Detector> GetDetectorsForLocation(this Location Location)
         {
             var detectors = new List<Detector>();
-            if (signal.Approaches != null)
+            if (Location.Approaches != null)
             {
-                foreach (var a in signal.Approaches.OrderBy(a => a.ProtectedPhaseNumber))
+                foreach (var a in Location.Approaches.OrderBy(a => a.ProtectedPhaseNumber))
                     foreach (var d in a.Detectors)
                         detectors.Add(d);
             }

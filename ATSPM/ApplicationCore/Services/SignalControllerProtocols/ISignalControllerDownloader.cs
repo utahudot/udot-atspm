@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ATSPM.Application.Services.SignalControllerProtocols
+namespace ATSPM.Application.Services.LocationControllerProtocols
 {
-    public interface ISignalControllerDownloader : IExecuteWithProgress<Signal, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
+    public interface ILocationControllerDownloader : IExecuteWithProgress<Device, IAsyncEnumerable<FileInfo>, ControllerDownloadProgress>, IDisposable
     {
         int ControllerType { get; }
 

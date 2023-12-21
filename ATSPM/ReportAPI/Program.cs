@@ -45,6 +45,8 @@ var builder = WebApplication.CreateBuilder(args);
 //{
 //    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
 //});
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -107,8 +109,7 @@ builder.Host.ConfigureServices((h, s) =>
         });
     });
 
-    s.AddNpgAtspmDbContext(h);
-    //s.AddAtspmDbContext(h);
+    s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
@@ -177,7 +178,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     //Common Services
     s.AddScoped<PlanService>();
-    s.AddScoped<SignalPhaseService>();
+    s.AddScoped<LocationPhaseService>();
     s.AddScoped<CycleService>();
     s.AddScoped<PedPhaseService>();
     s.AddScoped<AnalysisPhaseCollectionService>();

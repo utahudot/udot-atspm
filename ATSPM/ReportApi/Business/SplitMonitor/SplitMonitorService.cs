@@ -9,7 +9,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public AnalysisPhaseCollectionData Phases { get; set; }
-        public string SignalID { get; set; }
+        public string locationId { get; set; }
     }
 
     public class SplitMonitorService
@@ -37,10 +37,10 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             IReadOnlyList<ControllerEventLog> pedEvents,
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Signal signal)
+            Location Location)
         {
             var phaseCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                signal.SignalIdentifier,
+                Location.LocationIdentifier,
                 options.Start,
                 options.End,
                 planEvents,
@@ -48,7 +48,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splitsEvents,
                 pedEvents,
                 terminationEvents,
-                signal,
+                Location,
                 1
                 );
 
@@ -74,7 +74,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
 
-            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.SignalIdentifier, options.Start, options.End)
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Items
@@ -111,7 +111,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                     PercentileSplit = p.PercentileSplit,
 
                 }).ToList(),
-                SignalDescription = phase.Signal.SignalDescription()
+                LocationDescription = phase.Location.LocationDescription()
             };
 
             return splitMonitorResult;
@@ -128,19 +128,21 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
                 if (cycles.Any())
                 {
-                    var planCycleCount = Convert.ToDouble(cycles.Count());
+                    //var planCycleCount = Convert.ToDouble(cycles.Count());
+                    var highCycleCount = plan.HighCycleCount;
+                    double SkippedPhases = plan.HighCycleCount - cycles.Count();
                     var percentile = Convert.ToDouble(options.PercentileSplit) / 100;
                     phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
                     {
                         Start = plan.Start,
                         End = plan.End,
                         PlanNumber = plan.PlanNumber,
-                        PercentSkips = planCycleCount > 0 ? Convert.ToDouble(plan.HighCycleCount - planCycleCount) / plan.HighCycleCount : 0,
-                        PercentGapOuts = planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / planCycleCount : 0,
-                        PercentMaxOuts = GetPercentMaxOuts(cycles, planCycleCount, plan.PlanNumber),
-                        PercentForceOffs = GetPercentForceOffs(cycles, planCycleCount, plan.PlanNumber),
-                        AverageSplit = planCycleCount > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / planCycleCount : 0,
-                        PercentileSplit = GetPercentSplit(planCycleCount, percentile, cycles),
+                        PercentSkips = highCycleCount > 0 ? SkippedPhases / highCycleCount : 0,
+                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / highCycleCount : 0,
+                        PercentMaxOuts = GetPercentMaxOuts(cycles, highCycleCount, plan.PlanNumber),
+                        PercentForceOffs = GetPercentForceOffs(cycles, highCycleCount, plan.PlanNumber),
+                        AverageSplit = cycles.Count > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / cycles.Count : 0,
+                        PercentileSplit = GetPercentSplit(highCycleCount, percentile, cycles),
                         Splits = plan.Splits
                     });
                 }
@@ -148,28 +150,28 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             return phasePlans;
         }
 
-        private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double highCycleCounts, string planNumber)
         {
             if (planNumber != "254")
-                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / planCycleCount : 0;
+                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCounts : 0;
             else
                 return 0;
         }
 
-        private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double highCycleCount, string planNumber)
         {
             if (planNumber == "254")
-                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / planCycleCount : 0;
+                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount : 0;
             else
                 return 0;
         }
 
-        private double GetPercentSplit(double planCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
+        private double GetPercentSplit(double highCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
         {
             if (cycles.Count <= 2)
                 return 0;
 
-            var percentilIndex = percentile * planCycleCount;
+            var percentilIndex = percentile * cycles.Count;
             if (percentilIndex % 1 == 0)
             {
                 return cycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration

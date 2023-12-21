@@ -237,7 +237,7 @@ namespace ATSPM.ReportApi.TempExtensions
             Approach approach)
         {
             return events.GetEvents(
-                approach.Signal.SignalIdentifier,
+                approach.Location.LocationIdentifier,
                 startTime,
                 endTime,
                 approach.GetPedDetectorsFromApproach(),
@@ -246,14 +246,14 @@ namespace ATSPM.ReportApi.TempExtensions
 
         public static IReadOnlyList<ControllerEventLog> GetEvents(
             this IEnumerable<ControllerEventLog> events,
-            string signalIdentifier,
+            string locationIdentifier,
             DateTime startTime,
             DateTime endTime,
             IEnumerable<int> eventParameters,
             IEnumerable<int> eventCodes)
         {
             var result = events
-                .Where(e => e.SignalIdentifier == signalIdentifier
+                .Where(e => e.SignalIdentifier == locationIdentifier
                 && e.Timestamp >= startTime
                 && e.Timestamp < endTime
                 && eventCodes.Contains(e.EventCode)

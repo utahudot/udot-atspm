@@ -28,10 +28,10 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-            i.Where(w => w.SignalIdentifier == input.Item1?.Signal?.SignalIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
+            i.Where(w => w.SignalIdentifier == input.Item1?.Location?.LocationIdentifier && w.EventCode == (int)DataLoggerEnum.DetectorOn)
             .Select(s => new CorrectedDetectorEvent()
             {
-                SignalIdentifier = s.SignalIdentifier,
+                LocationIdentifier = s.SignalIdentifier,
                 PhaseNumber = o.Approach.ProtectedPhaseNumber,
                 Direction = o.Approach.DirectionTypeId,
                 DetectorChannel = o.DetectorChannel,

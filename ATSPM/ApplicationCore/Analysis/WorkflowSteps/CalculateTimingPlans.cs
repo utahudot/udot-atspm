@@ -10,17 +10,17 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class CalculateTimingPlans<T> : TransformProcessStepBase<Tuple<Signal, int, IEnumerable<ControllerEventLog>>, Tuple<Signal, int, IEnumerable<T>>> where T : IPlan, new()
+    public class CalculateTimingPlans<T> : TransformProcessStepBase<Tuple<Location, int, IEnumerable<ControllerEventLog>>, Tuple<Location, int, IEnumerable<T>>> where T : IPlan, new()
     {
         public CalculateTimingPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<Tuple<Signal, int, IEnumerable<T>>> Process(Tuple<Signal, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
+        protected override Task<Tuple<Location, int, IEnumerable<T>>> Process(Tuple<Location, int, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item2, input.Item3
                 .GroupBy(g => g.EventCode, (k, l) => 
                 l.Select((s, i) => new T()
                 {
-                    SignalIdentifier = input.Item1.SignalIdentifier,
+                    LocationIdentifier = input.Item1.LocationIdentifier,
                     PlanNumber = input.Item2,
                     Start = l.ElementAt(i).Timestamp,
                     End = i < l.Count() - 1 ? l.ElementAt(i + 1).Timestamp : default

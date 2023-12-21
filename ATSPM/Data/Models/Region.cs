@@ -7,7 +7,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Region
     /// </summary>
-    public partial class Region : AtspmConfigModelBase<int>, IRelatedSignals
+    public partial class Region : AtspmConfigModelBase<int>, IRelatedLocations
     {
         /// <summary>
         /// Region description
@@ -16,10 +16,10 @@ namespace ATSPM.Data.Models
 
         public virtual ICollection<UserRegion> UserRegions { get; set; } = new HashSet<UserRegion>();
 
-        #region IRelatedSignals
+        #region IRelatedLocations
 
         /// <inheritdoc/>
-        public virtual ICollection<Signal> Signals { get; set; } = new HashSet<Signal>();
+        public virtual ICollection<Location> Locations { get; set; } = new HashSet<Location>();
 
         #endregion
 

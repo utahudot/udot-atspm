@@ -26,14 +26,14 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             var result = Tuple.Create(input.Item1, new Volumes(eventFilter, TimeSpan.FromMinutes(15))
             {
-                SignalIdentifier = input.Item1.Signal.SignalIdentifier,
+                LocationIdentifier = input.Item1.Location.LocationIdentifier,
                 PhaseNumber = input.Item1.ProtectedPhaseNumber,
                 Direction = input.Item1.DirectionTypeId
             });
 
             result.Item2.Segments.ToList().ForEach((f =>
             {
-                f.SignalIdentifier = input.Item1?.Signal.SignalIdentifier;
+                f.LocationIdentifier = input.Item1?.Location.LocationIdentifier;
                 f.PhaseNumber = input.Item1?.ProtectedPhaseNumber ?? 0;
                 f.Direction = input.Item1.DirectionTypeId;
                 f.DetectorEvents.AddRange(eventFilter.Where(w => f.InRange(w)));

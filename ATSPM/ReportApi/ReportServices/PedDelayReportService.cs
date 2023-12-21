@@ -18,7 +18,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PedPhaseService pedPhaseService;
         private readonly CycleService cycleService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
-        private readonly ISignalRepository signalRepository;
+        private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
@@ -27,37 +27,37 @@ namespace ATSPM.ReportApi.ReportServices
             PedPhaseService pedPhaseService,
             CycleService cycleService,
             IControllerEventLogRepository controllerEventLogRepository,
-            ISignalRepository signalRepository,
+            ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
             this.pedDelayService = pedDelayService;
             this.pedPhaseService = pedPhaseService;
             this.cycleService = cycleService;
             this.controllerEventLogRepository = controllerEventLogRepository;
-            this.signalRepository = signalRepository;
+            this.LocationRepository = LocationRepository;
             this.phaseService = phaseService;
         }
 
         /// <inheritdoc/>
         public override async Task<IEnumerable<PedDelayResult>> ExecuteAsync(PedDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var signal = signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
-            if (signal == null)
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            if (Location == null)
             {
-                //return BadRequest("Signal not found");
-                return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("Signal not found"));
+                //return BadRequest("Location not found");
+                return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+                //return Ok("No Controller Event Logs found for Location");
+                return await Task.FromException<IEnumerable<PedDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseDetails = phaseService.GetPhases(signal);
+            var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<PedDelayResult>>();
             foreach (var phase in phaseDetails)
             {
@@ -104,7 +104,7 @@ namespace ATSPM.ReportApi.ReportServices
                 pedPhaseData,
                 cycles
                 );
-            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

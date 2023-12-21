@@ -47,6 +47,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WatchDogTests", "WatchDogTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportApi", "ReportApi\ReportApi.csproj", "{803EAFDD-E25A-4D22-906F-67676BEBDE80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseProviders", "DatabaseProviders", "{EA135084-6954-488E-8E0F-86480ACD9803}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabaseProvider", "SqlDatabaseProvider\SqlDatabaseProvider.csproj", "{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLDatabaseProvider", "PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj", "{66B69A6E-EB9F-49F2-AE89-5018556563F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlDatabaseProvider", "MySqlDatabaseProvider\MySqlDatabaseProvider.csproj", "{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,9 +137,36 @@ Global
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{803EAFDD-E25A-4D22-906F-67676BEBDE80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01F8C3CB-C7F2-49BA-956D-6AB734934C3E} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{66B69A6E-EB9F-49F2-AE89-5018556563F5} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62} = {EA135084-6954-488E-8E0F-86480ACD9803}
+		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B} = {EA135084-6954-488E-8E0F-86480ACD9803}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EEE1679F-AC1D-4DE8-93ED-A8CBCDC6F71F}

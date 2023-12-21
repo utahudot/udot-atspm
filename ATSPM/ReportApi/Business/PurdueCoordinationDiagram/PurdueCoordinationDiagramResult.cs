@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
 public class PurdueCoordinationDiagramResult : ApproachResult
 {
     public PurdueCoordinationDiagramResult(
-        string signalId,
+        string locationId,
         int approachId,
         int phaseNumber,
         string phaseDescription,
@@ -24,7 +24,7 @@ public class PurdueCoordinationDiagramResult : ApproachResult
         ICollection<DataPointForDouble> redSeries,
         ICollection<DataPointForDouble> yellowSeries,
         ICollection<DataPointForDouble> greenSeries,
-        ICollection<DataPointForDouble> detectorEvents) : base(approachId, signalId, start, end)
+        ICollection<DataPointForDouble> detectorEvents) : base(approachId, locationId, start, end)
     {
         PhaseNumber = phaseNumber;
         PhaseDescription = phaseDescription;

@@ -5,19 +5,19 @@ namespace ATSPM.Data.Models
     public class WatchDogLogEvent
     {
         public int Id { get; set; }                     // Unique ID for the event
-        public int SignalId { get; set; }               // ID of the signal that the event is associated with
-        public string SignalIdentifier { get; set; }
+        public int locationId { get; set; }               // ID of the Location that the event is associated with
+        public string locationIdentifier { get; set; }
         public DateTime Timestamp { get; set; }         // Time when the event was logged
-        public WatchDogComponentType ComponentType { get; set; } // 'Signal', 'Approach', or 'Detector'
-        public int ComponentId { get; set; }         // Specific identifier for the component (like signal ID)
+        public WatchDogComponentType ComponentType { get; set; } // 'Location', 'Approach', or 'Detector'
+        public int ComponentId { get; set; }         // Specific identifier for the component (like Location ID)
         public WatchDogIssueType IssueType { get; set; }
         public string Details { get; set; }              // Additional details about the issue
         public int? Phase { get; set; }
 
-        public WatchDogLogEvent(int signalId, string signalIdentifier, DateTime timestamp, WatchDogComponentType componentType, int componentId, WatchDogIssueType issueType, string details, int? phase)
+        public WatchDogLogEvent(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentType componentType, int componentId, WatchDogIssueType issueType, string details, int? phase)
         {
-            SignalId = signalId;
-            SignalIdentifier = signalIdentifier;
+            locationId = locationId;
+            locationIdentifier = locationIdentifier;
             Timestamp = timestamp;
             ComponentType = componentType;
             ComponentId = componentId;
@@ -28,7 +28,7 @@ namespace ATSPM.Data.Models
 
         public override string ToString()
         {
-            return $"[{SignalId}-{Timestamp}] {ComponentType} (ID: {ComponentId}) - {IssueType}: {Details}";
+            return $"[{locationId}-{Timestamp}] {ComponentType} (ID: {ComponentId}) - {IssueType}: {Details}";
         }
 
         public override bool Equals(object obj)
@@ -41,7 +41,7 @@ namespace ATSPM.Data.Models
             WatchDogLogEvent other = (WatchDogLogEvent)obj;
 
             // Compare all properties except for Details
-            return SignalIdentifier == other.SignalIdentifier &&
+            return locationIdentifier == other.locationIdentifier &&
                     Timestamp == other.Timestamp &&
                    ComponentType == other.ComponentType &&
                    ComponentId == other.ComponentId &&
