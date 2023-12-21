@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace ATSPM.Data.Enums
 {
     /// <summary>
-    /// Traffic Signal Hi Resolution Data Logger Enumerations
+    /// Traffic Location Hi Resolution Data Logger Enumerations
     /// <seealso cref="Reference" href="https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1002&context=jtrpdata"/>
     /// </summary>
     public enum DataLoggerEnum
@@ -168,7 +168,7 @@ namespace ATSPM.Data.Enums
 
         ///<summary>
         ///Set when extended pedestrian change interval is requested by pressing the pedestrian push button for two (2) seconds.
-        ///See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Signals and Detectors - Extended Pushbutton Press Features for more details
+        ///See 2009 MUTCD Section 4E.13 - Accessible Pedestrian Locations and Detectors - Extended Pushbutton Press Features for more details
         ///</summary>
         [Display(Name = "Extended Pedestrian Change Interval")]
         ExtendedPedestrianChangeInterval = 25,
@@ -318,7 +318,7 @@ namespace ATSPM.Data.Enums
         ///<summary>
         ///Set when overlap becomes green.
         ///Do not set repeatedly when overlap is flashing green.
-        ///Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual signal head colors
+        ///Note that overlap colors are consistent to the GYR intervals resultant from the controller programming and may not be indicative of actual Location head colors
         ///</summary>
         [Display(Name = "Overlap Begin Green")]
         OverlapBeginGreen = 61,
@@ -631,7 +631,7 @@ namespace ATSPM.Data.Enums
 
         ///<summary>
         ///Split change events shall be populated upon selection of a new coordination pattern
-        ///as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+        ///as well as during a split change to an active pattern via Location Control and Prioritization (SCP),
         ///Adaptive Control System (ACS) Lite or other adaptive control system
         ///</summary>
         [Display(Name = "Split 1 Change")]
@@ -881,7 +881,7 @@ namespace ATSPM.Data.Enums
         AuxSwitchOnOff = 202,
 
         ///<summary>
-        ///Split change events shall be populated upon selection of a new coordination pattern as well as during a split change to an active pattern via Signal Control and Prioritization (SCP),
+        ///Split change events shall be populated upon selection of a new coordination pattern as well as during a split change to an active pattern via Location Control and Prioritization (SCP),
         ///Adaptive Control System (ACS) Lite or other adaptive control system
         ///</summary>
         [Display(Name = "Split 17 Change")]

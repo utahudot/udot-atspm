@@ -1,12 +1,8 @@
-﻿using ATSPM.Data.Interfaces;
-using System;
-using System.Collections.Generic;
-
-#nullable disable
+﻿#nullable disable
 
 namespace ATSPM.Data.Models
 {
-    public partial class ControllerLogArchive : ISignalLayer
+    public partial class ControllerLogArchive
     {
         public string SignalIdentifier { get; set; }
         public DateTime ArchiveDate { get; set; }

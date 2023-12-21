@@ -29,10 +29,10 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             TurningMovementCountsOptions options,
             List<ControllerEventLog> detectorEvents,
             List<Plan> plans,
-            string signalIdentifier,
-            string signalDescription)
+            string locationIdentifier,
+            string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(options.Start, options.End, signalIdentifier, plans);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, locationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
@@ -80,8 +80,8 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
                 .Sum(i => i.DetectorCount);
 
             return new TurningMovementCountsResult(
-                signalIdentifier,
-                signalDescription,
+                locationIdentifier,
+                LocationDescription,
                 options.Start,
                 options.End,
                 directionType.GetDisplayName(),

@@ -18,12 +18,12 @@ namespace ATSPM.Application.Analysis.Common
         int DetectorCount { get; }
     }
 
-    public interface IPhaseVolume : IStartEndRange, ISignalPhaseLayer, IDetectorCount
+    public interface IPhaseVolume : IStartEndRange, ILocationPhaseLayer, IDetectorCount
     {
         DirectionTypes Direction { get; set; }
     }
 
-    public interface IToltalVolume : IStartEndRange, ISignalLayer, IDetectorCount
+    public interface IToltalVolume : IStartEndRange, ILocationLayer, IDetectorCount
     {
 
     }
@@ -35,10 +35,10 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IToltalVolume
 
-        #region ISignalLayer
+        #region ILocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace ATSPM.Application.Analysis.Common
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{SignalIdentifier} --- {Primary} --- {Opposing} --- {Start} - {End} - {DetectorCount}";
+            return $"{LocationIdentifier} --- {Primary} --- {Opposing} --- {Start} - {End} - {DetectorCount}";
         }
     }
 
@@ -69,10 +69,10 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IToltalVolume
 
-        #region ISignalLayer
+        #region ILocationLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         #endregion
 
@@ -85,14 +85,14 @@ namespace ATSPM.Application.Analysis.Common
         #endregion
     }
 
-    //public class Volume : List<IDetectorEvent>, ISignalPhaseLayer, IPhaseVolume
+    //public class Volume : List<IDetectorEvent>, ILocationPhaseLayer, IPhaseVolume
     //{
     //    #region IPhaseVolume
 
-    //    #region ISignalPhaseLayer
+    //    #region ILocationPhaseLayer
 
     //    /// <inheritdoc/>
-    //    public string SignalIdentifier { get; set; }
+    //    public string locationIdentifier { get; set; }
 
     //    /// <inheritdoc/>
     //    public int PhaseNumber { get; set; }
@@ -126,7 +126,7 @@ namespace ATSPM.Application.Analysis.Common
 
     //    public override string ToString()
     //    {
-    //        return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+    //        return $"{locationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
     //    }
     //}
 
@@ -134,10 +134,10 @@ namespace ATSPM.Application.Analysis.Common
     {
         #region IPhaseVolume
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }
@@ -170,20 +170,20 @@ namespace ATSPM.Application.Analysis.Common
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+            return $"{LocationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
         }
     }
 
     //[JsonObject(memberSerialization: MemberSerialization.OptIn)]
-    //public class Volume : StartEndList<CorrectedDetectorEvent>, ISignalPhaseLayer, IPhaseVolume
+    //public class Volume : StartEndList<CorrectedDetectorEvent>, ILocationPhaseLayer, IPhaseVolume
     //{
     //    #region IPhaseVolume
 
-    //    #region ISignalPhaseLayer
+    //    #region ILocationPhaseLayer
 
     //    /// <inheritdoc/>
     //    [JsonProperty]
-    //    public string SignalIdentifier { get; set; }
+    //    public string locationIdentifier { get; set; }
 
     //    /// <inheritdoc/>
     //    [JsonProperty]
@@ -233,7 +233,7 @@ namespace ATSPM.Application.Analysis.Common
 
     //    public override string ToString()
     //    {
-    //        return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+    //        return $"{locationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
     //    }
     //}
 
@@ -250,11 +250,11 @@ namespace ATSPM.Application.Analysis.Common
 
         #region IPhaseVolume
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
         [JsonProperty]
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         [JsonProperty]
@@ -285,7 +285,7 @@ namespace ATSPM.Application.Analysis.Common
 
         public override string ToString()
         {
-            return $"{SignalIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+            return $"{LocationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
         }
     }
 }

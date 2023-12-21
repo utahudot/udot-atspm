@@ -20,14 +20,14 @@ namespace ATSPM.ReportApi.Business.PreempDetail
         public PreemptRequestAndServices Summary { get; set; }
     }
 
-    public class PreemptDetail : SignalResult
+    public class PreemptDetail : LocationResult
     {
         public PreemptDetail(
-            string signalId,
+            string locationId,
             DateTime start,
             DateTime end,
             int preemptNumber,
-            ICollection<PreemptCycleResult> preemptCycles) : base(signalId, start, end)
+            ICollection<PreemptCycleResult> preemptCycles) : base(locationId, start, end)
         {
             PreemptionNumber = preemptNumber;
             Cycles = preemptCycles;

@@ -21,7 +21,7 @@ namespace ATSPM.EventLogUtility.Commands
 {
     public class LogConsoleCommand : Command, ICommandOption<EventLogLoggingConfiguration>
     {
-        public LogConsoleCommand() : base("log", "Logs data from signal controllers")
+        public LogConsoleCommand() : base("log", "Logs data from Location controllers")
         {
             IncludeOption.AddValidator(r =>
             {
@@ -48,12 +48,12 @@ namespace ATSPM.EventLogUtility.Commands
 
             //    foreach (var s in i)
             //    {
-            //        Console.WriteLine($"Extracting event logs for signal {s}");
+            //        Console.WriteLine($"Extracting event logs for Location {s}");
             //    }
 
             //    foreach (var s in e)
             //    {
-            //        Console.WriteLine($"Excluding event logs for signal {s}");
+            //        Console.WriteLine($"Excluding event logs for Location {s}");
             //    }
 
             //    Console.WriteLine($"Extraction path {p}");
@@ -61,15 +61,15 @@ namespace ATSPM.EventLogUtility.Commands
             //}, DateOption, IncludeOption, ExcludeOption, PathCommandOption);
         }
 
-        public Argument<bool> PingControllerArg { get; set; } = new Argument<bool>("ping", "Ping to verify signal controller is online");
+        public Argument<bool> PingControllerArg { get; set; } = new Argument<bool>("ping", "Ping to verify Location controller is online");
 
         public Argument<bool> DeleteLocalFileArg { get; set; } = new Argument<bool>("delete local", "Delete local file");
 
-        public SignalIncludeCommandOption IncludeOption { get; set; } = new();
+        public LocationIncludeCommandOption IncludeOption { get; set; } = new();
 
-        public SignalExcludeCommandOption ExcludeOption { get; set; } = new();
+        public LocationExcludeCommandOption ExcludeOption { get; set; } = new();
 
-        public SignalTypeCommandOption TypeOption { get; set; } = new();
+        public LocationTypeCommandOption TypeOption { get; set; } = new();
 
         public PathCommandOption PathCommandOption { get; set; } = new();
 
@@ -89,7 +89,7 @@ namespace ATSPM.EventLogUtility.Commands
         {
             services.AddSingleton(GetOptionsBinder());
             services.AddOptions<EventLogLoggingConfiguration>().BindCommandLine();
-            services.AddHostedService<SignalLoggerUtilityHostedService>();
+            services.AddHostedService<LocationLoggerUtilityHostedService>();
         }
     }
 }

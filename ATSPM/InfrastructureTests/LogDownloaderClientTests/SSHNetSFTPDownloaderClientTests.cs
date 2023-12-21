@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using Moq;
 using System;
@@ -25,7 +25,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             _client = new SSHNetSFTPDownloaderClient();
 
             //var s = new ServiceCollection();
-            //s.AddTransient<ISignalControllerDownloader, StubSignalControllerDownloader>();
+            //s.AddTransient<ILocationControllerDownloader, StubLocationControllerDownloader>();
 
 
 

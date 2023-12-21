@@ -40,7 +40,7 @@ namespace ATSPM.ConfigApi.Controllers
         }
 
         /// <summary>
-        /// <see cref="RouteSignal"/> navigation property action
+        /// <see cref="RouteLocation"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -48,13 +48,13 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<RouteSignal>> GetPrimaryDirections([FromRoute] DirectionTypes key)
+        public ActionResult<IEnumerable<RouteLocation>> GetPrimaryDirections([FromRoute] DirectionTypes key)
         {
-            return GetNavigationProperty<IEnumerable<RouteSignal>>(key);
+            return GetNavigationProperty<IEnumerable<RouteLocation>>(key);
         }
 
         /// <summary>
-        /// <see cref="RouteSignal"/> navigation property action
+        /// <see cref="RouteLocation"/> navigation property action
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -62,9 +62,9 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
-        public ActionResult<IEnumerable<RouteSignal>> GetOpposingDirections([FromRoute] DirectionTypes key)
+        public ActionResult<IEnumerable<RouteLocation>> GetOpposingDirections([FromRoute] DirectionTypes key)
         {
-            return GetNavigationProperty<IEnumerable<RouteSignal>>(key);
+            return GetNavigationProperty<IEnumerable<RouteLocation>>(key);
         }
 
         #endregion

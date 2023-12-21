@@ -12,7 +12,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -43,7 +43,7 @@ builder.Host.ConfigureServices((h, s) =>
         o.ReportApiVersions = true;
         o.DefaultApiVersion = new ApiVersion(1, 0);
         o.AssumeDefaultVersionWhenUnspecified = true;
-        
+
         //Sunset policies
         o.Policies.Sunset(0.1).Effective(DateTimeOffset.Now.AddDays(60)).Link("").Title("These are only available during development").Type("text/html");
         //o.Policies.Sunset(0.9).Effective(DateTimeOffset.Now.AddDays(60)).Link("policy.html").Title("Versioning Policy").Type("text/html");

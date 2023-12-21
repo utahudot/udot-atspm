@@ -10,14 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\ApproachNotMapped.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Models\ApproachNotMapped.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Duende.IdentityServer.EntityFramework.Storage" Version="6.3.6" />
     <PackageReference Include="EFCore.BulkExtensions" Version="7.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />

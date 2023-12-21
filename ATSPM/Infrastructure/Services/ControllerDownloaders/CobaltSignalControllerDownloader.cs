@@ -1,13 +1,13 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.SignalControllerProtocols;
+using ATSPM.Application.Services.LocationControllerProtocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public class CobaltSignalControllerDownloader : ControllerDownloaderBase
+    public class CobaltLocationControllerDownloader : ControllerDownloaderBase
     {
-        public CobaltSignalControllerDownloader(IFTPDownloaderClient client, ILogger<CobaltSignalControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+        public CobaltLocationControllerDownloader(IFTPDownloaderClient client, ILogger<CobaltLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         #region Properties
 

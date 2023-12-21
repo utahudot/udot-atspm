@@ -7,9 +7,9 @@ namespace ATSPM.ReportApi.Business.SplitMonitor;
 /// <summary>
 /// Split Monitor chart
 /// </summary>
-public class SplitMonitorResult : SignalResult
+public class SplitMonitorResult : LocationResult
 {
-    public SplitMonitorResult(int phaseNumber, string phaseDescription, string signalId, DateTime start, DateTime end) : base(signalId, start, end)
+    public SplitMonitorResult(int phaseNumber, string phaseDescription, string locationId, DateTime start, DateTime end) : base(locationId, start, end)
     {
         PhaseNumber = phaseNumber;
         PhaseDescription = phaseDescription;
@@ -23,7 +23,7 @@ public class SplitMonitorResult : SignalResult
     }
 
     public SplitMonitorResult(
-        string signalId,
+        string locationId,
         DateTime start,
         DateTime end,
         int phaseNumber,
@@ -33,7 +33,7 @@ public class SplitMonitorResult : SignalResult
         ICollection<DataPointForDouble> maxOuts,
         ICollection<DataPointForDouble> forceOffs,
         ICollection<DataPointForDouble> unknowns,
-        ICollection<DataPointForDouble> peds) : base(signalId, start, end)
+        ICollection<DataPointForDouble> peds) : base(locationId, start, end)
     {
         PhaseNumber = phaseNumber;
         Plans = plans;
