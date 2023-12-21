@@ -10,30 +10,30 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace InfrastructureTests.SignalControllerDecoderTests
+namespace InfrastructureTests.LocationControllerDecoderTests
 {
-    public class ISignalControllerDecoderTests : IDisposable
+    public class ILocationControllerDecoderTests : IDisposable
     {
         private const string TestDataPath = "C:\\Projects\\udot-atsmp\\ATSPM\\InfrastructureTests\\TestData";
 
         private readonly ITestOutputHelper _output;
-        //private ISignalControllerDecoder _decoder;
+        //private ILocationControllerDecoder _decoder;
         //private ILogger _nullLogger;
         //private IOptions<SignalControllerDecoderConfiguration> _nullOptions;
 
-        public ISignalControllerDecoderTests(ITestOutputHelper output)
+        public ILocationControllerDecoderTests(ITestOutputHelper output)
         {
             _output = output;
-            //_nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubSignalControllerDecoder>();
+            //_nullLogger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<StubLocationControllerDecoder>();
             //_nullOptions = Options.Create(new SignalControllerDecoderConfiguration() { EarliestAcceptableDate = new DateTime() });
-            //_decoder = new StubSignalControllerDecoder((ILogger<StubSignalControllerDecoder>)_nullLogger, _nullOptions);
+            //_decoder = new StubLocationControllerDecoder((ILogger<StubLocationControllerDecoder>)_nullLogger, _nullOptions);
 
-            //_output.WriteLine($"Created ISignalControllerDecoder Instance: {_decoder.GetHashCode()}");
+            //_output.WriteLine($"Created ILocationControllerDecoder Instance: {_decoder.GetHashCode()}");
         }
 
-        #region ISignalControllerDecoder
+        #region ILocationControllerDecoder
 
-        //#region ISignalControllerDecoder.IsCompressed
+        //#region ILocationControllerDecoder.IsCompressed
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -50,7 +50,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
 
         //#endregion
 
-        //#region ISignalControllerDecoder.IsEncoded
+        //#region ILocationControllerDecoder.IsEncoded
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -67,7 +67,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
 
         //#endregion
 
-        //#region ISignalControllerDecoder.Decompress
+        //#region ILocationControllerDecoder.Decompress
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -90,7 +90,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
 
         //#endregion
 
-        //#region ISignalControllerDecoder.Decode
+        //#region ILocationControllerDecoder.Decode
 
         //[Theory]
         //[EncodedControllerTestFiles]
@@ -166,12 +166,12 @@ namespace InfrastructureTests.SignalControllerDecoderTests
 
         //#endregion
 
-        #region ISignalControllerDecoder.ExecuteAsync
+        #region ILocationControllerDecoder.ExecuteAsync
 
         [Fact]
         public async Task ExecuteAsyncWithNullFileInfoParameter()
         {
-            var sut = new Mock<StubSignalControllerDecoder>(Mock.Of<ILogger<StubSignalControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
+            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
 
             await Assert.ThrowsAnyAsync<ArgumentNullException>(() => sut.ExecuteAsync(null, null));
         }
@@ -179,7 +179,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
         [Fact]
         public async Task ExecuteAsyncWithInvalidFileInfoParameter()
         {
-            var sut = new Mock<StubSignalControllerDecoder>(Mock.Of<ILogger<StubSignalControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
+            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
 
             await Assert.ThrowsAnyAsync<FileNotFoundException>(() => sut.ExecuteAsync(new FileInfo("C:\\invalid.txt"), null));
         }
@@ -187,7 +187,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
         [Fact]
         public async Task ExecuteAsyncWithFailedCanExecute()
         {
-            var sut = new Mock<StubSignalControllerDecoder>(Mock.Of<ILogger<StubSignalControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>());
+            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>());
 
             sut.Setup(m => m.CanExecute(It.IsAny<FileInfo>())).Returns(false);
 
@@ -248,7 +248,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
             var condition = collection?.Count > 0;
 
             Assert.True(condition);
-            Assert.All(collection, l => Assert.Equal(expected, l.SignalId));
+            Assert.All(collection, l => Assert.Equal(expected, l.LocationId));
         }
 
         [Fact]
@@ -289,7 +289,7 @@ namespace InfrastructureTests.SignalControllerDecoderTests
 
         public void Dispose()
         {
-            //_output.WriteLine($"Disposing ISignalControllerDecoder Instance: {_decoder.GetHashCode()}");
+            //_output.WriteLine($"Disposing ILocationControllerDecoder Instance: {_decoder.GetHashCode()}");
         }
     }
 }

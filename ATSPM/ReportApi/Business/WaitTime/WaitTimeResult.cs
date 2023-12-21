@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
     /// </summary>
     public class WaitTimeResult : ApproachResult
     {
-        public WaitTimeResult(string signalId,
+        public WaitTimeResult(string locationId,
                              int approachId,
                              string approachDescription,
                              int phaseNumber,
@@ -23,7 +23,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
                              IReadOnlyList<DataPointForDouble> forceOffs,
                              IReadOnlyList<DataPointForDouble> unknowns,
                              IReadOnlyList<DataPointForDouble> average,
-                             IReadOnlyList<DataPointForInt> volumes) : base(approachId, signalId, start, end)
+                             IReadOnlyList<DataPointForInt> volumes) : base(approachId, locationId, start, end)
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;

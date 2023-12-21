@@ -4,6 +4,5 @@ namespace ATSPM.Application.Repositories
 {
     public interface IWatchDogLogEventRepository : IAsyncRepository<WatchDogLogEvent>
     {
-
     }
 }

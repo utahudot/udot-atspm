@@ -52,21 +52,21 @@ namespace ApplicationCoreTests.Analysis.TestObjects
 
     public class PreemptiveProcessTestData
     {
-        public Signal Configuration { get; set; }
+        public Location Configuration { get; set; }
         public List<ControllerEventLog> Input { get; set; }
         public List<PreempDetailValueBase> Output { get; set; }
     }
 
     public class AggregatePriorityCodesTestData
     {
-        public Signal Configuration { get; set; }
+        public Location Configuration { get; set; }
         public List<ControllerEventLog> Input { get; set; }
         public List<PriorityAggregation> Output { get; set; }
     }
 
     public class AggregatePreemptCodesTestData
     {
-        public Signal Configuration { get; set; }
+        public Location Configuration { get; set; }
         public List<ControllerEventLog> Input { get; set; }
         public List<PreemptionAggregation> Output { get; set; }
     }

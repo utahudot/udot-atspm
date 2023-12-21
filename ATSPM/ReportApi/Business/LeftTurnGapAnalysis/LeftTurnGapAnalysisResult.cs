@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
     public class LeftTurnGapAnalysisResult : ApproachResult
     {
         public LeftTurnGapAnalysisResult(
-            string signalId,
+            string locationId,
             int approachId,
             int phaseNumber,
             string phaseDescription,
@@ -43,7 +43,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
             double? sumDuration3,
             double sumGreenTime,
             int highestTotal,
-            string detectionTypeStr) : base(approachId, signalId, start, end)
+            string detectionTypeStr) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseDescription = phaseDescription;

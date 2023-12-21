@@ -11,25 +11,25 @@ namespace ATSPM.ReportApi.Business.Common
         ///     Collection of phase events primarily used for the split monitor and Phase Termination Chart
         /// </summary>
         /// <param name="phasenumber"></param>
-        /// <param name="signalid"></param>
+        /// <param name="locationId"></param>
         /// <param name="CycleEventsTable"></param>
         public AnalysisPhaseCycleCollection(
             int phasenumber,
-            string signalId,
+            string locationId,
             List<ControllerEventLog> CycleEventsTable,
             List<ControllerEventLog> PedEvents,
             List<ControllerEventLog> terminationEvents
             )
         {
             AnalysisPhaseCycle Cycle = null;
-            SignalID = signalId;
+            locationId = locationId;
             PhaseNumber = phasenumber;
 
 
             foreach (var row in CycleEventsTable)
             {
                 if (row.EventCode == 1 && row.EventParam == phasenumber)
-                    Cycle = new AnalysisPhaseCycle(signalId, phasenumber, row.Timestamp);
+                    Cycle = new AnalysisPhaseCycle(locationId, phasenumber, row.Timestamp);
 
                 if (Cycle != null && row.EventParam == phasenumber &&
                     (row.EventCode == 4 || row.EventCode == 5 || row.EventCode == 6))
@@ -61,7 +61,7 @@ namespace ATSPM.ReportApi.Business.Common
             }
         }
 
-        public string SignalID { get; set; }
+        public string locationId { get; set; }
         public int PhaseNumber { get; set; }
 
 

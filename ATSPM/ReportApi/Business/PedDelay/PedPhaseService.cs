@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
             var pedPhaseData = new PedPhaseData();
             pedPhaseData.StartDate = options.Start;
             pedPhaseData.EndDate = options.End;
-            pedPhaseData.SignalId = approach.Signal.SignalIdentifier;
+            pedPhaseData.locationId = approach.Location.LocationIdentifier;
             pedPhaseData.TimeBuffer = options.TimeBuffer;
             pedPhaseData.Approach = approach;
             pedPhaseData.PhaseNumber = approach.ProtectedPhaseNumber;
@@ -57,7 +57,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
         {
             var planService = new PlanService();
             var pedPlans = new List<PedPlan>();
-            var planEvents = planService.GetPlanEvents(options.Start, options.End, options.SignalIdentifier, plansData.ToList());
+            var planEvents = planService.GetPlanEvents(options.Start, options.End, options.locationIdentifier, plansData.ToList());
             for (var i = 0; i < planEvents.Count; i++)
             {
                 //if this is the last plan then we want the end of the plan

@@ -52,7 +52,7 @@ var list = File.ReadAllLines(path1)
 //               .Select(x => x.Split(','))
 //               .Select(x => new ControllerEventLog
 //               {
-//                   SignalId = x[0],
+//                   LocationId = x[0],
 //                   Timestamp = DateTime.Parse(x[1]),
 //                   EventCode = int.Parse(x[2]),
 //                   EventParam = int.Parse(x[3])
@@ -65,7 +65,7 @@ var list = File.ReadAllLines(path1)
 //Console.WriteLine($"list2: {list2.Where(w => w.EventCode == 131).Count()}");
 
 
-//var s = new Signal() { SignalId = "7191" };
+//var s = new Location() { LocationId = "7191" };
 
 //var d1 = new Detector()
 //{
@@ -77,7 +77,7 @@ var list = File.ReadAllLines(path1)
 //        ProtectedPhaseNumber = 2,
 //        DirectionTypeId = DirectionTypes.NB,
 //        Mph = 45,
-//        Signal = s
+//        Location = s
 //    }
 //};
 
@@ -91,7 +91,7 @@ var list = File.ReadAllLines(path1)
 //        ProtectedPhaseNumber = 6,
 //        DirectionTypeId = DirectionTypes.SB,
 //        Mph = 45,
-//        Signal = s
+//        Location = s
 //    }
 //};
 
@@ -165,7 +165,7 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddATSPMDbContext(h);
 
 //        //repositories
-//        s.AddScoped<ISignalRepository, SignalEFRepository>();
+//        s.AddScoped<ILocationRepository, LocationEFRepository>();
 //        s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 //        //s.AddScoped<IControllerEventLogRepository, ControllerEventLogFileRepository>();
 
@@ -179,28 +179,28 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
 //        //downloaders
-//        s.AddScoped<ISignalControllerDownloader, ASC3SignalControllerDownloader>();
-//        s.AddScoped<ISignalControllerDownloader, CobaltSignalControllerDownloader>();
-//        s.AddScoped<ISignalControllerDownloader, MaxTimeSignalControllerDownloader>();
-//        s.AddScoped<ISignalControllerDownloader, EOSSignalControllerDownloader>();
-//        s.AddScoped<ISignalControllerDownloader, NewCobaltSignalControllerDownloader>();
+//        s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
+//        s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
+//        s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
+//        s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
+//        s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
 
 //        //decoders
-//        s.AddScoped<ISignalControllerDecoder, ASCSignalControllerDecoder>();
-//        s.AddScoped<ISignalControllerDecoder, MaxTimeSignalControllerDecoder>();
+//        s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
+//        s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
 
-//        //SignalControllerLogger
-//        //s.AddScoped<ISignalControllerLoggerService, CompressedSignalControllerLogger>();
-//        s.AddScoped<ISignalControllerLoggerService, LegacySignalControllerLogger>();
+//        //LocationControllerLogger
+//        //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
+//        s.AddScoped<ILocationControllerLoggerService, LegacyLocationControllerLogger>();
 
 //        //controller logger configuration
-//        s.Configure<SignalControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(SignalControllerLoggerConfiguration)));
+//        s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
 
 //        //downloader configurations
-//        s.ConfigureSignalControllerDownloaders(h);
+//        s.ConfigureLocationControllerDownloaders(h);
 
 //        //decoder configurations
-//        s.ConfigureSignalControllerDecoders(h);
+//        s.ConfigureLocationControllerDecoders(h);
 
 //        s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
 
@@ -218,8 +218,8 @@ var result = await test.ExecuteAsync(testData);
 //        //}
 
 //        ////hosted services
-//        //s.AddHostedService<SignalLoggerUtilityHostedService>();
-//        //s.AddHostedService<TestSignalLoggerHostedService>();
+//        //s.AddHostedService<LocationLoggerUtilityHostedService>();
+//        //s.AddHostedService<TestLocationLoggerHostedService>();
 
 //        //s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o => o.LocalPath = s.configurall);
 //    });
@@ -271,7 +271,7 @@ public class TestExtractLogHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Included)
                     {
-                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                     }
                 }
 
@@ -279,7 +279,7 @@ public class TestExtractLogHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Excluded)
                     {
-                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                     }
                 }
             }
@@ -304,13 +304,13 @@ public class TestExtractLogHostedService : IHostedService
     }
 }
 
-public class TestSignalLoggerHostedService : IHostedService
+public class TestLocationLoggerHostedService : IHostedService
 {
     private readonly ILogger _log;
     private IServiceProvider _serviceProvider;
     private IOptions<EventLogLoggingConfiguration> _options;
 
-    public TestSignalLoggerHostedService(ILogger<TestSignalLoggerHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLoggingConfiguration> options) =>
+    public TestLocationLoggerHostedService(ILogger<TestLocationLoggerHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLoggingConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -344,7 +344,7 @@ public class TestSignalLoggerHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Included)
                     {
-                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                     }
                 }
 
@@ -352,7 +352,7 @@ public class TestSignalLoggerHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Excluded)
                     {
-                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                     }
                 }
             }
@@ -377,13 +377,13 @@ public class TestSignalLoggerHostedService : IHostedService
     }
 }
 
-public class TestSignalInfoHostedService : IHostedService
+public class TestLocationInfoHostedService : IHostedService
 {
     private readonly ILogger _log;
     private IServiceProvider _serviceProvider;
-    private IOptions<EventLogSignalInfoConfiguration> _options;
+    private IOptions<EventLogLocationInfoConfiguration> _options;
 
-    public TestSignalInfoHostedService(ILogger<TestSignalInfoHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogSignalInfoConfiguration> options) =>
+    public TestLocationInfoHostedService(ILogger<TestLocationInfoHostedService> log, IServiceProvider serviceProvider, IOptions<EventLogLocationInfoConfiguration> options) =>
             (_log, _serviceProvider, _options) = (log, serviceProvider, options);
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -409,7 +409,7 @@ public class TestSignalInfoHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Included)
                     {
-                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                     }
                 }
 
@@ -417,7 +417,7 @@ public class TestSignalInfoHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Excluded)
                     {
-                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                     }
                 }
             }
@@ -476,7 +476,7 @@ public class TestAggregationHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Included)
                     {
-                        _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                     }
                 }
 
@@ -484,7 +484,7 @@ public class TestAggregationHostedService : IHostedService
                 {
                     foreach (var s in _options.Value.Excluded)
                     {
-                        _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                        _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                     }
                 }
             }

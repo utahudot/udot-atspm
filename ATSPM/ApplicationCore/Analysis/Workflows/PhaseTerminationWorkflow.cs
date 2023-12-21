@@ -31,12 +31,12 @@ namespace ATSPM.Application.Analysis.Workflows
         /// <summary>
         ///     Phase Objects primarily for the split monitor and terminaiton chart
         /// </summary>
-        /// <param name="signalid"></param>
+        /// <param name="locationId"></param>
         /// <param name="phasenumber"></param>
         /// <param name="starttime"></param>
-        public PhaseCycle(string signalid, int phasenumber, DateTime starttime)
+        public PhaseCycle(string locationId, int phasenumber, DateTime starttime)
         {
-            SignalId = signalid;
+            locationId = locationId;
             PhaseNumber = phasenumber;
             StartTime = starttime;
             HasPed = false;
@@ -45,7 +45,7 @@ namespace ATSPM.Application.Analysis.Workflows
 
         public int PhaseNumber { get; }
 
-        public string SignalId { get; }
+        public string locationId { get; }
 
         public DateTime StartTime { get; }
 
@@ -117,8 +117,8 @@ namespace ATSPM.Application.Analysis.Workflows
     public class PhaseTerminationResult
     {
         public string ChartName { get; internal set; }
-        public string SignalId { get; internal set; }
-        public string SignalLocation { get; internal set; }
+        public string locationId { get; internal set; }
+        public string LocationLocation { get; internal set; }
         public DateTime Start { get; internal set; }
         public DateTime End { get; internal set; }
         public int ConsecutiveCount { get; internal set; }

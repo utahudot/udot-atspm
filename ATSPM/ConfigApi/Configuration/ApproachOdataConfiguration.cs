@@ -16,7 +16,7 @@ namespace ATSPM.ConfigApi.Configuration
             var model = builder.EntitySet<Approach>("Approach")
                 .EntityType
                 .Page(default, default)
-                .Expand(1, SelectExpandType.Automatic, new string[] { "directionType", "signal" });
+                .Expand(1, SelectExpandType.Automatic, new string[] { "directionType", "Location" });
 
             switch (apiVersion.MajorVersion)
             {

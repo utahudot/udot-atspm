@@ -10,7 +10,7 @@ namespace ATSPM.Data.Interfaces
     /// <summary>
     /// For objects in the plan layer
     /// </summary>
-    public interface IPlanLayer : ISignalLayer
+    public interface IPlanLayer : ILocationLayer
     {
         /// <summary>
         /// Plan number as derrived from the event parameter on <see cref="DataLoggerEnum.CoordPatternChange"/> event
