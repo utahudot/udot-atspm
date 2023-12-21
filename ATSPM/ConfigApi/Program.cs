@@ -89,6 +89,18 @@ builder.Host.ConfigureServices((h, s) =>
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });
+
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    s.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins(allowedHosts.Split(','))
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 });
 
 var app = builder.Build();
@@ -115,7 +127,7 @@ app.UseSwaggerUI(o =>
             o.SwaggerEndpoint(url, name);
         }
     });
-
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
