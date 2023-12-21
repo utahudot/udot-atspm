@@ -9,10 +9,10 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Phase termination aggregation
     /// </summary>
-    public partial class PhaseTerminationAggregation : ATSPMAggregationBase, ISignalPhaseLayer
+    public partial class PhaseTerminationAggregation : ATSPMAggregationBase, ILocationPhaseLayer
     {
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

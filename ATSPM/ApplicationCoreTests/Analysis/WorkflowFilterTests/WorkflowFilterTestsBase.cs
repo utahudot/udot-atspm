@@ -14,9 +14,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
         protected readonly ITestOutputHelper _output;
 
         protected List<int> filteredList = new();
-        protected FilterEventCodeSignalBase sut;
+        protected FilterEventCodeLocationBase sut;
 
-        protected Tuple<Signal, IEnumerable<ControllerEventLog>> testData;
+        protected Tuple<Location, IEnumerable<ControllerEventLog>> testData;
 
         public WorkflowFilterTestsBase(ITestOutputHelper output)
         {
@@ -26,22 +26,22 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
         [Fact]
         public void CheckFilterPass()
         {
-            var testSignal = new Signal() { SignalIdentifier = "1001" };
+            var testLocation = new Location() { LocationIdentifier = "1001" };
             var testLogs = Enumerable.Range(0, 1000).Select(s => new ControllerEventLog()
             {
-                SignalIdentifier = testSignal.SignalIdentifier,
+                SignalIdentifier = testLocation.LocationIdentifier,
                 Timestamp = DateTime.Now.AddSeconds(s),
                 EventCode = s,
                 EventParam = 1
             }).ToList();
 
-            testData = Tuple.Create(testSignal, testLogs.AsEnumerable());
+            testData = Tuple.Create(testLocation, testLogs.AsEnumerable());
 
             sut.Post(testData);
             sut.Complete();
 
             var actual = sut.Receive();
-            var expected = Tuple.Create(testSignal, testLogs.Where(w => filteredList.Contains(w.EventCode)));
+            var expected = Tuple.Create(testLocation, testLogs.Where(w => filteredList.Contains(w.EventCode)));
 
             //foreach (var a in actual.Item2)
             //    _output.WriteLine($"actual: {a}");

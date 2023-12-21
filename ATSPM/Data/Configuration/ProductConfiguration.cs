@@ -2,6 +2,7 @@
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Linq;
 
 namespace ATSPM.Data.Configuration
 {
@@ -24,7 +25,7 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(48);
 
             builder.Property(e => e.DeviceType)
-                .HasMaxLength(12)
+                .HasMaxLength(Enum.GetNames(typeof(DeviceTypes)).Max().Length)
                 .HasDefaultValue(DeviceTypes.Unknown);
 
             builder.Property(e => e.Notes)

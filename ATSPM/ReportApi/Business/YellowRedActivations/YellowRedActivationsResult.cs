@@ -10,7 +10,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
     public class YellowRedActivationsResult : ApproachResult
     {
         public YellowRedActivationsResult(
-            string signalId,
+            string locationId,
             int approachId,
             string approachDescription,
             int phaseNumber,
@@ -24,7 +24,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             ICollection<DataPointForDouble> redEvents,
             ICollection<DataPointForDouble> yellowEvents,
             ICollection<DataPointForDouble> redClearanceEvents,
-            ICollection<DataPointForDouble> detectorEvents) : base(approachId, signalId, start, end)
+            ICollection<DataPointForDouble> detectorEvents) : base(approachId, locationId, start, end)
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;

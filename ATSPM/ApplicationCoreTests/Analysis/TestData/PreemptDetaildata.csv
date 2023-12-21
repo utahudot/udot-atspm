@@ -1,4 +1,4 @@
-SignalId,Timestamp,EventCode,EventParameter
+locationId,Timestamp,EventCode,EventParameter
 7573,4/17/2023 12:02:14.50,102,1
 7573,4/17/2023 12:02:20.50,105,1
 7573,4/17/2023 12:02:25.50,107,1

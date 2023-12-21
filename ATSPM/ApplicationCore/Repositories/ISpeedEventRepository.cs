@@ -17,7 +17,7 @@ namespace ATSPM.Application.Repositories
         #region Obsolete
 
         //[Obsolete("This method isn't currently being used")]
-        //IReadOnlyList<Speed_Events> GetSpeedEventsBySignal(DateTime startDate, DateTime endDate, Approach approach);
+        //IReadOnlyList<Speed_Events> GetSpeedEventsByLocation(DateTime startDate, DateTime endDate, Approach approach);
 
         #endregion
     }

@@ -23,7 +23,7 @@ namespace ATSPM.DataApi.Formatters
                 timestampFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat;
 
                 var csv = result.Select(x => $"{x.SignalIdentifier},{x.Timestamp.ToString(timestampFormat)},{x.EventCode},{x.EventParam}").ToList();
-                csv.Insert(0, "SignalID,Timestamp,EventCode,EventParam");
+                csv.Insert(0, "locationId,Timestamp,EventCode,EventParam");
 
                 return context.HttpContext.Response.WriteAsync(string.Join("\n", csv), selectedEncoding);
             }

@@ -17,7 +17,7 @@ namespace ATSPM.Application.Extensions
         #region Obsolete
 
         [Obsolete("This method is not used", true)]
-        public static IReadOnlyList<Detector> GetDetectorsBySignalIDAndMetricType(this IDetectorRepository repo, string signalId, int metricId)
+        public static IReadOnlyList<Detector> GetDetectorsBylocationIdAndMetricType(this IDetectorRepository repo, string locationId, int metricId)
         {
             throw new NotImplementedException();
         }
@@ -35,7 +35,7 @@ namespace ATSPM.Application.Extensions
         }
 
         [Obsolete("User GetList() instead", true)]
-        public static IReadOnlyList<Detector> GetDetectorsBySignalID(this IDetectorRepository repo, string signalId)
+        public static IReadOnlyList<Detector> GetDetectorsBylocationId(this IDetectorRepository repo, string locationId)
         {
             throw new NotImplementedException();
         }

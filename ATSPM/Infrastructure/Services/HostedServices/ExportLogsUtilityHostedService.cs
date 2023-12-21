@@ -49,7 +49,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     {
                         foreach (var s in _options.Value.Included)
                         {
-                            _log.LogInformation("Including Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Including Event Logs for Location(s): {Location}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => _options.Value.Included.Any(d => i.SignalIdentifier == d));
@@ -59,7 +59,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
                     {
                         foreach (var s in _options.Value.Excluded)
                         {
-                            _log.LogInformation("Excluding Event Logs for Signal(s): {signal}", s);
+                            _log.LogInformation("Excluding Event Logs for Location(s): {Location}", s);
                         }
 
                         archiveQuery = archiveQuery.Where(i => !_options.Value.Excluded.Contains(i.SignalIdentifier));
@@ -115,7 +115,7 @@ namespace ATSPM.Infrastructure.Services.HostedServices
 
                 var path = Path.Combine(dir.FullName, $"{archive.SignalIdentifier}-{archive.ArchiveDate:MM-dd-yyyy}.csv");
 
-                await File.WriteAllLinesAsync(path, new string[] { "SignalId, Timestamp, EventCode, EventParam" });
+                await File.WriteAllLinesAsync(path, new string[] { "locationId, Timestamp, EventCode, EventParam" });
 
                 var csv = archive.LogData.Select(x => $"{archive.SignalIdentifier},{x.Timestamp.ToString(_options.Value.DateTimeFormat)},{x.EventCode},{x.EventParam}");
 

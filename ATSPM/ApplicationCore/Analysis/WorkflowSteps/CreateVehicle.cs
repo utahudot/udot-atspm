@@ -17,8 +17,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<Tuple<Approach, IEnumerable<Vehicle>>> Process(Tuple<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>, Tuple<Approach, IEnumerable<RedToRedCycle>>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item2.Item2?.GroupJoin(input.Item1.Item2, 
-                o => new { o.SignalIdentifier, o.PhaseNumber }, 
-                i => new { i.SignalIdentifier, i.PhaseNumber },
+                o => new { o.LocationIdentifier, o.PhaseNumber }, 
+                i => new { i.LocationIdentifier, i.PhaseNumber },
                 (o, i) => i.Where(w => o.InRange(w.Timestamp))
                 .Select(s => new Vehicle(s, o)))
                 .SelectMany(m => m);

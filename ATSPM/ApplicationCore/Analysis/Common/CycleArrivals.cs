@@ -12,7 +12,7 @@ namespace ATSPM.Application.Analysis.Common
     /// <summary>
     /// A cycle with <see cref="DataLoggerEnum.DetectorOn"/> event arrivals
     /// </summary>
-    public class CycleArrivals : StartEndRange, ICycleArrivals, ISignalPhaseLayer
+    public class CycleArrivals : StartEndRange, ICycleArrivals, ILocationPhaseLayer
     {
         private readonly ICycleTotal _cycle = new RedToRedCycle();
 
@@ -24,17 +24,17 @@ namespace ATSPM.Application.Analysis.Common
             Start = _cycle.Start;
             End = _cycle.End;
 
-            if (cycle is ISignalPhaseLayer sp)
+            if (cycle is ILocationPhaseLayer sp)
             {
-                SignalIdentifier = sp.SignalIdentifier;
+                LocationIdentifier = sp.LocationIdentifier;
                 PhaseNumber = sp.PhaseNumber;
             }
         }
 
-        #region ISignalPhaseLayer
+        #region ILocationPhaseLayer
 
         /// <inheritdoc/>
-        public string SignalIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }

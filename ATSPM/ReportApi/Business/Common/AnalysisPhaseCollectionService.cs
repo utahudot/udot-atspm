@@ -13,9 +13,9 @@ namespace ATSPM.ReportApi.Business.Common
 
         public IReadOnlyList<PlanSplitMonitorData> Plans { get; set; }
         public int MaxPhaseInUse { get; set; }
-        public string SignalId { get; set; }
+        public string locationId { get; set; }
         public List<AnalysisPhaseData> AnalysisPhases { get; set; }
-        public Signal Signal { get; internal set; }
+        public Location Location { get; internal set; }
     }
 
     public class AnalysisPhaseCollectionService
@@ -36,30 +36,30 @@ namespace ATSPM.ReportApi.Business.Common
         }
 
         //public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-        //    string signalId,
+        //    string locationId,
         //    DateTime startTime,
         //    DateTime endTime,
         //    int consecutivecount)
         //{
-        //    var signal = _signalRepository.GetLatestVersionOfSignal(signalId, startTime);
+        //    var Location = _LocationRepository.GetLatestVersionOfLocation(locationId, startTime);
         //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-        //    analysisPhaseCollectionData.SignalId = signalId;
-        //    var ptedt = controllerEventLogRepository.GetSignalEventsByEventCodes(
-        //        analysisPhaseCollectionData.SignalId,
+        //    analysisPhaseCollectionData.LocationId = locationId;
+        //    var ptedt = controllerEventLogRepository.GetLocationEventsByEventCodes(
+        //        analysisPhaseCollectionData.LocationId,
         //        startTime,
         //        endTime,
         //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
-        //    var dapta = controllerEventLogRepository.GetSignalEventsByEventCodes(
-        //        analysisPhaseCollectionData.SignalId,
+        //    var dapta = controllerEventLogRepository.GetLocationEventsByEventCodes(
+        //        analysisPhaseCollectionData.LocationId,
         //        startTime,
         //        endTime,
         //        new List<int> { 1 });
         //    ptedt = ptedt.OrderByDescending(i => i.TimeStamp).ToList();
         //    var phasesInUse = dapta.Where(r => r.EventCode == 1).Select(r => r.EventParam).Distinct();
-        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.SignalId);
+        //    analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, analysisPhaseCollectionData.LocationId);
         //    foreach (var row in phasesInUse)
         //    {
-        //        var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, signal);
+        //        var aPhase = analysisPhaseService.GetAnalysisPhaseData(row, ptedt, consecutivecount, Location);
         //        analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
         //    }
         //    analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.OrderBy(i => i.PhaseNumber).ToList();
@@ -68,7 +68,7 @@ namespace ATSPM.ReportApi.Business.Common
         //}
 
         public AnalysisPhaseCollectionData GetAnalysisPhaseCollectionData(
-            string signalIdentifier,
+            string locationIdentifier,
             DateTime startTime,
             DateTime endTime,
             IReadOnlyList<ControllerEventLog> planEvents,
@@ -76,17 +76,17 @@ namespace ATSPM.ReportApi.Business.Common
             IReadOnlyList<ControllerEventLog> splitsEvents,
             IReadOnlyList<ControllerEventLog> pedestrianEvents,
             IReadOnlyList<ControllerEventLog> terminationEvents,
-            Signal signal,
+            Location Location,
             int consecutiveCount)
         {
-            if (signal.Approaches.IsNullOrEmpty())
+            if (Location.Approaches.IsNullOrEmpty())
             {
                 return null;
             }
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
-            analysisPhaseCollectionData.SignalId = signalIdentifier;
+            analysisPhaseCollectionData.locationId = locationIdentifier;
             var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, signalIdentifier, planEvents.ToList());
+            analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, locationIdentifier, planEvents.ToList());
             foreach (var phaseNumber in phasesInUse)
             {
                 var aPhase = analysisPhaseService.GetAnalysisPhaseData(
@@ -95,12 +95,12 @@ namespace ATSPM.ReportApi.Business.Common
                     cycleEvents,
                     terminationEvents,
                     consecutiveCount,
-                    signal);
+                    Location);
                 analysisPhaseCollectionData.AnalysisPhases.Add(aPhase);
             }
             analysisPhaseCollectionData.AnalysisPhases = analysisPhaseCollectionData.AnalysisPhases.Where(a => a != null).OrderBy(i => i.PhaseNumber).ToList();
             analysisPhaseCollectionData.MaxPhaseInUse = FindMaxPhase(analysisPhaseCollectionData.AnalysisPhases);
-            analysisPhaseCollectionData.Signal = signal;
+            analysisPhaseCollectionData.Location = Location;
             if (analysisPhaseCollectionData.Plans.Count > 0)
             {
                 foreach (var plan in analysisPhaseCollectionData.Plans)
@@ -121,7 +121,7 @@ namespace ATSPM.ReportApi.Business.Common
         }
 
         //public AnalysisPhaseCollectionData GetAnalysisPhaseCollection(
-        //    string signalId,
+        //    string locationId,
         //    DateTime startTime,
         //    DateTime endTime,
         //    IReadOnlyList<ControllerEventLog> terminationEvents,
@@ -131,14 +131,14 @@ namespace ATSPM.ReportApi.Business.Common
         //{
         //    var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
         //    var cel = ControllerEventLogRepositoryFactory.Create();
-        //    var ptedt = cel.GetSignalEventsByEventCodes(signalId, startTime, endTime,
+        //    var ptedt = cel.GetLocationEventsByEventCodes(locationId, startTime, endTime,
         //        new List<int> { 1, 11, 4, 5, 6, 7, 21, 23 });
-        //    var dapta = cel.GetSignalEventsByEventCodes(signalId, startTime, endTime, new List<int> { 1 });
+        //    var dapta = cel.GetLocationEventsByEventCodes(locationId, startTime, endTime, new List<int> { 1 });
         //    var phasesInUse = dapta.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
-        //    Plans = PlanFactory.GetSplitMonitorPlans(startTime, endTime, signalId);
+        //    Plans = PlanFactory.GetSplitMonitorPlans(startTime, endTime, locationId);
         //    foreach (var row in phasesInUse)
         //    {
-        //        var aPhase = new AnalysisPhase(row, signalId, ptedt);
+        //        var aPhase = new AnalysisPhase(row, locationId, ptedt);
         //        Items.Add(aPhase);
         //    }
         //    OrderPhases();
@@ -150,13 +150,13 @@ namespace ATSPM.ReportApi.Business.Common
             return analysisPhases.Select(phase => phase.PhaseNumber).Concat(new[] { 0 }).Max();
         }
 
-        public void SetProgrammedSplits(PlanSplitMonitorData plan, List<ControllerEventLog> signalEvents)
+        public void SetProgrammedSplits(PlanSplitMonitorData plan, List<ControllerEventLog> LocationEvents)
         {
             plan.Splits.Clear();
             var eventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 eventCodes.Add(i);
-            var splitsDt = signalEvents.Where(s => eventCodes.Contains(s.EventCode)); // controllerEventLogRepository.GetSignalEventsByEventCodes(signalId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
+            var splitsDt = LocationEvents.Where(s => eventCodes.Contains(s.EventCode)); // controllerEventLogRepository.GetLocationEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
             foreach (var row in splitsDt)
             {
                 if (row.EventCode == 132)

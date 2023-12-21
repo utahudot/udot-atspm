@@ -13,35 +13,35 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
         public PurdueCoordinationDiagramResult GetChartData(
             PurdueCoordinationDiagramOptions options,
             Approach approach,
-            SignalPhase signalPhase)
+            LocationPhase LocationPhase)
         {
             List<DataPointForDouble> volume = new List<DataPointForDouble>();
             if (options.ShowVolumes)
             {
-                volume = signalPhase.Volume.Items.ConvertAll(v => new DataPointForDouble(v.StartTime, v.HourlyVolume));
+                volume = LocationPhase.Volume.Items.ConvertAll(v => new DataPointForDouble(v.StartTime, v.HourlyVolume));
             }
-            var plans = signalPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
+            var plans = LocationPhase.Plans.Select(p => new PerdueCoordinationPlanViewModel(
                 p.PlanNumber.ToString(),
                 p.Start,
                 p.End,
                 p.PercentGreenTime,
                 p.PercentArrivalOnGreen,
                 p.PlatoonRatio)).ToList();
-            var redSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.RedLineY));
-            var yellowSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.YellowLineY));
-            var greenSeries = signalPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.GreenLineY));
-            var detectorEvents = signalPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointForDouble(d.TimeStamp, d.YPointSeconds)));
+            var redSeries = LocationPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.RedLineY));
+            var yellowSeries = LocationPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.YellowLineY));
+            var greenSeries = LocationPhase.Cycles.Select(c => new DataPointForDouble(c.EndTime, c.GreenLineY));
+            var detectorEvents = LocationPhase.Cycles.SelectMany(c => c.DetectorEvents.Select(d => new DataPointForDouble(d.TimeStamp, d.YPointSeconds)));
 
             return new PurdueCoordinationDiagramResult(
-                options.SignalIdentifier,
+                options.locationIdentifier,
                 approach.Id,
                 approach.ProtectedPhaseNumber,
                 approach.Description,
                 options.Start,
                 options.End,
-                Convert.ToInt32(signalPhase.TotalArrivalOnGreen),
-                Convert.ToInt32(signalPhase.TotalVolume),
-                signalPhase.PercentArrivalOnGreen,
+                Convert.ToInt32(LocationPhase.TotalArrivalOnGreen),
+                Convert.ToInt32(LocationPhase.TotalVolume),
+                LocationPhase.PercentArrivalOnGreen,
                 plans,
                 volume,
                 redSeries.ToList(),
