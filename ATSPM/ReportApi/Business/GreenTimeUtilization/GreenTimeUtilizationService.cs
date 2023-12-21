@@ -1,10 +1,6 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DateTime = System.DateTime;
 
 namespace ATSPM.ReportApi.Business.GreenTimeUtilization
@@ -154,16 +150,16 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                     foreach (var detection in greenDetectionsList)
                     {
                         TimeSpan timeSinceGreenStart = detection.Timestamp - green.Timestamp;
-                        var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.XAxisBinSize);
-                        if (BinValueList.Count < yAxisBinNumber)
+                        //var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.XAxisBinSize);
+                        if (BinValueList.Count < options.YAxisBinSize)
                         {
-                            int howMany = yAxisBinNumber - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
+                            int howMany = options.YAxisBinSize - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
                             for (int i = 1; i <= howMany; i++)
                             {
                                 BinValueList.Add(0); //add a new value of 0 -- not sure if this is the right statement yet
                             }
                         }
-                        BinValueList[yAxisBinNumber] = BinValueList[yAxisBinNumber] + 1;
+                        BinValueList[options.YAxisBinSize] = BinValueList[options.YAxisBinSize] + 1;
 
                     }
                 }
