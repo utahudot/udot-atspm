@@ -97,13 +97,13 @@ builder.Host.ConfigureServices((h, s) =>
         // integrate xml comments
         o.IncludeXmlComments(filePath);
     });
-
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     s.AddCors(options =>
     {
-        options.AddPolicy("AllowAll",
+        options.AddPolicy("CorsPolicy",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins(allowedHosts.Split(','))
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
@@ -204,12 +204,11 @@ var app = builder.Build();
 app.UseResponseCompression();
 
 
-//app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 if (app.Environment.IsDevelopment())
 {
     //app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
-    app.UseCors("AllowAll");
 }
 
 // Configure the HTTP request pipeline.
