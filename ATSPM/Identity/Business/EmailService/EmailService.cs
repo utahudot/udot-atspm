@@ -12,10 +12,10 @@ namespace Identity.Business.EmailSender
             // Configure your SMTP settings
             _smtpClient = new SmtpClient
             {
-                Host = "smtp-server.com",
-                Port = 587,
+                Host = "smtp.freesmtpservers.com",
+                Port = 25,
                 Credentials = new NetworkCredential(),
-                EnableSsl = true,
+                //EnableSsl = true,
             };
         }
 
