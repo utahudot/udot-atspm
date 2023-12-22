@@ -1,6 +1,8 @@
 ﻿using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
+using Identity.Business.ScopeService;
 using Identity.Models.Account;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +17,21 @@ namespace Identity.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
+        private readonly IScopeService _scopeService;
+
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IScopeService scopeService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _accountService = accountService;
             _emailService = emailService;
+            _scopeService = scopeService;
         }
 
         [HttpPost("register")]
@@ -76,14 +82,38 @@ namespace Identity.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _accountService.Login(model.Email, model.Password, model.RememberMe);
+            var authenticationResult = await _accountService.Login(model.Email, model.Password, model.RememberMe);
 
-            if (result.Code == StatusCodes.Status200OK)
+            if (authenticationResult.Code == StatusCodes.Status200OK)
             {
-                return Ok(result);
+                // Assuming _scopeService is injected and provides access to the database for fetching allowed scopes
+                var allowedScopes = _scopeService.GetScopesForClient(authenticationResult.ClientId);
+
+                // Request the access token from the Identity Server
+                var tokenClient = new TokenClient(
+                    Configuration["IdentityServer:TokenEndpoint"],
+                    authenticationResult.ClientId,
+                    Configuration["IdentityServer:ClientSecret"]);
+
+                var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(
+                    model.Email,
+                    model.Password,
+                    allowedScopes);
+
+                if (tokenResponse.IsError)
+                {
+                    // Handle error, e.g., return an error response to the client
+                    return BadRequest($"Authentication succeeded, but token request failed. Error: {tokenResponse.Error}");
+                }
+
+                // Access token obtained successfully, you can use it or return it to the client
+                var accessToken = tokenResponse.AccessToken;
+
+                // Other logic, e.g., return user information along with the access token
+                return Ok(new { AccessToken = accessToken, UserInfo = /* user information */ });
             }
 
-            return BadRequest(result);
+            return BadRequest(authenticationResult);
         }
 
         [HttpPost("external-login")]
@@ -165,11 +195,12 @@ namespace Identity.Controllers
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var callbackUrl = Url.Action(
-                "ResetPassword", // Action method to reset password in your web application
-                "Account",
-                new { email = user.Email, token },
-                protocol: HttpContext.Request.Scheme);
+            //var callbackUrl = Url.Action(
+            //    "ResetPassword", // Action method to reset password in your web application
+            //    "Account",
+            //    new { email = user.Email, token },
+            //    protocol: HttpContext.Request.Scheme);
+            var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&code=" + token;
 
             await _emailService.SendEmailAsync(
                 model.Email,

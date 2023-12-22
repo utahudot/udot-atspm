@@ -102,6 +102,8 @@ builder.Host.ConfigureServices((host, services) =>
         options.ClientSecret = "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";
     });
 
+    services.AddClientCredentialsTokenManagement();
+
     //This is for the production certificate
     //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)
     //.Certificates
