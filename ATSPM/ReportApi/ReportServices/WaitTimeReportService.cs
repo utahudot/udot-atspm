@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.WaitTime;
@@ -57,17 +56,13 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseEvents = controllerEventLogRepository.GetLocationEventsByEventCodes(
-            parameter.locationIdentifier,
-            parameter.Start,
-                parameter.End,
-                new List<int>() {
+            var phaseEventCodes = new List<int>() {
                     82,
                     WaitTimeService.PHASE_BEGIN_GREEN,
                     WaitTimeService.PHASE_CALL_DROPPED,
                     WaitTimeService.PHASE_END_RED_CLEARANCE,
-                    WaitTimeService.PHASE_CALL_REGISTERED}
-                );
+                    WaitTimeService.PHASE_CALL_REGISTERED};
+            var phaseEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, phaseEventCodes);
             var terminationEvents = controllerEventLogs.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
