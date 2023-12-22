@@ -31,10 +31,6 @@ namespace ATSPM.ReportApi.Business.Common
                 if (row.EventCode == 1 && row.EventParam == phasenumber)
                     Cycle = new AnalysisPhaseCycle(locationId, phasenumber, row.Timestamp);
 
-                if (Cycle != null && row.EventParam == phasenumber &&
-                    (row.EventCode == 4 || row.EventCode == 5 || row.EventCode == 6))
-                    Cycle.SetTerminationEvent(row.EventCode);
-
                 if (Cycle != null && row.EventParam == phasenumber && row.EventCode == 8)
                     Cycle.YellowEvent = row.Timestamp;
 
@@ -43,6 +39,12 @@ namespace ATSPM.ReportApi.Business.Common
                     Cycle.SetEndTime(row.Timestamp);
                     Items.Add(Cycle);
                 }
+            }
+            foreach (var terminationEvent in terminationEvents)
+            {
+                if (Cycle != null && terminationEvent.EventParam == phasenumber &&
+                    (terminationEvent.EventCode == 4 || terminationEvent.EventCode == 5 || terminationEvent.EventCode == 6))
+                    Cycle.SetTerminationEvent(terminationEvent.EventCode);
             }
             if (!PedEvents.IsNullOrEmpty())
             {
