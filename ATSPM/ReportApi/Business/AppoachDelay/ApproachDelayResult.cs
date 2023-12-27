@@ -1,8 +1,5 @@
 ﻿using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ATSPM.ReportApi.Business.AppoachDelay
 {
@@ -10,7 +7,7 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
     {
         public ApproachDelayResult()
         {
-            
+
         }
 
         public ApproachDelayResult(
@@ -40,13 +37,13 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
         public double AverageDelayPerVehicle { get; set; }
         public double TotalDelay { get; set; }
 
-        [JsonIgnore]
+
         public List<ApproachDelayPlan> Plans { get; set; }
 
-        [JsonIgnore]
+
         public List<DataPointForDouble> ApproachDelayDataPoints { get; set; }
 
-        [JsonIgnore]
+
         public List<DataPointForDouble> ApproachDelayPerVehicleDataPoints { get; set; }
 
         public override string ToString()

@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
+namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20231214005231_EFCore6Upgrade")]
-    partial class EFCore6Upgrade
+    [Migration("20231218194815_20231218170917_EFCore6Upgrade")]
+    partial class _20231218170917_EFCore6Upgrade
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -98,65 +98,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.ToTable("Areas", t =>
                         {
                             t.HasComment("Areas");
-                        });
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Directory")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(1024)");
-
-                    b.Property<string>("Firmware")
-                        .HasMaxLength(32)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(32)");
-
-                    b.Property<string>("Password")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<long>("Port")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasDefaultValueSql("((0))");
-
-                    b.Property<string>("Product")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Protocol")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
-                        .HasDefaultValue("Unknown");
-
-                    b.Property<string>("SearchTerm")
-                        .HasMaxLength(128)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ControllerTypes", t =>
-                        {
-                            t.HasComment("Location Controller Types");
                         });
                 });
 
@@ -257,10 +198,10 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DateDisabled")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("integer");
@@ -326,7 +267,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -352,8 +293,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
@@ -426,14 +367,13 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
-                    b.Property<string>("SearchTerm")
-                        .HasMaxLength(128)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(128)");
+                    b.Property<string>("SearchTerms")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(50)
@@ -878,16 +818,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ControllerTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Ipaddress")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
-                        .HasDefaultValueSql("('10.0.0.1')");
-
                     b.Property<int>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -904,9 +834,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
                     b.Property<int>("LocationTypeId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("LoggingEnabled")
-                        .HasColumnType("boolean");
 
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
@@ -939,7 +866,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("Start")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -947,8 +874,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasDefaultValueSql("((10))");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ControllerTypeId");
 
                     b.HasIndex("JurisdictionId");
 
@@ -1009,7 +934,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -1439,8 +1364,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Manufacturer")
@@ -1606,7 +1531,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     b.HasIndex("RouteId", "LocationIdentifier")
                         .IsUnique();
 
-                    b.ToTable("RouteLocationss", t =>
+                    b.ToTable("RouteLocations", t =>
                         {
                             t.HasComment("Route Locations");
                         });
@@ -1704,8 +1629,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValue(new DateTime(2023, 12, 13, 17, 52, 31, 697, DateTimeKind.Local).AddTicks(3480));
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValue(new DateTime(2023, 12, 18, 12, 48, 15, 240, DateTimeKind.Local).AddTicks(4980));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1760,7 +1685,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("locationId")
                         .HasColumnType("integer");
@@ -1908,12 +1833,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             modelBuilder.Entity("ATSPM.Data.Models.Location", b =>
                 {
-                    b.HasOne("ATSPM.Data.Models.ControllerType", "ControllerType")
-                        .WithMany("Locations")
-                        .HasForeignKey("ControllerTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Locations")
                         .HasForeignKey("JurisdictionId")
@@ -1931,8 +1850,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ControllerType");
 
                     b.Navigation("Jurisdiction");
 
@@ -2112,11 +2029,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
             modelBuilder.Entity("ATSPM.Data.Models.Area", b =>
                 {
                     b.Navigation("UserAreas");
-                });
-
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerType", b =>
-                {
-                    b.Navigation("Locations");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.Detector", b =>

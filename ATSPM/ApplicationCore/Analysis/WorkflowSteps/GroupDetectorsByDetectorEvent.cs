@@ -30,8 +30,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
             var result = approach.Detectors
                 .GroupJoin(logs
-                .Where(w => w.LocationIdentifier == approach?.Location?.LocationIdentifier)
-                .Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn), 
+                .Where(w => w.SignalIdentifier == approach?.Location?.LocationIdentifier)
+                .Where(w => w.EventCode == (int)DataLoggerEnum.DetectorOn),
                 o => o.DetectorChannel, i => i.EventParam, (o, i) => Tuple.Create(o, o.DetectorChannel, i.OrderBy(o => o.Timestamp).AsEnumerable()));
 
             return Task.FromResult(result);
