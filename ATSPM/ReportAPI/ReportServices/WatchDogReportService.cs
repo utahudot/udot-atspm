@@ -36,9 +36,9 @@ namespace ATSPM.ReportApi.ReportServices
             //inject watchdog repo 
             var query = watchDogLogEventRepository.GetList()
                 .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End);
-            if (parameter.LocationId != null)
+            if (parameter.LocationIdentifier != null)
             {
-                query.Where(w => w.locationId == parameter.LocationId);
+                query.Where(w => w.locationIdentifier == parameter.LocationIdentifier);
             }
    
 
