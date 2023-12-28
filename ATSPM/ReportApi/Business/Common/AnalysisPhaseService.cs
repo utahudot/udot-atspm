@@ -54,7 +54,8 @@ namespace ATSPM.ReportApi.Business.Common
             }
             analysisPhaseData.PhaseDescription = phase.Approach.Description;
             analysisPhaseData.PhaseNumber = phasenumber;
-            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
+            var cycleEventCodes = new List<int> { 1, 8, 11 };
+            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
@@ -75,7 +76,7 @@ namespace ATSPM.ReportApi.Business.Common
             analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
-            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(terminationEvents.ToList()) ?? new List<ControllerEventLog>();
+            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(terminationEvents.ToList(), phasenumber) ?? new List<ControllerEventLog>();
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
@@ -181,9 +182,9 @@ namespace ATSPM.ReportApi.Business.Common
             return ConsecutiveEvents;
         }
 
-        private List<ControllerEventLog> FindUnknownTerminationEvents(List<ControllerEventLog> terminationEvents)
+        private List<ControllerEventLog> FindUnknownTerminationEvents(List<ControllerEventLog> terminationEvents, int phaseNumber)
         {
-            return terminationEvents.Where(t => t.EventCode == 7).ToList();
+            return terminationEvents.Where(t => t.EventCode == 7 && t.EventParam == phaseNumber).ToList();
         }
 
 
