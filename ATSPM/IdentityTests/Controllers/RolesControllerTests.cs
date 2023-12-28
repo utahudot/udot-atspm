@@ -40,7 +40,7 @@ namespace Identity.Controllers.Tests
             _roleManagerMock.Setup(rm => rm.Roles).Returns(roles.AsQueryable());
 
             // Act
-            var result = _rolesController.GetRoles();
+            var result = _rolesController.GetRolesAsync();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
