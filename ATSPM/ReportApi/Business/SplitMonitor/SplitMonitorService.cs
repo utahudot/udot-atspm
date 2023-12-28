@@ -76,6 +76,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
 
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
+                PercentileSplit = options.PercentileSplit,
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 4)
