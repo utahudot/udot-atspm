@@ -93,7 +93,9 @@ namespace ATSPM.ReportApi.Business.Common
 
         private void SetFirstPlan(DateTime startDate, string locationId, List<ControllerEventLog> planEvents)
         {
-            var firstPlanEvent = planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
+            // Check if first plan has exact startDate as value in planEvents
+            var firstPlanEvent = planEvents.Where(e => e.Timestamp == startDate).FirstOrDefault();
+            firstPlanEvent ??= planEvents.Where(e => e.Timestamp < startDate).OrderByDescending(e => e.Timestamp).FirstOrDefault();
 
             if (firstPlanEvent != null)
             {
