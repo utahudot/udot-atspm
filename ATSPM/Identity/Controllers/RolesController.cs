@@ -1,7 +1,10 @@
-﻿using Identity.Models.Role;
+﻿using ATSPM.Domain.Extensions;
+using Identity.Business.NewFolder;
+using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Identity.Controllers
 {
@@ -20,11 +23,19 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ViewRoles")]
-        public IActionResult GetRoles()
+        //[Authorize(Policy = "ViewRoles")]
+        public async Task<IActionResult> GetRolesAsync()
         {
-            var roles = _roleManager.Roles.Select(r => r.Name).ToList();
-            return Ok(roles);
+            var roles = _roleManager.Roles.ToList();
+            var result = new List<RolesResult>();
+
+            foreach (var role in roles)
+            {
+                var claims = await _roleManager.GetClaimsAsync(role);
+                result.Add(new RolesResult { Role = role.Name, Claims = claims.Select(c => c.Value).ToList() });
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]

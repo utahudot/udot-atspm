@@ -87,30 +87,30 @@ namespace Identity.Controllers
             if (authenticationResult.Code == StatusCodes.Status200OK)
             {
                 // Assuming _scopeService is injected and provides access to the database for fetching allowed scopes
-                var allowedScopes = _scopeService.GetScopesForClient(authenticationResult.ClientId);
+                //var allowedScopes = _scopeService.GetScopesForClient(authenticationResult.ClientId);
 
                 // Request the access token from the Identity Server
-                var tokenClient = new TokenClient(
-                    Configuration["IdentityServer:TokenEndpoint"],
-                    authenticationResult.ClientId,
-                    Configuration["IdentityServer:ClientSecret"]);
+                //var tokenClient = new TokenClient(
+                //    Configuration["IdentityServer:TokenEndpoint"],
+                //    authenticationResult.ClientId,
+                //    Configuration["IdentityServer:ClientSecret"]);
 
-                var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(
-                    model.Email,
-                    model.Password,
-                    allowedScopes);
+                //var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(
+                //    model.Email,
+                //    model.Password,
+                //    allowedScopes);
 
-                if (tokenResponse.IsError)
-                {
-                    // Handle error, e.g., return an error response to the client
-                    return BadRequest($"Authentication succeeded, but token request failed. Error: {tokenResponse.Error}");
-                }
+                //if (tokenResponse.IsError)
+                //{
+                //    // Handle error, e.g., return an error response to the client
+                //    return BadRequest($"Authentication succeeded, but token request failed. Error: {tokenResponse.Error}");
+                //}
 
                 // Access token obtained successfully, you can use it or return it to the client
-                var accessToken = tokenResponse.AccessToken;
+                //var accessToken = tokenResponse.AccessToken;
 
                 // Other logic, e.g., return user information along with the access token
-                return Ok(new { AccessToken = accessToken, UserInfo = /* user information */ });
+                //return Ok(new { AccessToken = accessToken, UserInfo = /* user information */ });
             }
 
             return BadRequest(authenticationResult);
