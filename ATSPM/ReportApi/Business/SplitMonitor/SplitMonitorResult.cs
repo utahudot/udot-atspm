@@ -1,6 +1,4 @@
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.SplitMonitor;
 
@@ -27,6 +25,7 @@ public class SplitMonitorResult : LocationResult
         DateTime start,
         DateTime end,
         int phaseNumber,
+        int percentileSplit,
         ICollection<PlanSplitMonitorDTO> plans,
         ICollection<DataPointForDouble> programmedSplits,
         ICollection<DataPointForDouble> gapOuts,
@@ -36,6 +35,7 @@ public class SplitMonitorResult : LocationResult
         ICollection<DataPointForDouble> peds) : base(locationId, start, end)
     {
         PhaseNumber = phaseNumber;
+        PercentileSplit = percentileSplit;
         Plans = plans;
         ProgrammedSplits = programmedSplits;
         GapOuts = gapOuts;
@@ -45,7 +45,7 @@ public class SplitMonitorResult : LocationResult
         Peds = peds;
     }
     public int PhaseNumber { get; internal set; }
-
+    public int PercentileSplit { get; internal set }
     public string PhaseDescription { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
     public ICollection<DataPointForDouble> ProgrammedSplits { get; internal set; }
