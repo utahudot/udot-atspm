@@ -5,52 +5,50 @@ namespace ATSPM.ReportApi.Business.Common
 {
     public class AnalysisPhaseCycleCollection
     {
-        public List<AnalysisPhaseCycle> Items = new List<AnalysisPhaseCycle>();
+        public List<AnalysisPhaseCycle> Cycles = new List<AnalysisPhaseCycle>();
 
         /// <summary>
         ///     Collection of phase events primarily used for the split monitor and Phase Termination Chart
         /// </summary>
         /// <param name="phasenumber"></param>
         /// <param name="locationId"></param>
-        /// <param name="CycleEventsTable"></param>
+        /// <param name="cycleEvents"></param>
         public AnalysisPhaseCycleCollection(
             int phasenumber,
             string locationId,
-            List<ControllerEventLog> CycleEventsTable,
-            List<ControllerEventLog> PedEvents,
+            List<ControllerEventLog> cycleEvents,
+            List<ControllerEventLog> pedEvents,
             List<ControllerEventLog> terminationEvents
             )
         {
-            AnalysisPhaseCycle Cycle = null;
+            AnalysisPhaseCycle cycle = null;
             locationId = locationId;
             PhaseNumber = phasenumber;
+            var combinedEvents = cycleEvents.Concat(terminationEvents).OrderBy(e => e.Timestamp).ToList();
 
-
-            foreach (var row in CycleEventsTable)
+            foreach (var cycleEvent in combinedEvents)
             {
-                if (row.EventCode == 1 && row.EventParam == phasenumber)
-                    Cycle = new AnalysisPhaseCycle(locationId, phasenumber, row.Timestamp);
+                if (cycleEvent.EventCode == 1 && cycleEvent.EventParam == phasenumber)
+                    cycle = new AnalysisPhaseCycle(locationId, phasenumber, cycleEvent.Timestamp);
 
-                if (Cycle != null && row.EventParam == phasenumber && row.EventCode == 8)
-                    Cycle.YellowEvent = row.Timestamp;
+                if (cycle != null && cycleEvent.EventParam == phasenumber &&
+                    (cycleEvent.EventCode == 4 || cycleEvent.EventCode == 5 || cycleEvent.EventCode == 6))
+                    cycle.SetTerminationEvent(cycleEvent.EventCode);
 
-                if (Cycle != null && row.EventParam == phasenumber && row.EventCode == 11)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 8)
+                    cycle.YellowEvent = cycleEvent.Timestamp;
+
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 11)
                 {
-                    Cycle.SetEndTime(row.Timestamp);
-                    Items.Add(Cycle);
+                    cycle.SetEndTime(cycleEvent.Timestamp);
+                    Cycles.Add(cycle);
                 }
             }
-            foreach (var terminationEvent in terminationEvents)
+            if (!pedEvents.IsNullOrEmpty())
             {
-                if (Cycle != null && terminationEvent.EventParam == phasenumber &&
-                    (terminationEvent.EventCode == 4 || terminationEvent.EventCode == 5 || terminationEvent.EventCode == 6))
-                    Cycle.SetTerminationEvent(terminationEvent.EventCode);
-            }
-            if (!PedEvents.IsNullOrEmpty())
-            {
-                foreach (var c in Items)
+                foreach (var c in Cycles)
                 {
-                    var PedEventsForCycle = (from r in PedEvents
+                    var PedEventsForCycle = (from r in pedEvents
                                              where r.Timestamp >=
                                                    c.StartTime && r.Timestamp <= c.EndTime
                                              select r).ToList();
@@ -88,7 +86,7 @@ namespace ATSPM.ReportApi.Business.Common
                         if (i == 0 && current.EventCode == 23)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.TimeStamp);
+                            //cycle.SetPedEnd(current.TimeStamp);
                             Cycle.SetPedEnd(Cycle.StartTime);
                         }
 
@@ -112,7 +110,7 @@ namespace ATSPM.ReportApi.Business.Common
                         if (i + 2 == eventsInOrder.Count() && next.EventCode == 21)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
-                            //Cycle.SetPedEnd(Cycle.YellowEvent);
+                            //cycle.SetPedEnd(cycle.YellowEvent);
                             Cycle.SetPedEnd(Cycle.StartTime);
                         }
                     }
@@ -126,7 +124,7 @@ namespace ATSPM.ReportApi.Business.Common
                         case 23:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
-                            //Cycle.SetPedEnd(current.TimeStamp);
+                            //cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on
@@ -134,7 +132,7 @@ namespace ATSPM.ReportApi.Business.Common
 
                             Cycle.SetPedStart(current.Timestamp);
                             Cycle.SetPedEnd(current.Timestamp);
-                            //Cycle.SetPedEnd(Cycle.YellowEvent);
+                            //cycle.SetPedEnd(cycle.YellowEvent);
 
                             break;
                     }

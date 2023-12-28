@@ -77,23 +77,23 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
                 ProgrammedSplits = splits,
-                GapOuts = phase.Cycles.Items
+                GapOuts = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                MaxOuts = phase.Cycles.Items
+                MaxOuts = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 5)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                ForceOffs = phase.Cycles.Items
+                ForceOffs = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 6)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                Unknowns = phase.Cycles.Items
+                Unknowns = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 0)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                Peds = phase.Cycles.Items
+                Peds = phase.Cycles.Cycles
                                 .Where(c => c.HasPed)
                                 .Select(c => new DataPointForDouble(c.PedStartTime, c.PedDuration))
                                 .ToList(),
@@ -125,7 +125,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
+                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
                 if (cycles.Any())
                 {
                     //var planCycleCount = Convert.ToDouble(cycles.Count());

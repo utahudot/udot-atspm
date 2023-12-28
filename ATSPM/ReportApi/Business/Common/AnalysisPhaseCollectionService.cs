@@ -139,7 +139,7 @@ namespace ATSPM.ReportApi.Business.Common
         //    foreach (var row in phasesInUse)
         //    {
         //        var aPhase = new AnalysisPhase(row, locationId, ptedt);
-        //        Items.Add(aPhase);
+        //        Cycles.Add(aPhase);
         //    }
         //    OrderPhases();
         //    return analysisPhaseCollectionData;
@@ -277,7 +277,7 @@ namespace ATSPM.ReportApi.Business.Common
             var HighCycleCount = 0;
             foreach (var phase in phases.AnalysisPhases)
             {
-                var Cycles = from cycle in phase.Cycles.Items
+                var Cycles = from cycle in phase.Cycles.Cycles
                              where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
                              select cycle;
 
