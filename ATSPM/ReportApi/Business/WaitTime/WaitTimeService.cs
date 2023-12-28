@@ -177,7 +177,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
             var averageWaitTime = new List<DataPointForDouble>();
             try
             {
-                if (!waitTimeTrackerList.Any())
+                if (waitTimeTrackerList.Any())
                 {
                     for (var lowerTimeLimit = options.Start;
                         lowerTimeLimit < options.End;
@@ -194,12 +194,12 @@ namespace ATSPM.ReportApi.Business.WaitTime
                 }
 
 
-                var splits = plans.Select(p => new PlanSplit(p.Start, p.End, phaseDetail.PhaseNumber, p.Splits[phaseDetail.PhaseNumber]));
+                var splits = plans.Select(p => new DataPointForDouble(p.Start, p.Splits[phaseDetail.PhaseNumber])).ToList();
                 var waitTimePlans = GetWaitTimePlans(plans, waitTimeTrackerList);
                 //}
 
-                return new WaitTimeResult(
-                    "Wait Time",
+                var result = new WaitTimeResult(
+                    phaseDetail.Approach.Location.LocationIdentifier,
                     phaseDetail.Approach.Id,
                     phaseDetail.Approach.Description,
                     phaseDetail.Approach.ProtectedPhaseNumber,
@@ -212,8 +212,11 @@ namespace ATSPM.ReportApi.Business.WaitTime
                     forceOffs,
                     unknowns,
                     averageWaitTime,
-                    volumeCollection.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList()
+                    volumeCollection.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList(),
+                    splits
                     );
+                result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
+                return result;
             }
             catch
             {
