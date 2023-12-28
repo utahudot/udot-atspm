@@ -1,6 +1,4 @@
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.WaitTime
 {
@@ -23,7 +21,9 @@ namespace ATSPM.ReportApi.Business.WaitTime
                              IReadOnlyList<DataPointForDouble> forceOffs,
                              IReadOnlyList<DataPointForDouble> unknowns,
                              IReadOnlyList<DataPointForDouble> average,
-                             IReadOnlyList<DataPointForInt> volumes) : base(approachId, locationId, start, end)
+                             IReadOnlyList<DataPointForInt> volumes,
+                             IReadOnlyList<DataPointForDouble> splits
+                             ) : base(approachId, locationId, start, end)
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;
@@ -36,6 +36,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
             Unknowns = unknowns;
             Average = average;
             Volumes = volumes;
+            PlanSplits = splits;
         }
         public string ApproachDescription { get; internal set; }
         public int PhaseNumber { get; internal set; }
@@ -47,6 +48,6 @@ namespace ATSPM.ReportApi.Business.WaitTime
         public IReadOnlyList<DataPointForDouble> Unknowns { get; internal set; }
         public IReadOnlyList<DataPointForDouble> Average { get; internal set; }
         public IReadOnlyList<DataPointForInt> Volumes { get; internal set; }
-        public IReadOnlyList<PlanSplit> PlanSplits { get; internal set; }
+        public IReadOnlyList<DataPointForDouble> PlanSplits { get; internal set; }
     }
 }
