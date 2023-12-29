@@ -188,7 +188,9 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 averageSplits,
                 programmedSplits.Select(p => new DataPointForDouble(p.Timestamp, p.ProgValue)).ToList(),
                 phaseDetail.PhaseNumber,
-                phaseNumberSort
+                phaseNumberSort,
+                options.YAxisBinSize,
+                options.XAxisBinSize
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
