@@ -1,5 +1,4 @@
 using ATSPM.ReportApi.Business.Common;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.TimingAndActuation
 {
@@ -13,9 +12,9 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         public bool ShowAdvancedDilemmaZone { get; set; }
         public bool ShowAdvancedCount { get; set; }
         public bool ShowAllLanesInfo { get; set; }
-        public List<int> GlobalEventCodesList { get; set; }
-        public List<int> GlobalEventParamsList { get; set; }
-        public List<int> PhaseEventCodesList { get; set; }
+        public List<int>? GlobalEventCodesList { get; set; }
+        public List<int>? GlobalEventParamsList { get; set; }
+        public List<int>? PhaseEventCodesList { get; set; }
         public int GlobalEventCounter { get; set; }
     }
 }
