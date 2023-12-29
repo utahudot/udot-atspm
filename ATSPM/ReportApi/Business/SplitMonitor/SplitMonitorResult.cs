@@ -45,7 +45,7 @@ public class SplitMonitorResult : LocationResult
         Peds = peds;
     }
     public int PhaseNumber { get; internal set; }
-    public int PercentileSplit { get; internal set }
+    public int PercentileSplit { get; internal set; }
     public string PhaseDescription { get; internal set; }
     public ICollection<PlanSplitMonitorDTO> Plans { get; internal set; }
     public ICollection<DataPointForDouble> ProgrammedSplits { get; internal set; }
