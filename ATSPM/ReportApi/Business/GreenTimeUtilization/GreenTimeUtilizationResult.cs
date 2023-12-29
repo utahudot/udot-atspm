@@ -1,6 +1,4 @@
 ﻿using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.GreenTimeUtilization
 {
@@ -15,19 +13,25 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             List<DataPointForDouble> avgSplits,
             List<DataPointForDouble> progSplits,
             int phaseNumber,
-            string phaseNumberSort) : base(approachId, locationIdentifier, start, end)
+            string phaseNumberSort,
+            int YAxisBinSize,
+            int XAxisBinSize) : base(approachId, locationIdentifier, start, end)
         {
             Bins = stacks;
-            AvgSplits = avgSplits;
-            ProgSplits = progSplits;
+            AverageSplits = avgSplits;
+            ProgrammedSplits = progSplits;
             PhaseNumber = phaseNumber;
             PhaseNumberSort = phaseNumberSort;
+            this.YAxisBinSize = YAxisBinSize;
+            this.XAxisBinSize = XAxisBinSize;
         }
 
         public List<BarStack> Bins { get; set; } = new List<BarStack>();
-        public List<DataPointForDouble> AvgSplits { get; set; } = new List<DataPointForDouble>();
-        public List<DataPointForDouble> ProgSplits { get; set; } = new List<DataPointForDouble>();
+        public List<DataPointForDouble> AverageSplits { get; set; } = new List<DataPointForDouble>();
+        public List<DataPointForDouble> ProgrammedSplits { get; set; } = new List<DataPointForDouble>();
         public int PhaseNumber { get; set; }
         public string PhaseNumberSort { get; set; }
+        public int YAxisBinSize { get; set; }
+        public int XAxisBinSize { get; set; }
     }
 }
