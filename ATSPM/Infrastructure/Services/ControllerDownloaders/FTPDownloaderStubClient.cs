@@ -72,10 +72,5 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
             return Task.FromResult(dir.GetFiles().Select(s => s.FullName));
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
     }
 }
