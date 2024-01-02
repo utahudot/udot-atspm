@@ -30,7 +30,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             _serviceProvider = serviceProvider;
         }
 
-        public override void Initialize()
+        public override Task Initialize()
         {
             var stepOptions = new ExecutionDataflowBlockOptions()
             {
@@ -59,7 +59,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             logsToArchive.LinkTo(saveToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
             saveToRepo.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            base.Initialize();
+            return base.Initialize();
         }
 
         protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Location Location, CancellationToken cancellationToken = default)
