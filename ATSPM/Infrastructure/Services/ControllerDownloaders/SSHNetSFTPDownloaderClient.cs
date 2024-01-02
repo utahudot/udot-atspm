@@ -126,22 +126,17 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         #endregion
 
-        protected override void Dispose(bool disposing)
+        protected override void DisposeManagedCode()
         {
-            if (disposing)
+            if (Client != null)
             {
-                if (Client != null)
+                if (Client.IsConnected)
                 {
-                    if (Client.IsConnected)
-                    {
-                        Client.Disconnect();
-                    }
-                    Client.Dispose();
-                    Client = null;
+                    Client.Disconnect();
                 }
+                Client.Dispose();
+                Client = null;
             }
-
-            base.Dispose(disposing);
         }
     }
 

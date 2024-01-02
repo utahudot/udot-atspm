@@ -167,21 +167,23 @@
             </summary>
             <param name="propertyName">Name of property that has changed.</param>
         </member>
-        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.#ctor(System.Boolean)">
-            <summary>
-            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-            </summary>
+        <member name="T:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressBase`3">
+            <inheritdoc cref="T:ATSPM.Domain.Services.IExecutableServiceWithProgress`3"/>
         </member>
-        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.ExecuteAsync(`0,System.IProgress{`2},System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressBase`3.#ctor(System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Domain.BaseClasses.ExectuableServiceWithProgressBase`3.ExecuteAsync(`0,System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressBase`3.ExecuteAsync(`0,System.IProgress{`2},System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressBase`3.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2">
+            <inheritdoc cref="T:ATSPM.Domain.Services.IExecutableService`2"/>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.#ctor(System.Boolean)">
-            <summary>
-            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="E:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.CanExecuteChanged">
             <inheritdoc/>
@@ -201,10 +203,11 @@
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceBase`2.System#Windows#Input#ICommand#Execute(System.Object)">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3">
+            <inheritdoc cref="T:ATSPM.Domain.Services.IExecutableServiceWithProgressAsync`3"/>
+        </member>
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.#ctor(System.Boolean)">
-            <summary>
-            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.Execute(`0,System.IProgress{`2},System.Threading.CancellationToken)">
             <inheritdoc/>
@@ -212,10 +215,11 @@
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceWithProgressAsyncBase`3.Execute(`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2">
+            <inheritdoc cref="T:ATSPM.Domain.Services.IExecutableServiceAsync`2"/>
+        </member>
         <member name="M:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.#ctor(System.Boolean)">
-            <summary>
-            Instantiate new service and calls <see cref="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.BeginInit"/> if <paramref name="initialize"/> is true
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="E:ATSPM.Domain.BaseClasses.ExecutableServiceAsyncBase`2.CanExecuteChanged">
             <inheritdoc/>
@@ -233,7 +237,7 @@
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Domain.BaseClasses.ServiceObjectBase">
-            <inheritdoc/>
+            <inheritdoc cref="T:ATSPM.Domain.Services.IService"/>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.#ctor(System.Boolean)">
             <summary>
@@ -252,6 +256,9 @@
             </summary>
             <remarks>Overriden from <see cref="T:ATSPM.Domain.BaseClasses.ObservableObjectBase"/> to check for validation errors and change tracking.</remarks>
         </member>
+        <member name="E:ATSPM.Domain.BaseClasses.ServiceObjectBase.Initialized">
+            <inheritdoc/>
+        </member>
         <member name="P:ATSPM.Domain.BaseClasses.ServiceObjectBase.IsInitialized">
             <inheritdoc/>
         </member>
@@ -267,8 +274,33 @@
         <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Dispose(System.Boolean)">
             <summary>
             Used for IDisposable Pattern
+            Dispose(bool disposing) executes in two distinct scenarios.
+            If disposing equals true, the method has been called directly or indirectly by a user's code.
+            Managed and unmanaged resources can be disposed.
+            If disposing equals false, the method has been called by the runtime from inside the finalizer and you should not reference other objects.
+            Only unmanaged resources can be disposed.
             </summary>
             <param name="disposing">Flag for keeping track of disposed state</param>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.DisposeManagedCode">
+            <summary>
+            Custom implementation of the IDisposable Pattern.
+            Override to dispose of Managed Code.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.DisposeUnManagedCode">
+            <summary>
+            Custom implementation of the IDisposable Pattern.
+            Override to dispose of Un-Managed Code.
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.Finalize">
+            <summary>
+            Use C# finalizer syntax for finalization code.
+            This finalizer will run only if the Dispose method does not get called.
+            It gives your base class the opportunity to finalize.
+            Do not provide finalizer in types derived from this class.
+            </summary>
         </member>
         <member name="M:ATSPM.Domain.BaseClasses.ServiceObjectBase.RaiseInitialized">
             <summary>
@@ -864,8 +896,140 @@
         </member>
         <member name="T:ATSPM.Domain.Services.IService">
             <summary>
-            <c>ServiceObjectBase</c> For services implementing:
+            <c>Service Definition</c> For services implementing:
             <list type="table">
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Services.IExecutableService`2">
+            <summary>
+            <c>Service Definition</c> For executable services implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:ATSPM.Domain.Common.IExecuteAsync"/></term>
+            <description>Defines an async command or process with input and ouput parameters which can conditionally be executed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Services.IExecutableServiceWithProgress`3">
+            <summary>
+            <c>Service Definition</c> For executable services with progress implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:ATSPM.Domain.Common.IExecuteAsyncWithProgress`3"/></term>
+            <description>Defines an async command or operation with input and ouput parameters which can conditionally be executed and use IProgress.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Services.IExecutableServiceAsync`2">
+            <summary>
+            <c>Service Definition</c> For <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> executable services implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:ATSPM.Domain.Common.IExecute"/></term>
+            <description>Defines a command with input and ouput parameters which can conditionally be executed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
+            <description>Notifies clients that a property value has changed.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.INotifyPropertyChanging"/></term>
+            <description>Notifies clients that a property value is changing.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.ComponentModel.ISupportInitializeNotification"/></term>
+            <description>Allows coordination of initialization for a component and its dependent properties.</description>
+            </item>
+            
+            <item>
+            <term><see cref="T:System.IDisposable"/></term>
+            <description>Provides a mechanism for releasing unmanaged resources.</description>
+            </item>
+            
+            </list>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Domain.Services.IExecutableServiceWithProgressAsync`3">
+            <summary>
+            <c>Service Definition</c> For <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/> executable services with progress implementing:
+            <list type="table">
+            
+            <item>
+            <term><see cref="T:ATSPM.Domain.Common.IExecuteWithProgress`3"/></term>
+            <description>Defines a command with input and ouput parameters which can conditionally be executed and use IProgress.</description>
+            </item>
             
             <item>
             <term><see cref="T:System.ComponentModel.INotifyPropertyChanged"/></term>
