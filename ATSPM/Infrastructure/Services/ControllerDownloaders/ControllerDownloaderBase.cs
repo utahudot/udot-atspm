@@ -7,6 +7,7 @@ using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
+using Duende.IdentityServer.EntityFramework.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -229,25 +230,11 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 Task.Run(() => Execute(p, default, default));
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void DisposeManagedCode()
         {
-            if (disposing)
-            {
-                if (_client != null)
-                {
-                    if (_client.IsConnected)
-                    {
-                        _client.DisconnectAsync();
-                    }
-                    _client.Dispose();
-                    _client = null;
-                }
-            }
-
-            base.Dispose(disposing);
+            _client?.Dispose();
         }
 
         #endregion
-
     }
 }
