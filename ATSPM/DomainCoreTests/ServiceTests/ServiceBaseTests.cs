@@ -20,6 +20,10 @@ namespace DomainCoreTests.ServiceTests
 
             public int InitStatus { get; set; }
 
+            public bool UnManagedDisposed { get; set; }
+
+            public bool ManagedDisposed { get; set; }
+
             public async override Task Initialize()
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(10));
@@ -27,15 +31,20 @@ namespace DomainCoreTests.ServiceTests
                 InitStatus += 1;
             }
 
-            protected override void DisposeManagedCode()
-            {
-                InitStatus = 0;
-            }
-
             public async Task TestRaiseInitialized()
             {
                 BeginInit();
                 await Task.Delay(TimeSpan.FromMilliseconds(20));
+            }
+
+            protected override void DisposeManagedCode()
+            {
+                ManagedDisposed = true;
+            }
+
+            protected override void DisposeUnManagedCode()
+            {
+                UnManagedDisposed = true;
             }
         }
 
@@ -103,7 +112,7 @@ namespace DomainCoreTests.ServiceTests
         /// Calling BeginInit while IsInitialized is true will re-initialize the service.
         /// </summary>
         [Fact]
-        [Trait(nameof(ServiceBaseTests), "Double Initialize Disposing")]
+        [Trait(nameof(ServiceBaseTests), "Double Initialize")]
         public async void ServiceBaseTestsDoubleInitialize()
         {
             var sut = new TestService();
@@ -145,6 +154,7 @@ namespace DomainCoreTests.ServiceTests
 
         /// <summary>
         /// When disposed, the service IsInitialized should be set to false
+        /// Managed and UnManaged code should have also been disposed
         /// </summary>
         [Fact]
         [Trait(nameof(ServiceBaseTests), "Not Initialized When Disposed")]
@@ -157,28 +167,17 @@ namespace DomainCoreTests.ServiceTests
             sut.Dispose();
 
             var condition1 = sut.IsInitialized;
-            var condition2 = sut.InitStatus > 0;
+            var condition2 = sut.ManagedDisposed;
+            var condition3 = sut.UnManagedDisposed;
 
             Assert.False(condition1);
-            Assert.False(condition2);
+            Assert.True(condition2);
+            Assert.True(condition3);
         }
 
         #endregion
 
         #endregion
-
-        //[Fact]
-        //[Trait(nameof(ServiceBaseTests), "Raises Property Changed On Initialized")]
-        //public void ServiceBaseTestsRaisesPropertyChangedOnInitialized()
-        //{
-        //    var sut = new TestService();
-
-        //    var evt = Assert.RaisesAny(h => sut.PropertyChanged += h, h => sut.PropertyChanged -= h, () => sut.BeginInit());
-
-        //    Assert.NotNull(evt);
-        //    Assert.Equal(sut, evt.Sender);
-        //    Assert.IsType<PropertyChangedEventArgs>(evt.Arguments);
-        //}
 
         public void Dispose()
         {
