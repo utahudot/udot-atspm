@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ATSPM.Domain.BaseClasses;
+using System;
 using System.Threading.Tasks;
-using Xunit.Abstractions;
 using Xunit;
-using ATSPM.Domain.BaseClasses;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
-using static Xunit.Assert;
+using Xunit.Abstractions;
 
 namespace DomainCoreTests.ServiceTests
 {
