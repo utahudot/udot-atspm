@@ -1,3 +1,4 @@
+using ATSPM.Identity.Business.Claims;
 using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
@@ -62,6 +63,7 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
     services.AddScoped<IEmailService, EmailService>();
+    services.AddScoped<ClaimsService, ClaimsService>();
 
     //services.AddAuthentication("Bearer")
     //   .AddJwtBearer("Bearer", options =>
