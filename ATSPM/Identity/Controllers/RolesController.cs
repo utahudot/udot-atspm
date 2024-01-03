@@ -1,14 +1,12 @@
-﻿using ATSPM.Domain.Extensions;
-using Identity.Business.NewFolder;
+﻿using Identity.Business.NewFolder;
 using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Identity.Controllers
 {
-    //[Authorize()]
+    [Authorize()]
     [ApiController]
     [Route("api/roles")]
     public class RolesController : ControllerBase
@@ -23,7 +21,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Policy = "ViewRoles")]
+        [Authorize(Policy = "ViewRoles")]
         public async Task<IActionResult> GetRolesAsync()
         {
             var roles = _roleManager.Roles.ToList();
@@ -39,7 +37,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Policy = "CreateRoles")]
+        [Authorize(Policy = "CreateRoles")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (!ModelState.IsValid)
