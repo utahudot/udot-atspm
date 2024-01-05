@@ -177,6 +177,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
     s.AddScoped<YellowRedActivationsService>();
+    s.AddScoped<WatchDogReportService>();
 
     //Common Services
     s.AddScoped<PlanService>();
