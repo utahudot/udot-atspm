@@ -24,6 +24,7 @@ using ATSPM.ReportApi.Business.TimeSpaceDiagram;
 using ATSPM.ReportApi.Business.TimingAndActuation;
 using ATSPM.ReportApi.Business.TurningMovementCounts;
 using ATSPM.ReportApi.Business.WaitTime;
+using ATSPM.ReportApi.Business.Watchdog;
 using ATSPM.ReportApi.Business.YellowRedActivations;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
@@ -37,7 +38,7 @@ using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
-//AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 //// Configure Kestrel to listen on the port defined by the PORT environment variable
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
@@ -155,6 +156,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
+    s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
 
     //Chart Services
     s.AddScoped<ApproachDelayService>();
@@ -175,6 +177,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
     s.AddScoped<YellowRedActivationsService>();
+    s.AddScoped<WatchDogReportService>();
 
     //Common Services
     s.AddScoped<PlanService>();
