@@ -1,13 +1,7 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.PreemptServiceRequest;
 using ATSPM.ReportApi.Business.Watchdog;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -20,11 +14,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ILocationRepository locationRepository;
         private readonly IJurisdictionRepository jurisdictionRepository;
         private readonly IRegionsRepository regionsRepository;
-     
 
-       
-        // handle returning correct region, area, etc (where nulls are at)
-        //handle null params
 
         /// <inheritdoc/>
         public WatchDogReportService(IWatchDogLogEventRepository watchDogLogEventRepository, ILocationRepository locationRepository, IJurisdictionRepository jurisdictionRepository, IRegionsRepository regionsRepository)
@@ -40,13 +30,12 @@ namespace ATSPM.ReportApi.ReportServices
         public override async Task<WatchDogResult> ExecuteAsync(WatchDogOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
 
-            //inject watchdog repo 
             var query = watchDogLogEventRepository.GetList()
                 .Where(w => w.Timestamp >= parameter.Start && w.Timestamp <= parameter.End);
 
             if (parameter.LocationIdentifier != null)
             {
-               query = query.Where(w => w.locationIdentifier == parameter.LocationIdentifier);
+                query = query.Where(w => w.locationIdentifier == parameter.LocationIdentifier);
             }
             if (parameter.IssueType != null)
             {
@@ -54,15 +43,8 @@ namespace ATSPM.ReportApi.ReportServices
             }
 
 
-
-            // do that for all the rest of the params except area, region, jur (because not built out yet.) 
-
-            // get location info. (do we add these to the logobjects itself ask christian)
-            
-
             var events = query.ToList();
 
-         
             var distinctLocationIds = events.Select(e => e.locationId).Distinct();
             var locations = locationRepository.GetList()
                 .Include(a => a.Areas)
@@ -96,17 +78,17 @@ namespace ATSPM.ReportApi.ReportServices
             var result = new WatchDogResult();
             result.LogEvents = new List<WatchDogLogEventDTO>();
             result.Start = parameter.Start;
-            result.End = parameter.End; 
-        
+            result.End = parameter.End;
+
             foreach (var e in events)
             {
                 var location = locations.Where(l => l.Id == e.locationId).FirstOrDefault();
                 string jurisdictionName = jurisdictionDict.ContainsKey(location.JurisdictionId)
                                               ? jurisdictionDict[location.JurisdictionId]
-                                              : "NA"; // Default value in case JurisdictionId is not found
+                                              : "NA";
                 string regionDescription = regionsDict.ContainsKey(location.RegionId)
                                   ? regionsDict[location.RegionId]
-                                  : "NA"; // Default value in case JurisdictionId is not found 
+                                  : "NA";
 
                 result.LogEvents.Add(
                     new WatchDogLogEventDTO(
@@ -122,11 +104,11 @@ namespace ATSPM.ReportApi.ReportServices
                         regionDescription,
                         location.JurisdictionId,
                         jurisdictionName,
-                        location.Areas.Select(a => new AreaDTO { Id = a.Id, Name = a.Name })    
+                        location.Areas.Select(a => new AreaDTO { Id = a.Id, Name = a.Name })
                 )); ;
             }
 
-            return result;  
+            return result;
         }
     }
 }
