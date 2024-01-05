@@ -134,6 +134,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IRouteLocationsRepository, RouteLocationEFRepository>();
             services.AddScoped<ISettingsRepository, SettingsEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
+            services.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
 
             return services;
         }
