@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Speed
+namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.EventLog
 {
-    [DbContext(typeof(SpeedContext))]
-    [Migration("20231214005351_EFCore6Upgrade")]
+    [DbContext(typeof(EventLogContext))]
+    [Migration("20240109175619_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -25,27 +25,24 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Speed
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ATSPM.Data.Models.SpeedEvent", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
-                    b.Property<string>("DetectorId")
-                        .HasMaxLength(50)
+                    b.Property<string>("LocationIdentifier")
+                        .HasMaxLength(10)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(10)");
 
-                    b.Property<int>("Mph")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Kph")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TimeStamp")
+                    b.Property<DateTime>("ArchiveDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("DetectorId", "Mph", "Kph", "TimeStamp");
+                    b.Property<byte[]>("LogData")
+                        .HasColumnType("bytea");
 
-                    b.ToTable("SpeedEvents", t =>
+                    b.HasKey("LocationIdentifier", "ArchiveDate");
+
+                    b.ToTable("ControllerLogArchives", t =>
                         {
-                            t.HasComment("Speed Event Data");
+                            t.HasComment("Compressed Event Log Data");
                         });
                 });
 #pragma warning restore 612, 618

@@ -172,6 +172,11 @@ namespace ATSPM.Data
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
+
+            if (Database.IsNpgsql())
+                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            //else
+            //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>

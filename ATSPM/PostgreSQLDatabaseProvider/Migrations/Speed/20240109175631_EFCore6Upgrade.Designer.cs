@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.EventLog
+namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Speed
 {
-    [DbContext(typeof(EventLogContext))]
-    [Migration("20231214005326_EFCore6Upgrade")]
+    [DbContext(typeof(SpeedContext))]
+    [Migration("20240109175631_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -25,24 +25,27 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.EventLog
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.SpeedEvent", b =>
                 {
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
+                    b.Property<string>("DetectorId")
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(10)");
+                        .HasColumnType("character varying(50)");
 
-                    b.Property<DateTime>("ArchiveDate")
+                    b.Property<int>("Mph")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Kph")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("TimeStamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte[]>("LogData")
-                        .HasColumnType("bytea");
+                    b.HasKey("DetectorId", "Mph", "Kph", "TimeStamp");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate");
-
-                    b.ToTable("ControllerLogArchives", t =>
+                    b.ToTable("SpeedEvents", t =>
                         {
-                            t.HasComment("Compressed Event Log Data");
+                            t.HasComment("Speed Event Data");
                         });
                 });
 #pragma warning restore 612, 618

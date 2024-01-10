@@ -1227,11 +1227,5 @@
         <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.Execute(`0,System.IProgress{System.Int32},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.CanExecute(`0)">
-            <inheritdoc/>
-        </member>
-        <member name="M:ATSPM.Domain.Workflows.WorkflowBase`2.Execute(`0,System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
     </members>
 </doc>

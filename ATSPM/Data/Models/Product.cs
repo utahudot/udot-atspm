@@ -35,6 +35,6 @@ namespace ATSPM.Data.Models
         public string Notes { get; set; }
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {DeviceType} - {Manufacturer} - {Model}";
+        public override string ToString() => $"{Id} - {DeviceType} - {Manufacturer} - {Model} - {DeviceType}";
     }
 }

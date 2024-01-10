@@ -88,18 +88,18 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureLocationControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureSignalControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
             return services;
         }
 
-        public static IServiceCollection ConfigureLocationControllerDecoders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
             services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
             services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
