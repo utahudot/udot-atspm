@@ -1366,6 +1366,13 @@
             <param name="locationId">Id of <see cref="T:ATSPM.Data.Models.Location"/> to get assigned <see cref="T:ATSPM.Data.Models.Device"/> from</param>
             <returns></returns>
         </member>
+        <member name="M:ATSPM.Application.Repositories.IDeviceRepository.GetActiveDevicesByAllLatestLocations">
+            <summary>
+            Returns all <see cref="T:ATSPM.Data.Models.Device"/> from all latest version <see cref="T:ATSPM.Data.Models.Location"/>
+            that are also enabled for logging.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:ATSPM.Application.Repositories.IDirectionTypeRepository">
             <summary>
             Direction type repository
@@ -1531,17 +1538,23 @@
             Version history repository
             </summary>
         </member>
-        <member name="T:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient">
+        <member name="T:ATSPM.Application.Services.IDeviceDownloader">
+            <summary>
+            When executed, downloads data from device
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:ATSPM.Application.Services.IDeviceDownloader.Protocol" -->
+        <member name="T:ATSPM.Application.Services.IDownloaderClient">
             <summary>
             Client for connecting to services and interacting with their file directories
             </summary>
         </member>
-        <member name="P:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.IsConnected">
+        <member name="P:ATSPM.Application.Services.IDownloaderClient.IsConnected">
             <summary>
             Tracks the connections status
             </summary>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.ConnectAsync(System.Net.NetworkCredential,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Services.IDownloaderClient.ConnectAsync(System.Net.NetworkCredential,System.Int32,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Open connection to the server
             </summary>
@@ -1551,7 +1564,7 @@
             <param name="token">Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken,System.String[])">
+        <member name="M:ATSPM.Application.Services.IDownloaderClient.ListDirectoryAsync(System.String,System.Threading.CancellationToken,System.String[])">
             <summary>
             List files in directory
             </summary>
@@ -1560,7 +1573,7 @@
             <param name="filters">File type and name filters</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.DownloadFileAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Services.IDownloaderClient.DownloadFileAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Download from remote path to local path
             </summary>
@@ -1569,7 +1582,7 @@
             <param name="token">Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.DeleteFileAsync(System.String,System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Services.IDownloaderClient.DeleteFileAsync(System.String,System.Threading.CancellationToken)">
             <summary>
             Delete files in directory
             </summary>
@@ -1577,34 +1590,34 @@
             <param name="token">Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.IDownloaderClient.DisconnectAsync(System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Services.IDownloaderClient.DisconnectAsync(System.Threading.CancellationToken)">
             <summary>
             Disconnects from the server
             </summary>
             <param name="token">Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Services.LocationControllerProtocols.IFTPDownloaderClient">
+        <member name="T:ATSPM.Application.Services.IFTPDownloaderClient">
             <summary>
             Client for connecting and downloading files via FTP servers
             </summary>
         </member>
-        <member name="T:ATSPM.Application.Services.LocationControllerProtocols.ISFTPDownloaderClient">
+        <member name="T:ATSPM.Application.Services.ISFTPDownloaderClient">
             <summary>
             Client for connecting and downloading files via SFTP servers
             </summary>
         </member>
-        <member name="T:ATSPM.Application.Services.LocationControllerProtocols.IHTTPDownloaderClient">
+        <member name="T:ATSPM.Application.Services.IHTTPDownloaderClient">
             <summary>
             Client for connecting and downloading files via HTTP servers
             </summary>
         </member>
-        <member name="T:ATSPM.Application.Services.LocationControllerProtocols.ISNMPDownloaderClient">
+        <member name="T:ATSPM.Application.Services.ISNMPDownloaderClient">
             <summary>
             Client for connecting and downloading files via SNMP servers
             </summary>
         </member>
-        <member name="M:ATSPM.Application.Services.LocationControllerProtocols.ILocationControllerDecoder.DecodeAsync(System.String,System.IO.Stream,System.Threading.CancellationToken)">
+        <member name="M:ATSPM.Application.Services.ILocationControllerDecoder.DecodeAsync(System.String,System.IO.Stream,System.Threading.CancellationToken)">
             <exception cref="!:ControllerLoggerDecoderException"></exception>
         </member>
         <member name="M:ATSPM.Application.ValueObjects.InfoBox.#ctor(System.String,System.String,System.Collections.Generic.SortedDictionary{System.Int32,System.Boolean})">

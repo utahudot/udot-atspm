@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    [Migration("20231214005253_EFCore6Upgrade")]
+    [Migration("20240109175603_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />

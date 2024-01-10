@@ -3,11 +3,11 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
-using Duende.IdentityServer.EntityFramework.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -17,25 +17,20 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
-    public abstract class ControllerDownloaderBase : ServiceObjectBase, IDeviceDownloader
+    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, FileInfo, ControllerDownloadProgress>, IDeviceDownloader
     {
-        public event EventHandler CanExecuteChanged;
-
         #region Fields
 
         protected IDownloaderClient _client;
         protected ILogger _log;
         protected readonly SignalControllerDownloaderConfiguration _options;
 
-
         #endregion
 
-        public ControllerDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options)
+        public DeviceDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(true)
         {
             _client = client;
             _log = log;
@@ -44,34 +39,35 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         #region Properties
 
-        public abstract int ControllerType { get; }
-
-        public abstract string[] FileFilters { get; set; }
+        public virtual TransportProtocols Protocol => TransportProtocols.Unknown;
 
         #endregion
 
         #region Methods
+
         //public override void Initialize()
         //{
         //}
 
-        public virtual bool CanExecute(Device value)
+        public virtual string GenerateLocalFilePath(Device value, string file)
         {
-            return value.LoggingEnabled;
+            return Path.Combine
+                (_options.LocalPath, 
+                $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}", 
+                value.DeviceConfiguration?.Product?.DeviceType.ToString(),
+                value.Ipaddress.ToString(),
+                Path.GetFileName(file));
         }
 
-        public async IAsyncEnumerable<FileInfo> Execute(Device parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override bool CanExecute(Device value)
         {
-            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
-            {
-                yield return item;
-            }
+            return value.LoggingEnabled;
         }
 
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidLocationControllerIPAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
-        public async IAsyncEnumerable<FileInfo> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<FileInfo> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var locationIdentifier = parameter?.Location?.LocationIdentifier;
             var user = parameter?.DeviceConfiguration?.UserName;
@@ -90,6 +86,8 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                     throw new InvalidSignalControllerIpAddressException(parameter);
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
+
+                //_log.LogError("this is a test");
 
                 using (_client)
                 {
@@ -138,7 +136,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                         foreach (var file in remoteFiles)
                         {
-                            var localFilePath = Path.Combine(_options.LocalPath, locationIdentifier, Path.GetFileName(file));
+                            var localFilePath = GenerateLocalFilePath(parameter, file);
                             FileInfo downloadedFile = null;
 
                             try
@@ -217,22 +215,18 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             }
         }
 
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is Device p)
-                return CanExecute(p);
-            return default;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is Device p)
-                Task.Run(() => Execute(p, default, default));
-        }
-
         protected override void DisposeManagedCode()
         {
-            _client?.Dispose();
+            Console.WriteLine($"-----------------------------------------------DisposeManagedCode-{this.GetHashCode()}");
+
+            base.DisposeManagedCode();
+        }
+
+        protected override void DisposeUnManagedCode()
+        {
+            Console.WriteLine($"-----------------------------------------------DisposeUnManagedCode-{this.GetHashCode()}");
+
+            base.DisposeUnManagedCode();
         }
 
         #endregion
