@@ -8,13 +8,5 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
     public class CobaltLocationControllerDownloader : ControllerDownloaderBase
     {
         public CobaltLocationControllerDownloader(IFTPDownloaderClient client, ILogger<CobaltLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        #region Properties
-
-        public override int ControllerType => 2;
-
-        public override string[] FileFilters { get; set; } = new string[] { "dat", "datZ" };
-
-        #endregion
     }
 }
