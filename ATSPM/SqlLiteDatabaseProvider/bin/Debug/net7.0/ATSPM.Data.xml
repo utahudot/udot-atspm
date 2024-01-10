@@ -1247,7 +1247,7 @@
         </member>
         <member name="T:ATSPM.Data.Enums.TransportProtocols">
             <summary>
-            Transport protocols
+            Transport protocols used for connecting to devices
             </summary>
         </member>
         <member name="F:ATSPM.Data.Enums.TransportProtocols.Unknown">
