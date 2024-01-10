@@ -29,27 +29,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 comment: "Areas");
 
             migrationBuilder.CreateTable(
-                name: "ControllerTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Product = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
-                    Firmware = table.Column<string>(type: "character varying(32)", unicode: false, maxLength: 32, nullable: true),
-                    Protocol = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
-                    Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
-                    Directory = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
-                    UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
-                    Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ControllerTypes", x => x.Id);
-                },
-                comment: "Location Controller Types");
-
-            migrationBuilder.CreateTable(
                 name: "DetectionTypes",
                 columns: table => new
                 {
@@ -149,7 +128,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp", nullable: false),
                     Comment = table.Column<string>(type: "character varying(255)", unicode: false, maxLength: 255, nullable: true),
                     LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false)
                 },
@@ -210,7 +189,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Manufacturer = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
                     Model = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
-                    DeviceType = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    DeviceType = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
                     WebPage = table.Column<string>(type: "text", nullable: true),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true)
                 },
@@ -287,7 +266,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2023, 12, 13, 17, 52, 31, 697, DateTimeKind.Local).AddTicks(3480)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 1, 9, 9, 26, 49, 733, DateTimeKind.Local).AddTicks(4822)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -311,7 +290,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     locationId = table.Column<int>(type: "integer", nullable: false),
                     locationIdentifier = table.Column<string>(type: "text", unicode: false, nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp", nullable: false),
                     ComponentType = table.Column<int>(type: "integer", nullable: false),
                     ComponentId = table.Column<int>(type: "integer", nullable: false),
                     IssueType = table.Column<int>(type: "integer", nullable: false),
@@ -437,10 +416,10 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Firmware = table.Column<string>(type: "character varying(16)", unicode: false, maxLength: 16, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Protocol = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    Protocol = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
                     Port = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "((0))"),
                     Directory = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
-                    SearchTerm = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
+                    SearchTerms = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     ProductId = table.Column<int>(type: "integer", nullable: false)
@@ -467,15 +446,12 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     Longitude = table.Column<double>(type: "double precision", nullable: false),
                     PrimaryName = table.Column<string>(type: "character varying(100)", unicode: false, maxLength: 100, nullable: false, defaultValueSql: "('')"),
                     SecondaryName = table.Column<string>(type: "character varying(100)", unicode: false, maxLength: 100, nullable: true),
-                    Ipaddress = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
                     ChartEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     VersionAction = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((10))"),
                     Note = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false, defaultValueSql: "('Initial')"),
-                    Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Start = table.Column<DateTime>(type: "timestamp", nullable: false),
                     PedsAre1to1 = table.Column<bool>(type: "boolean", nullable: false),
                     LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
-                    ControllerTypeId = table.Column<int>(type: "integer", nullable: false),
                     JurisdictionId = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((0))"),
                     LocationTypeId = table.Column<int>(type: "integer", nullable: false),
                     RegionId = table.Column<int>(type: "integer", nullable: false)
@@ -483,12 +459,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Locations", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Locations_ControllerTypes_ControllerTypeId",
-                        column: x => x.ControllerTypeId,
-                        principalTable: "ControllerTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Locations_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
@@ -529,7 +499,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RouteLocationss",
+                name: "RouteLocations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -548,33 +518,33 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RouteLocationss", x => x.Id);
+                    table.PrimaryKey("PK_RouteLocations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_DirectionTypes_OpposingDirectionId",
+                        name: "FK_RouteLocations_DirectionTypes_OpposingDirectionId",
                         column: x => x.OpposingDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_DirectionTypes_PrimaryDirectionId",
+                        name: "FK_RouteLocations_DirectionTypes_PrimaryDirectionId",
                         column: x => x.PrimaryDirectionId,
                         principalTable: "DirectionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_RouteDistances_NextLocationDistanceId",
+                        name: "FK_RouteLocations_RouteDistances_NextLocationDistanceId",
                         column: x => x.NextLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_RouteDistances_PreviousLocationDistanceId",
+                        name: "FK_RouteLocations_RouteDistances_PreviousLocationDistanceId",
                         column: x => x.PreviousLocationDistanceId,
                         principalTable: "RouteDistances",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RouteLocationss_Routes_RouteId",
+                        name: "FK_RouteLocations_Routes_RouteId",
                         column: x => x.RouteId,
                         principalTable: "Routes",
                         principalColumn: "Id",
@@ -650,7 +620,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     Ipaddress = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
-                    DeviceStatus = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false, defaultValue: "Unknown"),
+                    DeviceStatus = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
                     LocationId = table.Column<int>(type: "integer", nullable: false),
                     DeviceConfigurationId = table.Column<int>(type: "integer", nullable: false)
@@ -683,8 +653,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                     DetectorChannel = table.Column<int>(type: "integer", nullable: false),
                     DistanceFromStopBar = table.Column<int>(type: "integer", nullable: true),
                     MinSpeedFilter = table.Column<int>(type: "integer", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DateDisabled = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: "timestamp", nullable: false),
+                    DateDisabled = table.Column<DateTime>(type: "timestamp", nullable: true),
                     LaneNumber = table.Column<int>(type: "integer", nullable: true),
                     MovementType = table.Column<int>(type: "integer", nullable: false),
                     LaneType = table.Column<int>(type: "integer", nullable: false),
@@ -736,7 +706,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TimeStamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TimeStamp = table.Column<DateTime>(type: "timestamp", nullable: false),
                     Comment = table.Column<string>(type: "character varying(256)", unicode: false, maxLength: 256, nullable: false),
                     DetectorId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -920,11 +890,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locations_ControllerTypeId",
-                table: "Locations",
-                column: "ControllerTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Locations_JurisdictionId",
                 table: "Locations",
                 column: "JurisdictionId");
@@ -966,33 +931,33 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_NextLocationDistanceId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_NextLocationDistanceId",
+                table: "RouteLocations",
                 column: "NextLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_OpposingDirectionId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_OpposingDirectionId",
+                table: "RouteLocations",
                 column: "OpposingDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_PreviousLocationDistanceId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_PreviousLocationDistanceId",
+                table: "RouteLocations",
                 column: "PreviousLocationDistanceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_PrimaryDirectionId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_PrimaryDirectionId",
+                table: "RouteLocations",
                 column: "PrimaryDirectionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_RouteId",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_RouteId",
+                table: "RouteLocations",
                 column: "RouteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RouteLocationss_RouteId_LocationIdentifier",
-                table: "RouteLocationss",
+                name: "IX_RouteLocations_RouteId_LocationIdentifier",
+                table: "RouteLocations",
                 columns: new[] { "RouteId", "LocationIdentifier" },
                 unique: true);
 
@@ -1057,7 +1022,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
-                name: "RouteLocationss");
+                name: "RouteLocations");
 
             migrationBuilder.DropTable(
                 name: "Settings");
@@ -1112,9 +1077,6 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations
 
             migrationBuilder.DropTable(
                 name: "Locations");
-
-            migrationBuilder.DropTable(
-                name: "ControllerTypes");
 
             migrationBuilder.DropTable(
                 name: "Jurisdictions");

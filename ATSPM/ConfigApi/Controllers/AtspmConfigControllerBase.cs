@@ -40,7 +40,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="200">Items successfully retrieved.</response>
         // GET /Entity
         //[HttpGet()]
-        [EnableQuery]
+        [EnableQuery(MaxExpansionDepth = 5)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -58,7 +58,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="404">Item does not exist.</response>
         // GET /Entity(1)
         //[HttpGet("{key}")]
-        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand)]
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand, MaxExpansionDepth = 5)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -149,8 +149,6 @@ namespace ATSPM.ConfigApi.Controllers
             }
 
             item.Patch(i);
-
-            Console.WriteLine($"patching: {i}");
 
             await _repository.UpdateAsync(i);
 

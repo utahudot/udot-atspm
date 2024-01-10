@@ -9,13 +9,5 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
     public class MaxTimeLocationControllerDownloader : ControllerDownloaderBase
     {
         public MaxTimeLocationControllerDownloader(IHTTPDownloaderClient client, ILogger<MaxTimeLocationControllerDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        #region Properties
-
-        public override int ControllerType => 4;
-
-        public override string[] FileFilters { get; set; } = new string[] { $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}" };
-
-        #endregion
     }
 }
