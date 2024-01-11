@@ -55,23 +55,27 @@ namespace ATSPM.ReportApi.Business.WaitTime
         public async Task<WaitTimeResult> GetChartData(
             WaitTimeOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> controllerEventLogs,
+            IReadOnlyList<ControllerEventLog> events,
             AnalysisPhaseData analysisPhaseData,
-            IReadOnlyList<PlanSplitMonitorData> plans,
-            VolumeCollection volumeCollection
+            IReadOnlyList<PlanSplitMonitorData> plans
             )
         {
+            var volume = new VolumeCollection(
+           options.Start,
+            options.End,
+               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
+               options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
-            var cycleEvents = controllerEventLogs.Where(x =>
+            var cycleEvents = events.Where(x =>
                 (x.EventCode == PHASE_END_RED_CLEARANCE || x.EventCode == PHASE_BEGIN_GREEN)
                 && x.EventParam == phaseDetail.PhaseNumber);
-            //var greenList = controllerEventLogs.Where(x =>
+            //var greenList = events.Where(x =>
             //x.EventCode == PHASE_BEGIN_GREEN
             //&& x.EventParam == phaseDetail.PhaseNumber)
             //.OrderBy(x => x.Timestamp);
-            var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
+            var orderedPhaseRegisterList = events.Where(x =>
                 (x.EventCode == PHASE_CALL_REGISTERED ||
                 x.EventCode == PHASE_CALL_DROPPED)
                 && x.EventParam == phaseDetail.PhaseNumber);
@@ -212,7 +216,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
                     forceOffs,
                     unknowns,
                     averageWaitTime,
-                    volumeCollection.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList(),
+                    volume.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList(),
                     splits
                     );
                 result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
