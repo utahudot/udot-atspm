@@ -80,7 +80,7 @@ namespace ATSPM.ReportApi.ReportServices
                terminationEvents,
                Location);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
