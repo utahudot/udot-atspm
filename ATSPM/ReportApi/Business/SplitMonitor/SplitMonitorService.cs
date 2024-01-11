@@ -60,7 +60,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
         }
 
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
