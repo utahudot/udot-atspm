@@ -1,6 +1,4 @@
 ﻿using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.TimingAndActuation
 {
@@ -14,7 +12,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             int phaseNumber,
             bool phaseOrOverlap,
             string phaseNumberSort,
-            bool getPermissivePhase,
+            string phaseType,
             List<CycleEventsDto> pedestrianIntervals,
             List<DetectorEventDto> pedestrianEvents,
             List<CycleEventsDto> cycleAllEvents,
@@ -25,9 +23,9 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             Dictionary<string, List<DataPointForInt>> phaseCustomEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
-            PhaseOrOverlap = phaseOrOverlap;
+            IsPhaseOverLap = phaseOrOverlap;
             PhaseNumberSort = phaseNumberSort;
-            GetPermissivePhase = getPermissivePhase;
+            PhaseType = phaseType;
             PedestrianIntervals = pedestrianIntervals;
             PedestrianEvents = pedestrianEvents;
             CycleAllEvents = cycleAllEvents;
@@ -39,9 +37,9 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         }
 
         public int PhaseNumber { get; set; }
-        public bool PhaseOrOverlap { get; set; }
+        public bool IsPhaseOverLap { get; set; }
         public string PhaseNumberSort { get; set; }
-        public bool GetPermissivePhase { get; set; }
+        public string PhaseType { get; set; }
         public List<CycleEventsDto> PedestrianIntervals { get; set; }
         public List<DetectorEventDto> PedestrianEvents { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
