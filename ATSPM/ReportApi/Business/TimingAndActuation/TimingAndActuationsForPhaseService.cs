@@ -62,7 +62,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                 phaseDetail.PhaseNumber,
                 phaseDetail.UseOverlap,
                 phaseNumberSort,
-                usePermissivePhase,
+                usePermissivePhase ? "Permissive" : "Protected",
                 pedestrianIntervals,
                 pedestrianEvents,
                 cycleAllEvents,
@@ -77,11 +77,11 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
 
         private string GetPhaseSort(PhaseDetail phaseDetail)
         {
-            return phaseDetail.IsPermissivePhase ?  // Check if the 'GetPermissivePhase' property of 'options' is true
+            return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of 'options' is true
                 phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
                     "zOverlap - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
                     : "Phase - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
-                :  // If 'GetPermissivePhase' is false
+                :  // If 'PhaseType' is false
                 phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
                     "zOverlap - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
                     : "Phase = " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
