@@ -63,7 +63,11 @@ namespace ATSPM.ReportApi.ReportServices
             var results = await Task.WhenAll(tasks);
 
             // Only send back data where detector events exists
-            var finalResultcheck = results.Where(result => result.DetectorEvents.Count != 0).OrderBy(r => r.PhaseNumber).ToList();
+            var finalResultcheck = results.Where(result => result.DetectorEvents.Count != 0)
+                .OrderBy(r => r.PhaseType)
+                .ThenBy(r => r.ProtectedPhaseNumber)
+                .ThenBy(r => r.IsPermissivePhase)
+                .ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
