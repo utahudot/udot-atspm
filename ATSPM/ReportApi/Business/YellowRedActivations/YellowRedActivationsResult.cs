@@ -1,6 +1,4 @@
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.YellowRedActivations
 {
@@ -13,7 +11,9 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             string locationId,
             int approachId,
             string approachDescription,
-            int phaseNumber,
+            int protectedPhaseNumber,
+            int? permissivePhaseNumber,
+            bool isPermissivePhase,
             string phaseType,
             DateTime start,
             DateTime end,
@@ -28,7 +28,9 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
         {
             ApproachId = approachId;
             ApproachDescription = approachDescription;
-            PhaseNumber = phaseNumber;
+            ProtectedPhaseNumber = protectedPhaseNumber;
+            PermissivePhaseNumber = permissivePhaseNumber;
+            IsPermissivePhase = isPermissivePhase;
             PhaseType = phaseType;
             TotalViolations = totalViolations;
             SevereViolations = severeViolations;
@@ -41,7 +43,10 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
         }
 
         public string ApproachDescription { get; set; }
-        public int PhaseNumber { get; internal set; }
+        public int ProtectedPhaseNumber { get; internal set; }
+        public int? PermissivePhaseNumber { get; internal set; }
+        public bool IsPermissivePhase { get; }
+        public bool IsPermissive { get; internal set; }
         public string PhaseType { get; internal set; }
         public int TotalViolations { get; internal set; }
         public int SevereViolations { get; internal set; }
