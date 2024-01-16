@@ -215,20 +215,6 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             }
         }
 
-        protected override void DisposeManagedCode()
-        {
-            Console.WriteLine($"-----------------------------------------------DisposeManagedCode-{this.GetHashCode()}");
-
-            base.DisposeManagedCode();
-        }
-
-        protected override void DisposeUnManagedCode()
-        {
-            Console.WriteLine($"-----------------------------------------------DisposeUnManagedCode-{this.GetHashCode()}");
-
-            base.DisposeUnManagedCode();
-        }
-
         #endregion
     }
 }
