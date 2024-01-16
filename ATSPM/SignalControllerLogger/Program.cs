@@ -96,6 +96,9 @@ namespace ATSPM.LocationControllerLogger
                     //s.AddScoped<IDeviceDownloader, EOSSignalControllerDownloader>();
                     //s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
                     s.AddScoped<IDeviceDownloader, DeviceFtpDownloader>();
+                    s.AddScoped<IDeviceDownloader, DeviceSftpDownloader>();
+                    s.AddScoped<IDeviceDownloader, DeviceHttpDownloader>();
+                    //s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
 
                     //decoders
                     //s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
@@ -143,11 +146,19 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                var devices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                var ftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
                     .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
                     .Where(w => w.Ipaddress.IsValidIPAddress())
                     .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Ftp)
-                    .Take(10);
+                    .Take(3);
+
+                var httpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                    .Where(w => w.Ipaddress.IsValidIPAddress())
+                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
+                    .Take(3);
+
+                var devices = ftpDevices.Union(httpDevices);
 
                 Console.WriteLine($"{devices.Count()}");
 
@@ -167,21 +178,24 @@ namespace ATSPM.LocationControllerLogger
                 //input.LinkTo(aiCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.AICamera);
                 //input.LinkTo(firCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.FIRCamera);
 
-                var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
-                {
-                    using (var downloadscope = host.Services.CreateScope())
-                    {
-                        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
+                //var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
+                //{
+                //    using (var downloadscope = host.Services.CreateScope())
+                //    {
+                //        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
 
-                        return downloader.Execute(t);
-                    }
+                //        return downloader.Execute(t);
+                //    }
 
-                    //await foreach (var file in downloader.Execute(t))
-                    //{
-                    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
-                    //    return file;
-                    //}
-                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
+                //    //await foreach (var file in downloader.Execute(t))
+                //    //{
+                //    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
+                //    //    return file;
+                //    //}
+                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
+
+
+                var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
 
                 var downloadResult = new ActionBlock<FileInfo>(t => Console.WriteLine($"Downloaded file - {t}"));
 
@@ -199,12 +213,6 @@ namespace ATSPM.LocationControllerLogger
 
                 await downloadResult.Completion;
 
-                //foreach (var d in devices)
-                //{
-                //    var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(d));
-
-                    
-                //}
 
                 Console.WriteLine($"*********************************************complete");
             }
@@ -219,6 +227,27 @@ namespace ATSPM.LocationControllerLogger
         public DeviceFtpDownloader(IFTPDownloaderClient client, ILogger<DeviceFtpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
 
         public override TransportProtocols Protocol => TransportProtocols.Ftp;
+    }
+
+    public class DeviceSftpDownloader : DeviceDownloaderBase
+    {
+        public DeviceSftpDownloader(ISFTPDownloaderClient client, ILogger<DeviceSftpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+
+        public override TransportProtocols Protocol => TransportProtocols.Sftp;
+    }
+
+    public class DeviceHttpDownloader : DeviceDownloaderBase
+    {
+        public DeviceHttpDownloader(IHTTPDownloaderClient client, ILogger<DeviceHttpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+
+        public override TransportProtocols Protocol => TransportProtocols.Http;
+    }
+
+    public class DeviceSnmpDownloader : DeviceDownloaderBase
+    {
+        public DeviceSnmpDownloader(ISNMPDownloaderClient client, ILogger<DeviceSnmpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
+
+        public override TransportProtocols Protocol => TransportProtocols.Snmp;
     }
 
     public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, FileInfo>
@@ -236,6 +265,8 @@ namespace ATSPM.LocationControllerLogger
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
                 var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(input));
+
+                Console.WriteLine($"device: {input.DeviceConfiguration.Protocol} - downloader: {downloader.GetType().Name}");
 
                 return downloader.Execute(input, cancelToken);
             }
