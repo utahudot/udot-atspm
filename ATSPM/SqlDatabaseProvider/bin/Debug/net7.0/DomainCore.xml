@@ -1142,6 +1142,39 @@
             <param name="cancelToken"></param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2">
+            <summary>
+            Base class for workflow process steps using <see cref="T:System.Threading.Tasks.Dataflow.TransformManyBlock`2"/>
+            </summary>
+            <typeparam name="T1">Input data type</typeparam>
+            <typeparam name="T2">Output data type</typeparam>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.#ctor(System.Threading.Tasks.Dataflow.ExecutionDataflowBlockOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="E:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.CanExecuteChanged">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.CanExecute(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.Execute(`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.System#Windows#Input#ICommand#CanExecute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.System#Windows#Input#ICommand#Execute(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.Process(`0,System.Threading.CancellationToken)">
+            <summary>
+            Process to perform when <see cref="M:ATSPM.Domain.Workflows.TransformManyProcessStepBaseAsync`2.Execute(`0,System.Threading.CancellationToken)"/> is called
+            </summary>
+            <param name="input"></param>
+            <param name="cancelToken"></param>
+            <returns></returns>
+        </member>
         <member name="T:ATSPM.Domain.Workflows.TransformProcessStepBase`2">
             <summary>
             Base class for workflow process steps using <see cref="T:System.Threading.Tasks.Dataflow.TransformBlock`2"/>
