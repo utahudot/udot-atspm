@@ -10,7 +10,8 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
         public YellowRedActivationsResult(
             string locationId,
             int approachId,
-            string approachDescription,
+            string direction,
+            string movementType,
             int protectedPhaseNumber,
             int? permissivePhaseNumber,
             bool isPermissivePhase,
@@ -27,7 +28,8 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             ICollection<DataPointForDouble> detectorEvents) : base(approachId, locationId, start, end)
         {
             ApproachId = approachId;
-            ApproachDescription = approachDescription;
+            Direction = direction;
+            MovementType = movementType;
             ProtectedPhaseNumber = protectedPhaseNumber;
             PermissivePhaseNumber = permissivePhaseNumber;
             IsPermissivePhase = isPermissivePhase;
@@ -42,11 +44,11 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             DetectorEvents = detectorEvents;
         }
 
-        public string ApproachDescription { get; set; }
+        public string Direction { get; set; }
+        public string MovementType { get; set; }
         public int ProtectedPhaseNumber { get; internal set; }
         public int? PermissivePhaseNumber { get; internal set; }
         public bool IsPermissivePhase { get; }
-        public bool IsPermissive { get; internal set; }
         public string PhaseType { get; internal set; }
         public int TotalViolations { get; internal set; }
         public int SevereViolations { get; internal set; }
