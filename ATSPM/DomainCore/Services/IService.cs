@@ -33,7 +33,6 @@ namespace ATSPM.Domain.Services
     /// </summary>
     public interface IService : INotifyPropertyChanged, INotifyPropertyChanging, ISupportInitializeNotification, IDisposable { }
 
-
     /// <summary>
     /// <c>Service Definition</c> For executable services implementing:
     /// <list type="table">
@@ -67,7 +66,6 @@ namespace ATSPM.Domain.Services
     /// </summary>
     public interface IExecutableService<Tin, Tout> : IService, IExecuteAsync<Tin, Tout> { }
 
-
     /// <summary>
     /// <c>Service Definition</c> For executable services with progress implementing:
     /// <list type="table">
@@ -100,7 +98,6 @@ namespace ATSPM.Domain.Services
     /// </list>
     /// </summary>
     public interface IExecutableServiceWithProgress<Tin, Tout, Tp> : IService, IExecuteAsyncWithProgress<Tin, Tout, Tp> { }
-
 
     /// <summary>
     /// <c>Service Definition</c> For <see cref="IAsyncEnumerable{T}"/> executable services implementing:
