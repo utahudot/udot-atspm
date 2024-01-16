@@ -49,7 +49,8 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             return new YellowRedActivationsResult(
                 phaseDetail.Approach.Location.LocationIdentifier,
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Description,
+                phaseDetail.Approach.DirectionType.Abbreviation,
+                phaseDetail.Approach.Detectors.FirstOrDefault().MovementType.ToString(),
                 phaseDetail.Approach.ProtectedPhaseNumber,
                 phaseDetail.Approach.PermissivePhaseNumber,
                 phaseDetail.IsPermissivePhase,
