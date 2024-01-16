@@ -61,7 +61,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         public override bool CanExecute(Device value)
         {
-            return value.LoggingEnabled;
+            return value.DeviceConfiguration.Protocol == Protocol && value.LoggingEnabled;
         }
 
         /// <exception cref="ArgumentNullException"></exception>

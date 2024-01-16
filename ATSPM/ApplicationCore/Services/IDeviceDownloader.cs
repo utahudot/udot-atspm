@@ -11,7 +11,7 @@ using System.IO;
 namespace ATSPM.Application.Services
 {
     /// <summary>
-    /// When executed, downloads data from device
+    /// When executed, downloads data from device using the specified <see cref="TransportProtocols"/>
     /// </summary>
     public interface IDeviceDownloader : IExecutableServiceWithProgressAsync<Device, FileInfo, ControllerDownloadProgress>
     {
