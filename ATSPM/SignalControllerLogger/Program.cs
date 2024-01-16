@@ -31,6 +31,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ATSPM.Data.Enums;
 using ATSPM.Domain.Extensions;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -144,78 +147,103 @@ namespace ATSPM.LocationControllerLogger
 
             //await host.RunAsync();
 
-            using (var scope = host.Services.CreateScope())
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var ftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+            //        .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+            //        .Where(w => w.Ipaddress.IsValidIPAddress())
+            //        .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Ftp)
+            //        .Take(3);
+
+            //    var httpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+            //        .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+            //        .Where(w => w.Ipaddress.IsValidIPAddress())
+            //        .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
+            //        .Take(3);
+
+            //    var devices = ftpDevices.Union(httpDevices);
+
+            //    Console.WriteLine($"{devices.Count()}");
+
+            //    var input = new BufferBlock<Device>();
+
+            //    //var signalControllers = new ActionBlock<Device>(i =>
+            //    //{
+            //    //    Console.WriteLine($"signalControllers - {i}");
+            //    //});
+
+            //    //var rampController = new ActionBlock<Device>(i => Console.WriteLine($"rampController - {i}"));
+            //    //var aiCamera = new ActionBlock<Device>(i => Console.WriteLine($"aiCamera - {i}"));
+            //    //var firCamera = new ActionBlock<Device>(i => Console.WriteLine($"firCamera - {i}"));
+
+            //    //input.LinkTo(signalControllers, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.SignalController);
+            //    //input.LinkTo(rampController, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.RampController);
+            //    //input.LinkTo(aiCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.AICamera);
+            //    //input.LinkTo(firCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.FIRCamera);
+
+            //    //var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
+            //    //{
+            //    //    using (var downloadscope = host.Services.CreateScope())
+            //    //    {
+            //    //        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
+
+            //    //        return downloader.Execute(t);
+            //    //    }
+
+            //    //    //await foreach (var file in downloader.Execute(t))
+            //    //    //{
+            //    //    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
+            //    //    //    return file;
+            //    //    //}
+            //    //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
+
+
+            //    var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
+
+            //    var downloadResult = new ActionBlock<FileInfo>(t => Console.WriteLine($"Downloaded file - {t}"));
+
+            //    input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            //    downloadStep.LinkTo(downloadResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+            //    foreach (var d in devices)
+            //    {
+            //        //Console.WriteLine($"{d}");
+            //        input.Post(d);
+            //    }
+
+            //    input.Complete();
+
+
+            //    await downloadResult.Completion;
+
+
+            //    Console.WriteLine($"*********************************************complete");
+            //}
+
+
+
+
+
+
+            var list = new List<ControllerEventLog>() { new ControllerEventLog(), new ControllerEventLog()};
+
+
+            var test = Newtonsoft.Json.JsonConvert.SerializeObject(list, new JsonSerializerSettings()
             {
-                var ftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
-                    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
-                    .Where(w => w.Ipaddress.IsValidIPAddress())
-                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Ftp)
-                    .Take(3);
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Arrays
+            });
 
-                var httpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
-                    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
-                    .Where(w => w.Ipaddress.IsValidIPAddress())
-                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
-                    .Take(3);
+            Console.WriteLine($"{test}");
 
-                var devices = ftpDevices.Union(httpDevices);
+            List<ControllerEventLog> test2 = (List<ControllerEventLog>)JsonConvert.DeserializeObject(test, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
 
-                Console.WriteLine($"{devices.Count()}");
-
-                var input = new BufferBlock<Device>();
-
-                //var signalControllers = new ActionBlock<Device>(i =>
-                //{
-                //    Console.WriteLine($"signalControllers - {i}");
-                //});
-
-                //var rampController = new ActionBlock<Device>(i => Console.WriteLine($"rampController - {i}"));
-                //var aiCamera = new ActionBlock<Device>(i => Console.WriteLine($"aiCamera - {i}"));
-                //var firCamera = new ActionBlock<Device>(i => Console.WriteLine($"firCamera - {i}"));
-
-                //input.LinkTo(signalControllers, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.SignalController);
-                //input.LinkTo(rampController, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.RampController);
-                //input.LinkTo(aiCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.AICamera);
-                //input.LinkTo(firCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.FIRCamera);
-
-                //var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
-                //{
-                //    using (var downloadscope = host.Services.CreateScope())
-                //    {
-                //        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
-
-                //        return downloader.Execute(t);
-                //    }
-
-                //    //await foreach (var file in downloader.Execute(t))
-                //    //{
-                //    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
-                //    //    return file;
-                //    //}
-                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
+            Console.WriteLine($"{test2.Count}");
 
 
-                var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
-
-                var downloadResult = new ActionBlock<FileInfo>(t => Console.WriteLine($"Downloaded file - {t}"));
-
-                input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
-                downloadStep.LinkTo(downloadResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-                foreach (var d in devices)
-                {
-                    //Console.WriteLine($"{d}");
-                    input.Post(d);
-                }
-
-                input.Complete();
-
-
-                await downloadResult.Completion;
-
-
-                Console.WriteLine($"*********************************************complete");
-            }
 
             Console.Read();
 

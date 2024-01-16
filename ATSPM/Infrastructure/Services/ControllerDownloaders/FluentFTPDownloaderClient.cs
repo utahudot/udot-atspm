@@ -134,8 +134,6 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 Client.Dispose();
                 Client = null;
             }
-
-            Console.WriteLine($"-----------------------------------------------Disposing client-{this.GetHashCode()}");
         }
     }
 }
