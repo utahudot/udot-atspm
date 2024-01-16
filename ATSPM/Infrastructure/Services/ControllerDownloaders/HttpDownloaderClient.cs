@@ -119,11 +119,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             {
                 var builder = new UriBuilder("http", Client.BaseAddress.Host.ToString(), 80, directory);
 
-                foreach (var filter in filters)
+                //for maxtime controllers it uses this searchterm:  $"since={DateTime.Now.AddHours(-24):MM-dd-yyyy HH:mm:ss.f}"
+                if (filters?.Length > 0)
                 {
-                    builder.Query = builder.Query + filter;
+                    foreach (var filter in filters)
+                    {
+                        builder.Query = builder.Query + filter;
+                    }
                 }
-                
+
                 _getPath = builder.Uri;
 
                 return Task.FromResult<IEnumerable<string>>(new List<string>() { $"{DateTime.Now.Ticks}.xml" });
