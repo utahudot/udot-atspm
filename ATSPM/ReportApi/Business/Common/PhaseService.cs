@@ -1,6 +1,4 @@
 ﻿using ATSPM.Data.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.Common
 {

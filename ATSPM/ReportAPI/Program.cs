@@ -150,7 +150,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResults>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramOption, IEnumerable<TimeSpaceDiagramResult>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
@@ -171,6 +171,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<PurdueCoordinationDiagramService>();
     s.AddScoped<SplitFailPhaseService>();
     s.AddScoped<SplitMonitorService>();
+    s.AddScoped<TimeSpaceDiagramForPhaseService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
