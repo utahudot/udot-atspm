@@ -1,4 +1,5 @@
 ﻿using ApplicationCoreTests.Analysis.TestObjects;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
