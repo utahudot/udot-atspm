@@ -51,7 +51,7 @@ namespace ATSPM.Application.LogMessages
         [LoggerMessage(EventId = 1010, EventName = "Getting Directory List", Level = LogLevel.Debug, Message = "Getting directory {directory} from {locationId} at {ip}")]
         public partial void GettingDirectoryListMessage(string locationId, IPAddress ip, string directory);
 
-        [LoggerMessage(EventId = 1011, EventName = "Directory Listing", Level = LogLevel.Debug, Message = "{total} files found on {locationId} at {ip}")]
+        [LoggerMessage(EventId = 1011, EventName = "Directory Listing", Level = LogLevel.Information, Message = "{total} files found on {locationId} at {ip}")]
         public partial void DirectoryListingMessage(int total, string locationId, IPAddress ip);
 
         [LoggerMessage(EventId = 1012, EventName = "Directory Listing Exception", Level = LogLevel.Warning, Message = "Exception getting directory {directory} from {locationId} at {ip}")]
