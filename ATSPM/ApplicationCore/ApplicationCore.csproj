@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Handlers\**" />
+    <EmbeddedResource Remove="Handlers\**" />
+    <None Remove="Handlers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Analysis\PhaseTerminationAnalysis.cs" />
     <Compile Remove="Analysis\Workflows\ApproachVolumeWorkflow.cs" />
     <Compile Remove="Analysis\Workflows\ArrivalsOnRedWorkflow.cs" />
@@ -42,8 +48,8 @@
     <Folder Include="Analysis\TurningMovemen\" />
     <Folder Include="Analysis\WaitTime\" />
     <Folder Include="Analysis\SplitMonitor\" />
-    <Folder Include="Handlers\" />
     <Folder Include="Attributes\" />
+    <Folder Include="Events\" />
   </ItemGroup>
 
   <ItemGroup>
