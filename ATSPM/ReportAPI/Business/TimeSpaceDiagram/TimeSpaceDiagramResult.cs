@@ -14,7 +14,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             string phaseNumberSort,
             double distanceToNextLocation,
             List<CycleEventsDto> cycleAllEvents,
-            List<TimeSpaceEventBase> countDetectors,
+            List<TimeSpaceEventBase> laneByLaneCountDetectors,
             List<TimeSpaceEventBase> advanceCountDetectors,
             List<TimeSpaceEventBase> stopBarPresenceDetectors,
             List<TimeSpaceEventBase> greenTimeEvents) : base(approachId, locationId, start, end)
@@ -23,7 +23,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             PhaseNumberSort = phaseNumberSort;
             DistanceToNextLocation = distanceToNextLocation;
             CycleAllEvents = cycleAllEvents;
-            CountDetectors = countDetectors;
+            LaneByLaneCountDetectors = laneByLaneCountDetectors;
             AdvanceCountDetectors = advanceCountDetectors;
             StopBarPresenceDetectors = stopBarPresenceDetectors;
             GreenTimeEvents = greenTimeEvents;
@@ -34,8 +34,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
         public double DistanceToNextLocation { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
         public List<TimeSpaceEventBase> GreenTimeEvents { get; set; }
-
-        public List<TimeSpaceEventBase> CountDetectors { get; set; }
+        public List<TimeSpaceEventBase> LaneByLaneCountDetectors { get; set; }
         public List<TimeSpaceEventBase> AdvanceCountDetectors { get; set; }
         public List<TimeSpaceEventBase> StopBarPresenceDetectors { get; set; }
     }

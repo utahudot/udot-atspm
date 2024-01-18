@@ -4,6 +4,7 @@ using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.TimingAndActuation;
+using System.Linq;
 
 namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 {
@@ -11,7 +12,13 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
     {
         private static readonly double FeetPerMile = 5280;
         private static readonly double SecondsInHour = 3600;
+        private readonly CycleService _cycleService;
 
+        public TimeSpaceDiagramForPhaseService(CycleService cycleService)
+        {
+            _cycleService = cycleService;
+        }
+        
         public TimeSpaceDiagramResult GetChartData(
            TimeSpaceDiagramOption options,
            PhaseDetail phaseDetail,
@@ -33,13 +40,13 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 
             if (isFirstElement)
             {
+                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+
                 countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
                 stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
-                stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResult(stopBarPresenceEvents, options, distanceToNextLocation, true);
-
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, controllerEventLogs, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+                stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, greenTimeEventsResult);
             }
             else if(isLastElement)
             {
@@ -48,16 +55,16 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             }
             else
             {
+                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+
                 countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
                 stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
-                stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResult(stopBarPresenceEvents, options, distanceToNextLocation, true);
+                stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, greenTimeEventsResult);
 
                 advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
                 advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToNextLocation);
-
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, controllerEventLogs, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
             }
 
             var phaseNumberSort = GetPhaseSort(phaseDetail);
@@ -78,8 +85,47 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             return timeSpaceDiagramResult;
         }
 
+        private List<TimeSpaceEventBase> CalculateTimeSpaceResultForStopBar(List<TimeSpaceDetectorEventDto> stopBarPresenceEvents, TimeSpaceDiagramOption options, double distanceToNextLocation, List<TimeSpaceEventBase> greenTimeEventsResult)
+        {
+            List<TimeSpaceEventBase> results = new List<TimeSpaceEventBase>();
+
+            if (stopBarPresenceEvents == null || stopBarPresenceEvents.Count < 1)
+            {
+                return results;
+            }
+              
+            foreach (var detectorEvent in stopBarPresenceEvents)
+            {
+                double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
+                DateTime currentDetectorOn = detectorEvent.DetectorOn;
+                DateTime currentDetectorOff = detectorEvent.DetectorOff;
+                //check on happens before green event and off happens after green events
+                TimeSpaceEventBase overlappingGreenEvent = greenTimeEventsResult.Find(e => currentDetectorOn < e.InitialX && currentDetectorOff > e.InitialX && e.IsDetectorOn == true);
+
+                GetArrivalTime(
+                    distanceToNextLocation,
+                    speedLimit,
+                    overlappingGreenEvent == null ? currentDetectorOn : overlappingGreenEvent.InitialX,
+                    out _,
+                    out DateTime arrivalTimeOn);
+
+                TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
+                    overlappingGreenEvent == null ? currentDetectorOn : overlappingGreenEvent.InitialX,
+                    arrivalTimeOn,
+                    true);
+
+                results.Add(resultOn);
+
+                    GetArrivalTime(distanceToNextLocation, speedLimit, currentDetectorOff, out _, out DateTime arrivalTimeOff);
+                    TimeSpaceEventBase resultOff = new TimeSpaceEventBase(currentDetectorOff, arrivalTimeOff, false);
+                    results.Add(resultOff);
+            }
+
+            return results;
+        }
+
         private List<TimeSpaceEventBase> GetGreenTimeEvents(PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
+            List<CycleEventsDto> cycleEvents,
             TimeSpaceDiagramOption options,
             double distanceToNextLocation,
             int speedLimit)
@@ -87,21 +133,9 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             List<int> cycleGreenStartEndCodes = new List<int>() { 1, 8 };
             var events = new List<CycleEventsDto>();
             var greenTimeEvents = new List<TimeSpaceEventBase>();
-            if (controllerEventLogs.Any())
-            {
-                var tempEvents = controllerEventLogs.Where(c => cycleGreenStartEndCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
-                    .Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
-                events.AddRange(tempEvents.Where(e => e.Start >= options.Start
-                                                        && e.Start <= options.End));
-                var firstEvent = tempEvents.Where(e => e.Start < options.Start).OrderByDescending(e => e.Start).FirstOrDefault();
-                if (firstEvent != null)
-                {
-                    firstEvent.Start = options.Start;
-                    events.Insert(0, firstEvent);
-                }
-            }
-            var uniqueEvents = new HashSet<CycleEventsDto>(events);
-            foreach (var gEvent in uniqueEvents) {
+            var tempEvents =  cycleEvents.Where(c => cycleGreenStartEndCodes.Contains(c.Value)).ToList();
+
+            foreach (var gEvent in tempEvents) {
                 double speed = options.SpeedLimit ?? speedLimit;
                 DateTime start = gEvent.Start;
                 GetArrivalTime(distanceToNextLocation, speedLimit, start, out _, out DateTime arrivalTime);
@@ -117,9 +151,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
         private List<TimeSpaceEventBase> CalculateTimeSpaceResult(
             List<TimeSpaceDetectorEventDto> events,
             TimeSpaceDiagramOption options,
-            double distanceToNextLocation,
-            bool includeDetectorOff = false
-            )
+            double distanceToNextLocation)
         {
             List<TimeSpaceEventBase> results = new List<TimeSpaceEventBase>();
 
@@ -132,22 +164,14 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             {
                 double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
                 DateTime currentDetectorOn = detectorEvent.DetectorOn;
-                DateTime currentDetectorOff = detectorEvent.DetectorOff;
                 GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOn, out _, out DateTime arrivalTimeOn);
 
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     currentDetectorOn,
                     arrivalTimeOn,
-                    includeDetectorOff ? (bool?)true : null);
+                    null);
 
                 results.Add(resultOn);
-
-                if (includeDetectorOff)
-                {
-                    GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOff, out _, out DateTime arrivalTimeOff);
-                    TimeSpaceEventBase resultOff = new TimeSpaceEventBase(currentDetectorOff, arrivalTimeOff, false);
-                    results.Add(resultOff);
-                }
             }
 
             return results;
@@ -217,15 +241,28 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             var events = new List<CycleEventsDto>();
             if (controllerEventLogs.Any())
             {
-                var tempEvents = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
-                    .Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
-                events.AddRange(tempEvents.Where(e => e.Start >= options.Start
-                                                        && e.Start <= options.End));
-                var firstEvent = tempEvents.Where(e => e.Start < options.Start).OrderByDescending(e => e.Start).FirstOrDefault();
-                if (firstEvent != null)
+                var distinctTimeStamps = new HashSet<string>();
+                var tempEvents = controllerEventLogs.Aggregate(new List<ControllerEventLog>(), (result, c) =>
                 {
-                    firstEvent.Start = options.Start;
-                    events.Insert(0, firstEvent);
+                    if (cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
+                    {
+                        if (!distinctTimeStamps.Contains(c.ToString()))
+                        {
+                            result.Add(c);
+                            distinctTimeStamps.Add(c.ToString());
+                        }
+                    }
+                    return result;
+                });
+                var cycles = _cycleService.GetGreenToGreenCycles(options.Start.AddMinutes(-5), options.End.AddMinutes(5), tempEvents).ToList();
+
+                for ( int i = 0; i < cycles.Count; i++ )
+                {
+                    var cycle = cycles[i];
+                    
+                    events.Add(new CycleEventsDto(cycle.StartTime, 1));
+                    events.Add(new CycleEventsDto(cycle.YellowEvent, 8));
+                    events.Add(new CycleEventsDto(cycle.RedEvent, 9));
                 }
             }
             return events;
@@ -251,9 +288,8 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             )
         {
             var DetEvents = new List<TimeSpaceDetectorEventDto>();
-            var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
-                .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
-                .ThenByDescending(l => l.LaneNumber).ToList();
+            var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType));
+            //  82 is on, 81 is off
             var detectorActivationCodes = new List<int> { 81, 82 };
             foreach (var detector in localSortedDetectors)
             {
@@ -267,16 +303,23 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
                     if (filteredEvents.Count > 0)
                     {
                         var detectorEvents = new List<TimeSpaceDetectorEventDto>();
-                        for (var i = 0; i < filteredEvents.Count; i += 2)
+                        for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i + 1 == filteredEvents.Count)
+                            if(i == 0 && filteredEvents[i].EventCode == 81)
+                            {
+                                detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
+                                   filteredEvents[i].Timestamp,
+                                   approach.Mph ?? 0,
+                                   detector.DistanceFromStopBar ?? 0));
+                            }
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode != 81)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i].Timestamp,
                                     approach.Mph ?? 0,
                                     detector.DistanceFromStopBar ?? 0));
                             }
-                            else
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i+1].EventCode == 81)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i + 1].Timestamp,
@@ -285,20 +328,6 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
                             }
                         }
                         DetEvents.AddRange(detectorEvents);
-                    }
-
-                    else if (filteredEvents.Count == 0 && options.ShowAllLanesInfo)
-                    {
-                        var e = new TimeSpaceDetectorEventDto(options.Start.AddSeconds(-10),
-                            options.Start.AddSeconds(-9),
-                            approach.Mph ?? 0,
-                            detector.DistanceFromStopBar ?? 0);
-
-                        var list = new List<TimeSpaceDetectorEventDto>
-                        {
-                            e
-                        };
-                        DetEvents.AddRange(list);
                     }
                 }
             }
