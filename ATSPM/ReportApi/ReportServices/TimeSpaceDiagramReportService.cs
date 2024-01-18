@@ -40,16 +40,20 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<TimeSpaceDiagramResult>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
-            //if(parameter.OpposingPhase == true)
-            //{
-            //    routeLocations.Reverse();
-            //}
+            //Throw exception when no distance is found
+            foreach ( var routeLocation in routeLocations)
+            {
+                if (routeLocation.NextLocationDistance == null)
+                {
+                    throw new Exception($"Distance not configured for route: {parameter.RouteId}");
+                }
+            }
 
             var (controllerEventLogsList, phaseDetails) = ProcessRouteLocations(routeLocations, parameter);
 
             for (var i = 0; i < routeLocations.Count; i++)
             {
-                var nextLocationDistance = routeLocations[i].NextLocationDistance == null ? defaultDistanceToNextLocation : routeLocations[i].NextLocationDistance.Distance;
+                var nextLocationDistance = routeLocations[i].NextLocationDistance.Distance;
                 tasks.Add(GetChartDataForPhase(parameter,
                     controllerEventLogsList[i],
                     phaseDetails[i],
