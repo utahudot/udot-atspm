@@ -20,8 +20,11 @@
           "Swashbuckle.AspNetCore": "6.5.0",
           "ATSPM.Data.Reference": "1.0.0.0",
           "ATSPM.Infrastructure.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.MySqlDatabaseProvider.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.OracleDatabaseProvider.Reference": "1.0.0.0",
           "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference": "1.0.0.0",
-          "ATSPM.Infrastructure.SqlDatabaseProvider.Reference": "1.0.0.0"
+          "ATSPM.Infrastructure.SqlDatabaseProvider.Reference": "1.0.0.0",
+          "ATSPM.Infrastructure.SqlLiteDatabaseProvider.Reference": "1.0.0.0"
         },
         "runtime": {
           "Identity.dll": {}
@@ -1168,6 +1171,31 @@
           }
         }
       },
+      "Oracle.EntityFrameworkCore/7.21.12": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Relational": "7.0.14",
+          "Oracle.ManagedDataAccess.Core": "3.21.120"
+        },
+        "runtime": {
+          "lib/net6.0/Oracle.EntityFrameworkCore.dll": {
+            "assemblyVersion": "7.0.21.1",
+            "fileVersion": "7.0.21.1"
+          }
+        }
+      },
+      "Oracle.ManagedDataAccess.Core/3.21.120": {
+        "dependencies": {
+          "System.Diagnostics.PerformanceCounter": "6.0.1",
+          "System.DirectoryServices": "6.0.1",
+          "System.DirectoryServices.Protocols": "6.0.2"
+        },
+        "runtime": {
+          "lib/netstandard2.1/Oracle.ManagedDataAccess.dll": {
+            "assemblyVersion": "3.1.21.1",
+            "fileVersion": "3.1.21.1"
+          }
+        }
+      },
       "Parquet.Net/3.10.0": {
         "dependencies": {
           "IronSnappy": "1.3.0"
@@ -1381,12 +1409,79 @@
         }
       },
       "System.Diagnostics.DiagnosticSource/7.0.2": {},
+      "System.Diagnostics.PerformanceCounter/6.0.1": {
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "6.0.1"
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.422.16404"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.422.16404"
+          }
+        }
+      },
       "System.Diagnostics.StackTrace/4.3.0": {
         "dependencies": {
           "System.IO.FileSystem": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Reflection.Metadata": "1.4.1",
           "System.Runtime": "4.3.0"
+        }
+      },
+      "System.DirectoryServices/6.0.1": {
+        "dependencies": {
+          "System.Security.AccessControl": "6.0.0",
+          "System.Security.Permissions": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.DirectoryServices.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "6.0.1423.7309"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.DirectoryServices.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "6.0.1423.7309"
+          }
+        }
+      },
+      "System.DirectoryServices.Protocols/6.0.2": {
+        "runtime": {
+          "lib/net6.0/System.DirectoryServices.Protocols.dll": {
+            "assemblyVersion": "6.0.0.2",
+            "fileVersion": "6.0.1823.26907"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux/lib/net6.0/System.DirectoryServices.Protocols.dll": {
+            "rid": "linux",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.2",
+            "fileVersion": "6.0.1823.26907"
+          },
+          "runtimes/osx/lib/net6.0/System.DirectoryServices.Protocols.dll": {
+            "rid": "osx",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.2",
+            "fileVersion": "6.0.1823.26907"
+          },
+          "runtimes/win/lib/net6.0/System.DirectoryServices.Protocols.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.2",
+            "fileVersion": "6.0.1823.26907"
+          }
         }
       },
       "System.Drawing.Common/6.0.0": {
@@ -1729,15 +1824,17 @@
       },
       "ATSPM.Infrastructure/1.0.0": {
         "dependencies": {
+          "ATSPM.Infrastructure.MySqlDatabaseProvider": "1.0.0",
+          "ATSPM.Infrastructure.OracleDatabaseProvider": "1.0.0",
           "ATSPM.Infrastructure.PostgreSQLDatabaseProvider": "1.0.0",
           "ATSPM.Infrastructure.SqlDatabaseProvider": "1.0.0",
+          "ATSPM.Infrastructure.SqlLiteDatabaseProvider": "1.0.0",
           "ApplicationCore": "1.0.0",
           "Duende.IdentityServer.EntityFramework": "6.3.6",
           "FluentFTP": "44.0.1",
           "Google.Cloud.Diagnostics.Common": "5.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "7.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "7.0.0",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11",
           "OData.Swagger": "1.0.0",
           "Parquet.Net": "3.10.0",
           "SSH.NET": "2020.0.2"
@@ -1746,9 +1843,27 @@
           "ATSPM.Infrastructure.dll": {}
         }
       },
-      "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+      "ATSPM.Infrastructure.MySqlDatabaseProvider/1.0.0": {
         "dependencies": {
           "ATSPM.Data": "1.0.0"
+        },
+        "runtime": {
+          "ATSPM.Infrastructure.MySqlDatabaseProvider.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.OracleDatabaseProvider/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0",
+          "Oracle.EntityFrameworkCore": "7.21.12"
+        },
+        "runtime": {
+          "ATSPM.Infrastructure.OracleDatabaseProvider.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "7.0.11"
         },
         "runtime": {
           "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {}
@@ -1760,6 +1875,14 @@
         },
         "runtime": {
           "ATSPM.Infrastructure.SqlDatabaseProvider.dll": {}
+        }
+      },
+      "ATSPM.Infrastructure.SqlLiteDatabaseProvider/1.0.0": {
+        "dependencies": {
+          "ATSPM.Data": "1.0.0"
+        },
+        "runtime": {
+          "ATSPM.Infrastructure.SqlLiteDatabaseProvider.dll": {}
         }
       },
       "DomainCore/1.0.0": {
@@ -1787,6 +1910,22 @@
           }
         }
       },
+      "ATSPM.Infrastructure.MySqlDatabaseProvider.Reference/1.0.0.0": {
+        "runtime": {
+          "ATSPM.Infrastructure.MySqlDatabaseProvider.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ATSPM.Infrastructure.OracleDatabaseProvider.Reference/1.0.0.0": {
+        "runtime": {
+          "ATSPM.Infrastructure.OracleDatabaseProvider.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference/1.0.0.0": {
         "runtime": {
           "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.dll": {
@@ -1798,6 +1937,14 @@
       "ATSPM.Infrastructure.SqlDatabaseProvider.Reference/1.0.0.0": {
         "runtime": {
           "ATSPM.Infrastructure.SqlDatabaseProvider.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ATSPM.Infrastructure.SqlLiteDatabaseProvider.Reference/1.0.0.0": {
+        "runtime": {
+          "ATSPM.Infrastructure.SqlLiteDatabaseProvider.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -2623,6 +2770,20 @@
       "path": "odata.swagger/1.0.0",
       "hashPath": "odata.swagger.1.0.0.nupkg.sha512"
     },
+    "Oracle.EntityFrameworkCore/7.21.12": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gJt6+oNrusVWFywWkIsUHWszr3Ve1wF4gS+DJceAaW65rH2ffM4EXjA4zI5Ocn2nby2i7bz6ZgVBL5gPLAVj/Q==",
+      "path": "oracle.entityframeworkcore/7.21.12",
+      "hashPath": "oracle.entityframeworkcore.7.21.12.nupkg.sha512"
+    },
+    "Oracle.ManagedDataAccess.Core/3.21.120": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RrSu5ZlhIqpV7mFauPfc2AkCsuWXA2cWCNXOBW+Wt7R8g6wqonWIWZN3iyhwr4mZMRrClJB/SRMtQzQMHuZPmg==",
+      "path": "oracle.manageddataaccess.core/3.21.120",
+      "hashPath": "oracle.manageddataaccess.core.3.21.120.nupkg.sha512"
+    },
     "Parquet.Net/3.10.0": {
       "type": "package",
       "serviceable": true,
@@ -2791,12 +2952,33 @@
       "path": "system.diagnostics.diagnosticsource/7.0.2",
       "hashPath": "system.diagnostics.diagnosticsource.7.0.2.nupkg.sha512"
     },
+    "System.Diagnostics.PerformanceCounter/6.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dDl7Gx3bmSrM2k2ZIm+ucEJnLloZRyvfQF1DvfvATcGF3jtaUBiPvChma+6ZcZzxWMirN3kCywkW7PILphXyMQ==",
+      "path": "system.diagnostics.performancecounter/6.0.1",
+      "hashPath": "system.diagnostics.performancecounter.6.0.1.nupkg.sha512"
+    },
     "System.Diagnostics.StackTrace/4.3.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-BiHg0vgtd35/DM9jvtaC1eKRpWZxr0gcQd643ABG7GnvSlf5pOkY2uyd42mMOJoOmKvnpNj0F4tuoS1pacTwYw==",
       "path": "system.diagnostics.stacktrace/4.3.0",
       "hashPath": "system.diagnostics.stacktrace.4.3.0.nupkg.sha512"
+    },
+    "System.DirectoryServices/6.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-935IbO7h5FDGYxeO3cbx/CuvBBuk/VI8sENlfmXlh1pupNOB3LAGzdYdPY8CawGJFP7KNrHK5eUlsFoz3F6cuA==",
+      "path": "system.directoryservices/6.0.1",
+      "hashPath": "system.directoryservices.6.0.1.nupkg.sha512"
+    },
+    "System.DirectoryServices.Protocols/6.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vDDPWwHn3/DNZ+kPkdXHoada+tKPEC9bVqDOr4hK6HBSP7hGCUTA0Zw6WU5qpGaqa5M1/V+axHMIv+DNEbIf6g==",
+      "path": "system.directoryservices.protocols/6.0.2",
+      "hashPath": "system.directoryservices.protocols.6.0.2.nupkg.sha512"
     },
     "System.Drawing.Common/6.0.0": {
       "type": "package",
@@ -3072,12 +3254,27 @@
       "serviceable": false,
       "sha512": ""
     },
+    "ATSPM.Infrastructure.MySqlDatabaseProvider/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.OracleDatabaseProvider/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
     "ATSPM.Infrastructure.PostgreSQLDatabaseProvider/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
     "ATSPM.Infrastructure.SqlDatabaseProvider/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.SqlLiteDatabaseProvider/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -3097,12 +3294,27 @@
       "serviceable": false,
       "sha512": ""
     },
+    "ATSPM.Infrastructure.MySqlDatabaseProvider.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.OracleDatabaseProvider.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
     "ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
     "ATSPM.Infrastructure.SqlDatabaseProvider.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ATSPM.Infrastructure.SqlLiteDatabaseProvider.Reference/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

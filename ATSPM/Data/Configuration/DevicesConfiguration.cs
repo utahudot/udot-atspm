@@ -21,8 +21,12 @@ namespace ATSPM.Data.Configuration
                 .HasDefaultValueSql("('10.0.0.1')");
 
             builder.Property(e => e.DeviceStatus)
-                .HasMaxLength(Enum.GetNames(typeof(DeviceStatus)).Max().Length)
+                .HasMaxLength(Enum.GetNames(typeof(DeviceStatus)).Max(m => m.Length))
                 .HasDefaultValue(DeviceStatus.Unknown);
+
+            builder.Property(e => e.DeviceType)
+                .HasMaxLength(Enum.GetNames(typeof(DeviceTypes)).Max(m => m.Length))
+                .HasDefaultValue(DeviceTypes.Unknown);
 
             builder.Property(e => e.Notes)
                 .HasMaxLength(512);
