@@ -32,7 +32,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Directory)
                 .IsRequired(false)
-                .HasMaxLength(1024);
+                .HasMaxLength(512);
 
             builder.Property(e => e.SearchTerms)
                 .IsRequired(false)
@@ -40,6 +40,17 @@ namespace ATSPM.Data.Configuration
                 .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<string[]>(v));
+
+            builder.Property(e => e.ConnectionTimeout)
+                .HasDefaultValueSql("((2000))");
+
+            builder.Property(e => e.OperationTimout)
+                .HasDefaultValueSql("((2000))");
+
+            builder.Property(e => e.DataModel)
+                .IsRequired(false)
+                .HasMaxLength(512)
+                .HasConversion<string>(v => v.FullName, v => Type.GetType(v));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)
