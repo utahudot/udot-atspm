@@ -54,7 +54,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
             return Path.Combine
                 (_options.LocalPath, 
                 $"{value.Location?.LocationIdentifier} - {value.Location?.PrimaryName}", 
-                value.DeviceConfiguration?.Product?.DeviceType.ToString(),
+                value.DeviceType.ToString(),
                 value.Ipaddress.ToString(),
                 Path.GetFileName(file));
         }

@@ -223,27 +223,40 @@ namespace ATSPM.LocationControllerLogger
 
 
             //var type = "System.Collections.Generic.List`1[[ATSPM.Data.Models.ControllerEventLog, ATSPM.Data]], System.Private.CoreLib";
-          
 
-            var list = new List<ControllerEventLog>() { new ControllerEventLog(), new ControllerEventLog()};
 
-            var type = list.GetType().FullName;
-            Console.WriteLine($"type: {type}");
 
-            var test = Newtonsoft.Json.JsonConvert.SerializeObject(list, new JsonSerializerSettings()
+            using (var scope = host.Services.CreateScope())
             {
-                Formatting = Newtonsoft.Json.Formatting.Indented
-                //TypeNameHandling = TypeNameHandling.Arrays
-            });
+                var config = scope.ServiceProvider.GetService<IDeviceConfigurationRepository>().GetList().ToList();
 
-            Console.WriteLine($"{test}");
+                foreach (var c in config)
+                {
+                    Console.WriteLine($"{c.Firmware} - {c.DataModel}");
+                }
+            }
 
-            List<ControllerEventLog> test2 = (List<ControllerEventLog>)JsonConvert.DeserializeObject(test, Type.GetType(type),  new JsonSerializerSettings()
-            {
-                //TypeNameHandling = TypeNameHandling.Auto
-            });
 
-            Console.WriteLine($"{test2.Count}");
+
+            //var list = new List<ControllerEventLog>() { new ControllerEventLog(), new ControllerEventLog()};
+
+            //var type = list.GetType().FullName;
+            //Console.WriteLine($"type: {type}");
+
+            //var test = Newtonsoft.Json.JsonConvert.SerializeObject(list, new JsonSerializerSettings()
+            //{
+            //    Formatting = Newtonsoft.Json.Formatting.Indented
+            //    //TypeNameHandling = TypeNameHandling.Arrays
+            //});
+
+            //Console.WriteLine($"{test}");
+
+            //List<ControllerEventLog> test2 = (List<ControllerEventLog>)JsonConvert.DeserializeObject(test, Type.GetType(type),  new JsonSerializerSettings()
+            //{
+            //    //TypeNameHandling = TypeNameHandling.Auto
+            //});
+
+            //Console.WriteLine($"{test2.Count}");
 
 
 
