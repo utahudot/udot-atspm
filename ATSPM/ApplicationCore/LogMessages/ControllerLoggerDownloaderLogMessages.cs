@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ATSPM.Application.LogMessages
@@ -19,7 +20,7 @@ namespace ATSPM.Application.LogMessages
                 { "locationIdentifier", device?.Location?.LocationIdentifier },
                 { "LocationName", device?.Location?.PrimaryName },
                 { "DeviceId", device.Id.ToString() },
-                { "DeviceType", device?.DeviceConfiguration?.Product?.DeviceType.ToString() },
+                { "DeviceType", device?.DeviceType.ToString() },
                 { "IPAddress", device?.Ipaddress.ToString() },
             });
         }
