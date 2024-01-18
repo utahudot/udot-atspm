@@ -20,11 +20,6 @@ namespace ATSPM.Data.Models
         public string Model { get; set; }
 
         /// <summary>
-        /// Product type
-        /// </summary>
-        public DeviceTypes DeviceType { get; set; }
-
-        /// <summary>
         /// Product web page
         /// </summary>
         public Uri WebPage { get; set; }
@@ -35,6 +30,6 @@ namespace ATSPM.Data.Models
         public string Notes { get; set; }
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {DeviceType} - {Manufacturer} - {Model} - {DeviceType}";
+        public override string ToString() => $"{Id} - {Manufacturer} - {Model}";
     }
 }

@@ -42,6 +42,21 @@ namespace ATSPM.Data.Models
         public string[] SearchTerms { get; set; }
 
         /// <summary>
+        /// Device connection timeout in milliseconds
+        /// </summary>
+        public int ConnectionTimeout { get; set; }
+
+        /// <summary>
+        /// Device operation timeout in milliseconds
+        /// </summary>
+        public int OperationTimout { get; set; }
+
+        /// <summary>
+        /// The object and assembly used to model the event data
+        /// </summary>
+        public Type DataModel { get; set; }
+
+        /// <summary>
         /// Username
         /// </summary>
         public string UserName { get; set; }

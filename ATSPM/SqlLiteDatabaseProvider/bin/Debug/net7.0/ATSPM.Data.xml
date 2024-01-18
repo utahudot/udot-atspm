@@ -1594,6 +1594,11 @@
             Device status
             </summary>
         </member>
+        <member name="P:ATSPM.Data.Models.Device.DeviceType">
+            <summary>
+            Device type
+            </summary>
+        </member>
         <member name="P:ATSPM.Data.Models.Device.Notes">
             <summary>
             Device notes
@@ -1648,6 +1653,21 @@
             <summary>
             Log search term to find log in directory
             Can be a query string or file extension
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.ConnectionTimeout">
+            <summary>
+            Device connection timeout in milliseconds
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.OperationTimout">
+            <summary>
+            Device operation timeout in milliseconds
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.DeviceConfiguration.DataModel">
+            <summary>
+            The object and assembly used to model the event data
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.DeviceConfiguration.UserName">
@@ -2127,11 +2147,6 @@
         <member name="P:ATSPM.Data.Models.Product.Model">
             <summary>
             Model
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Product.DeviceType">
-            <summary>
-            Product type
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.Product.WebPage">

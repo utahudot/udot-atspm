@@ -1540,7 +1540,7 @@
         </member>
         <member name="T:ATSPM.Application.Services.IDeviceDownloader">
             <summary>
-            When executed, downloads data from device
+            When executed, downloads data from device using the specified <see cref="T:ATSPM.Data.Enums.TransportProtocols"/>
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "P:ATSPM.Application.Services.IDeviceDownloader.Protocol" -->

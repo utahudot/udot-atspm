@@ -29,6 +29,11 @@ namespace ATSPM.Data.Models
         public DeviceStatus DeviceStatus { get; set; }
 
         /// <summary>
+        /// Device type
+        /// </summary>
+        public DeviceTypes DeviceType { get; set; }
+
+        /// <summary>
         /// Device notes
         /// </summary>
         public string Notes { get; set; }
@@ -54,6 +59,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceStatus} --- {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
     }
 }
