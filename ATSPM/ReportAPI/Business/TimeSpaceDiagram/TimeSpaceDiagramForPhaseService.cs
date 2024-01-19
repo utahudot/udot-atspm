@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
         }
         
         public TimeSpaceDiagramResult GetChartData(
-           TimeSpaceDiagramOption options,
+           TimeSpaceDiagramOptions options,
            PhaseDetail phaseDetail,
            List<ControllerEventLog> controllerEventLogs,
            double distanceToNextLocation,
@@ -85,7 +85,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             return timeSpaceDiagramResult;
         }
 
-        private List<TimeSpaceEventBase> CalculateTimeSpaceResultForStopBar(List<TimeSpaceDetectorEventDto> stopBarPresenceEvents, TimeSpaceDiagramOption options, double distanceToNextLocation, List<TimeSpaceEventBase> greenTimeEventsResult)
+        private List<TimeSpaceEventBase> CalculateTimeSpaceResultForStopBar(List<TimeSpaceDetectorEventDto> stopBarPresenceEvents, TimeSpaceDiagramOptions options, double distanceToNextLocation, List<TimeSpaceEventBase> greenTimeEventsResult)
         {
             List<TimeSpaceEventBase> results = new List<TimeSpaceEventBase>();
 
@@ -126,7 +126,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 
         private List<TimeSpaceEventBase> GetGreenTimeEvents(PhaseDetail phaseDetail,
             List<CycleEventsDto> cycleEvents,
-            TimeSpaceDiagramOption options,
+            TimeSpaceDiagramOptions options,
             double distanceToNextLocation,
             int speedLimit)
         {
@@ -150,7 +150,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 
         private List<TimeSpaceEventBase> CalculateTimeSpaceResult(
             List<TimeSpaceDetectorEventDto> events,
-            TimeSpaceDiagramOption options,
+            TimeSpaceDiagramOptions options,
             double distanceToNextLocation)
         {
             List<TimeSpaceEventBase> results = new List<TimeSpaceEventBase>();
@@ -184,7 +184,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 
         private List<TimeSpaceEventBase> CalculateTimeSpaceResultForAdvanceCount(
             List<TimeSpaceDetectorEventDto> events,
-            TimeSpaceDiagramOption options,
+            TimeSpaceDiagramOptions options,
             double distanceToNextLocation
             )
         {
@@ -232,7 +232,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
         public List<CycleEventsDto> GetCycleEvents(
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
-            TimeSpaceDiagramOption options)
+            TimeSpaceDiagramOptions options)
         {
 
             List<int> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
@@ -282,7 +282,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 
         public List<TimeSpaceDetectorEventDto> GetDetectionEvents(
             Approach approach,
-            TimeSpaceDiagramOption options,
+            TimeSpaceDiagramOptions options,
             List<ControllerEventLog> controllerEventLogs,
             DetectionTypes detectionType
             )

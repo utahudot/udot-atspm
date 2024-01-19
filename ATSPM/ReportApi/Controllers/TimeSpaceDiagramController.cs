@@ -12,9 +12,9 @@ namespace ATSPM.ReportApi.Controllers
     [ApiVersion(1.0)]
     [ApiController]
     [Route("v{version:apiVersion}/[controller]")]
-    public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOption, IEnumerable<TimeSpaceDiagramResult>>
+    public class TimeSpaceDiagramController : ReportControllerBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>
     {
         /// <inheritdoc/>
-        public TimeSpaceDiagramController(IReportService<TimeSpaceDiagramOption, IEnumerable<TimeSpaceDiagramResult>> reportService) : base(reportService) { }
+        public TimeSpaceDiagramController(IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>> reportService) : base(reportService) { }
     }
 }

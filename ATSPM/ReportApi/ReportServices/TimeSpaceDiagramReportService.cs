@@ -14,7 +14,7 @@ namespace ATSPM.ReportApi.ReportServices
     /// <summary>
     /// Time space diagram report service
     /// </summary>
-    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOption, IEnumerable<TimeSpaceDiagramResult>>
+    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>
     {
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
@@ -33,7 +33,7 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<TimeSpaceDiagramResult>> ExecuteAsync(TimeSpaceDiagramOption parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<IEnumerable<TimeSpaceDiagramResult>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
             var eventCodes = new List<int>() { 81, 82 };
@@ -68,7 +68,7 @@ namespace ATSPM.ReportApi.ReportServices
             return results;
         }
 
-        private (List<List<ControllerEventLog>> controllerEventLogsList, List<PhaseDetail> phaseDetails) ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOption parameter)
+        private (List<List<ControllerEventLog>> controllerEventLogsList, List<PhaseDetail> phaseDetails) ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
         {
             var controllerEventLogsList = new List<List<ControllerEventLog>>();
             var phaseDetails = new List<PhaseDetail>();
@@ -105,7 +105,7 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         private async Task<TimeSpaceDiagramResult> GetChartDataForPhase(
-            TimeSpaceDiagramOption parameter, 
+            TimeSpaceDiagramOptions parameter, 
             List<ControllerEventLog> currentControllerEventLogs, 
             PhaseDetail currentPhase,
             List<int> eventCodes,
@@ -114,13 +114,13 @@ namespace ATSPM.ReportApi.ReportServices
             bool isLastElement)
         {
             eventCodes.AddRange(timeSpaceDiagramReportService.GetCycleCodes(currentPhase.UseOverlap));
-            var approachevents = currentControllerEventLogs.GetEventsByEventCodes(
+            var approachEvents = currentControllerEventLogs.GetEventsByEventCodes(
                 parameter.Start.AddMinutes(-15),
                 parameter.End.AddMinutes(15),
                 eventCodes).ToList();
             var viewModel = timeSpaceDiagramReportService.GetChartData(parameter,
                 currentPhase,
-                approachevents,
+                approachEvents,
                 distanceToNextLocation,
                 isFirstElement,
                 isLastElement);

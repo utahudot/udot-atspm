@@ -2,11 +2,9 @@
 
 namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
 {
-    public class TimeSpaceDiagramOption : BasePhaseOptions
+    public class TimeSpaceDiagramOptions : BasePhaseOptions
     {
         public int RouteId { get; set; }
-        //public string ChartType { get; set; }
-        //public bool OpposingPhase { get; set; }
         public int ?SpeedLimit { get; set; }
     }
 }
