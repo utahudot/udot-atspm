@@ -1,5 +1,4 @@
 ﻿using ATSPM.ReportApi.Business.Common;
-using System;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -9,10 +8,10 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             DateTime start,
             DateTime end,
             string planNumber,
-            int averageSpeed,
-            int standardDeviation,
-            int eightyFifthPercentile,
-            int fifteenthPercentile) : base(planNumber, start, end)
+            int? averageSpeed,
+            int? standardDeviation,
+            int? eightyFifthPercentile,
+            int? fifteenthPercentile) : base(planNumber, start, end)
         {
             AverageSpeed = averageSpeed;
             StandardDeviation = standardDeviation;
@@ -23,10 +22,10 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             //End = end;
         }
 
-        public int AverageSpeed { get; set; }
-        public int StandardDeviation { get; set; }
-        public int EightyFifthPercentile { get; set; }
-        public int FifteenthPercentile { get; set; }
+        public int? AverageSpeed { get; set; }
+        public int? StandardDeviation { get; set; }
+        public int? EightyFifthPercentile { get; set; }
+        public int? FifteenthPercentile { get; set; }
         //public string PlanNumber { get; set; }
         //public DateTime Start { get; set; }
         //public DateTime End { get; set; }
