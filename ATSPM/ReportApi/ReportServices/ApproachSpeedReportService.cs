@@ -47,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No data found");
-                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("Location not found"));
+                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("No Controller Event Logs found for this signal on this date"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();

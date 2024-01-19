@@ -228,21 +228,31 @@ namespace ATSPM.ReportApi.Business.Common
                     var planStart = new DateTime();
                     var planEnd = new DateTime();
                     var planNumber = 0;
-                    var averageSpeed = 0;
-                    var standardDeviation = 0;
-                    var eightyFifthPercentile = 0;
-                    var fifteenthPercentile = 0;
+                    int? averageSpeed = null;
+                    int? standardDeviation = null;
+                    int? eightyFifthPercentile = null;
+                    int? fifteenthPercentile = null;
+                    List<int> speedEvents = null;
+                    if (cycles
+                        .SelectMany(c => c.SpeedEvents)
+                        .Where(c => c.TimeStamp >= planEvents[i].Timestamp && c.TimeStamp < endDate).Any())
+                    {
+                        speedEvents = cycles
+                            .SelectMany(c => c.SpeedEvents)
+                            .Where(c => c.TimeStamp >= planEvents[i].Timestamp && c.TimeStamp < endDate)
+                            .Select(c => c.Mph)
+                            .ToList();
+                    }
+
                     if (planEvents.Count - 1 == i)
                     {
                         if (planEvents[i].Timestamp != endDate)
                         {
-                            var planCycles = cycles
-                                .Where(c => c.StartTime >= planEvents[i].Timestamp && c.StartTime < endDate).ToList();
                             planStart = planEvents[i].Timestamp;
                             planEnd = endDate;
                             planNumber = planEvents[i].EventParam;
                             SetSpeedStatistics(
-                                planCycles,
+                                speedEvents,
                                 out averageSpeed,
                                 out standardDeviation,
                                 out eightyFifthPercentile,
@@ -253,14 +263,11 @@ namespace ATSPM.ReportApi.Business.Common
                     {
                         if (planEvents[i].Timestamp != planEvents[i + 1].Timestamp)
                         {
-                            var planCycles = cycles.Where(c =>
-                                    c.StartTime >= planEvents[i].Timestamp && c.StartTime < planEvents[i + 1].Timestamp)
-                                .ToList();
                             planStart = planEvents[i].Timestamp;
                             planEnd = planEvents[i + 1].Timestamp;
                             planNumber = planEvents[i].EventParam;
                             SetSpeedStatistics(
-                                planCycles,
+                                speedEvents,
                                 out averageSpeed,
                                 out standardDeviation,
                                 out eightyFifthPercentile,
@@ -286,37 +293,31 @@ namespace ATSPM.ReportApi.Business.Common
         }
 
         public void SetSpeedStatistics(
-            List<CycleSpeed> cycles,
-            out int avgSpeed,
-            out int stdDev,
-            out int eightyFifth,
-            out int fifteenth)
+            List<int> speeds,
+            out int? avgSpeed,
+            out int? stdDev,
+            out int? eightyFifth,
+            out int? fifteenth)
         {
-            var rawSpeeds = new List<int>();
-            foreach (var cycle in cycles)
-                rawSpeeds.AddRange(cycle.SpeedEvents.Select(s => s.Mph));
-
-            //find stddev of average
-            if (rawSpeeds.Count > 0)
+            avgSpeed = null;
+            stdDev = null;
+            eightyFifth = null;
+            fifteenth = null;
+            if (speeds != null && speeds.Count > 0)
             {
-                var rawaverage = rawSpeeds.Average();
+                var rawaverage = speeds.Average();
                 avgSpeed = Convert.ToInt32(Math.Round(rawaverage));
                 stdDev =
-                    Convert.ToInt32(Math.Round(Math.Sqrt(rawSpeeds.Average(v => Math.Pow(v - rawaverage, 2)))));
+                    Convert.ToInt32(Math.Round(Math.Sqrt(speeds.Average(v => Math.Pow(v - rawaverage, 2)))));
+                eightyFifth = GetPercentile(speeds, .85);
+                fifteenth = GetPercentile(speeds, .15);
             }
-            else
-            {
-                avgSpeed = 0;
-                stdDev = 0;
-            }
-            eightyFifth = GetPercentile(rawSpeeds, .85);
-            fifteenth = GetPercentile(rawSpeeds, .15);
         }
 
-        private int GetPercentile(IReadOnlyList<int> speeds, double percentile)
+        private int? GetPercentile(IReadOnlyList<int> speeds, double percentile)
         {
             if (speeds.IsNullOrEmpty())
-                return -1;
+                return null;
             var sortedSpeeds = speeds.OrderBy(x => x).ToList();
             var tempPercentileIndex = sortedSpeeds.Count * percentile - 1;
             var percentileIndex = 0;
