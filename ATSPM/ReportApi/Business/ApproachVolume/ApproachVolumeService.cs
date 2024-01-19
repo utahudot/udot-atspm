@@ -113,7 +113,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
                 combinedPeakHourKFactor,
                 combinedPeakHourValue,
                 combinedPeakHourFactor,
-                combinedVolume,
+                combinedPeakHourItem.Value,
                 primaryDirectionPeakHourString,
                 primaryKFactor,
                 primayDirectionPeakHourItem.Value,
