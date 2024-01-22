@@ -1275,6 +1275,12 @@
             Supports HTTP Protocol
             </summary>
         </member>
+        <member name="P:ATSPM.Data.EventModels.EventModelBase.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.EventModels.EventModelBase.Timestamp">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Interfaces.ILocationDetectorLayer">
             <summary>
             For objects in the location and detector layer
@@ -1408,6 +1414,14 @@
         <member name="P:ATSPM.Data.Models.AtspmConfigModelBase`1.Id">
             <summary>
             Primary key
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventData.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventData.ArchiveDate">
+            <summary>
+            Day the data is archived for
             </summary>
         </member>
         <member name="T:ATSPM.Data.Models.DetectionType">
