@@ -34,6 +34,14 @@ using ATSPM.Domain.Extensions;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization.Metadata;
+using ATSPM.Infrastructure.Services.DownloaderClients;
+using ATSPM.Data.EventModels;
+using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using ATSPM.Data.Interfaces;
+using System.Collections;
+using System.IO.Compression;
+using System.Text;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -225,39 +233,57 @@ namespace ATSPM.LocationControllerLogger
             //var type = "System.Collections.Generic.List`1[[ATSPM.Data.Models.ControllerEventLog, ATSPM.Data]], System.Private.CoreLib";
 
 
+            //var e = new IndiannaEvent()
+            //{
+            //    LocationIdentifier = "1234",
+            //    Timestamp = DateTime.Now,
+            //    EventCode = 1,
+            //    EventParam = 1
+            //};
+
+            //var list = new List<IndiannaEvent>() { e };
+
+
+
+
+            //var test2 = JsonConvert.DeserializeObject<IEnumerable<EventModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
+            //{
+            //    TypeNameHandling = TypeNameHandling.Arrays
+            //});
+
+            //Console.WriteLine($"{test2?.Count()}");
+
 
             using (var scope = host.Services.CreateScope())
             {
-                var config = scope.ServiceProvider.GetService<IDeviceConfigurationRepository>().GetList().ToList();
+                var db = scope.ServiceProvider.GetService<EventLogContext>();
 
-                foreach (var c in config)
+                var e = new IndiannaEvent()
                 {
-                    Console.WriteLine($"{c.Firmware} - {c.DataModel}");
+                    LocationIdentifier = "1234",
+                    Timestamp = DateTime.Now,
+                    EventCode = 1,
+                    EventParam = 1
+                };
+
+                db.EventLogArchives.Add(new CompressedEventData()
+                {
+                    LocationIdentifier = "1234",
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    LogData = new List<IndiannaEvent>()
+                    {
+                        e
+                    }
+                });
+
+                db.SaveChanges();
+
+                foreach (var l in db.EventLogArchives.ToList())
+                {
+                    Console.WriteLine($"{l.LocationIdentifier} - {l.ArchiveDate} - {l.LogData.Count()}");
                 }
+
             }
-
-
-
-            //var list = new List<ControllerEventLog>() { new ControllerEventLog(), new ControllerEventLog()};
-
-            //var type = list.GetType().FullName;
-            //Console.WriteLine($"type: {type}");
-
-            //var test = Newtonsoft.Json.JsonConvert.SerializeObject(list, new JsonSerializerSettings()
-            //{
-            //    Formatting = Newtonsoft.Json.Formatting.Indented
-            //    //TypeNameHandling = TypeNameHandling.Arrays
-            //});
-
-            //Console.WriteLine($"{test}");
-
-            //List<ControllerEventLog> test2 = (List<ControllerEventLog>)JsonConvert.DeserializeObject(test, Type.GetType(type),  new JsonSerializerSettings()
-            //{
-            //    //TypeNameHandling = TypeNameHandling.Auto
-            //});
-
-            //Console.WriteLine($"{test2.Count}");
-
 
 
             Console.Read();
@@ -265,33 +291,7 @@ namespace ATSPM.LocationControllerLogger
         }
     }
 
-    public class DeviceFtpDownloader : DeviceDownloaderBase
-    {
-        public DeviceFtpDownloader(IFTPDownloaderClient client, ILogger<DeviceFtpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        public override TransportProtocols Protocol => TransportProtocols.Ftp;
-    }
-
-    public class DeviceSftpDownloader : DeviceDownloaderBase
-    {
-        public DeviceSftpDownloader(ISFTPDownloaderClient client, ILogger<DeviceSftpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        public override TransportProtocols Protocol => TransportProtocols.Sftp;
-    }
-
-    public class DeviceHttpDownloader : DeviceDownloaderBase
-    {
-        public DeviceHttpDownloader(IHTTPDownloaderClient client, ILogger<DeviceHttpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        public override TransportProtocols Protocol => TransportProtocols.Http;
-    }
-
-    public class DeviceSnmpDownloader : DeviceDownloaderBase
-    {
-        public DeviceSnmpDownloader(ISNMPDownloaderClient client, ILogger<DeviceSnmpDownloader> log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(client, log, options) { }
-
-        public override TransportProtocols Protocol => TransportProtocols.Snmp;
-    }
+    
 
     public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, FileInfo>
     {

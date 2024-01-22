@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ATSPM.Infrastructure.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
     public class FTPDownloaderStubClient : ServiceObjectBase, IFTPDownloaderClient
     {
