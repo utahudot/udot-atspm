@@ -86,6 +86,18 @@ namespace Identity.Controllers
 
             if (authenticationResult.Code == StatusCodes.Status200OK)
             {
+                var client = new HttpClient();
+
+                var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest {
+                    Address = "https://demo.duendesoftware.com/connect/token",
+
+                    ClientId = "client",
+                    ClientSecret = "secret",
+                    Scope = "api1",
+
+                    UserName = model.Email,
+                    Password = model.Password,
+                });
                 // Assuming _scopeService is injected and provides access to the database for fetching allowed scopes
                 //var allowedScopes = _scopeService.GetScopesForClient(authenticationResult.ClientId);
 
