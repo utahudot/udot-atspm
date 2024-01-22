@@ -20,6 +20,7 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
+    ///<inheritdoc cref="IDeviceDownloader"/>
     public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, FileInfo, ControllerDownloadProgress>, IDeviceDownloader
     {
         #region Fields
@@ -30,6 +31,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         #endregion
 
+        ///<inheritdoc/>
         public DeviceDownloaderBase(IDownloaderClient client, ILogger log, IOptionsSnapshot<SignalControllerDownloaderConfiguration> options) : base(true)
         {
             _client = client;
@@ -39,6 +41,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
         #region Properties
 
+        ///<inheritdoc/>
         public virtual TransportProtocols Protocol => TransportProtocols.Unknown;
 
         #endregion
@@ -59,6 +62,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                 Path.GetFileName(file));
         }
 
+        ///<inheritdoc/>
         public override bool CanExecute(Device value)
         {
             return value.DeviceConfiguration.Protocol == Protocol && value.LoggingEnabled;

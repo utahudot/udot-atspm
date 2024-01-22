@@ -24,6 +24,19 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                     table.PrimaryKey("PK_ControllerLogArchives", x => new { x.LocationIdentifier, x.ArchiveDate });
                 },
                 comment: "Compressed Event Log Data");
+
+            migrationBuilder.CreateTable(
+                name: "EventLogArchives",
+                columns: table => new
+                {
+                    LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    ArchiveDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    LogData = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventLogArchives", x => new { x.LocationIdentifier, x.ArchiveDate });
+                });
         }
 
         /// <inheritdoc />
@@ -31,6 +44,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
         {
             migrationBuilder.DropTable(
                 name: "ControllerLogArchives");
+
+            migrationBuilder.DropTable(
+                name: "EventLogArchives");
         }
     }
 }

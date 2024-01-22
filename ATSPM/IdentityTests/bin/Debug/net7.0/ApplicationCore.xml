@@ -1618,7 +1618,7 @@
             </summary>
         </member>
         <member name="M:ATSPM.Application.Services.ILocationControllerDecoder.DecodeAsync(System.String,System.IO.Stream,System.Threading.CancellationToken)">
-            <exception cref="!:ControllerLoggerDecoderException"></exception>
+            <exception cref="T:ATSPM.Application.Exceptions.ControllerLoggerDecoderException"></exception>
         </member>
         <member name="M:ATSPM.Application.ValueObjects.InfoBox.#ctor(System.String,System.String,System.Collections.Generic.SortedDictionary{System.Int32,System.Boolean})">
             <summary>

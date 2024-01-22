@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
-    [Migration("20231214004804_EFCore6Upgrade")]
+    [Migration("20240122214732_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -24,6 +24,24 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEventData", b =>
+                {
+                    b.Property<string>("LocationIdentifier")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<DateTime>("ArchiveDate")
+                        .HasColumnType("Date");
+
+                    b.Property<byte[]>("LogData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("LocationIdentifier", "ArchiveDate");
+
+                    b.ToTable("EventLogArchives");
+                });
 
             modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
