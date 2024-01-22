@@ -585,7 +585,7 @@
             <summary>
             GZip stream and encode to <see cref="T:System.IO.MemoryStream"/>
             </summary>
-            <param name="stream">Stream to compress and convert</param>
+            <param name="msi">Stream to compress and convert</param>
             <returns><see cref="T:System.IO.MemoryStream"/> of compressed stream</returns>
         </member>
         <member name="M:ATSPM.Domain.Extensions.CompressionExtensions.GZipDecompressToStream(System.Byte[])">

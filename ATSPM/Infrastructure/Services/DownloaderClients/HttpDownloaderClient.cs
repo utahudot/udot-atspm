@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace ATSPM.Infrastructure.Services.ControllerDownloaders
+namespace ATSPM.Infrastructure.Services.DownloaderClients
 {
     public class HttpDownloaderClient : ServiceObjectBase, IHTTPDownloaderClient
     {
