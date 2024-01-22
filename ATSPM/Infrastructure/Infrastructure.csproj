@@ -13,22 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\ControllerDownloaders\ASC3SignalControllerDownloader.cs" />
-    <Compile Remove="Services\ControllerDownloaders\CobaltSignalControllerDownloader.cs" />
-    <Compile Remove="Services\ControllerDownloaders\EOSSignalControllerDownloader.cs" />
-    <Compile Remove="Services\ControllerDownloaders\MaxTimeSignalControllerDownloader.cs" />
-    <Compile Remove="Services\ControllerDownloaders\NewCobaltSignalControllerDownloader.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Services\ControllerDownloaders\ASC3SignalControllerDownloader.cs" />
-    <None Include="Services\ControllerDownloaders\CobaltSignalControllerDownloader.cs" />
-    <None Include="Services\ControllerDownloaders\EOSSignalControllerDownloader.cs" />
-    <None Include="Services\ControllerDownloaders\MaxTimeSignalControllerDownloader.cs" />
-    <None Include="Services\ControllerDownloaders\NewCobaltSignalControllerDownloader.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="6.3.6" />
     <PackageReference Include="FluentFTP" Version="44.0.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />

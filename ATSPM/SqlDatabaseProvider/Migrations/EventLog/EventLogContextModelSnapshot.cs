@@ -22,6 +22,24 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEventData", b =>
+                {
+                    b.Property<string>("LocationIdentifier")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<DateTime>("ArchiveDate")
+                        .HasColumnType("Date");
+
+                    b.Property<byte[]>("LogData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("LocationIdentifier", "ArchiveDate");
+
+                    b.ToTable("EventLogArchives");
+                });
+
             modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
                 {
                     b.Property<string>("LocationIdentifier")
