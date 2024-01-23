@@ -36,7 +36,12 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             var stopBarPresenceEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var advanceCountEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs, options, out List<GreenToGreenCycle> resultCycles);
+            var speed = options.SpeedLimit ?? phaseDetail.Approach.Mph;
 
+            if(!speed.HasValue)
+            {
+                throw new ArgumentNullException($"No speed available for {phaseDetail.PhaseNumber}");
+            }
 
             if (isFirstElement)
             {
@@ -76,6 +81,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
                 phaseDetail.PhaseNumber,
                 phaseNumberSort,
                 distanceToNextLocation,
+                (int)speed,
                 cycleAllEvents,
                 countEventsTimeSpaceResult,
                 advanceCountEventsTimeSpaceResult,
