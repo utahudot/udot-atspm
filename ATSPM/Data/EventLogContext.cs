@@ -5,6 +5,7 @@ using ATSPM.Data.EventModels;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using AutoMapper.Execution;
+using AutoMapper.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -39,7 +40,7 @@ namespace ATSPM.Data
 
 
 
-        public virtual DbSet<CompressedData> CompressedData { get; set; }
+        public virtual DbSet<EventsBase> CompressedData { get; set; }
         //public virtual DbSet<ModelTwo> ModelTwo { get; set; }
         //public virtual DbSet<ModelThree> ModelThree { get; set; }
 
@@ -111,11 +112,11 @@ namespace ATSPM.Data
             //modelBuilder.Entity<ModelTwo>(builder => builder.HasBaseType<ModelOne>());
             //modelBuilder.Entity<ModelThree>(builder => builder.HasBaseType<ModelOne>());
 
-            modelBuilder.Entity<CompressedData>(builder =>
+            modelBuilder.Entity<EventsBase>(builder =>
             {
                 //builder.ToTable("CompressedData");
                 
-                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate });
+                builder.HasKey(e => new { e.LocationIdentifier, e.DeviceId, e.ArchiveDate });
 
                 builder.Property(e => e.LocationIdentifier)
                     .IsRequired()
@@ -129,11 +130,21 @@ namespace ATSPM.Data
                     v => DateOnly.FromDateTime(v));
 
 
-                builder.HasDiscriminator(d => d.DataType)
-                .HasValue<CompressedIndiannaEvents>(typeof(CompressedIndiannaEvents))
-                .HasValue<CompressedPedestrianCounter>(typeof(CompressedPedestrianCounter));
+                //builder.HasDiscriminator(d => d.DataType)
+                //.HasValue<CompressedIndiannaEvents>(typeof(CompressedIndiannaEvents))
+                //.HasValue<CompressedPedestrianCounter>(typeof(CompressedPedestrianCounter));
+
+
+                var b = builder.HasDiscriminator(d => d.DataType);
+                foreach (var t in typeof(EventsBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventsBase)) && !w.IsAbstract))
+                {
+                    var m = t.GetInheritedProperty("Events").PropertyType.GenericTypeArguments[0];
+
+                    b.HasValue(t, m);
+                }
 
                 builder.Property(p => p.DataType)
+                .HasMaxLength(64)
                 .HasConversion<string>(v => v.FullName, v => Type.GetType(v));
             });
 
