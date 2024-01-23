@@ -22,32 +22,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedData", b =>
-                {
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("Date");
-
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("DataType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LocationIdentifier", "ArchiveDate");
-
-                    b.ToTable("CompressedData");
-
-                    b.HasDiscriminator<string>("DataType");
-
-                    b.UseTphMappingStrategy();
-                });
-
             modelBuilder.Entity("ATSPM.Data.Models.CompressedEventData", b =>
                 {
                     b.Property<string>("LocationIdentifier")
@@ -90,26 +64,48 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                         });
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedIndiannaEvents", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.EventsBase", b =>
                 {
-                    b.HasBaseType("ATSPM.Data.Models.CompressedData");
+                    b.Property<string>("LocationIdentifier")
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("DeviceId")
-                        .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("int");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.CompressedIndiannaEvents");
+                    b.Property<DateTime>("ArchiveDate")
+                        .HasColumnType("Date");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("LocationIdentifier", "DeviceId", "ArchiveDate");
+
+                    b.ToTable("CompressedData");
+
+                    b.HasDiscriminator<string>("DataType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedIndiannaEvents", b =>
+                {
+                    b.HasBaseType("ATSPM.Data.Models.EventsBase");
+
+                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.IndiannaEvent");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedPedestrianCounter", b =>
                 {
-                    b.HasBaseType("ATSPM.Data.Models.CompressedData");
+                    b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
-                    b.Property<int>("DeviceId")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("int");
-
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.CompressedPedestrianCounter");
+                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.PedestrianCounter");
                 });
 #pragma warning restore 612, 618
         }
