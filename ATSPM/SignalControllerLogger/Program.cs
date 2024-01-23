@@ -42,6 +42,7 @@ using ATSPM.Data.Interfaces;
 using System.Collections;
 using System.IO.Compression;
 using System.Text;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -266,24 +267,46 @@ namespace ATSPM.LocationControllerLogger
                     EventParam = 1
                 };
 
-                db.EventLogArchives.Add(new CompressedEventData()
+                db.CompressedData.Add(new CompressedIndiannaEvents()
                 {
                     LocationIdentifier = "1234",
+                    //DeviceId = 1,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    LogData = new List<IndiannaEvent>()
-                    {
-                        e
-                    }
+                    //Data = new List<IndiannaEvent>()
+                    //{
+                    //    e
+                    //}
+                });
+
+                var f = new PedestrianCounter()
+                {
+                    LocationIdentifier = "1234",
+                    Timestamp = DateTime.Now,
+                    In = 100,
+                    Out = 99
+                };
+
+                db.CompressedData.Add(new CompressedPedestrianCounter()
+                {
+                    LocationIdentifier = "1234",
+                    //DeviceId = 2,
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    //LogData = new List<PedestrianCounter>()
+                    //{
+                    //    f
+                    //}
                 });
 
                 db.SaveChanges();
 
-                foreach (var l in db.EventLogArchives.ToList())
-                {
-                    Console.WriteLine($"{l.LocationIdentifier} - {l.ArchiveDate} - {l.LogData.Count()}");
-                }
+                //foreach (var l in db.EventLogArchives.ToList())
+                //{
+                //    Console.WriteLine($"{l.LocationIdentifier} - {l.ArchiveDate} - {l.LogData.Count()}");
+                //}
 
             }
+
+
 
 
             Console.Read();
