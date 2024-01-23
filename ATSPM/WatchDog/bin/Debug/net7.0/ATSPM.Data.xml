@@ -1419,9 +1419,40 @@
         <member name="P:ATSPM.Data.Models.CompressedEventData.LocationIdentifier">
             <inheritdoc/>
         </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventData.DeviceId">
+            <summary>
+            Id of the device the logs came from
+            </summary>
+        </member>
         <member name="P:ATSPM.Data.Models.CompressedEventData.ArchiveDate">
             <summary>
             Day the data is archived for
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventData.LogData">
+            <summary>
+            Compressed log data
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.CompressedEventData.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedData.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedData.ArchiveDate">
+            <summary>
+            Day the data is archived for
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedData.Data">
+            <summary>
+            Compressed data
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventsBase.DeviceId">
+            <summary>
+            Id of the device the logs came from
             </summary>
         </member>
         <member name="T:ATSPM.Data.Models.DetectionType">

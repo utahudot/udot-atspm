@@ -34,6 +34,19 @@ namespace ATSPM.Data
 
 
 
+
+
+
+
+
+        public virtual DbSet<CompressedData> CompressedData { get; set; }
+        //public virtual DbSet<ModelTwo> ModelTwo { get; set; }
+        //public virtual DbSet<ModelThree> ModelThree { get; set; }
+
+
+
+
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().AreUnicode(false);
@@ -63,7 +76,7 @@ namespace ATSPM.Data
 
             modelBuilder.Entity<CompressedEventData>(builder =>
             {
-                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate });
+                builder.HasKey(e => new { e.LocationIdentifier, e.DeviceId, e.ArchiveDate });
 
                 builder.Property(e => e.LocationIdentifier)
                     .IsRequired()
@@ -94,6 +107,35 @@ namespace ATSPM.Data
                     c => c.ToList()));
             });
 
+
+            //modelBuilder.Entity<ModelTwo>(builder => builder.HasBaseType<ModelOne>());
+            //modelBuilder.Entity<ModelThree>(builder => builder.HasBaseType<ModelOne>());
+
+            modelBuilder.Entity<CompressedData>(builder =>
+            {
+                //builder.ToTable("CompressedData");
+                
+                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate });
+
+                builder.Property(e => e.LocationIdentifier)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                builder.Property(e => e.ArchiveDate)
+                .IsRequired()
+                .HasColumnType("Date")
+                .HasConversion<DateTime>(
+                    v => v.ToDateTime(TimeOnly.MinValue),
+                    v => DateOnly.FromDateTime(v));
+
+
+                builder.HasDiscriminator(d => d.DataType)
+                .HasValue<CompressedIndiannaEvents>(typeof(CompressedIndiannaEvents))
+                .HasValue<CompressedPedestrianCounter>(typeof(CompressedPedestrianCounter));
+
+                builder.Property(p => p.DataType)
+                .HasConversion<string>(v => v.FullName, v => Type.GetType(v));
+            });
 
             OnModelCreatingPartial(modelBuilder);
         }
