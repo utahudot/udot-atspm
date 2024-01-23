@@ -1,48 +1,22 @@
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
-using ATSPM.Domain.Common;
-using ATSPM.Infrastructure.Converters;
+using ATSPM.Data;
+using ATSPM.Data.EventModels;
+using ATSPM.Data.Models;
+using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.Services.LocationControllerLoggers;
+using ATSPM.Infrastructure.Services.DownloaderClients;
+using AutoMapper.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using LocationControllerLogger;
-using System.Threading.Tasks;
-using System.Linq;
-using System.IO;
 using System;
-using ATSPM.Application.Common.EqualityComparers;
-using ATSPM.Data.Models;
-using ATSPM.Data;
-using EFCore.BulkExtensions;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
-using static Google.Cloud.Logging.V2.TailLogEntriesResponse.Types.SuppressionInfo.Types;
-using Microsoft.OData.Edm.Csdl;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using ATSPM.Domain.Workflows;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ATSPM.Data.Enums;
-using ATSPM.Domain.Extensions;
-using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-using System.Text.Json.Serialization.Metadata;
-using ATSPM.Infrastructure.Services.DownloaderClients;
-using ATSPM.Data.EventModels;
-using Newtonsoft.Json.Linq;
-using System.Text.Json;
-using ATSPM.Data.Interfaces;
-using System.Collections;
-using System.IO.Compression;
-using System.Text;
-using Google.Protobuf.WellKnownTypes;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -270,12 +244,12 @@ namespace ATSPM.LocationControllerLogger
                 db.CompressedData.Add(new CompressedIndiannaEvents()
                 {
                     LocationIdentifier = "1234",
-                    //DeviceId = 1,
+                    DeviceId = 1,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    //Data = new List<IndiannaEvent>()
-                    //{
-                    //    e
-                    //}
+                    Events = new List<IndiannaEvent>()
+                    {
+                        e
+                    }
                 });
 
                 var f = new PedestrianCounter()
@@ -289,12 +263,12 @@ namespace ATSPM.LocationControllerLogger
                 db.CompressedData.Add(new CompressedPedestrianCounter()
                 {
                     LocationIdentifier = "1234",
-                    //DeviceId = 2,
+                    DeviceId = 2,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    //LogData = new List<PedestrianCounter>()
-                    //{
-                    //    f
-                    //}
+                    Events = new List<PedestrianCounter>()
+                    {
+                        f
+                    }
                 });
 
                 db.SaveChanges();

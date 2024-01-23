@@ -4,6 +4,7 @@ using ATSPM.Domain.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -61,29 +62,29 @@ namespace ATSPM.Data.Models
         /// </summary>
         public int DeviceId { get; set; }
 
-        //[JsonIgnore]
-        //public List<T> Events
-        //{
-        //    get
-        //    {
-        //        return JsonConvert.DeserializeObject<List<T>>(Data.GZipDecompressToString(), new JsonSerializerSettings()
-        //        {
-        //            TypeNameHandling = TypeNameHandling.Arrays
-        //        });
-        //    }
-        //    set
-        //    {
-        //        Data = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
-        //        {
-        //            TypeNameHandling = TypeNameHandling.Arrays
-        //        }).GZipCompressToByte();
-        //    }
-        //}
+        
     }
 
     public abstract class EventsTypeBase<T> : EventsBase where T : EventModelBase
     {
-
+        [NotMapped]
+        public List<T> Events
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<List<T>>(Data.GZipDecompressToString(), new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Arrays
+                });
+            }
+            set
+            {
+                Data = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.Arrays
+                }).GZipCompressToByte();
+            }
+        }
     }
 
     public class CompressedIndiannaEvents : EventsTypeBase<IndiannaEvent>

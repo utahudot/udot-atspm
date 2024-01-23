@@ -17,13 +17,13 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                 {
                     LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     ArchiveDate = table.Column<DateTime>(type: "Date", nullable: false),
-                    DataType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    DeviceId = table.Column<int>(type: "int", nullable: true)
+                    DeviceId = table.Column<int>(type: "int", nullable: false),
+                    DataType = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    Data = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompressedData", x => new { x.LocationIdentifier, x.ArchiveDate });
+                    table.PrimaryKey("PK_CompressedData", x => new { x.LocationIdentifier, x.DeviceId, x.ArchiveDate });
                 });
 
             migrationBuilder.CreateTable(
