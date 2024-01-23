@@ -18,15 +18,13 @@ namespace ATSPM.Data.EventModels
 
         ///<inheritdoc/>
         public DateTime Timestamp { get; set; }
-
-        //public int Id { get; set; }
     }
 
 
     public class IndiannaEvent : EventModelBase
     {
-        public int EventCode { get; set; }
-        public int EventParam { get; set; }
+        public ushort EventCode { get; set; }
+        public byte EventParam { get; set; }
 
         public override string ToString()
         {
@@ -36,7 +34,7 @@ namespace ATSPM.Data.EventModels
 
     public class PedestrianCounter : EventModelBase
     {
-        public int In { get; set; }
-        public int Out { get; set; }
+        public ushort In { get; set; }
+        public ushort Out { get; set; }
     }
 }
