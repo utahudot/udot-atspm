@@ -41,8 +41,8 @@ namespace ATSPM.Data
 
 
         public virtual DbSet<EventsBase> CompressedData { get; set; }
-        //public virtual DbSet<ModelTwo> ModelTwo { get; set; }
-        //public virtual DbSet<ModelThree> ModelThree { get; set; }
+        public virtual DbSet<EventsTypeBase<IndiannaEvent>> IndiannaEvents { get; set; }
+        public virtual DbSet<EventsTypeBase<PedestrianCounter>> PedestrianCounters { get; set; }
 
 
 
@@ -129,6 +129,10 @@ namespace ATSPM.Data
                     v => v.ToDateTime(TimeOnly.MinValue),
                     v => DateOnly.FromDateTime(v));
 
+                builder.Property(p => p.DataType)
+                .HasMaxLength(512)
+                .HasConversion<string>(v => v.AssemblyQualifiedName, v => Type.GetType(v));
+
 
                 //builder.HasDiscriminator(d => d.DataType)
                 //.HasValue<EventsTypeBase<IndiannaEvent>>(typeof(IndiannaEvent))
@@ -142,15 +146,44 @@ namespace ATSPM.Data
                     b.HasValue(g, t);
                 }
 
-                builder.Property(p => p.DataType)
-                .HasMaxLength(64)
-                .HasConversion<string>(v => v.FullName, v => Type.GetType(v));
+                //builder.Property(p => p.Data).HasConversion<CompressedJsonConverter>();
+
+                builder.Property(e => e.Data)
+                .HasConversion<byte[]>(
+                    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Arrays
+                    }).GZipCompressToByte(),
+
+                    v => JsonConvert.DeserializeObject<IEnumerable<EventModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Arrays
+                    }),
+
+                    new ValueComparer<IEnumerable<EventModelBase>>((c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()));
             });
 
             OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
+
+    public class CompressedJsonConverter : ValueConverter<object, byte[]>
+    {
+        public CompressedJsonConverter() : base(
+            v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Arrays
+            }).GZipCompressToByte(),
+            v => JsonConvert.DeserializeObject<object>(v.GZipDecompressToString(), new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.Arrays
+            })
+            )
+        { }
     }
 
     //add-migration -name EFCore6Upgrade -context EventLogContext
