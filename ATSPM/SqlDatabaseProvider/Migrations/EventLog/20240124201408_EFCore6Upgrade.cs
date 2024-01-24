@@ -18,7 +18,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                     LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
                     ArchiveDate = table.Column<DateTime>(type: "Date", nullable: false),
                     DeviceId = table.Column<int>(type: "int", nullable: false),
-                    DataType = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
+                    DataType = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     Data = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>

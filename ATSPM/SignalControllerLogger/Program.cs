@@ -8,9 +8,11 @@ using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
 using AutoMapper.Internal;
+using EFCore.BulkExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -247,7 +249,7 @@ namespace ATSPM.LocationControllerLogger
                     LocationIdentifier = "1234",
                     DeviceId = 1,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Events = new List<IndiannaEvent>()
+                    Data = new List<IndiannaEvent>()
                     {
                         e
                     }
@@ -266,7 +268,7 @@ namespace ATSPM.LocationControllerLogger
                     LocationIdentifier = "1234",
                     DeviceId = 2,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Events = new List<PedestrianCounter>()
+                    Data = new List<PedestrianCounter>()
                     {
                         f
                     }
@@ -274,10 +276,20 @@ namespace ATSPM.LocationControllerLogger
 
                 db.SaveChanges();
 
-                //foreach (var l in db.EventLogArchives.ToList())
-                //{
-                //    Console.WriteLine($"{l.LocationIdentifier} - {l.ArchiveDate} - {l.LogData.Count()}");
-                //}
+                foreach (var l in db.CompressedData.ToList())
+                {
+                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                }
+
+                foreach (var l in db.IndiannaEvents.ToList())
+                {
+                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                }
+
+                foreach (var l in db.PedestrianCounters.ToList())
+                {
+                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                }
 
             }
 
