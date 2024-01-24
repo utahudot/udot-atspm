@@ -82,8 +82,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 
                     b.Property<string>("DataType")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.HasKey("LocationIdentifier", "DeviceId", "ArchiveDate");
 
@@ -98,14 +98,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.IndiannaEvent");
+                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.IndiannaEvent, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.EventsTypeBase<ATSPM.Data.EventModels.PedestrianCounter>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.PedestrianCounter");
+                    b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.PedestrianCounter, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
                 });
 #pragma warning restore 612, 618
         }
