@@ -52,7 +52,8 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Compressed data
         /// </summary>
-        public byte[] Data { get; set; }
+        //public byte[] Data { get; set; }
+        public virtual object Data { get; set; }
     }
 
     public abstract class EventsBase : CompressedData
@@ -62,36 +63,12 @@ namespace ATSPM.Data.Models
         /// </summary>
         public int DeviceId { get; set; }
 
-        
+        public new IEnumerable<EventModelBase> Data { get; set; }
+
     }
 
     public class EventsTypeBase<T> : EventsBase where T : EventModelBase
     {
-        [NotMapped]
-        public List<T> Events
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<List<T>>(Data.GZipDecompressToString(), new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.Arrays
-                });
-            }
-            set
-            {
-                Data = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.Arrays
-                }).GZipCompressToByte();
-            }
-        }
+        public new ICollection<T> Data { get => (ICollection<T>)base.Data; set => base.Data = value; }
     }
-
-    //public class CompressedIndiannaEvents : EventsTypeBase<IndiannaEvent>
-    //{
-    //}
-
-    //public class CompressedPedestrianCounter : EventsTypeBase<PedestrianCounter>
-    //{
-    //}
 }
