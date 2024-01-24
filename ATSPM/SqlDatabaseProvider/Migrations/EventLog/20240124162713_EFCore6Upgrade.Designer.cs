@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 {
     [DbContext(typeof(EventLogContext))]
-    [Migration("20240123220344_EFCore6Upgrade")]
+    [Migration("20240124162713_EFCore6Upgrade")]
     partial class EFCore6Upgrade
     {
         /// <inheritdoc />
@@ -97,14 +97,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedIndiannaEvents", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.EventsTypeBase<ATSPM.Data.EventModels.IndiannaEvent>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
                     b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.IndiannaEvent");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedPedestrianCounter", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.EventsTypeBase<ATSPM.Data.EventModels.PedestrianCounter>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
