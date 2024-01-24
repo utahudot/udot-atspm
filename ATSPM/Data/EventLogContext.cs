@@ -131,16 +131,15 @@ namespace ATSPM.Data
 
 
                 //builder.HasDiscriminator(d => d.DataType)
-                //.HasValue<CompressedIndiannaEvents>(typeof(CompressedIndiannaEvents))
-                //.HasValue<CompressedPedestrianCounter>(typeof(CompressedPedestrianCounter));
-
+                //.HasValue<EventsTypeBase<IndiannaEvent>>(typeof(IndiannaEvent))
+                //.HasValue<EventsTypeBase<PedestrianCounter>>(typeof(PedestrianCounter));
 
                 var b = builder.HasDiscriminator(d => d.DataType);
-                foreach (var t in typeof(EventsBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventsBase)) && !w.IsAbstract))
+                foreach (var t in typeof(EventModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventModelBase))))
                 {
-                    var m = t.GetInheritedProperty("Events").PropertyType.GenericTypeArguments[0];
+                    var g = typeof(EventsTypeBase<>).MakeGenericType(t);
 
-                    b.HasValue(t, m);
+                    b.HasValue(g, t);
                 }
 
                 builder.Property(p => p.DataType)
@@ -153,15 +152,6 @@ namespace ATSPM.Data
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
-
-    //public class EventDataConverter : ValueConverter<IEnumerable<EventModelBase>, byte[]>
-    //{
-    //    public EventDataConverter() : base(
-
-    //        )
-    //    {
-    //    }
-    //}
 
     //add-migration -name EFCore6Upgrade -context EventLogContext
     //update-database -context EventLogContext
