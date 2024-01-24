@@ -65,7 +65,7 @@ namespace ATSPM.Data.Models
         
     }
 
-    public abstract class EventsTypeBase<T> : EventsBase where T : EventModelBase
+    public class EventsTypeBase<T> : EventsBase where T : EventModelBase
     {
         [NotMapped]
         public List<T> Events
@@ -87,11 +87,11 @@ namespace ATSPM.Data.Models
         }
     }
 
-    public class CompressedIndiannaEvents : EventsTypeBase<IndiannaEvent>
-    {
-    }
+    //public class CompressedIndiannaEvents : EventsTypeBase<IndiannaEvent>
+    //{
+    //}
 
-    public class CompressedPedestrianCounter : EventsTypeBase<PedestrianCounter>
-    {
-    }
+    //public class CompressedPedestrianCounter : EventsTypeBase<PedestrianCounter>
+    //{
+    //}
 }

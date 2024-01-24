@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -241,7 +242,7 @@ namespace ATSPM.LocationControllerLogger
                     EventParam = 1
                 };
 
-                db.CompressedData.Add(new CompressedIndiannaEvents()
+                db.CompressedData.Add(new EventsTypeBase<IndiannaEvent>()
                 {
                     LocationIdentifier = "1234",
                     DeviceId = 1,
@@ -260,7 +261,7 @@ namespace ATSPM.LocationControllerLogger
                     Out = 99
                 };
 
-                db.CompressedData.Add(new CompressedPedestrianCounter()
+                db.CompressedData.Add(new EventsTypeBase<PedestrianCounter>()
                 {
                     LocationIdentifier = "1234",
                     DeviceId = 2,
@@ -279,7 +280,6 @@ namespace ATSPM.LocationControllerLogger
                 //}
 
             }
-
 
 
 

@@ -94,14 +94,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedIndiannaEvents", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.EventsTypeBase<ATSPM.Data.EventModels.IndiannaEvent>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
                     b.HasDiscriminator().HasValue("ATSPM.Data.EventModels.IndiannaEvent");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.CompressedPedestrianCounter", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.EventsTypeBase<ATSPM.Data.EventModels.PedestrianCounter>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.EventsBase");
 
