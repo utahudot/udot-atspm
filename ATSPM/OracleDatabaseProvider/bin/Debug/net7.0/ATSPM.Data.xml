@@ -4,6 +4,95 @@
         <name>ATSPM.Data</name>
     </assembly>
     <members>
+        <member name="T:ATSPM.Data.AggregationContext">
+            <summary>
+            Atspm aggregation database context
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.AggregationContext.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.AggregationContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{ATSPM.Data.AggregationContext})">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.CompressedAggregations">
+            <summary>
+            Compressed data base table
+            Use this table when accessing all recoreds regardless of datatype
+            Returned compressed data will need to be cast to type specified in <see cref="P:ATSPM.Data.Models.CompressedAggregationBase.Data"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.ApproachPcdAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.ApproachPcdAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.ApproachSpeedAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.ApproachSpeedAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.ApproachSplitFailAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.ApproachSplitFailAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.ApproachYellowRedActivationAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.ApproachYellowRedActivationAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.DetectorEventCountAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PhaseCycleAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PhaseCycleAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PhaseLeftTurnGapAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PhaseSplitMonitorAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PhaseSplitMonitorAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PhaseTerminationAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PreemptionAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PreemptionAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.PriorityAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.PriorityAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.SignalEventCountAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.SignalEventCountAggregation"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.AggregationContext.SignalPlanAggregations">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.AggregationContext.ConfigureConventions(Microsoft.EntityFrameworkCore.ModelConfigurationBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.AggregationContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.ConfigContext">
             <summary>
             Atspm configuration database context
@@ -1275,10 +1364,43 @@
             Supports HTTP Protocol
             </summary>
         </member>
-        <member name="P:ATSPM.Data.EventModels.EventModelBase.LocationIdentifier">
+        <member name="T:ATSPM.Data.EventLogContext">
+            <summary>
+            Atspm device log events database context
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.EventLogContext.#ctor">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.EventModels.EventModelBase.Timestamp">
+        <member name="M:ATSPM.Data.EventLogContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{ATSPM.Data.EventLogContext})">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.EventLogContext.CompressedEvents">
+            <summary>
+            Compressed data base table
+            Use this table when accessing all recoreds regardless of datatype
+            Returned compressed data will need to be cast to type specified in <see cref="P:ATSPM.Data.Models.CompressedEventsBase.Data"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.EventLogContext.IndiannaEvents">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.IndiannaEvent"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.EventLogContext.SpeedEvents">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.SpeedEvent"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.EventLogContext.PedestrianCounters">
+            <summary>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.PedestrianCounter"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.EventLogContext.ConfigureConventions(Microsoft.EntityFrameworkCore.ModelConfigurationBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.EventLogContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Interfaces.ILocationDetectorLayer">
@@ -1320,6 +1442,134 @@
             <summary>
             Plan number as derrived from the event parameter on <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> event
             </summary>
+        </member>
+        <member name="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation">
+            <summary>
+            Detector event cout aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.ApproachId">
+            <summary>
+            Approach dd
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.DetectorPrimaryId">
+            <summary>
+            Detector id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.EventCount">
+            <summary>
+            Sum of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation">
+            <summary>
+            Phase termination aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.PhaseNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.GapOuts">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.ForceOffs">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.MaxOuts">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff"/> events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.Unknown">
+            <summary>
+            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/> events
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.AggregationModels.PreemptionAggregation">
+            <summary>
+            Preemption aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.PreemptNumber">
+            <summary>
+            Prempt number
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.PreemptRequests">
+            <summary>
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOn"/> Set when preemption input is activated
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.PreemptServices">
+            <summary>
+            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted"/> Set when preemption delay expires
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.AggregationModels.PriorityAggregation">
+            <summary>
+            Priority request aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.PriorityNumber">
+            <summary>
+            Priority number
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.PriorityRequests">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/> Set when request for priority is received
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.PriorityServiceEarlyGreen">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.PriorityServiceExtendedGreen">
+            <summary>
+             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.AggregationModels.PriorityAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation">
+            <summary>
+            Signal plan aggregation
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation.PlanNumber">
+            <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.Approach">
             <summary>
@@ -1416,44 +1666,67 @@
             Primary key
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventData.LocationIdentifier">
+        <member name="T:ATSPM.Data.Models.CompressedDataBase">
+            <summary>
+            Base for compressed database table models
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.LocationIdentifier">
             <inheritdoc/>
         </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventData.DeviceId">
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.DataType">
+            <summary>
+            Model type that is used in the compressed <see cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.ArchiveDate">
+            <summary>
+            Day the data is compressed into
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.Data">
+            <summary>
+            Compressed data, ovverride or use <c>new</c> in derrived class for specific type
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedEventsBase">
+            <summary>
+            Base for compressed events database table models
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventsBase.DeviceId">
             <summary>
             Id of the device the logs came from
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventData.ArchiveDate">
+        <member name="P:ATSPM.Data.Models.CompressedEventsBase.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedEvents`1">
             <summary>
-            Day the data is archived for
+            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.EventModels.AtspmEventModelBase"/> objects
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEvents`1.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedAggregationBase">
+            <summary>
+            Base for compressed aggregation database table models
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventData.LogData">
+        <member name="P:ATSPM.Data.Models.CompressedAggregationBase.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedAggregations`1">
             <summary>
-            Compressed log data
+            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.AggregationModels.AtspmAggregationModelBase"/> objects
             </summary>
+            <typeparam name="T"></typeparam>
         </member>
-        <member name="M:ATSPM.Data.Models.CompressedEventData.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedData.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedData.ArchiveDate">
-            <summary>
-            Day the data is archived for
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedData.Data">
-            <summary>
-            Compressed data
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventsBase.DeviceId">
-            <summary>
-            Id of the device the logs came from
-            </summary>
+        <member name="P:ATSPM.Data.Models.CompressedAggregations`1.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
         </member>
         <member name="T:ATSPM.Data.Models.DetectionType">
             <summary>
@@ -1591,32 +1864,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.DetectorComment.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.DetectorEventCountAggregation">
-            <summary>
-            Detector event cout aggregation
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.ApproachId">
-            <summary>
-            Approach dd
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.DetectorPrimaryId">
-            <summary>
-            Detector id
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.DetectorEventCountAggregation.EventCount">
-            <summary>
-            Sum of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.DetectorEventCountAggregation.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.Device">
@@ -1771,6 +2018,77 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.DirectionType.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventModels.AtspmEventModelBase">
+            <summary>
+            Event model base for models used in logging Atspm device logging data
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.AtspmEventModelBase.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.AtspmEventModelBase.Timestamp">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventModels.IndiannaEvent">
+            <summary>
+            Indiana Traffic Signal Hi Resolution Data Logger Enumerations
+            <seealso cref="!:https://docs.lib.purdue.edu/jtrpdata/4/"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventCode">
+            <summary>
+            Event code from <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventParam">
+            <summary>
+            Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventCode"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventModels.IndiannaEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventModels.PedestrianCounter">
+            <summary>
+            Generic pedestrian counter events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.PedestrianCounter.In">
+            <summary>
+            Input count
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.PedestrianCounter.Out">
+            <summary>
+            Output count
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventModels.PedestrianCounter.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventModels.SpeedEvent">
+            <summary>
+            Generic speed events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.DetectorId">
+            <summary>
+            Detector id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.Mph">
+            <summary>
+            Miles per hour
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.Kph">
+            <summary>
+            Kilometers per hour
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventModels.SpeedEvent.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.ExternalLink">
@@ -2088,97 +2406,6 @@
         <member name="M:ATSPM.Data.Models.MenuItem.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.PhaseTerminationAggregation">
-            <summary>
-            Phase termination aggregation
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.PhaseNumber">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.GapOuts">
-            <summary>
-            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut"/> events
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.ForceOffs">
-            <summary>
-            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/> events
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.MaxOuts">
-            <summary>
-            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff"/> events
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PhaseTerminationAggregation.Unknown">
-            <summary>
-            Sum of consecutive <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/> events
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.PhaseTerminationAggregation.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.PreemptionAggregation">
-            <summary>
-            Preemption aggregation
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PreemptionAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptNumber">
-            <summary>
-            Prempt number
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptRequests">
-            <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOn"/> Set when preemption input is activated
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PreemptionAggregation.PreemptServices">
-            <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted"/> Set when preemption delay expires
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.PreemptionAggregation.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.PriorityAggregation">
-            <summary>
-            Priority request aggregation
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PriorityAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityNumber">
-            <summary>
-            Priority number
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityRequests">
-            <summary>
-             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/> Set when request for priority is received
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityServiceEarlyGreen">
-            <summary>
-             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.PriorityAggregation.PriorityServiceExtendedGreen">
-            <summary>
-             <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.PriorityAggregation.ToString">
-            <inheritdoc/>
-        </member>
         <member name="T:ATSPM.Data.Models.Product">
             <summary>
             Products
@@ -2367,17 +2594,6 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Models.Settings.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.LocationPlanAggregation">
-            <summary>
-            Location plan aggregation
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.LocationPlanAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.LocationPlanAggregation.PlanNumber">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.VersionHistory">
