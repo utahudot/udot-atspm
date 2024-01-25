@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    public class SpeedEventEFRepository : ATSPMRepositoryEFBase<SpeedEvent>, ISpeedEventRepository
+    public class SpeedEventEFRepository : ATSPMRepositoryEFBase<OldSpeedEvent>, ISpeedEventRepository
     {
         public SpeedEventEFRepository(SpeedContext db, ILogger<SpeedEventEFRepository> log) : base(db, log) { }
 
