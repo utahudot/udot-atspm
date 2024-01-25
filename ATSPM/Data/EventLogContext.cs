@@ -2,10 +2,8 @@
 #nullable disable
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventModels;
-using ATSPM.Domain.Extensions;
+using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Newtonsoft.Json;
 
 namespace ATSPM.Data
 {
@@ -75,36 +73,13 @@ namespace ATSPM.Data
                     v => DateOnly.FromDateTime(v));
 
                 builder.Property(p => p.DataType)
-                .HasMaxLength(512)
-                .HasConversion<string>(v => v.FullName, v => Type.GetType($"{v}, {typeof(CompressedEventsBase).Assembly}"));
+                .HasMaxLength(32)
+                .HasConversion(new CompressionTypeConverter(typeof(AtspmEventModelBase).Namespace.ToString(), typeof(AtspmEventModelBase).Assembly.ToString()));
 
-                //builder.HasDiscriminator(d => d.DataType)
-                //.HasValue<CompressedEvents<IndiannaEvent>>(typeof(IndiannaEvent))
-                //.HasValue<CompressedEvents<PedestrianCounter>>(typeof(PedestrianCounter));
-
-                var b = builder.HasDiscriminator(d => d.DataType);
-                foreach (var t in typeof(AtspmEventModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AtspmEventModelBase))))
-                {
-                    var g = typeof(CompressedEvents<>).MakeGenericType(t);
-
-                    b.HasValue(g, t);
-                }
+                builder.HasDiscriminator(d => d.DataType).AddCompressedTableDiscriminators(typeof(AtspmEventModelBase), typeof(CompressedEvents<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<byte[]>(
-                    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }).GZipCompressToByte(),
-
-                    v => JsonConvert.DeserializeObject<IEnumerable<AtspmEventModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }),
-
-                    new ValueComparer<IEnumerable<AtspmEventModelBase>>((c1, c2) => c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
+                .HasConversion<CompressedListComverter<AtspmEventModelBase>, CompressedListComparer<AtspmEventModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -113,7 +88,7 @@ namespace ATSPM.Data
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
-    //add-migration -name EFCore6Upgrade -context EventLogContext
+    //add-migration -name V5Upgrade -context EventLogContext
     //update-database -context EventLogContext
     //drop-database -context EventLogContext
 }
