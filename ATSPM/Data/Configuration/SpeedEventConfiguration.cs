@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ATSPM.Data.Configuration
 {
-    public class SpeedEventConfiguration : IEntityTypeConfiguration<SpeedEvent>
+    public class SpeedEventConfiguration : IEntityTypeConfiguration<OldSpeedEvent>
     {
-        public void Configure(EntityTypeBuilder<SpeedEvent> builder)
+        public void Configure(EntityTypeBuilder<OldSpeedEvent> builder)
         {
             builder.HasComment("Speed Event Data");
 
