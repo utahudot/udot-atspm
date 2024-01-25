@@ -24,7 +24,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             ApproachSpeedOptions options,
             List<ControllerEventLog> cycleEvents,
             List<ControllerEventLog> planEvents,
-            List<SpeedEvent> speedEvents,
+            List<OldSpeedEvent> speedEvents,
             Detector detector)
         {
             var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.TimeStamp >= options.Start && d.TimeStamp < options.End).ToList();
@@ -69,7 +69,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             int binSize,
             List<ControllerEventLog> planEvents,
             List<ControllerEventLog> cycleEvents,
-            List<SpeedEvent> speedEventsForDetector)
+            List<OldSpeedEvent> speedEventsForDetector)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);
             if (cycles.Any())

@@ -1,4 +1,5 @@
 ﻿#nullable disable
+using ATSPM;
 using ATSPM.Data.Relationships;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace ATSPM.Data.Models
         /// Icon for disquinguishing location type
         /// </summary>
         public string Icon { get; set; }
-        
+
         #region IRelatedLocations
 
         /// <inheritdoc/>

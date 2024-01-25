@@ -1,8 +1,8 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
 using ATSPM.Data;
-using ATSPM.Data.EventModels;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventModels;
 using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
@@ -244,7 +244,7 @@ namespace ATSPM.LocationControllerLogger
                     EventParam = 1
                 };
 
-                db.CompressedData.Add(new EventsTypeBase<IndiannaEvent>()
+                db.CompressedData.Add(new CompressedEventsBase<IndiannaEvent>()
                 {
                     LocationIdentifier = "1234",
                     DeviceId = 1,
@@ -263,7 +263,7 @@ namespace ATSPM.LocationControllerLogger
                     Out = 99
                 };
 
-                db.CompressedData.Add(new EventsTypeBase<PedestrianCounter>()
+                db.CompressedData.Add(new CompressedEventsBase<PedestrianCounter>()
                 {
                     LocationIdentifier = "1234",
                     DeviceId = 2,
