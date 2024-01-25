@@ -2,10 +2,8 @@
 #nullable disable
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Domain.Extensions;
+using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Newtonsoft.Json;
 
 namespace ATSPM.Data
 {
@@ -124,7 +122,7 @@ namespace ATSPM.Data
             {
                 builder.ToTable(t => t.HasComment("Compressed aggregations"));
 
-                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate });
+                builder.HasKey(e => new { e.LocationIdentifier, e.ArchiveDate, e.DataType });
 
                 builder.Property(e => e.LocationIdentifier)
                     .IsRequired()
@@ -138,32 +136,13 @@ namespace ATSPM.Data
                     v => DateOnly.FromDateTime(v));
 
                 builder.Property(p => p.DataType)
-                .HasMaxLength(512)
-                .HasConversion<string>(v => v.FullName, v => Type.GetType($"{v}, {typeof(CompressedAggregationBase).Assembly}"));
+                .HasMaxLength(32)
+                .HasConversion(new CompressionTypeConverter(typeof(AtspmAggregationModelBase).Namespace.ToString(), typeof(AtspmAggregationModelBase).Assembly.ToString()));
 
-                var b = builder.HasDiscriminator(d => d.DataType);
-                foreach (var t in typeof(AtspmAggregationModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AtspmAggregationModelBase))))
-                {
-                    var g = typeof(CompressedAggregations<>).MakeGenericType(t);
-
-                    b.HasValue(g, t);
-                }
+                builder.HasDiscriminator(d => d.DataType).AddCompressedTableDiscriminators(typeof(AtspmAggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<byte[]>(
-                    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }).GZipCompressToByte(),
-
-                    v => JsonConvert.DeserializeObject<IEnumerable<AtspmAggregationModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }),
-
-                    new ValueComparer<IEnumerable<AtspmAggregationModelBase>>((c1, c2) => c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
+                .HasConversion<CompressedListComverter<AtspmAggregationModelBase>, CompressedListComparer<AtspmAggregationModelBase>>();
             });
 
             //modelBuilder.ApplyConfiguration(new ApproachPcdAggregationConfiguration());
@@ -198,7 +177,9 @@ namespace ATSPM.Data
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
-    //add-migration -name EFCore6Upgrade -context AggregationContext
+    //add-migration -name V5Upgrade -context AggregationContext
     //update-database -context AggregationContext
     //drop-database -context AggregationContext
+
+    
 }

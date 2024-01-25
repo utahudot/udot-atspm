@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Aggregation
 {
     [DbContext(typeof(AggregationContext))]
-    [Migration("20240125174719_EFCore6Upgrade")]
-    partial class EFCore6Upgrade
+    [Migration("20240125211432_V5Upgrade")]
+    partial class V5Upgrade
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,15 +35,14 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Aggregation
                     b.Property<DateTime>("ArchiveDate")
                         .HasColumnType("Date");
 
+                    b.Property<string>("DataType")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("DataType")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.HasKey("LocationIdentifier", "ArchiveDate");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
 
                     b.ToTable("CompressedAggregations", t =>
                         {
@@ -59,91 +58,91 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Aggregation
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.ApproachPcdAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("ApproachPcdAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachSpeedAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.ApproachSpeedAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("ApproachSpeedAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachSplitFailAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.ApproachSplitFailAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("ApproachSplitFailAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachYellowRedActivationAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.ApproachYellowRedActivationAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("ApproachYellowRedActivationAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("DetectorEventCountAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseCycleAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PhaseCycleAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PhaseCycleAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PhaseLeftTurnGapAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseSplitMonitorAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PhaseSplitMonitorAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PhaseSplitMonitorAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PhaseTerminationAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PreemptionAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PreemptionAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PreemptionAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PriorityAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.PriorityAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("PriorityAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.SignalEventCountAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.SignalEventCountAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("SignalEventCountAggregation");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.SignalPlanAggregation>", b =>
                 {
                     b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.AggregationModels.SignalPlanAggregation, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                    b.HasDiscriminator().HasValue("SignalPlanAggregation");
                 });
 #pragma warning restore 612, 618
         }
