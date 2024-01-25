@@ -13,7 +13,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             DateTime startDate,
             DateTime endDate,
             List<CycleSpeed> cycles,
-            List<SpeedEvent> speedEvents,
+            List<OldSpeedEvent> speedEvents,
             AvgSpeedBucketCollection avgSpeedBucketCollection)
         {
             Plans = plans;
@@ -30,7 +30,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<CycleSpeed> Cycles { get; set; }
-        public List<SpeedEvent> SpeedEvents { get; set; }
+        public List<OldSpeedEvent> SpeedEvents { get; set; }
         public AvgSpeedBucketCollection AvgSpeedBucketCollection { get; set; }
     }
 }

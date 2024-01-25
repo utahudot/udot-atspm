@@ -6,11 +6,11 @@ namespace ATSPM.Application.Repositories
     /// <summary>
     /// Speed Event Repository
     /// </summary>
-    public interface ISpeedEventRepository : IAsyncRepository<SpeedEvent>
+    public interface ISpeedEventRepository : IAsyncRepository<OldSpeedEvent>
     {
         #region ExtensionMethods
 
-        //IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5);
+        //IReadOnlyList<OldSpeedEvent> GetSpeedEventsByDetector(Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5);
 
         #endregion
 

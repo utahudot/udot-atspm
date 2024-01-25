@@ -14,9 +14,7 @@ namespace ATSPM.Data
     public partial class ConfigContext : DbContext
     {
         /// <inheritdoc/>
-        public ConfigContext()
-        {
-        }
+        public ConfigContext() { }
 
         /// <inheritdoc/>
         public ConfigContext(DbContextOptions<ConfigContext> options): base(options) {}

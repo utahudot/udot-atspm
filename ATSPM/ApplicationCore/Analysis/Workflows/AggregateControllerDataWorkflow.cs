@@ -4,6 +4,7 @@ using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
 using System;

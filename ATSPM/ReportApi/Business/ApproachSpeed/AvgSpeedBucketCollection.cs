@@ -22,7 +22,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         }
 
 
-        public int GetAverageSpeed(List<SpeedEvent> speedEvents)
+        public int GetAverageSpeed(List<OldSpeedEvent> speedEvents)
         {
             var TotalSpeed = 0;
             var AvgSpeed = 0;
