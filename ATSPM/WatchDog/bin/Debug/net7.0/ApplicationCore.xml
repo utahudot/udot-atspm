@@ -803,7 +803,7 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.WorkflowSteps.AggregateDetectorEvents">
             <summary>
-            Transforms <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> into <see cref="T:ATSPM.Data.Models.DetectorEventCountAggregation"/>
+            Transforms <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> into <see cref="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation"/>
             where <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
             and <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventParam"/> equals <see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>.
             </summary>

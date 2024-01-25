@@ -25,23 +25,23 @@ namespace ATSPM.Data
         /// Use this table when accessing all recoreds regardless of datatype
         /// Returned compressed data will need to be cast to type specified in <see cref="CompressedEventsBase.Data"/>
         /// </summary>
-        public virtual DbSet<CompressedEventsBase> CompressedData { get; set; }
+        public virtual DbSet<CompressedEventsBase> CompressedEvents { get; set; }
 
         /// <summary>
         /// <inheritdoc cref="IndiannaEvent"/>
         /// </summary>
-        public virtual DbSet<CompressedEventsBase<IndiannaEvent>> IndiannaEvents { get; set; }
+        public virtual DbSet<CompressedEvents<IndiannaEvent>> IndiannaEvents { get; set; }
 
         /// <summary>
         /// <inheritdoc cref="SpeedEvent"/>
         /// </summary>
-        public virtual DbSet<CompressedEventsBase<SpeedEvent>> SpeedEvents { get; set; }
+        public virtual DbSet<CompressedEvents<SpeedEvent>> SpeedEvents { get; set; }
 
 
         /// <summary>
         /// <inheritdoc cref="PedestrianCounter"/>
         /// </summary>
-        public virtual DbSet<CompressedEventsBase<PedestrianCounter>> PedestrianCounters { get; set; }
+        public virtual DbSet<CompressedEvents<PedestrianCounter>> PedestrianCounters { get; set; }
 
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -76,16 +76,16 @@ namespace ATSPM.Data
 
                 builder.Property(p => p.DataType)
                 .HasMaxLength(512)
-                .HasConversion<string>(v => v.AssemblyQualifiedName, v => Type.GetType(v));
+                .HasConversion<string>(v => v.FullName, v => Type.GetType($"{v}, {typeof(CompressedEventsBase).Assembly}"));
 
                 //builder.HasDiscriminator(d => d.DataType)
-                //.HasValue<CompressedEventsBase<IndiannaEvent>>(typeof(IndiannaEvent))
-                //.HasValue<CompressedEventsBase<PedestrianCounter>>(typeof(PedestrianCounter));
+                //.HasValue<CompressedEvents<IndiannaEvent>>(typeof(IndiannaEvent))
+                //.HasValue<CompressedEvents<PedestrianCounter>>(typeof(PedestrianCounter));
 
                 var b = builder.HasDiscriminator(d => d.DataType);
-                foreach (var t in typeof(EventModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventModelBase))))
+                foreach (var t in typeof(AtspmEventModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AtspmEventModelBase))))
                 {
-                    var g = typeof(CompressedEventsBase<>).MakeGenericType(t);
+                    var g = typeof(CompressedEvents<>).MakeGenericType(t);
 
                     b.HasValue(g, t);
                 }
@@ -97,12 +97,12 @@ namespace ATSPM.Data
                         TypeNameHandling = TypeNameHandling.Arrays
                     }).GZipCompressToByte(),
 
-                    v => JsonConvert.DeserializeObject<IEnumerable<EventModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
+                    v => JsonConvert.DeserializeObject<IEnumerable<AtspmEventModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.Arrays
                     }),
 
-                    new ValueComparer<IEnumerable<EventModelBase>>((c1, c2) => c1.SequenceEqual(c2),
+                    new ValueComparer<IEnumerable<AtspmEventModelBase>>((c1, c2) => c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList()));
             });

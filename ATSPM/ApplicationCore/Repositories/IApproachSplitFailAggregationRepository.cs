@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 
 namespace ATSPM.Application.Repositories
 {

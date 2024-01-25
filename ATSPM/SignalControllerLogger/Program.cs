@@ -20,6 +20,8 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using AutoFixture;
+using ATSPM.Data.Models.AggregationModels;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -224,7 +226,7 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-            //var test2 = JsonConvert.DeserializeObject<IEnumerable<EventModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
+            //var test2 = JsonConvert.DeserializeObject<IEnumerable<AtspmEventModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
             //{
             //    TypeNameHandling = TypeNameHandling.Arrays
             //});
@@ -232,64 +234,101 @@ namespace ATSPM.LocationControllerLogger
             //Console.WriteLine($"{test2?.Count()}");
 
 
+            //Console.WriteLine($"{typeof(IndiannaEvent).FullName}, {typeof(IndiannaEvent).Assembly}");
+            //Console.WriteLine($"{typeof(IndiannaEvent).AssemblyQualifiedName}");
+
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<EventLogContext>();
+
+            //    var e = new IndiannaEvent()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        Timestamp = DateTime.Now,
+            //        EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
+            //        EventParam = 1
+            //    };
+
+            //    db.CompressedEvents.Add(new CompressedEvents<IndiannaEvent>()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        DeviceId = 1,
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        Data = new List<IndiannaEvent>()
+            //        {
+            //            e
+            //        }
+            //    });
+
+            //    var f = new PedestrianCounter()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        Timestamp = DateTime.Now,
+            //        In = 100,
+            //        Out = 99
+            //    };
+
+            //    db.CompressedEvents.Add(new CompressedEvents<PedestrianCounter>()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        DeviceId = 2,
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        Data = new List<PedestrianCounter>()
+            //        {
+            //            f
+            //        }
+            //    });
+
+            //    db.SaveChanges();
+
+            //    foreach (var l in db.CompressedEvents.ToList())
+            //    {
+            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    }
+
+            //    foreach (var l in db.IndiannaEvents.ToList())
+            //    {
+            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    }
+
+            //    foreach (var l in db.PedestrianCounters.ToList())
+            //    {
+            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    }
+
+            //}
+
+
             using (var scope = host.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetService<EventLogContext>();
+                var db = scope.ServiceProvider.GetService<AggregationContext>();
 
-                var e = new IndiannaEvent()
+                var aggs = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
+
+                db.CompressedAggregations.Add(new CompressedAggregations<ApproachPcdAggregation>()
                 {
                     LocationIdentifier = "1234",
-                    Timestamp = DateTime.Now,
-                    EventCode = 1,
-                    EventParam = 1
-                };
-
-                db.CompressedData.Add(new CompressedEventsBase<IndiannaEvent>()
-                {
-                    LocationIdentifier = "1234",
-                    DeviceId = 1,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = new List<IndiannaEvent>()
-                    {
-                        e
-                    }
-                });
-
-                var f = new PedestrianCounter()
-                {
-                    LocationIdentifier = "1234",
-                    Timestamp = DateTime.Now,
-                    In = 100,
-                    Out = 99
-                };
-
-                db.CompressedData.Add(new CompressedEventsBase<PedestrianCounter>()
-                {
-                    LocationIdentifier = "1234",
-                    DeviceId = 2,
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = new List<PedestrianCounter>()
-                    {
-                        f
-                    }
+                    Data = aggs
                 });
 
                 db.SaveChanges();
 
-                foreach (var l in db.CompressedData.ToList())
+                foreach (var l in db.CompressedAggregations.ToList())
                 {
                     Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
                 }
 
-                foreach (var l in db.IndiannaEvents.ToList())
-                {
-                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-                }
+                //foreach (var l in db.IndiannaEvents.ToList())
+                //{
+                //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                //}
 
-                foreach (var l in db.PedestrianCounters.ToList())
-                {
-                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-                }
+                //foreach (var l in db.PedestrianCounters.ToList())
+                //{
+                //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                //}
 
             }
 
