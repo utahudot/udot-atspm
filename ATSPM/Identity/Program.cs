@@ -3,7 +3,6 @@ using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
 using Identity.Business.EmailSender;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -57,7 +56,6 @@ builder.Host.ConfigureServices((host, services) =>
         //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
         //})
         // other configurations, like adding a signing credential...
-        .AddAspNetIdentity<ApplicationUser>()
         .AddDeveloperSigningCredential();
 
     services.AddScoped<IAgencyService, AgencyService>();
@@ -104,7 +102,6 @@ builder.Host.ConfigureServices((host, services) =>
         options.ClientSecret = "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";
     });
 
-    services.AddClientCredentialsTokenManagement();
 
     //This is for the production certificate
     //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)

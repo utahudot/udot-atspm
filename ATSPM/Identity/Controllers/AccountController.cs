@@ -17,21 +17,18 @@ namespace Identity.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
-        private readonly IScopeService _scopeService;
 
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IAccountService accountService,
-            IEmailService emailService,
-            IScopeService scopeService)
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _accountService = accountService;
             _emailService = emailService;
-            _scopeService = scopeService;
         }
 
         [HttpPost("register")]
