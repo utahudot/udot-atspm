@@ -14,7 +14,7 @@ namespace ATSPM.Application.Extensions
 {
     public static class SpeedEventRepositoryExtensions
     {
-        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByDetector(this ISpeedEventRepository repo, Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5)
+        public static IReadOnlyList<OldSpeedEvent> GetSpeedEventsByDetector(this ISpeedEventRepository repo, Detector detector, DateTime startDate, DateTime endDate, int minSpeedFilter = 5)
         {
             return repo.GetList()
                 .Where(w => w.TimeStamp > startDate && w.TimeStamp < endDate && w.Mph > minSpeedFilter)
@@ -24,7 +24,7 @@ namespace ATSPM.Application.Extensions
         #region Obsolete
 
         [Obsolete("This method isn't currently being used")]
-        public static IReadOnlyList<SpeedEvent> GetSpeedEventsByLocation(this ISpeedEventRepository repo, DateTime startDate, DateTime endDate, Approach approach)
+        public static IReadOnlyList<OldSpeedEvent> GetSpeedEventsByLocation(this ISpeedEventRepository repo, DateTime startDate, DateTime endDate, Approach approach)
         {
             throw new NotImplementedException();
         }
