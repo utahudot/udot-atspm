@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration
+namespace ATSPM.Data.Configuration.Aggregation
 {
-    public class PhaseSplitMonitorAggregationConfiguration : IEntityTypeConfiguration<PhaseSplitMonitorAggregation>
+    public class PhaseTerminationAggregationConfiguration : IEntityTypeConfiguration<PhaseTerminationAggregation>
     {
-        public void Configure(EntityTypeBuilder<PhaseSplitMonitorAggregation> builder)
+        public void Configure(EntityTypeBuilder<PhaseTerminationAggregation> builder)
         {
-            builder.HasComment("Phase Split Monitor Aggregation");
+            builder.HasComment("Phase Termination Aggregation");
 
             builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PhaseNumber });
 

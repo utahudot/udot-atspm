@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration
+namespace ATSPM.Data.Configuration.Aggregation
 {
     public class ApproachPcdAggregationConfiguration : IEntityTypeConfiguration<ApproachPcdAggregation>
     {

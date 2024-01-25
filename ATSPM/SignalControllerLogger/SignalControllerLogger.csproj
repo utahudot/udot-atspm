@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="5.0.0-preview0007" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">

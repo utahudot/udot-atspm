@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ATSPM.Data.Configuration
+namespace ATSPM.Data.Configuration.Aggregation
 {
-    public class PhaseLeftTurnGapAggregationConfiguration : IEntityTypeConfiguration<PhaseLeftTurnGapAggregation>
+    public class PhaseSplitMonitorAggregationConfiguration : IEntityTypeConfiguration<PhaseSplitMonitorAggregation>
     {
-        public void Configure(EntityTypeBuilder<PhaseLeftTurnGapAggregation> builder)
+        public void Configure(EntityTypeBuilder<PhaseSplitMonitorAggregation> builder)
         {
-            builder.HasComment("Phase Left Turn Gap Aggregation");
+            builder.HasComment("Phase Split Monitor Aggregation");
 
             builder.HasKey(e => new { e.BinStartTime, e.LocationIdentifier, e.PhaseNumber });
 

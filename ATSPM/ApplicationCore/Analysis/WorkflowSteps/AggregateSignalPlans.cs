@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Analysis.Plans;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,14 @@ using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
-    public class AggregateLocationPlans : TransformProcessStepBase<Tuple<Location, int, IEnumerable<Plan>>, IEnumerable<LocationPlanAggregation>>
+    public class AggregateLocationPlans : TransformProcessStepBase<Tuple<Location, int, IEnumerable<Plan>>, IEnumerable<SignalPlanAggregation>>
     {
         public AggregateLocationPlans(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override Task<IEnumerable<LocationPlanAggregation>> Process(Tuple<Location, int, IEnumerable<Plan>> input, CancellationToken cancelToken = default)
+        protected override Task<IEnumerable<SignalPlanAggregation>> Process(Tuple<Location, int, IEnumerable<Plan>> input, CancellationToken cancelToken = default)
         {
             var result = input.Item3
-                .Select(s => new LocationPlanAggregation()
+                .Select(s => new SignalPlanAggregation()
                 {
                     LocationIdentifier = s.LocationIdentifier,
                     PlanNumber = s.PlanNumber,
