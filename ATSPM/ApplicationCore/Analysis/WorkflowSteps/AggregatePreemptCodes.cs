@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using ATSPM.Domain.Extensions;
 using ATSPM.Application.Specifications;
+using ATSPM.Data.Models.AggregationModels;
 
 namespace ATSPM.Application.Analysis.WorkflowSteps
 {
