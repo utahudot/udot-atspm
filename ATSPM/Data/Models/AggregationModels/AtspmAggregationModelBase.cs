@@ -3,17 +3,23 @@ using ATSPM.Data.Interfaces;
 using ATSPM.Domain.Common;
 using Newtonsoft.Json;
 
+#nullable disable
+
 namespace ATSPM.Data.Models.AggregationModels
 {
-    public abstract class AtspmAggregationModelBase : StartEndRange
+    public abstract class AtspmAggregationModelBase : StartEndRange, ILocationLayer
     {
+        ///<inheritdoc/>
+        [JsonIgnore]
+        public string LocationIdentifier { get; set; }
+
         [Obsolete("this has bee replaced with StartEndRange")]
         public DateTime BinStartTime { get; set; }
     }
 
     public partial class ApproachPcdAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public bool IsProtectedPhase { get; set; }
@@ -26,7 +32,7 @@ namespace ATSPM.Data.Models.AggregationModels
 
     public partial class ApproachSpeedAggregation : AtspmAggregationModelBase, ILocationLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int ApproachId { get; set; }
         public int SummedSpeed { get; set; }
         public int SpeedVolume { get; set; }
@@ -36,7 +42,7 @@ namespace ATSPM.Data.Models.AggregationModels
 
     public partial class ApproachSplitFailAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public bool IsProtectedPhase { get; set; }
@@ -50,7 +56,7 @@ namespace ATSPM.Data.Models.AggregationModels
 
     public partial class ApproachYellowRedActivationAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public bool IsProtectedPhase { get; set; }
@@ -67,7 +73,7 @@ namespace ATSPM.Data.Models.AggregationModels
     public partial class DetectorEventCountAggregation : AtspmAggregationModelBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Approach dd
@@ -88,9 +94,9 @@ namespace ATSPM.Data.Models.AggregationModels
         public override string ToString() => JsonConvert.SerializeObject(this);
     }
 
-    public partial class PhaseCycleAggregation : AtspmAggregationModelBase, ILocationLayer
+    public partial class PhaseCycleAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int ApproachId { get; set; }
         public int PhaseNumber { get; set; }
         public int RedTime { get; set; }
@@ -102,7 +108,7 @@ namespace ATSPM.Data.Models.AggregationModels
 
     public partial class PhaseLeftTurnGapAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int ApproachId { get; set; }
         public int GapCount1 { get; set; }
@@ -122,9 +128,9 @@ namespace ATSPM.Data.Models.AggregationModels
         public double SumGreenTime { get; set; }
     }
 
-    public partial class PhaseSplitMonitorAggregation : AtspmAggregationModelBase, ILocationLayer
+    public partial class PhaseSplitMonitorAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
         public int EightyFifthPercentileSplit { get; set; }
         public int SkippedCount { get; set; }
@@ -136,7 +142,7 @@ namespace ATSPM.Data.Models.AggregationModels
     public partial class PhaseTerminationAggregation : AtspmAggregationModelBase, ILocationPhaseLayer
     {
         /// <inheritdoc/>
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PhaseNumber { get; set; }
@@ -171,7 +177,7 @@ namespace ATSPM.Data.Models.AggregationModels
     public partial class PreemptionAggregation : AtspmAggregationModelBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Prempt number
@@ -198,7 +204,7 @@ namespace ATSPM.Data.Models.AggregationModels
     public partial class PriorityAggregation : AtspmAggregationModelBase, ILocationLayer
     {
         /// <inheritdoc/>
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
 
         /// <summary>
         /// Priority number
@@ -226,17 +232,17 @@ namespace ATSPM.Data.Models.AggregationModels
 
     public partial class SignalEventCountAggregation : AtspmAggregationModelBase, ILocationLayer
     {
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
         public int EventCount { get; set; }
     }
 
     /// <summary>
     /// Signal plan aggregation
     /// </summary>
-    public partial class SignalPlanAggregation : AtspmAggregationModelBase, ILocationLayer, IPlanLayer
+    public partial class SignalPlanAggregation : AtspmAggregationModelBase, IPlanLayer
     {
         /// <inheritdoc/>
-        public string LocationIdentifier { get; set; }
+        //public string LocationIdentifier { get; set; }
 
         /// <inheritdoc/>
         public int PlanNumber { get; set; }

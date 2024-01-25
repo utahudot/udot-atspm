@@ -299,18 +299,37 @@ namespace ATSPM.LocationControllerLogger
 
             //}
 
+            Console.WriteLine($"{typeof(ApproachPcdAggregation).Name}");
 
             using (var scope = host.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetService<AggregationContext>();
 
-                var aggs = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
+                var aggs1 = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
 
                 db.CompressedAggregations.Add(new CompressedAggregations<ApproachPcdAggregation>()
                 {
                     LocationIdentifier = "1234",
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = aggs
+                    Data = aggs1
+                });
+
+                var aggs2 = new Fixture().CreateMany<ApproachSpeedAggregation>(10).ToList();
+
+                db.CompressedAggregations.Add(new CompressedAggregations<ApproachSpeedAggregation>()
+                {
+                    LocationIdentifier = "1234",
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    Data = aggs2
+                });
+
+                var aggs3 = new Fixture().CreateMany<ApproachSplitFailAggregation>(10).ToList();
+
+                db.CompressedAggregations.Add(new CompressedAggregations<ApproachSplitFailAggregation>()
+                {
+                    LocationIdentifier = "1234",
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    Data = aggs3
                 });
 
                 db.SaveChanges();

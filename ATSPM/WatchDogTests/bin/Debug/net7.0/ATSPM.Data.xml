@@ -1443,13 +1443,13 @@
             Plan number as derrived from the event parameter on <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> event
             </summary>
         </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.AtspmAggregationModelBase.LocationIdentifier">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation">
             <summary>
             Detector event cout aggregation
             </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.LocationIdentifier">
-            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.ApproachId">
             <summary>
@@ -1473,9 +1473,6 @@
             <summary>
             Phase termination aggregation
             </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.LocationIdentifier">
-            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation.PhaseNumber">
             <inheritdoc/>
@@ -1508,9 +1505,6 @@
             Preemption aggregation
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.LocationIdentifier">
-            <inheritdoc/>
-        </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.PreemptionAggregation.PreemptNumber">
             <summary>
             Prempt number
@@ -1533,9 +1527,6 @@
             <summary>
             Priority request aggregation
             </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.LocationIdentifier">
-            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.PriorityAggregation.PriorityNumber">
             <summary>
@@ -1564,9 +1555,6 @@
             <summary>
             Signal plan aggregation
             </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation.LocationIdentifier">
-            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation.PlanNumber">
             <inheritdoc/>
@@ -2908,6 +2896,55 @@
             <summary>
             Collection of route Locations
             </summary>
+        </member>
+        <member name="T:ATSPM.Data.Utility.CompressedListComparer`1">
+            <summary>
+            <see cref="T:Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer"/> used to compare an <see cref="T:System.Collections.IEnumerable"/> of <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ATSPM.Data.Utility.CompressedListComparer`1.#ctor">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Utility.CompressedListComverter`1">
+            <summary>
+            <see cref="T:Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter"/> used to convert compressed list of <typeparamref name="T"/>
+            to/from gzip compressed json
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ATSPM.Data.Utility.CompressedListComverter`1.#ctor">
+            <summary>
+            <inheritdoc/>
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Utility.CompressionTypeConverter">
+            <summary>
+            <see cref="T:Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter"/> used to convert a database string to an assembly type
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Utility.CompressionTypeConverter.#ctor(System.String,System.String)">
+            <summary>
+            <see cref="T:Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter"/> used to convert a database string to an assembly type
+            </summary>
+            <param name="nameSpace">Namespace of class to convert to/from</param>
+            <param name="assembly">Assembly of class to convert to/from</param>
+        </member>
+        <member name="T:ATSPM.Data.Utility.EntityFrameworkExtensions">
+            <summary>
+            Entity framework extensions specific to Atspm
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Utility.EntityFrameworkExtensions.AddCompressedTableDiscriminators``1(Microsoft.EntityFrameworkCore.Metadata.Builders.DiscriminatorBuilder{``0},System.Type,System.Type)">
+            <summary>
+            Used with compressed data hierarchy tables to get discrimators from and generic type
+            </summary>
+            <typeparam name="TType">Data type of the property to use as the discriminator</typeparam>
+            <param name="builder"></param>
+            <param name="model">Data model name to use in the discriminator property</param>
+            <param name="generic">Generic of type <paramref name="model"/> that acts as the model for the db table</param>
         </member>
     </members>
 </doc>
