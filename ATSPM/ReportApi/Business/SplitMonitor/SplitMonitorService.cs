@@ -60,7 +60,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
         }
 
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
@@ -126,7 +126,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
+                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.EndTime < plan.End).ToList();
                 if (cycles.Any())
                 {
                     //var planCycleCount = Convert.ToDouble(cycles.Count());
@@ -171,11 +171,12 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
         {
             if (cycles.Count <= 2)
                 return 0;
+            var orderedCycles = cycles.OrderBy(c => c.Duration.TotalSeconds).ToList();
 
-            var percentilIndex = percentile * cycles.Count;
+            var percentilIndex = percentile * orderedCycles.Count;
             if (percentilIndex % 1 == 0)
             {
-                return cycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
+                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
                     .TotalSeconds;
             }
             else
@@ -185,8 +186,8 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 //There was probably another way to do that, but this is easy.
                 int indexInt = Convert.ToInt16(percentilIndex - .5);
 
-                var step1 = cycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
-                var step2 = cycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
+                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
+                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
                 var stepDiff = step2 - step1;
                 var step3 = stepDiff * indexMod;
                 return step1 + step3;
