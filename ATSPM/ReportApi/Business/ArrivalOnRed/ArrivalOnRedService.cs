@@ -1,8 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.ArrivalOnRed
 {
@@ -39,11 +37,10 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
                     // Get cycles that start and end within the bin, and the cycle that starts before and ends
                     // within the bin, and the cycle that starts within and ends after the bin
                     var cycles = LocationPhase.Cycles
-                        .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize))
-                        .ToList();
-                    //|| c.StartTime < dt && c.EndTime >= dt
-                    //|| c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
-                    //&& c.StartTime < dt.AddMinutes(options.SelectedBinSize));
+                        .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize)
+                    || (c.StartTime < dt && c.EndTime >= dt)
+                    || (c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
+                    && c.StartTime < dt.AddMinutes(options.SelectedBinSize)));
                     foreach (var cycle in cycles)
                     {
                         // Filter cycle events to only include timestamps within the bin
