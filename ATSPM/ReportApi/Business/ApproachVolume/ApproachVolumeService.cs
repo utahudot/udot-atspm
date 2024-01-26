@@ -86,13 +86,13 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             string combinedPeakHourString = combinedPeakHourItem.Key.ToShortTimeString() + " - " + combinedPeakHourItem.Key.AddHours(1).ToShortTimeString();
 
             double primaryDirectionPeakHourFactor = GetPeakHourFactor(primayDirectionPeakHourItem.Value, primaryDirectionPeakHourlyValueInHour);
-            double primaryDirectionPeakHourDFactor = GetPeakHourDFactor(primayDirectionPeakHourItem.Key, primayDirectionPeakHourItem.Value, opposingDirectionVolume, binSizeMultiplier);
+            double primaryDirectionPeakHourDFactor = GetPeakHourDFactor(primayDirectionPeakHourItem.Key, primayDirectionPeakHourItem.Value, opposingDirectionVolume);
             string primaryDirectionPeakHourString = primayDirectionPeakHourItem.Key.ToShortTimeString() + " - " + primayDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
             int opposingDirectionPeakValueInHour = FindPeakValueinHour(opposingDirectionPeakHourItem.Key, opposingDirectionVolume, binSizeMultiplier);
             int opposingDirectionPeakHourlyValueInHour = opposingDirectionPeakValueInHour * binSizeMultiplier;
 
             double opposingDirectionPeakHourFactor = GetPeakHourFactor(opposingDirectionPeakHourItem.Value, opposingDirectionPeakHourlyValueInHour);
-            double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, primaryDirectionVolume, binSizeMultiplier);
+            double opposingDirectionPeakHourDFactor = GetPeakHourDFactor(opposingDirectionPeakHourItem.Key, opposingDirectionPeakHourItem.Value, primaryDirectionVolume);
             string opposingDirectionPeakHourString = opposingDirectionPeakHourItem.Key.ToShortTimeString() + " - " + opposingDirectionPeakHourItem.Key.AddHours(1).ToShortTimeString();
             var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
@@ -111,7 +111,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
                 GetDFactorSeries(opposingDirectionVolume, combinedDirectionsVolumes),
                 combinedPeakHourString,
                 combinedPeakHourKFactor,
-                combinedPeakHourValue,
+                combinedPeakHourItem.Value,
                 combinedPeakHourFactor,
                 combinedVolume,
                 primaryDirectionPeakHourString,
@@ -119,11 +119,13 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
                 primayDirectionPeakHourItem.Value,
                 primaryDirectionPeakHourFactor,
                 Convert.ToInt32(primaryDirectionTotalVolume),
+                primaryDirectionPeakHourDFactor,
                 opposingDirectionPeakHourString,
                 opposingKFactor,
                 opposingDirectionPeakHourItem.Value,
                 opposingDirectionPeakHourFactor,
-                Convert.ToInt32(opposingDirectionTotalVolume)
+                Convert.ToInt32(opposingDirectionTotalVolume),
+                opposingDirectionPeakHourDFactor
                 );
         }
 
@@ -285,25 +287,22 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             return maxVolume;
         }
 
-        protected double GetPeakHourDFactor(DateTime StartofHour, int Peakhourvolume, VolumeCollection volDic,
-            int binMultiplier)
+        protected double GetPeakHourDFactor(DateTime startofHour, int peakhourvolume, VolumeCollection volumes)
         {
             int totalVolume = 0;
-            double PHDF = 0.0;
-
-            for (int i = 0; i < binMultiplier; i++)
+            double PHDF = 0;
+            if (volumes.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
             {
-                if (volDic.Items.Any(d => d.StartTime == StartofHour))
-                    totalVolume = totalVolume + volDic.Items.FirstOrDefault(d => d.StartTime == StartofHour).DetectorCount;
-
-                StartofHour = StartofHour.AddMinutes(60 / binMultiplier);
+                totalVolume = volumes.Items
+                    .Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1))
+                    .Sum(v => v.DetectorCount);
             }
-            totalVolume /= binMultiplier;
-            totalVolume += Peakhourvolume;
+            //totalVolume /= binMultiplier;
+            totalVolume += peakhourvolume;
             if (totalVolume > 0)
-                PHDF = Round(Convert.ToDouble(Peakhourvolume) / Convert.ToDouble(totalVolume), 3);
+                PHDF = Round(Convert.ToDouble(peakhourvolume) / Convert.ToDouble(totalVolume), 3);
             else
-                PHDF = 0.0;
+                PHDF = 0;
             return PHDF;
         }
     }

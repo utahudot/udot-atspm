@@ -19,7 +19,7 @@ namespace ATSPM.ReportApi.Business.Common
 
         public CycleSplitFail(DateTime firstGreenEvent, DateTime redEvent, DateTime yellowEvent,
             DateTime lastGreenEvent, TerminationType terminationType,
-            int firstSecondsOfRed) : base(firstGreenEvent, redEvent, yellowEvent, lastGreenEvent)
+            int firstSecondsOfRed) : base(firstGreenEvent, yellowEvent, redEvent, lastGreenEvent)
         {
             FirstSecondsOfRed = firstSecondsOfRed;
             TerminationEvent = terminationType;
