@@ -24,6 +24,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
            PhaseDetail phaseDetail,
            List<ControllerEventLog> controllerEventLogs,
            double distanceToNextLocation,
+           double distanceToPreviousLocation,
            bool isFirstElement,
            bool isLastElement
            )
@@ -56,7 +57,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             else if(isLastElement)
             {
                 advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
-                advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToNextLocation);
+                advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
             else
             {
@@ -69,7 +70,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
                 stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, resultCycles);
 
                 advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
-                advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToNextLocation);
+                advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
 
             var phaseNumberSort = GetPhaseSort(phaseDetail);
