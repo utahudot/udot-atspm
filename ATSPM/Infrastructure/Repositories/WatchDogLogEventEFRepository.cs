@@ -8,7 +8,6 @@ namespace ATSPM.Infrastructure.Repositories
     public class WatchDogLogEventEFRepository : ATSPMRepositoryEFBase<WatchDogLogEvent>, IWatchDogLogEventRepository
     {
         public WatchDogLogEventEFRepository(ConfigContext db, ILogger<WatchDogLogEventEFRepository> log) : base(db, log) { }
-
-
     }
+
 }

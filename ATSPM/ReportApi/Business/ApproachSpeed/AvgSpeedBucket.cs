@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using ATSPM.Data.Models;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -10,7 +7,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         private int _binSizeMultiplier;
 
         public AvgSpeedBucket(DateTime startTime, DateTime endTime, int binSize, int movementdelay,
-            List<CycleSpeed> cycles)
+            List<SpeedEvent> speedEvents)
         {
             StartTime = startTime;
             EndTime = endTime;
@@ -18,14 +15,10 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             _binSizeMultiplier = 60 / binSize;
             MovementDelay = movementdelay;
             var speedsForBucket = new List<int>();
-
-            foreach (var cycle in cycles)
-                if (cycle.GreenEvent >= startTime && cycle.GreenEvent < endTime)
-                    speedsForBucket.AddRange(cycle.SpeedEvents.Select(s => s.Mph));
+            speedsForBucket.AddRange(speedEvents.Where(s => s.TimeStamp >= startTime && s.TimeStamp < endTime).Select(s => s.Mph));
 
             if (speedsForBucket.Count > 0)
             {
-                var testAvg = speedsForBucket.Average();
                 speedsForBucket.Sort();
                 SpeedVolume = speedsForBucket.Count();
                 SummedSpeed = speedsForBucket.Sum();
