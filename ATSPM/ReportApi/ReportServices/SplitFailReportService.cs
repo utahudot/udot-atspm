@@ -63,7 +63,7 @@ namespace ATSPM.ReportApi.ReportServices
             }
 
             var results = await Task.WhenAll(tasks);
-            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -101,7 +101,7 @@ namespace ATSPM.ReportApi.ReportServices
                 tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
             }
             var results = await Task.WhenAll(tasks);
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
         }
 
         private async Task<SplitFailsResult> GetChartDataByDetectionType(
