@@ -69,7 +69,7 @@ namespace ATSPM.ReportApi.ReportServices
             }
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumberSort).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{

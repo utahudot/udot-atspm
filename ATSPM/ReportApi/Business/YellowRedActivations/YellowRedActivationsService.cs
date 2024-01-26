@@ -49,8 +49,11 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             return new YellowRedActivationsResult(
                 phaseDetail.Approach.Location.LocationIdentifier,
                 phaseDetail.Approach.Id,
-                phaseDetail.Approach.Description,
-                phaseDetail.PhaseNumber,
+                phaseDetail.Approach.DirectionType.Abbreviation,
+                phaseDetail.Approach.Detectors.FirstOrDefault().MovementType.ToString(),
+                phaseDetail.Approach.ProtectedPhaseNumber,
+                phaseDetail.Approach.PermissivePhaseNumber,
+                phaseDetail.IsPermissivePhase,
                 phaseType,
                 options.Start,
                 options.End,
@@ -66,9 +69,9 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
                     p.PercentViolations,
                     p.PercentSevereViolations,
                     p.AverageTRLV)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.StartTime, c.EndTime)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.RedEvent, c.EndTime)).ToList(),
                 cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedClearanceEvent)).ToList(),
-                cycles.Select(c => new DataPointForDouble(c.StartTime, c.RedEvent)).ToList(),
+                cycles.Select(c => new DataPointForDouble(c.RedClearanceEvent, c.RedEvent)).ToList(),
                 detectorActivations.Select(d => new DataPointForDouble(d.TimeStamp, d.YPoint)).ToList()
                 );
         }
