@@ -207,15 +207,32 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                     if (filteredEvents.Count > 0)
                     {
                         var detectorEvents = new List<DetectorEventBase>();
-                        for (var i = 0; i < filteredEvents.Count; i += 2)
+                        for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i + 1 == filteredEvents.Count)
+                            if (i == 0 && filteredEvents[i].EventCode == 81)
                             {
-                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i].Timestamp));
+                                detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 81)
+                            {
+                                detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
+                            }
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 82)
+                            {
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, null));
+                            }
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
+                                i++;
+                            }
+                            else if (filteredEvents[i].EventCode == 81 && filteredEvents[i + 1].EventCode == 81)
+                            {
+                                detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i + 1].Timestamp));
+                            }
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 82)
+                            {
+                                detectorEvents.Add(new DetectorEventBase(filteredEvents[i + 1].Timestamp, null));
                             }
                         }
                         DetEvents.Add(new DetectorEventDto(lableName, detectorEvents));
