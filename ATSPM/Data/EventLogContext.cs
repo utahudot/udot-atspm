@@ -76,7 +76,8 @@ namespace ATSPM.Data
                 .HasMaxLength(32)
                 .HasConversion(new CompressionTypeConverter(typeof(AtspmEventModelBase).Namespace.ToString(), typeof(AtspmEventModelBase).Assembly.ToString()));
 
-                builder.HasDiscriminator(d => d.DataType).AddCompressedTableDiscriminators(typeof(AtspmEventModelBase), typeof(CompressedEvents<>));
+                builder.HasDiscriminator(d => d.DataType)
+                .AddCompressedTableDiscriminators(typeof(AtspmEventModelBase), typeof(CompressedEvents<>));
 
                 builder.Property(e => e.Data)
                 .HasConversion<CompressedListComverter<AtspmEventModelBase>, CompressedListComparer<AtspmEventModelBase>>();

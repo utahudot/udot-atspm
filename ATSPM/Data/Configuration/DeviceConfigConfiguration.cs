@@ -1,8 +1,12 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventModels;
+using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
+
+#nullable disable
 
 namespace ATSPM.Data.Configuration
 {
@@ -14,7 +18,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DeviceConfiguration> builder)
         {
-            builder.HasComment("DeviceConfiguration");
+            builder.ToTable(t => t.HasComment("Device Configuration"));
 
             builder.Property(e => e.Firmware)
                 .IsRequired()
@@ -50,7 +54,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.DataModel)
                 .IsRequired(false)
                 .HasMaxLength(512)
-                .HasConversion<string>(v => v.FullName, v => Type.GetType(v));
+                .HasConversion(new CompressionTypeConverter(typeof(AtspmEventModelBase).Namespace.ToString(), typeof(AtspmEventModelBase).Assembly.ToString()));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)
