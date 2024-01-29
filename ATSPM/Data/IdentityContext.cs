@@ -1,5 +1,4 @@
-﻿using Duende.IdentityServer.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,19 +12,19 @@ public class IdentityContext : IdentityDbContext<ApplicationUser>
 
 }
 
-public class IdentityConfigurationContext : ConfigurationDbContext<IdentityConfigurationContext>
-{
-    public IdentityConfigurationContext(DbContextOptions<IdentityConfigurationContext> options)
-        : base(options)
-    { }
-}
+//public class IdentityConfigurationContext : ConfigurationDbContext<IdentityConfigurationContext>
+//{
+//    public IdentityConfigurationContext(DbContextOptions<IdentityConfigurationContext> options)
+//        : base(options)
+//    { }
+//}
 
-public class IdentityOperationalContext : PersistedGrantDbContext<IdentityOperationalContext>
-{
-    public IdentityOperationalContext(DbContextOptions<IdentityOperationalContext> options)
-        : base(options)
-    { }
-}
+//public class IdentityOperationalContext : PersistedGrantDbContext<IdentityOperationalContext>
+//{
+//    public IdentityOperationalContext(DbContextOptions<IdentityOperationalContext> options)
+//        : base(options)
+//    { }
+//}
 
 
 public class ApplicationUser : IdentityUser
