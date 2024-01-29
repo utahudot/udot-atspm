@@ -369,7 +369,57 @@ namespace ATSPM.LocationControllerLogger
                 var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
                 var loc = "1234";
-                DateOnly date = DateOnly.Parse("2024-01-29");
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+
+
+
+
+
+
+                var e = new IndiannaEvent()
+                {
+                    LocationIdentifier = loc,
+                    Timestamp = DateTime.Now,
+                    EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
+                    EventParam = 1
+                };
+
+                repo.Add(new CompressedEvents<IndiannaEvent>()
+                {
+                    LocationIdentifier = loc,
+                    DeviceId = 1,
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    Data = new List<IndiannaEvent>()
+                        {
+                            e
+                        }
+                });
+
+                var f = new PedestrianCounter()
+                {
+                    LocationIdentifier = loc,
+                    Timestamp = DateTime.Now,
+                    In = 100,
+                    Out = 99
+                };
+
+                repo.Add(new CompressedEvents<PedestrianCounter>()
+                {
+                    LocationIdentifier = loc,
+                    DeviceId = 2,
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    Data = new List<PedestrianCounter>()
+                        {
+                            f
+                        }
+                });
+
+
+
+
+
+
+
 
                 var first = repo.GetEvents(loc, date);
                 var second = repo.GetEvents(loc, date, 1);
