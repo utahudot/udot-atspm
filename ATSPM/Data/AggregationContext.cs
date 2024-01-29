@@ -3,6 +3,7 @@
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Utility;
+using ATSPM.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.Data
@@ -90,20 +91,6 @@ namespace ATSPM.Data
         /// </summary>
         public virtual DbSet<CompressedAggregations<SignalPlanAggregation>> SignalPlanAggregations { get; set; }
 
-        //public virtual DbSet<ApproachPcdAggregation> ApproachPcdAggregations { get; set; }
-        //public virtual DbSet<ApproachSpeedAggregation> ApproachSpeedAggregations { get; set; }
-        //public virtual DbSet<ApproachSplitFailAggregation> ApproachSplitFailAggregations { get; set; }
-        //public virtual DbSet<ApproachYellowRedActivationAggregation> ApproachYellowRedActivationAggregations { get; set; }
-        //public virtual DbSet<DetectorEventCountAggregation> DetectorEventCountAggregations { get; set; }
-        //public virtual DbSet<PhaseCycleAggregation> PhaseCycleAggregations { get; set; }
-        //public virtual DbSet<PhaseLeftTurnGapAggregation> PhaseLeftTurnGapAggregations { get; set; }
-        //public virtual DbSet<PhaseSplitMonitorAggregation> PhaseSplitMonitorAggregations { get; set; }
-        //public virtual DbSet<PhaseTerminationAggregation> PhaseTerminationAggregations { get; set; }
-        //public virtual DbSet<PreemptionAggregation> PreemptionAggregations { get; set; }
-        //public virtual DbSet<PriorityAggregation> PriorityAggregations { get; set; }
-        //public virtual DbSet<SignalEventCountAggregation> LocationEventCountAggregations { get; set; }
-        //public virtual DbSet<SignalPlanAggregation> LocationPlanAggregations { get; set; }
-
         /// <inheritdoc/>
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
@@ -139,37 +126,12 @@ namespace ATSPM.Data
                 .HasMaxLength(32)
                 .HasConversion(new CompressionTypeConverter(typeof(AtspmAggregationModelBase).Namespace.ToString(), typeof(AtspmAggregationModelBase).Assembly.ToString()));
 
-                builder.HasDiscriminator(d => d.DataType).AddCompressedTableDiscriminators(typeof(AtspmAggregationModelBase), typeof(CompressedAggregations<>));
+                builder.HasDiscriminator(d => d.DataType)
+                .AddCompressedTableDiscriminators(typeof(AtspmAggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
                 .HasConversion<CompressedListComverter<AtspmAggregationModelBase>, CompressedListComparer<AtspmAggregationModelBase>>();
             });
-
-            //modelBuilder.ApplyConfiguration(new ApproachPcdAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new ApproachSpeedAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new ApproachSplitFailAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new ApproachYellowRedActivationAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new DetectorEventCountAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PhaseCycleAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PhaseLeftTurnGapAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PhaseSplitMonitorAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PhaseTerminationAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PreemptionAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new PriorityAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new LocationEventCountAggregationConfiguration());
-
-            //modelBuilder.ApplyConfiguration(new LocationPlanAggregationConfiguration());
 
             OnModelCreatingPartial(modelBuilder);
         }
@@ -181,5 +143,30 @@ namespace ATSPM.Data
     //update-database -context AggregationContext
     //drop-database -context AggregationContext
 
-    
+//    DELETE FROM dbo.CompressedAggregations
+//SELECT* FROM dbo.CompressedAggregations
+
+//SELECT CAST(DECOMPRESS(Data) AS varchar(MAX))
+//FROM dbo.CompressedAggregations
+
+//--SELECT*
+//--FROM CompressedAggregations CROSS APPLY OPENJSON(CAST(DECOMPRESS(Data) AS varchar(MAX)), '$."$values"')
+
+
+
+
+//--SELECT LocationIdentifier, Timestamp, EventCode, EventParam
+//--FROM CompressedAggregations CROSS APPLY OPENJSON(CAST(DECOMPRESS(Data) AS varchar(MAX)), '$."$values"') WITH(Timestamp DateTime2(7), EventCode int, EventParam int)
+
+//--{
+//--  "$type": "System.Collections.Generic.List`1[[ATSPM.Data.EventModels.IndiannaEvent, ATSPM.Data]], System.Private.CoreLib",
+//--  "$values": [
+//--    {
+//--      "EventCode": 1,
+//--      "EventParam": 1,
+//--      "LocationIdentifier": "1234",
+//--      "Timestamp": "2024-01-22T13:41:43.587733-07:00"
+//--    }
+//--  ]
+//--}
 }
