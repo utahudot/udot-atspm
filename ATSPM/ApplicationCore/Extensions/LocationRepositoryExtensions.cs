@@ -135,11 +135,11 @@ namespace ATSPM.Application.Extensions
             throw new NotImplementedException();
         }
 
-        [Obsolete("This should not be in respository")]
-        public static IReadOnlyList<Pin> GetPinInfo(this ILocationRepository repo)
-        {
-            throw new NotImplementedException();
-        }
+        //[Obsolete("This should not be in respository")]
+        //public static IReadOnlyList<Pin> GetPinInfo(this ILocationRepository repo)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         [Obsolete("Use GetLatestVersionOfLocation")]
         public static string GetLocationLocation(this ILocationRepository repo, string locationId)

@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using AutoFixture;
 using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Application.Repositories;
+using ATSPM.Infrastructure.Repositories;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -90,6 +92,19 @@ namespace ATSPM.LocationControllerLogger
                     s.AddScoped<IDeviceDownloader, DeviceSftpDownloader>();
                     s.AddScoped<IDeviceDownloader, DeviceHttpDownloader>();
                     //s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
+
+
+
+
+
+
+                    s.AddScoped<IEventLogRepository, EventLogEFRepository>();
+
+
+
+
+
+
 
                     //decoders
                     //s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
@@ -299,59 +314,74 @@ namespace ATSPM.LocationControllerLogger
 
             //}
 
-            Console.WriteLine($"{typeof(ApproachPcdAggregation).Name}");
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var db = scope.ServiceProvider.GetService<AggregationContext>();
+
+            //    var aggs1 = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
+
+            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachPcdAggregation>()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        Data = aggs1
+            //    });
+
+            //    var aggs2 = new Fixture().CreateMany<ApproachSpeedAggregation>(10).ToList();
+
+            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachSpeedAggregation>()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        Data = aggs2
+            //    });
+
+            //    var aggs3 = new Fixture().CreateMany<ApproachSplitFailAggregation>(10).ToList();
+
+            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachSplitFailAggregation>()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        Data = aggs3
+            //    });
+
+            //    db.SaveChanges();
+
+            //    foreach (var l in db.CompressedAggregations.ToList())
+            //    {
+            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    }
+
+            //    //foreach (var l in db.IndiannaEvents.ToList())
+            //    //{
+            //    //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    //}
+
+            //    //foreach (var l in db.PedestrianCounters.ToList())
+            //    //{
+            //    //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+            //    //}
+
+            //}
 
             using (var scope = host.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetService<AggregationContext>();
+                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                var aggs1 = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
+                var loc = "1234";
+                DateOnly date = DateOnly.Parse("2024-01-29");
 
-                db.CompressedAggregations.Add(new CompressedAggregations<ApproachPcdAggregation>()
-                {
-                    LocationIdentifier = "1234",
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = aggs1
-                });
+                var first = repo.GetEvents(loc, date);
+                var second = repo.GetEvents(loc, date, 1);
+                var third = repo.GetEvents(loc, date, typeof(IndiannaEvent));
+                var fourth = repo.GetEvents<IndiannaEvent>(loc, date);
+                var fifth = repo.GetEvents<IndiannaEvent>(loc, date, 1);
 
-                var aggs2 = new Fixture().CreateMany<ApproachSpeedAggregation>(10).ToList();
-
-                db.CompressedAggregations.Add(new CompressedAggregations<ApproachSpeedAggregation>()
-                {
-                    LocationIdentifier = "1234",
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = aggs2
-                });
-
-                var aggs3 = new Fixture().CreateMany<ApproachSplitFailAggregation>(10).ToList();
-
-                db.CompressedAggregations.Add(new CompressedAggregations<ApproachSplitFailAggregation>()
-                {
-                    LocationIdentifier = "1234",
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = aggs3
-                });
-
-                db.SaveChanges();
-
-                foreach (var l in db.CompressedAggregations.ToList())
-                {
-                    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-                }
-
-                //foreach (var l in db.IndiannaEvents.ToList())
+                //foreach (var l in repo.GetList())
                 //{
                 //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
                 //}
-
-                //foreach (var l in db.PedestrianCounters.ToList())
-                //{
-                //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-                //}
-
             }
-
-
 
             Console.Read();
 
