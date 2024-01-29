@@ -41,7 +41,7 @@ namespace ATSPM.Data.Models
         public int DeviceId { get; set; }
 
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<AtspmEventModelBase> Data { get; set; }
+        public new IEnumerable<AtspmEventModelBase> Data { get => (IEnumerable<AtspmEventModelBase>)base.Data; set => base.Data = value; }
 
     }
 
@@ -61,7 +61,7 @@ namespace ATSPM.Data.Models
     public abstract class CompressedAggregationBase : CompressedDataBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<AtspmAggregationModelBase> Data { get; set; }
+        public new IEnumerable<AtspmAggregationModelBase> Data { get => (IEnumerable<AtspmAggregationModelBase>)base.Data; set => base.Data = value; }
     }
 
     /// <summary>

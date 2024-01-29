@@ -3,7 +3,6 @@
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Utility;
-using ATSPM.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.Data

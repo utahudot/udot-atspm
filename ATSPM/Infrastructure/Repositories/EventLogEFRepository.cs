@@ -1,7 +1,9 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Extensions;
+using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventModels;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,25 +23,28 @@ namespace ATSPM.Infrastructure.Repositories
         ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date)
         {
-            return ProcessEventLogs(GetList()
+            return GetList()
                 .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date)
-                .AsEnumerable());
+                .ToList()
+                .AddLocationIdentifer<AtspmEventModelBase>();
         }
 
         ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, int deviceId)
         {
-            return ProcessEventLogs(GetList()
+            return GetList()
                 .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DeviceId == deviceId)
-                .AsEnumerable());
+                .AsEnumerable()
+                .AddLocationIdentifer<AtspmEventModelBase>();
         }
 
         ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, Type dataType)
         {
-            return ProcessEventLogs(GetList()
+            return GetList()
                 .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == dataType)
-                .AsEnumerable());
+                .AsEnumerable()
+                .AddLocationIdentifer<AtspmEventModelBase>();
         }
 
         ///<inheritdoc/>
@@ -47,11 +52,10 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var type = typeof(T);
 
-            return ProcessEventLogs(GetList()
+            return GetList()
                 .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == type)
-                .AsEnumerable())
-                .Cast<T>()
-                .ToList();
+                .AsEnumerable()
+                .AddLocationIdentifer<T>();
         }
 
         ///<inheritdoc/>
@@ -59,23 +63,12 @@ namespace ATSPM.Infrastructure.Repositories
         {
             var type = typeof(T);
 
-            return ProcessEventLogs(GetList()
+            return GetList()
                 .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == type && w.DeviceId == deviceId)
-                .AsEnumerable())
-                .Cast<T>()
-                .ToList();
+                .AsEnumerable()
+                .AddLocationIdentifer<T>();
         }
 
         #endregion
-
-        private IReadOnlyList<AtspmEventModelBase> ProcessEventLogs(IEnumerable<CompressedEventsBase> items)
-        {
-            return items.SelectMany(m => m.Data, (o, r) =>
-            {
-                if (r is ILocationLayer l)
-                    l.LocationIdentifier = o.LocationIdentifier;
-                return r;
-            }).ToList();
-        }
     }
 }
