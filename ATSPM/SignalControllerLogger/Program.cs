@@ -376,43 +376,43 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-                var e = new IndiannaEvent()
-                {
-                    LocationIdentifier = loc,
-                    Timestamp = DateTime.Now,
-                    EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
-                    EventParam = 1
-                };
+                //var e = new IndiannaEvent()
+                //{
+                //    LocationIdentifier = loc,
+                //    Timestamp = DateTime.Now,
+                //    EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
+                //    EventParam = 1
+                //};
 
-                repo.Add(new CompressedEvents<IndiannaEvent>()
-                {
-                    LocationIdentifier = loc,
-                    DeviceId = 1,
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = new List<IndiannaEvent>()
-                        {
-                            e
-                        }
-                });
+                //repo.Add(new CompressedEvents<IndiannaEvent>()
+                //{
+                //    LocationIdentifier = loc,
+                //    DeviceId = 1,
+                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                //    Data = new List<IndiannaEvent>()
+                //        {
+                //            e
+                //        }
+                //});
 
-                var f = new PedestrianCounter()
-                {
-                    LocationIdentifier = loc,
-                    Timestamp = DateTime.Now,
-                    In = 100,
-                    Out = 99
-                };
+                //var f = new PedestrianCounter()
+                //{
+                //    LocationIdentifier = loc,
+                //    Timestamp = DateTime.Now,
+                //    In = 100,
+                //    Out = 99
+                //};
 
-                repo.Add(new CompressedEvents<PedestrianCounter>()
-                {
-                    LocationIdentifier = loc,
-                    DeviceId = 2,
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    Data = new List<PedestrianCounter>()
-                        {
-                            f
-                        }
-                });
+                //repo.Add(new CompressedEvents<PedestrianCounter>()
+                //{
+                //    LocationIdentifier = loc,
+                //    DeviceId = 2,
+                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                //    Data = new List<PedestrianCounter>()
+                //        {
+                //            f
+                //        }
+                //});
 
 
 
