@@ -82,8 +82,8 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddDbContext<SpeedContext>(db => db.GetDbProviderInfo<SpeedContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             //services.AddDbContext<LegacyEventLogContext>(db => db.GetDbProviderInfo<LegacyEventLogContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            services.AddDbContext<IdentityConfigurationContext>(db => db.GetDbProviderInfo<IdentityConfigurationContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            services.AddDbContext<IdentityOperationalContext>(db => db.GetDbProviderInfo<IdentityOperationalContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<IdentityConfigurationContext>(db => db.GetDbProviderInfo<IdentityConfigurationContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+            //services.AddDbContext<IdentityOperationalContext>(db => db.GetDbProviderInfo<IdentityOperationalContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
 
             return services;
         }

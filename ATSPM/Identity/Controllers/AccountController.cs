@@ -1,8 +1,7 @@
 ﻿using Identity.Business.Accounts;
 using Identity.Business.EmailSender;
-using Identity.Business.ScopeService;
+using Identity.Business.Tokens;
 using Identity.Models.Account;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -83,46 +82,10 @@ namespace Identity.Controllers
 
             if (authenticationResult.Code == StatusCodes.Status200OK)
             {
-                var client = new HttpClient();
-
-                var response = await client.RequestPasswordTokenAsync(new PasswordTokenRequest {
-                    Address = "https://demo.duendesoftware.com/connect/token",
-
-                    ClientId = "client",
-                    ClientSecret = "secret",
-                    Scope = "api1",
-
-                    UserName = model.Email,
-                    Password = model.Password,
-                });
-                // Assuming _scopeService is injected and provides access to the database for fetching allowed scopes
-                //var allowedScopes = _scopeService.GetScopesForClient(authenticationResult.ClientId);
-
-                // Request the access token from the Identity Server
-                //var tokenClient = new TokenClient(
-                //    Configuration["IdentityServer:TokenEndpoint"],
-                //    authenticationResult.ClientId,
-                //    Configuration["IdentityServer:ClientSecret"]);
-
-                //var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync(
-                //    model.Email,
-                //    model.Password,
-                //    allowedScopes);
-
-                //if (tokenResponse.IsError)
-                //{
-                //    // Handle error, e.g., return an error response to the client
-                //    return BadRequest($"Authentication succeeded, but token request failed. Error: {tokenResponse.Error}");
-                //}
-
-                // Access token obtained successfully, you can use it or return it to the client
-                //var accessToken = tokenResponse.AccessToken;
-
-                // Other logic, e.g., return user information along with the access token
-                //return Ok(new { AccessToken = accessToken, UserInfo = /* user information */ });
+                return Ok(new { UserInfo = authenticationResult });
             }
 
-            return BadRequest(authenticationResult);
+            return BadRequest(authenticationResult.Error);
         }
 
         [HttpPost("external-login")]
@@ -167,8 +130,8 @@ namespace Identity.Controllers
             return Ok(new { Message = "Successfully logged out." });
         }
 
+        [Authorize(Policy = "ViewUsers")]
         [HttpPost("changepassword")]
-        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
