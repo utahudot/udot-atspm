@@ -10,12 +10,15 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories
 {
+    ///<inheritdoc cref="IEventLogRepository"/>
     public class EventLogEFRepository : ATSPMRepositoryEFBase<CompressedEventsBase>, IEventLogRepository
     {
+        ///<inheritdoc/>
         public EventLogEFRepository(EventLogContext db, ILogger<EventLogEFRepository> log) : base(db, log) { }
 
         #region IEventLogRepository
 
+        ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date)
         {
             return ProcessEventLogs(GetList()
@@ -23,6 +26,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .AsEnumerable());
         }
 
+        ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, int deviceId)
         {
             return ProcessEventLogs(GetList()
@@ -30,6 +34,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .AsEnumerable());
         }
 
+        ///<inheritdoc/>
         public IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, Type dataType)
         {
             return ProcessEventLogs(GetList()
@@ -37,6 +42,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .AsEnumerable());
         }
 
+        ///<inheritdoc/>
         public IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date) where T : AtspmEventModelBase
         {
             var type = typeof(T);
@@ -48,6 +54,7 @@ namespace ATSPM.Infrastructure.Repositories
                 .ToList();
         }
 
+        ///<inheritdoc/>
         public IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date, int deviceId) where T : AtspmEventModelBase
         {
             var type = typeof(T);
