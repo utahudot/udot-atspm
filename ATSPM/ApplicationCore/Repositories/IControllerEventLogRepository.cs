@@ -1,61 +1,92 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventModels;
+using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ATSPM.Application.Repositories
 {
     /// <summary>
-    /// Device event log repository
+    /// Location Controller Event Log Repository
     /// </summary>
-    public interface IEventLogRepository : IAsyncRepository<CompressedEventsBase>
+    public interface IControllerEventLogRepository : IAsyncRepository<ControllerLogArchive>
     {
         /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+        /// Get all controller event logs by <c>LocationId</c> and date range
         /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of events</param>
+        /// <param name="locationId">Location controller identifier</param>
+        /// <param name="startTime">Start time</param>
+        /// <param name="endTime">End time</param>
         /// <returns></returns>
-        IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date);
+        IReadOnlyList<ControllerEventLog> GetLocationEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
 
-        /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of events</param>
-        /// <param name="deviceId">Deivce id events came from</param>
-        /// <returns></returns>
-        IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, int deviceId);
+        #region ExtensionMethods
 
-        /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of events</param>
-        /// <param name="dataType"></param>
-        /// <returns></returns>
-        IReadOnlyList<AtspmEventModelBase> GetEvents(string locationIdentifier, DateOnly date, Type dataType);
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param);
 
-        /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
-        /// Where date type of derrived from <typeparamref name="T"/>
-        /// </summary>
-        /// <typeparam name="T">Data type of <see cref="AtspmEventModelBase"/></typeparam>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of events</param>
-        /// <returns></returns>
-        IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date) where T : AtspmEventModelBase;
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double latencyCorrection);
 
-        /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
-        /// Where date type of derrived from <typeparamref name="T"/>
-        /// </summary>
-        /// <typeparam name="T">Data type of <see cref="AtspmEventModelBase"/></typeparam>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of events</param>
-        /// <param name="deviceId">Deivce id events came from</param>
-        /// <returns></returns>
-        IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date, int deviceId) where T : AtspmEventModelBase;
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParam(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double offset, double latencyCorrection);
+
+        //IReadOnlyList<ControllerEventLog> GetRecordsByParameterAndEvent(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<int> eventCodes);
+
+        //int GetRecordCountByParameterAndEvent(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<int> eventCodes);
+
+        //IReadOnlyList<ControllerEventLog> GetAllAggregationCodes(string LocationId, DateTime startTime, DateTime endTime);
+
+        //int GetApproachEventsCountBetweenDates(int approachId, DateTime startTime, DateTime endTime, int phaseNumber);
+
+        //int GetDetectorActivationCount(string LocationId, DateTime startTime, DateTime endTime, int detectorChannel);
+
+        //ControllerEventLog GetFirstEventBeforeDate(string LocationId, int eventCode, DateTime date);
+
+        //ControllerEventLog GetFirstEventBeforeDateByEventCodeAndParameter(string LocationId, int eventCode, int eventParam, DateTime date);
+
+        //IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCode(string LocationId, DateTime startTime, DateTime endTime, int eventCode);
+
+        //IReadOnlyList<ControllerEventLog> GetLocationEventsByEventCodes(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes);
+
+        //IReadOnlyList<ControllerEventLog> GetSplitEvents(string LocationId, DateTime startTime, DateTime endTime);
+
+        //double GetTmcVolume(DateTime startDate, DateTime endDate, string LocationId, int phase);
+
+        //IReadOnlyList<ControllerEventLog> GetTopEventsAfterDateByEventCodesParam(string LocationId, DateTime timestamp, IEnumerable<int> eventCodes, int param, int top);
+
+        //IReadOnlyList<ControllerEventLog> GetTopNumberOfLocationEventsBetweenDates(string LocationId, int numberOfRecords, DateTime startTime, DateTime endTime);
+
+        #endregion
+
+        #region Obsolete
+
+        //[Obsolete("Use GetLocationEventsBetweenDates(locationId, startTime, endTime).Count()", true)]
+        //int GetLocationEventsCountBetweenDates(string LocationId, DateTime startTime, DateTime endTime);
+
+        //[Obsolete("This method isn't currently being used")]
+        //bool CheckForRecords(string LocationId, DateTime startTime, DateTime endTime);
+
+        //[Obsolete("This method isn't currently being used")]
+        //int GetEventCountByEventCodesParamDateTimeRange(string LocationId, DateTime startTime, DateTime endTime, int startHour, int startMinute, int endHour, int endMinute, IEnumerable<int> eventCodes, int param);
+
+        //[Obsolete("This method isn't currently being used")]
+        //IReadOnlyList<ControllerEventLog> GetEventsBetweenDates(DateTime startTime, DateTime endTime);
+
+        //[Obsolete("This method isn't currently being used")]
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamDateTimeRange(string LocationId, DateTime startTime, DateTime endTime, int startHour, int startMinute, int endHour, int endMinute, IEnumerable<int> eventCodes, int param);
+
+        //[Obsolete("Use GetEventsByEventCodesParam overload", true)]
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamWithLatencyCorrection(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double latencyCorrection);
+
+        //[Obsolete("Use GetEventsByEventCodesParam overload", true)]
+        //IReadOnlyList<ControllerEventLog> GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(string LocationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventCodes, int param, double offset, double latencyCorrection);
+
+        //[Obsolete("Use GetLocationEventsCountBetweenDates instead", true)]
+        //int GetRecordCount(string LocationId, DateTime startTime, DateTime endTime);
+
+        //[Obsolete("Depreciated, use a specification instead")]
+        //DateTime GetMostRecentRecordTimestamp(string LocationId);
+
+        #endregion
     }
 }
