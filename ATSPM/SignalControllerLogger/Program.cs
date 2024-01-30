@@ -24,6 +24,8 @@ using AutoFixture;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Domain.Services;
+using ATSPM.Domain.Extensions;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -368,77 +370,59 @@ namespace ATSPM.LocationControllerLogger
             {
                 var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                var loc = "1234";
-                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                var item = repo.GetList().First();
 
 
 
 
-
-
-                //var e = new IndiannaEvent()
+                //foreach (var p in item.DataType.GetProperties())
                 //{
-                //    LocationIdentifier = loc,
-                //    Timestamp = DateTime.Now,
-                //    EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
-                //    EventParam = 1
-                //};
-
-                //repo.Add(new CompressedEvents<IndiannaEvent>()
-                //{
-                //    LocationIdentifier = loc,
-                //    DeviceId = 1,
-                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                //    Data = new List<IndiannaEvent>()
-                //        {
-                //            e
-                //        }
-                //});
-
-                //var f = new PedestrianCounter()
-                //{
-                //    LocationIdentifier = loc,
-                //    Timestamp = DateTime.Now,
-                //    In = 100,
-                //    Out = 99
-                //};
-
-                //repo.Add(new CompressedEvents<PedestrianCounter>()
-                //{
-                //    LocationIdentifier = loc,
-                //    DeviceId = 2,
-                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                //    Data = new List<PedestrianCounter>()
-                //        {
-                //            f
-                //        }
-                //});
-
-
-
-
-
-
-
-
-                var first = repo.GetEvents(loc, date);
-                var second = repo.GetEvents(loc, date, 1);
-                var third = repo.GetEvents(loc, date, typeof(IndiannaEvent));
-                var fourth = repo.GetEvents<IndiannaEvent>(loc, date);
-                var fifth = repo.GetEvents<IndiannaEvent>(loc, date, 1);
-
-                //foreach (var l in repo.GetList())
-                //{
-                //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
+                //    Console.WriteLine($"p: {p.Name}");
                 //}
+
+                var props = item.DataType.GetProperties();
+
+                foreach (var i in item.Data)
+                {
+                    Console.WriteLine($"i: {i.ToCsv()}");
+                    
+                    //foreach (var p in props)
+                    //{
+                    //    if (i.HasProperty(p.Name))
+                    //    {
+                    //        var value = p.GetValue(i, null);
+                    //        Console.WriteLine($"{p.Name} : {value}");
+                    //    }
+                            
+                    //}
+                }
+
+
+                //var csv = stuff.Select(x => $"{x.LocationIdentifier},{x.Timestamp.ToString(timestampFormat)}").ToList();
+
+                //csv.Insert(0, "locationId,Timestamp");
+
+
             }
+
+
 
             Console.Read();
 
         }
+
+        
     }
 
-    
+    public static class Testing
+    {
+        public static string ToCsv(this object obj)
+        {
+            return string.Join(",", obj.GetType().GetProperties().Select(pi => pi.GetValue(obj, null)));
+        }
+    }
+
+
 
     public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, FileInfo>
     {
