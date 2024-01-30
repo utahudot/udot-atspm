@@ -1,6 +1,6 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventModels;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -54,7 +54,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.DataModel)
                 .IsRequired(false)
                 .HasMaxLength(512)
-                .HasConversion(new CompressionTypeConverter(typeof(AtspmEventModelBase).Namespace.ToString(), typeof(AtspmEventModelBase).Assembly.ToString()));
+                .HasConversion(new CompressionTypeConverter(typeof(EventLogModelBase).Namespace.ToString(), typeof(EventLogModelBase).Assembly.ToString()));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)
