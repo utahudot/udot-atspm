@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Analysis.ApproachDelay;
-using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 
 namespace ATSPM.Application.ValueObjects
 {

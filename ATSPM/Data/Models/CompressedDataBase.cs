@@ -1,6 +1,6 @@
 ﻿using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Data.Models.EventModels;
+using ATSPM.Data.Models.EventLogModels;
 
 #nullable disable
 
@@ -33,7 +33,7 @@ namespace ATSPM.Data.Models
     /// <summary>
     /// Base for compressed events database table models
     /// </summary>
-    public abstract class CompressedEventsBase : CompressedDataBase
+    public abstract class CompressedEventLogBase : CompressedDataBase
     {
         /// <summary>
         /// Id of the device the logs came from
@@ -41,15 +41,15 @@ namespace ATSPM.Data.Models
         public int DeviceId { get; set; }
 
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<AtspmEventModelBase> Data { get => (IEnumerable<AtspmEventModelBase>)base.Data; set => base.Data = value; }
+        public new IEnumerable<EventLogModelBase> Data { get => (IEnumerable<EventLogModelBase>)base.Data; set => base.Data = value; }
 
     }
 
     /// <summary>
-    /// Generic type to use when compressing <see cref="AtspmEventModelBase"/> objects
+    /// Generic type to use when compressing <see cref="EventLogModelBase"/> objects
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CompressedEvents<T> : CompressedEventsBase where T : AtspmEventModelBase
+    public class CompressedEventLogs<T> : CompressedEventLogBase where T : EventLogModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data { get => (ICollection<T>)base.Data; set => base.Data = value; }
@@ -61,14 +61,14 @@ namespace ATSPM.Data.Models
     public abstract class CompressedAggregationBase : CompressedDataBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<AtspmAggregationModelBase> Data { get => (IEnumerable<AtspmAggregationModelBase>)base.Data; set => base.Data = value; }
+        public new IEnumerable<AggregationModelBase> Data { get => (IEnumerable<AggregationModelBase>)base.Data; set => base.Data = value; }
     }
 
     /// <summary>
-    /// Generic type to use when compressing <see cref="AtspmAggregationModelBase"/> objects
+    /// Generic type to use when compressing <see cref="AggregationModelBase"/> objects
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CompressedAggregations<T> : CompressedAggregationBase where T : AtspmAggregationModelBase
+    public class CompressedAggregations<T> : CompressedAggregationBase where T : AggregationModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data { get => (ICollection<T>)base.Data; set => base.Data = value; }
