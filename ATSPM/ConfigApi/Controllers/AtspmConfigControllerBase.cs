@@ -58,7 +58,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="404">Item does not exist.</response>
         // GET /Entity(1)
         //[HttpGet("{key}")]
-        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand)]
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand, MaxExpansionDepth = 4)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

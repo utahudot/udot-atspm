@@ -42,6 +42,7 @@ namespace ATSPM.ReportApi.Business.Common
             Location Location
             )
         {
+            var cleanTerminationEventsForPhase = CleanTerminationEvents(terminationEvents, phasenumber);
             if (Location.Approaches.IsNullOrEmpty())
             {
                 return null;
@@ -54,7 +55,8 @@ namespace ATSPM.ReportApi.Business.Common
             }
             analysisPhaseData.PhaseDescription = phase.Approach.Description;
             analysisPhaseData.PhaseNumber = phasenumber;
-            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber).ToList();
+            var cycleEventCodes = new List<int> { 1, 8, 11 };
+            var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
             {
                 analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
@@ -63,10 +65,10 @@ namespace ATSPM.ReportApi.Business.Common
             {
                 analysisPhaseData.PedestrianEvents = new List<ControllerEventLog>();
             }
-            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, terminationEvents.ToList());
-            if (!terminationEvents.IsNullOrEmpty())
+            analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, analysisPhaseData.PedestrianEvents, cleanTerminationEventsForPhase);
+            if (!cleanTerminationEventsForPhase.IsNullOrEmpty())
             {
-                analysisPhaseData.TerminationEvents = terminationEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
+                analysisPhaseData.TerminationEvents = cleanTerminationEventsForPhase.Where(t => t.EventParam == phasenumber && (t.EventCode == 4 || t.EventCode == 5 || t.EventCode == 6)).ToList();
             }
             else
             {
@@ -75,7 +77,7 @@ namespace ATSPM.ReportApi.Business.Common
             analysisPhaseData.ConsecutiveGapOuts = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 4, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveMaxOut = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 5, consecutiveCount) ?? new List<ControllerEventLog>();
             analysisPhaseData.ConsecutiveForceOff = FindConsecutiveEvents(analysisPhaseData.TerminationEvents, 6, consecutiveCount) ?? new List<ControllerEventLog>();
-            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(terminationEvents.ToList()) ?? new List<ControllerEventLog>();
+            analysisPhaseData.UnknownTermination = FindUnknownTerminationEvents(cleanTerminationEventsForPhase.ToList(), phasenumber) ?? new List<ControllerEventLog>();
             analysisPhaseData.PercentMaxOuts = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 5);
             analysisPhaseData.PercentForceOffs = FindPercentageConsecutiveEvents(analysisPhaseData.TerminationEvents, 6);
             analysisPhaseData.TotalPhaseTerminations = analysisPhaseData.TerminationEvents.Count;
@@ -108,17 +110,11 @@ namespace ATSPM.ReportApi.Business.Common
         //    return analysisPhaseData;
         //}
 
-        public List<ControllerEventLog> FindTerminationEvents(IReadOnlyList<ControllerEventLog> terminationeventstable,
+        public List<ControllerEventLog> CleanTerminationEvents(IReadOnlyList<ControllerEventLog> terminationEvents,
             int phasenumber)
         {
-            var events = (from row in terminationeventstable
-                          where row.EventParam == phasenumber && (row.EventCode == 4 ||
-                                                                  row.EventCode == 5 ||
-                                                                  row.EventCode == 6 ||
-                                                                  row.EventCode == 7)
-                          select row).ToList();
 
-            var sortedEvents = events.OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
+            var sortedEvents = terminationEvents.Where(t => t.EventParam == phasenumber).OrderBy(x => x.Timestamp).ThenBy(y => y.EventCode).ToList();
             var duplicateList = new List<ControllerEventLog>();
             for (int i = 0; i < sortedEvents.Count - 1; i++)
             {
@@ -181,9 +177,9 @@ namespace ATSPM.ReportApi.Business.Common
             return ConsecutiveEvents;
         }
 
-        private List<ControllerEventLog> FindUnknownTerminationEvents(List<ControllerEventLog> terminationEvents)
+        private List<ControllerEventLog> FindUnknownTerminationEvents(List<ControllerEventLog> terminationEvents, int phaseNumber)
         {
-            return terminationEvents.Where(t => t.EventCode == 7).ToList();
+            return terminationEvents.Where(t => t.EventCode == 7 && t.EventParam == phaseNumber).ToList();
         }
 
 
