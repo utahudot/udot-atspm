@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ATSPM.Data.Models.EventModels;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Specifications
 {
-    public class EventLogDateRangeSpecification : BaseSpecification<CompressedEventsBase>
+    public class EventLogDateRangeSpecification : BaseSpecification<CompressedEventLogBase>
     {
         public EventLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
@@ -19,7 +19,7 @@ namespace ATSPM.Application.Specifications
         }
     }
 
-    public class EventLogDateTimeRangeSpecification : BaseSpecification<AtspmEventModelBase>
+    public class EventLogDateTimeRangeSpecification : BaseSpecification<EventLogModelBase>
     {
         public EventLogDateTimeRangeSpecification(DateTime startDate, DateTime endDate) : base()
         {

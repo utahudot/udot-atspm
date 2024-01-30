@@ -1233,7 +1233,21 @@
             <param name="message">The error message that explains the reason for the exception.</param>
             <param name="innerException">The exception that is the cause of the current exception, or a null reference</param>
         </member>
-        <member name="M:ATSPM.Application.Extensions.LocationRepositoryExtensions.CopyLocationToNewVersion(ATSPM.Application.Repositories.ILocationRepository,System.Int32)">
+        <member name="T:ATSPM.Application.Extensions.CompressedDataExtensions">
+            <summary>
+            Extensions to help with compressed repositories
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Extensions.CompressedDataExtensions.AddLocationIdentifer``1(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.CompressedDataBase})">
+            <summary>
+            Takes the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> and populates it based on the <see cref="P:ATSPM.Data.Models.CompressedDataBase.LocationIdentifier"/>
+            Compressing the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> to the data is inefficient so this is used to populate it upon decompression.
+            </summary>
+            <typeparam name="T">Object type of the compressed data that the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> needs to be populated</typeparam>
+            <param name="items"><see cref="T:ATSPM.Data.Models.CompressedDataBase"/> items that need the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> populated</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Extensions.LocationRepositoryExtensions.CopyLocationToNewVersion(ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,System.Int32)">
             <summary>
             Copies <see cref="T:ATSPM.Data.Models.Location"/> and associated <see cref="T:ATSPM.Data.Models.Approach"/> to new version
             and archives old version
@@ -1242,7 +1256,7 @@
             <param name="id">Location version to copy</param>
             <returns>New version of copied <see cref="T:ATSPM.Data.Models.Location"/></returns>
         </member>
-        <member name="M:ATSPM.Application.Extensions.LocationRepositoryExtensions.SetLocationToDeleted(ATSPM.Application.Repositories.ILocationRepository,System.Int32)">
+        <member name="M:ATSPM.Application.Extensions.LocationRepositoryExtensions.SetLocationToDeleted(ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,System.Int32)">
             <summary>
             Marks <see cref="T:ATSPM.Data.Models.Location"/> to deleted
             </summary>
@@ -1288,14 +1302,326 @@
         <member name="T:ATSPM.Application.LogMessages.ControllerLoggerDownloaderLogMessages.__DirectoryListingExceptionStruct">
             <summary> This API supports the logging infrastructure and is not intended to be used directly from your code. It is subject to change in the future. </summary>
         </member>
-        <member name="T:ATSPM.Application.Repositories.IApproachRepository">
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository">
+            <summary>
+            Aggregation repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository.GetAggregations(System.String,System.DateOnly)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of aggregations</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository.GetAggregations(System.String,System.DateOnly,System.Type)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of aggregations</param>
+            <param name="dataType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository.GetAggregations``1(System.String,System.DateOnly)">
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IApproachRepository">
             <summary>
             Approach Repository
             </summary>
         </member>
-        <member name="T:ATSPM.Application.Repositories.IAreaRepository">
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IAreaRepository">
             <summary>
             Area Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectionTypeRepository">
+            <summary>
+            Detection type repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectionTypeRepository.GetAllDetectionTypesNoBasic">
+            <summary>
+            don't know what this does or if it's needed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectorCommentRepository">
+            <summary>
+            Detector Comment Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectorRepository">
+            <summary>
+            Dectector Repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectorRepository.GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(System.String,ATSPM.Data.Enums.DirectionTypes,System.Collections.Generic.List{ATSPM.Data.Enums.MovementTypes})">
+            <summary>
+            Gets a list of <see cref="T:ATSPM.Data.Models.Detector"/> that match <paramref name="directionType"/> and <paramref name="movementTypeIds"/>
+            </summary>
+            <param name="locationId">Don't know why but this isn't being used???</param>
+            <param name="directionType">Direction type to match to <see cref="T:ATSPM.Data.Models.Detector"/></param>
+            <param name="movementTypeIds">Movement type to match to <see cref="T:ATSPM.Data.Models.Detector"/></param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IDetectorRepository.GetMaximumDetectorChannel(System.Int32)">
+            <summary>
+            Get maximum detector channel from Location controller
+            </summary>
+            <param name="id">Location controller id</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDeviceConfigurationRepository">
+            <summary>
+            Route distance repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDeviceRepository">
+            <summary>
+            Device repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IDeviceRepository.GetActiveDevicesByLocation(System.Int32)">
+            <summary>
+            Gets all <see cref="T:ATSPM.Data.Models.Device"/> from <paramref name="locationId"/> where <see cref="P:ATSPM.Data.Models.Device.DeviceStatus"/> equals <see cref="F:ATSPM.Data.Enums.DeviceStatus.Active"/>
+            </summary>
+            <param name="locationId">Id of <see cref="T:ATSPM.Data.Models.Location"/> to get assigned <see cref="T:ATSPM.Data.Models.Device"/> from</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IDeviceRepository.GetActiveDevicesByAllLatestLocations">
+            <summary>
+            Returns all <see cref="T:ATSPM.Data.Models.Device"/> from all latest version <see cref="T:ATSPM.Data.Models.Location"/>
+            that are also enabled for logging.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IDirectionTypeRepository">
+            <summary>
+            Direction type repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IExternalLinksRepository">
+            <summary>
+            External Links Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IFaqRepository">
+            <summary>
+            Frequently Asked Quesions Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IJurisdictionRepository">
+            <summary>
+            Jurisdiction Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository">
+            <summary>
+            Location Controller Repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetAllVersionsOfLocation(System.String)">
+            <summary>
+            Get all active <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
+            </summary>
+            <param name="LocationIdentifier">Location controller identifier</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> in decescing order of start date</returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetLatestVersionOfAllLocations">
+            <summary>
+            Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities
+            </summary>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetLatestVersionOfAllLocations(System.DateTime)">
+            <summary>
+            Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities by <see cref="T:System.DateTime"/>
+            </summary>
+            <param name="startDate">Locations starting  from <see cref="T:System.DateTime"/> to filter</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetLatestVersionOfLocation(System.String)">
+            <summary>
+            Get latest version of <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
+            </summary>
+            <param name="LocationIdentifier">Location controller identifier</param>
+            <returns>Lastest <see cref="T:ATSPM.Data.Models.Location"/> version</returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetLatestVersionOfLocation(System.String,System.DateTime)">
+            <summary>
+            Get latest version of <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
+            and begin at or before <paramref name="startDate"/>
+            </summary>
+            <param name="LocationIdentifier">Location controller identifier</param>
+            <param name="startDate">Starting date of Location controllers</param>
+            <returns>Lastest <see cref="T:ATSPM.Data.Models.Location"/> version</returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository.GetLocationsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Get all active <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
+            and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
+            </summary>
+            <param name="LocationIdentifier">Location controller identifier</param>
+            <param name="startDate">Date controllers are older than</param>
+            <param name="endDate">Date controllers are newer than</param>
+            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> in decescing order of start date</returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.ILocationTypeRepository">
+            <summary>
+            Location type repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IMeasureCommentRepository">
+            <summary>
+            Metric Comment Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IMeasureOptionsRepository">
+            <summary>
+            Measure options repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IMeasureTypeRepository">
+            <summary>
+            Measure type repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IMenuItemReposiotry">
+            <summary>
+            Menu item repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IProductRepository">
+            <summary>
+            Products repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRegionsRepository">
+            <summary>
+            Region Repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteDistanceRepository">
+            <summary>
+            Route distance repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteDistanceRepository.GetRouteDistanceByLocationIdentifiers(System.String,System.String)">
+            <summary>
+            Gets the <see cref="T:ATSPM.Data.Models.RouteDistance"/> that contains <paramref name="locationA"/> and <paramref name="locationB"/> 
+            </summary>
+            <param name="locationA"></param>
+            <param name="locationB"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteRepository">
+            <summary>
+            Route repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteLocationsRepository">
+            <summary>
+            Route Location repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteLocationsRepository.GetByRoutelocationId(System.Int32)">
+            <summary>
+            Get route from Location id
+            </summary>
+            <param name="id">id of Location</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteLocationsRepository.MoveRouteLocationUp(System.Int32,System.Int32)">
+            <summary>
+            Moves Location up in route order
+            </summary>
+            <param name="routeId">id of route</param>
+            <param name="routelocationId">id of Location route</param>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteLocationsRepository.MoveRouteLocationDown(System.Int32,System.Int32)">
+            <summary>
+            Moves Location down in route order
+            </summary>
+            <param name="routeId">id of route</param>
+            <param name="routelocationId">id of Location route</param>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IVersionHistoryRepository">
+            <summary>
+            Version history repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository">
+            <summary>
+            Device event log repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of events</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly,System.Int32)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of events</param>
+            <param name="deviceId">Deivce id events came from</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly,System.Type)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of events</param>
+            <param name="dataType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents``1(System.String,System.DateOnly)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            Where date type of derrived from <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of events</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents``1(System.String,System.DateOnly,System.Int32)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
+            Where date type of derrived from <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of events</param>
+            <param name="deviceId">Deivce id events came from</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IIndiannaEventLogRepository">
+            <summary>
+            Indianna event log repository
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IIndiannaEventLogRepository.GetEventsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Get all <see cref="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent"/> logs by <c>LocationId</c> and date range
+            </summary>
+            <param name="locationId">Location identifier</param>
+            <param name="startTime">Start time</param>
+            <param name="endTime">End time</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.ISpeedEventRepository">
+            <summary>
+            Speed Event Repository
             </summary>
         </member>
         <member name="T:ATSPM.Application.Repositories.IControllerEventLogRepository">
@@ -1312,230 +1638,9 @@
             <param name="endTime">End time</param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Repositories.IDetectionTypeRepository">
-            <summary>
-            Detection type repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IDetectionTypeRepository.GetAllDetectionTypesNoBasic">
-            <summary>
-            don't know what this does or if it's needed
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IDetectorCommentRepository">
-            <summary>
-            Detector Comment Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IDetectorRepository">
-            <summary>
-            Dectector Repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IDetectorRepository.GetDetectorsBylocationIdMovementTypeIdDirectionTypeId(System.String,ATSPM.Data.Enums.DirectionTypes,System.Collections.Generic.List{ATSPM.Data.Enums.MovementTypes})">
-            <summary>
-            Gets a list of <see cref="T:ATSPM.Data.Models.Detector"/> that match <paramref name="directionType"/> and <paramref name="movementTypeIds"/>
-            </summary>
-            <param name="locationId">Don't know why but this isn't being used???</param>
-            <param name="directionType">Direction type to match to <see cref="T:ATSPM.Data.Models.Detector"/></param>
-            <param name="movementTypeIds">Movement type to match to <see cref="T:ATSPM.Data.Models.Detector"/></param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IDetectorRepository.GetMaximumDetectorChannel(System.Int32)">
-            <summary>
-            Get maximum detector channel from Location controller
-            </summary>
-            <param name="id">Location controller id</param>
-            <returns></returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IDeviceConfigurationRepository">
-            <summary>
-            Route distance repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IDeviceRepository">
-            <summary>
-            Device repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IDeviceRepository.GetActiveDevicesByLocation(System.Int32)">
-            <summary>
-            Gets all <see cref="T:ATSPM.Data.Models.Device"/> from <paramref name="locationId"/> where <see cref="P:ATSPM.Data.Models.Device.DeviceStatus"/> equals <see cref="F:ATSPM.Data.Enums.DeviceStatus.Active"/>
-            </summary>
-            <param name="locationId">Id of <see cref="T:ATSPM.Data.Models.Location"/> to get assigned <see cref="T:ATSPM.Data.Models.Device"/> from</param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IDeviceRepository.GetActiveDevicesByAllLatestLocations">
-            <summary>
-            Returns all <see cref="T:ATSPM.Data.Models.Device"/> from all latest version <see cref="T:ATSPM.Data.Models.Location"/>
-            that are also enabled for logging.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IDirectionTypeRepository">
-            <summary>
-            Direction type repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IExternalLinksRepository">
-            <summary>
-            External Links Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IFaqRepository">
-            <summary>
-            Frequently Asked Quesions Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IJurisdictionRepository">
-            <summary>
-            Jurisdiction Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.ILocationRepository">
-            <summary>
-            Location Controller Repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetAllVersionsOfLocation(System.String)">
-            <summary>
-            Get all active <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
-            </summary>
-            <param name="LocationIdentifier">Location controller identifier</param>
-            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> in decescing order of start date</returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfAllLocations">
-            <summary>
-            Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities
-            </summary>
-            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfAllLocations(System.DateTime)">
-            <summary>
-            Get latest version of all <see cref="T:ATSPM.Data.Models.Location"/> and related entities by <see cref="T:System.DateTime"/>
-            </summary>
-            <param name="startDate">Locations starting  from <see cref="T:System.DateTime"/> to filter</param>
-            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> with newest start date</returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfLocation(System.String)">
-            <summary>
-            Get latest version of <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
-            </summary>
-            <param name="LocationIdentifier">Location controller identifier</param>
-            <returns>Lastest <see cref="T:ATSPM.Data.Models.Location"/> version</returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLatestVersionOfLocation(System.String,System.DateTime)">
-            <summary>
-            Get latest version of <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
-            and begin at or before <paramref name="startDate"/>
-            </summary>
-            <param name="LocationIdentifier">Location controller identifier</param>
-            <param name="startDate">Starting date of Location controllers</param>
-            <returns>Lastest <see cref="T:ATSPM.Data.Models.Location"/> version</returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.ILocationRepository.GetLocationsBetweenDates(System.String,System.DateTime,System.DateTime)">
-            <summary>
-            Get all active <see cref="T:ATSPM.Data.Models.Location"/> and related entities that match <paramref name="LocationIdentifier"/>
-            and start date is between <paramref name="startDate"/> and <paramref name="endDate"/>
-            </summary>
-            <param name="LocationIdentifier">Location controller identifier</param>
-            <param name="startDate">Date controllers are older than</param>
-            <param name="endDate">Date controllers are newer than</param>
-            <returns>List of <see cref="T:ATSPM.Data.Models.Location"/> in decescing order of start date</returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.ILocationTypeRepository">
-            <summary>
-            Location type repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IMeasureCommentRepository">
-            <summary>
-            Metric Comment Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IMeasureOptionsRepository">
-            <summary>
-            Measure options repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IMeasureTypeRepository">
-            <summary>
-            Measure type repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IMenuItemReposiotry">
-            <summary>
-            Menu item repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IProductRepository">
-            <summary>
-            Products repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IRegionsRepository">
-            <summary>
-            Region Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IRouteDistanceRepository">
-            <summary>
-            Route distance repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IRouteDistanceRepository.GetRouteDistanceByLocationIdentifiers(System.String,System.String)">
-            <summary>
-            Gets the <see cref="T:ATSPM.Data.Models.RouteDistance"/> that contains <paramref name="locationA"/> and <paramref name="locationB"/> 
-            </summary>
-            <param name="locationA"></param>
-            <param name="locationB"></param>
-            <returns></returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IRouteRepository">
-            <summary>
-            Route repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IRouteLocationsRepository">
-            <summary>
-            Route Location repository
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IRouteLocationsRepository.GetByRoutelocationId(System.Int32)">
-            <summary>
-            Get route from Location id
-            </summary>
-            <param name="id">id of Location</param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IRouteLocationsRepository.MoveRouteLocationUp(System.Int32,System.Int32)">
-            <summary>
-            Moves Location up in route order
-            </summary>
-            <param name="routeId">id of route</param>
-            <param name="routelocationId">id of Location route</param>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.IRouteLocationsRepository.MoveRouteLocationDown(System.Int32,System.Int32)">
-            <summary>
-            Moves Location down in route order
-            </summary>
-            <param name="routeId">id of route</param>
-            <param name="routelocationId">id of Location route</param>
-        </member>
         <member name="T:ATSPM.Application.Repositories.ISettingsRepository">
             <summary>
             Settings repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.ISpeedEventRepository">
-            <summary>
-            Speed Event Repository
-            </summary>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.IVersionHistoryRepository">
-            <summary>
-            Version history repository
             </summary>
         </member>
         <member name="T:ATSPM.Application.Services.IDeviceDownloader">
@@ -1620,29 +1725,5 @@
         <member name="M:ATSPM.Application.Services.ILocationControllerDecoder.DecodeAsync(System.String,System.IO.Stream,System.Threading.CancellationToken)">
             <exception cref="T:ATSPM.Application.Exceptions.ControllerLoggerDecoderException"></exception>
         </member>
-        <member name="M:ATSPM.Application.ValueObjects.InfoBox.#ctor(System.String,System.String,System.Collections.Generic.SortedDictionary{System.Int32,System.Boolean})">
-            <summary>
-                Default constructor for the infobox class.
-                Usually there will be one of these per pin.
-            </summary>
-            <param name="number"></param>
-            <param name="loc"></param>
-            <param name="reports"></param>
-        </member>
-        <member name="M:ATSPM.Application.ValueObjects.Pin.#ctor(System.String,System.String,System.String,System.String,System.String)">
-            <summary>
-                Default Constructor Used for Map Pins
-            </summary>
-            <param name="number"></param>
-            <param name="lat"></param>
-            <param name="Long"></param>
-            <param name="desc"></param>
-            <param name="hasPCD"></param>
-            <param name="hasSpeed"></param>
-            <param name="hasPhase"></param>
-            <param name="hasTMC"></param>
-            <param name="Region"></param>
-        </member>
-        <!-- Badly formed XML comment ignored for member "M:ATSPM.Application.ValueObjects.Pin.FindReports(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)" -->
     </members>
 </doc>

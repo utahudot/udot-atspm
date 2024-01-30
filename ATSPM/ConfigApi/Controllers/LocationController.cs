@@ -1,6 +1,6 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;

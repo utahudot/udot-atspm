@@ -2,7 +2,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
 using ATSPM.Data;
 using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventModels;
+
 using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
@@ -22,10 +22,10 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using AutoFixture;
 using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Application.Repositories;
-using ATSPM.Infrastructure.Repositories;
 using ATSPM.Domain.Services;
 using ATSPM.Domain.Extensions;
+using ATSPM.Infrastructure.Repositories.EventLogRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -230,7 +230,7 @@ namespace ATSPM.LocationControllerLogger
             //var type = "System.Collections.Generic.List`1[[ATSPM.Data.Models.ControllerEventLog, ATSPM.Data]], System.Private.CoreLib";
 
 
-            //var e = new IndiannaEvent()
+            //var e = new IndianaEvent()
             //{
             //    LocationIdentifier = "1234",
             //    Timestamp = DateTime.Now,
@@ -238,12 +238,12 @@ namespace ATSPM.LocationControllerLogger
             //    EventParam = 1
             //};
 
-            //var list = new List<IndiannaEvent>() { e };
+            //var list = new List<IndianaEvent>() { e };
 
 
 
 
-            //var test2 = JsonConvert.DeserializeObject<IEnumerable<AtspmEventModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
+            //var test2 = JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
             //{
             //    TypeNameHandling = TypeNameHandling.Arrays
             //});
@@ -251,15 +251,15 @@ namespace ATSPM.LocationControllerLogger
             //Console.WriteLine($"{test2?.Count()}");
 
 
-            //Console.WriteLine($"{typeof(IndiannaEvent).FullName}, {typeof(IndiannaEvent).Assembly}");
-            //Console.WriteLine($"{typeof(IndiannaEvent).AssemblyQualifiedName}");
+            //Console.WriteLine($"{typeof(IndianaEvent).FullName}, {typeof(IndianaEvent).Assembly}");
+            //Console.WriteLine($"{typeof(IndianaEvent).AssemblyQualifiedName}");
 
 
             //using (var scope = host.Services.CreateScope())
             //{
             //    var db = scope.ServiceProvider.GetService<EventLogContext>();
 
-            //    var e = new IndiannaEvent()
+            //    var e = new IndianaEvent()
             //    {
             //        LocationIdentifier = "1234",
             //        Timestamp = DateTime.Now,
@@ -267,12 +267,12 @@ namespace ATSPM.LocationControllerLogger
             //        EventParam = 1
             //    };
 
-            //    db.CompressedEvents.Add(new CompressedEvents<IndiannaEvent>()
+            //    db.CompressedEventLogs.Add(new CompressedEventLogs<IndianaEvent>()
             //    {
             //        LocationIdentifier = "1234",
             //        DeviceId = 1,
             //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = new List<IndiannaEvent>()
+            //        Data = new List<IndianaEvent>()
             //        {
             //            e
             //        }
@@ -286,7 +286,7 @@ namespace ATSPM.LocationControllerLogger
             //        Out = 99
             //    };
 
-            //    db.CompressedEvents.Add(new CompressedEvents<PedestrianCounter>()
+            //    db.CompressedEventLogs.Add(new CompressedEventLogs<PedestrianCounter>()
             //    {
             //        LocationIdentifier = "1234",
             //        DeviceId = 2,
@@ -299,7 +299,7 @@ namespace ATSPM.LocationControllerLogger
 
             //    db.SaveChanges();
 
-            //    foreach (var l in db.CompressedEvents.ToList())
+            //    foreach (var l in db.CompressedEventLogs.ToList())
             //    {
             //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
             //    }
