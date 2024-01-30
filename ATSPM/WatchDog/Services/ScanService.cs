@@ -59,7 +59,7 @@ namespace WatchDog.Services
             EmailOptions emailOptions)
         {
             //need a version of this that gets the Location version for date of the scan
-            var Locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
+            var locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
             var errors = new List<WatchDogLogEvent>();
             if (watchDogLogEventRepository.GetList().Where(e => e.Timestamp == emailOptions.ScanDate).Any())
             {
@@ -67,7 +67,7 @@ namespace WatchDog.Services
             }
             else
             {
-                errors = await logService.GetWatchDogIssues(loggingOptions, Locations);
+                errors = await logService.GetWatchDogIssues(loggingOptions, locations);
                 SaveErrorLogs(errors);
             }
             if (emailOptions != null)
@@ -110,7 +110,7 @@ namespace WatchDog.Services
                 await emailService.SendAllEmails(
                     emailOptions,
                     errors,
-                    Locations,
+                    locations,
                     smtp,
                     users,
                     jurisdictions,
