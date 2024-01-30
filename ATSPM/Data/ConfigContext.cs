@@ -3,6 +3,7 @@
 using ATSPM.Data.Configuration;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 

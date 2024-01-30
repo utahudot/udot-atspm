@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 
 namespace ATSPM.Data.Configuration
 {

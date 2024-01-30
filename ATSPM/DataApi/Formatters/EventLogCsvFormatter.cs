@@ -1,5 +1,5 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventModels;
+
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace ATSPM.DataApi.Formatters
 
         public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            //if (context.Object is IEnumerable<AtspmEventModelBase> stuff)
+            //if (context.Object is IEnumerable<EventLogModelBase> stuff)
             //{
             //    context.HttpContext.Request.Headers.TryGetValue("X-Timestamp-Format", out StringValues timestampFormat);
             //    timestampFormat = string.IsNullOrEmpty(timestampFormat) ? "yyyy-MM-dd'T'HH:mm:ss.f" : timestampFormat;
@@ -48,7 +48,7 @@ namespace ATSPM.DataApi.Formatters
 
         protected override bool CanWriteType(Type type)
         {
-            return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type); //|| typeof(IEnumerable<AtspmEventModelBase>).IsAssignableFrom(type);
+            return typeof(IEnumerable<ControllerEventLog>).IsAssignableFrom(type); //|| typeof(IEnumerable<EventLogModelBase>).IsAssignableFrom(type);
         }
     }
 }

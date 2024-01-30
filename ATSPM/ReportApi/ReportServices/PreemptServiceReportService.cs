@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.PreemptService;
 using ATSPM.ReportApi.TempExtensions;

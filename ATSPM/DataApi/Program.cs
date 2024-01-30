@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft;
 using System.Text.Json;
+using ATSPM.Infrastructure.Repositories.EventLogRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((h, s) =>

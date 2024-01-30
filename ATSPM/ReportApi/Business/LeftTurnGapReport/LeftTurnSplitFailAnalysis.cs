@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 
 namespace ATSPM.ReportApi.Business.LeftTurnGapReport
 {

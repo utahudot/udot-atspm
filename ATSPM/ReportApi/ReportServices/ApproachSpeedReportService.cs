@@ -1,5 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.ApproachSpeed;
