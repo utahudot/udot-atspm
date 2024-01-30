@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(options.Start, options.End, locationIdentifier, plans);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, LocationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
