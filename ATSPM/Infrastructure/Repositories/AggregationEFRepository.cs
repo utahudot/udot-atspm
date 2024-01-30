@@ -10,13 +10,13 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories
 {
-    ///<inheritdoc cref="IEventLogRepository"/>
+    ///<inheritdoc cref="IAggregationRepository"/>
     public class AggregationEFRepository : ATSPMRepositoryEFBase<CompressedAggregationBase>, IAggregationRepository
     {
         ///<inheritdoc/>
         public AggregationEFRepository(AggregationContext db, ILogger<AggregationEFRepository> log) : base(db, log) { }
 
-        #region IEventLogRepository
+        #region IAggregationRepository
 
         ///<inheritdoc/>
         public IReadOnlyList<AtspmAggregationModelBase> GetAggregations(string locationIdentifier, DateOnly date)
