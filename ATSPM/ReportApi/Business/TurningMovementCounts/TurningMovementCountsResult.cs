@@ -1,6 +1,4 @@
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.TurningMovementCounts
 {
@@ -27,8 +25,8 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             double? laneUtilizationFactor
             )
         {
-            locationIdentifier = locationIdentifier;
-            LocationDescription = LocationDescription;
+            this.LocationIdentifier = locationIdentifier;
+            this.LocationDescription = LocationDescription;
             Start = start;
             End = end;
             Direction = direction;
@@ -44,7 +42,7 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             LaneUtilizationFactor = laneUtilizationFactor;
         }
 
-        public string locationIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
         public string LocationDescription { get; set; }
         public DateTime Start { get; set; }
         public DateTime End { get; set; }

@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
@@ -63,7 +62,12 @@ namespace ATSPM.ReportApi.ReportServices
 
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            // Only send back data where detector events exists
+            var finalResultcheck = results.Where(result => result.DetectorEvents.Count != 0)
+                .OrderBy(r => r.PhaseType)
+                .ThenBy(r => r.ProtectedPhaseNumber)
+                .ThenBy(r => r.IsPermissivePhase)
+                .ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
