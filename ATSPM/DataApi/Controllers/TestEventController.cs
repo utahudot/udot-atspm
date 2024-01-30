@@ -1,8 +1,8 @@
 ﻿using Asp.Versioning;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventModels;
+using ATSPM.Data.Models.EventLogModels;
 using Google.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -33,7 +33,7 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<string>> GetEventDataTypes()
         {
-            return Ok(typeof(AtspmEventModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(AtspmEventModelBase))).Select(s => s.Name));
+            return Ok(typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name));
         }
 
         /// <summary>

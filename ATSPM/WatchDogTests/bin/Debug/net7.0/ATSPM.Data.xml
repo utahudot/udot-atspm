@@ -344,7 +344,7 @@
             Location type configuration
             </summary>
         </member>
-        <member name="M:ATSPM.Data.Configuration.LocationTypeConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.LocationType})">
+        <member name="M:ATSPM.Data.Configuration.LocationTypeConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.ConfigurationModels.LocationType})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Configuration.MeasureCommentConfiguration">
@@ -1379,22 +1379,22 @@
             <summary>
             Compressed data base table
             Use this table when accessing all recoreds regardless of datatype
-            Returned compressed data will need to be cast to type specified in <see cref="P:ATSPM.Data.Models.CompressedEventsBase.Data"/>
+            Returned compressed data will need to be cast to type specified in <see cref="P:ATSPM.Data.Models.CompressedEventLogBase.Data"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.EventLogContext.IndiannaEvents">
             <summary>
-            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.IndiannaEvent"/>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.EventLogContext.SpeedEvents">
             <summary>
-            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.SpeedEvent"/>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventLogModels.SpeedEvent"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.EventLogContext.PedestrianCounters">
             <summary>
-            <inheritdoc cref="T:ATSPM.Data.Models.EventModels.PedestrianCounter"/>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventLogModels.PedestrianCounter"/>
             </summary>
         </member>
         <member name="M:ATSPM.Data.EventLogContext.ConfigureConventions(Microsoft.EntityFrameworkCore.ModelConfigurationBuilder)">
@@ -1443,7 +1443,12 @@
             Plan number as derrived from the event parameter on <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> event
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.AggregationModels.AtspmAggregationModelBase.LocationIdentifier">
+        <member name="T:ATSPM.Data.Models.AggregationModels.AggregationModelBase">
+            <summary>
+            Aggregation model base for models used in Atspm data aggregations
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.AggregationModelBase.LocationIdentifier">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation">
@@ -1559,6 +1564,68 @@
         <member name="P:ATSPM.Data.Models.AggregationModels.SignalPlanAggregation.PlanNumber">
             <inheritdoc/>
         </member>
+        <member name="T:ATSPM.Data.Models.CompressedDataBase">
+            <summary>
+            Base for compressed database table models
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.DataType">
+            <summary>
+            Model type that is used in the compressed <see cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.ArchiveDate">
+            <summary>
+            Day the data is compressed into
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedDataBase.Data">
+            <summary>
+            Compressed data, ovverride or use <c>new</c> in derrived class for specific type
+            </summary>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedEventLogBase">
+            <summary>
+            Base for compressed events database table models
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventLogBase.DeviceId">
+            <summary>
+            Id of the device the logs came from
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventLogBase.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedEventLogs`1">
+            <summary>
+            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/> objects
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedEventLogs`1.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedAggregationBase">
+            <summary>
+            Base for compressed aggregation database table models
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedAggregationBase.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
+        <member name="T:ATSPM.Data.Models.CompressedAggregations`1">
+            <summary>
+            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.AggregationModels.AggregationModelBase"/> objects
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:ATSPM.Data.Models.CompressedAggregations`1.Data">
+            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
+        </member>
         <member name="T:ATSPM.Data.Models.Approach">
             <summary>
             Approach
@@ -1643,78 +1710,29 @@
         <member name="M:ATSPM.Data.Models.Area.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.AtspmConfigModelBase`1">
+        <member name="T:ATSPM.Data.Models.ConfigurationModels.AtspmConfigModelBase`1">
             <summary>
             Base class for configuration context models.
             This base includes interfaces for working with user interfaces.
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.AtspmConfigModelBase`1.Id">
+        <member name="P:ATSPM.Data.Models.ConfigurationModels.AtspmConfigModelBase`1.Id">
             <summary>
             Primary key
             </summary>
         </member>
-        <member name="T:ATSPM.Data.Models.CompressedDataBase">
+        <member name="P:ATSPM.Data.Models.ConfigurationModels.LocationType.Name">
             <summary>
-            Base for compressed database table models
+            Name of location type
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.CompressedDataBase.LocationIdentifier">
+        <member name="P:ATSPM.Data.Models.ConfigurationModels.LocationType.Icon">
+            <summary>
+            Icon for disquinguishing location type
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.ConfigurationModels.LocationType.Locations">
             <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedDataBase.DataType">
-            <summary>
-            Model type that is used in the compressed <see cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedDataBase.ArchiveDate">
-            <summary>
-            Day the data is compressed into
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedDataBase.Data">
-            <summary>
-            Compressed data, ovverride or use <c>new</c> in derrived class for specific type
-            </summary>
-        </member>
-        <member name="T:ATSPM.Data.Models.CompressedEventsBase">
-            <summary>
-            Base for compressed events database table models
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventsBase.DeviceId">
-            <summary>
-            Id of the device the logs came from
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedEventsBase.Data">
-            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
-        </member>
-        <member name="T:ATSPM.Data.Models.CompressedEvents`1">
-            <summary>
-            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.EventModels.AtspmEventModelBase"/> objects
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedEvents`1.Data">
-            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
-        </member>
-        <member name="T:ATSPM.Data.Models.CompressedAggregationBase">
-            <summary>
-            Base for compressed aggregation database table models
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedAggregationBase.Data">
-            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
-        </member>
-        <member name="T:ATSPM.Data.Models.CompressedAggregations`1">
-            <summary>
-            Generic type to use when compressing <see cref="T:ATSPM.Data.Models.AggregationModels.AtspmAggregationModelBase"/> objects
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:ATSPM.Data.Models.CompressedAggregations`1.Data">
-            <inheritdoc cref="P:ATSPM.Data.Models.CompressedDataBase.Data"/>
         </member>
         <member name="T:ATSPM.Data.Models.DetectionType">
             <summary>
@@ -2008,77 +2026,6 @@
         <member name="M:ATSPM.Data.Models.DirectionType.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.EventModels.AtspmEventModelBase">
-            <summary>
-            Event model base for models used in logging Atspm device logging data
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.AtspmEventModelBase.LocationIdentifier">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.AtspmEventModelBase.Timestamp">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.EventModels.IndiannaEvent">
-            <summary>
-            Indiana Traffic Signal Hi Resolution Data Logger Enumerations
-            <seealso cref="!:https://docs.lib.purdue.edu/jtrpdata/4/"/>
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventCode">
-            <summary>
-            Event code from <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/>
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventParam">
-            <summary>
-            Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventModels.IndiannaEvent.EventCode"/>
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.EventModels.IndiannaEvent.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.EventModels.PedestrianCounter">
-            <summary>
-            Generic pedestrian counter events
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.PedestrianCounter.In">
-            <summary>
-            Input count
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.PedestrianCounter.Out">
-            <summary>
-            Output count
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.EventModels.PedestrianCounter.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Models.EventModels.SpeedEvent">
-            <summary>
-            Generic speed events
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.DetectorId">
-            <summary>
-            Detector id
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.Mph">
-            <summary>
-            Miles per hour
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.EventModels.SpeedEvent.Kph">
-            <summary>
-            Kilometers per hour
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.EventModels.SpeedEvent.ToString">
-            <inheritdoc/>
-        </member>
         <member name="T:ATSPM.Data.Models.ExternalLink">
             <summary>
             External link
@@ -2237,19 +2184,6 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.Location.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="P:ATSPM.Data.Models.LocationType.Name">
-            <summary>
-            Name of location type
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.LocationType.Icon">
-            <summary>
-            Icon for disquinguishing location type
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.LocationType.Locations">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.MeasureComment">
@@ -2566,24 +2500,6 @@
         <member name="M:ATSPM.Data.Models.RouteLocation.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.Settings">
-            <summary>
-            Application settings
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Settings.Setting">
-            <summary>
-            Settings key
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Settings.Value">
-            <summary>
-            Settings value
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.Settings.ToString">
-            <inheritdoc/>
-        </member>
         <member name="T:ATSPM.Data.Models.VersionHistory">
             <summary>
             Version history
@@ -2625,6 +2541,95 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Models.VersionHistory.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase">
+            <summary>
+            Event log model base for models used in logging Atspm device data
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.EventLogModelBase.LocationIdentifier">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.EventLogModelBase.Timestamp">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent">
+            <summary>
+            Indiana Traffic Signal Hi Resolution Data Logger Enumerations
+            <seealso cref="!:https://docs.lib.purdue.edu/jtrpdata/4/"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventCode">
+            <summary>
+            Event code from <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/>
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventParam">
+            <summary>
+            Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventCode"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.IndiannaEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventLogModels.PedestrianCounter">
+            <summary>
+            Generic pedestrian counter events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.PedestrianCounter.In">
+            <summary>
+            Input count
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.PedestrianCounter.Out">
+            <summary>
+            Output count
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.PedestrianCounter.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.EventLogModels.SpeedEvent">
+            <summary>
+            Generic speed events
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.SpeedEvent.DetectorId">
+            <summary>
+            Detector id
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.SpeedEvent.Mph">
+            <summary>
+            Miles per hour
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.EventLogModels.SpeedEvent.Kph">
+            <summary>
+            Kilometers per hour
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.SpeedEvent.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Models.Settings">
+            <summary>
+            Application settings
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Settings.Setting">
+            <summary>
+            Settings key
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Models.Settings.Value">
+            <summary>
+            Settings value
+            </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.Settings.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedApproach">

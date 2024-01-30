@@ -123,13 +123,13 @@ namespace ATSPM.Data
 
                 builder.Property(p => p.DataType)
                 .HasMaxLength(32)
-                .HasConversion(new CompressionTypeConverter(typeof(AtspmAggregationModelBase).Namespace.ToString(), typeof(AtspmAggregationModelBase).Assembly.ToString()));
+                .HasConversion(new CompressionTypeConverter(typeof(AggregationModelBase).Namespace.ToString(), typeof(AggregationModelBase).Assembly.ToString()));
 
                 builder.HasDiscriminator(d => d.DataType)
-                .AddCompressedTableDiscriminators(typeof(AtspmAggregationModelBase), typeof(CompressedAggregations<>));
+                .AddCompressedTableDiscriminators(typeof(AggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListComverter<AtspmAggregationModelBase>, CompressedListComparer<AtspmAggregationModelBase>>();
+                .HasConversion<CompressedListComverter<AggregationModelBase>, CompressedListComparer<AggregationModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -158,7 +158,7 @@ namespace ATSPM.Data
 //--FROM CompressedAggregations CROSS APPLY OPENJSON(CAST(DECOMPRESS(Data) AS varchar(MAX)), '$."$values"') WITH(Timestamp DateTime2(7), EventCode int, EventParam int)
 
 //--{
-//--  "$type": "System.Collections.Generic.List`1[[ATSPM.Data.EventModels.IndiannaEvent, ATSPM.Data]], System.Private.CoreLib",
+//--  "$type": "System.Collections.Generic.List`1[[ATSPM.Data.EventModels.IndianaEvent, ATSPM.Data]], System.Private.CoreLib",
 //--  "$values": [
 //--    {
 //--      "EventCode": 1,

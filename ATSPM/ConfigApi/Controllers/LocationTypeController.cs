@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;

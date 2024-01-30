@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 
 namespace ATSPM.Data.Configuration
 {
