@@ -3,9 +3,12 @@ using ATSPM.Infrastructure.Extensions;
 using Identity.Business.Accounts;
 using Identity.Business.Agency;
 using Identity.Business.EmailSender;
+using Identity.Business.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var builder = WebApplication.CreateBuilder(args);
@@ -22,85 +25,59 @@ builder.Host.ConfigureServices((host, services) =>
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
-    services.AddIdentityServer()
-    .AddOperationalStore<IdentityOperationalContext>(options =>
-    {
-        options.ConfigureDbContext = builder =>
-            builder.UseNpgsql(
-                host.Configuration.GetConnectionString(nameof(IdentityContext)),
-                sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
-    })
-     .AddConfigurationStore<IdentityConfigurationContext>(options =>
-     {
-         options.ConfigureDbContext = builder =>
-             builder.UseNpgsql(
-                 host.Configuration.GetConnectionString(nameof(IdentityContext)),
-                 sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
-     })
-        //For production
-        //(options =>
-        //{
-        //    options.AccessTokenLifetime = TimeSpan.FromHours(1);   // Default: 1 hour
-        //    options.IdentityTokenLifetime = TimeSpan.FromMinutes(20);  // Default: 20 minutes
-        //    options.RefreshTokenExpiration = TokenExpiration.Absolute;
-        //    options.RefreshTokenUsage = TokenUsage.OneTimeOnly;
-        //    options.RefreshTokenLifetime = TimeSpan.FromDays(30);  // Default: 15 days
-        //                                                           // ... other options ...
-        //})
-        //.AddConfigurationStore<IdentityConfigurationContext>(options =>
-        //{
-        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        //})
-        //.AddOperationalStore<IdentityOperationalContext>(options =>
-        //{
-        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        //})
-        // other configurations, like adding a signing credential...
-        .AddDeveloperSigningCredential();
-
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
     services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
+    services.AddScoped<TokenService, TokenService>();
 
-    //services.AddAuthentication("Bearer")
-    //   .AddJwtBearer("Bearer", options =>
-    //   {
-    //       options.Authority = "https://localhost:5001"; // assuming your IdentityServer is running on this URL
-    //       options.RequireHttpsMetadata = false; // set to true in production!
-
-    //       options.Audience = "Identity"; // replace with your API resource name
-    //   });
-    services.AddAuthentication(options =>
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        options.DefaultScheme = "Cookies";
-        options.DefaultChallengeScheme = "oidc";
-    })
-    .AddCookie("Cookie")
-    .AddJwtBearer("JwtBearerIdentityApi", options =>
-    {
-        options.Authority = "https://localhost:44346"; // IdentityServer URL
-        options.Audience = "identityApi"; // API resource name
-    })
-    .AddJwtBearer("JwtBearerIdentity", options =>
-    {
-        options.Authority = "https://localhost:44357";
-        options.Audience = "Identity";
-    })
-    .AddOpenIdConnect("oidc", options =>
-    {
-        options.Authority = "https://localhost:44357";
-        options.ClientId = "PostmanTest";
-        options.ResponseType = "code";
-        options.Scope.Add("openid");
-        options.Scope.Add("profile");
-        options.SaveTokens = true;
-    })
-    .AddGoogle("Google", options =>
-    {
-        options.ClientId = "***REMOVED***";
-        options.ClientSecret = "***REMOVED***";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
     });
+
+    services.AddAuthorization();
+    //services.AddAuthentication(options =>
+    //{
+    //    options.DefaultScheme = "Cookies";
+    //    options.DefaultChallengeScheme = "oidc";
+    //})
+    //.AddCookie("Cookie")
+    //.AddJwtBearer("JwtBearerIdentityApi", options =>
+    //{
+    //    options.Authority = "https://localhost:44346"; // IdentityServer URL
+    //    options.Audience = "identityApi"; // API resource name
+    //})
+    //.AddJwtBearer("JwtBearerIdentity", options =>
+    //{
+    //    options.Authority = "https://localhost:44357";
+    //    options.Audience = "Identity";
+    //})
+    //.AddOpenIdConnect("oidc", options =>
+    //{
+    //    options.Authority = "https://localhost:44357";
+    //    options.ClientId = "PostmanTest";
+    //    options.ResponseType = "code";
+    //    options.Scope.Add("openid");
+    //    options.Scope.Add("profile");
+    //    options.SaveTokens = true;
+    //})
+    //.AddGoogle("Google", options =>
+    //{
+    //    options.ClientId = "***REMOVED***";
+    //    options.ClientSecret = "***REMOVED***";
+    //});
 
 
     //This is for the production certificate
@@ -111,49 +88,49 @@ builder.Host.ConfigureServices((host, services) =>
     //.Single();
 
     //IdentityClient Settings
-    services.AddAuthorization(options =>
-    {
-        options.AddPolicy("ViewUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:ViewUsers");
-        });
-        options.AddPolicy("EditUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:EditUsers");
-        });
-        options.AddPolicy("DeleteUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:DeleteUsers");
-        });
-        options.AddPolicy("ViewRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewRoles", "Admin:ViewRoles");
-        });
-        options.AddPolicy("EditRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:EditRoles", "Admin:EditRoles");
-        });
-        options.AddPolicy("DeleteRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:DeleteRoles", "Admin:DeleteRoles");
-        });
-        options.AddPolicy("CreateRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
-        });
-        options.AddPolicy("RequireValidToken", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("scope", "identityApi");
-        });
-    });
+    //services.AddAuthorization(options =>
+    //{
+    //    options.AddPolicy("ViewUsers", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:ViewUsers", "Admin:ViewUsers");
+    //    });
+    //    options.AddPolicy("EditUsers", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:ViewUsers", "Admin:EditUsers");
+    //    });
+    //    options.AddPolicy("DeleteUsers", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:ViewUsers", "Admin:DeleteUsers");
+    //    });
+    //    options.AddPolicy("ViewRoles", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:ViewRoles", "Admin:ViewRoles");
+    //    });
+    //    options.AddPolicy("EditRoles", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:EditRoles", "Admin:EditRoles");
+    //    });
+    //    options.AddPolicy("DeleteRoles", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:DeleteRoles", "Admin:DeleteRoles");
+    //    });
+    //    options.AddPolicy("CreateRoles", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
+    //    });
+    //    options.AddPolicy("RequireValidToken", policy =>
+    //    {
+    //        policy.RequireAuthenticatedUser();
+    //        policy.RequireClaim("scope", "identityApi");
+    //    });
+    //});
 
 
     services.AddControllers();
