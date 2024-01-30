@@ -2,10 +2,6 @@
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.ReportApi.Business.WaitTime
 {
@@ -16,6 +12,13 @@ namespace ATSPM.ReportApi.Business.WaitTime
         public const int PHASE_END_RED_CLEARANCE = 11;
         public const int PHASE_CALL_REGISTERED = 43;
         public const int PHASE_CALL_DROPPED = 44;
+        private readonly CycleService cycleService;
+
+        public WaitTimeService(CycleService cycleService)
+        {
+            this.cycleService = cycleService;
+        }
+
         public class WaitTimeTracker
         {
             public DateTime Time;
@@ -52,24 +55,27 @@ namespace ATSPM.ReportApi.Business.WaitTime
         public async Task<WaitTimeResult> GetChartData(
             WaitTimeOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> controllerEventLogs,
+            IReadOnlyList<ControllerEventLog> events,
             AnalysisPhaseData analysisPhaseData,
-            IReadOnlyList<PlanSplitMonitorData> plans,
-            VolumeCollection volumeCollection
+            IReadOnlyList<PlanSplitMonitorData> plans
             )
         {
+            var volume = new VolumeCollection(
+           options.Start,
+            options.End,
+               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
+               options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
-            var redList = controllerEventLogs.Where(x =>
-                x.EventCode == PHASE_END_RED_CLEARANCE
-                && x.EventParam == phaseDetail.PhaseNumber)
-                .OrderBy(x => x.Timestamp);
-            var greenList = controllerEventLogs.Where(x =>
-            x.EventCode == PHASE_BEGIN_GREEN
-            && x.EventParam == phaseDetail.PhaseNumber)
-                .OrderBy(x => x.Timestamp);
-            var orderedPhaseRegisterList = controllerEventLogs.Where(x =>
+            var cycleEvents = events.Where(x =>
+                (x.EventCode == PHASE_END_RED_CLEARANCE || x.EventCode == PHASE_BEGIN_GREEN)
+                && x.EventParam == phaseDetail.PhaseNumber);
+            //var greenList = events.Where(x =>
+            //x.EventCode == PHASE_BEGIN_GREEN
+            //&& x.EventParam == phaseDetail.PhaseNumber)
+            //.OrderBy(x => x.Timestamp);
+            var orderedPhaseRegisterList = events.Where(x =>
                 (x.EventCode == PHASE_CALL_REGISTERED ||
                 x.EventCode == PHASE_CALL_DROPPED)
                 && x.EventParam == phaseDetail.PhaseNumber);
@@ -80,56 +86,57 @@ namespace ATSPM.ReportApi.Business.WaitTime
             var unknowns = new List<DataPointForDouble>();
             try
             {
-                foreach (var red in redList)
+                var waitTimeCycles = await cycleService.GetWaitTimeCyclesAsync(cycleEvents.ToList(), orderedPhaseRegisterList.ToList(), options.Start, options.End);
+                foreach (var cycle in waitTimeCycles)
                 {
-                    //Find the corresponding green
-                    var green = greenList.Where(x => x.Timestamp > red.Timestamp).OrderBy(x => x.Timestamp)
-                        .FirstOrDefault();
-                    if (green == null)
-                        continue;
+                    ////Find the corresponding green
+                    //var green = greenList.Where(x => x.Timestamp > red.Timestamp).OrderBy(x => x.Timestamp)
+                    //    .FirstOrDefault();
+                    //if (green == null)
+                    //    continue;
 
                     //Find all events between the red and green
-                    var phaseCallList = orderedPhaseRegisterList
-                        .Where(x => x.Timestamp >= red.Timestamp && x.Timestamp < green.Timestamp)
-                        .OrderBy(x => x.Timestamp).ToList();
+                    //var phaseCallList = orderedPhaseRegisterList
+                    //    .Where(x => x.Timestamp >= red.Timestamp && x.Timestamp < green.Timestamp)
+                    //    .OrderBy(x => x.Timestamp).ToList();
 
-                    if (!phaseCallList.Any())
+                    if (!cycle.PhaseRegisterDroppedCalls.Any())
                         continue;
 
                     var exportList = new List<string>();
-                    foreach (var row in phaseCallList)
+                    foreach (var row in cycle.PhaseRegisterDroppedCalls)
                     {
                         exportList.Add($"{row.SignalIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
                     }
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
                     if (useDroppingAlgorithm &&
-                        phaseCallList.Any(x => x.EventCode == PHASE_CALL_DROPPED))
+                        cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == PHASE_CALL_DROPPED))
                     {
                         var lastDroppedPhaseCall =
-                            phaseCallList.LastOrDefault(x => x.EventCode == PHASE_CALL_DROPPED);
+                            cycle.PhaseRegisterDroppedCalls.LastOrDefault(x => x.EventCode == PHASE_CALL_DROPPED);
                         if (lastDroppedPhaseCall != null)
                         {
-                            var lastIndex = phaseCallList.IndexOf(lastDroppedPhaseCall);
-                            if (lastIndex + 1 >= phaseCallList.Count)
+                            var lastIndex = cycle.PhaseRegisterDroppedCalls.IndexOf(lastDroppedPhaseCall);
+                            if (lastIndex + 1 >= cycle.PhaseRegisterDroppedCalls.Count)
                                 continue;
-                            var nextPhaseCall = phaseCallList[lastIndex + 1];
+                            var nextPhaseCall = cycle.PhaseRegisterDroppedCalls[lastIndex + 1];
 
                             waitTimeTrackerToFill = new WaitTimeTracker
                             {
-                                Time = green.Timestamp,
-                                WaitTimeSeconds = (green.Timestamp - nextPhaseCall.Timestamp).TotalSeconds
+                                Time = cycle.GreenEvent,
+                                WaitTimeSeconds = (cycle.GreenEvent - nextPhaseCall.Timestamp).TotalSeconds
                             };
                         }
                     }
-                    else if (phaseCallList.Any(x => x.EventCode == PHASE_CALL_REGISTERED))
+                    else if (cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == PHASE_CALL_REGISTERED))
                     {
-                        var firstPhaseCall = phaseCallList.First(x => x.EventCode == PHASE_CALL_REGISTERED);
+                        var firstPhaseCall = cycle.PhaseRegisterDroppedCalls.First(x => x.EventCode == PHASE_CALL_REGISTERED);
                         //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
-                            Time = green.Timestamp,
-                            WaitTimeSeconds = (green.Timestamp - firstPhaseCall.Timestamp).TotalSeconds
+                            Time = cycle.GreenEvent,
+                            WaitTimeSeconds = (cycle.GreenEvent - firstPhaseCall.Timestamp).TotalSeconds
                         };
                     }
                     else
@@ -140,7 +147,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
                     //Toss anything longer than 6 minutes - usually a bad value as a result of missing data
                     if (waitTimeTrackerToFill.WaitTimeSeconds > 360)
                         continue;
-                    var priorPhase = analysisPhaseData.Cycles.Items.FirstOrDefault(x => x.EndTime == red.Timestamp);
+                    var priorPhase = analysisPhaseData.Cycles.Cycles.FirstOrDefault(x => x.EndTime == cycle.RedEvent);
                     if (priorPhase != null)
                     {
                         waitTimeTrackerList.Add(waitTimeTrackerToFill);
@@ -174,7 +181,7 @@ namespace ATSPM.ReportApi.Business.WaitTime
             var averageWaitTime = new List<DataPointForDouble>();
             try
             {
-                if (!waitTimeTrackerList.Any())
+                if (waitTimeTrackerList.Any())
                 {
                     for (var lowerTimeLimit = options.Start;
                         lowerTimeLimit < options.End;
@@ -191,12 +198,12 @@ namespace ATSPM.ReportApi.Business.WaitTime
                 }
 
 
-                var splits = plans.Select(p => new PlanSplit(p.Start, p.End, phaseDetail.PhaseNumber, p.Splits[phaseDetail.PhaseNumber]));
+                var splits = plans.Select(p => new DataPointForDouble(p.Start, p.Splits[phaseDetail.PhaseNumber])).ToList();
                 var waitTimePlans = GetWaitTimePlans(plans, waitTimeTrackerList);
                 //}
 
-                return new WaitTimeResult(
-                    "Wait Time",
+                var result = new WaitTimeResult(
+                    phaseDetail.Approach.Location.LocationIdentifier,
                     phaseDetail.Approach.Id,
                     phaseDetail.Approach.Description,
                     phaseDetail.Approach.ProtectedPhaseNumber,
@@ -209,8 +216,11 @@ namespace ATSPM.ReportApi.Business.WaitTime
                     forceOffs,
                     unknowns,
                     averageWaitTime,
-                    volumeCollection.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList()
+                    volume.Items.Select(v => new DataPointForInt(v.StartTime, v.HourlyVolume)).ToList(),
+                    splits
                     );
+                result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
+                return result;
             }
             catch
             {

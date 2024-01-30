@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.WaitTime;
@@ -57,17 +56,13 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var phaseEvents = controllerEventLogRepository.GetLocationEventsByEventCodes(
-            parameter.locationIdentifier,
-            parameter.Start,
-                parameter.End,
-                new List<int>() {
+            var eventCodes = new List<int>() {
                     82,
                     WaitTimeService.PHASE_BEGIN_GREEN,
                     WaitTimeService.PHASE_CALL_DROPPED,
                     WaitTimeService.PHASE_END_RED_CLEARANCE,
-                    WaitTimeService.PHASE_CALL_REGISTERED}
-                );
+                    WaitTimeService.PHASE_CALL_REGISTERED};
+            var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, eventCodes);
             var terminationEvents = controllerEventLogs.Where(e =>
                 new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
@@ -79,17 +74,13 @@ namespace ATSPM.ReportApi.ReportServices
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var volume = new VolumeCollection(
-            parameter.Start,
-                parameter.End,
-                phaseEvents.Where(e => e.EventCode == 82).ToList(),
-                parameter.BinSize);
+
             var analysisPhaseDataCollection = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
                 Location.LocationIdentifier,
             parameter.Start,
                 parameter.End,
                 planEvents,
-                phaseEvents,
+                events,
                 splitsEvents,
                 null,
                 terminationEvents,
@@ -102,15 +93,14 @@ namespace ATSPM.ReportApi.ReportServices
                 tasks.Add(waitTimeService.GetChartData(
                 parameter,
                 phaseDetail,
-                phaseEvents,
+                events,
                 analysisPhaseDataCollection.AnalysisPhases.Where(a => a.PhaseNumber == phaseDetail.PhaseNumber).First(),
-                analysisPhaseDataCollection.Plans,
-                volume
+                analysisPhaseDataCollection.Plans
                 ));
             }
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
