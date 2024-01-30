@@ -16,8 +16,8 @@ namespace ATSPM.Data.Models
 
         public WatchDogLogEvent(int locationId, string locationIdentifier, DateTime timestamp, WatchDogComponentType componentType, int componentId, WatchDogIssueType issueType, string details, int? phase)
         {
-            locationId = locationId;
-            locationIdentifier = locationIdentifier;
+            this.locationId = locationId;
+            this.locationIdentifier = locationIdentifier;
             Timestamp = timestamp;
             ComponentType = componentType;
             ComponentId = componentId;

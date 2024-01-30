@@ -4,7 +4,9 @@ using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.ReportApi.Business.Common;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,6 +19,10 @@ class Program
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         var host = Host.CreateDefaultBuilder()
+               //.ConfigureWebHostDefaults(webBuilder =>
+               //{
+               //    webBuilder.UseEnvironment("Development"); // Setting the environment
+               //})
                .ConfigureLogging((h, l) =>
                {
                })
@@ -39,7 +45,7 @@ class Program
                    s.AddScoped<AnalysisPhaseCollectionService>();
                    s.AddScoped<AnalysisPhaseService>();
                    s.AddScoped<PhaseService>();
-                   DateTime scanDate = args.Length > 0 ? DateTime.Parse(args[0]) : DateTime.Today;
+                   DateTime scanDate = args.Length > 0 ? DateTime.Parse(args[0]) : DateTime.Today.AddDays(-1);
 
                    // Register the hosted service with the date
                    s.AddHostedService<ScanHostedService>(serviceProvider =>
@@ -56,6 +62,14 @@ class Program
                     .AddEntityFrameworkStores<IdentityContext>() // Specify the EF Core store
                     .AddDefaultTokenProviders();
 
+               })
+               .ConfigureAppConfiguration((context, config) =>
+               {
+                   // Add other configuration files, environment variables, etc.
+                   if (context.HostingEnvironment.IsDevelopment())
+                   {
+                       config.AddUserSecrets<Program>();
+                   }
                })
                 .UseConsoleLifetime()
                 .Build();
