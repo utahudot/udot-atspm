@@ -1,8 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.ReportApi.Business.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

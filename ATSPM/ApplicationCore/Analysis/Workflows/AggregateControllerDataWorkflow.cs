@@ -22,7 +22,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public CancellationToken CancellationToken { get; set; }
     }
     
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : AtspmAggregationModelBase
+    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : AggregationModelBase
     {
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
@@ -253,7 +253,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<AtspmAggregationModelBase>>
+    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<AggregationModelBase>>
     {
         //aggregate detector events
         //public FilteredDetectorData FilteredDetectorData { get; private set; }
