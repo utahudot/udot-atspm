@@ -11,9 +11,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Device entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IDeviceRepository"/>
     public class DeviceEFRepository : ATSPMRepositoryEFBase<Device>, IDeviceRepository
     {
         /// <inheritdoc/>

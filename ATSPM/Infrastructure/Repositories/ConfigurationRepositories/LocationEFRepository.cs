@@ -12,9 +12,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Location controller entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="ILocationRepository"/>
     public class LocationEFRepository : ATSPMRepositoryEFBase<Location>, ILocationRepository
     {
         /// <inheritdoc/>

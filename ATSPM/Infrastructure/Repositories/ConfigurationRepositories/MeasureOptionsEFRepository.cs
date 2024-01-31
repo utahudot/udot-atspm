@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Measure options entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IMeasureOptionsRepository"/>
     public class MeasureOptionsEFRepository : ATSPMRepositoryEFBase<MeasureOption>, IMeasureOptionsRepository
     {
         /// <inheritdoc/>

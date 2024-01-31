@@ -6,9 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Area entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IAreaRepository"/>
     public class AreaEFRepository : ATSPMRepositoryEFBase<Area>, IAreaRepository
     {
         public AreaEFRepository(ConfigContext db, ILogger<AreaEFRepository> log) : base(db, log) { }

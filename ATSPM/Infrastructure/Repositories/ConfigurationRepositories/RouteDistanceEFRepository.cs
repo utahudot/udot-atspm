@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Route distance entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IRouteDistanceRepository"/>
     public class RouteDistanceEFRepository : ATSPMRepositoryEFBase<RouteDistance>, IRouteDistanceRepository
     {
         /// <inheritdoc/>
