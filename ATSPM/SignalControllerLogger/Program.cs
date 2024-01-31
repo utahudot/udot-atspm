@@ -73,7 +73,7 @@ namespace ATSPM.LocationControllerLogger
                     //s.AddHostedService<LoggerBackgroundService>();
 
                     //repositories
-                    s.AddAtspmEFRepositories();
+                    s.AddAtspmEFConfigRepositories();
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();

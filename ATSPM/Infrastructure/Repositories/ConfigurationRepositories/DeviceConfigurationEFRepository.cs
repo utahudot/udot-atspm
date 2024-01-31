@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Device configuration entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IDeviceConfigurationRepository"/>
     public class DeviceConfigurationEFRepository : ATSPMRepositoryEFBase<DeviceConfiguration>, IDeviceConfigurationRepository
     {
         /// <inheritdoc/>

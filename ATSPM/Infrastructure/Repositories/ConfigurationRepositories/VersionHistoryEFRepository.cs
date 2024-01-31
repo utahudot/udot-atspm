@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Version history entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IVersionHistoryRepository"/>
     public class VersionHistoryEFRepository : ATSPMRepositoryEFBase<VersionHistory>, IVersionHistoryRepository
     {
         /// <inheritdoc/>
