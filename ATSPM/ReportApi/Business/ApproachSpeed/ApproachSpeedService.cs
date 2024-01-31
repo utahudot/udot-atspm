@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,10 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             ApproachSpeedOptions options,
             List<ControllerEventLog> cycleEvents,
             List<ControllerEventLog> planEvents,
-            List<OldSpeedEvent> speedEvents,
+            List<SpeedEvent> speedEvents,
             Detector detector)
         {
-            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.TimeStamp >= options.Start && d.TimeStamp < options.End).ToList();
+            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.Timestamp >= options.Start && d.Timestamp < options.End).ToList();
             var speedDetector = GetSpeedDetector(
                 detector,
                 options.Start,
@@ -69,7 +70,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             int binSize,
             List<ControllerEventLog> planEvents,
             List<ControllerEventLog> cycleEvents,
-            List<OldSpeedEvent> speedEventsForDetector)
+            List<SpeedEvent> speedEventsForDetector)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);
             if (cycles.Any())

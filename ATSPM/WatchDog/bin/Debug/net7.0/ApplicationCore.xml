@@ -1247,6 +1247,30 @@
             <param name="items"><see cref="T:ATSPM.Data.Models.CompressedDataBase"/> items that need the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> populated</param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.Application.Extensions.LocationApproachLayerExtensions">
+            <summary>
+            Extensions for object that inherit <see cref="T:ATSPM.Data.Interfaces.ILocationApproachLayer"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Application.Extensions.LocationApproachLayerExtensions.GetByApproachId``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Gets all items that have the provided <paramref name="approachId"/>
+            </summary>
+            <typeparam name="T"><see cref="T:ATSPM.Data.Interfaces.ILocationApproachLayer"/></typeparam>
+            <param name="items"><see cref="T:System.Collections.Generic.IEnumerable`1"/> of objects that inherit <see cref="T:ATSPM.Data.Interfaces.ILocationApproachLayer"/></param>
+            <param name="approachId">Id of approach to match with <paramref name="items"/></param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Extensions.LocationApproachLayerExtensions.GetByApproachId``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Boolean)">
+            <summary>
+            Gets all items that have the provided <paramref name="approachId"/>
+            </summary>
+            <typeparam name="T"><see cref="T:ATSPM.Data.Interfaces.ILocationApproachLayer"/></typeparam>
+            <param name="items"><see cref="T:System.Collections.Generic.IEnumerable`1"/> of objects that inherit <see cref="T:ATSPM.Data.Interfaces.ILocationApproachLayer"/></param>
+            <param name="approachId">Id of approach to match with <paramref name="items"/></param>
+            <param name="protectedPhase">Flag to check protected phase status</param>
+            <returns></returns>
+        </member>
         <member name="M:ATSPM.Application.Extensions.LocationRepositoryExtensions.CopyLocationToNewVersion(ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,System.Int32)">
             <summary>
             Copies <see cref="T:ATSPM.Data.Models.Location"/> and associated <see cref="T:ATSPM.Data.Models.Approach"/> to new version
@@ -1264,26 +1288,6 @@
             <param name="id">Id of <see cref="T:ATSPM.Data.Models.Location"/> to mark as deleted</param>
             <returns></returns>
             <exception cref="T:System.ArgumentException">id is not a valid Location</exception>
-        </member>
-        <member name="T:ATSPM.Application.Extensions.SettingsReposiotryExtensions">
-            <summary>
-            Extensions for <see cref="T:ATSPM.Application.Repositories.ISettingsRepository"/>
-            </summary>
-        </member>
-        <member name="M:ATSPM.Application.Extensions.SettingsReposiotryExtensions.LookupSetting(ATSPM.Application.Repositories.ISettingsRepository,System.String)">
-            <summary>
-            returns a string value by setting key
-            </summary>
-            <param name="repo"></param>
-            <param name="setting">Unique setting key</param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Extensions.SettingsReposiotryExtensions.SettingsDictionary(ATSPM.Application.Repositories.ISettingsRepository)">
-            <summary>
-            Returns the settings as a dictionary
-            </summary>
-            <param name="repo"></param>
-            <returns></returns>
         </member>
         <member name="M:ATSPM.Application.Extensions.DetectorExtensions.CheckReportAvialbility(ATSPM.Data.Models.Detector,System.Int32)">
             <summary>
@@ -1325,7 +1329,94 @@
             <returns></returns>
         </member>
         <member name="M:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository.GetAggregations``1(System.String,System.DateOnly)">
+            <summary>
+            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            Where date type of derrived from <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.AggregationModels.AggregationModelBase"/></typeparam>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of aggregations</param>
             <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository`1">
+            <summary>
+            Generic interface for accessing aggregations
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.AggregationRepositories.IAggregationRepository`1.GetAggregationsBetweenDates(System.String,System.DateTime,System.DateTime)">
+            <summary>
+            Get all <see cref="T:ATSPM.Data.Models.AggregationModels.AggregationModelBase"/> by <c>LocationId</c> and date range
+            </summary>
+            <param name="locationId">Location identifier</param>
+            <param name="startTime">Start time</param>
+            <param name="endTime">End time</param>
+            <returns></returns>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IApproachPcdAggregationRepository">
+            <summary>
+            Approach purdue coordination diagram aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IApproachSpeedAggregationRepository">
+            <summary>
+            Approach speed aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IApproachSplitFailAggregationRepository">
+            <summary>
+            Approach split fail aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IApproachYellowRedActivationAggregationRepository">
+            <summary>
+            Approach yellow red activation aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IDetectorEventCountAggregationRepository">
+            <summary>
+            Detector event count aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPhaseCycleAggregationRepository">
+            <summary>
+            Phase cycle aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPhaseLeftTurnGapAggregationRepository">
+            <summary>
+            Phase left turn gap aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPhaseSplitMonitorAggregationRepository">
+            <summary>
+            Phase split monitoriing aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPhaseTerminationAggregationRepository">
+            <summary>
+            Phase termination aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPreemptionAggregationRepository">
+            <summary>
+            Preemption aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.IPriorityAggregationRepository">
+            <summary>
+            Priority aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.ISignalEventCountAggregationRepository">
+            <summary>
+            Signal event cout aggregation repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.AggregationRepositories.ISignalPlanAggregationRepository">
+            <summary>
+            Signal plan aggregation repository
+            </summary>
         </member>
         <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IApproachRepository">
             <summary>
@@ -1517,11 +1608,6 @@
             <param name="locationB"></param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteRepository">
-            <summary>
-            Route repository
-            </summary>
-        </member>
         <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteLocationsRepository">
             <summary>
             Route Location repository
@@ -1547,6 +1633,21 @@
             </summary>
             <param name="routeId">id of route</param>
             <param name="routelocationId">id of Location route</param>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IRouteRepository">
+            <summary>
+            Route repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IUserJurisdictionRepository">
+            <summary>
+            User jurisdiction repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IUserRegionRepository">
+            <summary>
+            User region repository
+            </summary>
         </member>
         <member name="T:ATSPM.Application.Repositories.ConfigurationRepositories.IVersionHistoryRepository">
             <summary>
@@ -1605,23 +1706,29 @@
             <param name="deviceId">Deivce id events came from</param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IIndiannaEventLogRepository">
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository`1">
             <summary>
-            Indianna event log repository
+            Generic interface for accessing device event logs
             </summary>
+            <typeparam name="T"></typeparam>
         </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IIndiannaEventLogRepository.GetEventsBetweenDates(System.String,System.DateTime,System.DateTime)">
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository`1.GetEventsBetweenDates(System.String,System.DateTime,System.DateTime)">
             <summary>
-            Get all <see cref="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent"/> logs by <c>LocationId</c> and date range
+            Get all <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/> logs by <c>LocationId</c> and date range
             </summary>
             <param name="locationId">Location identifier</param>
             <param name="startTime">Start time</param>
             <param name="endTime">End time</param>
             <returns></returns>
         </member>
-        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.ISpeedEventRepository">
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IIndianaEventLogRepository">
             <summary>
-            Speed Event Repository
+            Indianna event log repository
+            </summary>
+        </member>
+        <member name="T:ATSPM.Application.Repositories.EventLogRepositories.ISpeedEventLogRepository">
+            <summary>
+            Speed event log repository
             </summary>
         </member>
         <member name="T:ATSPM.Application.Repositories.IControllerEventLogRepository">
@@ -1637,11 +1744,6 @@
             <param name="startTime">Start time</param>
             <param name="endTime">End time</param>
             <returns></returns>
-        </member>
-        <member name="T:ATSPM.Application.Repositories.ISettingsRepository">
-            <summary>
-            Settings repository
-            </summary>
         </member>
         <member name="T:ATSPM.Application.Services.IDeviceDownloader">
             <summary>
