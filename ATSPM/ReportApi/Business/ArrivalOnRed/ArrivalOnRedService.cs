@@ -68,7 +68,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
             if (totalDetectorHits > 0)
                 totalPercentAoR = totalAoR / totalCars * 100;
 
-            var plans = GetArrivalOnRedPlans(LocationPhase.Plans, options.ShowPlanStatistics);
+            var plans = GetArrivalOnRedPlans(LocationPhase.Plans);
             return new ArrivalOnRedResult(
                 approach.Location.LocationIdentifier,
                 approach.Id,
@@ -88,8 +88,7 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
 
 
         protected ReadOnlyCollection<ArrivalOnRedPlan> GetArrivalOnRedPlans(
-            List<PurdueCoordinationPlan> planCollection,
-            bool showPlanStatistics)
+            List<PurdueCoordinationPlan> planCollection)
         {
             List<ArrivalOnRedPlan> arrivals = new List<ArrivalOnRedPlan>();
             foreach (PurdueCoordinationPlan planPcd in planCollection)
