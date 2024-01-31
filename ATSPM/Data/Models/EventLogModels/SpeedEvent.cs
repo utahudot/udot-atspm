@@ -25,6 +25,23 @@ namespace ATSPM.Data.Models.EventLogModels
         public int Kph { get; set; }
 
         ///<inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return obj is SpeedEvent @event &&
+                   LocationIdentifier == @event.LocationIdentifier &&
+                   Timestamp == @event.Timestamp &&
+                   DetectorId == @event.DetectorId &&
+                   Mph == @event.Mph &&
+                   Kph == @event.Kph;
+        }
+
+        ///<inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(LocationIdentifier, Timestamp, DetectorId, Mph, Kph);
+        }
+
+        ///<inheritdoc/>
         public override string ToString()
         {
             return $"{LocationIdentifier}-{Timestamp}-{DetectorId}-{Mph}-{Kph}";
