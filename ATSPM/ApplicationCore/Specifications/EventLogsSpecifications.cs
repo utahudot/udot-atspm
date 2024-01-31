@@ -1,11 +1,7 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.ValueObjects;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Specifications;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Specifications
 {

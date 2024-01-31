@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Location type entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="ILocationTypeRepository"/>
     public class LocationTypeEFRepository : ATSPMRepositoryEFBase<LocationType>, ILocationTypeRepository
     {
         /// <inheritdoc/>

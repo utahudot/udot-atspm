@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Approaches entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IApproachRepository"/>
     public class ApproachEFRepository : ATSPMRepositoryEFBase<Approach>, IApproachRepository
     {
         /// <inheritdoc/>

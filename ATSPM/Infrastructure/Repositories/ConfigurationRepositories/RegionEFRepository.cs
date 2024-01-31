@@ -6,9 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Region entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IRegionsRepository"/>
     public class RegionEFRepository : ATSPMRepositoryEFBase<Region>, IRegionsRepository
     {
         /// <inheritdoc/>

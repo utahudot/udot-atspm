@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Product entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IProductRepository"/>
     public class ProductEFRepository : ATSPMRepositoryEFBase<Product>, IProductRepository
     {
         /// <inheritdoc/>
