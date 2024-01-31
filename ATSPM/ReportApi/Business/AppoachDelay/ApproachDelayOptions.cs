@@ -6,6 +6,6 @@ namespace ATSPM.ReportApi.Business.AppoachDelay
     {
         public int BinSize { get; set; }
         public bool GetPermissivePhase { get; set; }
-        public bool GetVolume { get; set; }
+        public bool GetVolume { get; set; } = true;
     }
 }
