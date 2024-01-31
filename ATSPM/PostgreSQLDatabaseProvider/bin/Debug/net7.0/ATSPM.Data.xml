@@ -2589,6 +2589,12 @@
             Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventLogModels.IndianaEvent.EventCode"/>
             </summary>
         </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.IndianaEvent.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.IndianaEvent.GetHashCode">
+            <inheritdoc/>
+        </member>
         <member name="M:ATSPM.Data.Models.EventLogModels.IndianaEvent.ToString">
             <inheritdoc/>
         </member>
@@ -2606,6 +2612,12 @@
             <summary>
             Output count
             </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.PedestrianCounter.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.PedestrianCounter.GetHashCode">
+            <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.EventLogModels.PedestrianCounter.ToString">
             <inheritdoc/>
@@ -2629,6 +2641,12 @@
             <summary>
             Kilometers per hour
             </summary>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.SpeedEvent.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Data.Models.EventLogModels.SpeedEvent.GetHashCode">
+            <inheritdoc/>
         </member>
         <member name="M:ATSPM.Data.Models.EventLogModels.SpeedEvent.ToString">
             <inheritdoc/>

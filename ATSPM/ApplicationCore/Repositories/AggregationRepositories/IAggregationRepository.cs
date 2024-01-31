@@ -1,6 +1,5 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;

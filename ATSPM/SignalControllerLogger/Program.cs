@@ -26,6 +26,9 @@ using ATSPM.Domain.Services;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Data.Enums;
+using ATSPM.Application.Common.EqualityComparers;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -74,6 +77,8 @@ namespace ATSPM.LocationControllerLogger
 
                     //repositories
                     s.AddAtspmEFConfigRepositories();
+                    s.AddAtspmEFEventLogRepositories();
+                    s.AddAtspmEFAggregationRepositories();
 
                     //s.AddTransient<IFileTranscoder, JsonFileTranscoder>();
                     //s.AddTransient<IFileTranscoder, ParquetFileTranscoder>();
@@ -98,9 +103,6 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-
-
-                    s.AddScoped<IEventLogRepository, EventLogEFRepository>();
 
 
 
@@ -255,155 +257,89 @@ namespace ATSPM.LocationControllerLogger
             //Console.WriteLine($"{typeof(IndianaEvent).AssemblyQualifiedName}");
 
 
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetService<EventLogContext>();
-
-            //    var e = new IndianaEvent()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        Timestamp = DateTime.Now,
-            //        EventCode = Data.Enums.DataLoggerEnum.AdvanceWarningSignInactive,
-            //        EventParam = 1
-            //    };
-
-            //    db.CompressedEventLogs.Add(new CompressedEventLogs<IndianaEvent>()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        DeviceId = 1,
-            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = new List<IndianaEvent>()
-            //        {
-            //            e
-            //        }
-            //    });
-
-            //    var f = new PedestrianCounter()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        Timestamp = DateTime.Now,
-            //        In = 100,
-            //        Out = 99
-            //    };
-
-            //    db.CompressedEventLogs.Add(new CompressedEventLogs<PedestrianCounter>()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        DeviceId = 2,
-            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = new List<PedestrianCounter>()
-            //        {
-            //            f
-            //        }
-            //    });
-
-            //    db.SaveChanges();
-
-            //    foreach (var l in db.CompressedEventLogs.ToList())
-            //    {
-            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    }
-
-            //    foreach (var l in db.IndiannaEvents.ToList())
-            //    {
-            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    }
-
-            //    foreach (var l in db.PedestrianCounters.ToList())
-            //    {
-            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    }
-
-            //}
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetService<AggregationContext>();
-
-            //    var aggs1 = new Fixture().CreateMany<ApproachPcdAggregation>(10).ToList();
-
-            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachPcdAggregation>()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = aggs1
-            //    });
-
-            //    var aggs2 = new Fixture().CreateMany<ApproachSpeedAggregation>(10).ToList();
-
-            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachSpeedAggregation>()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = aggs2
-            //    });
-
-            //    var aggs3 = new Fixture().CreateMany<ApproachSplitFailAggregation>(10).ToList();
-
-            //    db.CompressedAggregations.Add(new CompressedAggregations<ApproachSplitFailAggregation>()
-            //    {
-            //        LocationIdentifier = "1234",
-            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-            //        Data = aggs3
-            //    });
-
-            //    db.SaveChanges();
-
-            //    foreach (var l in db.CompressedAggregations.ToList())
-            //    {
-            //        Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    }
-
-            //    //foreach (var l in db.IndiannaEvents.ToList())
-            //    //{
-            //    //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    //}
-
-            //    //foreach (var l in db.PedestrianCounters.ToList())
-            //    //{
-            //    //    Console.WriteLine($"{l.GetType()} - {l.LocationIdentifier} - {l.ArchiveDate} - {l.DataType} - {l.Data.Count()}");
-            //    //}
-
-            //}
-
             using (var scope = host.Services.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+                var loc = "1234";
+                var timestamp = DateTime.Now.ToString();
 
-                var item = repo.GetList().First();
+                //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-
-
-
-                //foreach (var p in item.DataType.GetProperties())
+                //for (var i = 0; i < 5; i++)
                 //{
-                //    Console.WriteLine($"p: {p.Name}");
+                //    var indianaEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
+                //    {
+                //        LocationIdentifier = loc,
+                //        Timestamp = DateTime.Now,
+                //        EventCode = (DataLoggerEnum)Random.Shared.Next(1, 255),
+                //        EventParam = (byte)Random.Shared.Next(1, 255)
+                //    }).ToList();
+
+                //    repo.Add(new CompressedEventLogs<IndianaEvent>()
+                //    {
+                //        LocationIdentifier = loc,
+                //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                //        DataType = typeof(IndianaEvent),
+                //        DeviceId = i,
+                //        Data = indianaEvents
+                //    });
+
+                //    var speedEvents = Enumerable.Range(1, 10).Select(s => new SpeedEvent()
+                //    {
+                //        LocationIdentifier = loc,
+                //        Timestamp = DateTime.Now,
+                //        DetectorId = "1",
+                //        Mph = Random.Shared.Next(1, 100),
+                //        Kph = Random.Shared.Next(1, 100)
+                //    }).ToList();
+
+                //repo.Add(new CompressedEventLogs<SpeedEvent>()
+                //{
+                //    LocationIdentifier = loc,
+                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                //    DataType = typeof(SpeedEvent),
+                //    DeviceId = i + 10,
+                //    Data = speedEvents
+                //});
+
+
+
+                var repo = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
+
+                //foreach (var i in repo.GetEventsBetweenDates(loc, DateTime.Now.AddHours(-4), DateTime.Now.AddHours(4)))
+                //{
+                //    Console.WriteLine($"{i}");
                 //}
 
-                var props = item.DataType.GetProperties();
 
-                foreach (var i in item.Data)
+
+                var indianaEvents = Enumerable.Range(1, 100).Select(s => new IndianaEvent()
                 {
-                    Console.WriteLine($"i: {i.ToCsv()}");
-                    
-                    //foreach (var p in props)
-                    //{
-                    //    if (i.HasProperty(p.Name))
-                    //    {
-                    //        var value = p.GetValue(i, null);
-                    //        Console.WriteLine($"{p.Name} : {value}");
-                    //    }
-                            
-                    //}
-                }
+                    LocationIdentifier = loc,
+                    Timestamp = DateTime.Parse(timestamp),
+                    EventCode = (DataLoggerEnum)Random.Shared.Next(1, 10),
+                    EventParam = (byte)Random.Shared.Next(1, 10)
+                }).ToList();
 
+                Console.WriteLine($"total created: {indianaEvents.Count}");
 
-                //var csv = stuff.Select(x => $"{x.LocationIdentifier},{x.Timestamp.ToString(timestampFormat)}").ToList();
+                //var noequal = new HashSet<IndianaEvent>(indianaEvents);
 
-                //csv.Insert(0, "locationId,Timestamp");
+                //Console.WriteLine($"{noequal.Count}");
 
+                await repo.AddAsync(new CompressedEventLogs<IndianaEvent>()
+                {
+                    LocationIdentifier = loc,
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    DataType = typeof(IndianaEvent),
+                    DeviceId = 1,
+                    Data = indianaEvents
+                });
 
+                Console.WriteLine($"total saved: {repo.GetList().AsEnumerable().SelectMany(m => m.Data).Count()}");
             }
+
+            
+
 
 
 
