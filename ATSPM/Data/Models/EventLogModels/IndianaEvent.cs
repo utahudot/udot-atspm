@@ -21,6 +21,22 @@ namespace ATSPM.Data.Models.EventLogModels
         public byte EventParam { get; set; }
 
         ///<inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return obj is IndianaEvent @event &&
+                   LocationIdentifier == @event.LocationIdentifier &&
+                   Timestamp == @event.Timestamp &&
+                   EventCode == @event.EventCode &&
+                   EventParam == @event.EventParam;
+        }
+
+        ///<inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(LocationIdentifier, Timestamp, EventCode, EventParam);
+        }
+
+        ///<inheritdoc/>
         public override string ToString()
         {
             return $"{LocationIdentifier}-{Timestamp}-{EventCode}-{EventParam}";

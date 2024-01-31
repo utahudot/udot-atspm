@@ -19,6 +19,22 @@ namespace ATSPM.Data.Models.EventLogModels
         public ushort Out { get; set; }
 
         ///<inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            return obj is PedestrianCounter counter &&
+                   LocationIdentifier == counter.LocationIdentifier &&
+                   Timestamp == counter.Timestamp &&
+                   In == counter.In &&
+                   Out == counter.Out;
+        }
+
+        ///<inheritdoc/>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(LocationIdentifier, Timestamp, In, Out);
+        }
+
+        ///<inheritdoc/>
         public override string ToString()
         {
             return $"{LocationIdentifier}-{Timestamp}-{In}-{Out}";
