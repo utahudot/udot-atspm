@@ -25,26 +25,26 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
             double gap3Max,
             ICollection<DataPointForInt> gap3Count,
             double? gap4Min,
-            //double? gap4Max,
-            //ICollection<DataPointForInt> gap4Count,
-            //double? gap5Min,
-            //double? gap5Max,
-            //ICollection<DataPointForInt> gap5Count,
-            //double? gap6Min,
-            //double? gap6Max,
-            //ICollection<DataPointForInt> gap6Count,
-            //double? gap7Min,
-            //double? gap7Max,
-            //ICollection<DataPointForInt> gap7Count,
-            //double? gap8Min,
-            //double? gap8Max,
-            //ICollection<DataPointForInt> gap8Count,
-            //double? gap9Min,
-            //double? gap9Max,
-            //ICollection<DataPointForInt> gap9Count,
-            //double? gap10Min,
-            //double? gap10Max,
-            //ICollection<DataPointForInt> gap10Count,
+            double? gap4Max,
+            ICollection<DataPointForInt> gap4Count,
+            double? gap5Min,
+            double? gap5Max,
+            ICollection<DataPointForInt> gap5Count,
+            double? gap6Min,
+            double? gap6Max,
+            ICollection<DataPointForInt> gap6Count,
+            double? gap7Min,
+            double? gap7Max,
+            ICollection<DataPointForInt> gap7Count,
+            double? gap8Min,
+            double? gap8Max,
+            ICollection<DataPointForInt> gap8Count,
+            double? gap9Min,
+            double? gap9Max,
+            ICollection<DataPointForInt> gap9Count,
+            double? gap10Min,
+            double? gap10Max,
+            ICollection<DataPointForInt> gap10Count,
             ICollection<DataPointForDouble> percentTurnableSeries,
             double? sumDuration1,
             double? sumDuration2,
@@ -68,26 +68,26 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
             Gap3Max = gap3Max;
             Gap3Count = gap3Count;
             Gap4Min = gap4Min;
-            //Gap4Max = gap4Max;
-            //Gap4Count = gap4Count;
-            //Gap5Min = gap5Min;
-            //Gap5Max = gap5Max;
-            //Gap5Count = gap5Count;
-            //Gap6Min = gap6Min;
-            //Gap6Max = gap6Max;
-            //Gap6Count = gap6Count;
-            //Gap7Min = gap7Min;
-            //Gap7Max = gap7Max;
-            //Gap7Count = gap7Count;
-            //Gap8Min = gap8Min;
-            //Gap8Max = gap8Max;
-            //Gap8Count = gap8Count;
-            //Gap9Min = gap9Min;
-            //Gap9Max = gap9Max;
-            //Gap9Count = gap9Count;
-            //Gap10Min = gap10Min;
-            //Gap10Max = gap10Max;
-            //Gap10Count = gap10Count;
+            Gap4Max = gap4Max;
+            Gap4Count = gap4Count;
+            Gap5Min = gap5Min;
+            Gap5Max = gap5Max;
+            Gap5Count = gap5Count;
+            Gap6Min = gap6Min;
+            Gap6Max = gap6Max;
+            Gap6Count = gap6Count;
+            Gap7Min = gap7Min;
+            Gap7Max = gap7Max;
+            Gap7Count = gap7Count;
+            Gap8Min = gap8Min;
+            Gap8Max = gap8Max;
+            Gap8Count = gap8Count;
+            Gap9Min = gap9Min;
+            Gap9Max = gap9Max;
+            Gap9Count = gap9Count;
+            Gap10Min = gap10Min;
+            Gap10Max = gap10Max;
+            Gap10Count = gap10Count;
             PercentTurnableSeries = percentTurnableSeries;
             SumDuration1 = sumDuration1;
             SumDuration2 = sumDuration2;
