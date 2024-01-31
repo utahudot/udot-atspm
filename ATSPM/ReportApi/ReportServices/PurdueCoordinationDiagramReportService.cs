@@ -85,7 +85,6 @@ namespace ATSPM.ReportApi.ReportServices
                 options.End,
                 options.BinSize,
                 null,
-                null,
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
                 options.ShowVolumes);
