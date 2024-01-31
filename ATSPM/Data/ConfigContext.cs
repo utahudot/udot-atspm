@@ -131,11 +131,6 @@ namespace ATSPM.Data
         public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
-        /// Settings table
-        /// </summary>
-        public virtual DbSet<Settings> Settings { get; set; }
-
-        /// <summary>
         /// User areas table
         /// </summary>
         public virtual DbSet<UserArea> UserAreas { get; set; }
@@ -181,7 +176,6 @@ namespace ATSPM.Data
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SettingsConfiguration());
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());

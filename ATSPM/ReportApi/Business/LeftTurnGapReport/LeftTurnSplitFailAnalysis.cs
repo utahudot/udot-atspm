@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.AggregationRepositories;
 
 namespace ATSPM.ReportApi.Business.LeftTurnGapReport
 {
@@ -60,8 +61,10 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapReport
             {
                 if (daysOfWeek.Contains((int)start.DayOfWeek))
                 {
-                    splitFailsAggregates.AddRange(_approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(
-                        approach.Id, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime), approach.ProtectedPhaseNumber == phaseNumber));
+                    //HACK: had to change this, but it needs location identifier. I put null in here for now
+                    splitFailsAggregates.AddRange(_approachSplitFailAggregationRepository
+                        .GetAggregationsBetweenDates(null, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime))
+                        .GetByApproachId(approach.Id, approach.ProtectedPhaseNumber == phaseNumber));
                 }
             }
 

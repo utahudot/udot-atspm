@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -22,7 +23,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         }
 
 
-        public int GetAverageSpeed(List<OldSpeedEvent> speedEvents)
+        public int GetAverageSpeed(List<SpeedEvent> speedEvents)
         {
             var TotalSpeed = 0;
             var AvgSpeed = 0;
