@@ -214,11 +214,6 @@
             Route Locations table
             </summary>
         </member>
-        <member name="P:ATSPM.Data.ConfigContext.Settings">
-            <summary>
-            Settings table
-            </summary>
-        </member>
         <member name="P:ATSPM.Data.ConfigContext.UserAreas">
             <summary>
             User areas table
@@ -417,14 +412,6 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Configuration.RouteLocationConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.RouteLocation})">
-            <inheritdoc/>
-        </member>
-        <member name="T:ATSPM.Data.Configuration.SettingsConfiguration">
-            <summary>
-            Settings configuration
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Configuration.SettingsConfiguration.Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder{ATSPM.Data.Models.Settings})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Configuration.VersionHistoryConfiguration">
@@ -1384,7 +1371,7 @@
         </member>
         <member name="P:ATSPM.Data.EventLogContext.IndiannaEvents">
             <summary>
-            <inheritdoc cref="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent"/>
+            <inheritdoc cref="T:ATSPM.Data.Models.EventLogModels.IndianaEvent"/>
             </summary>
         </member>
         <member name="P:ATSPM.Data.EventLogContext.SpeedEvents">
@@ -1402,6 +1389,16 @@
         </member>
         <member name="M:ATSPM.Data.EventLogContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.Data.Interfaces.ILocationApproachLayer">
+            <summary>
+            For objects in the location and approach layer
+            </summary>
+        </member>
+        <member name="P:ATSPM.Data.Interfaces.ILocationApproachLayer.ApproachId">
+            <summary>
+            Id of approach assigned to <see cref="P:ATSPM.Data.Interfaces.ILocationLayer.LocationIdentifier"/>
+            </summary>
         </member>
         <member name="T:ATSPM.Data.Interfaces.ILocationDetectorLayer">
             <summary>
@@ -1451,15 +1448,25 @@
         <member name="P:ATSPM.Data.Models.AggregationModels.AggregationModelBase.LocationIdentifier">
             <inheritdoc/>
         </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.ApproachPcdAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.ApproachSpeedAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.ApproachSplitFailAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.ApproachYellowRedActivationAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation">
             <summary>
             Detector event cout aggregation
             </summary>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.ApproachId">
-            <summary>
-            Approach dd
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="P:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.DetectorPrimaryId">
             <summary>
@@ -1472,6 +1479,18 @@
             </summary>
         </member>
         <member name="M:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseCycleAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation.PhaseNumber">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation.ApproachId">
+            <inheritdoc/>
+        </member>
+        <member name="P:ATSPM.Data.Models.AggregationModels.PhaseSplitMonitorAggregation.PhaseNumber">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation">
@@ -2554,23 +2573,23 @@
         <member name="P:ATSPM.Data.Models.EventLogModels.EventLogModelBase.Timestamp">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.EventLogModels.IndiannaEvent">
+        <member name="T:ATSPM.Data.Models.EventLogModels.IndianaEvent">
             <summary>
             Indiana Traffic Signal Hi Resolution Data Logger Enumerations
             <seealso cref="!:https://docs.lib.purdue.edu/jtrpdata/4/"/>
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventCode">
+        <member name="P:ATSPM.Data.Models.EventLogModels.IndianaEvent.EventCode">
             <summary>
             Event code from <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/>
             </summary>
         </member>
-        <member name="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventParam">
+        <member name="P:ATSPM.Data.Models.EventLogModels.IndianaEvent.EventParam">
             <summary>
-            Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventLogModels.IndiannaEvent.EventCode"/>
+            Event parameter that is specific to <see cref="P:ATSPM.Data.Models.EventLogModels.IndianaEvent.EventCode"/>
             </summary>
         </member>
-        <member name="M:ATSPM.Data.Models.EventLogModels.IndiannaEvent.ToString">
+        <member name="M:ATSPM.Data.Models.EventLogModels.IndianaEvent.ToString">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.Data.Models.EventLogModels.PedestrianCounter">

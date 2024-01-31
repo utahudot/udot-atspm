@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -13,7 +14,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             DateTime startDate,
             DateTime endDate,
             List<CycleSpeed> cycles,
-            List<OldSpeedEvent> speedEvents,
+            List<SpeedEvent> speedEvents,
             AvgSpeedBucketCollection avgSpeedBucketCollection)
         {
             Plans = plans;
@@ -30,7 +31,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<CycleSpeed> Cycles { get; set; }
-        public List<OldSpeedEvent> SpeedEvents { get; set; }
+        public List<SpeedEvent> SpeedEvents { get; set; }
         public AvgSpeedBucketCollection AvgSpeedBucketCollection { get; set; }
     }
 }
