@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Location route entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IRouteLocationsRepository"/>
     public class RouteLocationEFRepository : ATSPMRepositoryEFBase<RouteLocation>, IRouteLocationsRepository
     {
         /// <inheritdoc/>

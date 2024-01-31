@@ -6,9 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Jurisdiction entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IJurisdictionRepository"/>
     public class JurisdictionEFRepository : ATSPMRepositoryEFBase<Jurisdiction>, IJurisdictionRepository
     {
         /// <inheritdoc/>

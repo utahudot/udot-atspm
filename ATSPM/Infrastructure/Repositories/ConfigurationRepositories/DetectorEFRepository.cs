@@ -9,9 +9,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Detector entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IDetectorRepository"/>
     public class DetectorEFRepository : ATSPMRepositoryEFBase<Detector>, IDetectorRepository
     {
         /// <inheritdoc/>

@@ -6,9 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Direction type entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IDirectionTypeRepository"/>
     public class DirectionTypeEFRepository : ATSPMRepositoryEFBase<DirectionType>, IDirectionTypeRepository
     {
         /// <inheritdoc/>

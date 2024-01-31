@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Measure comment entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IMeasureCommentRepository"/>
     public class MeasureCommentEFRepository : ATSPMRepositoryEFBase<MeasureComment>, IMeasureCommentRepository
     {
         /// <inheritdoc/>
