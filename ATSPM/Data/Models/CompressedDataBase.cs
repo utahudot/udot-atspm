@@ -52,7 +52,7 @@ namespace ATSPM.Data.Models
     public class CompressedEventLogs<T> : CompressedEventLogBase where T : EventLogModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data { get => (ICollection<T>)base.Data; set => base.Data = value; }
+        public new ICollection<T> Data { get => Enumerable.ToHashSet(base.Data.Cast<T>()); set => base.Data = Enumerable.ToHashSet(value.Cast<T>()); }
     }
 
     /// <summary>
@@ -71,6 +71,6 @@ namespace ATSPM.Data.Models
     public class CompressedAggregations<T> : CompressedAggregationBase where T : AggregationModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data { get => (ICollection<T>)base.Data; set => base.Data = value; }
+        public new ICollection<T> Data { get => Enumerable.ToHashSet(base.Data.Cast<T>()); set => base.Data = Enumerable.ToHashSet(value.Cast<T>()); }
     }
 }
