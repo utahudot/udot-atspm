@@ -87,7 +87,7 @@ namespace ATSPM.ReportApi.ReportServices
                 null,
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
-                options.ShowVolumes);
+                options.GetVolume);
             if (LocationPhase == null)
             {
                 return null;
