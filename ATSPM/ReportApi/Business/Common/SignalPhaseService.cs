@@ -87,7 +87,6 @@ namespace ATSPM.ReportApi.Business.Common
             DateTime start,
             DateTime end,
             int binSize,
-            bool? getPermissivePhase,
             DetectionType detectionType,
             List<ControllerEventLog> controllerEventLogs,
             List<ControllerEventLog> planEvents,
@@ -108,7 +107,7 @@ namespace ATSPM.ReportApi.Business.Common
 
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 phaseDetail.PhaseNumber,
-                getPermissivePhase.HasValue ? getPermissivePhase.Value : phaseDetail.UseOverlap,
+                phaseDetail.UseOverlap,
                 start,
                 end);
             if (cycleEvents.IsNullOrEmpty())
