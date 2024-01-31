@@ -444,7 +444,7 @@
             Approach speed report service
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.#ctor(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ConfigurationRepositories.IApproachRepository,ATSPM.Application.Repositories.EventLogRepositories.ISpeedEventRepository,ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
+        <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.#ctor(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedService,ATSPM.Application.Repositories.IControllerEventLogRepository,ATSPM.Application.Repositories.ConfigurationRepositories.IApproachRepository,ATSPM.Application.Repositories.EventLogRepositories.ISpeedEventLogRepository,ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,ATSPM.ReportApi.Business.Common.PhaseService)">
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.ApproachSpeedReportService.ExecuteAsync(ATSPM.ReportApi.Business.ApproachSpeed.ApproachSpeedOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">

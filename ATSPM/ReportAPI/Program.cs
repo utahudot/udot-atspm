@@ -108,7 +108,7 @@ builder.Host.ConfigureServices((h, s) =>
     });
 
     s.AddAtspmDbContext(h);
-    s.AddAtspmEFRepositories();
+    s.AddAtspmEFConfigRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
     //mocked report services
