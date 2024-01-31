@@ -163,42 +163,42 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 var localTotal = items.Sum(x => x.GapCounter1) + items.Sum(x => x.GapCounter2)
                                                                + items.Sum(x => x.GapCounter3) +
                                                                items.Sum(x => x.GapCounter4);
-                //if (options.Gap5Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter5);
-                //    gaps5.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
-                //if (options.Gap6Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter6);
-                //    gaps6.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
-                //if (options.Gap7Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter7);
-                //    gaps7.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
-                //if (options.Gap8Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter8);
-                //    gaps8.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
-                //if (options.Gap9Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter9);
-                //    gaps9.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
-                //if (options.Gap10Min.HasValue)
-                //{
-                //    int sum = items.Sum(x => x.GapCounter10);
-                //    gaps10.Add(new DataPointForInt(upperTimeLimit, sum));
-                //    localTotal += sum;
-                //}
+                if (options.Gap5Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter5);
+                    gaps5.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
+                if (options.Gap6Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter6);
+                    gaps6.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
+                if (options.Gap7Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter7);
+                    gaps7.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
+                if (options.Gap8Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter8);
+                    gaps8.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
+                if (options.Gap9Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter9);
+                    gaps9.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
+                if (options.Gap10Min.HasValue)
+                {
+                    int sum = items.Sum(x => x.GapCounter10);
+                    gaps10.Add(new DataPointForInt(upperTimeLimit, sum));
+                    localTotal += sum;
+                }
                 percentTurnableSeries.Add(new DataPointForDouble(upperTimeLimit, items.Average(x => x.PercentPhaseTurnable) * 100));
 
                 if (localTotal > highestTotal)
@@ -223,26 +223,26 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 options.Gap3Max,
                 gaps3,
                 options.Gap4Min,
-                //options.Gap4Max,
-                //gaps4,
-                //options.Gap5Min,
-                //options.Gap5Max,
-                //gaps5,
-                //options.Gap6Min,
-                //options.Gap6Max,
-                //gaps6,
-                //options.Gap7Min,
-                //options.Gap7Max,
-                //gaps7,
-                //options.Gap8Min,
-                //options.Gap8Max,
-                //gaps8,
-                //options.Gap9Min,
-                //options.Gap9Max,
-                //gaps9,
-                //options.Gap10Min,
-                //options.Gap10Max,
-                //gaps10,
+                options.Gap4Max,
+                gaps4,
+                options.Gap5Min,
+                options.Gap5Max,
+                gaps5,
+                options.Gap6Min,
+                options.Gap6Max,
+                gaps6,
+                options.Gap7Min,
+                options.Gap7Max,
+                gaps7,
+                options.Gap8Min,
+                options.Gap8Max,
+                gaps8,
+                options.Gap9Min,
+                options.Gap9Max,
+                gaps9,
+                options.Gap10Min,
+                options.Gap10Max,
+                gaps10,
                 percentTurnableSeries,
                 sumDuration1,
                 sumDuration2,
@@ -270,73 +270,73 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 phaseTracker.GapCounter3++;
             }
 
-            //if (options.Gap4Max == null)
-            //{
-            //    if (gap > options.Gap4Min)
-            //    {
-            //        phaseTracker.GapCounter4++;
-            //    }
-            //}
-            //else
-            //{
-            //    if (gap > options.Gap4Min && gap <= options.Gap4Max.Value)
-            //    {
-            //        phaseTracker.GapCounter4++;
-            //    }
-            //}
+            if (options.Gap4Max == null)
+            {
+                if (gap > options.Gap4Min)
+                {
+                    phaseTracker.GapCounter4++;
+                }
+            }
+            else
+            {
+                if (gap > options.Gap4Min && gap <= options.Gap4Max.Value)
+                {
+                    phaseTracker.GapCounter4++;
+                }
+            }
 
-            //if (options.Gap5Min != null)
-            //{
-            //    if (options.Gap5Max != null && gap > options.Gap5Min.Value &&
-            //        gap > options.Gap5Min && gap <= options.Gap5Max.Value)
-            //    {
-            //        phaseTracker.GapCounter5++;
-            //    }
-            //}
-            //if (options.Gap6Min != null)
-            //{
-            //    if (options.Gap6Max != null && gap > options.Gap6Min.Value &&
-            //        gap > options.Gap6Min && gap <= options.Gap6Max.Value)
-            //    {
-            //        phaseTracker.GapCounter6++;
-            //    }
-            //}
-            //if (options.Gap7Min != null)
-            //{
-            //    if (options.Gap7Max != null && gap > options.Gap7Min.Value &&
-            //        gap > options.Gap7Min && gap <= options.Gap7Max.Value)
-            //    {
-            //        phaseTracker.GapCounter7++;
-            //    }
-            //}
-            //if (options.Gap8Min != null)
-            //{
-            //    if (options.Gap8Max != null && gap > options.Gap8Min.Value &&
-            //        gap > options.Gap8Min && gap <= options.Gap8Max.Value)
-            //    {
-            //        phaseTracker.GapCounter8++;
-            //    }
-            //}
-            //if (options.Gap9Min != null)
-            //{
-            //    if (options.Gap9Max != null && gap > options.Gap9Min.Value &&
-            //        gap > options.Gap9Min && gap <= options.Gap9Max.Value)
-            //    {
-            //        phaseTracker.GapCounter9++;
-            //    }
-            //}
-            //if (options.Gap10Min != null)
-            //{
-            //    if (options.Gap10Max != null && gap > options.Gap10Min.Value &&
-            //        gap > options.Gap10Min && gap <= options.Gap10Max.Value)
-            //    {
-            //        phaseTracker.GapCounter10++;
-            //    }
-            //}
-            //if (options.Gap10Max != null && gap > options.Gap10Max.Value)
-            //{
-            //    phaseTracker.GapCounter11++;
-            //}
+            if (options.Gap5Min != null)
+            {
+                if (options.Gap5Max != null && gap > options.Gap5Min.Value &&
+                    gap > options.Gap5Min && gap <= options.Gap5Max.Value)
+                {
+                    phaseTracker.GapCounter5++;
+                }
+            }
+            if (options.Gap6Min != null)
+            {
+                if (options.Gap6Max != null && gap > options.Gap6Min.Value &&
+                    gap > options.Gap6Min && gap <= options.Gap6Max.Value)
+                {
+                    phaseTracker.GapCounter6++;
+                }
+            }
+            if (options.Gap7Min != null)
+            {
+                if (options.Gap7Max != null && gap > options.Gap7Min.Value &&
+                    gap > options.Gap7Min && gap <= options.Gap7Max.Value)
+                {
+                    phaseTracker.GapCounter7++;
+                }
+            }
+            if (options.Gap8Min != null)
+            {
+                if (options.Gap8Max != null && gap > options.Gap8Min.Value &&
+                    gap > options.Gap8Min && gap <= options.Gap8Max.Value)
+                {
+                    phaseTracker.GapCounter8++;
+                }
+            }
+            if (options.Gap9Min != null)
+            {
+                if (options.Gap9Max != null && gap > options.Gap9Min.Value &&
+                    gap > options.Gap9Min && gap <= options.Gap9Max.Value)
+                {
+                    phaseTracker.GapCounter9++;
+                }
+            }
+            if (options.Gap10Min != null)
+            {
+                if (options.Gap10Max != null && gap > options.Gap10Min.Value &&
+                    gap > options.Gap10Min && gap <= options.Gap10Max.Value)
+                {
+                    phaseTracker.GapCounter10++;
+                }
+            }
+            if (options.Gap10Max != null && gap > options.Gap10Max.Value)
+            {
+                phaseTracker.GapCounter11++;
+            }
 
         }
 
@@ -390,23 +390,23 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                             trendLineGapTimeCounter += gap;
                         }
 
-                        //if (options.SumDurationGap1.HasValue &&
-                        //    gap >= options.SumDurationGap1.Value)
-                        //{
-                        //    sumDuration1 += gap;
-                        //}
+                        if (options.SumDurationGap1.HasValue &&
+                            gap >= options.SumDurationGap1.Value)
+                        {
+                            sumDuration1 += gap;
+                        }
 
-                        //if (options.SumDurationGap2.HasValue &&
-                        //    gap >= options.SumDurationGap2.Value)
-                        //{
-                        //    sumDuration2 += gap;
-                        //}
+                        if (options.SumDurationGap2.HasValue &&
+                            gap >= options.SumDurationGap2.Value)
+                        {
+                            sumDuration2 += gap;
+                        }
 
-                        //if (options.SumDurationGap3.HasValue &&
-                        //    gap >= options.SumDurationGap3.Value)
-                        //{
-                        //    sumDuration3 += gap;
-                        //}
+                        if (options.SumDurationGap3.HasValue &&
+                            gap >= options.SumDurationGap3.Value)
+                        {
+                            sumDuration3 += gap;
+                        }
                     }
 
                     //Decimal rounding errors can cause the number to be > 100
