@@ -232,6 +232,11 @@ C:\Users\jbhatia\source\repos\udot-atspm\WatchDogTests\obj\Debug\net7.0\WatchDog
 C:\Users\jbhatia\source\repos\udot-atspm\WatchDogTests\obj\Debug\net7.0\WatchDogTests.genruntimeconfig.cache
 C:\Users\jbhatia\source\repos\udot-atspm\WatchDogTests\obj\Debug\net7.0\ref\WatchDogTests.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\CoverletSourceRootsMapping
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.csproj.AssemblyReference.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.AssemblyInfoInputs.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.AssemblyInfo.cs
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\testhost.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\WatchDog.deps.json
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\WatchDog.runtimeconfig.json
@@ -473,11 +478,6 @@ C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\ne
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\DomainCore.xml
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\ReportApi.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\bin\Debug\net7.0\ReportApi.xml
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.csproj.AssemblyReference.cache
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.AssemblyInfoInputs.cache
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.AssemblyInfo.cs
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.csproj.CopyComplete
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\WatchDogTests.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDogTests\obj\Debug\net7.0\refint\WatchDogTests.dll

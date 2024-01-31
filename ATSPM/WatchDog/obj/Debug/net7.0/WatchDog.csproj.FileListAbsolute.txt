@@ -143,6 +143,11 @@ C:\Users\jbhatia\source\repos\udot-atspm\WatchDog\obj\Debug\net7.0\refint\WatchD
 C:\Users\jbhatia\source\repos\udot-atspm\WatchDog\obj\Debug\net7.0\WatchDog.pdb
 C:\Users\jbhatia\source\repos\udot-atspm\WatchDog\obj\Debug\net7.0\WatchDog.genruntimeconfig.cache
 C:\Users\jbhatia\source\repos\udot-atspm\WatchDog\obj\Debug\net7.0\ref\WatchDog.dll
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.csproj.AssemblyReference.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.AssemblyInfoInputs.cache
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.AssemblyInfo.cs
+C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ReportApi.deps.json
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ReportApi.runtimeconfig.json
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\appsettings.Development.json
@@ -297,11 +302,6 @@ C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\ATSPM.Infrastructure.SqlLiteDatabaseProvider.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\DomainCore.pdb
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\bin\Debug\net7.0\DomainCore.xml
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.csproj.AssemblyReference.cache
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.AssemblyInfoInputs.cache
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.AssemblyInfo.cs
-C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.csproj.CoreCompileInputs.cache
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.csproj.CopyComplete
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\WatchDog.dll
 C:\Users\christianbaker\source\repos\udot-atspm\ATSPM\WatchDog\obj\Debug\net7.0\refint\WatchDog.dll

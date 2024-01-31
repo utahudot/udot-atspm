@@ -35,7 +35,7 @@ namespace ATSPM.Application.Repositories.AggregationRepositories
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="AggregationModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
-        //// <param name="date">Archive date of aggregations</param>
+        /// <param name="date">Archive date of aggregations</param>
         /// <returns></returns>
         IReadOnlyList<T> GetAggregations<T>(string locationIdentifier, DateOnly date) where T : AggregationModelBase;
     }

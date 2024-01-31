@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
         {
         }
 
-        public List<OldSpeedEvent> SpeedEvents { get; set; }
+        public List<SpeedEvent> SpeedEvents { get; set; }
 
-        public void FindSpeedEventsForCycle(List<OldSpeedEvent> speeds)
+        public void FindSpeedEventsForCycle(List<SpeedEvent> speeds)
         {
             SpeedEvents = speeds.Where(s =>
-                s.TimeStamp >= GreenEvent.AddSeconds(15) && s.TimeStamp < YellowEvent && s.Mph >= 5).ToList();
+                s.Timestamp >= GreenEvent.AddSeconds(15) && s.Timestamp < YellowEvent && s.Mph >= 5).ToList();
         }
     }
 }
