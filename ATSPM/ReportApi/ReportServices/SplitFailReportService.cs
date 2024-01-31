@@ -59,7 +59,10 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
+                }
             }
 
             var results = await Task.WhenAll(tasks);
