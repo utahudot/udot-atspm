@@ -8,7 +8,6 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
     {
         public int BinSize { get; set; }
         public bool ShowVolumes { get; set; }
-        public bool ShowArrivalsOnGreen { get; set; }
         public bool ShowPlanStatistics { get; set; }
     }
 }
