@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
+    ///<inheritdoc cref="IExternalLinksRepository"/>
     public class ExternalLinsEFRepository : ATSPMRepositoryEFBase<ExternalLink>, IExternalLinksRepository
     {
         public ExternalLinsEFRepository(ConfigContext db, ILogger<ExternalLinsEFRepository> log) : base(db, log) { }

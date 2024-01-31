@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
+    ///<inheritdoc cref="IFaqRepository"/>
     public class FaqEFRepository : ATSPMRepositoryEFBase<Faq>, IFaqRepository
     {
         public FaqEFRepository(ConfigContext db, ILogger<FaqEFRepository> log) : base(db, log) { }

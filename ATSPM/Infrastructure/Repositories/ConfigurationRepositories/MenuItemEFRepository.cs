@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Menu item entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IMenuItemReposiotry"/>
     public class MenuItemEFRepository : ATSPMRepositoryEFBase<MenuItem>, IMenuItemReposiotry
     {
         /// <inheritdoc/>

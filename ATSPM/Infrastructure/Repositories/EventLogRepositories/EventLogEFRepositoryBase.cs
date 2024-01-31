@@ -13,24 +13,27 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
 {
-    ///<inheritdoc cref="IIndiannaEventLogRepository"/>
-    public class IndiannaEventLogEFRepository : ATSPMRepositoryEFBase<CompressedEventLogs<IndianaEvent>>, IIndiannaEventLogRepository
+    /// <summary>
+    /// Generic base for accessing device event logs
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class EventLogEFRepositoryBase<T> : ATSPMRepositoryEFBase<CompressedEventLogs<T>>, IEventLogRepository<T> where T : EventLogModelBase
     {
         ///<inheritdoc/>
-        public IndiannaEventLogEFRepository(EventLogContext db, ILogger<IndiannaEventLogEFRepository> log) : base(db, log) { }
+        public EventLogEFRepositoryBase(EventLogContext db, ILogger<EventLogEFRepositoryBase<T>> log) : base(db, log) { }
 
-        #region IIndiannaEventRepository
+        #region IEventLogRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<IndianaEvent> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
+        public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
                 .FromSpecification(new EventLogDateRangeSpecification(locationId, startTime, endTime))
                 .AsNoTracking()
                 .AsEnumerable()
-                .AddLocationIdentifer<IndianaEvent>()
+                .AddLocationIdentifer<T>()
                 .FromSpecification(new EventLogDateTimeRangeSpecification(locationId, startTime, endTime))
-                .Cast<IndianaEvent>()
+                .Cast<T>()
                 .ToList();
 
             return result;

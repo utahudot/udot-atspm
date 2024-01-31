@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -37,5 +38,21 @@ namespace ATSPM.Application.Repositories.AggregationRepositories
         //// <param name="date">Archive date of aggregations</param>
         /// <returns></returns>
         IReadOnlyList<T> GetAggregations<T>(string locationIdentifier, DateOnly date) where T : AggregationModelBase;
+    }
+
+    /// <summary>
+    /// Generic interface for accessing aggregations
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IAggregationRepository<T> : IAsyncRepository<CompressedAggregations<T>> where T : AggregationModelBase
+    {
+        /// <summary>
+        /// Get all <see cref="AggregationModelBase"/> by <c>LocationId</c> and date range
+        /// </summary>
+        /// <param name="locationId">Location identifier</param>
+        /// <param name="startTime">Start time</param>
+        /// <param name="endTime">End time</param>
+        /// <returns></returns>
+        IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
     }
 }

@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Route entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IRouteRepository"/>
     public class RouteEFRepository : ATSPMRepositoryEFBase<Route>, IRouteRepository
     {
         /// <inheritdoc/>
