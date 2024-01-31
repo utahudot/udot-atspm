@@ -37,15 +37,15 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
                     // Get cycles that start and end within the bin, and the cycle that starts before and ends
                     // within the bin, and the cycle that starts within and ends after the bin
                     var cycles = LocationPhase.Cycles
-                        .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.SelectedBinSize)
+                        .Where(c => c.StartTime >= dt && c.StartTime < dt.AddMinutes(options.BinSize)
                     || (c.StartTime < dt && c.EndTime >= dt)
-                    || (c.EndTime >= dt.AddMinutes(options.SelectedBinSize)
-                    && c.StartTime < dt.AddMinutes(options.SelectedBinSize)));
+                    || (c.EndTime >= dt.AddMinutes(options.BinSize)
+                    && c.StartTime < dt.AddMinutes(options.BinSize)));
                     foreach (var cycle in cycles)
                     {
                         // Filter cycle events to only include timestamps within the bin
                         var binEvents = cycle.DetectorEvents.Where(e => e.TimeStamp >= dt
-                        && e.TimeStamp < dt.AddMinutes(options.SelectedBinSize));
+                        && e.TimeStamp < dt.AddMinutes(options.BinSize));
                         totalDetectorHits += binEvents.Count();
                         binDetectorHits += binEvents.Count();
                         foreach (var detectorPoint in binEvents)
@@ -58,9 +58,9 @@ namespace ATSPM.ReportApi.Business.ArrivalOnRed
                             binPercentAoR = binTotalStops / binDetectorHits * 100;
                     }
                     percentArrivalsOnReds.Add(new DataPointForDouble(dt, binPercentAoR));
-                    totalVehicles.Add(new DataPointForDouble(dt, binDetectorHits * (60 / options.SelectedBinSize)));
-                    arrivalsOnReds.Add(new DataPointForDouble(dt, binTotalStops * (60 / options.SelectedBinSize)));
-                    dt = dt.AddMinutes(options.SelectedBinSize);
+                    totalVehicles.Add(new DataPointForDouble(dt, binDetectorHits * (60 / options.BinSize)));
+                    arrivalsOnReds.Add(new DataPointForDouble(dt, binTotalStops * (60 / options.BinSize)));
+                    dt = dt.AddMinutes(options.BinSize);
                 }
             }
             totalCars = totalDetectorHits;
