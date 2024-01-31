@@ -16,7 +16,7 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
             LocationPhase LocationPhase)
         {
             List<DataPointForDouble> volume = new List<DataPointForDouble>();
-            if (options.ShowVolumes)
+            if (options.GetVolume)
             {
                 volume = LocationPhase.Volume.Items.ConvertAll(v => new DataPointForDouble(v.StartTime, v.HourlyVolume));
             }
