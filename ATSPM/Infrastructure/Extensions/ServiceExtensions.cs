@@ -1,12 +1,15 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data;
+using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.MySqlDatabaseProvider;
 using ATSPM.Infrastructure.OracleDatabaseProvider;
 using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
@@ -111,16 +114,15 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection AddAtspmEFRepositories(this IServiceCollection services)
+        public static IServiceCollection AddAtspmEFConfigRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
-            services.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
             services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();
-            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDeviceConfigurationRepository, DeviceConfigurationEFRepository>();
+            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
             services.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
             services.AddScoped<IFaqRepository, FaqEFRepository>();
@@ -133,11 +135,44 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
             services.AddScoped<IProductRepository, ProductEFRepository>();
             services.AddScoped<IRegionsRepository, RegionEFRepository>();
-            services.AddScoped<IRouteRepository, RouteEFRepository>();
             services.AddScoped<IRouteDistanceRepository, RouteDistanceEFRepository>();
             services.AddScoped<IRouteLocationsRepository, RouteLocationEFRepository>();
-            services.AddScoped<ISettingsRepository, SettingsEFRepository>();
+            services.AddScoped<IRouteRepository, RouteEFRepository>();
+            services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
+            services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
+            services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAtspmEFEventLogRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IEventLogRepository, EventLogEFRepository>();
+
+            services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
+            services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAtspmEFAggregationRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IAggregationRepository, AggregationEFRepository>();
+
+            services.AddScoped<IApproachPcdAggregationRepository, ApproachPcdAggregationEFRepository>();
+            services.AddScoped<IApproachSpeedAggregationRepository, ApproachSpeedAggregationEFRepository>();
+            services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationEFRepository>();
+            services.AddScoped<IApproachYellowRedActivationAggregationRepository, ApproachYellowRedActivationAggregationEFRepository>();
+            services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationEFRepository>();
+            services.AddScoped<IPhaseCycleAggregationRepository, PhaseCycleAggregationEFRepository>();
+            services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationEFRepository>();
+            services.AddScoped<IPhaseSplitMonitorAggregationRepository, PhaseSplitMonitorAggregationEFRepository>();
+            services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationEFRepository>();
+            services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();
+            services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
+            services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
+            services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
 
             return services;
         }

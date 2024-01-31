@@ -76,7 +76,7 @@ builder.Host.ConfigureServices((h, s) =>
         });
 
     s.AddAtspmDbContext(h);
-    s.AddAtspmEFRepositories();
+    s.AddAtspmEFConfigRepositories();
 
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0

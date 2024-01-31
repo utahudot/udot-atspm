@@ -58,4 +58,20 @@ namespace ATSPM.Application.Repositories.EventLogRepositories
         /// <returns></returns>
         IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date, int deviceId) where T : EventLogModelBase;
     }
+
+    /// <summary>
+    /// Generic interface for accessing device event logs
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IEventLogRepository<T> : IAsyncRepository<CompressedEventLogs<T>> where T : EventLogModelBase
+    {
+        /// <summary>
+        /// Get all <see cref="EventLogModelBase"/> logs by <c>LocationId</c> and date range
+        /// </summary>
+        /// <param name="locationId">Location identifier</param>
+        /// <param name="startTime">Start time</param>
+        /// <param name="endTime">End time</param>
+        /// <returns></returns>
+        IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
+    }
 }

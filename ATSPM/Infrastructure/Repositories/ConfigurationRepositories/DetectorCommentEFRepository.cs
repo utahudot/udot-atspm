@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
 {
-    /// <summary>
-    /// Detector comment entity framework repository
-    /// </summary>
+    ///<inheritdoc cref="IDetectorCommentRepository"/>
     public class DetectorCommentEFRepository : ATSPMRepositoryEFBase<DetectorComment>, IDetectorCommentRepository
     {
         /// <inheritdoc/>
