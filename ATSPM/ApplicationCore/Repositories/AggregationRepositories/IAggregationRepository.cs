@@ -12,31 +12,34 @@ namespace ATSPM.Application.Repositories.AggregationRepositories
     public interface IAggregationRepository : IAsyncRepository<CompressedAggregationBase>
     {
         /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+        /// Get all aggregations that match <paramref name="locationIdentifier"/>, <paramref name="start"/>/<paramref name="end"/> and <paramref name="dataType"/>
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of aggregations</param>
-        /// <returns></returns>
-        IReadOnlyList<AggregationModelBase> GetAggregations(string locationIdentifier, DateOnly date);
-
-        /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
-        /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of aggregations</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
         /// <param name="dataType"></param>
         /// <returns></returns>
-        IReadOnlyList<AggregationModelBase> GetAggregations(string locationIdentifier, DateOnly date, Type dataType);
+        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end, Type dataType);
 
         /// <summary>
-        /// Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+        /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
         /// Where date type of derrived from <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Data type of <see cref="AggregationModelBase"/></typeparam>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="date">Archive date of aggregations</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
         /// <returns></returns>
-        IReadOnlyList<T> GetAggregations<T>(string locationIdentifier, DateOnly date) where T : AggregationModelBase;
+        IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : AggregationModelBase;
+
+        /// <summary>
+        /// Get all aggregations that match <paramref name="locationIdentifier"/> and <paramref name="start"/>/<paramref name="end"/>
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
+        IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end);
     }
 
     /// <summary>
