@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.EventLogRepositories;
+﻿using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Data;
 using ATSPM.Data.Models;
@@ -28,10 +27,10 @@ namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
         public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new EventLogDateRangeSpecification(locationId, startTime, endTime))
+                .FromSpecification(new EventLogDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
                 .AsNoTracking()
                 .AsEnumerable()
-                .AddLocationIdentifer<T>()
+                .SelectMany(m => m.Data)
                 .FromSpecification(new EventLogDateTimeRangeSpecification(locationId, startTime, endTime))
                 .Cast<T>()
                 .ToList();

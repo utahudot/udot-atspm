@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Data;
 using ATSPM.Data.Models;
@@ -28,10 +27,10 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
         public virtual IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
             var result = table
-                .FromSpecification(new AggregationDateRangeSpecification(locationId, startTime, endTime))
+                .FromSpecification(new AggregationDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
                 .AsNoTracking()
                 .AsEnumerable()
-                .AddLocationIdentifer<T>()
+                .SelectMany(m => m.Data)
                 .FromSpecification(new AggregationDateTimeRangeSpecification(locationId, startTime, endTime))
                 .Cast<T>()
                 .ToList();

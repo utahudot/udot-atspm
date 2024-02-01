@@ -1,8 +1,10 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.AggregationRepositories;
+using ATSPM.Application.Specifications;
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,32 +21,32 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
         #region IAggregationRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<AggregationModelBase> GetAggregations(string locationIdentifier, DateOnly date)
+        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end, Type dataType)
         {
             return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date)
-                .AsEnumerable()
-                .AddLocationIdentifer<AggregationModelBase>();
+                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .Where(w => w.DataType == dataType)
+                .ToList();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<AggregationModelBase> GetAggregations(string locationIdentifier, DateOnly date, Type dataType)
-        {
-            return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == dataType)
-                .AsEnumerable()
-                .AddLocationIdentifer<AggregationModelBase>();
-        }
-
-        ///<inheritdoc/>
-        public IReadOnlyList<T> GetAggregations<T>(string locationIdentifier, DateOnly date) where T : AggregationModelBase
+        public IReadOnlyList<CompressedAggregations<T>> GetArchivedAggregations<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : AggregationModelBase
         {
             var type = typeof(T);
 
             return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == type)
-                .AsEnumerable()
-                .AddLocationIdentifer<T>();
+                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .Where(w => w.DataType == type)
+                .Cast<CompressedAggregations<T>>()
+                .ToList();
+        }
+
+        ///<inheritdoc/>
+        public IReadOnlyList<CompressedAggregationBase> GetArchivedAggregations(string locationIdentifier, DateOnly start, DateOnly end)
+        {
+            return GetList()
+                .FromSpecification(new AggregationDateRangeSpecification(locationIdentifier, start, end))
+                .ToList();
         }
 
         #endregion

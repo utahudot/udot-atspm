@@ -1,34 +1,22 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
-using ATSPM.Data;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
-using AutoMapper.Internal;
-using EFCore.BulkExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using AutoFixture;
-using ATSPM.Data.Models.AggregationModels;
-using ATSPM.Domain.Services;
-using ATSPM.Domain.Extensions;
-using ATSPM.Infrastructure.Repositories.EventLogRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Data.Enums;
-using ATSPM.Application.Common.EqualityComparers;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -259,7 +247,7 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                var loc = "1234";
+                var loc = "1000";
                 var timestamp = DateTime.Now.ToString();
 
                 //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
@@ -303,7 +291,7 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-                var repo = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
+                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
                 //foreach (var i in repo.GetEventsBetweenDates(loc, DateTime.Now.AddHours(-4), DateTime.Now.AddHours(4)))
                 //{
@@ -331,14 +319,37 @@ namespace ATSPM.LocationControllerLogger
                     LocationIdentifier = loc,
                     ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
                     DataType = typeof(IndianaEvent),
-                    DeviceId = 1,
+                    DeviceId = 3,
                     Data = indianaEvents
                 });
 
-                Console.WriteLine($"total saved: {repo.GetList().AsEnumerable().SelectMany(m => m.Data).Count()}");
+                //Console.WriteLine($"total saved: {repo.GetList().AsEnumerable().SelectMany(m => m.Data).Count()}");
+
+
+
+
+                //foreach (var i in repo.GetEventsBetweenDates(loc, DateTime.Now.AddHours(-4), DateTime.Now.AddHours(4)))
+                //{
+                //    Console.WriteLine($"{i}");
+                //}
+
+                //var start = DateOnly.FromDateTime(DateTime.Now.AddDays(-2));
+                //var end = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+
+                //var test1 = repo.GetArchivedEvents("1000", start, end, typeof(IndianaEvent), 1);
+                //var test2 = repo.GetArchivedEvents<IndianaEvent>("1000", start, end, 1);
+                //var test3 = repo.GetArchivedEvents("1000", start, end);
+                //var test4 = repo.GetArchivedEvents("1000", start, end, typeof(IndianaEvent));
+                //var test5 = repo.GetArchivedEvents("1000", start, end, 1);
+                //var test6 = repo.GetArchivedEvents<IndianaEvent>("1000", start, end);
+
+
+
+
+
             }
 
-            
+
 
 
 
