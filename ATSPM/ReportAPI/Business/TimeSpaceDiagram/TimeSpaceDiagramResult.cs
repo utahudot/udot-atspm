@@ -13,6 +13,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             int phaseNumber,
             string phaseNumberSort,
             double distanceToNextLocation,
+            int speed,
             List<CycleEventsDto> cycleAllEvents,
             List<TimeSpaceEventBase> laneByLaneCountDetectors,
             List<TimeSpaceEventBase> advanceCountDetectors,
@@ -22,6 +23,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
             PhaseNumber = phaseNumber;
             PhaseNumberSort = phaseNumberSort;
             DistanceToNextLocation = distanceToNextLocation;
+            Speed = speed;
             CycleAllEvents = cycleAllEvents;
             LaneByLaneCountDetectors = laneByLaneCountDetectors;
             AdvanceCountDetectors = advanceCountDetectors;
@@ -30,6 +32,7 @@ namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
         }
 
         public int PhaseNumber { get; set; }
+        public int Speed { get; set; }
         public string PhaseNumberSort { get; set; }
         public double DistanceToNextLocation { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
