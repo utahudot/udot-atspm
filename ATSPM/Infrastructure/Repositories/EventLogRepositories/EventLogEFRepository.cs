@@ -1,10 +1,13 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.Specifications;
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,52 +22,61 @@ namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
         #region IEventLogRepository
 
         ///<inheritdoc/>
-        public IReadOnlyList<EventLogModelBase> GetEvents(string locationIdentifier, DateOnly date)
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType, int deviceId)
         {
             return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date)
-                .ToList()
-                .AddLocationIdentifer<EventLogModelBase>();
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end, deviceId))
+                .Where(w => w.DataType == dataType)
+                .ToList();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<EventLogModelBase> GetEvents(string locationIdentifier, DateOnly date, int deviceId)
-        {
-            return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DeviceId == deviceId)
-                .AsEnumerable()
-                .AddLocationIdentifer<EventLogModelBase>();
-        }
-
-        ///<inheritdoc/>
-        public IReadOnlyList<EventLogModelBase> GetEvents(string locationIdentifier, DateOnly date, Type dataType)
-        {
-            return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == dataType)
-                .AsEnumerable()
-                .AddLocationIdentifer<EventLogModelBase>();
-        }
-
-        ///<inheritdoc/>
-        public IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date) where T : EventLogModelBase
+        public IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateOnly start, DateOnly end, int deviceId) where T : EventLogModelBase
         {
             var type = typeof(T);
 
             return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == type)
-                .AsEnumerable()
-                .AddLocationIdentifer<T>();
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end, deviceId))
+                .Where(w => w.DataType == type)
+                .Cast<CompressedEventLogs<T>>()
+                .ToList();
         }
 
         ///<inheritdoc/>
-        public IReadOnlyList<T> GetEvents<T>(string locationIdentifier, DateOnly date, int deviceId) where T : EventLogModelBase
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
+        {
+            return GetList()
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end))
+                .ToList();
+        }
+
+        ///<inheritdoc/>
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, Type dataType)
+        {
+            return GetList()
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end))
+                .Where(w => w.DataType == dataType)
+                .ToList();
+        }
+
+        ///<inheritdoc/>
+        public IReadOnlyList<CompressedEventLogBase> GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end, int deviceId)
+        {
+            return GetList()
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end, deviceId))
+                .ToList();
+        }
+
+        ///<inheritdoc/>
+        public IReadOnlyList<CompressedEventLogs<T>> GetArchivedEvents<T>(string locationIdentifier, DateOnly start, DateOnly end) where T : EventLogModelBase
         {
             var type = typeof(T);
 
             return GetList()
-                .Where(w => w.LocationIdentifier == locationIdentifier && w.ArchiveDate == date && w.DataType == type && w.DeviceId == deviceId)
-                .AsEnumerable()
-                .AddLocationIdentifer<T>();
+                .FromSpecification(new EventLogDateRangeSpecification(locationIdentifier, start, end))
+                .Where(w => w.DataType == type)
+                .Cast<CompressedEventLogs<T>>()
+                .ToList();
         }
 
         #endregion

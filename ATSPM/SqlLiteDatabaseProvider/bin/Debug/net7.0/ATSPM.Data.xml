@@ -2651,24 +2651,6 @@
         <member name="M:ATSPM.Data.Models.EventLogModels.SpeedEvent.ToString">
             <inheritdoc/>
         </member>
-        <member name="T:ATSPM.Data.Models.Settings">
-            <summary>
-            Application settings
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Settings.Setting">
-            <summary>
-            Settings key
-            </summary>
-        </member>
-        <member name="P:ATSPM.Data.Models.Settings.Value">
-            <summary>
-            Settings value
-            </summary>
-        </member>
-        <member name="M:ATSPM.Data.Models.Settings.ToString">
-            <inheritdoc/>
-        </member>
         <member name="T:ATSPM.Data.Relationships.IRelatedApproach">
             <summary>
             Related approach
