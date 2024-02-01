@@ -7,9 +7,16 @@ namespace ATSPM.Application.Specifications
 {
     public class EventLogDateRangeSpecification : BaseSpecification<CompressedEventLogBase>
     {
-        public EventLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
+        public EventLogDateRangeSpecification(string locationId, DateOnly startDate, DateOnly endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= DateOnly.FromDateTime(startDate.Date) && c.ArchiveDate <= DateOnly.FromDateTime(endDate.Date);
+            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
+
+            ApplyOrderBy(o => o.ArchiveDate);
+        }
+
+        public EventLogDateRangeSpecification(string locationId, DateOnly startDate, DateOnly endDate, int deviceId) : base()
+        {
+            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate && c.DeviceId == deviceId;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }

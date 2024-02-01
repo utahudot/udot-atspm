@@ -52,7 +52,19 @@ namespace ATSPM.Data.Models
     public class CompressedEventLogs<T> : CompressedEventLogBase where T : EventLogModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data { get => Enumerable.ToHashSet(base.Data.Cast<T>()); set => base.Data = Enumerable.ToHashSet(value.Cast<T>()); }
+        public new ICollection<T> Data 
+        {
+            get
+            {
+                var hs = Enumerable.ToHashSet(base.Data.Cast<T>());
+                foreach (var h in hs)
+                {
+                    h.LocationIdentifier = LocationIdentifier;
+                }
+                return hs;
+            }
+            set => base.Data = Enumerable.ToHashSet(value.Cast<T>());
+        }
     }
 
     /// <summary>
@@ -71,6 +83,18 @@ namespace ATSPM.Data.Models
     public class CompressedAggregations<T> : CompressedAggregationBase where T : AggregationModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data { get => Enumerable.ToHashSet(base.Data.Cast<T>()); set => base.Data = Enumerable.ToHashSet(value.Cast<T>()); }
+        public new ICollection<T> Data
+        {
+            get
+            {
+                var hs = Enumerable.ToHashSet(base.Data.Cast<T>());
+                foreach (var h in hs)
+                {
+                    h.LocationIdentifier = LocationIdentifier;
+                }
+                return hs;
+            }
+            set => base.Data = Enumerable.ToHashSet(value.Cast<T>());
+        }
     }
 }
