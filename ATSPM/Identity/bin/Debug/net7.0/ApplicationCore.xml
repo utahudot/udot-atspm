@@ -1238,6 +1238,14 @@
             Extensions to help with compressed repositories
             </summary>
         </member>
+        <member name="M:ATSPM.Application.Extensions.CompressedDataExtensions.GetEventLogs``1(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.CompressedEventLogs{``0}})">
+            <summary>
+            Get event logs from <see cref="T:ATSPM.Data.Models.CompressedEventLogs`1"/>
+            </summary>
+            <typeparam name="T">Type from <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
+            <param name="items">List of <see cref="T:ATSPM.Data.Models.CompressedEventLogs`1"/> to get events from</param>
+            <returns></returns>
+        </member>
         <member name="M:ATSPM.Application.Extensions.CompressedDataExtensions.AddLocationIdentifer``1(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.CompressedDataBase})">
             <summary>
             Takes the <see cref="T:ATSPM.Data.Interfaces.ILocationLayer"/> and populates it based on the <see cref="P:ATSPM.Data.Models.CompressedDataBase.LocationIdentifier"/>
@@ -1659,51 +1667,51 @@
             Device event log repository
             </summary>
         </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly)">
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetArchivedEvent(System.String,System.DateOnly,System.Int32)">
             <summary>
-            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
             </summary>
             <param name="locationIdentifier">Location identifier</param>
-            <param name="date">Archive date of events</param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly,System.Int32)">
-            <summary>
-            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
-            </summary>
-            <param name="locationIdentifier">Location identifier</param>
-            <param name="date">Archive date of events</param>
+            <param name="date">Archive date of event</param>
             <param name="deviceId">Deivce id events came from</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents(System.String,System.DateOnly,System.Type)">
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetArchivedEvent``1(System.String,System.DateOnly,System.Int32)">
             <summary>
-            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
+            Get archived event that matches <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
+            Where date type of derrived from <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of event</param>
+            <param name="deviceId">Deivce id events came from</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetArchivedEvents(System.String,System.DateOnly)">
+            <summary>
+            Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
             </summary>
             <param name="locationIdentifier">Location identifier</param>
-            <param name="date">Archive date of events</param>
+            <param name="date">Archive date of event</param>
+            <returns></returns>
+        </member>
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetArchivedEvents(System.String,System.DateOnly,System.Type)">
+            <summary>
+            Get archived events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="dataType"/>
+            </summary>
+            <param name="locationIdentifier">Location identifier</param>
+            <param name="date">Archive date of event</param>
             <param name="dataType"></param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents``1(System.String,System.DateOnly)">
+        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetArchivedEvents``1(System.String,System.DateOnly)">
             <summary>
-            Get all events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
+            Get archived events that match <paramref name="locationIdentifier"/> and <paramref name="date"/>
             Where date type of derrived from <typeparamref name="T"/>
             </summary>
             <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
             <param name="locationIdentifier">Location identifier</param>
-            <param name="date">Archive date of events</param>
-            <returns></returns>
-        </member>
-        <member name="M:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository.GetEvents``1(System.String,System.DateOnly,System.Int32)">
-            <summary>
-            Get all events that match <paramref name="locationIdentifier"/>, <paramref name="date"/> and <paramref name="deviceId"/>
-            Where date type of derrived from <typeparamref name="T"/>
-            </summary>
-            <typeparam name="T">Data type of <see cref="T:ATSPM.Data.Models.EventLogModels.EventLogModelBase"/></typeparam>
-            <param name="locationIdentifier">Location identifier</param>
-            <param name="date">Archive date of events</param>
-            <param name="deviceId">Deivce id events came from</param>
+            <param name="date">Archive date of event</param>
             <returns></returns>
         </member>
         <member name="T:ATSPM.Application.Repositories.EventLogRepositories.IEventLogRepository`1">
