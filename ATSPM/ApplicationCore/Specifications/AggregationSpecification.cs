@@ -7,9 +7,9 @@ namespace ATSPM.Application.Specifications
 {
     public class AggregationDateRangeSpecification : BaseSpecification<CompressedAggregationBase>
     {
-        public AggregationDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
+        public AggregationDateRangeSpecification(string locationId, DateOnly startDate, DateOnly endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= DateOnly.FromDateTime(startDate.Date) && c.ArchiveDate <= DateOnly.FromDateTime(endDate.Date);
+            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
