@@ -1,11 +1,4 @@
-﻿using Identity.Business.Accounts;
-using Identity.Business.EmailSender;
-using Identity.Models.Account;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Identity.Controllers
+﻿namespace Identity.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -92,7 +85,7 @@ namespace Identity.Controllers
                 return Ok(new { AccessToken = token });
             }
 
-            return BadRequest(authenticationResult);
+            return BadRequest(authenticationResult.Error);
         }
 
 
@@ -139,8 +132,8 @@ namespace Identity.Controllers
             return Ok(new { Message = "Successfully logged out." });
         }
 
+        [Authorize(Policy = "ViewUsers")]
         [HttpPost("changepassword")]
-        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)

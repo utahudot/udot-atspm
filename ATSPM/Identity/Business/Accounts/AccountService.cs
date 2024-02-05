@@ -1,9 +1,4 @@
-﻿using Identity.Business.Agency;
-using Identity.Business.Tokens;
-using Microsoft.AspNetCore.Identity;
-
-
-namespace Identity.Business.Accounts
+﻿namespace Identity.Business.Accounts
 {
     public class AccountService : IAccountService
     {
@@ -19,7 +14,6 @@ namespace Identity.Business.Accounts
             TokenService tokenService)
         {
             _userManager = userManager;
-            _agencyService = agencyService;
             _signInManager = signInManager;
             this.tokenService = tokenService;
         }
