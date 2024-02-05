@@ -1,11 +1,9 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
-using ATSPM.Infrastructure.Repositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PhaseTermination;
 using ATSPM.ReportApi.Business.TimeSpaceDiagram;
-using ATSPM.ReportApi.Business.TimingAndActuation;
 using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
