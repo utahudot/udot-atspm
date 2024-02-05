@@ -1,7 +1,5 @@
 using ATSPM.Data.Enums;
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.ApproachVolume;
 
@@ -42,11 +40,13 @@ public class ApproachVolumeResult : LocationResult
         int primaryPeakHourVolume,
         double primaryPeakHourFactor,
         int primaryTotalVolume,
+        double primaryPeakHourDFactor,
         string opposingPeakHour,
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume) : base(locationIdentifier, start, end)
+        int opposingTotalVolume,
+        double opposingPeakHourDFactor) : base(locationIdentifier, start, end)
     {
         DetectorType = detectorType;
         DistanceFromStopBar = distanceFromStopBar;
@@ -68,11 +68,13 @@ public class ApproachVolumeResult : LocationResult
         primaryPeakHourVolume,
         primaryPeakHourFactor,
         primaryTotalVolume,
+        primaryPeakHourDFactor,
         opposingPeakHour,
         opposingKFactor,
         opposingPeakHourVolume,
         opposingPeakHourFactor,
-        opposingTotalVolume);
+        opposingTotalVolume,
+        opposingPeakHourDFactor);
     }
 
     public string PrimaryDirectionName { get; set; }
@@ -101,11 +103,13 @@ public class SummaryData
         int primaryPeakHourVolume,
         double primaryPeakHourFactor,
         int primaryTotalVolume,
+        double primaryPeakHourDFactor,
         string opposingPeakHour,
         double opposingKFactor,
         int opposingPeakHourVolume,
         double opposingPeakHourFactor,
-        int opposingTotalVolume)
+        int opposingTotalVolume,
+        double opposingPeakHourDFactor)
     {
         PeakHour = peakHour;
         KFactor = kFactor;
@@ -117,11 +121,13 @@ public class SummaryData
         PrimaryPeakHourVolume = primaryPeakHourVolume;
         PrimaryPeakHourFactor = primaryPeakHourFactor;
         PrimaryTotalVolume = primaryTotalVolume;
+        PrimaryDFactor = primaryPeakHourDFactor;
         OpposingPeakHour = opposingPeakHour;
         OpposingKFactor = opposingKFactor;
         OpposingPeakHourVolume = opposingPeakHourVolume;
         OpposingPeakHourFactor = opposingPeakHourFactor;
         OpposingTotalVolume = opposingTotalVolume;
+        OpposingDFactor = opposingPeakHourDFactor;
     }
 
     public string PeakHour { get; set; }
@@ -134,9 +140,11 @@ public class SummaryData
     public int PrimaryPeakHourVolume { get; set; }
     public double PrimaryPeakHourFactor { get; set; }
     public int PrimaryTotalVolume { get; set; }
+    public double PrimaryDFactor { get; }
     public string OpposingPeakHour { get; set; }
     public double OpposingKFactor { get; set; }
     public int OpposingPeakHourVolume { get; set; }
     public double OpposingPeakHourFactor { get; set; }
     public int OpposingTotalVolume { get; set; }
+    public double OpposingDFactor { get; }
 }

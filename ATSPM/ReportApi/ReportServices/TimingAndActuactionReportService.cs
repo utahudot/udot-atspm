@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
@@ -70,7 +69,7 @@ namespace ATSPM.ReportApi.ReportServices
             }
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumberSort).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -90,8 +89,8 @@ namespace ATSPM.ReportApi.ReportServices
         {
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
             var approachevents = controllerEventLogs.GetEventsByEventCodes(
-                options.Start,
-                options.End,
+                options.Start.AddMinutes(-15),
+                options.End.AddMinutes(15),
                 eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();

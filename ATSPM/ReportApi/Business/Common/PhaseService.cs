@@ -1,6 +1,4 @@
 ﻿using ATSPM.Data.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.Common
 {
@@ -22,6 +20,7 @@ namespace ATSPM.ReportApi.Business.Common
                     {
                         PhaseNumber = approach.ProtectedPhaseNumber,
                         UseOverlap = approach.IsProtectedPhaseOverlap,
+                        IsPermissivePhase = false,
                         Approach = approach
                     });
                 }
@@ -31,25 +30,28 @@ namespace ATSPM.ReportApi.Business.Common
                     {
                         PhaseNumber = approach.PermissivePhaseNumber.Value,
                         UseOverlap = approach.IsPermissivePhaseOverlap,
+                        IsPermissivePhase = true,
                         Approach = approach
                     });
                 }
             }
+            return phaseDetails;
 
-            var groupedPhaseDetails = phaseDetails
-                .GroupBy(p => new { p.PhaseNumber, p.UseOverlap });
+            //This compbines the phases and removes permissive phases. Not sure this is what we want in all scenarios.
+            //var groupedPhaseDetails = phaseDetails
+            //    .GroupBy(p => new { p.PhaseNumber, p.UseOverlap });
 
-            // Create a new list to store combined phase details
-            var combinedPhaseDetails = new List<PhaseDetail>();
+            //// Create a new list to store combined phase details
+            //var combinedPhaseDetails = new List<PhaseDetail>();
 
-            foreach (var group in groupedPhaseDetails)
-            {
-                //first item from each group. 
-                var representative = group.First();
-                combinedPhaseDetails.Add(representative);
-            }
+            //foreach (var group in groupedPhaseDetails)
+            //{
+            //    //first item from each group. 
+            //    var representative = group.First();
+            //    combinedPhaseDetails.Add(representative);
+            //}
 
-            return combinedPhaseDetails;
+            //return combinedPhaseDetails;
         }
     }
 
@@ -58,6 +60,6 @@ namespace ATSPM.ReportApi.Business.Common
         public int PhaseNumber { get; set; }
         public bool UseOverlap { get; set; }
         public Approach Approach { get; set; }
-        public bool IsPermissivePhase { get { if (Approach != null) { return PhaseNumber != Approach.ProtectedPhaseNumber; } else return false; } }
+        public bool IsPermissivePhase { get; set; }
     }
 }
