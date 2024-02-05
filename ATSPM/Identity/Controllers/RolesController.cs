@@ -27,7 +27,7 @@ namespace Identity.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "ViewRoles")]
+        [Authorize(Policy = "CanViewRoles")]
         public async Task<IActionResult> GetRolesAsync()
         {
             var roles = roleManager.Roles.ToList();
@@ -43,7 +43,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "CreateRoles")]
+        [Authorize(Policy = "CanEditRoles")]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
             if (!ModelState.IsValid)
@@ -65,7 +65,7 @@ namespace Identity.Controllers
         }
 
         [HttpDelete("{roleName}")]
-        [Authorize(Policy = "DeleteRoles")]
+        [Authorize(Policy = "CanDeleteRoles")]
         public async Task<IActionResult> DeleteRole(string roleName)
         {
             var role = await roleManager.FindByNameAsync(roleName);
@@ -86,7 +86,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("assign")]
-        [Authorize(Policy = "EditUsers")]
+        //[Authorize(Policy = "EditUsers")]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
             if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)
@@ -148,6 +148,9 @@ namespace Identity.Controllers
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:View"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Edit"));
             await roleManager.AddClaimAsync(userAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "User:Delete"));
+
+            var adminRole = roleManager.FindByNameAsync("Admin").Result;
+            await roleManager.AddClaimAsync(adminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin"));
 
             var roleAdminRole = await roleManager.FindByNameAsync("RoleAdmin");
             await roleManager.AddClaimAsync(roleAdminRole, new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Role:View"));
