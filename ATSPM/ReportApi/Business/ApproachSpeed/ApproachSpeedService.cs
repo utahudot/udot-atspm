@@ -1,8 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Duende.IdentityServer.Extensions;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -32,18 +30,39 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
                 detector,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 planEvents,
                 cycleEvents,
                 speedEventsForDetector);
+            if (speedEvents.IsNullOrEmpty())
+            {
+                new ApproachSpeedResult(
+                   detector.Approach.Location.LocationIdentifier,
+                   detector.ApproachId,
+                   detector.Approach.ProtectedPhaseNumber,
+                   detector.Approach.Description,
+                   options.Start,
+                   options.End,
+                   detector.DetectionTypes.FirstOrDefault(d => d.MeasureTypes.Any(m => m.Id == options.MetricTypeId)).Description,
+                   detector.DistanceFromStopBar.Value,
+                   detector.Approach.Mph.Value,
+                   speedDetector.Plans,
+                   null,
+                   null,
+                   null
+                   );
+            }
             var averageSpeeds = new List<DataPointForInt>();
             var eightyFifthSpeeds = new List<DataPointForInt>();
             var fifteenthSpeeds = new List<DataPointForInt>();
-            foreach (var bucket in speedDetector.AvgSpeedBucketCollection.AvgSpeedBuckets)
+            if (speedDetector.AvgSpeedBucketCollection != null)
             {
-                averageSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.AvgSpeed));
-                eightyFifthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.EightyFifth));
-                fifteenthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.FifteenthPercentile));
+                foreach (var bucket in speedDetector.AvgSpeedBucketCollection.AvgSpeedBuckets)
+                {
+                    averageSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.AvgSpeed));
+                    eightyFifthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.EightyFifth));
+                    fifteenthSpeeds.Add(new DataPointForInt(bucket.StartTime, bucket.FifteenthPercentile));
+                }
             }
             return new ApproachSpeedResult(
                     detector.Approach.Location.LocationIdentifier,
@@ -77,9 +96,21 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
                 foreach (var cycle in cycles)
                     cycle.FindSpeedEventsForCycle(speedEventsForDetector);
             }
+            var plans = planService.GetSpeedPlans(cycles, start, end, detector.Approach, planEvents);
+            if (speedEventsForDetector.IsNullOrEmpty())
+            {
+                return new SpeedDetector(
+                    plans,
+                    0,
+                    start,
+                    end,
+                    cycles,
+                    null,
+                    null
+                );
+            }
 
             var totalDetectorHits = cycles.Sum(c => c.SpeedEvents.Count);
-            var plans = planService.GetSpeedPlans(cycles, start, end, detector.Approach, planEvents);
             var movementDelay = 0;
             if (detector.MovementDelay != null)
                 movementDelay = detector.MovementDelay.Value;

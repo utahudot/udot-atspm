@@ -29,9 +29,9 @@ namespace WatchDog.Services
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
             LoggingOptions options,
-            List<Location> Locations)
+            List<Location> locations)
         {
-            if (Locations.IsNullOrEmpty())
+            if (locations.IsNullOrEmpty())
             {
                 return new List<WatchDogLogEvent>();
             }
@@ -39,7 +39,7 @@ namespace WatchDog.Services
             {
                 var errors = new ConcurrentBag<WatchDogLogEvent>();
 
-                foreach (var Location in Locations)//.Where(s => s.locationIdentifier == "7115"))
+                foreach (var Location in locations)//.Where(s => s.locationIdentifier == "7115"))
                 {
                     var LocationEvents = controllerEventLogRepository.GetLocationEventsBetweenDates(
                         Location.LocationIdentifier,
@@ -54,23 +54,23 @@ namespace WatchDog.Services
                     var tasks = new List<Task>();
                     tasks.Add(CheckLocationForPhaseErrors(Location, options, LocationEvents, errors));
                     tasks.Add(CheckDetectors(Location, options, LocationEvents, errors));
-                    //CheckApplicationEvents(Locations, options);
+                    //CheckApplicationEvents(locations, options);
                     await Task.WhenAll(tasks);
                 }
                 return errors.ToList();
             }
         }
 
-        private async Task CheckDetectors(Location Location, LoggingOptions options, List<ControllerEventLog> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors)
+        private async Task CheckDetectors(Location location, LoggingOptions options, List<ControllerEventLog> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
         {
             var detectorEventCodes = new List<int> { 81, 82 };
-            CheckForUnconfiguredDetectors(Location, options, LocationEvents, errors, detectorEventCodes);
-            CheckForLowDetectorHits(Location, options, LocationEvents, errors, detectorEventCodes);
+            CheckForUnconfiguredDetectors(location, options, locationEvents, errors, detectorEventCodes);
+            CheckForLowDetectorHits(location, options, locationEvents, errors, detectorEventCodes);
         }
 
-        private void CheckForLowDetectorHits(Location Location, LoggingOptions options, List<ControllerEventLog> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
+        private void CheckForLowDetectorHits(Location location, LoggingOptions options, List<ControllerEventLog> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<int> detectorEventCodes)
         {
-            var detectors = Location.GetDetectorsForLocationThatSupportMetric(6);
+            var detectors = location.GetDetectorsForLocationThatSupportMetric(6);
             //Parallel.ForEach(detectors, options, detector =>
             foreach (var detector in detectors)
                 try
@@ -91,13 +91,13 @@ namespace WatchDog.Services
                             start = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakStart);
                             end = options.ScanDate.AddDays(-1).Date.AddHours(options.PreviousDayPMPeakEnd);
                         }
-                        var currentVolume = LocationEvents.Where(e => e.EventParam == detector.DetectorChannel && detectorEventCodes.Contains(e.EventCode)).Count();
+                        var currentVolume = locationEvents.Where(e => e.EventParam == detector.DetectorChannel && detectorEventCodes.Contains(e.EventCode)).Count();
                         //Compare collected hits to low hit threshold, 
                         if (currentVolume < Convert.ToInt32(options.LowHitThreshold))
                         {
                             var error = new WatchDogLogEvent(
-                                Location.Id,
-                                Location.LocationIdentifier,
+                                location.Id,
+                                location.LocationIdentifier,
                                 options.ScanDate,
                                 WatchDogComponentType.Detector,
                                 detector.Id,
@@ -195,7 +195,7 @@ namespace WatchDog.Services
             if (analysisPhaseCollection != null)
             {
                 foreach (var phase in analysisPhaseCollection.AnalysisPhases)
-                //Parallel.ForEach(APcollection.Items, options,phase =>
+                //Parallel.ForEach(APcollection.Cycles, options,phase =>
                 {
                     var taskList = new List<Task>();
                     var approach = Location.Approaches.Where(a => a.ProtectedPhaseNumber == phase.PhaseNumber).FirstOrDefault();
@@ -350,8 +350,7 @@ namespace WatchDog.Services
                     WatchDogComponentType.Location,
                     Location.Id,
                     WatchDogIssueType.RecordCount,
-                    null,
-                    //"Missing Records - IP: " + Location.Ipaddress,
+                    "Missing Records - IP: " + string.Join(",", Location.Devices.Select(d => d.Ipaddress.ToString()).ToList()),
                     null
                 );
             }

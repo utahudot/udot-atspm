@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.AppoachDelay;
@@ -47,7 +46,9 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = _controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = _controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier,
+                parameter.Start.AddHours(-12),
+                parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -63,11 +64,14 @@ namespace ATSPM.ReportApi.ReportServices
 
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
+                if((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
+                }
             }
 
             var results = await Task.WhenAll(tasks);
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -93,7 +97,7 @@ namespace ATSPM.ReportApi.ReportServices
                 null,
                 controllerEventLogs,
                 planEvents,
-                false);
+                options.GetVolume);
             if (LocationPhase == null)
             {
                 return null;
