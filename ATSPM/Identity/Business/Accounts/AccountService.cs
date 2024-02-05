@@ -34,7 +34,7 @@ namespace Identity.Business.Accounts
                 return await Login(user.Email, password);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest,
+            return new AccountResult("", StatusCodes.Status400BadRequest, "",
                 createUserResult.Errors.First().Description);
         }
 
@@ -44,7 +44,7 @@ namespace Identity.Business.Accounts
             var user = await _signInManager.UserManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return new AccountResult("", StatusCodes.Status400BadRequest, "User not found");
+                return new AccountResult("", StatusCodes.Status400BadRequest, "", "User not found");
             }
 
             var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
@@ -52,10 +52,10 @@ namespace Identity.Business.Accounts
             if (result.Succeeded)
             {
                 var token = await tokenService.GenerateJwtTokenAsync(user);
-                return new AccountResult(user.UserName, StatusCodes.Status200OK, token);
+                return new AccountResult(user.UserName, StatusCodes.Status200OK, token, null);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest, "Incorrect username or password");
+            return new AccountResult("", StatusCodes.Status400BadRequest, "", "Incorrect username or password");
         }
 
     }

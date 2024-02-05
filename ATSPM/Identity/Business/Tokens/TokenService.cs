@@ -10,14 +10,17 @@ namespace Identity.Business.Tokens
     {
         private readonly IConfiguration configuration;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         public TokenService(
             IConfiguration configuration,
-            SignInManager<ApplicationUser> signInManager
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager
             )
         {
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
 
 
@@ -31,12 +34,25 @@ namespace Identity.Business.Tokens
                 new Claim("uid", user.Id)
             };
 
-            var roles = await signInManager.UserManager.GetRolesAsync(user);
-            // Adding roles as claims
-            foreach (var role in roles)
+            var roleNames = await signInManager.UserManager.GetRolesAsync(user);
+            if (roleNames.Contains("Admin"))
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("RoleClaim", "Admin"));
             }
+            else
+            {
+                // Adding roleNames as claims
+                foreach (var roleName in roleNames)
+                {
+                    var role = await roleManager.FindByNameAsync(roleName);
+                    var roleClaims = await roleManager.GetClaimsAsync(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        claims.Add(new Claim(roleClaim.Type, roleClaim.Value));
+                    }
+                }
+            }
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
