@@ -129,7 +129,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.Direction).ThenBy(r => r.MovementType);
         }
 
         private async Task<TurningMovementCountsResult> GetChartDataByMovementType(

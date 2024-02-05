@@ -60,7 +60,7 @@ namespace ATSPM.ReportApi.ReportServices
             GetApproachVolume(parameter, Location, controllerEventLogs, tasks, nebSwbApproaches, DirectionTypes.NE, DirectionTypes.SW);
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PrimaryDirectionName).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{

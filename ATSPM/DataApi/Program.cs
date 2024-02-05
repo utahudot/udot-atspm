@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Host.ConfigureServices((h, s) =>
 {
     s.AddControllers(o =>
@@ -79,16 +80,29 @@ builder.Host.ConfigureServices((h, s) =>
         l.RequestBodyLogLimit = 4096;
         l.ResponseBodyLogLimit = 4096;
     });
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    s.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins(allowedHosts.Split(','))
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 });
 
 var app = builder.Build();
 
 app.UseResponseCompression();
+app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
     app.Services.PrintHostInformation();
 }
+
 
 app.UseHttpLogging();
 
