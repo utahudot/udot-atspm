@@ -1,20 +1,4 @@
-﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
-using ATSPM.Data;
-using ATSPM.Infrastructure.MySqlDatabaseProvider;
-using ATSPM.Infrastructure.OracleDatabaseProvider;
-using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
-using ATSPM.Infrastructure.Repositories;
-using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
-using ATSPM.Infrastructure.SqlDatabaseProvider;
-using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-namespace ATSPM.Infrastructure.Extensions
+﻿namespace ATSPM.Infrastructure.Extensions
 {
     public class DatabaseOption
     {

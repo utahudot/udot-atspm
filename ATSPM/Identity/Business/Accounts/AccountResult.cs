@@ -5,6 +5,8 @@
         public AccountResult(string username, int code, string token, string? error)
         {
             Username = username;
+            //Roles = roles;
+            Token = token;
             Code = code;
             Token = token;
             Error = error;
