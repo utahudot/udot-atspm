@@ -28,9 +28,9 @@
             </summary>
             <param name="phasenumber"></param>
             <param name="locationId"></param>
-            <param name="CycleEventsTable"></param>
+            <param name="cycleEvents"></param>
         </member>
-        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseService.FindTerminationEvents(System.Collections.Generic.IReadOnlyList{ATSPM.Data.Models.ControllerEventLog},System.Int32)">
+        <member name="M:ATSPM.ReportApi.Business.Common.AnalysisPhaseService.CleanTerminationEvents(System.Collections.Generic.IReadOnlyList{ATSPM.Data.Models.ControllerEventLog},System.Int32)">
             <summary>
                 Constructor Used for Split monitor
             </summary>
@@ -115,6 +115,11 @@
             <param name="events"></param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.ReportApi.Business.Common.WaitTimeCycle">
+            <summary>
+                Data that represents a red to red cycle for a Location phase
+            </summary>
+        </member>
         <member name="T:ATSPM.ReportApi.Business.LeftTurnGapAnalysis.LeftTurnGapAnalysisResult">
             <summary>
             Left Turn Gap Analysis chart
@@ -164,6 +169,11 @@
             Split Monitor chart
             </summary>
         </member>
+        <member name="T:ATSPM.ReportApi.Business.TimeSpaceDiagram.TimeSpaceEventBase">
+            <summary>
+            DTO for storing the initial and final time values that a detector event would follow for creating the time space graph
+            </summary>
+        </member>
         <member name="T:ATSPM.ReportApi.Business.TurningMovementCounts.TurningMovementCountsResult">
             <summary>
             Turning Movement Count chart
@@ -173,6 +183,19 @@
             <summary>
             Wait Time chart
             </summary>
+        </member>
+        <member name="T:ATSPM.ReportApi.Business.Watchdog.AreaDTO">
+            <summary>
+            Area
+            </summary>
+        </member>
+        <member name="P:ATSPM.ReportApi.Business.Watchdog.AreaDTO.Name">
+            <summary>
+            Area name
+            </summary>
+        </member>
+        <member name="M:ATSPM.ReportApi.Business.Watchdog.AreaDTO.ToString">
+            <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.Business.YellowRedActivations.YellowRedActivation.#ctor(System.DateTime,System.DateTime)">
             <summary>
@@ -393,7 +416,7 @@
             Time space diagram report controller
             </summary>
         </member>
-        <member name="M:ATSPM.ReportApi.Controllers.TimeSpaceDiagramController.#ctor(ATSPM.ReportApi.Business.IReportService{ATSPM.ReportApi.Business.TimeSpaceDiagram.TimeSpaceDiagramOptions,System.Collections.Generic.IEnumerable{ATSPM.ReportApi.Business.TimeSpaceDiagram.TimeSpaceDiagramResults}})">
+        <member name="M:ATSPM.ReportApi.Controllers.TimeSpaceDiagramController.#ctor(ATSPM.ReportApi.Business.IReportService{ATSPM.ReportApi.Business.TimeSpaceDiagram.TimeSpaceDiagramOptions,System.Collections.Generic.IEnumerable{ATSPM.ReportApi.Business.TimeSpaceDiagram.TimeSpaceDiagramResult}})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.ReportApi.Controllers.TimingAndActuationController">
@@ -418,6 +441,14 @@
             </summary>
         </member>
         <member name="M:ATSPM.ReportApi.Controllers.WaitTimeController.#ctor(ATSPM.ReportApi.Business.IReportService{ATSPM.ReportApi.Business.WaitTime.WaitTimeOptions,System.Collections.Generic.IEnumerable{ATSPM.ReportApi.Business.WaitTime.WaitTimeResult}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.ReportApi.Controllers.WatchdogController">
+            <summary>
+            Preempt request report controller
+            </summary>
+        </member>
+        <member name="M:ATSPM.ReportApi.Controllers.WatchdogController.#ctor(ATSPM.ReportApi.Business.IReportService{ATSPM.ReportApi.Business.Watchdog.WatchDogOptions,ATSPM.ReportApi.Business.Watchdog.WatchDogResult})">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.ReportApi.Controllers.YellowRedActivationsController">
@@ -621,6 +652,17 @@
             <inheritdoc/>
         </member>
         <member name="M:ATSPM.ReportApi.ReportServices.WaitTimeReportService.ExecuteAsync(ATSPM.ReportApi.Business.WaitTime.WaitTimeOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:ATSPM.ReportApi.ReportServices.WatchDogReportService">
+            <summary>
+            Preempt request report service
+            </summary>
+        </member>
+        <member name="M:ATSPM.ReportApi.ReportServices.WatchDogReportService.#ctor(ATSPM.Application.Repositories.IWatchDogLogEventRepository,ATSPM.Application.Repositories.ConfigurationRepositories.ILocationRepository,ATSPM.Application.Repositories.ConfigurationRepositories.IJurisdictionRepository,ATSPM.Application.Repositories.ConfigurationRepositories.IRegionsRepository)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.ReportApi.ReportServices.WatchDogReportService.ExecuteAsync(ATSPM.ReportApi.Business.Watchdog.WatchDogOptions,System.IProgress{System.Int32},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="T:ATSPM.ReportApi.ReportServices.YellowRedActivationsReportService">
