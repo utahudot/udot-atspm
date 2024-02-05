@@ -85,31 +85,6 @@ namespace Identity.Controllers
             }
         }
 
-        [HttpPost("assign")]
-        //[Authorize(Policy = "EditUsers")]
-        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
-        {
-            if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var user = await userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await userManager.AddToRoleAsync(user, model.RoleName);
-            if (result != null && result.Succeeded)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest(result?.Errors);
-            }
-        }
 
         // POST: api/roles/setup
         [HttpPost("setup")]

@@ -1,3 +1,13 @@
+using ATSPM.Identity.Business.Claims;
+using ATSPM.Infrastructure.Extensions;
+using Identity.Business.Accounts;
+using Identity.Business.Agency;
+using Identity.Business.EmailSender;
+using Identity.Business.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 
@@ -37,17 +47,17 @@ builder.Host.ConfigureServices((host, services) =>
 
     services.AddAuthorization(options =>
     {
-        options.AddPolicy("CanViewUser", policy =>
+        options.AddPolicy("CanViewUsers", policy =>
             policy.RequireAssertion(context =>
                 context.User.HasClaim(c =>
                     (c.Type == ClaimTypes.Role && c.Value == "User:View") ||
                     (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
-        options.AddPolicy("CanEditUser", policy =>
+        options.AddPolicy("CanEditUsers", policy =>
             policy.RequireAssertion(context =>
                 context.User.HasClaim(c =>
                     (c.Type == ClaimTypes.Role && c.Value == "User:Edit") ||
                     (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
-        options.AddPolicy("CanDeleteUser", policy =>
+        options.AddPolicy("CanDeleteUsers", policy =>
             policy.RequireAssertion(context =>
                 context.User.HasClaim(c =>
                     (c.Type == ClaimTypes.Role && c.Value == "User:Delete") ||

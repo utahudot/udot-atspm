@@ -1,4 +1,8 @@
-﻿namespace Identity.Business.Accounts
+﻿using Identity.Business.Agency;
+using Identity.Business.Tokens;
+using Microsoft.AspNetCore.Identity;
+
+namespace Identity.Business.Accounts
 {
     public class AccountService : IAccountService
     {
