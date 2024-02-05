@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             _binSizeMultiplier = 60 / binSize;
             MovementDelay = movementdelay;
             var speedsForBucket = new List<int>();
-            speedsForBucket.AddRange(speedEvents.Where(s => s.TimeStamp >= startTime && s.TimeStamp < endTime).Select(s => s.Mph));
+            speedsForBucket.AddRange(speedEvents.Where(s => s.Timestamp >= startTime && s.Timestamp < endTime).Select(s => s.Mph));
 
             if (speedsForBucket.Count > 0)
             {
