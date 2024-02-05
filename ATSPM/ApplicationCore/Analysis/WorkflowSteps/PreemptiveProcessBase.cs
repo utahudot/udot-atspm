@@ -2,7 +2,6 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
-using Google.Apis.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +34,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             //    }), input.Item3);
 
             var result = input.Item2
-                .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
+                .Where(w => w.SignalIdentifier == input.Item1.LocationIdentifier)
                 .Where(w => w.EventParam == input.Item3)
                 .TimeSpanFromConsecutiveCodes(first, second)
                 .Select(s => new T()

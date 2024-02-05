@@ -1,10 +1,6 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DateTime = System.DateTime;
 
 namespace ATSPM.ReportApi.Business.GreenTimeUtilization
@@ -192,7 +188,8 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 averageSplits,
                 programmedSplits.Select(p => new DataPointForDouble(p.Timestamp, p.ProgValue)).ToList(),
                 phaseDetail.PhaseNumber,
-                phaseNumberSort
+                options.YAxisBinSize,
+                options.XAxisBinSize
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();

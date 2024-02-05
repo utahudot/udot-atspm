@@ -77,7 +77,7 @@ namespace WatchDog.Services
                 if (userIdsByArea.IsNullOrEmpty())
                     continue;
                 var usersByArea = users.Where(u => userIdsByArea.Any(ua => ua.UserId == u.Id)).ToList();
-                var LocationsByArea = Locations.Where(s => s.RegionId == area.Id).ToList();
+                var LocationsByArea = Locations.Where(s => s.Areas.Select(a => a.Id).Contains(area.Id)).ToList();
                 if (!userIdsByArea.IsNullOrEmpty() && !LocationsByArea.IsNullOrEmpty())
                     CreateAndSendEmail(options, eventsContainer, LocationsByArea, smtp, area.Name, usersByArea, logsFromPreviousDay);
             }

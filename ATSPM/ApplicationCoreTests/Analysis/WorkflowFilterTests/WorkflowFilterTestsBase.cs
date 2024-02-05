@@ -29,7 +29,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
             var testLocation = new Location() { LocationIdentifier = "1001" };
             var testLogs = Enumerable.Range(0, 1000).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = testLocation.LocationIdentifier,
+                SignalIdentifier = testLocation.LocationIdentifier,
                 Timestamp = DateTime.Now.AddSeconds(s),
                 EventCode = s,
                 EventParam = 1

@@ -6,7 +6,8 @@ namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
     [DataContract]
     public class PurdueCoordinationDiagramOptions : OptionsBase
     {
-        public int SelectedBinSize { get; set; }
-        public bool ShowVolumes { get; set; }
+        public int BinSize { get; set; }
+        public bool GetVolume { get; set; } = true;
+        public bool ShowPlanStatistics { get; set; }
     }
 }

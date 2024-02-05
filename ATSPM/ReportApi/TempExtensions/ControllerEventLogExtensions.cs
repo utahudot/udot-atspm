@@ -49,7 +49,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    LocationIdentifier = "0",
+                    SignalIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -79,7 +79,7 @@ namespace ATSPM.ReportApi.TempExtensions
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
                 var newEvent = new ControllerEventLog
                 {
-                    LocationIdentifier = "0",
+                    SignalIdentifier = "0",
                     Timestamp = date,
                     EventCode = 131,
                     EventParam = 0
@@ -253,7 +253,7 @@ namespace ATSPM.ReportApi.TempExtensions
             IEnumerable<int> eventCodes)
         {
             var result = events
-                .Where(e => e.LocationIdentifier == locationIdentifier
+                .Where(e => e.SignalIdentifier == locationIdentifier
                 && e.Timestamp >= startTime
                 && e.Timestamp < endTime
                 && eventCodes.Contains(e.EventCode)
