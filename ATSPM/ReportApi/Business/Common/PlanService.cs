@@ -235,11 +235,11 @@ namespace ATSPM.ReportApi.Business.Common
                     List<int> speedEvents = null;
                     if (cycles
                         .SelectMany(c => c.SpeedEvents)
-                        .Where(c => c.TimeStamp >= planEvents[i].Timestamp && c.TimeStamp < endDate).Any())
+                        .Where(c => c.Timestamp >= planEvents[i].Timestamp && c.Timestamp < endDate).Any())
                     {
                         speedEvents = cycles
                             .SelectMany(c => c.SpeedEvents)
-                            .Where(c => c.TimeStamp >= planEvents[i].Timestamp && c.TimeStamp < endDate)
+                            .Where(c => c.Timestamp >= planEvents[i].Timestamp && c.Timestamp < endDate)
                             .Select(c => c.Mph)
                             .ToList();
                     }
