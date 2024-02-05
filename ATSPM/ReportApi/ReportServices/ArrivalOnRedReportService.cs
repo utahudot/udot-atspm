@@ -60,9 +60,12 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<ArrivalOnRedResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(
-                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription())
-                );
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(
+                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
+                }
+                    
             }
 
             var results = await Task.WhenAll(tasks);
@@ -89,7 +92,7 @@ namespace ATSPM.ReportApi.ReportServices
                 phaseDetail,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 null,
                 controllerEventLogs,
                 planEvents,

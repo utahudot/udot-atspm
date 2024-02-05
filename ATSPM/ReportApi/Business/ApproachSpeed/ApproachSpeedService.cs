@@ -30,7 +30,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
                 detector,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 planEvents,
                 cycleEvents,
                 speedEventsForDetector);
