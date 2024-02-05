@@ -44,8 +44,8 @@ namespace ATSPM.ReportApi.Business.SplitFail
         {
             var splitFailPhaseData = new SplitFailPhaseData();
             splitFailPhaseData.Approach = approach;
-            splitFailPhaseData.GetPermissivePhase = options.UsePermissivePhase;
-            splitFailPhaseData.PhaseNumberSort = options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
+            splitFailPhaseData.GetPermissivePhase = options.GetPermissivePhase;
+            splitFailPhaseData.PhaseNumberSort = options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
             splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(
                 options,
                 cycleEvents,
@@ -190,7 +190,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
                     Timestamp = options.End,
                     EventCode = 81,
                     EventParam = detector.DetectorChannel,
-                    LocationIdentifier = options.locationIdentifier
+                    SignalIdentifier = options.locationIdentifier
                 });
         }
 
@@ -203,7 +203,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
                     Timestamp = options.Start,
                     EventCode = 82,
                     EventParam = detector.DetectorChannel,
-                    LocationIdentifier = options.locationIdentifier
+                    SignalIdentifier = options.locationIdentifier
                 });
         }
     }

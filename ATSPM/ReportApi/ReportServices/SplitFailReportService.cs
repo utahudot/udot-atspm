@@ -60,11 +60,14 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents, false));
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
+                }
             }
 
             var results = await Task.WhenAll(tasks);
-            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -79,13 +82,12 @@ namespace ATSPM.ReportApi.ReportServices
             SplitFailOptions options,
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
-            bool usePermissivePhase)
+            List<ControllerEventLog> planEvents)
         {
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 phaseDetail.PhaseNumber,
-                options.UsePermissivePhase,
+                options.GetPermissivePhase,
                 options.Start,
                 options.End);
             if (cycleEvents.IsNullOrEmpty())
@@ -102,7 +104,7 @@ namespace ATSPM.ReportApi.ReportServices
                 tasks.Add(GetChartDataByDetectionType(options, phaseDetail, controllerEventLogs, planEvents, cycleEvents, terminationEvents, detectors, detectionType));
             }
             var results = await Task.WhenAll(tasks);
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
         }
 
         private async Task<SplitFailsResult> GetChartDataByDetectionType(
@@ -177,7 +179,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = channel.DetectorChannel;
@@ -188,7 +190,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = channel.DetectorChannel;

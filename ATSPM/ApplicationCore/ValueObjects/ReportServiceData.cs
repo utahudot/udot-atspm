@@ -49,7 +49,7 @@ namespace ATSPM.Application.ValueObjects
                    .Select(x => x.Split(','))
                    .Select(x => new ControllerEventLog
                    {
-                       LocationIdentifier = x[0],
+                       SignalIdentifier = x[0],
                        Timestamp = DateTime.Parse(x[1]),
                        EventCode = int.Parse(x[2]),
                        EventParam = int.Parse(x[3])
