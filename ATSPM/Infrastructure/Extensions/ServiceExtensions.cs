@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
@@ -6,6 +7,7 @@ using ATSPM.Data;
 using ATSPM.Infrastructure.MySqlDatabaseProvider;
 using ATSPM.Infrastructure.OracleDatabaseProvider;
 using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
+using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
