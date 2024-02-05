@@ -63,7 +63,7 @@ namespace Identity.Controllers
             var result = await userManager.DeleteAsync(user);
             if (result != null && result.Succeeded)
             {
-                return Ok();
+                return NoContent();
             }
             else
             {
