@@ -117,7 +117,7 @@
 //            metricInfo.Direction2PeakHourDFactor = GetPeakHourDFactor(direction2PeakHourItem.Key, direction2PeakHourItem.Value, primaryDirectionVolume, binSizeMultiplier);
 //            metricInfo.Direction2PeakHourString = direction2PeakHourItem.Key.ToShortTimeString() + " - " + direction2PeakHourItem.Key.AddHours(1).ToShortTimeString();
 //            metricInfo.Direction2PeakHourVolume = direction2PeakHourItem.Value;
-//            metricInfo.Direction2Volume = opposingDirectionVolume.Items.Sum(o => o.DetectorCount);
+//            metricInfo.Direction2Volume = opposingDirectionVolume.Cycles.Sum(o => o.DetectorCount);
 //        }
 
 //        private void SetPrimaryDirectionVolumeStatistics(
@@ -134,7 +134,7 @@
 //            metricInfo.Direction1PeakHourDFactor = GetPeakHourDFactor(direction1PeakHourItem.Key, direction1PeakHourItem.Value, opposingDirectionVolume, binSizeMultiplier);
 //            metricInfo.Direction1PeakHourString = direction1PeakHourItem.Key.ToShortTimeString() + " - " + direction1PeakHourItem.Key.AddHours(1).ToShortTimeString();
 //            metricInfo.Direction1PeakHourVolume = direction1PeakHourItem.Value;
-//            metricInfo.Direction1Volume = primaryDirectionVolume.Items.Sum(o => o.DetectorCount);
+//            metricInfo.Direction1Volume = primaryDirectionVolume.Cycles.Sum(o => o.DetectorCount);
 //        }
 
 //        private void SetCombinedVolumeStatistics(int binSizeMultiplier,
@@ -150,16 +150,16 @@
 //            metricInfo.CombinedPeakHourKFactor = GetPeakHourKFactor(combinedPeakHourItem, combinedDirectionsVolume);
 //            metricInfo.CombinedPeakHourString = combinedPeakHourItem.Key.ToShortTimeString() + " - " + combinedPeakHourItem.Key.AddHours(1).ToShortTimeString();
 //            metricInfo.CombinedPeakHourVolume = combinedPeakHourItem.Value;
-//            metricInfo.CombinedVolume = combinedDirectionsVolume.Items.Sum(c => c.DetectorCount);
+//            metricInfo.CombinedVolume = combinedDirectionsVolume.Cycles.Sum(c => c.DetectorCount);
 //        }
 
 //        private double GetPeakHourKFactor(
 //            KeyValuePair<DateTime, int> combinedPeakHourItem,
 //            VolumeCollection combindedDirectionsVolumes)
 //        {
-//            double combinedVolumeForPeakHour = combindedDirectionsVolumes.Items
+//            double combinedVolumeForPeakHour = combindedDirectionsVolumes.Cycles
 //                .Where(v => v.StartTime >= combinedPeakHourItem.Key && v.StartTime < combinedPeakHourItem.Key.AddHours(1)).Sum(v => v.DetectorCount);
-//            double combinedVolume = combindedDirectionsVolumes.Items.Sum(v => v.DetectorCount);
+//            double combinedVolume = combindedDirectionsVolumes.Cycles.Sum(v => v.DetectorCount);
 //            return Math.Round(combinedVolumeForPeakHour / combinedVolume, 3);
 //        }
 
@@ -185,9 +185,9 @@
 //        {
 //            KeyValuePair<DateTime, int> peakHourValue = new KeyValuePair<DateTime, int>();
 //            SortedDictionary<DateTime, int> iteratedVolumes = new SortedDictionary<DateTime, int>();
-//            foreach (var volume in volumes.Items)
+//            foreach (var volume in volumes.Cycles)
 //            {
-//                iteratedVolumes.Add(volume.StartTime, volumes.Items.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.DetectorCount));
+//                iteratedVolumes.Add(volume.StartTime, volumes.Cycles.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.DetectorCount));
 //            }
 //            peakHourValue = iteratedVolumes.OrderByDescending(i => i.Value).FirstOrDefault();
 //            return peakHourValue;
@@ -196,9 +196,9 @@
 //        protected int FindPeakValueinHour(DateTime startofHour, VolumeCollection volumeCollection)
 //        {
 //            int maxVolume = 0;
-//            if (volumeCollection.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
+//            if (volumeCollection.Cycles.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
 //            {
-//                maxVolume = volumeCollection.Items.Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)).Max(v => v.DetectorCount);
+//                maxVolume = volumeCollection.Cycles.Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)).Max(v => v.DetectorCount);
 //            }
 //            return maxVolume;
 //        }
@@ -208,9 +208,9 @@
 //        {
 //            int totalVolume = 0;
 //            double PHDF = 0;
-//            if (volumes.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
+//            if (volumes.Cycles.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
 //            {
-//                totalVolume = volumes.Items
+//                totalVolume = volumes.Cycles
 //                    .Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1))
 //                    .Sum(v => v.DetectorCount);
 //            }
@@ -345,7 +345,7 @@
 ////            MetricInfo.Direction2PeakHourDFactor = GetPeakHourDFactor(direction2PeakHourItem.Key, direction2PeakHourItem.Value, PrimaryDirectionVolume, binSizeMultiplier);
 ////            MetricInfo.Direction2PeakHourString = direction2PeakHourItem.Key.ToShortTimeString() + " - " + direction2PeakHourItem.Key.AddHours(1).ToShortTimeString();
 ////            MetricInfo.Direction2PeakHourVolume = direction2PeakHourItem.Value;
-////            MetricInfo.Direction2Volume = OpposingDirectionVolume.Items.Sum(o => o.DetectorCount);
+////            MetricInfo.Direction2Volume = OpposingDirectionVolume.Cycles.Sum(o => o.DetectorCount);
 ////        }
 
 ////        private void SetPrimaryDirectionVolumeStatistics(int binSizeMultiplier)
@@ -357,7 +357,7 @@
 ////            MetricInfo.Direction1PeakHourDFactor = GetPeakHourDFactor(direction1PeakHourItem.Key, direction1PeakHourItem.Value, OpposingDirectionVolume, binSizeMultiplier);
 ////            MetricInfo.Direction1PeakHourString = direction1PeakHourItem.Key.ToShortTimeString() + " - " + direction1PeakHourItem.Key.AddHours(1).ToShortTimeString();
 ////            MetricInfo.Direction1PeakHourVolume = direction1PeakHourItem.Value;
-////            MetricInfo.Direction1Volume = PrimaryDirectionVolume.Items.Sum(o => o.DetectorCount);
+////            MetricInfo.Direction1Volume = PrimaryDirectionVolume.Cycles.Sum(o => o.DetectorCount);
 ////        }
 
 ////        private void SetCombinedVolumeStatistics(int binSizeMultiplier)
@@ -369,14 +369,14 @@
 ////            MetricInfo.CombinedPeakHourKFactor = GetPeakHourKFactor(combinedPeakHourItem);
 ////            MetricInfo.CombinedPeakHourString = combinedPeakHourItem.Key.ToShortTimeString() + " - " + combinedPeakHourItem.Key.AddHours(1).ToShortTimeString();
 ////            MetricInfo.CombinedPeakHourVolume = combinedPeakHourItem.Value;
-////            MetricInfo.CombinedVolume = CombinedDirectionsVolumes.Items.Sum(c => c.DetectorCount);
+////            MetricInfo.CombinedVolume = CombinedDirectionsVolumes.Cycles.Sum(c => c.DetectorCount);
 ////        }
 
 ////        private double GetPeakHourKFactor(KeyValuePair<DateTime, int> combinedPeakHourItem)
 ////        {
-////            double combinedVolumeForPeakHour = CombinedDirectionsVolumes.Items
+////            double combinedVolumeForPeakHour = CombinedDirectionsVolumes.Cycles
 ////                .Where(v => v.StartTime >= combinedPeakHourItem.Key && v.StartTime < combinedPeakHourItem.Key.AddHours(1)).Sum(v => v.DetectorCount);
-////            double combinedVolume = CombinedDirectionsVolumes.Items.Sum(v => v.DetectorCount);
+////            double combinedVolume = CombinedDirectionsVolumes.Cycles.Sum(v => v.DetectorCount);
 ////            return Math.Round(combinedVolumeForPeakHour / combinedVolume, 3);
 ////        }
 
@@ -402,9 +402,9 @@
 ////        {
 ////            KeyValuePair<DateTime, int> peakHourValue = new KeyValuePair<DateTime, int>();
 ////            SortedDictionary<DateTime, int> iteratedVolumes = new SortedDictionary<DateTime, int>();
-////            foreach (var volume in volumes.Items)
+////            foreach (var volume in volumes.Cycles)
 ////            {
-////                iteratedVolumes.Add(volume.StartTime, volumes.Items.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.DetectorCount));
+////                iteratedVolumes.Add(volume.StartTime, volumes.Cycles.Where(v => v.StartTime >= volume.StartTime && v.StartTime < volume.StartTime.AddHours(1)).Sum(v => v.DetectorCount));
 ////            }
 ////            peakHourValue = iteratedVolumes.OrderByDescending(i => i.Value).FirstOrDefault();
 ////            return peakHourValue;
@@ -413,9 +413,9 @@
 ////        protected int FindPeakValueinHour(DateTime startofHour, VolumeCollection volumeCollection)
 ////        {
 ////            int maxVolume = 0;
-////            if (volumeCollection.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
+////            if (volumeCollection.Cycles.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
 ////            {
-////                maxVolume = volumeCollection.Items.Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)).Max(v => v.DetectorCount);
+////                maxVolume = volumeCollection.Cycles.Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)).Max(v => v.DetectorCount);
 ////            }
 ////            return maxVolume;
 ////        }
@@ -425,9 +425,9 @@
 ////        {
 ////            int totalVolume = 0;
 ////            double PHDF = 0;
-////            if (volumes.Items.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
+////            if (volumes.Cycles.Any(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1)))
 ////            {
-////                totalVolume = volumes.Items
+////                totalVolume = volumes.Cycles
 ////                    .Where(v => v.StartTime >= startofHour && v.StartTime < startofHour.AddHours(1))
 ////                    .Sum(v => v.DetectorCount);
 ////            }

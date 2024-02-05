@@ -138,6 +138,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
             services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
+            services.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
 
             return services;
         }

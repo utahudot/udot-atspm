@@ -139,7 +139,7 @@ namespace ATSPM.ReportApi.Business.Common
         //    foreach (var row in phasesInUse)
         //    {
         //        var aPhase = new AnalysisPhase(row, locationId, ptedt);
-        //        Items.Add(aPhase);
+        //        Cycles.Add(aPhase);
         //    }
         //    OrderPhases();
         //    return analysisPhaseCollectionData;
@@ -156,7 +156,7 @@ namespace ATSPM.ReportApi.Business.Common
             var eventCodes = new List<int>();
             for (var i = 130; i <= 151; i++)
                 eventCodes.Add(i);
-            var splitsDt = LocationEvents.Where(s => eventCodes.Contains(s.EventCode)); // controllerEventLogRepository.GetLocationEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
+            var splitsDt = LocationEvents.Where(s => s.Timestamp >= plan.Start && s.Timestamp < plan.Start.AddSeconds(2) && eventCodes.Contains(s.EventCode)).OrderBy(s => s.Timestamp); // controllerEventLogRepository.GetLocationEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
             foreach (var row in splitsDt)
             {
                 if (row.EventCode == 132)
@@ -277,7 +277,7 @@ namespace ATSPM.ReportApi.Business.Common
             var HighCycleCount = 0;
             foreach (var phase in phases.AnalysisPhases)
             {
-                var Cycles = from cycle in phase.Cycles.Items
+                var Cycles = from cycle in phase.Cycles.Cycles
                              where cycle.StartTime > planSplitMonitorData.Start && cycle.EndTime < planSplitMonitorData.End
                              select cycle;
 

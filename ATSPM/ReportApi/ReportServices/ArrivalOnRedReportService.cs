@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+=======
+﻿using ATSPM.Application.Repositories;
+>>>>>>> main
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.ArrivalOnRed;
@@ -62,14 +66,17 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<ArrivalOnRedResult>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(
-                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription())
-                );
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(
+                   GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
+                }
+                    
             }
 
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -91,7 +98,7 @@ namespace ATSPM.ReportApi.ReportServices
                 phaseDetail,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 null,
                 controllerEventLogs,
                 planEvents,

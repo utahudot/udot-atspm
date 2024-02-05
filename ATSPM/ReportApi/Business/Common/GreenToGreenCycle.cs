@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.Business.Common
             Unknown
         }
 
-        public GreenToGreenCycle(DateTime firstGreenEvent, DateTime redEvent, DateTime yellowEvent,
+        public GreenToGreenCycle(DateTime firstGreenEvent, DateTime yellowEvent, DateTime redEvent,
             DateTime lastGreenEvent)
         {
             StartTime = firstGreenEvent;

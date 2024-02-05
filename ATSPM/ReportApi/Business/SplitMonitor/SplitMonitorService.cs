@@ -60,7 +60,7 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
 
             var results = await Task.WhenAll(tasks);
 
-            return results.Where(result => result != null);
+            return results.Where(result => result != null).OrderBy(r => r.PhaseNumber);
         }
 
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
@@ -76,24 +76,25 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
 
             var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
             {
+                PercentileSplit = options.PercentileSplit,
                 ProgrammedSplits = splits,
-                GapOuts = phase.Cycles.Items
+                GapOuts = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                MaxOuts = phase.Cycles.Items
+                MaxOuts = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 5)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                ForceOffs = phase.Cycles.Items
+                ForceOffs = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 6)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                Unknowns = phase.Cycles.Items
+                Unknowns = phase.Cycles.Cycles
                                 .Where(c => c.TerminationEvent == 0)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
-                Peds = phase.Cycles.Items
+                Peds = phase.Cycles.Cycles
                                 .Where(c => c.HasPed)
                                 .Select(c => new DataPointForDouble(c.PedStartTime, c.PedDuration))
                                 .ToList(),
@@ -125,22 +126,24 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             var phasePlans = new List<PlanSplitMonitorData>();
             foreach (var plan in phaseCollection.Plans)
             {
-                var cycles = phase.Cycles.Items.Where(x => x.StartTime >= plan.Start && x.StartTime < plan.End).ToList();
+                var cycles = phase.Cycles.Cycles.Where(x => x.StartTime >= plan.Start && x.EndTime < plan.End).ToList();
                 if (cycles.Any())
                 {
-                    var planCycleCount = Convert.ToDouble(cycles.Count());
+                    //var planCycleCount = Convert.ToDouble(cycles.Count());
+                    var highCycleCount = plan.HighCycleCount;
+                    double SkippedPhases = plan.HighCycleCount - cycles.Count();
                     var percentile = Convert.ToDouble(options.PercentileSplit) / 100;
                     phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
                     {
                         Start = plan.Start,
                         End = plan.End,
                         PlanNumber = plan.PlanNumber,
-                        PercentSkips = planCycleCount > 0 ? Convert.ToDouble(plan.HighCycleCount - planCycleCount) / plan.HighCycleCount : 0,
-                        PercentGapOuts = planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / planCycleCount : 0,
-                        PercentMaxOuts = GetPercentMaxOuts(cycles, planCycleCount, plan.PlanNumber),
-                        PercentForceOffs = GetPercentForceOffs(cycles, planCycleCount, plan.PlanNumber),
-                        AverageSplit = planCycleCount > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / planCycleCount : 0,
-                        PercentileSplit = GetPercentSplit(planCycleCount, percentile, cycles),
+                        PercentSkips = highCycleCount > 0 ? SkippedPhases / highCycleCount : 0,
+                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / highCycleCount : 0,
+                        PercentMaxOuts = GetPercentMaxOuts(cycles, highCycleCount, plan.PlanNumber),
+                        PercentForceOffs = GetPercentForceOffs(cycles, highCycleCount, plan.PlanNumber),
+                        AverageSplit = cycles.Count > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / cycles.Count : 0,
+                        PercentileSplit = GetPercentSplit(highCycleCount, percentile, cycles),
                         Splits = plan.Splits
                     });
                 }
@@ -148,31 +151,32 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
             return phasePlans;
         }
 
-        private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double highCycleCounts, string planNumber)
         {
             if (planNumber != "254")
-                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / planCycleCount : 0;
+                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCounts : 0;
             else
                 return 0;
         }
 
-        private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double planCycleCount, string planNumber)
+        private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double highCycleCount, string planNumber)
         {
             if (planNumber == "254")
-                return planCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / planCycleCount : 0;
+                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount : 0;
             else
                 return 0;
         }
 
-        private double GetPercentSplit(double planCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
+        private double GetPercentSplit(double highCycleCount, double percentile, List<AnalysisPhaseCycle> cycles)
         {
             if (cycles.Count <= 2)
                 return 0;
+            var orderedCycles = cycles.OrderBy(c => c.Duration.TotalSeconds).ToList();
 
-            var percentilIndex = percentile * planCycleCount;
+            var percentilIndex = percentile * orderedCycles.Count;
             if (percentilIndex % 1 == 0)
             {
-                return cycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
+                return orderedCycles.ElementAt(Convert.ToInt16(percentilIndex) - 1).Duration
                     .TotalSeconds;
             }
             else
@@ -182,8 +186,8 @@ namespace ATSPM.ReportApi.Business.SplitMonitor
                 //There was probably another way to do that, but this is easy.
                 int indexInt = Convert.ToInt16(percentilIndex - .5);
 
-                var step1 = cycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
-                var step2 = cycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
+                var step1 = orderedCycles.ElementAt(Convert.ToInt16(indexInt) - 1).Duration.TotalSeconds;
+                var step2 = orderedCycles.ElementAt(Convert.ToInt16(indexInt)).Duration.TotalSeconds;
                 var stepDiff = step2 - step1;
                 var step3 = stepDiff * indexMod;
                 return step1 + step3;
