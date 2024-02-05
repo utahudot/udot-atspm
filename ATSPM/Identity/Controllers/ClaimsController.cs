@@ -29,7 +29,7 @@ public class ClaimsController : ControllerBase
             var roleClaims = await _claimsService.GetAllClaimsForRole(role.Name);
             claims = claims.Concat(roleClaims).ToList();
         }
-        return Ok(new ClaimsModel() { Claims = new HashSet<string>(claims).ToList()});
+        return Ok(new ClaimsModel() { Claims = new HashSet<string>(claims).ToList() });
     }
 
     // GET: api/claims/roleName
@@ -49,7 +49,7 @@ public class ClaimsController : ControllerBase
     }
 
     // POST: api/claims/addClaims/roleName
-    [HttpPost("addClaims/{roleName}")]
+    [HttpPost("add/{roleName}")]
     public async Task<IActionResult> AddClaimsToRole(string roleName, [FromBody] ClaimsModel model)
     {
         try
@@ -64,6 +64,8 @@ public class ClaimsController : ControllerBase
         }
         //return BadRequest("Could not add claim to role.");
     }
+
+
 
     // DELETE: api/claims/roleName
     [HttpDelete("{roleName}")]
