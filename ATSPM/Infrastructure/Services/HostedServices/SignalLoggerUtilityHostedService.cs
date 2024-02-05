@@ -1,5 +1,5 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -179,11 +179,11 @@ var result = await test.ExecuteAsync(testData);
 //        s.AddTransient<ISFTPDownloaderClient, SSHNetSFTPDownloaderClient>();
 
 //        //downloaders
-//        s.AddScoped<ILocationControllerDownloader, ASC3LocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, CobaltLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, MaxTimeLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, EOSLocationControllerDownloader>();
-//        s.AddScoped<ILocationControllerDownloader, NewCobaltLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, ASC3SignalControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, CobaltLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, MaxTimeLocationControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, EOSSignalControllerDownloader>();
+//        s.AddScoped<IDeviceDownloader, NewCobaltLocationControllerDownloader>();
 
 //        //decoders
 //        s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
@@ -197,10 +197,10 @@ var result = await test.ExecuteAsync(testData);
 //        s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
 
 //        //downloader configurations
-//        s.ConfigureLocationControllerDownloaders(h);
+//        s.ConfigureSignalControllerDownloaders(h);
 
 //        //decoder configurations
-//        s.ConfigureLocationControllerDecoders(h);
+//        s.ConfigureSignalControllerDecoders(h);
 
 //        s.Configure<FileRepositoryConfiguration>(h.Configuration.GetSection("FileRepositoryConfiguration"));
 

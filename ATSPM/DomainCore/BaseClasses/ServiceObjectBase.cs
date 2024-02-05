@@ -1,56 +1,160 @@
-﻿using System;
+﻿using ATSPM.Domain.Common;
+using ATSPM.Domain.Services;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ATSPM.Domain.BaseClasses
 {
-    /// <summary>
-    /// <c>ServiceObjectBase</c> For services implementing:
-    /// <list type="table">
-    /// 
-    /// <item>
-    /// <term><see cref="INotifyPropertyChanged"/></term>
-    /// <description>Notifies clients that a property value has changed.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="INotifyPropertyChanging"/></term>
-    /// <description>Notifies clients that a property value is changing.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="ISupportInitializeNotification"/></term>
-    /// <description>Allows coordination of initialization for a component and its dependent properties.</description>
-    /// </item>
-    /// 
-    /// <item>
-    /// <term><see cref="IDisposable"/></term>
-    /// <description>Provides a mechanism for releasing unmanaged resources.</description>
-    /// </item>
-    /// 
-    /// </list>
-    /// </summary>
-    public abstract class ServiceObjectBase : ObservableObjectBase, ISupportInitializeNotification, IDisposable
+
+    /// <inheritdoc cref="IExecutableServiceWithProgress{Tin, Tout, Tp}"/>
+    public abstract class ExecutableServiceWithProgressBase<Tin, Tout, Tp> : ExecutableServiceBase<Tin, Tout>, IExecutableServiceWithProgress<Tin, Tout, Tp>
+    {
+        /// <inheritdoc/>
+        public ExecutableServiceWithProgressBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecutableServiceWithProgress
+
+        ///<inheritdoc/>
+        public abstract Task<Tout> ExecuteAsync(Tin parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+
+        ///<inheritdoc/>
+        public override async Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default)
+        {
+            return await ExecuteAsync(parameter, cancelToken).ConfigureAwait(false);
+        }
+
+        #endregion
+    }
+
+    /// <inheritdoc cref="IExecutableService{Tin, Tout}"/>
+    public abstract class ExecutableServiceBase<Tin, Tout> : ServiceObjectBase, IExecutableService<Tin, Tout>
+    {
+        /// <inheritdoc/>
+        public ExecutableServiceBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecuteAsync
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged;
+
+        /// <inheritdoc/>
+        public virtual bool CanExecute(Tin parameter) => IsInitialized;
+
+        /// <inheritdoc/>
+        public abstract Task<Tout> ExecuteAsync(Tin parameter, CancellationToken cancelToken = default);
+
+        /// <inheritdoc/>
+        Task IExecuteAsync.ExecuteAsync(object parameter)
+        {
+            if (parameter is Tin p)
+                return Task.Run(() => ExecuteAsync(p, default));
+            return default;
+        }
+
+        /// <inheritdoc/>
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (parameter is Tin p)
+                return CanExecute(p);
+            return default;
+        }
+
+        /// <inheritdoc/>
+        void ICommand.Execute(object parameter)
+        {
+            if (parameter is Tin p)
+                Task.Run(() => ExecuteAsync(p, default));
+        }
+
+        #endregion
+    }
+
+    /// <inheritdoc cref="IExecutableServiceWithProgressAsync{Tin, Tout, Tp}"/>
+    public abstract class ExecutableServiceWithProgressAsyncBase<Tin, Tout, Tp> : ExecutableServiceAsyncBase<Tin, Tout>, IExecutableServiceWithProgressAsync<Tin, Tout, Tp>
+    {
+        /// <inheritdoc/>
+        public ExecutableServiceWithProgressAsyncBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecutableServiceWithProgress
+
+        ///<inheritdoc/>
+        public abstract IAsyncEnumerable<Tout> Execute(Tin parameter, IProgress<Tp> progress = null, CancellationToken cancelToken = default);
+
+        ///<inheritdoc/>
+        public override async IAsyncEnumerable<Tout> Execute(Tin parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        {
+            await foreach (var item in Execute(parameter, default, cancelToken).WithCancellation(cancelToken))
+            {
+                yield return item;
+            }
+        }
+
+        #endregion
+    }
+
+    /// <inheritdoc cref="IExecutableServiceAsync{Tin, Tout}"/>
+    public abstract class ExecutableServiceAsyncBase<Tin, Tout> : ServiceObjectBase, IExecutableServiceAsync<Tin, Tout>
+    {
+        /// <inheritdoc/>
+        public ExecutableServiceAsyncBase(bool initialize = false) : base(initialize) { }
+
+        #region IExecuteAsync
+
+        /// <inheritdoc/>
+        public event EventHandler CanExecuteChanged;
+
+        /// <inheritdoc/>
+        public virtual bool CanExecute(Tin parameter) => IsInitialized;
+
+        /// <inheritdoc/>
+        public abstract IAsyncEnumerable<Tout> Execute(Tin parameter, CancellationToken cancelToken = default);
+
+        /// <inheritdoc/>
+        bool ICommand.CanExecute(object parameter)
+        {
+            if (parameter is Tin p)
+                return CanExecute(p);
+            return false;
+        }
+
+        /// <inheritdoc/>
+        void ICommand.Execute(object parameter)
+        {
+            if (parameter is Tin p)
+                Task.Run(() => Execute(p, default));
+        }
+
+        #endregion
+    }
+
+    /// <inheritdoc cref="IService"/>
+    public abstract class ServiceObjectBase : ObservableObjectBase, IService
     {
         /// <summary>
-        /// Instantiate new service and calls <see cref="BeginInit"/>
+        /// Instantiate new service and calls <see cref="BeginInit"/> if <paramref name="initialize"/> is true
         /// </summary>
-        public ServiceObjectBase()
+        public ServiceObjectBase(bool initialize = false)
         {
-            //intialize object
-            //BeginInit();
+            if (initialize)
+            {
+                BeginInit();
+            }
         }
 
         /// <summary>
         /// Initialize service
         /// </summary>
         /// <remarks>Constructor calls <see cref="BeginInit"/> and initializes on instantiation.</remarks>
-        public virtual void Initialize()
+        public virtual Task Initialize()
         {
             //initialize complete
-            EndInit();
+            //EndInit();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -79,10 +183,10 @@ namespace ATSPM.Domain.BaseClasses
 
         #region ISupportInitializeNotification
 
+        ///<inheritdoc/>
         public event EventHandler Initialized;
 
         private bool _isInitialized;
-
 
         //[Newtonsoft.Json.JsonIgnore]
         ///<inheritdoc/>
@@ -93,15 +197,19 @@ namespace ATSPM.Domain.BaseClasses
             {
                 _isInitialized = value;
                 RaisePropertyChanged(nameof(IsInitialized));
-                if (_isInitialized) { RaiseInitialized(); }
+                if (_isInitialized) 
+                {
+                    disposedValue = false;
+                    RaiseInitialized(); 
+                }
             }
         }
 
         ///<inheritdoc/>
         public void BeginInit()
         {
-            if (IsInitialized) { IsInitialized = false; }
-            else { Initialize(); }
+            IsInitialized = false;
+            Task.Run(() => Initialize().ContinueWith(t => EndInit()));
         }
 
         ///<inheritdoc/>
@@ -118,7 +226,7 @@ namespace ATSPM.Domain.BaseClasses
 
         #region IDisposable
 
-        private bool disposedValue;
+        protected bool disposedValue;
 
         ///<inheritdoc/>
         public void Dispose()
@@ -126,25 +234,68 @@ namespace ATSPM.Domain.BaseClasses
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+
+            //show that the service is not Initialized
+            IsInitialized = false;
         }
 
         /// <summary>
         /// Used for IDisposable Pattern
+        /// Dispose(bool disposing) executes in two distinct scenarios.
+        /// If disposing equals true, the method has been called directly or indirectly by a user's code.
+        /// Managed and unmanaged resources can be disposed.
+        /// If disposing equals false, the method has been called by the runtime from inside the finalizer and you should not reference other objects.
+        /// Only unmanaged resources can be disposed.
         /// </summary>
         /// <param name="disposing">Flag for keeping track of disposed state</param>
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
+            // Check to see if Dispose has already been called.
             if (!disposedValue)
             {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
                 if (disposing)
                 {
-                    // // TODO: dispose managed state (managed objects)
+                    // Dispose managed resources.
+                    DisposeManagedCode();
                 }
 
-                // // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // // TODO: set large fields to null
+                // Call the appropriate methods to clean up
+                // unmanaged resources here.
+                // If disposing is false,
+                // only the following code is executed.
+                DisposeUnManagedCode();
+
+                // Note disposing has been done.
                 disposedValue = true;
             }
+        }
+
+        /// <summary>
+        /// Custom implementation of the IDisposable Pattern.
+        /// Override to dispose of Managed Code.
+        /// </summary>
+        protected virtual void DisposeManagedCode() { }
+
+        /// <summary>
+        /// Custom implementation of the IDisposable Pattern.
+        /// Override to dispose of Un-Managed Code.
+        /// </summary>
+        protected virtual void DisposeUnManagedCode() { }
+
+        /// <summary>
+        /// Use C# finalizer syntax for finalization code.
+        /// This finalizer will run only if the Dispose method does not get called.
+        /// It gives your base class the opportunity to finalize.
+        /// Do not provide finalizer in types derived from this class.
+        /// </summary>
+        ~ServiceObjectBase()
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(disposing: false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(disposing: false);
         }
 
         #endregion
@@ -158,14 +309,5 @@ namespace ATSPM.Domain.BaseClasses
 
             Initialized?.Invoke(this, new EventArgs());
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~ServiceObjectBase()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
-        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Net;

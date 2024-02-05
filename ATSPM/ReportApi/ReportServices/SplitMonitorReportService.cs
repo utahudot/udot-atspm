@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.SplitMonitor;
 using ATSPM.ReportApi.TempExtensions;
