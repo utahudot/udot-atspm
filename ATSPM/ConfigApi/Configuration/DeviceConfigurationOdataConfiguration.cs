@@ -25,7 +25,10 @@ namespace ATSPM.ConfigApi.Configuration
 
                         model.Property(p => p.Firmware).MaxLength = 16;
                         model.Property(p => p.Notes).MaxLength = 512;
-                        model.Property(p => p.Directory).MaxLength = 1024;
+                        model.Property(p => p.Directory).MaxLength = 512;
+                        model.Property(p => p.ConnectionTimeout).DefaultValueString = "2000";
+                        model.Property(p => p.OperationTimout).DefaultValueString = "2000";
+                        //model.Property(p => p.DataModel).MaxLength = 512;
                         model.Property(p => p.UserName).MaxLength = 50;
                         model.Property(p => p.Password).MaxLength = 50;
 

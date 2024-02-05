@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;

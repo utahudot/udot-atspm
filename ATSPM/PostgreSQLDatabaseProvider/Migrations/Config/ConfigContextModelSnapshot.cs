@@ -195,10 +195,17 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateAdded")
+<<<<<<< HEAD
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DateDisabled")
+                        .HasColumnType("timestamp");
+=======
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DateDisabled")
                         .HasColumnType("timestamp without time zone");
+>>>>>>> main
 
                     b.Property<int?>("DecisionPoint")
                         .HasColumnType("integer");
@@ -264,7 +271,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
+<<<<<<< HEAD
+                        .HasColumnType("timestamp");
+=======
                         .HasColumnType("timestamp without time zone");
+>>>>>>> main
 
                     b.HasKey("Id");
 
@@ -863,7 +874,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("Start")
+<<<<<<< HEAD
+                        .HasColumnType("timestamp");
+=======
                         .HasColumnType("timestamp without time zone");
+>>>>>>> main
 
                     b.Property<int>("VersionAction")
                         .ValueGeneratedOnAdd()
@@ -931,7 +946,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(10)");
 
                     b.Property<DateTime>("TimeStamp")
+<<<<<<< HEAD
+                        .HasColumnType("timestamp");
+=======
                         .HasColumnType("timestamp without time zone");
+>>>>>>> main
 
                     b.HasKey("Id");
 
@@ -1626,8 +1645,13 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
+<<<<<<< HEAD
+                        .HasColumnType("timestamp")
+                        .HasDefaultValue(new DateTime(2024, 1, 9, 9, 26, 49, 733, DateTimeKind.Local).AddTicks(4822));
+=======
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValue(new DateTime(2023, 12, 18, 12, 48, 15, 240, DateTimeKind.Local).AddTicks(4980));
+>>>>>>> main
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1682,7 +1706,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Timestamp")
+<<<<<<< HEAD
+                        .HasColumnType("timestamp");
+=======
                         .HasColumnType("timestamp without time zone");
+>>>>>>> main
 
                     b.Property<int>("locationId")
                         .HasColumnType("integer");
