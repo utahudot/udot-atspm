@@ -10,13 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ListenAnyIP(int.Parse(port)); // Listen for HTTP on port defined by PORT environment variable
-});
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureServices((host, services) =>
 {
@@ -30,6 +26,7 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
     services.AddScoped<TokenService, TokenService>();
+    services.AddScoped<RoleManager<IdentityRole>>();
 
     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -48,90 +45,6 @@ builder.Host.ConfigureServices((host, services) =>
     });
 
     services.AddAuthorization();
-    //services.AddAuthentication(options =>
-    //{
-    //    options.DefaultScheme = "Cookies";
-    //    options.DefaultChallengeScheme = "oidc";
-    //})
-    //.AddCookie("Cookie")
-    //.AddJwtBearer("JwtBearerIdentityApi", options =>
-    //{
-    //    options.Authority = "https://localhost:44346"; // IdentityServer URL
-    //    options.Audience = "identityApi"; // API resource name
-    //})
-    //.AddJwtBearer("JwtBearerIdentity", options =>
-    //{
-    //    options.Authority = "https://localhost:44357";
-    //    options.Audience = "Identity";
-    //})
-    //.AddOpenIdConnect("oidc", options =>
-    //{
-    //    options.Authority = "https://localhost:44357";
-    //    options.ClientId = "PostmanTest";
-    //    options.ResponseType = "code";
-    //    options.Scope.Add("openid");
-    //    options.Scope.Add("profile");
-    //    options.SaveTokens = true;
-    //})
-    //.AddGoogle("Google", options =>
-    //{
-    //    options.ClientId = "768772401068-fho9ccfocp70quikb2p167jj0u9jvqjh.apps.googleusercontent.com";
-    //    options.ClientSecret = "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";
-    //});
-
-
-    //This is for the production certificate
-    //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)
-    //.Certificates
-    //.Find(X509FindType.FindByThumbprint, "ATSPM_CERTIFICATE_THUMBPRINT", validOnly: true)
-    //.OfType<X509Certificate2>()
-    //.Single();
-
-    //IdentityClient Settings
-    //services.AddAuthorization(options =>
-    //{
-    //    options.AddPolicy("ViewUsers", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:ViewUsers", "Admin:ViewUsers");
-    //    });
-    //    options.AddPolicy("EditUsers", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:ViewUsers", "Admin:EditUsers");
-    //    });
-    //    options.AddPolicy("DeleteUsers", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:ViewUsers", "Admin:DeleteUsers");
-    //    });
-    //    options.AddPolicy("ViewRoles", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:ViewRoles", "Admin:ViewRoles");
-    //    });
-    //    options.AddPolicy("EditRoles", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:EditRoles", "Admin:EditRoles");
-    //    });
-    //    options.AddPolicy("DeleteRoles", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:DeleteRoles", "Admin:DeleteRoles");
-    //    });
-    //    options.AddPolicy("CreateRoles", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
-    //    });
-    //    options.AddPolicy("RequireValidToken", policy =>
-    //    {
-    //        policy.RequireAuthenticatedUser();
-    //        policy.RequireClaim("scope", "identityApi");
-    //    });
-    //});
-
 
     services.AddControllers();
 
@@ -148,21 +61,21 @@ builder.Host.ConfigureServices((host, services) =>
         options.Cookie.SameSite = SameSiteMode.Lax;
         //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
-
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll",
-            builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+        options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins(allowedHosts.Split(','))
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
     });
 });
 
 var app = builder.Build();
-app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
@@ -173,11 +86,10 @@ if (app.Environment.IsDevelopment())
 
         try
         {
-            var configContext = services.GetRequiredService<IdentityConfigurationContext>();
 
             // Get UserManager and RoleManager instances
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Run the seed method for configuration data
             //ConfigurationSeedData.Seed(configContext);
@@ -200,7 +112,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseIdentityServer();
 
 app.MapControllers();
 
