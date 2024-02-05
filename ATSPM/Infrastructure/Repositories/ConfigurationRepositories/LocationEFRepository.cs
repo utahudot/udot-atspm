@@ -77,7 +77,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         //    var result = BaseQuery()
         //        .Where(w => w.ControllerTypeId == controllerTypeId)
         //        .FromSpecification(new ActiveLocationSpecification())
-        //        .GroupBy(r => r.LocationIdentifier)
+        //        .GroupBy(r => r.SignalIdentifier)
         //        .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
         //        .ToList();
 
@@ -117,7 +117,8 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         public IReadOnlyList<Location> GetLatestVersionOfAllLocations(DateTime startDate)
         {
             var result = BaseQuery()
-                 .Include(s => s.Approaches)
+                .Include(s => s.Devices)
+                .Include(s => s.Approaches)
                     .ThenInclude(a => a.DirectionType)
                 .Include(s => s.Approaches)
                     .ThenInclude(a => a.Detectors)

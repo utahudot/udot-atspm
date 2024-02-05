@@ -107,6 +107,11 @@ namespace ATSPM.ReportApi.Business.PedDelay
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);
 
+            if (mainEvents.Count > 1 && mainEvents[0].EventCode == 90 && mainEvents[1].EventCode == pedPhaseData.BeginWalkEvent)
+            {
+                pedPhaseData.Cycles.Add(new PedCycle(mainEvents[1].Timestamp, mainEvents[0].Timestamp));  // Middle of the event
+            }
+
             for (var i = 0; i < mainEvents.Count - 1; i++)
             {
                 if (mainEvents[i].EventCode == pedPhaseData.BeginClearanceEvent &&

@@ -32,7 +32,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 2
@@ -40,7 +40,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = "1001",
+                SignalIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 2
@@ -66,7 +66,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"corrected event: {l}");
             }
 
-            var expected = correct.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
+            var expected = correct.Select(s => s.SignalIdentifier).Distinct().OrderBy(o => o);
             var actual = result.Item2.Select(s => s.LocationIdentifier).Distinct().OrderBy(o => o);
 
             _output.WriteLine($"expected: {expected}");
@@ -81,7 +81,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 2
@@ -89,7 +89,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 100
@@ -130,7 +130,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var correct = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 2
@@ -138,7 +138,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var incorrect = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = Random.Shared.Next(1, 50),
                 EventParam = 2
@@ -181,7 +181,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testLog = new ControllerEventLog()
             {
-                LocationIdentifier = _testApproach.Location.LocationIdentifier,
+                SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = (int)DataLoggerEnum.DetectorOn,
                 EventParam = 2
@@ -240,7 +240,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = Enumerable.Range(1, 5).Select(s => new ControllerEventLog()
             {
-                LocationIdentifier = "1001",
+                SignalIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
                 EventCode = Random.Shared.Next(1, 50),
                 EventParam = 5

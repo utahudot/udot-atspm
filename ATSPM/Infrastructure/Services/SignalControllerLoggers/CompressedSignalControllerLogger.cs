@@ -4,7 +4,6 @@ using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -106,7 +105,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
         {
             HashSet<ControllerEventLog> uniqueLogs = new HashSet<ControllerEventLog>(logs, new ControllerEventLogEqualityComparer());
 
-            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier)).Select(s => new ControllerLogArchive() { LocationIdentifier = s.Key.LocationIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
+            return uniqueLogs.GroupBy(g => (g.Timestamp.Date, g.SignalIdentifier)).Select(s => new ControllerLogArchive() { SignalIdentifier = s.Key.SignalIdentifier, ArchiveDate = s.Key.Date, LogData = s.ToList() });
         }
 
         protected async virtual Task<IEnumerable<ControllerLogArchive>> SaveToRepo(ControllerLogArchive archive, CancellationToken cancellationToken = default)
