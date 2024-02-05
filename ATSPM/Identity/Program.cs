@@ -1,13 +1,3 @@
-using ATSPM.Identity.Business.Claims;
-using ATSPM.Infrastructure.Extensions;
-using Identity.Business.Accounts;
-using Identity.Business.Agency;
-using Identity.Business.EmailSender;
-using Identity.Business.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 
