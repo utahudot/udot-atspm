@@ -1,10 +1,8 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.ValueObjects;
 using ATSPM.Domain.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ATSPM.Application.Specifications
 {
@@ -12,7 +10,7 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogLocationFilterSpecification(Location Location) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier;
+            base.Criteria = c => c.SignalIdentifier == Location.LocationIdentifier;
 
             ApplyOrderBy(o => o.Timestamp);
         }
@@ -22,7 +20,7 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogLocationAndParamterFilterSpecification(Location Location, int param) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == Location.LocationIdentifier && c.EventParam == param;
+            base.Criteria = c => c.SignalIdentifier == Location.LocationIdentifier && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }
@@ -32,7 +30,7 @@ namespace ATSPM.Application.Specifications
     {
         public ControllerLogDateRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == locationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
+            base.Criteria = c => c.SignalIdentifier == locationId && c.ArchiveDate.Date >= startDate.Date && c.ArchiveDate.Date <= endDate.Date;
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
@@ -87,7 +85,7 @@ namespace ATSPM.Application.Specifications
 
         public ControllerLogDateTimeRangeSpecification(string locationId, DateTime startDate, DateTime endDate) : base()
         {
-            base.Criteria = c => c.LocationIdentifier == locationId && c.Timestamp >= startDate && c.Timestamp <= endDate;
+            base.Criteria = c => c.SignalIdentifier == locationId && c.Timestamp >= startDate && c.Timestamp <= endDate;
 
             ApplyOrderBy(o => o.Timestamp);
         }

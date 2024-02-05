@@ -24,6 +24,7 @@ using ATSPM.ReportApi.Business.TimeSpaceDiagram;
 using ATSPM.ReportApi.Business.TimingAndActuation;
 using ATSPM.ReportApi.Business.TurningMovementCounts;
 using ATSPM.ReportApi.Business.WaitTime;
+using ATSPM.ReportApi.Business.Watchdog;
 using ATSPM.ReportApi.Business.YellowRedActivations;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
@@ -37,7 +38,7 @@ using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
-//AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 //// Configure Kestrel to listen on the port defined by the PORT environment variable
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
@@ -95,13 +96,13 @@ builder.Host.ConfigureServices((h, s) =>
         // integrate xml comments
         o.IncludeXmlComments(filePath);
     });
-
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     s.AddCors(options =>
     {
-        options.AddPolicy("AllowAll",
+        options.AddPolicy("CorsPolicy",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins(allowedHosts.Split(','))
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
@@ -148,11 +149,12 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResults>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
+    s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
 
     //Chart Services
     s.AddScoped<ApproachDelayService>();
@@ -169,10 +171,12 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<PurdueCoordinationDiagramService>();
     s.AddScoped<SplitFailPhaseService>();
     s.AddScoped<SplitMonitorService>();
+    s.AddScoped<TimeSpaceDiagramForPhaseService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();
     s.AddScoped<YellowRedActivationsService>();
+    s.AddScoped<WatchDogReportService>();
 
     //Common Services
     s.AddScoped<PlanService>();
@@ -202,12 +206,11 @@ var app = builder.Build();
 app.UseResponseCompression();
 
 
-//app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 if (app.Environment.IsDevelopment())
 {
     //app.Services.PrintHostInformation();
     app.UseDeveloperExceptionPage();
-    app.UseCors("AllowAll");
 }
 
 // Configure the HTTP request pipeline.
