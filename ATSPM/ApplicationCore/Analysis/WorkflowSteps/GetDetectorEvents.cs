@@ -4,7 +4,6 @@ using ATSPM.Domain.Workflows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -19,7 +18,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
             var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
-                .GroupBy(g => g.LocationIdentifier)
+                .GroupBy(g => g.SignalIdentifier)
                 .Select(Location => Location.AsEnumerable()
                 .GroupBy(g => g.EventParam)
                     .Select(s => Tuple.Create(new Detector()

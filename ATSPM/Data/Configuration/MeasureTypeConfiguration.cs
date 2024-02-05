@@ -319,6 +319,15 @@ namespace ATSPM.Data.Configuration
                     ShowOnWebsite = false,
                     ShowOnAggregationSite = true,
                     DisplayOrder = 120
+                },
+                new MeasureType
+                {
+                    Id = 36,
+                    Name = "Green Time Utilization",
+                    Abbreviation = "GTU",
+                    ShowOnWebsite = true,
+                    ShowOnAggregationSite = false,
+                    DisplayOrder = 130
                 });
         }
     }
