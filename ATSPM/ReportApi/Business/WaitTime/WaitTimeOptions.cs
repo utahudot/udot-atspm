@@ -6,6 +6,5 @@ namespace ATSPM.ReportApi.Business.WaitTime
     {
         public int BinSize { get; set; }
 
-
     }
 }
