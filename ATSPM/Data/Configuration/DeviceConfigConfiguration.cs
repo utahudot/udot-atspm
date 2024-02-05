@@ -1,8 +1,12 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Data.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Newtonsoft.Json;
+
+#nullable disable
 
 namespace ATSPM.Data.Configuration
 {
@@ -14,7 +18,7 @@ namespace ATSPM.Data.Configuration
         /// <inheritdoc/>
         public void Configure(EntityTypeBuilder<DeviceConfiguration> builder)
         {
-            builder.HasComment("DeviceConfiguration");
+            builder.ToTable(t => t.HasComment("Device Configuration"));
 
             builder.Property(e => e.Firmware)
                 .IsRequired()
@@ -32,7 +36,7 @@ namespace ATSPM.Data.Configuration
 
             builder.Property(e => e.Directory)
                 .IsRequired(false)
-                .HasMaxLength(1024);
+                .HasMaxLength(512);
 
             builder.Property(e => e.SearchTerms)
                 .IsRequired(false)
@@ -40,6 +44,17 @@ namespace ATSPM.Data.Configuration
                 .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<string[]>(v));
+
+            builder.Property(e => e.ConnectionTimeout)
+                .HasDefaultValueSql("((2000))");
+
+            builder.Property(e => e.OperationTimout)
+                .HasDefaultValueSql("((2000))");
+
+            builder.Property(e => e.DataModel)
+                .IsRequired(false)
+                .HasMaxLength(512)
+                .HasConversion(new CompressionTypeConverter(typeof(EventLogModelBase).Namespace.ToString(), typeof(EventLogModelBase).Assembly.ToString()));
 
             builder.Property(e => e.UserName)
                 .IsRequired(false)

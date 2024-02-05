@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 
 namespace ATSPM.ReportApi.Business.LeftTurnGapReport
 {

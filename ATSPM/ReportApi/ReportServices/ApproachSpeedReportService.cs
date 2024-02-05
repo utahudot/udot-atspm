@@ -1,5 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.ApproachSpeed;
@@ -17,7 +19,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ApproachSpeedService approachSpeedService;
         private readonly IControllerEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
-        private readonly ISpeedEventRepository speedEventRepository;
+        private readonly ISpeedEventLogRepository speedEventRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
@@ -26,7 +28,7 @@ namespace ATSPM.ReportApi.ReportServices
             ApproachSpeedService approachSpeedService,
             IControllerEventLogRepository controllerEventLogRepository,
             IApproachRepository approachRepository,
-            ISpeedEventRepository speedEventRepository,
+            ISpeedEventLogRepository speedEventRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
         {

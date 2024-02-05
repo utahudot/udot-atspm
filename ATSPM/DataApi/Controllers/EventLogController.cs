@@ -1,134 +1,195 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
-using Google.Api;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
+
+#nullable disable
 
 namespace ATSPM.DataApi.Controllers
 {
     /// <summary>
-    /// Location controller event log data
+    /// Event log controller
+    /// for querying raw device log data
     /// </summary>
     [ApiController]
-
-    //[ApiVersion("1.0")]
-    //[ApiVersion("2.0")]
+    [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/[controller]")]
     public class EventLogController : ControllerBase
     {
-        private readonly IControllerEventLogRepository _repository;
+        private readonly IEventLogRepository _repository;
         private readonly ILogger _log;
 
         /// <inheritdoc/>
-        public EventLogController(IControllerEventLogRepository repository, ILogger<EventLogController> log)
+        public EventLogController(IEventLogRepository repository, ILogger<EventLogController> log)
         {
             _repository = repository;
             _log = log;
         }
 
         /// <summary>
-        /// Get Location events between dates
+        /// Returns the possible event log data types
         /// </summary>
-        /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">Date/time of first event. Example: <c>2023-02-09T08:15:30.0</c></param>
-        /// <param name="end">Date/time of last event. Example: <c>2023-02-09T11:59:59.5</c></param>
-        /// <returns>List of ControllerEventLogs</returns>
+        /// <returns></returns>
         /// <response code="200">Call completed successfully</response>
-        /// <response code="400">Invalid request (start/end range)</response>
-        /// <response code="404">Resource not found</response>
-        //[ApiVersion("2.0")]
-        [HttpGet("{locationIdentifier}")]
-        [Produces("application/json", "application/xml", "text/csv")]
+        [HttpGet("[Action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<ControllerEventLog>> GetLocationEventsBetweenDates(string locationIdentifier, DateTime start, DateTime end)
+        public ActionResult<IEnumerable<string>> GetEventDataTypes()
         {
-            _log.LogDebug("Location: {Location} start: {start} end: {end}", locationIdentifier, start, end);
-
-            if (start == DateTime.MinValue || end == DateTime.MinValue)
-                return BadRequest("Invalid datetime range on start/end");
-            
-            var result = _repository.GetLocationEventsBetweenDates(locationIdentifier, start, end);
-
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return Ok(typeof(EventLogModelBase).Assembly.GetTypes().Where(w => w.IsSubclassOf(typeof(EventLogModelBase))).Select(s => s.Name));
         }
 
+
         /// <summary>
-        /// Get Location events between dates with event code
+        /// Get all event logs for location by date
         /// </summary>
         /// <param name="locationIdentifier">Location identifier</param>
-        /// <param name="start">date/time of first event</param>
-        /// <param name="end">date/time of last event</param>
-        /// <returns>List of ControllerEventLogs</returns>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
         /// <response code="200">Call completed successfully</response>
-        /// <response code="400">Invalid request (start/end range or event code)</response>
+        /// <response code="400">Invalid request (date)</response>
         /// <response code="404">Resource not found</response>
-        //[ApiVersion("1.0")]
         [HttpGet("[Action]/{locationIdentifier}")]
-        [Produces("application/json", "application/xml", "text/csv")]
+        [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<ControllerEventLog>> GetLocationEventsByEventCode(string locationIdentifier, DateTime start, DateTime end, [FromQuery] IEnumerable<int> eventCode)
+        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
         {
-            //var eventCode = new List<int>();
-            
-            _log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+                return BadRequest("Invalid date range");
 
-            Console.WriteLine($"events: {eventCode.Count()}");
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
 
-            if (start == DateTime.MinValue || end == DateTime.MinValue)
-                return BadRequest("Invalid datetime range on start/end");
-
-            var result = _repository.GetLocationEventsByEventCode(locationIdentifier, start, end, eventCode.First());
-
-            if (result == null)
+            if (result.Count == 0)
                 return NotFound();
+
+            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
 
         /// <summary>
-        /// Get Location events between dates with list of event codes and parameters
+        /// Get all event logs for location by date
         /// </summary>
-        /// <param name="locationIdentifier"></param>
-        /// <param name="start">date/time of first event</param>
-        /// <param name="end">date/time of last event</param>
-        /// <param name="body">List of event codes and parameters</param>
-        /// <returns>List of ControllerEventLogs</returns>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="deviceId">Deivce id events came from</param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
         /// <response code="200">Call completed successfully</response>
-        /// <response code="400">Invalid request (start/end range)</response>
+        /// <response code="400">Invalid request (date)</response>
         /// <response code="404">Resource not found</response>
-        [HttpPost("{locationIdentifier}")]
-        [Produces("application/json", "application/xml", "text/csv")]
+        [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}")]
+        [Produces("application/json", "application/xml")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<List<ControllerEventLog>> GetRecordsByParameterAndEvent(string locationIdentifier, DateTime start, DateTime end, [FromBody] TestInput body)
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, DateOnly start, DateOnly end)
         {
-            _log.LogDebug("Location: {Location} start: {start} end: {end}", locationIdentifier, start, end);
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+                return BadRequest("Invalid date range");
 
-            if (start == DateTime.MinValue || end == DateTime.MinValue)
-                return BadRequest("Invalid datetime range on start/end");
+            if (deviceId == 0)
+                return BadRequest("Invalid device id");
 
-            var result = _repository.GetRecordsByParameterAndEvent(locationIdentifier, start, end, body.Params, body.Codes);
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, deviceId);
 
-            if (result == null)
+            if (result.Count == 0)
                 return NotFound();
+
+            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
 
             return Ok(result);
         }
-    }
 
-    public class TestInput
-    {
-        public List<int> Codes { get; set; }
-        public List<int> Params { get; set; }
+        /// <summary>
+        /// Get all event logs for location by date
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
+        /// <response code="200">Call completed successfully</response>
+        /// <response code="400">Invalid request (date)</response>
+        /// <response code="404">Resource not found</response>
+        [HttpGet("[Action]/{locationIdentifier}/{dataType}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetArchivedEvents(string locationIdentifier, string dataType, DateOnly start, DateOnly end)
+        {
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+                return BadRequest("Invalid date range");
+
+            Type type;
+
+            try
+            {
+                type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid data type");
+            }
+
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, type);
+
+            if (result.Count == 0)
+                return NotFound();
+
+            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get all event logs for location by date
+        /// </summary>
+        /// <param name="locationIdentifier">Location identifier</param>
+        /// <param name="deviceId">Deivce id events came from</param>
+        /// <param name="dataType">Type that inherits from <see cref="EventLogModelBase"/></param>
+        /// <param name="start">Archive date of event to start with</param>
+        /// <param name="end">Archive date of event to end with</param>
+        /// <returns></returns>
+        /// <response code="200">Call completed successfully</response>
+        /// <response code="400">Invalid request (date)</response>
+        /// <response code="404">Resource not found</response>
+        [HttpGet("[Action]/{locationIdentifier}/{deviceId:int}/{dataType}")]
+        [Produces("application/json", "application/xml")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetArchivedEvents(string locationIdentifier, int deviceId, string dataType, DateOnly start, DateOnly end)
+        {
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+                return BadRequest("Invalid date range");
+
+            if (deviceId == 0)
+                return BadRequest("Invalid device id");
+
+            Type type;
+
+            try
+            {
+                type = Type.GetType($"{typeof(EventLogModelBase).Namespace}.{dataType}, {typeof(EventLogModelBase).Assembly}", true);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid data type");
+            }
+
+            var result = _repository.GetArchivedEvents(locationIdentifier, start, end, type, deviceId);
+
+            if (result.Count == 0)
+                return NotFound();
+
+            HttpContext.Response.Headers.Add("X-Total-Count", result.Count.ToString());
+
+            return Ok(result);
+        }
     }
 }

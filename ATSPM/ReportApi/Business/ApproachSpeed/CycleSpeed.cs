@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using Duende.IdentityServer.Extensions;
 

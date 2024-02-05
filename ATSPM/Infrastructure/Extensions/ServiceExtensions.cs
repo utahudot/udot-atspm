@@ -1,12 +1,15 @@
 ﻿using ATSPM.Application.Configuration;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.AggregationRepositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data;
 using ATSPM.Infrastructure.MySqlDatabaseProvider;
 using ATSPM.Infrastructure.OracleDatabaseProvider;
 using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
-using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Repositories.AggregationRepositories;
+using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
+using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
 using Microsoft.EntityFrameworkCore;
@@ -88,18 +91,18 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureLocationControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureSignalControllerDownloaders(this IServiceCollection services, HostBuilderContext host)
         {
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3LocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3LocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSLocationControllerDownloader)}"));
-            services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(ASC3SignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(ASC3SignalControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(CobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(CobaltLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(MaxTimeLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(MaxTimeLocationControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(EOSSignalControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(EOSSignalControllerDownloader)}"));
+            //services.Configure<SignalControllerDownloaderConfiguration>(nameof(NewCobaltLocationControllerDownloader), host.Configuration.GetSection($"{nameof(SignalControllerDownloaderConfiguration)}:{nameof(NewCobaltLocationControllerDownloader)}"));
 
             return services;
         }
 
-        public static IServiceCollection ConfigureLocationControllerDecoders(this IServiceCollection services, HostBuilderContext host)
+        public static IServiceCollection ConfigureSignalControllerDecoders(this IServiceCollection services, HostBuilderContext host)
         {
             services.Configure<SignalControllerDecoderConfiguration>(nameof(ASCLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(ASCLocationControllerDecoder)}"));
             services.Configure<SignalControllerDecoderConfiguration>(nameof(MaxTimeLocationControllerDecoder), host.Configuration.GetSection($"{nameof(SignalControllerDecoderConfiguration)}:{nameof(MaxTimeLocationControllerDecoder)}"));
@@ -107,16 +110,15 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
-        public static IServiceCollection AddAtspmEFRepositories(this IServiceCollection services)
+        public static IServiceCollection AddAtspmEFConfigRepositories(this IServiceCollection services)
         {
             services.AddScoped<IApproachRepository, ApproachEFRepository>();
-            services.AddScoped<ISpeedEventRepository, SpeedEventEFRepository>();
             services.AddScoped<IAreaRepository, AreaEFRepository>();
             services.AddScoped<IDetectionTypeRepository, DetectionTypeEFRepository>();
             services.AddScoped<IDetectorCommentRepository, DetectorCommentEFRepository>();
             services.AddScoped<IDetectorRepository, DetectorEFRepository>();
-            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDeviceConfigurationRepository, DeviceConfigurationEFRepository>();
+            services.AddScoped<IDeviceRepository, DeviceEFRepository>();
             services.AddScoped<IDirectionTypeRepository, DirectionTypeEFRepository>();
             services.AddScoped<IExternalLinksRepository, ExternalLinsEFRepository>();
             services.AddScoped<IFaqRepository, FaqEFRepository>();
@@ -129,12 +131,45 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IMenuItemReposiotry, MenuItemEFRepository>();
             services.AddScoped<IProductRepository, ProductEFRepository>();
             services.AddScoped<IRegionsRepository, RegionEFRepository>();
-            services.AddScoped<IRouteRepository, RouteEFRepository>();
             services.AddScoped<IRouteDistanceRepository, RouteDistanceEFRepository>();
             services.AddScoped<IRouteLocationsRepository, RouteLocationEFRepository>();
-            services.AddScoped<ISettingsRepository, SettingsEFRepository>();
+            services.AddScoped<IRouteRepository, RouteEFRepository>();
+            services.AddScoped<IUserAreaRepository, UserAreaEFRepository>();
+            services.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
+            services.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
             services.AddScoped<IVersionHistoryRepository, VersionHistoryEFRepository>();
             services.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAtspmEFEventLogRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IEventLogRepository, EventLogEFRepository>();
+
+            services.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
+            services.AddScoped<ISpeedEventLogRepository, SpeedEventLogEFRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAtspmEFAggregationRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IAggregationRepository, AggregationEFRepository>();
+
+            services.AddScoped<IApproachPcdAggregationRepository, ApproachPcdAggregationEFRepository>();
+            services.AddScoped<IApproachSpeedAggregationRepository, ApproachSpeedAggregationEFRepository>();
+            services.AddScoped<IApproachSplitFailAggregationRepository, ApproachSplitFailAggregationEFRepository>();
+            services.AddScoped<IApproachYellowRedActivationAggregationRepository, ApproachYellowRedActivationAggregationEFRepository>();
+            services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationEFRepository>();
+            services.AddScoped<IPhaseCycleAggregationRepository, PhaseCycleAggregationEFRepository>();
+            services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationEFRepository>();
+            services.AddScoped<IPhaseSplitMonitorAggregationRepository, PhaseSplitMonitorAggregationEFRepository>();
+            services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationEFRepository>();
+            services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();
+            services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
+            services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
+            services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
 
             return services;
         }

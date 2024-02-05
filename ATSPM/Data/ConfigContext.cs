@@ -3,6 +3,7 @@
 using ATSPM.Data.Configuration;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
@@ -14,9 +15,7 @@ namespace ATSPM.Data
     public partial class ConfigContext : DbContext
     {
         /// <inheritdoc/>
-        public ConfigContext()
-        {
-        }
+        public ConfigContext() { }
 
         /// <inheritdoc/>
         public ConfigContext(DbContextOptions<ConfigContext> options): base(options) {}
@@ -132,11 +131,6 @@ namespace ATSPM.Data
         public virtual DbSet<RouteLocation> RouteLocations { get; set; }
 
         /// <summary>
-        /// Settings table
-        /// </summary>
-        public virtual DbSet<Settings> Settings { get; set; }
-
-        /// <summary>
         /// User areas table
         /// </summary>
         public virtual DbSet<UserArea> UserAreas { get; set; }
@@ -172,12 +166,16 @@ namespace ATSPM.Data
             configurationBuilder.Properties<TransportProtocols>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceTypes>().HaveConversion<string>();
             configurationBuilder.Properties<DeviceStatus>().HaveConversion<string>();
+
+            if (Database.IsNpgsql())
+                configurationBuilder.Properties<DateTime>().HaveColumnType("timestamp");
+            //else
+            //    configurationBuilder.Properties<DateTime>().HaveColumnType("datetime");
         }
 
         /// <inheritdoc/>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new SettingsConfiguration());
             modelBuilder.ApplyConfiguration(new ApproachConfiguration());
             modelBuilder.ApplyConfiguration(new AreaConfiguration());
             modelBuilder.ApplyConfiguration(new DetectionTypeConfiguration());
