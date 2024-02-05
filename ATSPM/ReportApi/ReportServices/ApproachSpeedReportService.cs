@@ -45,14 +45,14 @@ namespace ATSPM.ReportApi.ReportServices
         {
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
             var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
-            
+
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No data found");
-                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("Location not found"));
+                return await Task.FromException<IEnumerable<ApproachSpeedResult>>(new NullReferenceException("No Controller Event Logs found for this signal on this date"));
             }
 
-            var planEvents = controllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12),parameter.End.AddHours(12)).ToList();
+            var planEvents = controllerEventLogs.GetPlanEvents(parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             var phaseDetails = phaseService.GetPhases(Location);
             var tasks = new List<Task<ApproachSpeedResult>>();
@@ -62,7 +62,7 @@ namespace ATSPM.ReportApi.ReportServices
                 tasks.Add(GetChartDataByApproach(parameter, controllerEventLogs, planEvents, phaseDetail, Location.LocationDescription()));
             }
             var results = await Task.WhenAll(tasks);
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{

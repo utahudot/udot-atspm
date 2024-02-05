@@ -34,11 +34,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testLocation, testLogs);
@@ -57,11 +57,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testLocation, testLogs);
@@ -84,11 +84,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testLocation, testLogs);
@@ -111,11 +111,11 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
-                new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:14.5"), EventCode = 1, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:20.5"), EventCode = 2, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:25.5"), EventCode = 3, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:01.3"), EventCode = 4, EventParam = 1},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:07.5"), EventCode = 5, EventParam = 1},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testLocation, testLogs);
@@ -124,7 +124,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var actual = await sut.ExecuteAsync(testData);
 
-            var expected = _testLocation.Approaches.Select(s => Tuple.Create(s, testLogs.Where(w => w.LocationIdentifier == _testLocation.LocationIdentifier)));
+            var expected = _testLocation.Approaches.Select(s => Tuple.Create(s, testLogs.Where(w => w.SignalIdentifier == _testLocation.LocationIdentifier)));
 
             Assert.Equal(expected, actual);
         }

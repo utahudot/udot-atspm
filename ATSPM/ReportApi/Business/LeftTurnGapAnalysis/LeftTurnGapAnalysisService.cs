@@ -3,10 +3,6 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
 {
@@ -22,9 +18,9 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
 
         public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<ControllerEventLog> eventLogs, LeftTurnGapAnalysisOptions options)
         {
-            var phaseEvents = new List<ControllerEventLog>();
+            var cycleEventsByPhase = new List<ControllerEventLog>();
 
-            phaseEvents.AddRange(eventLogs.Where(x =>
+            cycleEventsByPhase.AddRange(eventLogs.Where(x =>
                 x.EventParam == approach.ProtectedPhaseNumber &&
                 (x.EventCode == EVENT_GREEN || x.EventCode == EVENT_RED)));
 
@@ -43,19 +39,20 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 if (!detectorsToUse.Any())
                     return null;
             }
-
+            var detectorEvents = new List<ControllerEventLog>();
             foreach (var detector in detectorsToUse)
             {
                 // Check for thru, right, thru-right, and thru-left
-                if (!IsThruDetector(detector)) continue;
-
-                phaseEvents.AddRange(eventLogs.Where(x =>
-                    x.EventCode == EVENT_DET && x.EventParam == detector.DetectorChannel));
+                if (IsThruDetector(detector))
+                {
+                    detectorEvents.AddRange(eventLogs.Where(x =>
+                        x.EventCode == EVENT_DET && x.EventParam == detector.DetectorChannel));
+                }
             }
 
-            if (phaseEvents.Any())
+            if (detectorEvents.Any() && cycleEventsByPhase.Any())
             {
-                var result = GetData(phaseEvents, options, detectionTypeStr, approach);
+                var result = GetData(cycleEventsByPhase, detectorEvents, options, detectionTypeStr, approach);
                 result.ApproachDescription = approach.Description;
                 result.LocationDescription = approach.Location.LocationDescription();
                 return result;
@@ -87,20 +84,21 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
         }
 
         protected LeftTurnGapAnalysisResult GetData(
-            List<ControllerEventLog> events,
+            List<ControllerEventLog> cycleEventsByPhase,
+            List<ControllerEventLog> detectorEvents,
             LeftTurnGapAnalysisOptions options,
             string detectionTypeStr,
             Approach approach)
         {
             var percentTurnableSeries = new List<DataPointForDouble>();
-            var greenList = events.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.Start && x.Timestamp < options.End)
+            var greenList = cycleEventsByPhase.Where(x => x.EventCode == EVENT_GREEN && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
-            var redList = events.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.Start && x.Timestamp < options.End)
+            var redList = cycleEventsByPhase.Where(x => x.EventCode == EVENT_RED && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
-            var orderedDetectorCallList = events.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.Start && x.Timestamp < options.End)
+            var orderedDetectorCallList = detectorEvents.Where(x => x.EventCode == EVENT_DET && x.Timestamp >= options.Start && x.Timestamp < options.End)
                 .OrderBy(x => x.Timestamp).ToList();
 
-            var eventBeforeStart = events.Where(e => e.Timestamp < options.Start && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
+            var eventBeforeStart = cycleEventsByPhase.Where(e => e.Timestamp < options.Start && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderByDescending(e => e.Timestamp).FirstOrDefault();
             if (eventBeforeStart != null && eventBeforeStart.EventCode == EVENT_GREEN)
             {
                 eventBeforeStart.Timestamp = options.Start;
@@ -112,7 +110,7 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 redList.Insert(0, eventBeforeStart);
             }
 
-            var eventAfterEnd = events.Where(e => e.Timestamp > options.End && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
+            var eventAfterEnd = cycleEventsByPhase.Where(e => e.Timestamp > options.End && (e.EventCode == EVENT_GREEN || e.EventCode == EVENT_RED)).OrderBy(e => e.Timestamp).FirstOrDefault();
             if (eventAfterEnd != null && eventAfterEnd.EventCode == EVENT_GREEN)
             {
                 eventAfterEnd.Timestamp = options.End;
@@ -215,24 +213,34 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 options.Start,
                 options.End,
                 detectionTypeStr,
+                options.Gap1Min,
                 options.Gap1Max,
                 gaps1,
+                options.Gap2Min,
                 options.Gap2Max,
                 gaps2,
+                options.Gap3Min,
                 options.Gap3Max,
                 gaps3,
+                options.Gap4Min,
                 options.Gap4Max,
                 gaps4,
+                options.Gap5Min,
                 options.Gap5Max,
                 gaps5,
+                options.Gap6Min,
                 options.Gap6Max,
                 gaps6,
+                options.Gap7Min,
                 options.Gap7Max,
                 gaps7,
+                options.Gap8Min,
                 options.Gap8Max,
                 gaps8,
+                options.Gap9Min,
                 options.Gap9Max,
                 gaps9,
+                options.Gap10Min,
                 options.Gap10Max,
                 gaps10,
                 percentTurnableSeries,
@@ -241,7 +249,9 @@ namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
                 sumDuration3,
                 sumGreenTime,
                 highestTotal,
-                detectionTypeStr
+                detectionTypeStr,
+                options.BinSize,
+                options.TrendLineGapThreshold
                 );
         }
 

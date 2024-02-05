@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\Config\" />
+  </ItemGroup>
+
 </Project>
