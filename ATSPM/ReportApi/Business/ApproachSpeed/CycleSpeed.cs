@@ -1,6 +1,6 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business.Common;
-using Duende.IdentityServer.Extensions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.Business.ApproachSpeed
 {
