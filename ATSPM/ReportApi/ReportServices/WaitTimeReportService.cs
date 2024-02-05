@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-=======
-﻿using ATSPM.Application.Repositories;
->>>>>>> main
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.WaitTime;
