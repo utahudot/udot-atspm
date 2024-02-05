@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,6 +20,25 @@ namespace ATSPM.Data.Configuration
             
             builder.Property(e => e.Icon)
                 .HasMaxLength(1024);
+
+            //TODO: add this back in later
+            //builder.HasData(
+            //    new LocationType()
+            //    {
+            //        Name = "Intersection",
+            //    },
+            //    new LocationType()
+            //    {
+            //        Name = "Ramp",
+            //    },
+            //    new LocationType()
+            //    {
+            //        Name = "Side Walk",
+            //    },
+            //    new LocationType()
+            //    {
+            //        Name = "Trail",
+            //    });
         }
     }
 }

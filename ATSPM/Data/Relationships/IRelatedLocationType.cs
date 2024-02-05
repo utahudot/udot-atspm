@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.ConfigurationModels;
 
 namespace ATSPM.Data.Relationships
 {

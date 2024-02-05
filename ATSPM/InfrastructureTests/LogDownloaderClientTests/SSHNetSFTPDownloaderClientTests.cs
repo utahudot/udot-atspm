@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Exceptions;
-using ATSPM.Application.Services.LocationControllerProtocols;
-using ATSPM.Infrastructure.Services.ControllerDownloaders;
+using ATSPM.Application.Services;
+using ATSPM.Infrastructure.Services.DownloaderClients;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace InfrastructureTests.LogDownloaderClientTests
             _client = new SSHNetSFTPDownloaderClient();
 
             //var s = new ServiceCollection();
-            //s.AddTransient<ILocationControllerDownloader, StubLocationControllerDownloader>();
+            //s.AddTransient<IDeviceDownloader, StubLocationControllerDownloader>();
 
 
 

@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Data;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Common;
@@ -29,7 +29,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             _serviceProvider = serviceProvider;
         }
 
-        public override void Initialize()
+        public override Task Initialize()
         {
             var stepOptions = new ExecutionDataflowBlockOptions()
             {
@@ -57,7 +57,9 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             logArchiveBatch.LinkTo(saveToRepoTemp, new DataflowLinkOptions() { PropagateCompletion = true });
             saveToRepoTemp.LinkTo(endResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
-            base.Initialize();
+            //base.Initialize();
+
+            return Task.CompletedTask;
         }
 
         protected async virtual Task<IEnumerable<DirectoryInfo>> DownloadLogs(Location Location, CancellationToken cancellationToken = default)
@@ -66,7 +68,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var downloader = scope.ServiceProvider.GetServices<ILocationControllerDownloader>().First(c => c.CanExecute(Location));
+                var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(Location));
 
                 //await foreach (var file in downloader.Execute(Location, cancellationToken))
                 //{
