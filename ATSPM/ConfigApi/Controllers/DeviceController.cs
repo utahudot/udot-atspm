@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;

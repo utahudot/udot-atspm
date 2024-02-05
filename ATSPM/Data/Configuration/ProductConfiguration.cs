@@ -24,10 +24,6 @@ namespace ATSPM.Data.Configuration
                 .IsRequired()
                 .HasMaxLength(48);
 
-            builder.Property(e => e.DeviceType)
-                .HasMaxLength(Enum.GetNames(typeof(DeviceTypes)).Max().Length)
-                .HasDefaultValue(DeviceTypes.Unknown);
-
             builder.Property(e => e.Notes)
                 .HasMaxLength(512);
         }

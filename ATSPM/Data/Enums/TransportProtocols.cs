@@ -1,7 +1,7 @@
 ﻿namespace ATSPM.Data.Enums
 {
     /// <summary>
-    /// Transport protocols
+    /// Transport protocols used for connecting to devices
     /// </summary>
     public enum TransportProtocols
     {

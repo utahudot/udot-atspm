@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -29,7 +30,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
