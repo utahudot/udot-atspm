@@ -25,10 +25,10 @@ namespace ATSPM.Infrastructure.Repositories
             return base.GetList()
                 .Include(i => i.Jurisdiction)
                 .Include(i => i.Region);
-                //.Include(i => i.VersionAction);
-                //.Include(i => i.Approaches)
-                //.ThenInclude(i => i.Detectors)
-                //.Include(i => i.Areas);
+            //.Include(i => i.VersionAction);
+            //.Include(i => i.Approaches)
+            //.ThenInclude(i => i.Detectors)
+            //.Include(i => i.Areas);
             //.Include(i => i.MetricComments);
         }
 
@@ -79,7 +79,7 @@ namespace ATSPM.Infrastructure.Repositories
         //    var result = BaseQuery()
         //        .Where(w => w.ControllerTypeId == controllerTypeId)
         //        .FromSpecification(new ActiveLocationSpecification())
-        //        .GroupBy(r => r.LocationIdentifier)
+        //        .GroupBy(r => r.SignalIdentifier)
         //        .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
         //        .ToList();
 
@@ -119,7 +119,8 @@ namespace ATSPM.Infrastructure.Repositories
         public IReadOnlyList<Location> GetLatestVersionOfAllLocations(DateTime startDate)
         {
             var result = BaseQuery()
-                 .Include(s => s.Approaches)
+                .Include(s => s.Devices)
+                .Include(s => s.Approaches)
                     .ThenInclude(a => a.DirectionType)
                 .Include(s => s.Approaches)
                     .ThenInclude(a => a.Detectors)

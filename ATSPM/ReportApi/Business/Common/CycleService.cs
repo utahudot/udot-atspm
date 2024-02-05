@@ -112,7 +112,7 @@ namespace ATSPM.ReportApi.Business.Common
             //        cycleEvents[item.Index + 2].Timestamp,
             //        cycleEvents[item.Index + 3].Timestamp,
             //        severeViolationSeconds,
-            //        detectorEvents
+            //        phaseDropsCalls
             //        ))
             //    .ToList();
             return cycles.Where(c => c.EndTime >= startTime && c.EndTime <= endTime || c.StartTime <= endTime && c.StartTime >= startTime).ToList();
@@ -140,7 +140,8 @@ namespace ATSPM.ReportApi.Business.Common
             int? pcdCycleTime)
         {
             cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
-            if(cycleEvents.Count <= 0) { 
+            if (cycleEvents.Count <= 0)
+            {
                 return new List<CyclePcd>();
             }
             var min = cycleEvents.Min(c => c.Timestamp);
@@ -159,7 +160,7 @@ namespace ATSPM.ReportApi.Business.Common
             {
                 //Parallel.ForEach(cycles, cycle =>
                 //{
-                //    AddDetectorEventsToCycles(detectorEvents, cycle, pcdCycleShift);
+                //    AddDetectorEventsToCycles(phaseDropsCalls, cycle, pcdCycleShift);
                 //});
                 var tasks = new List<Task>();
                 foreach (var cycle in cycles)
@@ -182,6 +183,10 @@ namespace ATSPM.ReportApi.Business.Common
             foreach (var controllerEventLog in eventsForCycle)
                 cycle.AddDetectorData(new DetectorDataPoint(cycle.StartTime, controllerEventLog.Timestamp,
                                                cycle.GreenEvent, cycle.YellowEvent));
+        }
+        private async void AddPhaseDropsCallsEventsToCycles(List<ControllerEventLog> phaseDropsCalls, WaitTimeCycle cycle)
+        {
+            cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).ToList();
         }
 
         private RedToRedCycle.EventType GetEventType(int eventCode)
@@ -620,6 +625,40 @@ namespace ATSPM.ReportApi.Business.Common
             }
 
             return cycle;
+        }
+
+        public async Task<List<WaitTimeCycle>> GetWaitTimeCyclesAsync(
+            List<ControllerEventLog> cycleEvents,
+            List<ControllerEventLog> phaseCallsDrops,
+            DateTime start,
+            DateTime end)
+        {
+            cycleEvents = cycleEvents.OrderBy(c => c.Timestamp).ToList();
+            if (cycleEvents.Count <= 0)
+            {
+                return new List<WaitTimeCycle>();
+            }
+            var min = cycleEvents.Min(c => c.Timestamp);
+            var max = cycleEvents.Max(c => c.Timestamp);
+            var cycles = new List<WaitTimeCycle>();
+            for (var i = 0; i < cycleEvents.Count; i++)
+                if (i < cycleEvents.Count - 3
+                    && GetEventType(cycleEvents[i].EventCode) == RedToRedCycle.EventType.ChangeToEndOfRedClearance
+                    && GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToGreen)
+                    cycles.Add(new WaitTimeCycle(cycleEvents[i].Timestamp, cycleEvents[i + 1].Timestamp));
+            if (cycles.Any())
+            {
+                var tasks = new List<Task>();
+                foreach (var cycle in cycles)
+                {
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        AddPhaseDropsCallsEventsToCycles(phaseCallsDrops, cycle);
+                    }));
+                }
+                await Task.WhenAll(tasks);
+            }
+            return cycles.Where(c => c.GreenEvent >= start && c.GreenEvent <= end || c.RedEvent <= end && c.RedEvent >= end).ToList();
         }
     }
 }

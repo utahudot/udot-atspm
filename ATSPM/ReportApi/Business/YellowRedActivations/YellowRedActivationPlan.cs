@@ -1,7 +1,4 @@
 ﻿using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.YellowRedActivations
 {
@@ -107,18 +104,18 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
                 {
                     return 0;
                 }
-                return Math.Round(TotalViolationTime / Violations, 1);
+                return TotalViolationTime / Violations;
             }
         }
 
-        public double AverageTYLO => Math.Round(TotalYellowTime / YellowOccurrences, 1);
+        public double AverageTYLO => TotalYellowTime / YellowOccurrences;
 
         public double PercentViolations
         {
             get
             {
                 if (TotalVolume > 0)
-                    return Math.Round(Violations / TotalVolume * 100, 0);
+                    return Violations / TotalVolume * 100;
                 return 0;
             }
         }
@@ -128,7 +125,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             get
             {
                 if (TotalVolume > 0)
-                    return Math.Round(YellowOccurrences / TotalVolume * 100, 0);
+                    return YellowOccurrences / TotalVolume * 100;
                 return 0;
             }
         }
@@ -138,7 +135,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             get
             {
                 if (TotalVolume > 0)
-                    return Math.Round(SevereRedLightViolations / TotalVolume * 100, 2);
+                    return SevereRedLightViolations / TotalVolume * 100;
                 return 0;
             }
         }
