@@ -1,21 +1,12 @@
 using Asp.Versioning;
-using ATSPM.Application.Repositories;
 using ATSPM.DataApi.Formatters;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Newtonsoft;
-using System.Text.Json;
-using ATSPM.Infrastructure.Repositories.EventLogRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureServices((h, s) =>

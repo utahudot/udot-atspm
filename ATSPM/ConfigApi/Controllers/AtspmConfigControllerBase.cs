@@ -96,31 +96,37 @@ namespace ATSPM.ConfigApi.Controllers
             return Created(item);
         }
 
-        // PUT /Entity(1)
-        //[ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">Key value of object to update</param>
+        /// <param name="item">Properites to update</param>
+        /// <returns></returns>
+        //PUT /Entity(1)
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    var i = await _repository.LookupAsync(key);
+            var i = await _repository.LookupAsync(key);
 
-        //    if (i == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (i == null)
+            {
+                return NotFound();
+            }
 
-        //    item.Id = i.Id;
+            item.Id = i.Id;
 
-        //    await _repository.UpdateAsync(item);
+            await _repository.UpdateAsync(item);
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
 
         /// <summary>
         /// Update object of specified type
