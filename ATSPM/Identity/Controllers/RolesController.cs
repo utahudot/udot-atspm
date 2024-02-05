@@ -16,14 +16,10 @@ namespace Identity.Controllers
     public class RolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly ClaimsService claimsService;
 
         public RolesController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ClaimsService claimsService)
         {
             this.roleManager = roleManager;
-            this.userManager = userManager;
-            this.claimsService = claimsService;
         }
 
         [HttpGet]
@@ -56,7 +52,7 @@ namespace Identity.Controllers
             var result = await roleManager.CreateAsync(role);
             if (result != null && result.Succeeded)
             {
-                return Ok();
+                return NoContent();
             }
             else
             {
@@ -77,7 +73,7 @@ namespace Identity.Controllers
             var result = await roleManager.DeleteAsync(role);
             if (result != null && result.Succeeded)
             {
-                return NoContent();
+                return Ok();
             }
             else
             {
