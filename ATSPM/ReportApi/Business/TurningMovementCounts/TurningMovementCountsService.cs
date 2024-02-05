@@ -32,22 +32,22 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             string locationIdentifier,
             string LocationDescription)
         {
-            //var plans = planService.GetBasicPlans(options.Start, options.End, locationIdentifier, plans);
+            //var plans = planService.GetBasicPlans(options.Start, options.End, LocationIdentifier, plans);
             var tmcDetectors = new List<Detector>();
             FindLaneDetectors(tmcDetectors, movementType, detectorsByDirection, laneType);
 
             if (tmcDetectors.Count == 0)
                 return null;
 
-            var laneVolumes = GetVolumeDictionaryByDetector(tmcDetectors, options.Start, options.End, detectorEvents, options.SelectedBinSize);
-            var allLanesMovementVolumes = new VolumeCollection(laneVolumes.Values.ToList(), options.SelectedBinSize);
+            var laneVolumes = GetVolumeDictionaryByDetector(tmcDetectors, options.Start, options.End, detectorEvents, options.BinSize);
+            var allLanesMovementVolumes = new VolumeCollection(laneVolumes.Values.ToList(), options.BinSize);
             var laneNumberVolumes = new Dictionary<int, VolumeCollection>();
             var lanes = new List<Lane>();
 
             foreach (var laneNumber in tmcDetectors.Select(d => d.LaneNumber).Distinct())
             {
                 var volumes = laneVolumes.Where(l => l.Key.LaneNumber == laneNumber).ToList();
-                var laneVolume = new VolumeCollection(volumes.Select(l => l.Value).ToList(), options.SelectedBinSize);
+                var laneVolume = new VolumeCollection(volumes.Select(l => l.Value).ToList(), options.BinSize);
                 var firstDetector = volumes.FirstOrDefault();
 
                 lanes.Add(new Lane
@@ -65,9 +65,9 @@ namespace ATSPM.ReportApi.Business.TurningMovementCounts
             var totalDetectorCounts = allLanesMovementVolumes.TotalDetectorCounts;
             var flu = totalDetectorCounts / (tmcDetectors.Count * (double)highestDetectorCountByLane);
 
-            var peakHour = GetPeakHour(allLanesMovementVolumes, 60 / options.SelectedBinSize);
+            var peakHour = GetPeakHour(allLanesMovementVolumes, 60 / options.BinSize);
             var peakHourEnd = peakHour.Key.AddHours(1);
-            var binMultiplier = 60 / options.SelectedBinSize;
+            var binMultiplier = 60 / options.BinSize;
 
             var peakHourMaxVolume = allLanesMovementVolumes.Items
                 .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)

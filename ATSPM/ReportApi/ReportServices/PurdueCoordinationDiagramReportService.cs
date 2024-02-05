@@ -1,5 +1,4 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
@@ -63,7 +62,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).ToList();
+            var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
 
             //if (finalResultcheck.IsNullOrEmpty())
             //{
@@ -84,11 +83,11 @@ namespace ATSPM.ReportApi.ReportServices
                 phaseDetail,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 null,
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
-                options.ShowVolumes);
+                options.GetVolume);
             if (LocationPhase == null)
             {
                 return null;
