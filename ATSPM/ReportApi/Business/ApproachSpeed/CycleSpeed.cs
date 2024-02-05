@@ -20,7 +20,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
                 SpeedEvents = new List<SpeedEvent>();
             else
                 SpeedEvents = speeds.Where(s =>
-                    s.TimeStamp >= GreenEvent.AddSeconds(15) && s.TimeStamp < YellowEvent && s.Mph >= 5).ToList();
+                    s.Timestamp >= GreenEvent.AddSeconds(15) && s.Timestamp < YellowEvent && s.Mph >= 5).ToList();
         }
     }
 }
