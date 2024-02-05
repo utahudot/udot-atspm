@@ -1,5 +1,6 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
 using System;

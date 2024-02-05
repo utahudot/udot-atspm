@@ -1,8 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using ATSPM.Application.Repositories;
+<<<<<<< HEAD
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Data;
+=======
 using ATSPM.Infrastructure.Extensions;
+>>>>>>> main
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.ReportApi.Business.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;

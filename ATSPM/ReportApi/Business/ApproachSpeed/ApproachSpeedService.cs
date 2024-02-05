@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using Duende.IdentityServer.Extensions;
 
@@ -25,7 +26,7 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             List<SpeedEvent> speedEvents,
             Detector detector)
         {
-            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.TimeStamp >= options.Start && d.TimeStamp < options.End).ToList();
+            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.Timestamp >= options.Start && d.Timestamp < options.End).ToList();
             var speedDetector = GetSpeedDetector(
                 detector,
                 options.Start,

@@ -22,539 +22,124 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Aggregation
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ATSPM.Data.Models.ApproachPcdAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregationBase", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LocationIdentifier")
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("ArchiveDate")
+                        .HasColumnType("Date");
 
-                    b.Property<bool>("IsProtectedPhase")
-                        .HasColumnType("bit");
+                    b.Property<string>("DataType")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("ArrivalsOnGreen")
-                        .HasColumnType("int");
+                    b.HasKey("LocationIdentifier", "ArchiveDate", "DataType");
 
-                    b.Property<int>("ArrivalsOnRed")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ArrivalsOnYellow")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TotalDelay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Volume")
-                        .HasColumnType("int");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber", "IsProtectedPhase");
-
-                    b.ToTable("ApproachPcdAggregations", t =>
+                    b.ToTable("CompressedAggregations", t =>
                         {
-                            t.HasComment("Approach Pcd Aggregation");
+                            t.HasComment("Compressed aggregations");
                         });
+
+                    b.HasDiscriminator<string>("DataType");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ApproachSpeedAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachPcdAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Speed15th")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Speed85th")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SpeedVolume")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SummedSpeed")
-                        .HasColumnType("int");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "ApproachId");
-
-                    b.ToTable("ApproachSpeedAggregations", t =>
-                        {
-                            t.HasComment("Approach Speed Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("ApproachPcdAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ApproachSplitFailAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachSpeedAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsProtectedPhase")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Cycles")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GreenOccupancySum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GreenTimeSum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RedOccupancySum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RedTimeSum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SplitFailures")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "ApproachId", "PhaseNumber", "IsProtectedPhase");
-
-                    b.ToTable("ApproachSplitFailAggregations", t =>
-                        {
-                            t.HasComment("Approach Split Fail Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("ApproachSpeedAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.ApproachYellowRedActivationAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachSplitFailAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsProtectedPhase")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Cycles")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SevereRedLightViolations")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TotalRedLightViolations")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ViolationTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YellowActivations")
-                        .HasColumnType("int");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber", "IsProtectedPhase");
-
-                    b.ToTable("ApproachYellowRedActivationAggregations", t =>
-                        {
-                            t.HasComment("Approach Yellow Red Activation Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("ApproachSplitFailAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.DetectorEventCountAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.ApproachYellowRedActivationAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<int>("DetectorPrimaryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LocationIdentifier")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "DetectorPrimaryId");
-
-                    b.ToTable("DetectorEventCountAggregations", t =>
-                        {
-                            t.HasComment("Detector Event Count Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("ApproachYellowRedActivationAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.LocationEventCountAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier");
-
-                    b.ToTable("LocationEventCountAggregations", t =>
-                        {
-                            t.HasComment("Location Event Count Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("DetectorEventCountAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.LocationPlanAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseCycleAggregation>", b =>
                 {
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PlanNumber")
-                        .HasColumnType("int");
-
-                    b.HasKey("LocationIdentifier", "Start", "End");
-
-                    b.ToTable("LocationPlanAggregations", t =>
-                        {
-                            t.HasComment("Location Plan Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PhaseCycleAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PhaseCycleAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseLeftTurnGapAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GreenTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RedTime")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TotalGreenToGreenCycles")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalRedToRedCycles")
-                        .HasColumnType("int");
-
-                    b.Property<int>("YellowTime")
-                        .HasColumnType("int");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber");
-
-                    b.ToTable("PhaseCycleAggregations", t =>
-                        {
-                            t.HasComment("Phase Cycle Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PhaseLeftTurnGapAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PhaseLeftTurnGapAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseSplitMonitorAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApproachId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GapCount1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount10")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount11")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount2")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount3")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount4")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount5")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount6")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount7")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount8")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapCount9")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("SumGapDuration1")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SumGapDuration2")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SumGapDuration3")
-                        .HasColumnType("float");
-
-                    b.Property<double>("SumGreenTime")
-                        .HasColumnType("float");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber");
-
-                    b.ToTable("PhaseLeftTurnGapAggregations", t =>
-                        {
-                            t.HasComment("Phase Left Turn Gap Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PhaseSplitMonitorAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PhaseSplitMonitorAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PhaseTerminationAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EightyFifthPercentileSplit")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SkippedCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber");
-
-                    b.ToTable("PhaseSplitMonitorAggregations", t =>
-                        {
-                            t.HasComment("Phase Split Monitor Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PhaseTerminationAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PhaseTerminationAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PreemptionAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PhaseNumber")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ForceOffs")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GapOuts")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MaxOuts")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Unknown")
-                        .HasColumnType("int");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PhaseNumber");
-
-                    b.ToTable("PhaseTerminationAggregations", t =>
-                        {
-                            t.HasComment("Phase Termination Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PreemptionAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PreemptionAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.PriorityAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<int>("PreemptNumber")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PreemptRequests")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PreemptServices")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PreemptNumber");
-
-                    b.ToTable("PreemptionAggregations", t =>
-                        {
-                            t.HasComment("Preemption Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("PriorityAggregation");
                 });
 
-            modelBuilder.Entity("ATSPM.Data.Models.PriorityAggregation", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.SignalEventCountAggregation>", b =>
                 {
-                    b.Property<DateTime>("BinStartTime")
-                        .HasColumnType("datetime2");
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<string>("LocationIdentifier")
-                        .HasMaxLength(10)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(10)");
+                    b.HasDiscriminator().HasValue("SignalEventCountAggregation");
+                });
 
-                    b.Property<int>("PriorityNumber")
-                        .HasColumnType("int");
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedAggregations<ATSPM.Data.Models.AggregationModels.SignalPlanAggregation>", b =>
+                {
+                    b.HasBaseType("ATSPM.Data.Models.CompressedAggregationBase");
 
-                    b.Property<DateTime>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PriorityRequests")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PriorityServiceEarlyGreen")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PriorityServiceExtendedGreen")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BinStartTime", "LocationIdentifier", "PriorityNumber");
-
-                    b.ToTable("PriorityAggregations", t =>
-                        {
-                            t.HasComment("Priority Aggregation");
-                        });
+                    b.HasDiscriminator().HasValue("SignalPlanAggregation");
                 });
 #pragma warning restore 612, 618
         }
