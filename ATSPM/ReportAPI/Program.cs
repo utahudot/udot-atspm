@@ -110,29 +110,13 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
+
+    s.AddAtspmAuthentication(h, builder);
+    s.AddAtspmAuthorization(h);
+
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
-    //mocked report services
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PurdueCoordinationDiagramOptions, PurdueCoordinationDiagramResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimeSpaceDiagramOptions, TimeSpaceDiagramResults>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
-    //s.AddScoped<TestDataUtility>();
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
