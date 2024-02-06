@@ -9,10 +9,15 @@ using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace ATSPM.Infrastructure.Extensions
 {
@@ -55,10 +60,6 @@ namespace ATSPM.Infrastructure.Extensions
                     {
                         return builder.UseOracle(opt.ConnectionString, opt => opt.MigrationsAssembly(OracleProvider.Migration));
                     }
-                //case MongoDBProvider.ProviderName:
-                //    {
-                //        return builder.UseMongoDB(opt.ConnectionString, null);
-                //    }
 
                 default:
                     {
@@ -80,9 +81,119 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddDbContext<AggregationContext>(db => db.GetDbProviderInfo<AggregationContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<EventLogContext>(db => db.GetDbProviderInfo<EventLogContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<SpeedContext>(db => db.GetDbProviderInfo<SpeedContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
-            //services.AddDbContext<LegacyEventLogContext>(db => db.GetDbProviderInfo<LegacyEventLogContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
             services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
 
+            return services;
+        }
+        public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
+        {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           .AddJwtBearer(options =>
+           {
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+                   ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                   ValidAudience = builder.Configuration["Jwt:Audience"],
+                   IssuerSigningKey = new SymmetricSecurityKey(
+                       Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+               };
+           });
+            return services;
+        }
+        public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CanViewUsers", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c =>
+                            (c.Type == ClaimTypes.Role && c.Value == "User:View") ||
+                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanEditUsers", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c =>
+                            (c.Type == ClaimTypes.Role && c.Value == "User:Edit") ||
+                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanDeleteUsers", policy =>
+                    policy.RequireAssertion(context =>
+                        context.User.HasClaim(c =>
+                            (c.Type == ClaimTypes.Role && c.Value == "User:Delete") ||
+                            (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+
+
+                options.AddPolicy("CanViewRoles", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Role:View") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanEditRoles", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Role:Edit") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanDeleteRoles", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Role:Delete") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+
+
+                options.AddPolicy("CanViewLocationConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:View") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanEditLocationConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Edit") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanDeleteLocationConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "LocationConfiguration:Delete") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+
+
+                options.AddPolicy("CanViewGeneralConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:View") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanEditGeneralConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Edit") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanDeleteGeneralConfigurations", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "GeneralConfiguration:Delete") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+
+
+                options.AddPolicy("CanViewData", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Data:View") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+                options.AddPolicy("CanEditData", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Data:Edit") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+
+
+                options.AddPolicy("CanViewWatchDog", policy =>
+                   policy.RequireAssertion(context =>
+                       context.User.HasClaim(c =>
+                           (c.Type == ClaimTypes.Role && c.Value == "Watchdog:View") ||
+                           (c.Type == ClaimTypes.Role && c.Value == "Admin"))));
+            });
             return services;
         }
 
