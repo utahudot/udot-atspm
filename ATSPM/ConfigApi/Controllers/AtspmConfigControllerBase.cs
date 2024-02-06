@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime;
 
 namespace ATSPM.ConfigApi.Controllers
 {
@@ -44,6 +44,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CanViewGeneralConfigurations")]
         public virtual ActionResult<IQueryable<T>> Get(ODataQueryOptions<T> options)
         {
             return Ok(_repository.GetList());
@@ -62,6 +63,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Policy = "CanViewGeneralConfigurations")]
         public virtual ActionResult<T> Get(TKey key, ODataQueryOptions<T> options)
         {
             var result = _repository.GetList().Where(w => w.Id.Equals(key));
@@ -84,6 +86,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Post))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CanEditGeneralConfigurations")]
         public virtual async Task<IActionResult> Post([FromBody] T item)
         {
             if (!ModelState.IsValid)
@@ -134,6 +137,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CanEditGeneralConfigurations")]
         public virtual async Task<IActionResult> Patch(TKey key, [FromBody] Delta<T> item)
         {
             if (!ModelState.IsValid)
@@ -168,6 +172,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(Policy = "CanDeleteGeneralConfigurations")]
         public virtual async Task<IActionResult> Delete(TKey key)
         {
             var i = await _repository.LookupAsync(key);
