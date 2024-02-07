@@ -110,6 +110,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
+    s.AddAtspmEFEventLogRepositories();
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
     //mocked report services
@@ -136,7 +137,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
