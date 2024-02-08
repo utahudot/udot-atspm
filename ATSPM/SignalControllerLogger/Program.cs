@@ -1,10 +1,12 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Workflows;
+using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
@@ -17,6 +19,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Application.Common.EqualityComparers;
+using System.Net.NetworkInformation;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -99,7 +104,7 @@ namespace ATSPM.LocationControllerLogger
 
 
                     //decoders
-                    //s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
+                    s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
                     //s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
 
                     //LocationControllerDataFlow
@@ -132,6 +137,7 @@ namespace ATSPM.LocationControllerLogger
                         o.PingControllerToVerify = true;
                         o.ConnectionTimeout = 2000;
                         o.ReadTimeout = 2000;
+                        //o.DeleteFile = true;
                     });
 
 
@@ -142,212 +148,124 @@ namespace ATSPM.LocationControllerLogger
 
             //await host.RunAsync();
 
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var ftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
-            //        .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
-            //        .Where(w => w.Ipaddress.IsValidIPAddress())
-            //        .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Ftp)
-            //        .Take(3);
-
-            //    var httpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
-            //        .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
-            //        .Where(w => w.Ipaddress.IsValidIPAddress())
-            //        .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
-            //        .Take(3);
-
-            //    var devices = ftpDevices.Union(httpDevices);
-
-            //    Console.WriteLine($"{devices.Count()}");
-
-            //    var input = new BufferBlock<Device>();
-
-            //    //var signalControllers = new ActionBlock<Device>(i =>
-            //    //{
-            //    //    Console.WriteLine($"signalControllers - {i}");
-            //    //});
-
-            //    //var rampController = new ActionBlock<Device>(i => Console.WriteLine($"rampController - {i}"));
-            //    //var aiCamera = new ActionBlock<Device>(i => Console.WriteLine($"aiCamera - {i}"));
-            //    //var firCamera = new ActionBlock<Device>(i => Console.WriteLine($"firCamera - {i}"));
-
-            //    //input.LinkTo(signalControllers, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.SignalController);
-            //    //input.LinkTo(rampController, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.RampController);
-            //    //input.LinkTo(aiCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.AICamera);
-            //    //input.LinkTo(firCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.FIRCamera);
-
-            //    //var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
-            //    //{
-            //    //    using (var downloadscope = host.Services.CreateScope())
-            //    //    {
-            //    //        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
-
-            //    //        return downloader.Execute(t);
-            //    //    }
-
-            //    //    //await foreach (var file in downloader.Execute(t))
-            //    //    //{
-            //    //    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
-            //    //    //    return file;
-            //    //    //}
-            //    //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
-
-
-            //    var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
-
-            //    var downloadResult = new ActionBlock<FileInfo>(t => Console.WriteLine($"Downloaded file - {t}"));
-
-            //    input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
-            //    downloadStep.LinkTo(downloadResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-            //    foreach (var d in devices)
-            //    {
-            //        //Console.WriteLine($"{d}");
-            //        input.Post(d);
-            //    }
-
-            //    input.Complete();
-
-
-            //    await downloadResult.Completion;
-
-
-            //    Console.WriteLine($"*********************************************complete");
-            //}
-
-
-
-            //var type = "System.Collections.Generic.List`1[[ATSPM.Data.Models.ControllerEventLog, ATSPM.Data]], System.Private.CoreLib";
-
-
-            //var e = new IndianaEvent()
-            //{
-            //    LocationIdentifier = "1234",
-            //    Timestamp = DateTime.Now,
-            //    EventCode = 1,
-            //    EventParam = 1
-            //};
-
-            //var list = new List<IndianaEvent>() { e };
-
-
-
-
-            //var test2 = JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(test.GZipDecompressToString(), new JsonSerializerSettings()
-            //{
-            //    TypeNameHandling = TypeNameHandling.Arrays
-            //});
-
-            //Console.WriteLine($"{test2?.Count()}");
-
-
-            //Console.WriteLine($"{typeof(IndianaEvent).FullName}, {typeof(IndianaEvent).Assembly}");
-            //Console.WriteLine($"{typeof(IndianaEvent).AssemblyQualifiedName}");
-
-
             using (var scope = host.Services.CreateScope())
             {
-                var loc = "1000";
-                var timestamp = DateTime.Now.ToString();
+                //var ftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                //    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                //    .Where(w => w.Ipaddress.IsValidIPAddress())
+                //    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Ftp)
+                //    .Take(3);
 
-                //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+                //var httpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                //    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                //    .Where(w => w.Ipaddress.IsValidIPAddress())
+                //    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
+                //    .Take(3);
 
-                //for (var i = 0; i < 5; i++)
+                var sftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
+                    .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
+                    .Where(w => w.Ipaddress.IsValidIPAddress())
+                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
+                    .Take(1);
+
+                var devices = sftpDevices;
+
+                Console.WriteLine($"{devices.Count()}");
+
+                var input = new BufferBlock<Device>();
+
+                //var signalControllers = new ActionBlock<Device>(i =>
                 //{
-                //    var indianaEvents = Enumerable.Range(1, 10).Select(s => new IndianaEvent()
-                //    {
-                //        LocationIdentifier = loc,
-                //        Timestamp = DateTime.Now,
-                //        EventCode = (DataLoggerEnum)Random.Shared.Next(1, 255),
-                //        EventParam = (byte)Random.Shared.Next(1, 255)
-                //    }).ToList();
-
-                //    repo.Add(new CompressedEventLogs<IndianaEvent>()
-                //    {
-                //        LocationIdentifier = loc,
-                //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                //        DataType = typeof(IndianaEvent),
-                //        DeviceId = i,
-                //        Data = indianaEvents
-                //    });
-
-                //    var speedEvents = Enumerable.Range(1, 10).Select(s => new SpeedEvent()
-                //    {
-                //        LocationIdentifier = loc,
-                //        Timestamp = DateTime.Now,
-                //        DetectorId = "1",
-                //        Mph = Random.Shared.Next(1, 100),
-                //        Kph = Random.Shared.Next(1, 100)
-                //    }).ToList();
-
-                //repo.Add(new CompressedEventLogs<SpeedEvent>()
-                //{
-                //    LocationIdentifier = loc,
-                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                //    DataType = typeof(SpeedEvent),
-                //    DeviceId = i + 10,
-                //    Data = speedEvents
+                //    Console.WriteLine($"signalControllers - {i}");
                 //});
 
+                //var rampController = new ActionBlock<Device>(i => Console.WriteLine($"rampController - {i}"));
+                //var aiCamera = new ActionBlock<Device>(i => Console.WriteLine($"aiCamera - {i}"));
+                //var firCamera = new ActionBlock<Device>(i => Console.WriteLine($"firCamera - {i}"));
 
+                //input.LinkTo(signalControllers, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.SignalController);
+                //input.LinkTo(rampController, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.RampController);
+                //input.LinkTo(aiCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.AICamera);
+                //input.LinkTo(firCamera, new DataflowLinkOptions() { PropagateCompletion = true }, i => i.DeviceConfiguration.Product.DeviceType == Data.Enums.DeviceTypes.FIRCamera);
 
-                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-                //foreach (var i in repo.GetEventsBetweenDates(loc, DateTime.Now.AddHours(-4), DateTime.Now.AddHours(4)))
+                //var downloadStep = new TransformManyBlock<Device, FileInfo>(t =>
                 //{
-                //    Console.WriteLine($"{i}");
-                //}
+                //    using (var downloadscope = host.Services.CreateScope())
+                //    {
+                //        var downloader = downloadscope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
+
+                //        return downloader.Execute(t);
+                //    }
+
+                //    //await foreach (var file in downloader.Execute(t))
+                //    //{
+                //    //    //Console.WriteLine($"{t.Ipaddress} -- {file.FullName}");
+                //    //    return file;
+                //    //}
+                //}, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5});
 
 
+                var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
+                var decodeStep = new DecodeDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
+                var logArchiveBatch = new BatchBlock<EventLogModelBase>(50000);
 
-                var indianaEvents = Enumerable.Range(1, 100).Select(s => new IndianaEvent()
+                var archiveLogs = new TransformManyBlock<EventLogModelBase[], CompressedEventLogBase>(t =>
                 {
-                    LocationIdentifier = loc,
-                    Timestamp = DateTime.Parse(timestamp),
-                    EventCode = (DataLoggerEnum)Random.Shared.Next(1, 10),
-                    EventParam = (byte)Random.Shared.Next(1, 10)
-                }).ToList();
 
-                Console.WriteLine($"total created: {indianaEvents.Count}");
+                    var test = t.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier, g.GetType()))
+                    .Select(s => Stuff.MakeItRain<IndianaEvent>(s.Key.Item3));
 
-                //var noequal = new HashSet<IndianaEvent>(indianaEvents);
 
-                //Console.WriteLine($"{noequal.Count}");
 
-                await repo.AddAsync(new CompressedEventLogs<IndianaEvent>()
-                {
-                    LocationIdentifier = loc,
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    DataType = typeof(IndianaEvent),
-                    DeviceId = 3,
-                    Data = indianaEvents
+
+                    //t.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier))
+                    //.Select(s => new CompressedEventLogs<>() { SignalIdentifier = s.Key.LocationIdentifier, ArchiveDate = s.Key.Date, LogData = t.ToList() });
                 });
 
-                //Console.WriteLine($"total saved: {repo.GetList().AsEnumerable().SelectMany(m => m.Data).Count()}");
-
-
-
-
-                //foreach (var i in repo.GetEventsBetweenDates(loc, DateTime.Now.AddHours(-4), DateTime.Now.AddHours(4)))
+                var actionResult = new ActionBlock<EventLogModelBase[]>(async t => Console.WriteLine($"{t}"));
                 //{
-                //    Console.WriteLine($"{i}");
-                //}
+                //    var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                //var start = DateOnly.FromDateTime(DateTime.Now.AddDays(-2));
-                //var end = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+                //    var searchLog = await repo.LookupAsync(t);
 
-                //var test1 = repo.GetArchivedEvents("1000", start, end, typeof(IndianaEvent), 1);
-                //var test2 = repo.GetArchivedEvents<IndianaEvent>("1000", start, end, 1);
-                //var test3 = repo.GetArchivedEvents("1000", start, end);
-                //var test4 = repo.GetArchivedEvents("1000", start, end, typeof(IndianaEvent));
-                //var test5 = repo.GetArchivedEvents("1000", start, end, 1);
-                //var test6 = repo.GetArchivedEvents<IndianaEvent>("1000", start, end);
+                //    if (searchLog != null)
+                //    {
+                //        var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.LogData, archive.LogData));
+
+                //        searchLog.Data = eventLogs.ToList();
+
+                //        await EventLogArchive.UpdateAsync(searchLog);
+
+                //        result.Add(searchLog);
+                //    }
+                //    else
+                //    {
+                //        await EventLogArchive.AddAsync(archive);
+                //        result.Add(archive);
+                //    }
+                //});
+
+                input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
+                downloadStep.LinkTo(decodeStep, new DataflowLinkOptions() { PropagateCompletion = true });
+                decodeStep.LinkTo(logArchiveBatch, new DataflowLinkOptions() { PropagateCompletion = true });
+                logArchiveBatch.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
+
+                foreach (var d in devices)
+                {
+                    //Console.WriteLine($"{d}");
+                    input.Post(d);
+                }
+
+                input.Complete();
 
 
+                await actionResult.Completion;
 
 
-
+                Console.WriteLine($"*********************************************complete");
             }
+
+
 
 
 
@@ -358,8 +276,17 @@ namespace ATSPM.LocationControllerLogger
 
         }
 
-        
     }
+
+    public static class Stuff
+    {
+        public static CompressedEventLogs<T> MakeItRain<T>(Type type) where T : EventLogModelBase
+        {
+            return (CompressedEventLogs<T>)Activator.CreateInstance(typeof(CompressedEventLogs<>).MakeGenericType(typeof(T)));
+        }
+    }
+
+    
 
     public static class Testing
     {
@@ -390,6 +317,29 @@ namespace ATSPM.LocationControllerLogger
                 Console.WriteLine($"device: {input.DeviceConfiguration.Protocol} - downloader: {downloader.GetType().Name}");
 
                 return downloader.Execute(input, cancelToken);
+            }
+        }
+    }
+
+    public class DecodeDeviceData : TransformManyProcessStepBaseAsync<FileInfo, EventLogModelBase>
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        /// <inheritdoc/>
+        public DecodeDeviceData(IServiceProvider serviceProvider, ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        protected override IAsyncEnumerable<EventLogModelBase> Process(FileInfo input, CancellationToken cancelToken = default)
+        {
+            using (var scope = _serviceProvider.CreateAsyncScope())
+            {
+                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder>().First(c => c.CanExecute(input));
+
+                //Console.WriteLine($"device: {input.DeviceConfiguration.Protocol} - downloader: {downloader.GetType().Name}");
+
+                return decoder.Execute(input, cancelToken);
             }
         }
     }
