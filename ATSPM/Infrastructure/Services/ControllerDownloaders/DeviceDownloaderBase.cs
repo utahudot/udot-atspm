@@ -69,7 +69,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidLocationControllerIPAddressException"></exception>
+        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<FileInfo> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
@@ -164,21 +164,21 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             }
 
                             // TODO: delete file here
-                            //if (_options.DeleteFile)
-                            //{
-                            //    try
-                            //    {
-                            //        await client.DeleteFileAsync(file, cancelToken);
-                            //    }
-                            //    catch (ControllerDownloadFileException e)
-                            //    {
-                            //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Exception deleting file {file} from {ip}", file, ipaddress);
-                            //    }
-                            //    catch (OperationCanceledException e)
-                            //    {
-                            //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Operation canceled connecting to {ip}", ipaddress);
-                            //    }
-                            //}
+                            if (_options.DeleteFile)
+                            {
+                                try
+                                {
+                                    await _client.DeleteFileAsync(file, cancelToken);
+                                }
+                                catch (ControllerDownloadFileException e)
+                                {
+                                    _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Exception deleting file {file} from {ip}", file, ipaddress);
+                                }
+                                catch (OperationCanceledException e)
+                                {
+                                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Operation canceled connecting to {ip}", ipaddress);
+                                }
+                            }
 
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
