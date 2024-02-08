@@ -59,7 +59,10 @@ namespace ATSPM.ReportApi.ReportServices
             var tasks = new List<Task<IEnumerable<SplitFailsResult>>>();
             foreach (var phase in phaseDetails)
             {
-                tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents, false));
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                {
+                    tasks.Add(GetChartDataForApproach(parameter, phase, controllerEventLogs, planEvents));
+                }
             }
 
             var results = await Task.WhenAll(tasks);
@@ -78,13 +81,12 @@ namespace ATSPM.ReportApi.ReportServices
             SplitFailOptions options,
             PhaseDetail phaseDetail,
             List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
-            bool usePermissivePhase)
+            List<ControllerEventLog> planEvents)
         {
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 phaseDetail.PhaseNumber,
-                options.UsePermissivePhase,
+                options.GetPermissivePhase,
                 options.Start,
                 options.End);
             if (cycleEvents.IsNullOrEmpty())
