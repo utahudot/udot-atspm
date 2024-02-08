@@ -1,12 +1,10 @@
 ﻿using ATSPM.Application.Common;
-using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
 using ATSPM.Application.Services;
-using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.BaseClasses;
-using ATSPM.Domain.Common;
 using ATSPM.Domain.Exceptions;
 using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
@@ -15,13 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public abstract class ControllerDecoderBase : ServiceObjectBase, ILocationControllerDecoder
+    public abstract class ControllerDecoderBase : ExecutableServiceWithProgressAsyncBase<FileInfo, EventLogModelBase, ControllerDecodeProgress>, ILocationControllerDecoder
     {
         public event EventHandler CanExecuteChanged;
 
@@ -33,7 +30,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #endregion
 
-        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options)
+        public ControllerDecoderBase(ILogger log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(true)
         {
             _log = log;
             _options = options?.Get(this.GetType().Name) ?? options?.Value;
@@ -49,22 +46,17 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         //{
         //}
 
-        private bool IsAcceptableDateRange(ControllerEventLog log)
+        private bool IsAcceptableDateRange(EventLogModelBase log)
         {
             return log.Timestamp <= DateTime.Now && log.Timestamp > _options.EarliestAcceptableDate;
         }
 
         public abstract bool CanExecute(FileInfo parameter);
 
-        public Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, CancellationToken cancelToken = default)
-        {
-            return ExecuteAsync(parameter, default, cancelToken);
-        }
-
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="ExecuteException"></exception>
-        public async Task<HashSet<ControllerEventLog>> ExecuteAsync(FileInfo parameter, IProgress<ControllerDecodeProgress> progress = null, CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<EventLogModelBase> Execute(FileInfo parameter, IProgress<ControllerDecodeProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"FileInfo parameter can not be null");
@@ -76,7 +68,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             {
                 var logMessages = new ControllerLoggerDecoderLogMessages(_log, parameter);
 
-                HashSet<ControllerEventLog> decodedLogs = new HashSet<ControllerEventLog>(new ControllerEventLogEqualityComparer());
+                HashSet<EventLogModelBase> decodedLogs = new();
 
                 var memoryStream = parameter.ToMemoryStream();
 
@@ -86,15 +78,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 {
                     logMessages.DecodeLogFileMessage(parameter.FullName);
 
-                    await foreach (var log in DecodeAsync(parameter.Directory.Name, memoryStream, cancelToken))
-                    {
-                        if (IsAcceptableDateRange(log))
-                        {
-                            decodedLogs.Add(log);
-
-                            progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
-                        }                     
-                    }
+                    decodedLogs = Decode(parameter.Directory.Name, memoryStream);
 
                     if (_options.DeleteFile)
                         parameter.Delete();
@@ -104,34 +88,25 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     logMessages.DecodeLogFileException(parameter.FullName, e);
                 }
 
+                memoryStream.Dispose();
+
                 logMessages.DecodedLogsMessage(parameter.FullName, decodedLogs.Count);
 
-                return decodedLogs;
+                foreach (var log in decodedLogs)
+                {
+                    if (IsAcceptableDateRange(log))
+                    {
+                        //TODO: add this back in
+                        //progress?.Report(new ControllerDecodeProgress(log, decodedLogs.Count - 1, decodedLogs.Count));
+
+                        yield return log;
+                    }
+                }
             }
             else
             {
                 throw new ExecuteException();
             }
-        }
-
-        Task IExecuteAsync.ExecuteAsync(object parameter)
-        {
-            if (parameter is FileInfo p)
-                return Task.Run(() => ExecuteAsync(p, default, default));
-            return default;
-        }
-
-        bool ICommand.CanExecute(object parameter)
-        {
-            if (parameter is FileInfo p)
-                return CanExecute(p);
-            return default;
-        }
-
-        void ICommand.Execute(object parameter)
-        {
-            if (parameter is FileInfo p)
-                Task.Run(() => ExecuteAsync(p, default, default));
         }
 
         public virtual bool IsCompressed(Stream stream)
@@ -154,7 +129,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, CancellationToken cancelToken = default);
+        public abstract HashSet<EventLogModelBase> Decode(string locationId, Stream stream);
 
         #endregion
     }

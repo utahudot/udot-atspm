@@ -95,7 +95,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
             using (var scope = _serviceProvider.CreateScope())
             {
                 var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder>().First(c => c.CanExecute(file));
-                logList = await decoder.ExecuteAsync(file, cancellationToken);
+                //logList = await decoder.ExecuteAsync(file, cancellationToken);
             }
 
             return logList;
