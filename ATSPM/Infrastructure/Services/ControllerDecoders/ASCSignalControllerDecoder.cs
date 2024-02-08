@@ -1,6 +1,8 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -43,13 +45,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override HashSet<EventLogModelBase> Decode(string locationId, Stream stream)
         {
             if (string.IsNullOrEmpty(locationId))
                 throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
+
+            HashSet<EventLogModelBase> decodedLogs = new();
 
             using (var br = new BinaryReader(stream, Encoding.ASCII))
             {
@@ -78,16 +82,16 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalIdentifier = locationId };
+                        var log = new IndianaEvent() { LocationIdentifier = locationId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {
                             //getting the EventCode
                             if (eventPart == 1)
-                                log.EventCode = Convert.ToInt32(br.ReadByte());
+                                log.EventCode = (DataLoggerEnum)Convert.ToInt16(br.ReadByte());
 
                             if (eventPart == 2)
-                                log.EventParam = Convert.ToInt32(br.ReadByte());
+                                log.EventParam = br.ReadByte();
 
                             //getting the time offset
                             if (eventPart == 3)
@@ -101,10 +105,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                             }
                         }
 
-                        yield return log;
+                        decodedLogs.Add(log);
                     }
                 }
             }
+
+            return decodedLogs;
         }
 
         #endregion
