@@ -30,7 +30,7 @@ namespace ATSPM.Data.Models
         /// Not sure what this does
         /// </summary>
         public bool ShowOnAggregationSite { get; set; }
-        
+
         /// <summary>
         /// Display order to show measures
         /// </summary>
@@ -47,6 +47,13 @@ namespace ATSPM.Data.Models
 
         /// <inheritdoc/>
         public virtual ICollection<MeasureComment> MeasureComments { get; set; } = new HashSet<MeasureComment>();
+
+        #endregion
+
+        #region IRelatedMeasureOptions
+
+        /// <inheritdoc/>
+        public virtual ICollection<MeasureOption> MeasureOptions { get; set; } = new HashSet<MeasureOption>();
 
         #endregion
 
