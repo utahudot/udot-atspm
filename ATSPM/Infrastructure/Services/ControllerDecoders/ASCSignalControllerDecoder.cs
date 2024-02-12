@@ -45,7 +45,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
-        public override HashSet<EventLogModelBase> Decode(string locationId, Stream stream)
+        public override IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream)
         {
             if (string.IsNullOrEmpty(locationId))
                 throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
@@ -53,7 +53,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
 
-            HashSet<EventLogModelBase> decodedLogs = new();
+            HashSet<IndianaEvent> decodedLogs = new();
 
             using (var br = new BinaryReader(stream, Encoding.ASCII))
             {

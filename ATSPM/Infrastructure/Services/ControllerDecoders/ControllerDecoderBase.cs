@@ -78,7 +78,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                 {
                     logMessages.DecodeLogFileMessage(parameter.FullName);
 
-                    decodedLogs = Decode(parameter.Directory.Name, memoryStream);
+                    decodedLogs = new HashSet<EventLogModelBase>(Decode(parameter.Directory.Name, memoryStream));
 
                     if (_options.DeleteFile)
                         parameter.Delete();
@@ -129,7 +129,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
         }
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        public abstract HashSet<EventLogModelBase> Decode(string locationId, Stream stream);
+        public abstract IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream);
 
         #endregion
     }

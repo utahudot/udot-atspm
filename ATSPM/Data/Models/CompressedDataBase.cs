@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventLogModels;
+using System.Collections;
 
 #nullable disable
 
@@ -52,7 +53,7 @@ namespace ATSPM.Data.Models
     public class CompressedEventLogs<T> : CompressedEventLogBase where T : EventLogModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data 
+        public new ICollection<T> Data
         {
             get
             {
@@ -61,9 +62,9 @@ namespace ATSPM.Data.Models
                 {
                     h.LocationIdentifier = LocationIdentifier;
                 }
-                return hs;
+                return hs.ToList();
             }
-            set => base.Data = Enumerable.ToHashSet(value.Cast<T>());
+            set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
         }
     }
 
@@ -92,9 +93,9 @@ namespace ATSPM.Data.Models
                 {
                     h.LocationIdentifier = LocationIdentifier;
                 }
-                return hs;
+                return hs.ToList();
             }
-            set => base.Data = Enumerable.ToHashSet(value.Cast<T>());
+            set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
         }
     }
 }
