@@ -6,7 +6,7 @@
 
         public DateTime InputOn { get; set; }
 
-        public DateTime GateDown { get; set; }
+        public DateTime? GateDown { get; set; }
 
         public double CallMaxOut { get; set; }
 
