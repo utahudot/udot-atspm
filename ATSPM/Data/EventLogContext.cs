@@ -3,7 +3,10 @@
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Data.Utility;
+using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json;
 
 namespace ATSPM.Data
 {
@@ -58,7 +61,7 @@ namespace ATSPM.Data
             modelBuilder.Entity<CompressedEventLogBase>(builder =>
             {
                 builder.ToTable(t => t.HasComment("Compressed device data log events"));
-                
+
                 builder.HasKey(e => new { e.LocationIdentifier, e.DeviceId, e.ArchiveDate });
 
                 builder.Property(e => e.LocationIdentifier)
@@ -79,8 +82,22 @@ namespace ATSPM.Data
                 builder.HasDiscriminator(d => d.DataType)
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
+                //builder.Property(e => e.Data)
+                //.HasConversion<CompressedListComverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
+
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListComverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
+                    .HasConversion<byte[]>(
+                    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Arrays
+                    }).GZipCompressToByte(),
+                    v => JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.Arrays
+                    }),
+null);
+
+
             });
 
             OnModelCreatingPartial(modelBuilder);
@@ -93,3 +110,5 @@ namespace ATSPM.Data
     //update-database -context EventLogContext
     //drop-database -context EventLogContext
 }
+
+
