@@ -41,7 +41,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             return parameter.Exists && (parameter.Extension == ".xml" || parameter.Extension == ".XML");
         }
 
-        public override HashSet<EventLogModelBase> Decode(string locationId, Stream stream)
+        public override IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream)
         {
             //cancelToken.ThrowIfCancellationRequested();
 
