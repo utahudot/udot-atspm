@@ -25,6 +25,10 @@ using System.Net.NetworkInformation;
 using ATSPM.Data;
 using Newtonsoft.Json;
 using AutoFixture;
+using ATSPM.Application.Analysis.Common;
+using ATSPM.Application.Analysis.WorkflowFilters;
+using ATSPM.Application.Analysis.WorkflowSteps;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -107,8 +111,8 @@ namespace ATSPM.LocationControllerLogger
 
 
                     //decoders
-                    s.AddScoped<ILocationControllerDecoder, ASCLocationControllerDecoder>();
-                    //s.AddScoped<ILocationControllerDecoder, MaxTimeLocationControllerDecoder>();
+                    s.AddScoped<ILocationControllerDecoder<IndianaEvent>, ASCLocationControllerDecoder>();
+                    //s.AddScoped<ILocationControllerDecoder<IndianaEvent>, MaxTimeLocationControllerDecoder>();
 
                     //LocationControllerDataFlow
                     //s.AddScoped<ILocationControllerLoggerService, CompressedLocationControllerLogger>();
@@ -210,88 +214,43 @@ namespace ATSPM.LocationControllerLogger
                 Console.WriteLine($"devices: {devices.Count()}");
 
                 //var input = new BufferBlock<Device>();
-                var input = new BufferBlock<FileInfo>();
+                var input = new BufferBlock<Tuple<Device, FileInfo>>();
 
                 var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
-                var decodeStep = new DecodeDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
-                var logArchiveBatch = new BatchBlock<EventLogModelBase>(50000);
+                //var decodeStep = new DecodeDeviceData<IndianaEvent>(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
+                //var logArchiveBatch = new BatchBlock<Tuple<Device, IndianaEvent>>(50000);
+                //var archiveDeviceData = new ArchiveDeviceData<IndianaEvent>(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
 
-                var testStep = new TransformBlock<EventLogModelBase[], IEnumerable<EventLogModelBase>>(t => t.Cast<IndianaEvent>().ToList());
-
-                var archiveDeviceData = new ArchiveDeviceData<IndianaEvent>(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
+                var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(host.Services, 1);
 
                 //var actionResult = new ActionBlock<CompressedEventLogBase>(async t => Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.Data.Count()}"));
                 var actionResult = new ActionBlock<CompressedEventLogBase>(async t =>
                 {
+                    //Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+
                     var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                    //var searchLog = await repo.LookupAsync(t);
+                    var searchLog = await repo.LookupAsync(t);
 
-                    Console.WriteLine($"three: {t.Data.GetType()}");
+                    if (searchLog != null)
+                    {
+                        Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& {searchLog.Data.Count()} --- {t.Data.Count()}");
 
-                    await repo.AddAsync(t);
+                        var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.Data, t.Data));
 
+                        searchLog.Data = eventLogs.ToList();
 
-                    //if (t.GetType().IsSubclassOf)
-
-                    //var test1 = t.GetType().GetGenericArguments()[0];
-                    //var test2 = typeof(CompressedEventLogs<>).MakeGenericType(test1);
-                    ////var test3 = (CompressedEventLogBase)Activator.CreateInstance(test2);
-
-                    //dynamic huh = Convert.ChangeType(t, test2);
-
-                    //Console.WriteLine($"{huh.Data.GetType()}");
-
-
-
-
-                    //var test = await repo.GetListAsync(w => w.LocationIdentifier == t.LocationIdentifier);
-                    //var test = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
-
-
-                    //if (t is CompressedEventLogs<IndianaEvent> huh)
-                    //{
-                    //    var test = Newtonsoft.Json.JsonConvert.SerializeObject(t.Data.Take(2), new JsonSerializerSettings()
-                    //    {
-                    //        Formatting = Newtonsoft.Json.Formatting.Indented,
-                    //        TypeNameHandling = TypeNameHandling.Arrays
-                    //    });
-
-
-                    //    Console.WriteLine($"{test}");
-                    //}
-
-                    //if (t is CompressedEventLogs<IndianaEvent> huh)
-                    //    await repo.AddAsync(huh);
-
-
+                        await repo.UpdateAsync(searchLog);
+                    }
+                    else
+                    {
+                        await repo.AddAsync(t);
+                    }
 
                     foreach (var i in repo.GetList())
                     {
                         Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
                     }
-
-
-
-
-                    //var searchLog = test.CompressedEvents.FirstOrDefault();
-
-                    //if (searchLog != null)
-                    //{
-                    //    Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& {searchLog.Data.Count()} --- {t.Data.Count()}");
-
-                    //    var eventLogs = new HashSet<EventLogModelBase>(Enumerable.Union(searchLog.Data, t.Data));
-
-                    //    searchLog.Data = eventLogs.ToList();
-
-                    //    await repo.UpdateAsync(searchLog);
-                    //}
-                    //else
-                    //{
-                    //    if (t is CompressedEventLogs<IndianaEvent> huh)
-                    //        await repo.AddAsync(huh);
-                    //    //await repo.AddAsync(t);
-                    //}
                 });
 
 
@@ -300,19 +259,17 @@ namespace ATSPM.LocationControllerLogger
                 //downloadStep.LinkTo(decodeStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
-                input.LinkTo(decodeStep, new DataflowLinkOptions() { PropagateCompletion = true });
+                //await processEventLogFileWorkflow.Initialize();
 
-                decodeStep.LinkTo(logArchiveBatch, new DataflowLinkOptions() { PropagateCompletion = true });
-                logArchiveBatch.LinkTo(testStep, new DataflowLinkOptions() { PropagateCompletion = true });
-                testStep.LinkTo(archiveDeviceData, new DataflowLinkOptions() { PropagateCompletion = true });
-                archiveDeviceData.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
-
+                input.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+                processEventLogFileWorkflow.Output.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
 
                 foreach (var f in new DirectoryInfo("C:\\temp\\5222 - 205 S. (SR-193)\\SignalController\\10.233.7.51").GetFiles())
                 {
-                    input.Post(f);
+                    input.Post(Tuple.Create(devices.First(), f));
                 }
 
                 //foreach (var d in devices)
@@ -355,7 +312,7 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-    public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, FileInfo>
+    public class DownloadDeviceData : TransformManyProcessStepBaseAsync<Device, Tuple<Device, FileInfo>>
     {
         private readonly IServiceProvider _serviceProvider;
         
@@ -365,7 +322,7 @@ namespace ATSPM.LocationControllerLogger
             _serviceProvider = serviceProvider;
         }
 
-        protected override IAsyncEnumerable<FileInfo> Process(Device input, CancellationToken cancelToken = default)
+        protected override IAsyncEnumerable<Tuple<Device, FileInfo>> Process(Device input, CancellationToken cancelToken = default)
         {
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
@@ -378,7 +335,7 @@ namespace ATSPM.LocationControllerLogger
         }
     }
 
-    public class DecodeDeviceData : TransformManyProcessStepBaseAsync<FileInfo, EventLogModelBase>
+    public class DecodeDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, FileInfo>, Tuple<Device, T>> where T : EventLogModelBase
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -388,11 +345,11 @@ namespace ATSPM.LocationControllerLogger
             _serviceProvider = serviceProvider;
         }
 
-        protected override IAsyncEnumerable<EventLogModelBase> Process(FileInfo input, CancellationToken cancelToken = default)
+        protected override IAsyncEnumerable<Tuple<Device, T>> Process(Tuple<Device, FileInfo> input, CancellationToken cancelToken = default)
         {
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
-                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder>().First(c => c.CanExecute(input));
+                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder<T>>().First(c => c.CanExecute(input));
 
                 //Console.WriteLine($"device: {input.DeviceConfiguration.Protocol} - downloader: {downloader.GetType().Name}");
 
@@ -401,7 +358,7 @@ namespace ATSPM.LocationControllerLogger
         }
     }
 
-    public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<IEnumerable<EventLogModelBase>, CompressedEventLogBase> where T : EventLogModelBase
+    public class ArchiveDeviceData<T> : TransformManyProcessStepBaseAsync<Tuple<Device, T>[], CompressedEventLogs<T>> where T : EventLogModelBase
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -411,19 +368,21 @@ namespace ATSPM.LocationControllerLogger
             _serviceProvider = serviceProvider;
         }
 
-        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(IEnumerable<EventLogModelBase> input, CancellationToken cancelToken = default)
+        protected override async IAsyncEnumerable<CompressedEventLogs<T>> Process(Tuple<Device, T>[] input, CancellationToken cancelToken = default)
         {
-            var result = input.GroupBy(g => (g.Timestamp.Date, g.LocationIdentifier))
+            var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id))
                 .Select(s => new CompressedEventLogs<T>()
                 {
-                    //LocationIdentifier = s.Key.LocationIdentifier,
-                    LocationIdentifier = "test",
+                    LocationIdentifier = s.Key.LocationIdentifier,
                     ArchiveDate = DateOnly.FromDateTime(s.Key.Date),
-                    Data = s.OfType<T>().ToList()
+                    DeviceId = s.Key.Id,
+                    Data = s.Select(s => s.Item2).ToList()
                 });
 
             foreach (var r in result)
             {
+                //Console.WriteLine($"$$${r.LocationIdentifier} - {r.ArchiveDate} - {r.DeviceId} - {r.DataType} - {r.Data.Count()}");
+
                 yield return r;
             }
         }
@@ -468,4 +427,50 @@ namespace ATSPM.LocationControllerLogger
     //        }
     //    }
     //}
+
+    public class ProcessEventLogFileWorkflow<T> : WorkflowBase<Tuple<Device, FileInfo>, CompressedEventLogs<T>> where T : EventLogModelBase
+    {
+        private readonly DataflowBlockOptions _filterOptions = new DataflowBlockOptions();
+        private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
+
+        private readonly IServiceProvider _serviceProvider;
+
+        public ProcessEventLogFileWorkflow(IServiceProvider serviceProvider, int maxDegreeOfParallelism = 1, CancellationToken cancellationToken = default)
+        {
+            _serviceProvider = serviceProvider;
+
+            _filterOptions.CancellationToken = cancellationToken;
+            _stepOptions.CancellationToken = cancellationToken;
+            _stepOptions.MaxDegreeOfParallelism = maxDegreeOfParallelism;
+        }
+
+        public DecodeDeviceData<T> DecodeDeviceDataStep { get; private set; }
+        public BatchBlock<Tuple<Device, T>> BatchLogsStep { get; private set; }
+        public ArchiveDeviceData<T> ArchiveDeviceDataStep { get; private set; }
+
+        /// <inheritdoc/>
+        protected override void InstantiateSteps()
+        {
+            DecodeDeviceDataStep = new(_serviceProvider, _stepOptions);
+            BatchLogsStep = new(50000);
+            ArchiveDeviceDataStep = new(_serviceProvider, _stepOptions);
+        }
+
+        /// <inheritdoc/>
+        protected override void AddStepsToTracker()
+        {
+            Steps.Add(DecodeDeviceDataStep);
+            Steps.Add(BatchLogsStep);
+            Steps.Add(ArchiveDeviceDataStep);
+        }
+
+        /// <inheritdoc/>
+        protected override void LinkSteps()
+        {
+            Input.LinkTo(DecodeDeviceDataStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            DecodeDeviceDataStep.LinkTo(BatchLogsStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            BatchLogsStep.LinkTo(ArchiveDeviceDataStep, new DataflowLinkOptions() { PropagateCompletion = true });
+            ArchiveDeviceDataStep.LinkTo(Output, new DataflowLinkOptions() { PropagateCompletion = true });
+        }
+    }
 }

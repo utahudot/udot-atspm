@@ -82,20 +82,19 @@ namespace ATSPM.Data
                 builder.HasDiscriminator(d => d.DataType)
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
-                //builder.Property(e => e.Data)
-                //.HasConversion<CompressedListComverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
-
                 builder.Property(e => e.Data)
-                    .HasConversion<byte[]>(
-                    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }).GZipCompressToByte(),
-                    v => JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
-                    {
-                        TypeNameHandling = TypeNameHandling.Arrays
-                    }),
-null);
+                .HasConversion<CompressedListComverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
+
+                //builder.Property(e => e.Data)
+                //    .HasConversion<byte[]>(
+                //    v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
+                //    {
+                //        TypeNameHandling = TypeNameHandling.Arrays
+                //    }).GZipCompressToByte(),
+                //    v => JsonConvert.DeserializeObject<IEnumerable<EventLogModelBase>>(v.GZipDecompressToString(), new JsonSerializerSettings()
+                //    {
+                //        TypeNameHandling = TypeNameHandling.Arrays
+                //    }),null);
 
 
             });

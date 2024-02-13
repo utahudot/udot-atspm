@@ -26,7 +26,7 @@ using System.Xml.Linq;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class MaxTimeLocationControllerDecoder : ControllerDecoderBase
+    public class MaxTimeLocationControllerDecoder : ControllerDecoderBase<IndianaEvent>
     {
         public MaxTimeLocationControllerDecoder(ILogger<MaxTimeLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
@@ -36,13 +36,18 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #region Methods
 
-        public override bool CanExecute(FileInfo parameter)
+        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
-            return parameter.Exists && (parameter.Extension == ".xml" || parameter.Extension == ".XML");
+            var device = parameter.Item1;
+            var file = parameter.Item2;
+
+            return file.Exists && (file.Extension == ".xml" || file.Extension == ".XML");
         }
 
-        public override IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream)
+        public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
         {
+            var locationId = device.Location.LocationIdentifier;
+
             //cancelToken.ThrowIfCancellationRequested();
 
             if (string.IsNullOrEmpty(locationId))
@@ -55,7 +60,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
             IEnumerable<XElement> logs;
 
-            HashSet<EventLogModelBase> decodedLogs = new();
+            HashSet<IndianaEvent> decodedLogs = new();
 
             try
             {
