@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace ATSPM.Application.Services
 {
-    public interface ILocationControllerDecoder : IExecutableServiceWithProgressAsync<FileInfo, EventLogModelBase, ControllerDecodeProgress>, IDisposable 
+    public interface ILocationControllerDecoder<T> : IExecutableServiceWithProgressAsync<Tuple<Device, FileInfo>, Tuple<Device, T>, ControllerDecodeProgress> where T : EventLogModelBase
     {
         bool IsCompressed(Stream stream);
 
@@ -20,6 +20,6 @@ namespace ATSPM.Application.Services
         Stream Decompress(Stream stream);
 
         /// <exception cref="ControllerLoggerDecoderException"></exception>
-        IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream);
+        IEnumerable<T> Decode(Device device, Stream stream);
     }
 }

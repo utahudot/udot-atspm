@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class ASCLocationControllerDecoder : ControllerDecoderBase
+    public class ASCLocationControllerDecoder : ControllerDecoderBase<IndianaEvent>
     {
         public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
@@ -25,9 +25,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #region Methods
 
-        public override bool CanExecute(FileInfo parameter)
+        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
-            return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ" || parameter.Extension == ".DAT");
+            var device = parameter.Item1;
+            var file = parameter.Item2;
+
+            return file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
         }
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
@@ -45,8 +48,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
-        public override IEnumerable<EventLogModelBase> Decode(string locationId, Stream stream)
+        public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
         {
+            var locationId = device.Location.LocationIdentifier;
+
+            //cancelToken.ThrowIfCancellationRequested();
+
             if (string.IsNullOrEmpty(locationId))
                 throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
 
