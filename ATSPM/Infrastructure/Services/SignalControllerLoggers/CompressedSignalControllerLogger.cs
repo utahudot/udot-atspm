@@ -3,6 +3,7 @@ using ATSPM.Application.Configuration;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -93,7 +94,7 @@ namespace ATSPM.Infrastructure.Services.LocationControllerLoggers
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder>().First(c => c.CanExecute(file));
+                var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder<IndianaEvent>>().First(c => c.CanExecute(file));
                 //logList = await decoder.ExecuteAsync(file, cancellationToken);
             }
 
