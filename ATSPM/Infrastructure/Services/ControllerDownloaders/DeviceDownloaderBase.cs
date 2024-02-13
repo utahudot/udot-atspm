@@ -21,7 +21,7 @@ using System.Threading;
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     ///<inheritdoc cref="IDeviceDownloader"/>
-    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, FileInfo, ControllerDownloadProgress>, IDeviceDownloader
+    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>, IDeviceDownloader
     {
         #region Fields
 
@@ -71,7 +71,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
-        public override async IAsyncEnumerable<FileInfo> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var locationIdentifier = parameter?.Location?.LocationIdentifier;
             var user = parameter?.DeviceConfiguration?.UserName;
@@ -187,7 +187,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
-                                yield return downloadedFile;
+                                yield return Tuple.Create<Device, FileInfo>(parameter, downloadedFile);
                             }
                             else
                             {
