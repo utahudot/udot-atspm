@@ -168,16 +168,20 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             {
                                 try
                                 {
+                                    logMessages.DeletingFileMessage(file, locationIdentifier, ipaddress);
+
                                     await _client.DeleteFileAsync(file, cancelToken);
                                 }
-                                catch (ControllerDownloadFileException e)
+                                catch (ControllerDeleteFileException e)
                                 {
-                                    _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Exception deleting file {file} from {ip}", file, ipaddress);
+                                    logMessages.DeleteFileException(file, locationIdentifier, ipaddress, e);
                                 }
                                 catch (OperationCanceledException e)
                                 {
-                                    _log.LogDebug(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Operation canceled connecting to {ip}", ipaddress);
+                                    logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
                                 }
+
+                                logMessages.DeletedFileMessage(file, locationIdentifier, ipaddress);
                             }
 
                             //HACK: don't know why files aren't downloading without throwing an error
@@ -196,6 +200,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                         }
 
                         logMessages.DownloadedFilesMessage(current, total, locationIdentifier, ipaddress);
+
                         try
                         {
                             logMessages.DisconnectingFromHostMessage(locationIdentifier, ipaddress);
