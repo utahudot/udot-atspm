@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.PreemptService;
 
@@ -15,10 +16,10 @@ namespace ATSPM.ReportApi.Business.PreemptServiceRequest
 
         public PreemptServiceRequestResult GetChartData(
             PreemptServiceRequestOptions options,
-            IReadOnlyList<ControllerEventLog> planEvents,
-            IReadOnlyList<ControllerEventLog> events)
+            IReadOnlyList<IndianaEvent> planEvents,
+            IReadOnlyList<IndianaEvent> events)
         {
-            var preemptEvents = events.Where(row => row.EventCode == 102).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
+            var preemptEvents = events.Where(row => row.EventCode == DataLoggerEnum.PreemptCallInputOn).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
             var plans = planService.GetBasicPlans(options.Start, options.End, options.locationIdentifier, planEvents);
             IReadOnlyList<Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),

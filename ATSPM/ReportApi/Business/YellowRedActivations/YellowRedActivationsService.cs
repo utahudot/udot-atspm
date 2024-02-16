@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.PedDelay;
 
@@ -21,9 +21,9 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
         public YellowRedActivationsResult GetChartData(
             YellowRedActivationsOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> cycleEvents,
-            IReadOnlyList<ControllerEventLog> detectorEvents,
-            IReadOnlyList<ControllerEventLog> planEvents)
+            IReadOnlyList<IndianaEvent> cycleEvents,
+            IReadOnlyList<IndianaEvent> detectorEvents,
+            IReadOnlyList<IndianaEvent> planEvents)
         {
 
             var cycles = cycleService.GetYellowRedActivationsCycles(

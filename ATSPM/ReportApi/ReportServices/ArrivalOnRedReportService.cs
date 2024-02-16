@@ -1,6 +1,7 @@
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.ArrivalOnRed;
 using ATSPM.ReportApi.Business.Common;
@@ -18,13 +19,13 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly LocationPhaseService LocationPhaseService;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
 
         /// <inheritdoc/>
         public ArrivalOnRedReportService(
             ArrivalOnRedService arrivalOnRedService,
             LocationPhaseService LocationPhaseService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService
             )
@@ -46,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
 
                 return await Task.FromException<IEnumerable<ArrivalOnRedResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -66,7 +67,7 @@ namespace ATSPM.ReportApi.ReportServices
                     tasks.Add(
                    GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
                 }
-                    
+
             }
 
             var results = await Task.WhenAll(tasks);
@@ -85,8 +86,8 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<ArrivalOnRedResult> GetChartDataByApproach(
             ArrivalOnRedOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var LocationPhase = await LocationPhaseService.GetLocationPhaseData(

@@ -1,4 +1,6 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 
 namespace ATSPM.ReportApi.Business.PedDelay
@@ -12,7 +14,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
         }
 
         public PedPhaseData GetPedPhaseData(PedDelayOptions options, Approach approach, //int timeBuffer, DateTime startDate, DateTime endDate,
-            List<ControllerEventLog> plansData, List<ControllerEventLog> pedEvents)
+            List<IndianaEvent> plansData, List<IndianaEvent> pedEvents)
         {
             var mainEvents = pedEvents.Where(p => p.Timestamp >= options.Start && p.Timestamp <= options.End).ToList();
             var previousEvents = pedEvents.Where(p => p.Timestamp < options.Start).ToList();
@@ -27,19 +29,19 @@ namespace ATSPM.ReportApi.Business.PedDelay
             pedPhaseData.ApproachId = approach.Id;
             pedPhaseData.Plans = new List<PedPlan>();
             pedPhaseData.Cycles = new List<PedCycle>();
-            pedPhaseData.PedBeginWalkEvents = new List<ControllerEventLog>();
+            pedPhaseData.PedBeginWalkEvents = new List<IndianaEvent>();
             pedPhaseData.HourlyTotals = new List<DataPointForDouble>();
             pedPhaseData.Plans = GetPedPlans(options, plansData, pedEvents, mainEvents, pedPhaseData);
 
             if (pedPhaseData.Approach.IsPedestrianPhaseOverlap)
             {
-                pedPhaseData.BeginWalkEvent = 67;
-                pedPhaseData.BeginClearanceEvent = 68;
+                pedPhaseData.BeginWalkEvent = DataLoggerEnum.PedestrianOverlapBeginWalk;
+                pedPhaseData.BeginClearanceEvent = DataLoggerEnum.PedestrianOverlapBeginClearance;
             }
             else
             {
-                pedPhaseData.BeginWalkEvent = 21;
-                pedPhaseData.BeginClearanceEvent = 22;
+                pedPhaseData.BeginWalkEvent = DataLoggerEnum.PedestrianBeginWalk;
+                pedPhaseData.BeginClearanceEvent = DataLoggerEnum.PedestrianBeginChangeInterval;
             }
 
             GetCycles(pedPhaseData, mainEvents, previousEvents);
@@ -50,9 +52,9 @@ namespace ATSPM.ReportApi.Business.PedDelay
 
         private List<PedPlan> GetPedPlans(
             PedDelayOptions options,
-            List<ControllerEventLog> plansData,
-            List<ControllerEventLog> pedEvents,
-            List<ControllerEventLog> mainEvents,
+            List<IndianaEvent> plansData,
+            List<IndianaEvent> pedEvents,
+            List<IndianaEvent> mainEvents,
             PedPhaseData pedPhaseData)
         {
             var planService = new PlanService();
@@ -71,7 +73,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
 
                 plan.UniquePedDetections = CountUniquePedDetections(
                     plan.Events,
-                    pedEvents.Where(e => e.EventCode == 90 && e.Timestamp < plan.Start).ToList(),
+                    pedEvents.Where(e => e.EventCode == DataLoggerEnum.PedDetectorOn && e.Timestamp < plan.Start).ToList(),
                     pedPhaseData);
                 pedPlans.Add(plan);
             }
@@ -91,23 +93,23 @@ namespace ATSPM.ReportApi.Business.PedDelay
 
         private void GetCycles(
             PedPhaseData pedPhaseData,
-            List<ControllerEventLog> mainEvents,
-            List<ControllerEventLog> previousEvents)
+            List<IndianaEvent> mainEvents,
+            List<IndianaEvent> previousEvents)
         {
-            pedPhaseData.PedPresses = mainEvents.Count(e => e.EventCode == 90);
+            pedPhaseData.PedPresses = mainEvents.Count(e => e.EventCode == DataLoggerEnum.PedDetectorOn);
             pedPhaseData.UniquePedDetections = CountUniquePedDetections(mainEvents, previousEvents, pedPhaseData);
 
             mainEvents = CombineSequential90s(mainEvents);
 
-            pedPhaseData.PedRequests = mainEvents.Count(e => e.EventCode == 90);
-            pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == 45);
+            pedPhaseData.PedRequests = mainEvents.Count(e => e.EventCode == DataLoggerEnum.PedDetectorOn);
+            pedPhaseData.PedCallsRegisteredCount = mainEvents.Count(e => e.EventCode == DataLoggerEnum.PedestrianCallRegistered);
 
             mainEvents = Remove45s(mainEvents);
 
             pedPhaseData.PedBeginWalkCount = mainEvents.Count(e => e.EventCode == pedPhaseData.BeginWalkEvent);
             pedPhaseData.ImputedPedCallsRegistered = CountImputedPedCalls(mainEvents, previousEvents, pedPhaseData);
 
-            if (mainEvents.Count > 1 && mainEvents[0].EventCode == 90 && mainEvents[1].EventCode == pedPhaseData.BeginWalkEvent)
+            if (mainEvents.Count > 1 && mainEvents[0].EventCode == DataLoggerEnum.PedDetectorOn && mainEvents[1].EventCode == pedPhaseData.BeginWalkEvent)
             {
                 pedPhaseData.Cycles.Add(new PedCycle(mainEvents[1].Timestamp, mainEvents[0].Timestamp));  // Middle of the event
             }
@@ -115,21 +117,21 @@ namespace ATSPM.ReportApi.Business.PedDelay
             for (var i = 0; i < mainEvents.Count - 1; i++)
             {
                 if (mainEvents[i].EventCode == pedPhaseData.BeginClearanceEvent &&
-                mainEvents[i + 1].EventCode == 90 &&
+                mainEvents[i + 1].EventCode == DataLoggerEnum.PedDetectorOn &&
                 mainEvents[i + 2].EventCode == pedPhaseData.BeginWalkEvent)
                 {
                     pedPhaseData.Cycles.Add(new PedCycle(mainEvents[i + 2].Timestamp, mainEvents[i + 1].Timestamp));  // this is case 1
                     i++;
                 }
                 else if (mainEvents[i].EventCode == pedPhaseData.BeginWalkEvent &&
-                         mainEvents[i + 1].EventCode == 90 &&
+                         mainEvents[i + 1].EventCode == DataLoggerEnum.PedDetectorOn &&
                          mainEvents[i + 2].EventCode == pedPhaseData.BeginClearanceEvent)
                 {
                     pedPhaseData.Cycles.Add(new PedCycle(mainEvents[i + 1].Timestamp, mainEvents[i + 1].Timestamp));  // this is case 2
                     i++;
                 }
                 else if (mainEvents[i].EventCode == pedPhaseData.BeginWalkEvent &&
-                         mainEvents[i + 1].EventCode == 90 &&
+                         mainEvents[i + 1].EventCode == DataLoggerEnum.PedDetectorOn &&
                          mainEvents[i + 2].EventCode == pedPhaseData.BeginWalkEvent)
                 {
                     pedPhaseData.Cycles.Add(new PedCycle(mainEvents[i + 2].Timestamp, mainEvents[i + 1].Timestamp));  // this is case 4
@@ -154,16 +156,16 @@ namespace ATSPM.ReportApi.Business.PedDelay
         }
 
 
-        private List<ControllerEventLog> CombineSequential90s(List<ControllerEventLog> controllerEventLogs)
+        private List<IndianaEvent> CombineSequential90s(List<IndianaEvent> controllerEventLogs)
         {
-            var tempEvents = new List<ControllerEventLog>();
+            var tempEvents = new List<IndianaEvent>();
             for (int i = 0; i < controllerEventLogs.Count; i++)
             {
-                if (controllerEventLogs[i].EventCode == 90)
+                if (controllerEventLogs[i].EventCode == DataLoggerEnum.PedDetectorOn)
                 {
                     tempEvents.Add(controllerEventLogs[i]);
 
-                    while (i + 1 < controllerEventLogs.Count && controllerEventLogs[i + 1].EventCode == 90)
+                    while (i + 1 < controllerEventLogs.Count && controllerEventLogs[i + 1].EventCode == DataLoggerEnum.PedDetectorOn)
                     {
                         i++;
                     }
@@ -176,19 +178,19 @@ namespace ATSPM.ReportApi.Business.PedDelay
             return tempEvents.OrderBy(t => t.Timestamp).ToList();
         }
 
-        private List<ControllerEventLog> Remove45s(List<ControllerEventLog> controllerEventLogs)
+        private List<IndianaEvent> Remove45s(List<IndianaEvent> controllerEventLogs)
         {
-            if (controllerEventLogs.Count(e => e.EventCode == 45) > 0)
+            if (controllerEventLogs.Count(e => e.EventCode == DataLoggerEnum.PedestrianCallRegistered) > 0)
             {
-                controllerEventLogs = controllerEventLogs.Where(e => e.EventCode != 45).OrderBy(t => t.Timestamp).ToList();
+                controllerEventLogs = controllerEventLogs.Where(e => e.EventCode != DataLoggerEnum.PedestrianCallRegistered).OrderBy(t => t.Timestamp).ToList();
             }
             return controllerEventLogs;
         }
 
-        private int CountImputedPedCalls(List<ControllerEventLog> mainEvents, List<ControllerEventLog> previousEvents, PedPhaseData pedPhaseData)
+        private int CountImputedPedCalls(List<IndianaEvent> mainEvents, List<IndianaEvent> previousEvents, PedPhaseData pedPhaseData)
         {
             if (mainEvents == null || mainEvents.Count == 0) return 0;
-            var tempEvents = mainEvents.Where(e => e.EventCode == 90 || e.EventCode == pedPhaseData.BeginWalkEvent).ToList();
+            var tempEvents = mainEvents.Where(e => e.EventCode == DataLoggerEnum.PedDetectorOn || e.EventCode == pedPhaseData.BeginWalkEvent).ToList();
             var previousEventCode = GetPreviousEventCode(previousEvents, pedPhaseData);
             if (previousEventCode != null)
             {
@@ -199,7 +201,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
 
             for (var i = 1; i < tempEvents.Count; i++)
             {
-                if (tempEvents[i].EventCode == 90 && tempEvents[i - 1]?.EventCode == pedPhaseData.BeginWalkEvent)
+                if (tempEvents[i].EventCode == DataLoggerEnum.PedDetectorOn && tempEvents[i - 1]?.EventCode == pedPhaseData.BeginWalkEvent)
                 {
                     pedCalls++;
                 }
@@ -207,7 +209,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
             return pedCalls;
         }
 
-        private ControllerEventLog GetPreviousEventCode(List<ControllerEventLog> previousEvents, PedPhaseData pedPhaseData)
+        private IndianaEvent GetPreviousEventCode(List<IndianaEvent> previousEvents, PedPhaseData pedPhaseData)
         {
             if (previousEvents == null || previousEvents.Count <= 0)
             {
@@ -215,12 +217,12 @@ namespace ATSPM.ReportApi.Business.PedDelay
             }
             return previousEvents
                 .OrderByDescending(e => e.Timestamp)
-                .FirstOrDefault(e => e.EventCode == 90 || e.EventCode == pedPhaseData.BeginWalkEvent);
+                .FirstOrDefault(e => e.EventCode == DataLoggerEnum.PedDetectorOn || e.EventCode == pedPhaseData.BeginWalkEvent);
         }
 
-        private int CountUniquePedDetections(List<ControllerEventLog> mainEvents, List<ControllerEventLog> previousEvents, PedPhaseData pedPhaseData)
+        private int CountUniquePedDetections(List<IndianaEvent> mainEvents, List<IndianaEvent> previousEvents, PedPhaseData pedPhaseData)
         {
-            var tempEvents = mainEvents.Where(e => e.EventCode == 90).ToList();
+            var tempEvents = mainEvents.Where(e => e.EventCode == DataLoggerEnum.PedDetectorOn).ToList();
 
             if (tempEvents.Count == 0) return 0;
 

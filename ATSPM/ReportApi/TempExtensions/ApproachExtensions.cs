@@ -55,9 +55,21 @@ namespace ATSPM.ReportApi.TempExtensions
                 : new List<int> { 1, 3, 8, 9, 11 };
         }
 
-        public static List<int> GetPedestrianCycleEventCodes(this Approach approach)
+        public static List<DataLoggerEnum> GetPedestrianCycleEventCodes(this Approach approach)
         {
-            return approach.IsPedestrianPhaseOverlap ? new List<int> { 67, 68, 45, 90 } : new List<int> { 21, 22, 45, 90 };
+            return approach.IsPedestrianPhaseOverlap ? new List<DataLoggerEnum>
+            {
+                DataLoggerEnum.PedestrianOverlapBeginWalk,
+                DataLoggerEnum.PedestrianOverlapBeginClearance,
+                DataLoggerEnum.PedestrianCallRegistered,
+                DataLoggerEnum.PedDetectorOn
+            } : new List<DataLoggerEnum>
+            {
+                DataLoggerEnum.PedestrianBeginWalk,
+                DataLoggerEnum.PedestrianBeginChangeInterval,
+                DataLoggerEnum.PedestrianCallRegistered,
+                DataLoggerEnum.PedDetectorOn
+            };
 
         }
 

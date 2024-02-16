@@ -1,7 +1,4 @@
-﻿using ATSPM.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.YellowRedActivations
 {
@@ -83,7 +80,7 @@ namespace ATSPM.ReportApi.Business.YellowRedActivations
             DateTime red,
             DateTime redEnd,
             double srlvSeconds,
-            IReadOnlyList<ControllerEventLog> detectorEvents
+            IReadOnlyList<IndianaEvent> detectorEvents
             )
         {
             SRLVSeconds = srlvSeconds;

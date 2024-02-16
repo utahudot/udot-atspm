@@ -1,5 +1,6 @@
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Data.Enums;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.PhaseTermination;
@@ -14,13 +15,13 @@ namespace ATSPM.ReportApi.ReportServices
     public class PurduePhaseTerminationReportService : ReportServiceBase<PurduePhaseTerminationOptions, PhaseTerminationResult>
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
@@ -37,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -48,20 +49,34 @@ namespace ATSPM.ReportApi.ReportServices
                 parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PhaseGapOut,
+                    DataLoggerEnum.PhaseMaxOut,
+                    DataLoggerEnum.PhaseForceOff,
+                    DataLoggerEnum.PhaseGreenTermination
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var pedEvents = controllerEventLogs.Where(e =>
-                new List<int> { 21, 23 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PedestrianBeginWalk,
+                    DataLoggerEnum.PedestrianBeginSolidDontWalk
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var cycleEvents = controllerEventLogs.Where(e =>
-                new List<int> { 1, 11 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PhaseBeginGreen,
+                    DataLoggerEnum.PhaseEndRedClearance
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<int>();
+            var splitsEventCodes = new List<DataLoggerEnum>();
             for (var i = 130; i <= 151; i++)
-                splitsEventCodes.Add(i);
+                splitsEventCodes.Add((DataLoggerEnum)i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start

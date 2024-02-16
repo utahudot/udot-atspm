@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
 using DateTime = System.DateTime;
@@ -22,14 +23,14 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
         public GreenTimeUtilizationResult GetChartData(
             PhaseDetail phaseDetail,
             GreenTimeUtilizationOptions options,
-            List<ControllerEventLog> detectorEvents, //DetectorType 4
-            List<ControllerEventLog> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> controllerEventLogs
+            List<IndianaEvent> detectorEvents, //DetectorType 4
+            List<IndianaEvent> cycleEvents, //PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW
+            List<IndianaEvent> planEvents,
+            List<IndianaEvent> controllerEventLogs
             ) // the plans/splits input is still TBD
         {
             //var Location = LocationRepository.GetLatestVersionOfLocation(options.locationIdentifier, options.Start);
-            //var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.locationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            //var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.locationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
 
             var isPermissivePhase = phaseDetail.PhaseNumber != phaseDetail.Approach.ProtectedPhaseNumber;
@@ -56,9 +57,9 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             }
 
             //get a list of cycle events
-            var phaseEventNumbers = new List<int> { PHASE_BEGIN_GREEN, PHASE_BEGIN_YELLOW };
+            var phaseEventNumbers = new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange };
             //var phaseEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(approach, options.UsePermissivePhase, options.Start, options.End)
-            var checkAgainstEvents = new List<ControllerEventLog>();
+            var checkAgainstEvents = new List<IndianaEvent>();
             if (isPermissivePhase == true && phaseDetail.PhaseNumber != 0)   // if it's a permissive phase, it will need to be checked against the protected green/yellow events
             {
                 checkAgainstEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End.AddMinutes(options.XAxisBinSize), phaseEventNumbers, phaseDetail.PhaseNumber).ToList();
@@ -67,7 +68,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             //get a list of detections for that phase
             //var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
             //var allDetectionEvents = cel.GetLocationEventsByEventCode(options.locationIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
-            //var detectionEvents = new List<ControllerEventLog>();
+            //var detectionEvents = new List<IndianaEvent>();
             //foreach (var detector in detectorsToUse)
             //{
             //    detectionEvents.AddRange(allDetectionEvents.Where(x =>
@@ -86,13 +87,13 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 int cycleCount = 0;
 
                 //determine timestamps of the first green and last yellow
-                var firstGreen = cycleEvents.Where(x => x.Timestamp > StartBinTime && x.EventCode == PHASE_BEGIN_GREEN).OrderBy(x => x.Timestamp).FirstOrDefault();
+                var firstGreen = cycleEvents.Where(x => x.Timestamp > StartBinTime && x.EventCode == DataLoggerEnum.PhaseBeginGreen).OrderBy(x => x.Timestamp).FirstOrDefault();
                 if (firstGreen is null || firstGreen.Timestamp > endAggTime)
                 {
                     continue; //skip this agg and go to the next if there is no green at all or if there isw no green in the agg period
                 }
-                var lastGreen = cycleEvents.Where(x => x.Timestamp < endAggTime && x.EventCode == PHASE_BEGIN_GREEN).OrderByDescending(x => x.Timestamp).FirstOrDefault();
-                var lastYellow = cycleEvents.Where(x => x.Timestamp > lastGreen.Timestamp && x.EventCode == PHASE_BEGIN_YELLOW).OrderBy(x => x.Timestamp).FirstOrDefault();
+                var lastGreen = cycleEvents.Where(x => x.Timestamp < endAggTime && x.EventCode == DataLoggerEnum.PhaseBeginGreen).OrderByDescending(x => x.Timestamp).FirstOrDefault();
+                var lastYellow = cycleEvents.Where(x => x.Timestamp > lastGreen.Timestamp && x.EventCode == DataLoggerEnum.PhaseBeginYellowChange).OrderBy(x => x.Timestamp).FirstOrDefault();
                 if (lastGreen is null || lastYellow is null)
                 {
                     continue; //skip this agg and go to the next if there is no green at all or if there isw no green in the agg period
@@ -105,20 +106,20 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                                 x.Timestamp <= lastYellow.Timestamp)
                     .OrderBy(x => x.Timestamp);
                 var greenList = cycleEvents
-                        .Where(x => x.EventCode == PHASE_BEGIN_GREEN &&
+                        .Where(x => x.EventCode == DataLoggerEnum.PhaseBeginGreen &&
                                     x.Timestamp >= firstGreen.Timestamp &&
                                     x.Timestamp <= lastGreen.Timestamp)
                         .OrderBy(x => x.Timestamp);
                 var yellowList = cycleEvents
-                    .Where(x => x.EventCode == PHASE_BEGIN_YELLOW &&
+                    .Where(x => x.EventCode == DataLoggerEnum.PhaseBeginYellowChange &&
                                 x.Timestamp >= firstGreen.Timestamp &&
                                 x.Timestamp <= lastYellow.Timestamp)
                     .OrderBy(x => x.Timestamp);
                 if (isPermissivePhase && checkAgainstEvents != null)
                 {
-                    var yProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_YELLOW);
-                    var gProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == PHASE_BEGIN_GREEN);
-                    greenList = (IOrderedEnumerable<ControllerEventLog>)CheckProtectedGreens(greenList, yellowList, gProtectedEvents, yProtectedEvents); //redefine the greenList after editng the green values to start at the beginning of the protected yellow phases if there is overlapping green time between the protected nad permissive phases (only happens with doghouses)
+                    var yProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == DataLoggerEnum.PhaseBeginYellowChange);
+                    var gProtectedEvents = checkAgainstEvents.Where(x => x.EventCode == DataLoggerEnum.PhaseBeginGreen);
+                    greenList = (IOrderedEnumerable<IndianaEvent>)CheckProtectedGreens(greenList, yellowList, gProtectedEvents, yProtectedEvents); //redefine the greenList after editng the green values to start at the beginning of the protected yellow phases if there is overlapping green time between the protected nad permissive phases (only happens with doghouses)
                 }
 
                 //pair each green with a yellow
@@ -218,10 +219,12 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
             int phaseNumber,
             DateTime startDate,
             DateTime endDate,
-            List<ControllerEventLog> controllerEventLogs)
+            List<IndianaEvent> controllerEventLogs)
         {
             var eventCode = GetEventCodeForPhase(phaseNumber);
-            return controllerEventLogs.GetEventsByEventCodes(startDate, endDate, new List<int> { eventCode })
+            if (eventCode == null)
+                return 0;
+            return controllerEventLogs.GetEventsByEventCodes(startDate, endDate, new List<DataLoggerEnum> { eventCode.Value })
                 .OrderByDescending(e => e.Timestamp)
                 .Where(e => e.Timestamp <= startDate)
                 .Select(e => e.EventParam)
@@ -249,73 +252,73 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
         //}
 
 
-        private int GetEventCodeForPhase(int PhaseNumber)
+        private DataLoggerEnum? GetEventCodeForPhase(int PhaseNumber)
         {
             switch (PhaseNumber)
             {
                 case 1:
-                    return 134;
+                    return DataLoggerEnum.Split1Change;
                 case 2:
-                    return 135;
+                    return DataLoggerEnum.Split2Change;
                 case 3:
-                    return 136;
+                    return DataLoggerEnum.Split4Change;
                 case 4:
-                    return 137;
+                    return DataLoggerEnum.Split5Change;
                 case 5:
-                    return 138;
+                    return DataLoggerEnum.Split6Change;
                 case 6:
-                    return 139;
+                    return DataLoggerEnum.Split7Change;
                 case 7:
-                    return 140;
+                    return DataLoggerEnum.Split8Change;
                 case 8:
-                    return 141;
+                    return DataLoggerEnum.Split9Change;
                 case 17:
-                    return 203;
+                    return DataLoggerEnum.Split17Change;
                 case 18:
-                    return 204;
+                    return DataLoggerEnum.Split18Change;
                 case 19:
-                    return 205;
+                    return DataLoggerEnum.Split19Change;
                 case 20:
-                    return 206;
+                    return DataLoggerEnum.Split20Change;
                 case 21:
-                    return 207;
+                    return DataLoggerEnum.Split21Change;
                 case 22:
-                    return 208;
+                    return DataLoggerEnum.Split22Change;
                 case 23:
-                    return 209;
+                    return DataLoggerEnum.Split23Change;
                 case 24:
-                    return 210;
+                    return DataLoggerEnum.Split24Change;
                 case 25:
-                    return 211;
+                    return DataLoggerEnum.Split25Change;
                 case 26:
-                    return 212;
+                    return DataLoggerEnum.Split26Change;
                 case 27:
-                    return 213;
+                    return DataLoggerEnum.Split27Change;
                 case 28:
-                    return 214;
+                    return DataLoggerEnum.Split28Change;
                 case 29:
-                    return 215;
+                    return DataLoggerEnum.Split29Change;
                 case 30:
-                    return 216;
+                    return DataLoggerEnum.Split30Change;
                 case 31:
-                    return 217;
+                    return DataLoggerEnum.Split31Change;
                 case 32:
-                    return 218;
+                    return DataLoggerEnum.Split32Change;
                 default:
-                    return 219;
+                    return null;
             }
         }
 
         private double GetYellowRedTimeSeconds(
             GreenTimeUtilizationOptions options,
             int phaseNumber,
-            List<ControllerEventLog> cycleEvents)
+            List<IndianaEvent> cycleEvents)
         {
-            var yrEventNumbers = new List<int> { PHASE_BEGIN_YELLOW, PHASE_END_RED_CLEAR };
+            var yrEventNumbers = new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndRedClearance };
             var yrEvents = cycleEvents.GetEventsByEventCodes(options.Start, options.End, yrEventNumbers, phaseNumber);
-            var yellowList = yrEvents.Where(x => x.EventCode == PHASE_BEGIN_YELLOW)
+            var yellowList = yrEvents.Where(x => x.EventCode == DataLoggerEnum.PhaseBeginYellowChange)
                 .OrderBy(x => x.Timestamp);
-            var redList = yrEvents.Where(x => x.EventCode == PHASE_END_RED_CLEAR)
+            var redList = yrEvents.Where(x => x.EventCode == DataLoggerEnum.PhaseEndRedClearance)
                 .OrderBy(x => x.Timestamp);
             var startyellow = yellowList.FirstOrDefault();
             var endRedClear = redList.Where(x => x.Timestamp > startyellow.Timestamp).OrderBy(x => x.Timestamp)
@@ -330,7 +333,7 @@ namespace ATSPM.ReportApi.Business.GreenTimeUtilization
                 return spanYellowRed.TotalSeconds;
             }
         }
-        IEnumerable<ControllerEventLog> CheckProtectedGreens(IEnumerable<ControllerEventLog> gPermissiveEvents, IEnumerable<ControllerEventLog> yPermissiveEvents, IEnumerable<ControllerEventLog> gProtectedEvents, IEnumerable<ControllerEventLog> yProtectedEvents)
+        IEnumerable<IndianaEvent> CheckProtectedGreens(IEnumerable<IndianaEvent> gPermissiveEvents, IEnumerable<IndianaEvent> yPermissiveEvents, IEnumerable<IndianaEvent> gProtectedEvents, IEnumerable<IndianaEvent> yProtectedEvents)
         {
             foreach (var gPermissive in gPermissiveEvents)
             {

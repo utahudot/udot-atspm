@@ -1,12 +1,7 @@
-﻿using ATSPM.Application.Exceptions;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.TempExtensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ATSPM.ReportApi.Business.Common
 {
@@ -57,9 +52,9 @@ namespace ATSPM.ReportApi.Business.Common
             bool showVolume,
             int? pcdCycleTime,
             int binSize,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> detectorEvents)
+            List<IndianaEvent> cycleEvents,
+            List<IndianaEvent> planEvents,
+            List<IndianaEvent> detectorEvents)
         {
             if (phaseDetail == null || phaseDetail.Approach == null)
             {
@@ -88,8 +83,8 @@ namespace ATSPM.ReportApi.Business.Common
             DateTime end,
             int binSize,
             DetectionType detectionType,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             bool getVolume)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(

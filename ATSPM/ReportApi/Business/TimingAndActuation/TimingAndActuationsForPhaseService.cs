@@ -1,5 +1,6 @@
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.ReportApi.Business.Common;
 
@@ -11,7 +12,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         public TimingAndActuationsForPhaseResult GetChartData(
             TimingAndActuationsOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             bool usePermissivePhase
             )
         {
@@ -89,18 +90,18 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
 
         public List<CycleEventsDto> GetCycleEvents(
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             TimingAndActuationsOptions options)
         {
 
-            List<int> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            List<DataLoggerEnum> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
             if (controllerEventLogs.Any())
             {
                 var tempEvents = controllerEventLogs.Where(c => cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
-                    .Select(e => new CycleEventsDto(e.Timestamp, e.EventCode)).ToList();
+                    .Select(e => new CycleEventsDto(e.Timestamp, (int)e.EventCode)).ToList();
                 events.AddRange(tempEvents.Where(e => e.Start >= options.Start
                                                         && e.Start <= options.End));
                 var firstEvent = tempEvents.Where(e => e.Start < options.Start).OrderByDescending(e => e.Start).FirstOrDefault();
@@ -113,12 +114,26 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             return events;
         }
 
-        public List<int> GetCycleCodes(bool getOverlapCodes)
+        public List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<int> { 1, 3, 8, 9, 11 };
+            var phaseEventCodesForCycles = new List<DataLoggerEnum>
+            {
+                DataLoggerEnum.PhaseBeginGreen,
+                DataLoggerEnum.PhaseMinComplete,
+                DataLoggerEnum.PhaseBeginYellowChange,
+                DataLoggerEnum.PhaseEndYellowChange,
+                DataLoggerEnum.PhaseEndRedClearance
+            };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<int> { 61, 62, 63, 64, 65 };
+                phaseEventCodesForCycles = new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.OverlapBeginGreen,
+                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
+                    DataLoggerEnum.OverlapBeginYellow,
+                    DataLoggerEnum.OverlapBeginRedClearance,
+                    DataLoggerEnum.OverlapOffInactivewithredindication
+                };
             }
 
             return phaseEventCodesForCycles;
@@ -129,12 +144,12 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             string locationIdentifier,
             int phaseNumber,
             TimingAndActuationsOptions options,
-            List<ControllerEventLog> controllerEventLogs)
+            List<IndianaEvent> controllerEventLogs)
         {
             var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
             if (options.PhaseEventCodesList != null && options.PhaseEventCodesList.Any())
             {
-                foreach (var phaseEventCode in options.PhaseEventCodesList)
+                foreach (var phaseEventCode in options.PhaseEventCodesList.Select(e => (DataLoggerEnum)e))
                 {
 
                     var phaseEvents = controllerEventLogs.Where(c => c.EventCode == phaseEventCode
@@ -143,30 +158,30 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                     if (phaseEvents.Count > 0)
                     {
                         phaseCustomEvents.Add(
-                            "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointForInt(s.Timestamp, s.EventCode)).ToList());
+                            "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointForInt(s.Timestamp, (int)s.EventCode)).ToList());
                     }
 
                     if (phaseCustomEvents.Count == 0 && options.ShowAllLanesInfo)
                     {
-                        var forceEventsForAllLanes = new List<ControllerEventLog>();
-                        var tempEvent1 = new ControllerEventLog()
+                        var forceEventsForAllLanes = new List<IndianaEvent>();
+                        var tempEvent1 = new IndianaEvent()
                         {
-                            SignalIdentifier = locationIdentifier,
+                            LocationIdentifier = locationIdentifier,
                             EventCode = phaseEventCode,
-                            EventParam = phaseNumber,
+                            EventParam = Convert.ToByte(phaseNumber),
                             Timestamp = options.Start.AddSeconds(-10)
                         };
                         forceEventsForAllLanes.Add(tempEvent1);
-                        var tempEvent2 = new ControllerEventLog()
+                        var tempEvent2 = new IndianaEvent()
                         {
-                            SignalIdentifier = locationIdentifier,
+                            LocationIdentifier = locationIdentifier,
                             EventCode = phaseEventCode,
-                            EventParam = phaseNumber,
+                            EventParam = Convert.ToByte(phaseNumber),
                             Timestamp = options.Start.AddSeconds(-9)
                         };
                         forceEventsForAllLanes.Add(tempEvent2);
                         phaseCustomEvents.Add(
-                            "Phase Events: " + phaseEventCode, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, s.EventCode))
+                            "Phase Events: " + phaseEventCode, forceEventsForAllLanes.Select(s => new DataPointForInt(s.Timestamp, (int)s.EventCode))
 
                             .ToList());
                     }
@@ -178,7 +193,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         public List<DetectorEventDto> GetDetectionEvents(
             Approach approach,
             TimingAndActuationsOptions options,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             DetectionTypes detectionType
             )
         {
@@ -186,7 +201,7 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
                 .ThenByDescending(l => l.LaneNumber).ToList();
-            var detectorActivationCodes = new List<int> { 81, 82 };
+            var detectorActivationCodes = new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn };
             foreach (var detector in localSortedDetectors)
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
@@ -209,28 +224,28 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
                         var detectorEvents = new List<DetectorEventBase>();
                         for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i == 0 && filteredEvents[i].EventCode == 81)
+                            if (i == 0 && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 81)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 82)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, null));
                             }
-                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
+                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
                                 i++;
                             }
-                            else if (filteredEvents[i].EventCode == 81 && filteredEvents[i + 1].EventCode == 81)
+                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i + 1].Timestamp));
                             }
-                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 82)
+                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOn)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i + 1].Timestamp, null));
                             }
@@ -256,13 +271,13 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
         public List<DetectorEventDto> GetPedestrianEventsNew(
             Approach approach,
             TimingAndActuationsOptions options,
-            List<ControllerEventLog> controllerEventLogs)
+            List<IndianaEvent> controllerEventLogs)
         {
             var pedestrianEvents = new List<DetectorEventDto>();
             if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.PedsAre1to1 && approach.IsProtectedPhaseOverlap
                 || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
-            var pedEventCodes = new List<int> { 89, 90 };
+            var pedEventCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn };
             foreach (var pedDetector in approach.Detectors)
             {
                 var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector.DetectorChannel}";
@@ -293,23 +308,28 @@ namespace ATSPM.ReportApi.Business.TimingAndActuation
 
         public List<CycleEventsDto> GetPedestrianIntervals(
             Approach approach,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             TimingAndActuationsOptions options)
         {
-            List<int> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
+            List<DataLoggerEnum> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
             var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
             return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode)
                                                     && c.EventParam == pedPhase
                                                     && c.Timestamp >= options.Start
-                                                    && c.Timestamp <= options.End).Select(s => new CycleEventsDto(s.Timestamp, s.EventCode)).ToList();
+                                                    && c.Timestamp <= options.End).Select(s => new CycleEventsDto(s.Timestamp, (int)s.EventCode)).ToList();
         }
 
-        public List<int> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        public List<DataLoggerEnum> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
         {
-            var overlapCodes = new List<int> { 21, 22, 23 };
+            var overlapCodes = new List<DataLoggerEnum>
+            {
+                DataLoggerEnum.PedestrianBeginWalk,
+                DataLoggerEnum.PedestrianBeginChangeInterval,
+                DataLoggerEnum.PedestrianBeginSolidDontWalk
+            };
             if (isPhaseOrOverlap)
             {
-                overlapCodes = new List<int> { 67, 68, 69 };
+                overlapCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedestrianOverlapBeginWalk, DataLoggerEnum.PedestrianOverlapBeginClearance, DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk };
             }
 
             return overlapCodes;

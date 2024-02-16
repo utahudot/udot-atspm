@@ -1,16 +1,15 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Specifications;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Domain.Extensions;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.TempExtensions
 {
     public static class ControllerEventLogRepositoryExtensions
     {
-        public static IReadOnlyList<ControllerEventLog> GetDetectorEvents(
-            this IControllerEventLogRepository repo,
+        public static IReadOnlyList<IndianaEvent> GetDetectorEvents(
+            this IIndianaEventLogRepository repo,
             int metricTypeId,
             Approach approach,
             DateTime start,
@@ -18,17 +17,17 @@ namespace ATSPM.ReportApi.TempExtensions
             bool detectorOn,
             bool detectorOff)
         {
-            var eventCodes = new List<int>();
+            var eventCodes = new List<DataLoggerEnum>();
             if (detectorOn)
-                eventCodes.Add(82);
+                eventCodes.Add(DataLoggerEnum.DetectorOn);
             if (detectorOff)
-                eventCodes.Add(81);
+                eventCodes.Add(DataLoggerEnum.DetectorOff);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
-            var events = new List<ControllerEventLog>();
+            var events = new List<IndianaEvent>();
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
             if (!detectorsForMetric.Any())
-                return new List<ControllerEventLog>();
+                return new List<IndianaEvent>();
             foreach (var d in detectorsForMetric)
                 events.AddRange(repo.GetEventsByEventCodesParam(
                     approach.Location.LocationIdentifier,
@@ -41,8 +40,8 @@ namespace ATSPM.ReportApi.TempExtensions
             return events.OrderBy(e => e.Timestamp).ToList();
         }
 
-        public static IReadOnlyList<ControllerEventLog> GetPlanEvents(
-           this IControllerEventLogRepository repo,
+        public static IReadOnlyList<IndianaEvent> GetPlanEvents(
+           this IIndianaEventLogRepository repo,
            string locationId,
            DateTime start,
            DateTime end)
@@ -51,11 +50,11 @@ namespace ATSPM.ReportApi.TempExtensions
                 locationId,
                 start.AddHours(-12),
                 end.AddHours(12),
-                131)
+                DataLoggerEnum.CoordPatternChange)
                 .OrderBy(e => e.Timestamp)
                 .ToList();
 
-            var uniqueEvents = new List<ControllerEventLog>();
+            var uniqueEvents = new List<IndianaEvent>();
             // Iterate over the original events list
             for (int i = 0; i < events.Count; i++)
             {
@@ -72,7 +71,7 @@ namespace ATSPM.ReportApi.TempExtensions
             return uniqueEvents; ;
         }
 
-        public static void UpdateEventsAfterDateForPlans(List<ControllerEventLog> events, DateTime date)
+        public static void UpdateEventsAfterDateForPlans(List<IndianaEvent> events, DateTime date)
         {
             // Find the first event that occurred after the specified date
             var index = events.FindIndex(e => e.Timestamp > date);
@@ -88,11 +87,11 @@ namespace ATSPM.ReportApi.TempExtensions
             else
             {
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
-                var newEvent = new ControllerEventLog
+                var newEvent = new IndianaEvent
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = 131,
+                    EventCode = DataLoggerEnum.CoordPatternChange,
                     EventParam = 0
                 };
 
@@ -102,7 +101,7 @@ namespace ATSPM.ReportApi.TempExtensions
         }
 
 
-        public static void UpdateEventsBeforeDateForPlans(List<ControllerEventLog> events, DateTime date)
+        public static void UpdateEventsBeforeDateForPlans(List<IndianaEvent> events, DateTime date)
         {
             // Find the first event that occurred before the specified date
             var index = events.FindIndex(e => e.Timestamp < date);
@@ -118,11 +117,11 @@ namespace ATSPM.ReportApi.TempExtensions
             else
             {
                 // If no event was found, create a new event with event param 0, event code 131, and the specified date as the timestamp
-                var newEvent = new ControllerEventLog
+                var newEvent = new IndianaEvent
                 {
-                    SignalIdentifier = "0",
+                    LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = 131,
+                    EventCode = DataLoggerEnum.CoordPatternChange,
                     EventParam = 0
                 };
 

@@ -1,7 +1,7 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
-using System;
-using System.Collections.Generic;
 
 namespace ATSPM.ReportApi.Business.PedDelay
 {
@@ -26,10 +26,10 @@ namespace ATSPM.ReportApi.Business.PedDelay
         public int PedRequests { get; set; }
         public int ImputedPedCallsRegistered { get; set; }
         public int PedBeginWalkCount { get; set; }
-        public List<ControllerEventLog> PedBeginWalkEvents { get; set; }
+        public List<IndianaEvent> PedBeginWalkEvents { get; set; }
         public int PedCallsRegisteredCount { get; set; }
-        public int BeginWalkEvent { get; set; }
-        public int BeginClearanceEvent { get; set; }
+        public DataLoggerEnum BeginWalkEvent { get; set; }
+        public DataLoggerEnum BeginClearanceEvent { get; set; }
     }
 
 }

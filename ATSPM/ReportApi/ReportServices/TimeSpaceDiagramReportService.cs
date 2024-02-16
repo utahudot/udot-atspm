@@ -1,6 +1,8 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.TimeSpaceDiagram;
@@ -14,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService;
         private readonly PhaseService phaseService;
         private readonly IRouteLocationsRepository routeLocationsRepository;
         private readonly static double defaultDistanceToNextLocation = 1584;
 
-        public TimeSpaceDiagramReportService(IControllerEventLogRepository controllerEventLogRepository, ILocationRepository locationRepository, TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService, PhaseService phaseService, IRouteLocationsRepository routeLocationsRepository)
+        public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository, ILocationRepository locationRepository, TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService, PhaseService phaseService, IRouteLocationsRepository routeLocationsRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;
@@ -39,7 +41,7 @@ namespace ATSPM.ReportApi.ReportServices
                 throw new Exception($"No locations present for route");
             }
 
-            var eventCodes = new List<int>() { 81, 82 };
+            var eventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOn, DataLoggerEnum.DetectorOff };
             var tasks = new List<Task<TimeSpaceDiagramResult>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
@@ -73,9 +75,9 @@ namespace ATSPM.ReportApi.ReportServices
             return results;
         }
 
-        private (List<List<ControllerEventLog>> controllerEventLogsList, List<PhaseDetail> phaseDetails) ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
+        private (List<List<IndianaEvent>> controllerEventLogsList, List<PhaseDetail> phaseDetails) ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
         {
-            var controllerEventLogsList = new List<List<ControllerEventLog>>();
+            var controllerEventLogsList = new List<List<IndianaEvent>>();
             var phaseDetails = new List<PhaseDetail>();
 
             foreach (var routeLocation in routeLocations)
@@ -87,7 +89,7 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new NullReferenceException("Issue fetching location from route");
                 }
 
-                var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+                var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
                 if (controllerEventLogs.IsNullOrEmpty())
                 {
@@ -110,10 +112,10 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         private async Task<TimeSpaceDiagramResult> GetChartDataForPhase(
-            TimeSpaceDiagramOptions parameter, 
-            List<ControllerEventLog> currentControllerEventLogs, 
+            TimeSpaceDiagramOptions parameter,
+            List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail currentPhase,
-            List<int> eventCodes,
+            List<DataLoggerEnum> eventCodes,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             bool isFirstElement,

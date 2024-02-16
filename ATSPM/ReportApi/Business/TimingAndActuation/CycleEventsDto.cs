@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ATSPM.ReportApi.Business.TimingAndActuation
+﻿namespace ATSPM.ReportApi.Business.TimingAndActuation
 {
     public class CycleEventsDto
     {

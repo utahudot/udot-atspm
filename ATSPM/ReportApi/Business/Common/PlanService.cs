@@ -1,4 +1,6 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.ApproachSpeed;
 using ATSPM.ReportApi.Business.SplitFail;
 using ATSPM.ReportApi.Business.YellowRedActivations;
@@ -14,7 +16,7 @@ namespace ATSPM.ReportApi.Business.Common
         }
 
         public List<PurdueCoordinationPlan> GetPcdPlans(List<CyclePcd> cycles, DateTime startDate,
-            DateTime endDate, Approach approach, List<ControllerEventLog> events)
+            DateTime endDate, Approach approach, List<IndianaEvent> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, approach.Location.LocationIdentifier, events.OrderBy(e => e.Timestamp).ToList());
             var plans = new List<PurdueCoordinationPlan>();
@@ -42,11 +44,11 @@ namespace ATSPM.ReportApi.Business.Common
             return plans;
         }
 
-        public IReadOnlyList<ControllerEventLog> GetPlanEvents(
+        public IReadOnlyList<IndianaEvent> GetPlanEvents(
             DateTime startDate,
             DateTime endDate,
             string locationId,
-            List<ControllerEventLog> tempPlanEvents)
+            List<IndianaEvent> tempPlanEvents)
         {
             startDate = DateTime.SpecifyKind(startDate, DateTimeKind.Unspecified);
             endDate = DateTime.SpecifyKind(endDate, DateTimeKind.Unspecified);
@@ -61,7 +63,7 @@ namespace ATSPM.ReportApi.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new ControllerEventLog { SignalIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = DataLoggerEnum.CoordPatternChange, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -73,7 +75,7 @@ namespace ATSPM.ReportApi.Business.Common
             return tempPlanEvents;
         }
 
-        private static void SetLastPlan(DateTime startDate, DateTime endDate, List<ControllerEventLog> tempPlanEvents)
+        private static void SetLastPlan(DateTime startDate, DateTime endDate, List<IndianaEvent> tempPlanEvents)
         {
             // Find the index of the last event within the start and end dates
             var lastPlan = tempPlanEvents.Where(log => log.Timestamp >= startDate && log.Timestamp <= endDate).OrderBy(e => e.Timestamp).Last();
@@ -91,7 +93,7 @@ namespace ATSPM.ReportApi.Business.Common
             }
         }
 
-        private void SetFirstPlan(DateTime startDate, string locationId, List<ControllerEventLog> planEvents)
+        private void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
         {
             // Check if first plan has exact startDate as value in planEvents
             var firstPlanEvent = planEvents.Where(e => e.Timestamp == startDate).FirstOrDefault();
@@ -112,17 +114,17 @@ namespace ATSPM.ReportApi.Business.Common
             else
             {
                 // create a new event with the specified properties and add it to the beginning of the list
-                firstPlanEvent = new ControllerEventLog
+                firstPlanEvent = new IndianaEvent
                 {
                     Timestamp = startDate,
-                    EventCode = 131,
+                    EventCode = DataLoggerEnum.CoordPatternChange,
                     EventParam = 0,
-                    SignalIdentifier = locationId
+                    LocationIdentifier = locationId
                 };
                 planEvents.Insert(0, firstPlanEvent);
             }
         }
-        //private void SetFirstPlan(DateTime startDate, string locationId, List<ControllerEventLog> planEvents)
+        //private void SetFirstPlan(DateTime startDate, string locationId, List<IndianaEvent> planEvents)
         //{
         //    var firstPlanEvent = controllerEventLogRepository.GetFirstEventBeforeDate(locationId, 131, startDate);
         //    if (firstPlanEvent != null)
@@ -147,7 +149,7 @@ namespace ATSPM.ReportApi.Business.Common
             DateTime startDate,
             DateTime endDate,
             string locationId,
-            IReadOnlyList<ControllerEventLog> events)
+            IReadOnlyList<IndianaEvent> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
             var plans = planEvents.Select((x, i) => i == planEvents.Count - 1
@@ -163,7 +165,7 @@ namespace ATSPM.ReportApi.Business.Common
             List<YellowRedActivationsCycle> cycles,
             string locationIdentifier,
             double severeRedLightViolationSeconds,
-            IReadOnlyList<ControllerEventLog> planEvents)
+            IReadOnlyList<IndianaEvent> planEvents)
         {
             var plans = GetBasicPlans(
                 startDate,
@@ -184,7 +186,7 @@ namespace ATSPM.ReportApi.Business.Common
             DateTime startDate,
             DateTime endDate,
             string locationId,
-            IList<ControllerEventLog> events)
+            IList<IndianaEvent> events)
         {
             var planEvents = GetPlanEvents(startDate, endDate, locationId, events.ToList());
             var plans = new List<PlanSplitMonitorData>();
@@ -213,7 +215,7 @@ namespace ATSPM.ReportApi.Business.Common
         /// <param name="events"></param>
         /// <returns></returns>
         public List<SpeedPlan> GetSpeedPlans(List<CycleSpeed> cycles, DateTime startDate,
-            DateTime endDate, Approach approach, List<ControllerEventLog> events)
+            DateTime endDate, Approach approach, List<IndianaEvent> events)
         {
             if (events.IsNullOrEmpty())
             {
@@ -343,7 +345,7 @@ namespace ATSPM.ReportApi.Business.Common
             List<CycleSplitFail> cycles,
             SplitFailOptions options,
             Approach approach,
-            IReadOnlyList<ControllerEventLog> events)
+            IReadOnlyList<IndianaEvent> events)
         {
             var planEvents = GetPlanEvents(options.Start, options.End, approach.Location.LocationIdentifier, events.ToList());
             var plans = planEvents.Select((x, i) =>

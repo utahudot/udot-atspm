@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Data.Enums;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.PreempDetail;
 using ATSPM.ReportApi.TempExtensions;
@@ -13,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class PreemptDetailReportService : ReportServiceBase<PreemptDetailOptions, PreemptDetailResult>
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly PreemptDetailService preemptDetailService;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PreemptDetailReportService(
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             PreemptDetailService preemptDetailService,
             ILocationRepository LocationRepository)
         {
@@ -37,10 +38,10 @@ namespace ATSPM.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<PreemptDetailResult>(new NullReferenceException("Location not found"));
             }
-            var codes = new List<int>();
+            var codes = new List<DataLoggerEnum>();
 
             for (var i = 101; i <= 111; i++)
-                codes.Add(i);
+                codes.Add((DataLoggerEnum)i);
 
             var events = controllerEventLogRepository.GetLocationEventsByEventCodes(
                 parameter.locationIdentifier,

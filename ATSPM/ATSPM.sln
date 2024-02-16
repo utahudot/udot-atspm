@@ -53,11 +53,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabaseProvider", "SqlD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLDatabaseProvider", "PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj", "{66B69A6E-EB9F-49F2-AE89-5018556563F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlDatabaseProvider", "MySqlDatabaseProvider\MySqlDatabaseProvider.csproj", "{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySqlDatabaseProvider", "MySqlDatabaseProvider\MySqlDatabaseProvider.csproj", "{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArchiveLogs", "..\..\Data ETL\Data-ETL\ArchiveLogs.csproj", "{CE52C630-6FE6-472C-A6E3-91709282ED6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,6 +159,10 @@ Global
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE52C630-6FE6-472C-A6E3-91709282ED6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE52C630-6FE6-472C-A6E3-91709282ED6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE52C630-6FE6-472C-A6E3-91709282ED6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE52C630-6FE6-472C-A6E3-91709282ED6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

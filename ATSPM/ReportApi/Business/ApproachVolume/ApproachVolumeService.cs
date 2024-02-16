@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
@@ -26,8 +27,8 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
         public ApproachVolumeResult GetChartData(
             ApproachVolumeOptions options,
             Location Location,
-            List<ControllerEventLog> primaryDetectorEvents,
-            List<ControllerEventLog> opposingDetectorEvents,
+            List<IndianaEvent> primaryDetectorEvents,
+            List<IndianaEvent> opposingDetectorEvents,
             List<Approach> primaryApproaches,
             List<Approach> opposingApproaches,
             int distanceFromStopBar,
@@ -137,7 +138,7 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
         //private VolumeCollection GetVolumeByDetection(
         //   List<Approach> approaches,
         //   ApproachVolumeOptions options,
-        //   List<ControllerEventLog> detectorEvents)
+        //   List<IndianaEvent> detectorEvents)
         //{
         //    var detectors = approaches.SelectMany(a => a.GetDetectorsForMetricType(7))
         //        .Where(d => d.LaneTypeId == LaneTypes.V).ToList();

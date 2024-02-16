@@ -41,7 +41,19 @@ namespace ATSPM.Data.Models
         public int DeviceId { get; set; }
 
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<EventLogModelBase> Data { get => (IEnumerable<EventLogModelBase>)base.Data; set => base.Data = value; }
+        public new IEnumerable<EventLogModelBase> Data
+        {
+            get
+            {
+                var data = (IEnumerable<EventLogModelBase>)base.Data;
+                foreach (var d in data)
+                {
+                    d.LocationIdentifier = LocationIdentifier;
+                }
+                return data;
+            }
+            set => base.Data = value;
+        }
 
     }
 
@@ -52,7 +64,7 @@ namespace ATSPM.Data.Models
     public class CompressedEventLogs<T> : CompressedEventLogBase where T : EventLogModelBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new ICollection<T> Data 
+        public new ICollection<T> Data
         {
             get
             {

@@ -1,7 +1,5 @@
-﻿using ATSPM.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.PedDelay
 {
@@ -19,7 +17,7 @@ namespace ATSPM.ReportApi.Business.PedDelay
         public DateTime End { get; }
         public int PlanNumber { get; }
         public int PhaseNumber { get; }
-        public List<ControllerEventLog> Events { get; set; }
+        public List<IndianaEvent> Events { get; set; }
         public List<PedCycle> Cycles { get; set; } = new List<PedCycle>();
         public int UniquePedDetections { get; set; }
         public double CyclesWithPedRequests => Cycles.Count;
@@ -27,14 +25,14 @@ namespace ATSPM.ReportApi.Business.PedDelay
         {
             get
             {
-                return Events.Where(e => e.EventCode == 21 || e.EventCode == 67).Count();
+                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianBeginWalk || e.EventCode == DataLoggerEnum.PedestrianOverlapBeginWalk).Count();
             }
         }
         public double PedCallsRegisteredCount
         {
             get
             {
-                return Events.Where(e => e.EventCode == 45).Count();
+                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianCallRegistered).Count();
             }
         }
         public double MinDelay

@@ -1,7 +1,5 @@
 ﻿using ATSPM.Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.ReportApi.Business.Common
 {
@@ -12,7 +10,7 @@ namespace ATSPM.ReportApi.Business.Common
             VolumeCollection volume,
             List<PurdueCoordinationPlan> plans,
             List<CyclePcd> cycles,
-            List<ControllerEventLog> detectorEvents,
+            List<IndianaEvent> detectorEvents,
             Approach approach,
             DateTime startDate,
             DateTime endDate
@@ -34,7 +32,7 @@ namespace ATSPM.ReportApi.Business.Common
         public VolumeCollection Volume { get; private set; }
         public List<PurdueCoordinationPlan> Plans { get; private set; }
         public List<CyclePcd> Cycles { get; private set; }
-        private List<ControllerEventLog> DetectorEvents { get; set; }
+        private List<IndianaEvent> DetectorEvents { get; set; }
         public Approach Approach { get; }
         public double AvgDelaySeconds => TotalDelaySeconds / TotalVolume;
 

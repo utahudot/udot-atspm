@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.Business.PreemptService;
 using ATSPM.ReportApi.TempModels;
@@ -17,10 +18,10 @@ namespace ATSPM.ReportApi.Business.PreempDetail
 
         public PreemptDetailResult GetChartData(
             PreemptDetailOptions preemptDetailOptions,
-            List<ControllerEventLog> preemptEvents)
+            List<IndianaEvent> preemptEvents)
         {
-            var preemptServiceEventCodes = new List<int>() { 105 };
-            var preemptServiceRequestEventCodes = new List<int>() { 102 };
+            var preemptServiceEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptEntryStarted };
+            var preemptServiceRequestEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptCallInputOn };
 
             var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();
             var preemptDetails = new List<PreemptDetail>();

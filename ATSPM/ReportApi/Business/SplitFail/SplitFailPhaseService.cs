@@ -1,9 +1,9 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business.Common;
 using ATSPM.ReportApi.TempExtensions;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ATSPM.ReportApi.Business.SplitFail
 {
@@ -36,10 +36,10 @@ namespace ATSPM.ReportApi.Business.SplitFail
 
         public SplitFailPhaseData GetSplitFailPhaseData(
             SplitFailOptions options,
-            IReadOnlyList<ControllerEventLog> cycleEvents,
-            IReadOnlyList<ControllerEventLog> planEvents,
-            IReadOnlyList<ControllerEventLog> terminationEvents,
-            IReadOnlyList<ControllerEventLog> detectorEvents,
+            IReadOnlyList<IndianaEvent> cycleEvents,
+            IReadOnlyList<IndianaEvent> planEvents,
+            IReadOnlyList<IndianaEvent> terminationEvents,
+            IReadOnlyList<IndianaEvent> detectorEvents,
             Approach approach)
         {
             var splitFailPhaseData = new SplitFailPhaseData();
@@ -146,7 +146,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
         private void SetDetectorActivations(
             SplitFailOptions options,
             SplitFailPhaseData splitFailPhaseData,
-            IReadOnlyList<ControllerEventLog> detectorEvents)
+            IReadOnlyList<IndianaEvent> detectorEvents)
         {
             var phaseNumber = splitFailPhaseData.GetPermissivePhase ? splitFailPhaseData.Approach.PermissivePhaseNumber.Value : splitFailPhaseData.Approach.ProtectedPhaseNumber;
             var detectors = splitFailPhaseData.Approach.GetAllDetectorsOfDetectionType(Data.Enums.DetectionTypes.SBP);// .GetDetectorsForMetricType(12);
@@ -169,11 +169,11 @@ namespace ATSPM.ReportApi.Business.SplitFail
             CombineDetectorActivations(splitFailPhaseData);
         }
 
-        private void AddDetectorActivationsFromList(List<ControllerEventLog> events, SplitFailPhaseData splitFailPhaseData)
+        private void AddDetectorActivationsFromList(List<IndianaEvent> events, SplitFailPhaseData splitFailPhaseData)
         {
             events = events.OrderBy(e => e.Timestamp).ToList();
             for (var i = 0; i < events.Count - 1; i++)
-                if (events[i].EventCode == 82 && events[i + 1].EventCode == 81)
+                if (events[i].EventCode == DataLoggerEnum.DetectorOn && events[i + 1].EventCode == DataLoggerEnum.DetectorOff)
                     splitFailPhaseData.DetectorActivations.Add(new SplitFailDetectorActivation
                     {
                         DetectorOn = events[i].Timestamp,
@@ -182,28 +182,28 @@ namespace ATSPM.ReportApi.Business.SplitFail
         }
 
         private static void AddDetectorOffToEndIfNecessary(SplitFailOptions options, Detector detector,
-            List<ControllerEventLog> events)
+            List<IndianaEvent> events)
         {
-            if (events.LastOrDefault()?.EventCode == 82)
-                events.Insert(events.Count, new ControllerEventLog
+            if (events.LastOrDefault()?.EventCode == DataLoggerEnum.DetectorOn)
+                events.Insert(events.Count, new IndianaEvent
                 {
                     Timestamp = options.End,
-                    EventCode = 81,
-                    EventParam = detector.DetectorChannel,
-                    SignalIdentifier = options.locationIdentifier
+                    EventCode = DataLoggerEnum.DetectorOff,
+                    EventParam = Convert.ToByte(detector.DetectorChannel),
+                    LocationIdentifier = options.locationIdentifier
                 });
         }
 
         private static void AddDetectorOnToBeginningIfNecessary(SplitFailOptions options, Detector detector,
-            List<ControllerEventLog> events)
+            List<IndianaEvent> events)
         {
-            if (events.FirstOrDefault()?.EventCode == 81)
-                events.Insert(0, new ControllerEventLog
+            if (events.FirstOrDefault()?.EventCode == DataLoggerEnum.DetectorOff)
+                events.Insert(0, new IndianaEvent
                 {
                     Timestamp = options.Start,
-                    EventCode = 82,
-                    EventParam = detector.DetectorChannel,
-                    SignalIdentifier = options.locationIdentifier
+                    EventCode = DataLoggerEnum.DetectorOn,
+                    EventParam = Convert.ToByte(detector.DetectorChannel),
+                    LocationIdentifier = options.locationIdentifier
                 });
         }
     }

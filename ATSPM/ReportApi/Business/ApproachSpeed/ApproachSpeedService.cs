@@ -21,8 +21,8 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
 
         public ApproachSpeedResult GetChartData(
             ApproachSpeedOptions options,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> cycleEvents,
+            List<IndianaEvent> planEvents,
             List<SpeedEvent> speedEvents,
             Detector detector)
         {
@@ -87,8 +87,8 @@ namespace ATSPM.ReportApi.Business.ApproachSpeed
             DateTime start,
             DateTime end,
             int binSize,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> cycleEvents,
+            List<IndianaEvent> planEvents,
+            List<IndianaEvent> cycleEvents,
             List<SpeedEvent> speedEventsForDetector)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);

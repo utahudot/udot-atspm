@@ -1,8 +1,9 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.ApproachVolume;
 using ATSPM.ReportApi.TempExtensions;
@@ -16,13 +17,13 @@ namespace ATSPM.ReportApi.ReportServices
     public class ApproachVolumeReportService : ReportServiceBase<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>
     {
         private readonly ILocationRepository LocationRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ApproachVolumeService approachVolumeService;
 
         /// <inheritdoc/>
         public ApproachVolumeReportService(
             ILocationRepository LocationRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ApproachVolumeService approachVolumeService)
         {
             this.LocationRepository = LocationRepository;
@@ -41,7 +42,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ApproachVolumeResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -74,7 +75,7 @@ namespace ATSPM.ReportApi.ReportServices
         private void GetApproachVolume(
             ApproachVolumeOptions options,
             Location Location,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Task<ApproachVolumeResult>> tasks,
             List<Approach> approaches,
             DirectionTypes primaryDirection,
@@ -94,7 +95,7 @@ namespace ATSPM.ReportApi.ReportServices
         private void GetAppoachVolumeForApproaches(
             ApproachVolumeOptions options,
             Location Location,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Task<ApproachVolumeResult>> tasks,
             List<Approach> approaches,
             DetectionType detectionType,
@@ -116,7 +117,7 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<ApproachVolumeResult> GetApproachVolumeByDetectionType(
             ApproachVolumeOptions options,
             Location Location,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Approach> primaryApproaches,
             List<Approach> opposingApproaches,
             DetectionType detectionType)
@@ -127,8 +128,8 @@ namespace ATSPM.ReportApi.ReportServices
             }
             int primaryDistanceFromStopBar = 0;
             int opposingDistanceFromStopBar = 0;
-            List<ControllerEventLog> primaryDetectorEvents = GetDetectorEvents(options, out primaryDistanceFromStopBar, controllerEventLogs, primaryApproaches, detectionType);
-            List<ControllerEventLog> opposingDetectorEvents = GetDetectorEvents(options, out opposingDistanceFromStopBar, controllerEventLogs, opposingApproaches, detectionType);
+            List<IndianaEvent> primaryDetectorEvents = GetDetectorEvents(options, out primaryDistanceFromStopBar, controllerEventLogs, primaryApproaches, detectionType);
+            List<IndianaEvent> opposingDetectorEvents = GetDetectorEvents(options, out opposingDistanceFromStopBar, controllerEventLogs, opposingApproaches, detectionType);
             if (primaryDetectorEvents.Count == 0 && opposingDetectorEvents.Count == 0)
             {
                 return new ApproachVolumeResult(Location.LocationIdentifier, options.Start, options.End, primaryApproaches.FirstOrDefault().DirectionTypeId);
@@ -146,10 +147,10 @@ namespace ATSPM.ReportApi.ReportServices
             return viewModel;
         }
 
-        private List<ControllerEventLog> GetDetectorEvents(
+        private List<IndianaEvent> GetDetectorEvents(
             ApproachVolumeOptions options,
             out int distanceFromStopBar,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Approach> approaches,
             DetectionType detectionType)
         {
@@ -163,7 +164,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 distanceFromStopBar = detectors.First().DistanceFromStopBar ?? 0;
             }
-            var detectorEvents = new List<ControllerEventLog>();
+            var detectorEvents = new List<IndianaEvent>();
             foreach (var approach in approaches)
             {
                 detectorEvents.AddRange(controllerEventLogs.GetDetectorEvents(

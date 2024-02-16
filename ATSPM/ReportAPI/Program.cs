@@ -1,8 +1,6 @@
 
 using Asp.Versioning;
-using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
-using ATSPM.Infrastructure.Repositories;
 using ATSPM.ReportApi.Business;
 using ATSPM.ReportApi.Business.AppoachDelay;
 using ATSPM.ReportApi.Business.ApproachSpeed;
@@ -111,7 +109,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
     s.AddAtspmEFEventLogRepositories();
-    s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+    //s.AddScoped<IIndianaEventLogRepository, ControllerEventLogEFRepository>();
 
     //mocked report services
     //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
