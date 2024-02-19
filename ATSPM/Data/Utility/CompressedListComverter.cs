@@ -19,7 +19,10 @@ namespace ATSPM.Data.Utility
         public CompressedListComverter() : base(
             v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Arrays
+                TypeNameHandling = TypeNameHandling.Arrays,
+                // Add Converters with StringEnumConverter to handle enum serialization as integers
+                Converters = new List<JsonConverter> { new Newtonsoft.Json.Converters.StringEnumConverter { AllowIntegerValues = true } }
+
             }).GZipCompressToByte(),
             v => JsonConvert.DeserializeObject<IEnumerable<T>>(v.GZipDecompressToString(), new JsonSerializerSettings()
             {

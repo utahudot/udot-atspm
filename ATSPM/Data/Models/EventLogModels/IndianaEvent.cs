@@ -14,11 +14,11 @@ namespace ATSPM.Data.Models.EventLogModels
         /// Event code from <see cref="DataLoggerEnum"/>
         /// </summary>
         public DataLoggerEnum EventCode { get; set; }
-        
+
         /// <summary>
         /// Event parameter that is specific to <see cref="EventCode"/>
         /// </summary>
-        public byte EventParam { get; set; }
+        public short EventParam { get; set; }
 
         ///<inheritdoc/>
         public override bool Equals(object obj)
