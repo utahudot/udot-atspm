@@ -41,7 +41,7 @@ namespace ATSPM.ReportApi.Business.PreempDetail
                 var tempEvents = preemptEvents
                     .Where(x => x.EventParam == preemptNumber).ToList();
                 var cycles = cycleService.CreatePreemptCycle(tempEvents);
-                var cycleToCycleResult = createResultCycles(cycles);
+                var cycleToCycleResult = createResultCycles(cycles, preemptDetailOptions);
 
                 var requests = requestEventsForNumber.Select(e => e.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss")).ToList();
                 var services = serviceEventsForNumber.Select(e => e.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss")).ToList();
@@ -63,13 +63,13 @@ namespace ATSPM.ReportApi.Business.PreempDetail
                 );
         }
 
-        private List<PreemptCycleResult> createResultCycles(List<PreemptCycle> cycles)
+        private List<PreemptCycleResult> createResultCycles(List<PreemptCycle> cycles, PreemptDetailOptions options)
         {
             var result = cycles.Select(c => new PreemptCycleResult()
             {
                 InputOff = c.InputOff[0],
-                InputOn = c.StartInputOn,
-                GateDown = c.GateDown,
+                InputOn = c.EntryStarted >= options.Start && c.EntryStarted <= options.End ? c.EntryStarted : c.InputOn[0],
+                GateDown = c.GateDown >= options.Start && c.GateDown <= options.End ? c.GateDown : null,
                 CallMaxOut = c.TimeToCallMaxOut,
                 Delay = c.Delay,
                 TimeToService = c.TimeToService,

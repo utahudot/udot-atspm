@@ -60,7 +60,10 @@ namespace ATSPM.ReportApi.ReportServices
             //viewModel.Details = Location.LocationDescription();
             result.Summary.LocationDescription = Location.LocationDescription();
             //return Ok(viewModel);
-
+            foreach (var item in result.Details)
+            {
+                item.LocationDescription = Location.LocationDescription();
+            }
             return result;
         }
     }
