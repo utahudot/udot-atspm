@@ -4,9 +4,9 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
 {
     public class ApproachVolumeOptions : OptionsBase
     {
-        public int SelectedBinSize { get; set; }
+        public int BinSize { get; set; }
         public bool ShowDirectionalSplits { get; set; }
-        public bool ShowTotalVolume { get; set; }
+        public bool GetVolume { get; set; } = true;
         public bool ShowNbEbVolume { get; set; }
         public bool ShowSbWbVolume { get; set; }
         public bool ShowTMCDetection { get; set; }
