@@ -23,6 +23,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Google.Cloud.Diagnostics.Common;
+using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -44,14 +47,14 @@ namespace ATSPM.LocationControllerLogger
                     //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
-                    //    l.AddGoogle(new LoggingServiceOptions
-                    //    {
-                    //        ProjectId = "1022556126938",
-                    //        //ProjectId = "869261868126",
-                    //        ServiceName = AppDomain.CurrentDomain.FriendlyName,
-                    //        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
-                    //        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
-                    //    });
+                    l.AddGoogle(new LoggingServiceOptions
+                    {
+                        ProjectId = "1022556126938",
+                        //ProjectId = "869261868126",
+                        ServiceName = AppDomain.CurrentDomain.FriendlyName,
+                        Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                        Options = LoggingOptions.Create(LogLevel.Information, AppDomain.CurrentDomain.FriendlyName)
+                    });
                     //}
                 })
                 .ConfigureServices((h, s) =>
@@ -171,8 +174,8 @@ namespace ATSPM.LocationControllerLogger
                 var sftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
                     .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
                     .Where(w => w.Ipaddress.IsValidIPAddress())
-                    //.Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
-                    .Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
+                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
+                    //.Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
                     .OrderBy(o => o.Ipaddress.ToString());
                     //.Skip(10)
                     //.Take(100);
@@ -189,7 +192,7 @@ namespace ATSPM.LocationControllerLogger
                 }
 
 
-                int instances = 50;
+                int instances = 1;
 
 
                 var input = new BufferBlock<Device>();
@@ -198,14 +201,14 @@ namespace ATSPM.LocationControllerLogger
                 var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(host.Services, instances);
                 var SaveEventsToRepo = new SaveEventsToRepo(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
 
-                var actionResult = new ActionBlock<CompressedEventLogBase>(async t =>
+                var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
                 {
-                    //Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
+                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.Data.Count()}");
 
-                    var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+                    //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                    var i = await repo.LookupAsync(t);
-                    Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
+                    //var i = await repo.LookupAsync(t);
+                    //Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
 
                     //foreach (var i in repo.GetList())
                     //{
@@ -230,7 +233,7 @@ namespace ATSPM.LocationControllerLogger
 
                 try
                 {
-                    await actionResult.Completion;
+                    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"));
                 }
                 catch (Exception e)
                 {
