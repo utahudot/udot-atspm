@@ -44,8 +44,8 @@ namespace ATSPM.ReportApi.Business.SplitFail
         {
             var splitFailPhaseData = new SplitFailPhaseData();
             splitFailPhaseData.Approach = approach;
-            splitFailPhaseData.GetPermissivePhase = options.UsePermissivePhase;
-            splitFailPhaseData.PhaseNumberSort = options.UsePermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
+            splitFailPhaseData.GetPermissivePhase = options.GetPermissivePhase;
+            splitFailPhaseData.PhaseNumberSort = options.GetPermissivePhase ? approach.PermissivePhaseNumber.Value.ToString() + "-1" : approach.ProtectedPhaseNumber.ToString() + "-2";
             splitFailPhaseData.Cycles = cycleService.GetSplitFailCycles(
                 options,
                 cycleEvents,
@@ -76,7 +76,7 @@ namespace ATSPM.ReportApi.Business.SplitFail
             do
             {
                 var endTime = startTime.AddMinutes(15);
-                var cycles = splitFailPhaseData.Cycles.Where(c => c.StartTime >= startTime && c.StartTime < endTime).ToList();
+                var cycles = splitFailPhaseData.Cycles.Where(c => c.StartTime >= startTime && c.StartTime <= endTime).ToList();
                 splitFailPhaseData.Bins.Add(new SplitFailBin(startTime, endTime, cycles));
                 startTime = startTime.AddMinutes(15);
             } while (startTime < options.End);
