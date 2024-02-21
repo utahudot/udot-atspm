@@ -6,8 +6,6 @@ namespace ATSPM.ReportApi.Business.SplitFail
     {
         public int FirstSecondsOfRed { get; set; }
         public int MetricTypeId { get; set; } = 12;
-        public bool UsePermissivePhase { get; set; }
-
-
+        public bool GetPermissivePhase { get; set; }
     }
 }

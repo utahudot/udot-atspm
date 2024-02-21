@@ -36,14 +36,19 @@ namespace ATSPM.ReportApi.ReportServices
         public override async Task<IEnumerable<TimeSpaceDiagramResult>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
+            if (routeLocations.Count == 0)
+            {
+                throw new Exception($"No locations present for route");
+            }
+
             var eventCodes = new List<int>() { 81, 82 };
             var tasks = new List<Task<TimeSpaceDiagramResult>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
             //Throw exception when no distance is found
-            foreach ( var routeLocation in routeLocations)
+            foreach (var routeLocation in routeLocations)
             {
-                if (routeLocation.NextLocationDistance == null)
+                if (routeLocation.NextLocationDistance == null && routeLocation.PreviousLocationDistance == null)
                 {
                     throw new Exception($"Distance not configured for route: {parameter.RouteId}");
                 }
@@ -53,12 +58,14 @@ namespace ATSPM.ReportApi.ReportServices
 
             for (var i = 0; i < routeLocations.Count; i++)
             {
-                var nextLocationDistance = routeLocations[i].NextLocationDistance.Distance;
+                var nextLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
+                var previousLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
                 tasks.Add(GetChartDataForPhase(parameter,
                     controllerEventLogsList[i],
                     phaseDetails[i],
                     eventCodes,
                     nextLocationDistance,
+                    previousLocationDistance,
                     isFirstElement: i == 0,
                     isLastElement: i == routeLocations.Count - 1
                 ));
@@ -110,6 +117,7 @@ namespace ATSPM.ReportApi.ReportServices
             PhaseDetail currentPhase,
             List<int> eventCodes,
             double distanceToNextLocation,
+            double distanceToPreviousLocation,
             bool isFirstElement,
             bool isLastElement)
         {
@@ -122,6 +130,7 @@ namespace ATSPM.ReportApi.ReportServices
                 currentPhase,
                 approachEvents,
                 distanceToNextLocation,
+                distanceToPreviousLocation,
                 isFirstElement,
                 isLastElement);
             viewModel.LocationDescription = currentPhase.Approach.Location.LocationDescription();
