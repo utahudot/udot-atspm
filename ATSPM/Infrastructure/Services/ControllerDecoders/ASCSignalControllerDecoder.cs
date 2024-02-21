@@ -3,6 +3,7 @@ using ATSPM.Application.Exceptions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Duende.IdentityServer.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -27,6 +28,9 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
+            if (parameter == null)
+                return false;
+            
             var device = parameter.Item1;
             var file = parameter.Item2;
 
