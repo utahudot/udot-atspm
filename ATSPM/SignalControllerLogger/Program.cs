@@ -16,8 +16,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -134,16 +136,18 @@ namespace ATSPM.LocationControllerLogger
                     {
                         o.LocalPath = "C:\\temp";
                         o.PingControllerToVerify = true;
-                        o.ConnectionTimeout = 3;
-                        o.ReadTimeout = 3;
-                        o.DeleteFile = true;
+                        o.ConnectionTimeout = 3000;
+                        o.ReadTimeout = 3000;
+                        o.DeleteFile = false;
                     });
 
-
+                    
                 })
 
                 .UseConsoleLifetime()
                 .Build();
+
+            host.Services.PrintHostInformation();
 
             //await host.RunAsync();
 
@@ -161,11 +165,17 @@ namespace ATSPM.LocationControllerLogger
                 ////    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Http)
                 ////    .Take(3);
 
+                var sw = new Stopwatch();
+                sw.Start();
+
                 var sftpDevices = scope.ServiceProvider.GetService<IDeviceRepository>().GetActiveDevicesByAllLatestLocations()
                     .Where(w => w.Ipaddress.ToString() != "10.10.10.10")
                     .Where(w => w.Ipaddress.IsValidIPAddress())
-                    .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
+                    //.Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
+                    .Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
                     .OrderBy(o => o.Ipaddress.ToString());
+                    //.Skip(10)
+                    //.Take(100);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;
@@ -178,108 +188,53 @@ namespace ATSPM.LocationControllerLogger
                     Console.WriteLine($"device: {d}");
                 }
 
-                //var input = new BufferBlock<Device>();
 
-                //var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 10 });
-                //var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(host.Services, 10);
-                //var SaveEventsToRepo = new SaveEventsToRepo(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
-
-                //var actionResult = new ActionBlock<CompressedEventLogBase>(async t =>
-                //{
-                //    var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-                //    foreach (var i in repo.GetList())
-                //    {
-                //        Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
-                //    }
-                //});
-
-                //input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
-
-                //await Task.Delay(TimeSpan.FromSeconds(1));
-
-                //downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
-                //processEventLogFileWorkflow.Output.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
-                //SaveEventsToRepo.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
-
-                //foreach (var d in devices)
-                //{
-                //    input.Post(d);
-                //}
-
-                //input.Complete();
-
-                //try
-                //{
-                //    await actionResult.Completion;
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.WriteLine($"{actionResult.Completion.Status}---------------{e}");
-                //}
+                int instances = 50;
 
 
+                var input = new BufferBlock<Device>();
 
+                var downloadStep = new DownloadDeviceData(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = instances });
+                var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(host.Services, instances);
+                var SaveEventsToRepo = new SaveEventsToRepo(host.Services, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                var testTrans = new TransformManyBlock<Device, Tuple<Device, FileInfo>>(t =>
+                var actionResult = new ActionBlock<CompressedEventLogBase>(async t =>
                 {
-                    var test = new TestClass(host.Services);
+                    //Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
 
-                    return test.ProcessAsync(t);
+                    var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
-                    //using (var scope = host.Services.CreateAsyncScope())
+                    var i = await repo.LookupAsync(t);
+                    Console.WriteLine($"======================={i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}=======================");
+
+                    //foreach (var i in repo.GetList())
                     //{
-                    //    try
-                    //    {
-                    //        var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(t));
-
-                    //        return downloader.Execute(t);
-                    //    }
-                    //    catch (InvalidSignalControllerIpAddressException e)
-                    //    {
-                    //        Console.WriteLine($"{t}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
-                    //    }
-
-                    //    return default;
+                    //    Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
                     //}
-                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1 });
+                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = instances });
 
-                var testAction = new ActionBlock<Tuple<Device, FileInfo>>(t =>
-                {
-                    Console.WriteLine($"output: {t?.Item2?.FullName}");
-                });
+                input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
-                testTrans.LinkTo(testAction, new DataflowLinkOptions() { PropagateCompletion = true });
+                downloadStep.LinkTo(processEventLogFileWorkflow.Input, new DataflowLinkOptions() { PropagateCompletion = true });
+                processEventLogFileWorkflow.Output.LinkTo(SaveEventsToRepo, new DataflowLinkOptions() { PropagateCompletion = true });
+                SaveEventsToRepo.LinkTo(actionResult, new DataflowLinkOptions() { PropagateCompletion = true });
 
                 foreach (var d in devices)
                 {
-                    testTrans.Post(d);
+                    input.Post(d);
                 }
 
-                testTrans.Complete();
+                input.Complete();
 
                 try
                 {
-                    await testAction.Completion;
+                    await actionResult.Completion;
                 }
                 catch (Exception e)
                 {
-
-                    Console.WriteLine($"{testTrans.Completion.Status}---------------{e}");
+                    Console.WriteLine($"{actionResult.Completion.Status}---------------{e}");
                 }
 
 
@@ -288,7 +243,13 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-                Console.WriteLine($"*********************************************complete");
+
+
+
+
+                sw.Stop();
+
+                Console.WriteLine($"*********************************************complete - {sw.Elapsed}");
             }
 
 
@@ -305,53 +266,6 @@ namespace ATSPM.LocationControllerLogger
         public static string ToCsv(this object obj)
         {
             return string.Join(",", obj.GetType().GetProperties().Select(pi => pi.GetValue(obj, null)));
-        }
-    }
-
-    public class TestClass
-    {
-        private readonly IServiceProvider _serviceProvider;
-
-        public TestClass(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public async IAsyncEnumerable<Tuple<Device, FileInfo>> ProcessAsync(Device input, CancellationToken cancelToken = default)
-        {
-            using (var scope = _serviceProvider.CreateAsyncScope())
-            {
-                List<Tuple<Device, FileInfo>> result = new();
-
-                try
-                {
-                    var downloader = scope.ServiceProvider.GetServices<IDeviceDownloader>().First(c => c.CanExecute(input));
-
-                    //return downloader.Execute(input, cancelToken);
-
-                    await foreach (var r in downloader.Execute(input, cancelToken))
-                    {
-                        result.Add(r);
-                    }
-
-
-                }
-                catch (InvalidSignalControllerIpAddressException e)
-                {
-                    Console.WriteLine($"{input}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
-                }
-
-                if (!result.Any())
-                    yield return default;
-
-
-                foreach (var r in result)
-                {
-                    yield return r;
-                }
-
-                
-            }
         }
     }
 
@@ -412,7 +326,7 @@ namespace ATSPM.LocationControllerLogger
         /// <inheritdoc/>
         public ArchiveDeviceData(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
-        protected override async IAsyncEnumerable<CompressedEventLogs<T>> Process(Tuple<Device, T>[] input, CancellationToken cancelToken = default)
+        protected override async IAsyncEnumerable<CompressedEventLogs<T>> Process(Tuple<Device, T>[] input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             var result = input.GroupBy(g => (g.Item2.LocationIdentifier, g.Item2.Timestamp.Date, g.Item1.Id))
                 .Select(s => new CompressedEventLogs<T>()
@@ -440,7 +354,7 @@ namespace ATSPM.LocationControllerLogger
             _serviceProvider = serviceProvider;
         }
 
-        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, CancellationToken cancelToken = default)
+        protected override async IAsyncEnumerable<CompressedEventLogBase> Process(CompressedEventLogBase input, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
             using (var scope = _serviceProvider.CreateAsyncScope())
             {
