@@ -1,7 +1,6 @@
 ﻿using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventLogModels;
-using System.Collections;
 
 #nullable disable
 
@@ -12,6 +11,8 @@ namespace ATSPM.Data.Models
     /// </summary>
     public abstract class CompressedDataBase : ILocationLayer
     {
+        private IEnumerable<ILocationLayer> data;
+
         ///<inheritdoc/>
         public string LocationIdentifier { get; set; }
 
@@ -28,7 +29,18 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Compressed data, ovverride or use <c>new</c> in derrived class for specific type
         /// </summary>
-        public virtual object Data { get; set; }
+        public virtual IEnumerable<ILocationLayer> Data
+        {
+            get
+            {
+                foreach (var d in data)
+                {
+                    d.LocationIdentifier = LocationIdentifier;
+                }
+                return data.ToList();
+            }
+            set => data = value;
+        }
     }
 
     /// <summary>
@@ -42,8 +54,11 @@ namespace ATSPM.Data.Models
         public int DeviceId { get; set; }
 
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<EventLogModelBase> Data { get => (IEnumerable<EventLogModelBase>)base.Data; set => base.Data = value; }
-
+        public new IEnumerable<EventLogModelBase> Data 
+        { 
+            get => base.Data.Cast<EventLogModelBase>().ToList(); 
+            set => base.Data = value; 
+        }
     }
 
     /// <summary>
@@ -55,15 +70,7 @@ namespace ATSPM.Data.Models
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data
         {
-            get
-            {
-                var hs = Enumerable.ToHashSet(base.Data.Cast<T>());
-                foreach (var h in hs)
-                {
-                    h.LocationIdentifier = LocationIdentifier;
-                }
-                return hs.ToList();
-            }
+            get => Enumerable.ToHashSet(base.Data.Cast<T>()).ToList();
             set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
         }
     }
@@ -74,7 +81,11 @@ namespace ATSPM.Data.Models
     public abstract class CompressedAggregationBase : CompressedDataBase
     {
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<AggregationModelBase> Data { get => (IEnumerable<AggregationModelBase>)base.Data; set => base.Data = value; }
+        public new IEnumerable<AggregationModelBase> Data
+        {
+            get => base.Data.Cast<AggregationModelBase>().ToList();
+            set => base.Data = value;
+        }
     }
 
     /// <summary>
@@ -86,15 +97,7 @@ namespace ATSPM.Data.Models
         ///<inheritdoc cref="CompressedDataBase.Data"/>
         public new ICollection<T> Data
         {
-            get
-            {
-                var hs = Enumerable.ToHashSet(base.Data.Cast<T>());
-                foreach (var h in hs)
-                {
-                    h.LocationIdentifier = LocationIdentifier;
-                }
-                return hs.ToList();
-            }
+            get => Enumerable.ToHashSet(base.Data.Cast<T>()).ToList();
             set => base.Data = Enumerable.ToHashSet(value.Cast<T>()).ToList();
         }
     }
