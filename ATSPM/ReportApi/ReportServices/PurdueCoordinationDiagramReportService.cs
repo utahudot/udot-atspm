@@ -83,11 +83,11 @@ namespace ATSPM.ReportApi.ReportServices
                 phaseDetail,
                 options.Start,
                 options.End,
-                options.SelectedBinSize,
+                options.BinSize,
                 null,
                 controllerEventLogs.ToList(),
                 planEvents.ToList(),
-                options.ShowVolumes);
+                options.GetVolume);
             if (LocationPhase == null)
             {
                 return null;

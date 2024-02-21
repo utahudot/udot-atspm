@@ -34,18 +34,18 @@ namespace ATSPM.ReportApi.Business.ApproachVolume
             DetectionType detectionType
             )
         {
-            int binSizeMultiplier = 60 / options.SelectedBinSize;
+            int binSizeMultiplier = 60 / options.BinSize;
             var primaryDirectionVolume = new VolumeCollection(
                 options.Start,
                 options.End,
                 primaryDetectorEvents,
-                options.SelectedBinSize);
+                options.BinSize);
             var opposingDirectionVolume = new VolumeCollection(
                 options.Start,
                 options.End,
                 opposingDetectorEvents,
-                options.SelectedBinSize);
-            var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.SelectedBinSize);
+                options.BinSize);
+            var combinedDirectionsVolumes = new VolumeCollection(primaryDirectionVolume, opposingDirectionVolume, options.BinSize);
             //ApproachVolume approachVolume = new ApproachVolume(
             //    primaryApproaches,
             //    opposingApproaches,
