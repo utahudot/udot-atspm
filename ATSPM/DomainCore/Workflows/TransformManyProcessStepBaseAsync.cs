@@ -3,6 +3,8 @@ using ATSPM.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -37,29 +39,31 @@ namespace ATSPM.Domain.Workflows
         }
 
         /// <inheritdoc/>
-        public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, CancellationToken cancelToken = default)
+        public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            if (!cancelToken.IsCancellationRequested)
+            if (parameter != null)
             {
-                IAsyncEnumerable<T2> result = default;
-
-                try
+                if (!cancelToken.IsCancellationRequested)
                 {
-                    //if (!CanExecute(parameter))
-                    //    throw new ExecuteException();
+                    List<T2> result = new();
 
-                    //return Process(parameter, cancelToken);
+                    try
+                    {
+                        await foreach (var p in Process(parameter, cancelToken))
+                        {
+                            result.Add(p);
+                        }
 
-                    result = Process(parameter, cancelToken);
+                    }
+                    catch (Exception e)
+                    {
+                        //Console.WriteLine($"{parameter}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
+                    }
 
-                }
-                catch (Exception)
-                {
-                }
-
-                await foreach (var r in result.WithCancellation(cancelToken))
-                {
-                    yield return r;
+                    foreach (var r in result)
+                    {
+                        yield return r;
+                    }
                 }
             }
         }
