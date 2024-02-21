@@ -1829,7 +1829,7 @@
             Client for connecting and downloading files via SNMP servers
             </summary>
         </member>
-        <member name="M:ATSPM.Application.Services.ILocationControllerDecoder.Decode(System.String,System.IO.Stream)">
+        <member name="M:ATSPM.Application.Services.ILocationControllerDecoder`1.Decode(ATSPM.Data.Models.Device,System.IO.Stream)">
             <exception cref="T:ATSPM.Application.Exceptions.ControllerLoggerDecoderException"></exception>
         </member>
     </members>
