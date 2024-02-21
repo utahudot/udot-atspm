@@ -21,7 +21,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 

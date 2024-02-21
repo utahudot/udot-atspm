@@ -23,6 +23,7 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.1.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -43,22 +44,22 @@
 
 	<ItemGroup>
 		<None Update="appsettings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="appsettings.Development.json">
 			<DependentUpon>appsettings.json</DependentUpon>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="appsettings.Staging.json">
 			<DependentUpon>appsettings.json</DependentUpon>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="appsettings.Production.json">
 			<DependentUpon>appsettings.json</DependentUpon>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 	
