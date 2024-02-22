@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.AppoachDelay
+namespace ATSPM.Application.Business.AppoachDelay
 {
     public class ApproachDelayPerVehicleDataPoint
     {

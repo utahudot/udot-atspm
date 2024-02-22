@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.PreemptService
+namespace ATSPM.Application.Business.PreemptService
 {
     public class PreemptPlan : Plan
     {

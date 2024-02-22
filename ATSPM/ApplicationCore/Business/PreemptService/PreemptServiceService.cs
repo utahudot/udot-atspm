@@ -1,9 +1,9 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Application.Business.Common;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.PreemptService
+namespace ATSPM.Application.Business.PreemptService
 {
     public class PreemptServiceService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.YellowRedActivations
+namespace ATSPM.Application.Business.YellowRedActivations
 {
     public class YellowRedActivation
     {

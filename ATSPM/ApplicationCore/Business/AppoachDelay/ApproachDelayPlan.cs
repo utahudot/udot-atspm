@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.AppoachDelay
+namespace ATSPM.Application.Business.AppoachDelay
 {
     public class ApproachDelayPlan : Plan
     {

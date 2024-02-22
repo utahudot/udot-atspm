@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.ApproachVolume
+namespace ATSPM.Application.Business.ApproachVolume
 {
     public class ApproachVolumeViewModel
     {

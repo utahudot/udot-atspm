@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ATSPM.ReportApi.Business
+namespace ATSPM.Application.Business
 {
     public interface IReportService<Tin, Tout> : IExecuteAsyncWithProgress<Tin, Tout, int> { }
 

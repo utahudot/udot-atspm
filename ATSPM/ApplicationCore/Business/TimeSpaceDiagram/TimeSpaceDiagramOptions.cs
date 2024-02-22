@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
+namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
     public class TimeSpaceDiagramOptions : BasePhaseOptions
     {

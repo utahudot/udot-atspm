@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 
 
-namespace ATSPM.ReportApi.Business.PedDelay
+namespace ATSPM.Application.Business.PedDelay
 {
     public static class Approaches
     {

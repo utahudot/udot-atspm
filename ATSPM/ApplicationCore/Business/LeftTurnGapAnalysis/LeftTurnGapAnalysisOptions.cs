@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
+namespace ATSPM.Application.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisOptions : OptionsBase
     {

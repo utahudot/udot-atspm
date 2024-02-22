@@ -3,7 +3,7 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.Watchdog
+namespace ATSPM.Application.Business.Watchdog
 {
     public class WatchDogLogEventDTO : WatchDogLogEvent
     {
