@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Analysis.Plans;
 using System;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class Plan
     {

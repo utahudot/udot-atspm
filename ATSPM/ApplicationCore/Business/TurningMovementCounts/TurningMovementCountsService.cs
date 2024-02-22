@@ -1,12 +1,13 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.ReportApi.Business.TurningMovementCounts
+namespace ATSPM.Application.Business.TurningMovementCounts
 {
     public class TMCData
     {

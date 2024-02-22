@@ -1,4 +1,4 @@
-﻿namespace ATSPM.ReportApi.Business.GreenTimeUtilization
+﻿namespace ATSPM.Application.Business.GreenTimeUtilization
 {
     public class Layer
     {

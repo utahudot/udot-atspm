@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.ApproachSpeed
+namespace ATSPM.Application.Business.ApproachSpeed
 {
     public class ApproachSpeedOptions : OptionsBase
     {

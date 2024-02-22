@@ -1,9 +1,9 @@
-﻿using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TimingAndActuation;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TimingAndActuation;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
+namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
     public class TimeSpaceDiagramResult : ApproachResult
     {

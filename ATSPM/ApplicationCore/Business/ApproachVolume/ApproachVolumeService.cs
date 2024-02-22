@@ -1,14 +1,14 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
-using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.ApproachVolume
+namespace ATSPM.Application.Business.ApproachVolume
 {
     public class ApproachVolumeService
     {

@@ -1,11 +1,11 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.ApproachSpeed
+namespace ATSPM.Application.Business.ApproachSpeed
 {
     public class CycleSpeed : RedToRedCycle
     {

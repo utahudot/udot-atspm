@@ -1,8 +1,8 @@
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Application.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.PreemptServiceRequest
+namespace ATSPM.Application.Business.PreemptServiceRequest
 {
     /// <summary>
     /// Preempt Service Request chart

@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.ArrivalOnRed
+namespace ATSPM.Application.Business.ArrivalOnRed
 {
     public class ArrivalOnRedPlan : Plan
     {

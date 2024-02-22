@@ -1,10 +1,10 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

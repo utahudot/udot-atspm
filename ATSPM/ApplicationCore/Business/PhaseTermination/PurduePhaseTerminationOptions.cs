@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.PhaseTermination
+namespace ATSPM.Application.Business.PhaseTermination
 {
     public class PurduePhaseTerminationOptions : OptionsBase
     {

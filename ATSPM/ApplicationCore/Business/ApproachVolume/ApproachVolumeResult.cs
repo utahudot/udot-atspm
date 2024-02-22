@@ -1,9 +1,9 @@
+using ATSPM.Application.Business.Common;
 using ATSPM.Data.Enums;
-using ATSPM.ReportApi.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.ApproachVolume;
+namespace ATSPM.Application.Business.ApproachVolume;
 
 /// <summary>
 /// Approach Volume Chart

@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.YellowRedActivations
+namespace ATSPM.Application.Business.YellowRedActivations
 {
     public class YellowRedActivationsOptions : OptionsBase
     {

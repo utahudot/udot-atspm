@@ -1,8 +1,8 @@
 ﻿using ATSPM.Data.Enums;
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Application.Business.Common;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.TurningMovementCounts
+namespace ATSPM.Application.Business.TurningMovementCounts
 {
     public class Lane
     {
