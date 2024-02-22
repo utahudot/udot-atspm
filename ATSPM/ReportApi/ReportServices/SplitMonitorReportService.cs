@@ -1,7 +1,7 @@
 ﻿using ATSPM.Application.Repositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.SplitMonitor;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.SplitMonitor;
+using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

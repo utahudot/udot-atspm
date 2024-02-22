@@ -1,6 +1,6 @@
 ﻿using ATSPM.Application.Repositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
