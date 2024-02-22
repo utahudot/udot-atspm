@@ -1,7 +1,10 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
+namespace ATSPM.Application.Business.PurdueCoordinationDiagram
 {
     public class PurdueCoordinationDiagramService
     {

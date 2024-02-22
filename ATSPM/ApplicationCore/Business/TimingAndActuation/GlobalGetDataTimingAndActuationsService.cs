@@ -4,7 +4,7 @@ using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.TimingAndActuation
+namespace ATSPM.Application.Business.TimingAndActuation
 {
     public class GlobalGetDataTimingAndActuationsService
     {

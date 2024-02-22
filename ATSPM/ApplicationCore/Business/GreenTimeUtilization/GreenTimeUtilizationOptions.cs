@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.GreenTimeUtilization
+namespace ATSPM.Application.Business.GreenTimeUtilization
 {
     public class GreenTimeUtilizationOptions : OptionsBase
     {

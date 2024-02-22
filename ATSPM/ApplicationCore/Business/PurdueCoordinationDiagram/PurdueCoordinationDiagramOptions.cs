@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System.Runtime.Serialization;
 
-namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
+namespace ATSPM.Application.Business.PurdueCoordinationDiagram
 {
     [DataContract]
     public class PurdueCoordinationDiagramOptions : OptionsBase

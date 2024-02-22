@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.PedDelay
+namespace ATSPM.Application.Business.PedDelay
 {
     public class PedPlan
     {

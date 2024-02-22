@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.LeftTurnGapReport
+namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public class PedActuationResult
     {

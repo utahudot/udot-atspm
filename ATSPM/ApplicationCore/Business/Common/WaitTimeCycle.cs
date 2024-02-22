@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     /// <summary>
     ///     Data that represents a red to red cycle for a Location phase

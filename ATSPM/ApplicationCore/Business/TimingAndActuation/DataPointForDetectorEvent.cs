@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.TimingAndActuation
+namespace ATSPM.Application.Business.TimingAndActuation
 {
     public class DataPointForDetectorEvent : DetectorEventBase
     {

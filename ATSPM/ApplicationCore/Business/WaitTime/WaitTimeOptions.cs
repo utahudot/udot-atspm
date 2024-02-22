@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.WaitTime
+namespace ATSPM.Application.Business.WaitTime
 {
     public class WaitTimeOptions : OptionsBase
     {

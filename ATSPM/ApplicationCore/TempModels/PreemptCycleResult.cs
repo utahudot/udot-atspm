@@ -1,4 +1,6 @@
-﻿namespace ATSPM.ReportApi.TempModels
+﻿using System;
+
+namespace ATSPM.Application.TempModels
 {
     public class PreemptCycleResult
     {
