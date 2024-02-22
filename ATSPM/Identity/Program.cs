@@ -1,13 +1,7 @@
-using ATSPM.Infrastructure.Extensions;
-using Identity.Business.Accounts;
-using Identity.Business.Agency;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.ConfigureServices((host, services) =>
 {
@@ -16,130 +10,15 @@ builder.Host.ConfigureServices((host, services) =>
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
-    services.AddIdentityServer()
-    .AddOperationalStore<IdentityOperationalContext>(options =>
-    {
-        options.ConfigureDbContext = builder =>
-            builder.UseNpgsql(
-                host.Configuration.GetConnectionString(nameof(IdentityContext)),
-                sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
-    })
-     .AddConfigurationStore<IdentityConfigurationContext>(options =>
-     {
-         options.ConfigureDbContext = builder =>
-             builder.UseNpgsql(
-                 host.Configuration.GetConnectionString(nameof(IdentityContext)),
-                 sql => sql.MigrationsAssembly(typeof(ServiceExtensions).Assembly.GetName().Name));
-     })
-        //For production
-        //(options =>
-        //{
-        //    options.AccessTokenLifetime = TimeSpan.FromHours(1);   // Default: 1 hour
-        //    options.IdentityTokenLifetime = TimeSpan.FromMinutes(20);  // Default: 20 minutes
-        //    options.RefreshTokenExpiration = TokenExpiration.Absolute;
-        //    options.RefreshTokenUsage = TokenUsage.OneTimeOnly;
-        //    options.RefreshTokenLifetime = TimeSpan.FromDays(30);  // Default: 15 days
-        //                                                           // ... other options ...
-        //})
-        //.AddConfigurationStore<IdentityConfigurationContext>(options =>
-        //{
-        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        //})
-        //.AddOperationalStore<IdentityOperationalContext>(options =>
-        //{
-        //    options.ConfigureDbContext = b => b.UseSqlServer(host.Configuration.GetConnectionString(nameof(IdentityContext)));
-        //})
-        // other configurations, like adding a signing credential...
-        .AddAspNetIdentity<ApplicationUser>()
-        .AddDeveloperSigningCredential();
-
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
+    services.AddScoped<IEmailService, EmailService>();
+    services.AddScoped<ClaimsService, ClaimsService>();
+    services.AddScoped<TokenService, TokenService>();
+    services.AddScoped<RoleManager<IdentityRole>>();
 
-    //services.AddAuthentication("Bearer")
-    //   .AddJwtBearer("Bearer", options =>
-    //   {
-    //       options.Authority = "https://localhost:5001"; // assuming your IdentityServer is running on this URL
-    //       options.RequireHttpsMetadata = false; // set to true in production!
-
-    //       options.Audience = "Identity"; // replace with your API resource name
-    //   });
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-    services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = "Cookies";
-        options.DefaultChallengeScheme = "oidc";
-    })
-        .AddCookie("Cookie")
-        .AddJwtBearer(options =>
-        {
-            options.Authority = "https://localhost:44357";
-            options.Audience = "Identity";
-        })
-        .AddOpenIdConnect("oidc", options =>
-        {
-            options.Authority = "https://localhost:44357";
-            options.ClientId = "PostmanTest";
-            options.ResponseType = "code";
-            options.Scope.Add("openid");
-            options.Scope.Add("profile");
-            options.SaveTokens = true;
-        });
-    services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        options.ClientId = "768772401068-fho9ccfocp70quikb2p167jj0u9jvqjh.apps.googleusercontent.com";
-        options.ClientSecret = "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";
-    });
-
-    //This is for the production certificate
-    //var certificate = new X509Store(StoreName.My, StoreLocation.LocalMachine)
-    //.Certificates
-    //.Find(X509FindType.FindByThumbprint, "ATSPM_CERTIFICATE_THUMBPRINT", validOnly: true)
-    //.OfType<X509Certificate2>()
-    //.Single();
-
-    //IdentityClient Settings
-    services.AddAuthorization(options =>
-    {
-        options.AddPolicy("ViewUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:ViewUsers");
-        });
-        options.AddPolicy("EditUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:EditUsers");
-        });
-        options.AddPolicy("DeleteUsers", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewUsers", "Admin:DeleteUsers");
-        });
-        options.AddPolicy("ViewRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:ViewRoles", "Admin:ViewRoles");
-        });
-        options.AddPolicy("EditRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:EditRoles", "Admin:EditRoles");
-        });
-        options.AddPolicy("DeleteRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:DeleteRoles", "Admin:DeleteRoles");
-        });
-        options.AddPolicy("CreateRoles", policy =>
-        {
-            policy.RequireAuthenticatedUser();
-            policy.RequireClaim("Admin:CreateRoles", "Admin:CreateRoles");
-        });
-
-    });
-
+    services.AddAtspmAuthentication(host, builder);
+    services.AddAtspmAuthorization(host);
 
     services.AddControllers();
 
@@ -156,21 +35,21 @@ builder.Host.ConfigureServices((host, services) =>
         options.Cookie.SameSite = SameSiteMode.Lax;
         //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
-
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll",
-            builder =>
-            {
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+        options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins(allowedHosts.Split(','))
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
     });
 });
 
 var app = builder.Build();
-app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {
@@ -181,11 +60,10 @@ if (app.Environment.IsDevelopment())
 
         try
         {
-            var configContext = services.GetRequiredService<IdentityConfigurationContext>();
 
             // Get UserManager and RoleManager instances
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            //var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Run the seed method for configuration data
             //ConfigurationSeedData.Seed(configContext);
@@ -208,7 +86,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseIdentityServer();
 
 app.MapControllers();
 
