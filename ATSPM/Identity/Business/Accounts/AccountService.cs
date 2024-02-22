@@ -28,7 +28,7 @@ namespace Identity.Business.Accounts
             var createUser = await _userManager.CreateAsync(user, password);
 
             // Just add new people as users
-            await _userManager.AddToRoleAsync(user, "User");
+            //await _userManager.AddToRoleAsync(user, "User");
 
             if (createUser != null && createUser.Succeeded)
             {
