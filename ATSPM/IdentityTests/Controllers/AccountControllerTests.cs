@@ -1,5 +1,4 @@
-﻿using Identity.Business.Accounts;
-using Identity.Business.Agency;
+﻿using Identity.Business.Agency;
 using Identity.Controllers;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Http;
@@ -38,10 +37,10 @@ namespace YourProject.Tests.Controllers
 
             // Consider using a mock HTTP client if you're making external HTTP requests
             // var httpClientMock = new Mock<IHttpClientFactory>();
-            var serviceMock = new AccountService(_userManagerMock.Object, agencyServiceMock.Object, _signInManagerMock.Object);
+            //var serviceMock = new AccountService(_userManagerMock.Object, agencyServiceMock.Object, _signInManagerMock.Object);
 
             // Use the configurationMock.Object in your controller tests and any new mocks
-            _accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object, configurationMock.Object, serviceMock /*, newServiceMock.Object, httpClientMock.Object*/);
+            //_accountController = new AccountController(_userManagerMock.Object, _signInManagerMock.Object, configurationMock.Object, serviceMock /*, newServiceMock.Object, httpClientMock.Object*/);
         }
 
 
