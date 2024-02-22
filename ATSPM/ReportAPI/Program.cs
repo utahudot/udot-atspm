@@ -1,31 +1,31 @@
 
 using Asp.Versioning;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.AppoachDelay;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.ApproachVolume;
+using ATSPM.Application.Business.ArrivalOnRed;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.GreenTimeUtilization;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Business.LeftTurnGapReport;
+using ATSPM.Application.Business.PedDelay;
+using ATSPM.Application.Business.PhaseTermination;
+using ATSPM.Application.Business.PreempDetail;
+using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.Business.PreemptServiceRequest;
+using ATSPM.Application.Business.PurdueCoordinationDiagram;
+using ATSPM.Application.Business.SplitFail;
+using ATSPM.Application.Business.SplitMonitor;
+using ATSPM.Application.Business.TimeSpaceDiagram;
+using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Business.Watchdog;
+using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.ApproachVolume;
-using ATSPM.ReportApi.Business.ArrivalOnRed;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.GreenTimeUtilization;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
-using ATSPM.ReportApi.Business.LeftTurnGapReport;
-using ATSPM.ReportApi.Business.PedDelay;
-using ATSPM.ReportApi.Business.PhaseTermination;
-using ATSPM.ReportApi.Business.PreempDetail;
-using ATSPM.ReportApi.Business.PreemptService;
-using ATSPM.ReportApi.Business.PreemptServiceRequest;
-using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.Business.SplitMonitor;
-using ATSPM.ReportApi.Business.TimeSpaceDiagram;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.Business.TurningMovementCounts;
-using ATSPM.ReportApi.Business.WaitTime;
-using ATSPM.ReportApi.Business.Watchdog;
-using ATSPM.ReportApi.Business.YellowRedActivations;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
@@ -110,29 +110,13 @@ builder.Host.ConfigureServices((h, s) =>
 
     s.AddAtspmDbContext(h);
     s.AddAtspmEFRepositories();
+
+    s.AddAtspmAuthentication(h, builder);
+    s.AddAtspmAuthorization(h);
+
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
-    //mocked report services
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PurdueCoordinationDiagramOptions, PurdueCoordinationDiagramResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimeSpaceDiagramOptions, TimeSpaceDiagramResults>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
-    //s.AddScoped<TestDataUtility>();
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();

@@ -1,10 +1,8 @@
-﻿using Asp.Versioning;
-using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using Google.Api;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 
 namespace ATSPM.DataApi.Controllers
 {
@@ -16,6 +14,7 @@ namespace ATSPM.DataApi.Controllers
     //[ApiVersion("1.0")]
     //[ApiVersion("2.0")]
     [Route("v{version:apiVersion}/[controller]")]
+    [Authorize(Policy = "CanViewData")]
     public class EventLogController : ControllerBase
     {
         private readonly IControllerEventLogRepository _repository;
@@ -50,7 +49,7 @@ namespace ATSPM.DataApi.Controllers
 
             if (start == DateTime.MinValue || end == DateTime.MinValue)
                 return BadRequest("Invalid datetime range on start/end");
-            
+
             var result = _repository.GetLocationEventsBetweenDates(locationIdentifier, start, end);
 
             if (result == null)
@@ -78,7 +77,7 @@ namespace ATSPM.DataApi.Controllers
         public ActionResult<List<ControllerEventLog>> GetLocationEventsByEventCode(string locationIdentifier, DateTime start, DateTime end, [FromQuery] IEnumerable<int> eventCode)
         {
             //var eventCode = new List<int>();
-            
+
             _log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
 
             Console.WriteLine($"events: {eventCode.Count()}");

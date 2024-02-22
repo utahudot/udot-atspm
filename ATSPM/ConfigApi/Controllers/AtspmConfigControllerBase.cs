@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime;
 
 namespace ATSPM.ConfigApi.Controllers
 {

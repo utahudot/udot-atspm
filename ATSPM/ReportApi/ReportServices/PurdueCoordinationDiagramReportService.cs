@@ -1,9 +1,9 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PurdueCoordinationDiagram;
+using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
