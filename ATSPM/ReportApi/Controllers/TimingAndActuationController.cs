@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.TimingAndActuation;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.TimingAndActuation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.ReportApi.Controllers
