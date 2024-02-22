@@ -1,8 +1,8 @@
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Application.Business.Common;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.PedDelay
+namespace ATSPM.Application.Business.PedDelay
 {
     /// <summary>
     /// Ped Delay chart

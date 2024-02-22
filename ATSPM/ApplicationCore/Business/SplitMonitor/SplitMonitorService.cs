@@ -1,12 +1,12 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.ReportApi.Business.SplitMonitor
+namespace ATSPM.Application.Business.SplitMonitor
 {
     public class SplitMonitorData
     {

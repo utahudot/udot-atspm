@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
-using ATSPM.Data.Models;
 
-namespace ATSPM.ReportApi.Business.ApproachSpeed
+namespace ATSPM.Application.Business.ApproachSpeed
 {
     public class SpeedDetector
     {

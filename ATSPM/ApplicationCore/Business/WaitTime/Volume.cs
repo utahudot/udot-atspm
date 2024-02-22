@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.WaitTime
+namespace ATSPM.Application.Business.WaitTime
 {
     public class Volume
     {

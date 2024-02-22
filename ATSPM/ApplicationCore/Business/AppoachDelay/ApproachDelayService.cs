@@ -1,11 +1,9 @@
-﻿using ATSPM.Application.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.AppoachDelay
+namespace ATSPM.Application.Business.AppoachDelay
 {
     public class ApproachDelayService
     {

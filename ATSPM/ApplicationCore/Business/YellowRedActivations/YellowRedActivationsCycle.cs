@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.YellowRedActivations
+namespace ATSPM.Application.Business.YellowRedActivations
 {
     /// <summary>
     ///     Data that represents a red to red cycle for a Location phase

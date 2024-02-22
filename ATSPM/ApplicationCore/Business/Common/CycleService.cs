@@ -1,15 +1,15 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.PreemptService;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.Business.YellowRedActivations;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.Business.SplitFail;
+using ATSPM.Application.Business.YellowRedActivations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 //using System.IO;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class CycleService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class DataPointForDouble : DataPointBase
     {

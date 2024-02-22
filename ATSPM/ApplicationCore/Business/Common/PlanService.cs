@@ -1,13 +1,13 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.Business.YellowRedActivations;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.SplitFail;
+using ATSPM.Application.Business.YellowRedActivations;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class PlanService
     {

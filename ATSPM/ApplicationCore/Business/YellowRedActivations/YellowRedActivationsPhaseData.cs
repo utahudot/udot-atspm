@@ -1,10 +1,10 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Application.Business.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.YellowRedActivations
+namespace ATSPM.Application.Business.YellowRedActivations
 {
     public class YellowRedActivationsPhaseData
     {

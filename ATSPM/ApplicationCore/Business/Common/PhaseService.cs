@@ -1,7 +1,7 @@
 ﻿using ATSPM.Data.Models;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class PhaseService
     {

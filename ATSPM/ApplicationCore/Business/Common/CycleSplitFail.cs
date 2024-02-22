@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ATSPM.ReportApi.Business.SplitFail;
+using ATSPM.Application.Business.SplitFail;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class CycleSplitFail : GreenToGreenCycle
     {

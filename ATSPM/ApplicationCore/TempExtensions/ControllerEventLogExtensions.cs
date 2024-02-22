@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.TempExtensions
+namespace ATSPM.Application.TempExtensions
 {
     public static class ControllerEventLogExtensions
     {

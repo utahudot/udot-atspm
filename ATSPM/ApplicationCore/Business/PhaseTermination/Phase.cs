@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.PhaseTermination;
+namespace ATSPM.Application.Business.PhaseTermination;
 
 public class Phase
 {

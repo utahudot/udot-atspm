@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.TurningMovementCounts
+namespace ATSPM.Application.Business.TurningMovementCounts
 {
     public class TurningMovementCountsOptions : OptionsBase
     {

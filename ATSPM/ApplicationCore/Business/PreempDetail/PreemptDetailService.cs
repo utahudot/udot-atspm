@@ -1,11 +1,11 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PreemptService;
-using ATSPM.ReportApi.TempModels;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.TempModels;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.PreempDetail
+namespace ATSPM.Application.Business.PreempDetail
 {
     public class PreemptDetailService
     {

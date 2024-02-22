@@ -1,6 +1,6 @@
 ﻿
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.TempExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public class LocationPhaseService
     {

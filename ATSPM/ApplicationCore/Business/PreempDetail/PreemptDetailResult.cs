@@ -1,9 +1,9 @@
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempModels;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempModels;
 using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.PreempDetail
+namespace ATSPM.Application.Business.PreempDetail
 {
     /// <summary>
     /// Preempt Detail chart
