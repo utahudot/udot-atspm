@@ -1,8 +1,7 @@
 ﻿using Asp.Versioning;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.ApproachVolume;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.ApproachVolume;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ATSPM.ReportApi.Controllers

@@ -131,7 +131,7 @@ namespace WatchDog.Services
         public async Task<List<ApplicationUser>> GetUsersWithWatchDogClaimAsync()
         {
             // Define the claim type you are looking for
-            const string claimType = "Admin:WatchDog";
+            const string claimValue = "Watchdog:View";
 
             var usersWithWatchDogClaim = new List<ApplicationUser>();
 
@@ -146,7 +146,7 @@ namespace WatchDog.Services
                 {
                     var roleClaims = await roleManager.GetClaimsAsync(await roleManager.FindByNameAsync(role));
 
-                    if (roleClaims.Any(claim => claim.Value == claimType))
+                    if (roleClaims.Any(claim => claim.Value == claimValue))
                     {
                         usersWithWatchDogClaim.Add(user);
                         break; // Once we find the claim in one of the user's roles, no need to check further
