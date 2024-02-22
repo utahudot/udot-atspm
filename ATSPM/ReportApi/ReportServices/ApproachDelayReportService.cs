@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.AppoachDelay;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Repositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -64,7 +64,7 @@ namespace ATSPM.ReportApi.ReportServices
 
             foreach (var phase in phaseDetails)
             {
-                if((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
+                if ((phase.IsPermissivePhase && parameter.GetPermissivePhase) || !phase.IsPermissivePhase)
                 {
                     tasks.Add(GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
                 }
