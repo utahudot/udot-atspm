@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.ArrivalOnRed;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Repositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.ArrivalOnRed;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -65,7 +65,7 @@ namespace ATSPM.ReportApi.ReportServices
                     tasks.Add(
                    GetChartDataByApproach(parameter, phase, controllerEventLogs, planEvents, Location.LocationDescription()));
                 }
-                    
+
             }
 
             var results = await Task.WhenAll(tasks);
