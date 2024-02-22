@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.TimingAndActuation;
+﻿using ATSPM.Application.Business.TimingAndActuation;
 using System;
 
-namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
+namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
     public class TimeSpaceDetectorEventDto : DetectorEventBase
     {

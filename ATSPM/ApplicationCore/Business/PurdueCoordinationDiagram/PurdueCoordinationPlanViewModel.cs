@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.PurdueCoordinationDiagram
+namespace ATSPM.Application.Business.PurdueCoordinationDiagram
 {
     public class PerdueCoordinationPlanViewModel : Plan
     {

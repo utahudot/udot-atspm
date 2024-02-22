@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.LeftTurnGapReport
+namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public class LeftTurnVolumeAnalysisService
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.PedDelay
+namespace ATSPM.Application.Business.PedDelay
 {
     public class PedCycle
     {

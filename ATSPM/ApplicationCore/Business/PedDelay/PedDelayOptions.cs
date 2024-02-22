@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System.Runtime.Serialization;
 
-namespace ATSPM.ReportApi.Business.PedDelay
+namespace ATSPM.Application.Business.PedDelay
 {
     [DataContract]
     public class PedDelayOptions : OptionsBase

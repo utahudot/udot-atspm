@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.WaitTime
+namespace ATSPM.Application.Business.WaitTime
 {
     public class PlanWaitTime : Plan
     {

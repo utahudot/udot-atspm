@@ -1,4 +1,4 @@
-﻿namespace ATSPM.ReportApi.Business.LeftTurnGapReport
+﻿namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public interface IDataCheckResult
     {

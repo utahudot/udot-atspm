@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace ATSPM.ReportApi.Business.ApproachVolume;
+namespace ATSPM.Application.Business.ApproachVolume;
 
 public class DFactors
 {

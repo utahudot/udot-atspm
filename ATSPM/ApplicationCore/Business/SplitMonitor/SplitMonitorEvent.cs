@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.SplitMonitor;
+namespace ATSPM.Application.Business.SplitMonitor;
 
 public class SplitMonitorEvent
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.LeftTurnGapReport
+namespace ATSPM.Application.Business.LeftTurnGapReport
 {
     public class PeakHourParameters
     {
