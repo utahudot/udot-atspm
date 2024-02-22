@@ -1,11 +1,11 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempExtensions;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.SplitFail
+namespace ATSPM.Application.Business.SplitFail
 {
     public class SplitFailPhaseData
     {

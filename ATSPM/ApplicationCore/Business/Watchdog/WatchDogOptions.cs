@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.Watchdog
+namespace ATSPM.Application.Business.Watchdog
 {
     public class WatchDogOptions
     {

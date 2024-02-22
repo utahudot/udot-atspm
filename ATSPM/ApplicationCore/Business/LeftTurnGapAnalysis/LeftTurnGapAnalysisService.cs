@@ -1,14 +1,14 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.TempExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ATSPM.ReportApi.Business.LeftTurnGapAnalysis
+namespace ATSPM.Application.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisService
     {

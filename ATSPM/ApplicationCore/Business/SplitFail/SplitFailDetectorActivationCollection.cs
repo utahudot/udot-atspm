@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.SplitFail
+namespace ATSPM.Application.Business.SplitFail
 {
     public class SplitFailDetectorActivationCollection
     {

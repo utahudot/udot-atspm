@@ -1,8 +1,8 @@
 ﻿using ATSPM.Application.Repositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PhaseTermination;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PhaseTermination;
+using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

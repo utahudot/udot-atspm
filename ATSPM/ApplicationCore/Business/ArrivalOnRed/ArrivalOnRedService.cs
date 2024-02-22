@@ -1,10 +1,10 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace ATSPM.ReportApi.Business.ArrivalOnRed
+namespace ATSPM.Application.Business.ArrivalOnRed
 {
     public class ArrivalOnRedService
     {

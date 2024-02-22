@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.SplitFail
+namespace ATSPM.Application.Business.SplitFail
 {
     public class SplitFailOptions : OptionsBase
     {

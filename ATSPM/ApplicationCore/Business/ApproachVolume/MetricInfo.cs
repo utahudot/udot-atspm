@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace ATSPM.ReportApi.Business.ApproachVolume
+﻿namespace ATSPM.Application.Business.ApproachVolume
 {
     public class MetricInfo
     {

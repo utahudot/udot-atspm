@@ -1,4 +1,4 @@
-﻿namespace ATSPM.ReportApi.Business.Common
+﻿namespace ATSPM.Application.Business.Common
 {
     public class BasePhaseOptions : OptionsBase
     {

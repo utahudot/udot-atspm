@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 
-namespace ATSPM.ReportApi.Business.PreempDetail
+namespace ATSPM.Application.Business.PreempDetail
 {
     public class PreemptDetailOptions : OptionsBase
     {

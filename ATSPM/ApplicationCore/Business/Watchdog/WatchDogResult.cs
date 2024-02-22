@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System.Collections.Generic;
 
-namespace ATSPM.ReportApi.Business.Watchdog
+namespace ATSPM.Application.Business.Watchdog
 {
     public class WatchDogResult : BaseResult
     {

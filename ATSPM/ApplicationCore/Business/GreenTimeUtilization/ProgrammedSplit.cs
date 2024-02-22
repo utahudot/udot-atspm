@@ -1,7 +1,7 @@
-﻿using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using System;
 
-namespace ATSPM.ReportApi.Business.GreenTimeUtilization
+namespace ATSPM.Application.Business.GreenTimeUtilization
 {
     public class ProgrammedSplit : DataPointBase
     {

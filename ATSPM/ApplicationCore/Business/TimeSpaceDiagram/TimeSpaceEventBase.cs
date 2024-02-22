@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ATSPM.ReportApi.Business.TimeSpaceDiagram
+namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
     /// <summary>
     /// DTO for storing the initial and final time values that a detector event would follow for creating the time space graph

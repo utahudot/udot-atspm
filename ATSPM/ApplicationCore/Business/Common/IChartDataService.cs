@@ -1,6 +1,6 @@
-﻿using ATSPM.ReportApi.Business.AppoachDelay;
+﻿using ATSPM.Application.Business.AppoachDelay;
 
-namespace ATSPM.ReportApi.Business.Common
+namespace ATSPM.Application.Business.Common
 {
     public interface IChartDataService
     {
