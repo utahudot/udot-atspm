@@ -85,6 +85,12 @@ namespace ATSPM.Infrastructure.Extensions
 
             return services;
         }
+        public static IServiceCollection AddIdentityDbContext(this IServiceCollection services, HostBuilderContext host)
+        {
+            services.AddDbContext<IdentityContext>(db => db.GetDbProviderInfo<IdentityContext>(host).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).EnableSensitiveDataLogging(host.HostingEnvironment.IsDevelopment()));
+
+            return services;
+        }
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
