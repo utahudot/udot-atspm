@@ -1,31 +1,18 @@
 using ATSPM.Application.Configuration;
-using ATSPM.Application.Exceptions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Extensions;
-using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
+using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using Google.Cloud.Diagnostics.Common;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -97,16 +84,6 @@ namespace ATSPM.LocationControllerLogger
                     s.AddScoped<IDeviceDownloader, DeviceHttpDownloader>();
                     //s.AddScoped<IDeviceDownloader, DeviceSnmpDownloader>();
 
-
-
-
-
-
-
-
-
-
-
                     //decoders
                     s.AddScoped<ILocationControllerDecoder<IndianaEvent>, ASCLocationControllerDecoder>();
                     //s.AddScoped<ILocationControllerDecoder<IndianaEvent>, MaxTimeLocationControllerDecoder>();
@@ -116,7 +93,7 @@ namespace ATSPM.LocationControllerLogger
                     //s.AddScoped<ILocationControllerLoggerService, LegacyLocationControllerLogger>();
 
                     //controller logger configuration
-                    //s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
+                    s.Configure<LocationControllerLoggerConfiguration>(h.Configuration.GetSection(nameof(LocationControllerLoggerConfiguration)));
 
                     //downloader configurations
                     //s.ConfigureSignalControllerDownloaders(h);
@@ -139,40 +116,24 @@ namespace ATSPM.LocationControllerLogger
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
                     {
                         o.LocalPath = "C:\\temp";
-                        o.PingControllerToVerify = true;
+                        o.PingControllerToVerify = false;
                         o.ConnectionTimeout = 3000;
                         o.ReadTimeout = 3000;
-                        o.DeleteFile = false;
+                        o.DeleteFile = true;
                     });
 
                     
                 })
 
-                .UseConsoleLifetime()
+                //.UseConsoleLifetime()
                 .Build();
 
             //host.Services.PrintHostInformation();
 
-            await host.RunAsync();
-
-            
-
-
-            //Console.Read();
-
+            //await host.RunAsync();
+            await host.StartAsync();
+            await host.StopAsync();
         }
 
     }
-
-    
-
-    public static class Testing
-    {
-        public static string ToCsv(this object obj)
-        {
-            return string.Join(",", obj.GetType().GetProperties().Select(pi => pi.GetValue(obj, null)));
-        }
-    }
-
-    
 }

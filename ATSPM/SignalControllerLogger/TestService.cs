@@ -1,36 +1,47 @@
-﻿using ATSPM.Application.Repositories.EventLogRepositories;
+﻿using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
-using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Workflows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Microsoft.Extensions.Logging;
-using ATSPM.Domain.Extensions;
-using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Enums;
-using System.Diagnostics;
 
 namespace ATSPM.LocationControllerLogger
 {
     public class TestService : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IOptions<LocationControllerLoggerConfiguration> _options;
         private readonly ILogger _logger;
 
-        public TestService(IServiceProvider serviceProvider, ILogger<TestService> log)
+        //IServiceScopeFactory?
+
+        public TestService(IServiceProvider serviceProvider, IOptions<LocationControllerLoggerConfiguration> options, ILogger<TestService> log)
         {
             _serviceProvider = serviceProvider;
+            _options = options;
             _logger = log;
+
+            var hostApplicationLifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+
+            hostApplicationLifetime.ApplicationStarted.Register(() => _logger.LogInformation("started"));
+            hostApplicationLifetime.ApplicationStopping.Register(() => _logger.LogInformation("stopping"));
+            hostApplicationLifetime.ApplicationStopped.Register(() => _logger.LogInformation("stopped"));
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -41,6 +52,35 @@ namespace ATSPM.LocationControllerLogger
 
 
             _serviceProvider.PrintHostInformation();
+
+
+            //using (var scope = _serviceProvider.CreateScope())
+            //{
+            //    var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+
+            //    var logs = new Fixture().CreateMany<IndianaEvent>(100).ToList();
+
+            //    var testEntry = new CompressedEventLogs<IndianaEvent>()
+            //    {
+            //        ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+            //        LocationIdentifier = "test",
+            //        DataType = typeof(IndianaEvent),
+            //        DeviceId = 1,
+            //        Data = logs
+            //    };
+
+            //    await repo.AddAsync(testEntry);
+
+            //    await Task.Delay(TimeSpan.FromSeconds(1));
+
+            //    var t = await repo.LookupAsync(testEntry);
+
+            //    Console.WriteLine($"*********************************{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.Data.Count()}*********************************");
+            //}
+
+
+
+
 
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -65,8 +105,8 @@ namespace ATSPM.LocationControllerLogger
                     .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
                     //.Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
                     .OrderBy(o => o.Ipaddress.ToString());
-                //.Skip(10)
-                //.Take(100);
+                    //.Skip(2)
+                    //.Take(1);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;
@@ -79,19 +119,15 @@ namespace ATSPM.LocationControllerLogger
                     Console.WriteLine($"device: {d}");
                 }
 
-
-                int instances = 1;
-
-
                 var input = new BufferBlock<Device>();
 
-                var downloadStep = new DownloadDeviceData(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = instances, CancellationToken = cancellationToken });
-                var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, instances);
+                var downloadStep = new DownloadDeviceData(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
+                var processEventLogFileWorkflow = new ProcessEventLogFileWorkflow<IndianaEvent>(_serviceProvider, _options.Value.SaveToDatabaseBatchSize, _options.Value.MaxDegreeOfParallelism);
                 var SaveEventsToRepo = new SaveEventsToRepo(_serviceProvider, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 1, CancellationToken = cancellationToken });
 
                 var actionResult = new ActionBlock<CompressedEventLogBase>(t =>
                 {
-                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.Data.Count()}");
+                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
 
                     //var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
 
@@ -102,7 +138,7 @@ namespace ATSPM.LocationControllerLogger
                     //{
                     //    Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
                     //}
-                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = instances, CancellationToken = cancellationToken });
+                }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
 
                 input.LinkTo(downloadStep, new DataflowLinkOptions() { PropagateCompletion = true });
 
@@ -303,10 +339,12 @@ namespace ATSPM.LocationControllerLogger
         private readonly ExecutionDataflowBlockOptions _stepOptions = new ExecutionDataflowBlockOptions();
 
         private readonly IServiceProvider _serviceProvider;
+        private readonly int _batchSize;
 
-        public ProcessEventLogFileWorkflow(IServiceProvider serviceProvider, int maxDegreeOfParallelism = 1, CancellationToken cancellationToken = default)
+        public ProcessEventLogFileWorkflow(IServiceProvider serviceProvider, int batchSize = 50000, int maxDegreeOfParallelism = 1, CancellationToken cancellationToken = default)
         {
             _serviceProvider = serviceProvider;
+            _batchSize = batchSize;
 
             _filterOptions.CancellationToken = cancellationToken;
             _stepOptions.CancellationToken = cancellationToken;
@@ -321,7 +359,7 @@ namespace ATSPM.LocationControllerLogger
         protected override void InstantiateSteps()
         {
             DecodeDeviceDataStep = new(_serviceProvider, _stepOptions);
-            BatchLogsStep = new(50000);
+            BatchLogsStep = new(_batchSize);
             ArchiveDeviceDataStep = new(_stepOptions);
         }
 
