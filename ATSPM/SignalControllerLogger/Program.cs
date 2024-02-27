@@ -138,21 +138,8 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            //await host.StartAsync();
-            //await host.StopAsync();
-
-            using (var scope = host.Services.CreateScope())
-            {
-                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
-
-                foreach (var t in repo.GetList())
-                {
-                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
-                }
-            }
-
-
-
+            await host.StartAsync();
+            await host.StopAsync();
         }
 
     }
