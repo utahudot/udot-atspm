@@ -136,7 +136,7 @@ namespace ATSPM.LocationControllerLogger
 
                     //foreach (var i in repo.GetList())
                     //{
-                    //    Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DeviceId} - {i.Data.Count()}");
+                    //    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
                     //}
                 }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = _options.Value.MaxDegreeOfParallelism, CancellationToken = cancellationToken });
 
@@ -168,8 +168,6 @@ namespace ATSPM.LocationControllerLogger
                 sw.Stop();
 
                 Console.WriteLine($"*********************************************complete - {sw.Elapsed}");
-
-                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
             }
         }
 

@@ -1,4 +1,5 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Infrastructure.Extensions;
@@ -6,10 +7,13 @@ using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -34,6 +38,9 @@ namespace ATSPM.LocationControllerLogger
                     //DOTNET_ENVIRONMENT = Development,GOOGLE_APPLICATION_CREDENTIALS = M:\My Drive\ut-udot-atspm-dev-023438451801.json
                     //if (h.Configuration.GetValue<bool>("UseGoogleLogger"))
                     //{
+
+                    //https://cloud.google.com/dotnet/docs/reference/Google.Cloud.Diagnostics.Common/latest
+
                     l.AddGoogle(new LoggingServiceOptions
                     {
                         ProjectId = "1022556126938",
@@ -131,8 +138,21 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetService<IEventLogRepository>();
+
+                foreach (var t in repo.GetList())
+                {
+                    Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+                }
+            }
+
+
+
         }
 
     }
