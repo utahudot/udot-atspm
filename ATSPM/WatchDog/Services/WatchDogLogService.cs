@@ -29,7 +29,8 @@ namespace WatchDog.Services
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
             LoggingOptions options,
-            List<Location> locations)
+            List<Location> locations,
+            CancellationToken cancellationToken)
         {
             if (locations.IsNullOrEmpty())
             {
@@ -41,6 +42,10 @@ namespace WatchDog.Services
 
                 foreach (var Location in locations)//.Where(s => s.locationIdentifier == "7115"))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return errors.ToList();
+                    }
                     var LocationEvents = controllerEventLogRepository.GetLocationEventsBetweenDates(
                         Location.LocationIdentifier,
                         options.AnalysisStart,
