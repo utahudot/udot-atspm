@@ -2,8 +2,6 @@
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Mail;
 using WatchDog.Models;
 
 namespace WatchDog.Services
@@ -56,7 +54,8 @@ namespace WatchDog.Services
         }
         public async Task StartScan(
             LoggingOptions loggingOptions,
-            EmailOptions emailOptions)
+            EmailOptions emailOptions,
+            CancellationToken cancellationToken)
         {
             //need a version of this that gets the Location version for date of the scan
             var locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
@@ -67,61 +66,73 @@ namespace WatchDog.Services
             }
             else
             {
-                errors = await logService.GetWatchDogIssues(loggingOptions, locations);
+                errors = await logService.GetWatchDogIssues(loggingOptions, locations, cancellationToken);
                 SaveErrorLogs(errors);
             }
-            if (emailOptions != null)
+
+            //SmtpClient smtp = new SmtpClient();
+            //if (emailOptions != null)
+            //{
+            //    switch (emailOptions.EmailType)
+            //    {
+            //        case "smtp":
+            //            await smtp.ConnectAsync(emailOptions.EmailServer, emailOptions.Port.Value, emailOptions.EnableSsl.Value ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
+            //            await smtp.AuthenticateAsync(emailOptions.UserName, emailOptions.Password);
+            //            break;
+            //        case "googleApi":
+            //            // Use OAuth2. For Gmail, you need to obtain the OAuth2 token beforehand.
+            //            // This example assumes you have the OAuth2 token stored in emailOptions.Password for simplicity.
+            //            var oauth2 = new SaslMechanismOAuth2(emailOptions.UserName, emailOptions.Password);
+            //            await smtp.ConnectAsync(emailOptions.EmailServer, emailOptions.Port.Value, SecureSocketOptions.Auto);
+            //            await smtp.AuthenticateAsync(oauth2);
+            //            break;
+            //        default:
+            //            throw new InvalidOperationException("Unsupported email type specified in EmailOptions.");
+            //    }
+            //}
+
+
+            var regions = regionsRepository.GetList().ToList();
+            var userRegions = userRegionRepository.GetList();
+
+            var areas = areaRepository.GetList().ToList();
+            var userAreas = userAreaRepository.GetList().ToList();
+
+            var jurisdictions = jurisdictionRepository.GetList().ToList();
+            var userJurisdictions = userJurisdictionRepository.GetList();
+
+            var users = await GetUsersWithWatchDogClaimAsync();
+
+
+            var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
+            if (!emailOptions.EmailAllErrors)
             {
-                SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
-                if (emailOptions.Port.HasValue)
-                    smtp.Port = emailOptions.Port.Value;
-                if (emailOptions.Password != null)
-                    smtp.Credentials = new NetworkCredential(emailOptions.UserName, emailOptions.Password);
-                if (emailOptions.EnableSsl.HasValue)
-                    smtp.EnableSsl = emailOptions.EnableSsl.Value;
-
-                var regions = regionsRepository.GetList().ToList();
-                var userRegions = userRegionRepository.GetList();
-
-                var areas = areaRepository.GetList().ToList();
-                var userAreas = userAreaRepository.GetList().ToList();
-
-                var jurisdictions = jurisdictionRepository.GetList().ToList();
-                var userJurisdictions = userJurisdictionRepository.GetList();
-
-                var users = await GetUsersWithWatchDogClaimAsync();
-
-
-                var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
-                if (!emailOptions.EmailAllErrors)
-                {
-                    //List<WatchDogEvent> RecordsFromTheDayBefore = new List<WatchDogEvent>();
-                    //compare to error log to see if this was failing yesterday
-                    if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
-                        recordsFromTheDayBefore =
-                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
-                                w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
-                    else
-                        recordsFromTheDayBefore =
-                            watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
-                                w.Timestamp < emailOptions.ScanDate).ToList();
-                }
-
-                await emailService.SendAllEmails(
-                    emailOptions,
-                    errors,
-                    locations,
-                    smtp,
-                    users,
-                    jurisdictions,
-                    userJurisdictions.ToList(),
-                    areas,
-                    userAreas.ToList(),
-                    regions,
-                    userRegions.ToList(),
-                    recordsFromTheDayBefore);
+                //List<WatchDogEvent> RecordsFromTheDayBefore = new List<WatchDogEvent>();
+                //compare to error log to see if this was failing yesterday
+                if (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek == DayOfWeek.Monday)
+                    recordsFromTheDayBefore =
+                        watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-3) &&
+                            w.Timestamp < emailOptions.ScanDate.AddDays(-2)).ToList();
+                else
+                    recordsFromTheDayBefore =
+                        watchDogLogEventRepository.GetList(w => w.Timestamp >= emailOptions.ScanDate.AddDays(-1) &&
+                            w.Timestamp < emailOptions.ScanDate).ToList();
             }
+
+            await emailService.SendAllEmails(
+                emailOptions,
+                errors,
+                locations,
+                users,
+                jurisdictions,
+                userJurisdictions.ToList(),
+                areas,
+                userAreas.ToList(),
+                regions,
+                userRegions.ToList(),
+                recordsFromTheDayBefore);
         }
+
 
         public void SaveErrorLogs(List<WatchDogLogEvent> errors)
         {
