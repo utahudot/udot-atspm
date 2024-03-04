@@ -8,7 +8,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// FAQ Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class FaqController : AtspmConfigControllerBase<Faq, int>
+    public class FaqController : AtspmGeneralConfigBase<Faq, int>
     {
         private readonly IFaqRepository _repository;
 
