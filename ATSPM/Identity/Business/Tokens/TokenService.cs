@@ -28,16 +28,15 @@ namespace Identity.Business.Tokens
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
             };
 
             var roleNames = await signInManager.UserManager.GetRolesAsync(user);
             if (roleNames.Contains("Admin"))
             {
-                claims.Add(new Claim("RoleClaim", "Admin"));
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
             }
             else
             {
@@ -60,8 +59,8 @@ namespace Identity.Business.Tokens
 
             var token = new JwtSecurityToken(
                 configuration["Jwt:Issuer"],
-                configuration["Jwt:Issuer"],
-                claims,
+                null,
+                claims: claims,
                 expires: expires,
                 signingCredentials: creds
             );
