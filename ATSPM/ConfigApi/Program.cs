@@ -132,9 +132,10 @@ app.UseSwaggerUI(o =>
     });
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
-app.UseRouting();
 app.MapControllers();
 app.Run();
 
