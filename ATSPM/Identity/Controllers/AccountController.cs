@@ -83,13 +83,14 @@ namespace Identity.Controllers
             {
                 // Assuming the authenticationResult includes the generated JWT token
                 var token = authenticationResult.Token;
+                var viewClaims = authenticationResult.Claims;
 
                 if (string.IsNullOrEmpty(token))
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Error generating token.");
                 }
 
-                return Ok(new { AccessToken = token });
+                return Ok(new { AccessToken = token, ViewClaims = viewClaims });
             }
 
             return BadRequest(authenticationResult.Error);
