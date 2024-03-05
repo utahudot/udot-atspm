@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 
@@ -7,24 +8,35 @@ namespace WatchDog.Models
 {
     public class SMTPMailService : IMailService
     {
+        private readonly IConfiguration configuration;
         private readonly ILogger<SMTPMailService> logger;
         SmtpClient smtp;
-        public SMTPMailService(string emailServer, int port, bool enableSsl, string userName, string password, ILogger<SMTPMailService> logger)
+        public SMTPMailService(IConfiguration configuration, ILogger<SMTPMailService> logger)
         {
+            this.configuration = configuration;
             this.logger = logger;
+        }
+
+        public void ConnectAndAuthenticate()
+        {
             smtp = new SmtpClient();
+            var host = configuration.GetValue<string>("SmtpSettings:Host");
+            var port = configuration.GetValue<int>("SmtpSettings:Port");
+            var userName = configuration.GetValue<string>("SmtpSettings:UserName");
+            var password = configuration.GetValue<string>("SmtpSettings:Password");
+            var enableSsl = configuration.GetValue<bool>("SmtpSettings:EnableSsl");
             try
             {
-                logger.LogInformation($"Connecting to {emailServer} on port {port} with SSL: {enableSsl}");
-                smtp.Connect(emailServer, port, enableSsl == true ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
-                logger.LogInformation($"Connected to {emailServer} on port {port} with SSL: {enableSsl}");
+                logger.LogInformation($"Connecting to {host} on port {port} with SSL: {enableSsl}");
+                smtp.Connect(host, port, enableSsl == true ? SecureSocketOptions.StartTls : SecureSocketOptions.Auto);
+                logger.LogInformation($"Connected to {host} on port {port} with SSL: {enableSsl}");
                 logger.LogInformation($"Authenticating with {userName}");
                 smtp.Authenticate(userName, password);
                 logger.LogInformation($"Authenticated with {userName}");
             }
             catch (System.Exception ex)
             {
-                logger.LogError(ex.Message);
+                logger.LogError($"Unable to connect to email host: {ex.Message}");
             }
         }
 
@@ -33,6 +45,12 @@ namespace WatchDog.Models
             if (smtp is null)
             {
                 throw new ArgumentNullException(nameof(smtp));
+            }
+            if (!smtp.IsConnected || !smtp.IsAuthenticated)
+            {
+                ConnectAndAuthenticate();
+                if (!smtp.IsConnected || !smtp.IsAuthenticated)
+                    return false;
             }
             var message = new MimeMessage();
             AddUsersToMessage(users, message);

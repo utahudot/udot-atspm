@@ -44,11 +44,7 @@ class Program
 
                            // Now create the SMTPMailService instance with the parameters
                            return new SMTPMailService(
-                               smtpHost,
-                               smtpPort,
-                               enableSsl,
-                               smtpUser,
-                               smtpPass,
+                               config,
                                serviceProvider.GetRequiredService<ILogger<SMTPMailService>>());
                        });
                    }
