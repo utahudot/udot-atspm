@@ -36,18 +36,11 @@ public class ScanHostedService : IHostedService
             var weekdayOnly = Convert.ToBoolean(configuration["WeekdayOnly"]);
             var scanDayEndHour = Convert.ToInt32(configuration["ScanDayEndHour"]);
             var scanDayStartHour = Convert.ToInt32(configuration["ScanDayStartHour"]);
-            if (weekdayOnly && (scanDate.DayOfWeek == DayOfWeek.Saturday || scanDate.DayOfWeek == DayOfWeek.Sunday))
-            {
-                return;
-            }
-
-            // Call the StartScan method with appropriate LoggingOptions
             var options = new LoggingOptions
             {
-                ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]), // Set your options here
-                LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]), // Set your options here
-                MaxDegreeOfParallelism = Convert.ToInt32(configuration["MaxDegreeOfParallelism"]), // Set your options here
-                MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]), // Set your opti
+                ConsecutiveCount = Convert.ToInt32(configuration["ConsecutiveCount"]),
+                LowHitThreshold = Convert.ToInt32(configuration["LowHitThreshold"]),
+                MaximumPedestrianEvents = Convert.ToInt32(configuration["MaximumPedestrianEvents"]),
                 MinimumRecords = Convert.ToInt32(configuration["MinimumRecords"]),
                 MinPhaseTerminations = Convert.ToInt32(configuration["MinPhaseTerminations"]),
                 PercentThreshold = Convert.ToDouble(configuration["PercentThreshold"]),
@@ -75,7 +68,6 @@ public class ScanHostedService : IHostedService
                 EmailAllErrors = Convert.ToBoolean(configuration["EmailAllErrors"]),
                 //EmailType = configuration["EmailType"]
             };
-
             await scanService.StartScan(options, emailOptions, cancellationToken);
         }
         catch (Exception ex)
