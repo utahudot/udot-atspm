@@ -12,7 +12,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// Jurisdiction Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class JurisdictionController : AtspmConfigControllerBase<Jurisdiction, int>
+    public class JurisdictionController : AtspmGeneralConfigBase<Jurisdiction, int>
     {
         private readonly IJurisdictionRepository _repository;
 
