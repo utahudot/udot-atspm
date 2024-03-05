@@ -20,13 +20,12 @@ namespace ATSPM.Data.Utility
             v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Arrays,
-                // Add Converters with StringEnumConverter to handle enum serialization as integers
-                Converters = new List<JsonConverter> { new Newtonsoft.Json.Converters.StringEnumConverter { AllowIntegerValues = true } }
-
+                SerializationBinder = new CompressedSerializationBinder<T>()
             }).GZipCompressToByte(),
             v => JsonConvert.DeserializeObject<IEnumerable<T>>(v.GZipDecompressToString(), new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Arrays
+                TypeNameHandling = TypeNameHandling.Arrays,
+                SerializationBinder = new CompressedSerializationBinder<T>()
             }))
         { }
     }
