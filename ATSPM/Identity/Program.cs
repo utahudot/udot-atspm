@@ -18,15 +18,16 @@ builder.Host.ConfigureServices((host, services) =>
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
+    services.AddAtspmAuthentication(host, builder);
+    services.AddAtspmAuthorization(host);
+
     services.AddScoped<IAgencyService, AgencyService>();
     services.AddScoped<IAccountService, AccountService>();
     services.AddScoped<IEmailService, EmailService>();
     services.AddScoped<ClaimsService, ClaimsService>();
     services.AddScoped<TokenService, TokenService>();
     services.AddScoped<RoleManager<IdentityRole>>();
-
-    services.AddAtspmAuthentication(host, builder);
-    services.AddAtspmAuthorization(host);
+    services.AddScoped<UserManager<ApplicationUser>>();
 
     services.AddControllers();
 
@@ -36,13 +37,13 @@ builder.Host.ConfigureServices((host, services) =>
         // Add other Swagger configuration as needed
     });
 
-    services.ConfigureApplicationCookie(options =>
-    {
-        // ... other options ...
+    //services.ConfigureApplicationCookie(options =>
+    //{
+    //    // ... other options ...
 
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    });
+    //    options.Cookie.SameSite = SameSiteMode.Lax;
+    //    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    //});
     var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
     services.AddCors(options =>
     {
@@ -91,6 +92,8 @@ if (app.Environment.IsDevelopment())
     }
 }
 app.UseHttpsRedirection();
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
