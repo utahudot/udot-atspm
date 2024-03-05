@@ -93,13 +93,19 @@ namespace ATSPM.Infrastructure.Extensions
         }
         public static IServiceCollection AddAtspmAuthentication(this IServiceCollection services, HostBuilderContext host, WebApplicationBuilder builder)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
            .AddJwtBearer(options =>
            {
                options.TokenValidationParameters = new TokenValidationParameters
                {
                    ValidateIssuer = true,
-                   ValidateAudience = true,
+                   //remeber this was set to true if we need to revert it
+                   ValidateAudience = false,
                    ValidateLifetime = true,
                    ValidateIssuerSigningKey = true,
                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
@@ -108,6 +114,7 @@ namespace ATSPM.Infrastructure.Extensions
                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                };
            });
+
             return services;
         }
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
