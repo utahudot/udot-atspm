@@ -1,6 +1,8 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
+using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
@@ -15,7 +17,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ATSPM.LocationControllerLogger
@@ -138,9 +143,35 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
+
+                var t = repo.GetList().Take(1).First();
+
+                Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+
+                foreach (var r in t.Data.Take(10))
+                    Console.WriteLine($"{r}");
+            }
+
+            Console.ReadLine();
+        }
+    }
+
+    public class IpAddressJsonConverter : JsonConverter<IPAddress>
+    {
+        public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return IPAddress.Parse(reader.GetString());
         }
 
+        public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
+        }
     }
 }
