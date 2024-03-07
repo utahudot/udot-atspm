@@ -21,7 +21,7 @@ using System.Threading;
 namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 {
     ///<inheritdoc cref="IDeviceDownloader"/>
-    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, FileInfo, ControllerDownloadProgress>, IDeviceDownloader
+    public abstract class DeviceDownloaderBase : ExecutableServiceWithProgressAsyncBase<Device, Tuple<Device, FileInfo>, ControllerDownloadProgress>, IDeviceDownloader
     {
         #region Fields
 
@@ -69,25 +69,25 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         }
 
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="InvalidLocationControllerIPAddressException"></exception>
+        /// <exception cref="InvalidSignalControllerIpAddressException"></exception>
         /// <exception cref="ExecuteException"></exception>
-        public override async IAsyncEnumerable<FileInfo> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var locationIdentifier = parameter?.Location?.LocationIdentifier;
-            var user = parameter?.DeviceConfiguration?.UserName;
-            var password = parameter?.DeviceConfiguration?.Password;
-            var ipaddress = parameter?.Ipaddress;
-            var directory = parameter?.DeviceConfiguration?.Directory;
-            var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
-
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Location parameter can not be null");
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
                     throw new InvalidSignalControllerIpAddressException(parameter);
+
+                var locationIdentifier = parameter?.Location?.LocationIdentifier;
+                var user = parameter?.DeviceConfiguration?.UserName;
+                var password = parameter?.DeviceConfiguration?.Password;
+                var ipaddress = IPAddress.Parse(parameter?.Ipaddress);
+                var directory = parameter?.DeviceConfiguration?.Directory;
+                var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
 
@@ -164,21 +164,25 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                             }
 
                             // TODO: delete file here
-                            //if (_options.DeleteFile)
-                            //{
-                            //    try
-                            //    {
-                            //        await client.DeleteFileAsync(file, cancelToken);
-                            //    }
-                            //    catch (ControllerDownloadFileException e)
-                            //    {
-                            //        _log.LogWarning(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Exception deleting file {file} from {ip}", file, ipaddress);
-                            //    }
-                            //    catch (OperationCanceledException e)
-                            //    {
-                            //        _log.LogDebug(new EventId(Convert.ToInt32(parameter.LocationId)), e, "Operation canceled connecting to {ip}", ipaddress);
-                            //    }
-                            //}
+                            if (_options.DeleteFile)
+                            {
+                                try
+                                {
+                                    logMessages.DeletingFileMessage(file, locationIdentifier, ipaddress);
+
+                                    await _client.DeleteFileAsync(file, cancelToken);
+                                }
+                                catch (ControllerDeleteFileException e)
+                                {
+                                    logMessages.DeleteFileException(file, locationIdentifier, ipaddress, e);
+                                }
+                                catch (OperationCanceledException e)
+                                {
+                                    logMessages.OperationCancelledException(locationIdentifier, ipaddress, e);
+                                }
+
+                                logMessages.DeletedFileMessage(file, locationIdentifier, ipaddress);
+                            }
 
                             //HACK: don't know why files aren't downloading without throwing an error
                             if (downloadedFile != null)
@@ -187,7 +191,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
 
                                 progress?.Report(new ControllerDownloadProgress(downloadedFile, current, total));
 
-                                yield return downloadedFile;
+                                yield return Tuple.Create<Device, FileInfo>(parameter, downloadedFile);
                             }
                             else
                             {
@@ -196,6 +200,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
                         }
 
                         logMessages.DownloadedFilesMessage(current, total, locationIdentifier, ipaddress);
+
                         try
                         {
                             logMessages.DisconnectingFromHostMessage(locationIdentifier, ipaddress);

@@ -2,6 +2,9 @@
 using ATSPM.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -36,20 +39,32 @@ namespace ATSPM.Domain.Workflows
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<T2> Execute(T1 parameter, CancellationToken cancelToken = default)
+        public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            cancelToken.ThrowIfCancellationRequested();
-
-            if (!CanExecute(parameter))
-                throw new ExecuteException();
-
-            try
+            if (parameter != null)
             {
-                return Process(parameter, cancelToken);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                if (!cancelToken.IsCancellationRequested)
+                {
+                    List<T2> result = new();
+
+                    try
+                    {
+                        await foreach (var p in Process(parameter, cancelToken))
+                        {
+                            result.Add(p);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        //Console.WriteLine($"{parameter}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
+                    }
+
+                    foreach (var r in result)
+                    {
+                        yield return r;
+                    }
+                }
             }
         }
 

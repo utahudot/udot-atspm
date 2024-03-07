@@ -120,8 +120,8 @@ namespace ATSPM.Infrastructure.Repositories
 
         public void Update(T item)
         {
-            table.Update(item);
-            _db.SaveChanges();
+            //table.Update(item);
+            //_db.SaveChanges();
 
             switch (_db.Entry(item).State)
             {
