@@ -709,3 +709,11 @@ C:\Projects\UDOT-ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.pdb
 C:\Projects\UDOT-ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.genruntimeconfig.cache
 C:\Projects\UDOT-ATSPM\TempReportTests\obj\Debug\net7.0\ref\TempReportTests.dll
 >>>>>>> main:TempReportTests/obj/Debug/net7.0/TempReportTests.csproj.FileListAbsolute.txt
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\bin\Debug\net7.0\CoverletSourceRootsMapping
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.csproj.AssemblyReference.cache
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.Properties.Resources.resources
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.csproj.GenerateResource.cache
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.AssemblyInfoInputs.cache
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.AssemblyInfo.cs
+C:\Users\jbhatia\source\repos\udot-atspm\ATSPM\TempReportTests\obj\Debug\net7.0\TempReportTests.csproj.CoreCompileInputs.cache
