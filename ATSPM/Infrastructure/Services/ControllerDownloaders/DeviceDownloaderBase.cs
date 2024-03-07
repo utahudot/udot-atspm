@@ -73,21 +73,21 @@ namespace ATSPM.Infrastructure.Services.ControllerDownloaders
         /// <exception cref="ExecuteException"></exception>
         public override async IAsyncEnumerable<Tuple<Device, FileInfo>> Execute(Device parameter, IProgress<ControllerDownloadProgress> progress = null, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            var locationIdentifier = parameter?.Location?.LocationIdentifier;
-            var user = parameter?.DeviceConfiguration?.UserName;
-            var password = parameter?.DeviceConfiguration?.Password;
-            var ipaddress = parameter?.Ipaddress;
-            var directory = parameter?.DeviceConfiguration?.Directory;
-            var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
-
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter), $"Location parameter can not be null");
 
             //if (CanExecute(parameter) && !cancelToken.IsCancellationRequested)
             if (CanExecute(parameter))
             {
-                if (!ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
+                if (!parameter.Ipaddress.IsValidIPAddress(_options.PingControllerToVerify))
                     throw new InvalidSignalControllerIpAddressException(parameter);
+
+                var locationIdentifier = parameter?.Location?.LocationIdentifier;
+                var user = parameter?.DeviceConfiguration?.UserName;
+                var password = parameter?.DeviceConfiguration?.Password;
+                var ipaddress = IPAddress.Parse(parameter?.Ipaddress);
+                var directory = parameter?.DeviceConfiguration?.Directory;
+                var searchTerms = parameter?.DeviceConfiguration?.SearchTerms;
 
                 var logMessages = new ControllerLoggerDownloaderLogMessages(_log, parameter);
 
