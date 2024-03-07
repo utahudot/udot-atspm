@@ -78,6 +78,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
 
+    s.AddAtspmAuthentication(h, builder);
+    s.AddAtspmAuthorization(h);
+
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
@@ -129,9 +132,10 @@ app.UseSwaggerUI(o =>
     });
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
-app.UseRouting();
 app.MapControllers();
 app.Run();
 

@@ -1,7 +1,7 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.Watchdog;
+using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Watchdog;
 using Microsoft.EntityFrameworkCore;
 
 namespace ATSPM.ReportApi.ReportServices

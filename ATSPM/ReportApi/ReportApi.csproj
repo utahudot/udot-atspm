@@ -28,11 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TempExtensions\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 

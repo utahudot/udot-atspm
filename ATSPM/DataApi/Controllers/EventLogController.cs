@@ -2,9 +2,8 @@
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-#nullable disable
 
 namespace ATSPM.DataApi.Controllers
 {
@@ -15,6 +14,7 @@ namespace ATSPM.DataApi.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/[controller]")]
+    [Authorize(Policy = "CanViewData")]
     public class EventLogController : ControllerBase
     {
         private readonly IEventLogRepository _repository;
@@ -94,6 +94,9 @@ namespace ATSPM.DataApi.Controllers
             if (deviceId == 0)
                 return BadRequest("Invalid device id");
 
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue)
+                return BadRequest("Invalid datetime range on start/end");
+
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end, deviceId);
 
             if (result.Count == 0)
@@ -126,6 +129,9 @@ namespace ATSPM.DataApi.Controllers
                 return BadRequest("Invalid date range");
 
             Type type;
+            //var eventCode = new List<int>();
+
+            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
 
             try
             {

@@ -59,6 +59,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySqlDatabaseProvider", "My
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArchiveLogs", "..\..\Data ETL\Data-ETL\ArchiveLogs.csproj", "{FF230DDC-D741-40BE-9DAF-9787E586F88D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,10 @@ Global
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF230DDC-D741-40BE-9DAF-9787E586F88D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF230DDC-D741-40BE-9DAF-9787E586F88D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF230DDC-D741-40BE-9DAF-9787E586F88D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF230DDC-D741-40BE-9DAF-9787E586F88D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

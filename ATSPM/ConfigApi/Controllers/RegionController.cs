@@ -12,7 +12,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// Region controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class RegionController : AtspmConfigControllerBase<Region, int>
+    public class RegionController : AtspmGeneralConfigBase<Region, int>
     {
         private readonly IRegionsRepository _repository;
 

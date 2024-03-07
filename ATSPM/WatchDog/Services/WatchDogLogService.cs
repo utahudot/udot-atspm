@@ -1,9 +1,9 @@
-﻿using ATSPM.Application.Repositories.EventLogRepositories;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
@@ -30,7 +30,8 @@ namespace WatchDog.Services
 
         public async Task<List<WatchDogLogEvent>> GetWatchDogIssues(
             LoggingOptions options,
-            List<Location> locations)
+            List<Location> locations,
+            CancellationToken cancellationToken)
         {
             if (locations.IsNullOrEmpty())
             {
@@ -42,6 +43,10 @@ namespace WatchDog.Services
 
                 foreach (var Location in locations)//.Where(s => s.locationIdentifier == "7115"))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return errors.ToList();
+                    }
                     var locationEvents = controllerEventLogRepository.GetEventsBetweenDates(
                         Location.LocationIdentifier,
                         options.AnalysisStart,

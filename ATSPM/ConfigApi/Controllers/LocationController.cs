@@ -5,16 +5,19 @@ using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
+
 
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
     /// Location Controller
     /// </summary>
+    /// 
     [ApiVersion(1.0)]
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
@@ -33,7 +36,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -47,7 +51,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -61,7 +66,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        [Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -79,6 +85,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Location version to copy</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
+        /// 
+        [Authorize(Policy = "CanEditLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +107,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
+        /// 
+        [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -125,6 +135,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="identifier">Location controller identifier</param>
         /// <returns>Lastest <see cref="Location"/> version</returns>
+        [Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Expand | Select, MaxExpansionDepth = 4)]
         [ProducesResponseType(typeof(Location), Status200OK)]
@@ -157,6 +168,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="identifier">Location controller identifier</param>
         /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
+        [Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
@@ -177,6 +189,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// Get latest version of all <see cref="Location"/>
         /// </summary>
         /// <returns>List of <see cref="Location"/> with newest start date</returns>
+        [Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]

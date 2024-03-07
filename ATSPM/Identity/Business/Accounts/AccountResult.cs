@@ -2,19 +2,18 @@
 {
     public class AccountResult
     {
-        public AccountResult(ApplicationUser user, List<string> roles, string token, int code, string? error)
+        public AccountResult(string username, int code, string token, List<string> claims, string? error)
         {
-            if(user != null)
-            {
-                User = new UserResult(user.FirstName, user.LastName, user.Email, user.Agency);
-            }
-            Roles = roles;
+            Username = username;
+            //Roles = roles;
+            Claims = claims;
             Token = token;
             Code = code;
+            Token = token;
             Error = error;
         }
-        public UserResult User { get; set; }
-        public List<string> Roles { get; set; }
+        public string Username { get; set; }
+        public List<string> Claims { get; set; }
         public string Token { get; set; }
         public int Code { get; }
         public string? Error { get; }

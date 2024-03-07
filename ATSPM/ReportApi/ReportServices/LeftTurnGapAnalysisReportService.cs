@@ -1,7 +1,7 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

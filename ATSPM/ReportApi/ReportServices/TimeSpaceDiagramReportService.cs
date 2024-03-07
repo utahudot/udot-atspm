@@ -1,12 +1,12 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TimeSpaceDiagram;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TimeSpaceDiagram;
-using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices

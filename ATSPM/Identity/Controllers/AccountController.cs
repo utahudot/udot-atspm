@@ -1,4 +1,5 @@
 ﻿using Identity.Business.Accounts;
+using Identity.Business.EmailSender;
 using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,20 +13,20 @@ namespace Identity.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
-
+        private readonly IEmailService _emailService;
         private readonly IAccountService _accountService;
+
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration,
-            IAccountService accountService)
+            IAccountService accountService,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _configuration = configuration;
             _accountService = accountService;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -76,33 +77,26 @@ namespace Identity.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _accountService.Login(model.Email, model.Password, model.RememberMe);
+            var authenticationResult = await _accountService.Login(model.Email, model.Password, model.RememberMe);
 
-            if (result.Code == StatusCodes.Status200OK)
+            if (authenticationResult.Code == StatusCodes.Status200OK)
             {
-                return Ok(result);
+                // Assuming the authenticationResult includes the generated JWT token
+                var token = authenticationResult.Token;
+                var viewClaims = authenticationResult.Claims;
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Error generating token.");
+                }
+
+                return Ok(new { AccessToken = token, ViewClaims = viewClaims });
             }
 
-            return BadRequest(result);
+            return BadRequest(authenticationResult.Error);
         }
 
-        //[HttpPost("forgot-password")]
-        //public async Task<IActionResult> ForgotPassword(LoginViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
 
-        //    var result = await _accountService.Login(model.Email, model.Password, model.RememberMe);
-
-        //    if (result.Code == StatusCodes.Status200OK)
-        //    {
-        //        return Ok(result);
-        //    }
-
-        //    return BadRequest(result);
-        //}
 
         [HttpPost("external-login")]
         public IActionResult ExternalLogin(LoginViewModel model)
@@ -146,8 +140,8 @@ namespace Identity.Controllers
             return Ok(new { Message = "Successfully logged out." });
         }
 
+        [Authorize(Policy = "ViewUsers")]
         [HttpPost("changepassword")]
-        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -176,18 +170,27 @@ namespace Identity.Controllers
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email);
-
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            if (user == null)
             {
-                // To prevent user enumeration attacks, return a generic error message
-                // instead of providing information whether the user exists or the email is confirmed.
-                return Ok("An email will be sent with the reset instructions.");
+                return Ok();
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            // Send the password reset token to the user's email for further steps.
 
-            return Ok("An email will be sent with the reset instructions");
+            //var callbackUrl = Url.Action(
+            //    "ResetPassword", // Action method to reset password in your web application
+            //    "Account",
+            //    new { email = user.Email, token },
+            //    protocol: HttpContext.Request.Scheme);
+            var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&code=" + token;
+
+            await _emailService.SendEmailAsync(
+                model.Email,
+                "Reset Password",
+                $"Please reset your password by clicking here: {callbackUrl}");
+
+            // You can return a success message or any other relevant information
+            return Ok();
         }
     }
 
