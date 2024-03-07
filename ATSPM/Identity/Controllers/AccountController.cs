@@ -140,7 +140,7 @@ namespace Identity.Controllers
             return Ok(new { Message = "Successfully logged out." });
         }
 
-        [Authorize(Policy = "ViewUsers")]
+        [Authorize]
         [HttpPost("changepassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
@@ -150,6 +150,11 @@ namespace Identity.Controllers
             }
 
             var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized("User not found");
+            }
 
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 
