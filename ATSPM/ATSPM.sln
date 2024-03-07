@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InfrastructureTests", "Infr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigApi", "ConfigApi\ConfigApi.csproj", "{FD186967-DF60-4707-B2BF-CADC17384974}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TempReportTests", "..\TempReportTests\TempReportTests.csproj", "{BF219D28-6045-4E35-9EB9-9EAB10800D62}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{B728C433-A46F-441B-9339-D0A238F06244}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityTests", "IdentityTests\IdentityTests.csproj", "{0B05F5AA-72D4-4D9B-8CA5-1007E06AB7FD}"
@@ -53,11 +51,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlDatabaseProvider", "SqlD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostgreSQLDatabaseProvider", "PostgreSQLDatabaseProvider\PostgreSQLDatabaseProvider.csproj", "{66B69A6E-EB9F-49F2-AE89-5018556563F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SqlLiteDatabaseProvider", "SqlLiteDatabaseProvider\SqlLiteDatabaseProvider.csproj", "{6EFC17B6-81A2-4B9B-B73A-A4951DD52FEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySqlDatabaseProvider", "MySqlDatabaseProvider\MySqlDatabaseProvider.csproj", "{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MySqlDatabaseProvider", "MySqlDatabaseProvider\MySqlDatabaseProvider.csproj", "{E70816BB-6279-4CA2-A7E9-A2B0F8E43F62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "OracleDatabaseProvider\OracleDatabaseProvider.csproj", "{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TempReportTests", "TempReportTests\TempReportTests.csproj", "{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,10 +113,6 @@ Global
 		{FD186967-DF60-4707-B2BF-CADC17384974}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD186967-DF60-4707-B2BF-CADC17384974}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD186967-DF60-4707-B2BF-CADC17384974}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF219D28-6045-4E35-9EB9-9EAB10800D62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B728C433-A46F-441B-9339-D0A238F06244}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -157,6 +153,10 @@ Global
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E2931D-E0C1-4BCC-95C4-6A6792590A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
