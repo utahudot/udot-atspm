@@ -76,6 +76,19 @@ namespace ATSPM.Application.LogMessages
 
         #endregion
 
+        #region FileDeleteMessages
+
+        [LoggerMessage(EventId = 1030, EventName = "Deleting File", Level = LogLevel.Debug, Message = "Deleting file {file} from {locationId} at {ip}")]
+        public partial void DeletingFileMessage(string file, string locationId, IPAddress ip);
+
+        [LoggerMessage(EventId = 1031, EventName = "Deleted File", Level = LogLevel.Debug, Message = "Deleted file {file} from {locationId} at {ip}")]
+        public partial void DeletedFileMessage(string file, string locationId, IPAddress ip);
+
+        [LoggerMessage(EventId = 1032, EventName = "Delete File Exception", Level = LogLevel.Warning, Message = "Exception deleting file {file} from {locationId} at {ip}")]
+        public partial void DeleteFileException (string file, string locationId, IPAddress ip, Exception ex = null);
+
+        #endregion
+
         [LoggerMessage(EventId = 9001, EventName = "Operation Canceled Exception", Level = LogLevel.Information, Message = "Operation canceled connecting to {locationId} at {ip}")]
         public partial void OperationCancelledException(string locationId, IPAddress ip, Exception ex = null);
     }

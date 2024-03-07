@@ -19,11 +19,13 @@ namespace ATSPM.Data.Utility
         public CompressedListComverter() : base(
             v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Arrays
+                TypeNameHandling = TypeNameHandling.Arrays,
+                SerializationBinder = new CompressedSerializationBinder<T>()
             }).GZipCompressToByte(),
             v => JsonConvert.DeserializeObject<IEnumerable<T>>(v.GZipDecompressToString(), new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.Arrays
+                TypeNameHandling = TypeNameHandling.Arrays,
+                SerializationBinder = new CompressedSerializationBinder<T>()
             }))
         { }
     }
