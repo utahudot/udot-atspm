@@ -1,12 +1,11 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Globalization;
 using System.Net;
-using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {
@@ -24,10 +23,10 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             PlanService planService = new PlanService(); // Replace with your PlanService instance
             CycleService cycleService = new CycleService(); // Replace with your CycleService instance
             ILoggerFactory loggerFactory = new LoggerFactory(); // Create an instance of ILoggerFactory
-            ILogger<SignalPhaseService> logger = loggerFactory.CreateLogger<SignalPhaseService>(); // Create the ILogger<SignalPhaseService> instance
+            ILogger<LocationPhaseService> logger = loggerFactory.CreateLogger<LocationPhaseService>(); // Create the ILogger<SignalPhaseService> instance
             PhaseService phaseService = new PhaseService();
 
-            SignalPhaseService signalPhaseService = new SignalPhaseService(planService, cycleService, logger);
+            LocationPhaseService signalPhaseService = new LocationPhaseService(planService, cycleService, logger);
 
 
             DateTime start = new DateTime(2020, 12, 1, 6, 0, 0);
@@ -42,7 +41,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 3106;
-            approach.Object.SignalId = 1933;
+            approach.Object.LocationId = 1933;
             approach.Object.DirectionTypeId = DirectionTypes.NB;
             approach.Object.Description = "NBT Ph2";
             approach.Object.Mph = 45;
@@ -54,11 +53,11 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
-            var mockSignal = new Mock<Signal>();
+            var mockSignal = new Mock<Location>();
 
             // Set the properties of the mock Signal object
             mockSignal.Object.Id = 1933;
-            mockSignal.Object.SignalIdentifier = "7191";
+            mockSignal.Object.LocationIdentifier = "7191";
             mockSignal.Object.Latitude = 40.69988569;
             mockSignal.Object.Longitude = -111.8713268;
             mockSignal.Object.PrimaryName = "700 East";
