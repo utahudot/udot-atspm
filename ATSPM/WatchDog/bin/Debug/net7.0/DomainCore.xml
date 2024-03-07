@@ -473,6 +473,17 @@
             <param name="data">data to decode</param>
             <returns></returns>
         </member>
+        <member name="T:ATSPM.Domain.Common.IpAddressJsonConverter">
+            <summary>
+            Json converter for <see cref="T:System.Net.IPAddress"/>
+            </summary>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IpAddressJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:ATSPM.Domain.Common.IpAddressJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.Net.IPAddress,System.Text.Json.JsonSerializerOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:ATSPM.Domain.Common.LambdaEqualityComparer`1">
             <summary>
             Versitile IEqualityComparer implementation that provides passing of delegate functions

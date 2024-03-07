@@ -978,3 +978,108 @@ namespace ATSPM.Data.Enums
         Split32Change = 218
     }
 }
+
+/*
+Passage and Demand  
+ 
+1206
+
+Ramp Meter - Lane Demand Det Recalled
+
+1207
+
+Ramp Meter - Lane Demand Det Working
+
+1208
+
+Ramp Meter - Lane Demand Det Other
+
+1209
+
+Ramp Meter - Lane Demand Det EC
+
+1210
+
+Ramp Meter - Lane Demand Det MP
+
+1211
+
+Ramp Meter - Lane Demand Det NA
+
+1212
+
+Ramp Meter - Lane Demand Det Error
+
+1213
+
+Ramp Meter - Lane Demand Det Dep. NA
+
+1214
+
+Ramp Meter - Lane Demand Det Dep. MP
+
+1215
+
+Ramp Meter - Lane Passage Det Recalled
+
+1216
+
+Ramp Meter - Lane Passage Det Working
+
+1217
+
+Ramp Meter - Lane Passage Det Other
+
+1218
+
+Ramp Meter - Lane Passage Det EC
+
+1219
+
+Ramp Meter - Lane Passage Det MP
+
+1220
+
+Ramp Meter - Lane Passage Det NA
+
+1221
+
+Ramp Meter - Lane Passage Det Error
+
+1222
+
+Ramp Meter - Lane Passage Det Dep. NA
+
+The Event ID is unique to the failure reported, and the Parameter is the lane where the failure is occurring. 
+ 
+Queue Detectors -- Lanes 1-16 (Each lane has it's own individual EventID / Failure combination. 
+1223
+
+Ramp Meter - Lane 1 Queue Det Disabled
+
+1224
+
+Ramp Meter - Lane 1 Queue Det Working
+
+1225
+
+Ramp Meter - Lane 1 Queue Det Other
+
+1226
+
+Ramp Meter - Lane 1 Queue Det EC
+
+1227
+
+Ramp Meter - Lane 1 Queue Det MP
+
+1228
+
+Ramp Meter - Lane 1 Queue Det NA
+
+1229
+
+Ramp Meter - Lane 1 Queue Det Error
+
+
+*/

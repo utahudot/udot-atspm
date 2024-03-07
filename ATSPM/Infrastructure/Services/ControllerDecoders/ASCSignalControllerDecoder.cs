@@ -1,6 +1,9 @@
 ﻿using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
+using Duende.IdentityServer.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -13,7 +16,7 @@ using System.Threading;
 
 namespace ATSPM.Infrastructure.Services.ControllerDecoders
 {
-    public class ASCLocationControllerDecoder : ControllerDecoderBase
+    public class ASCLocationControllerDecoder : ControllerDecoderBase<IndianaEvent>
     {
         public ASCLocationControllerDecoder(ILogger<ASCLocationControllerDecoder> log, IOptionsSnapshot<SignalControllerDecoderConfiguration> options) : base(log, options) { }
 
@@ -23,9 +26,15 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
 
         #region Methods
 
-        public override bool CanExecute(FileInfo parameter)
+        public override bool CanExecute(Tuple<Device, FileInfo> parameter)
         {
-            return parameter.Exists && (parameter.Extension == ".dat" || parameter.Extension == ".datZ" || parameter.Extension == ".DAT");
+            if (parameter == null)
+                return false;
+            
+            var device = parameter.Item1;
+            var file = parameter.Item2;
+
+            return file.Exists && (file.Extension == ".dat" || file.Extension == ".datZ" || file.Extension == ".DAT");
         }
 
         //HACK: need to use extension methods and GetFileSignatureFromMagicHeader to get compression type
@@ -43,13 +52,19 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
             }
         }
 
-        public override async IAsyncEnumerable<ControllerEventLog> DecodeAsync(string locationId, Stream stream, [EnumeratorCancellation] CancellationToken cancelToken = default)
+        public override IEnumerable<IndianaEvent> Decode(Device device, Stream stream)
         {
+            var locationId = device.Location.LocationIdentifier;
+
+            //cancelToken.ThrowIfCancellationRequested();
+
             if (string.IsNullOrEmpty(locationId))
                 throw new ControllerLoggerDecoderException("locationId can not be null", new ArgumentNullException(nameof(locationId)));
 
             if (stream?.Length == 0)
                 throw new ControllerLoggerDecoderException("Stream is empty", new InvalidDataException(nameof(stream)));
+
+            HashSet<IndianaEvent> decodedLogs = new();
 
             using (var br = new BinaryReader(stream, Encoding.ASCII))
             {
@@ -78,16 +93,16 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     // after that, we start reading until we reach the end 
                     while (br.BaseStream.Position + sizeof(byte) * 4 <= br.BaseStream.Length)
                     {
-                        var log = new ControllerEventLog() { SignalIdentifier = locationId };
+                        var log = new IndianaEvent() { LocationIdentifier = locationId };
 
                         for (var eventPart = 1; eventPart < 4; eventPart++)
                         {
                             //getting the EventCode
                             if (eventPart == 1)
-                                log.EventCode = Convert.ToInt32(br.ReadByte());
+                                log.EventCode = (DataLoggerEnum)Convert.ToInt16(br.ReadByte());
 
                             if (eventPart == 2)
-                                log.EventParam = Convert.ToInt32(br.ReadByte());
+                                log.EventParam = br.ReadByte();
 
                             //getting the time offset
                             if (eventPart == 3)
@@ -101,10 +116,12 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                             }
                         }
 
-                        yield return log;
+                        decodedLogs.Add(log);
                     }
                 }
             }
+
+            return decodedLogs;
         }
 
         #endregion
