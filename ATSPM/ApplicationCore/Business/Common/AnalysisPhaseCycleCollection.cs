@@ -1,4 +1,5 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -19,9 +20,9 @@ namespace ATSPM.Application.Business.Common
         public AnalysisPhaseCycleCollection(
             int phasenumber,
             string locationId,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> pedEvents,
-            List<ControllerEventLog> terminationEvents
+            List<IndianaEvent> cycleEvents,
+            List<IndianaEvent> pedEvents,
+            List<IndianaEvent> terminationEvents
             )
         {
             AnalysisPhaseCycle cycle = null;
@@ -31,17 +32,17 @@ namespace ATSPM.Application.Business.Common
 
             foreach (var cycleEvent in combinedEvents)
             {
-                if (cycleEvent.EventCode == 1 && cycleEvent.EventParam == phasenumber)
+                if (cycleEvent.EventCode == DataLoggerEnum.PhaseBeginGreen && cycleEvent.EventParam == phasenumber)
                     cycle = new AnalysisPhaseCycle(locationId, phasenumber, cycleEvent.Timestamp);
 
                 if (cycle != null && cycleEvent.EventParam == phasenumber &&
-                    (cycleEvent.EventCode == 4 || cycleEvent.EventCode == 5 || cycleEvent.EventCode == 6))
+                    (cycleEvent.EventCode == DataLoggerEnum.PhaseGapOut || cycleEvent.EventCode == DataLoggerEnum.PhaseMaxOut || cycleEvent.EventCode == DataLoggerEnum.PhaseForceOff))
                     cycle.SetTerminationEvent(cycleEvent.EventCode);
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 8)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == DataLoggerEnum.PhaseBeginYellowChange)
                     cycle.YellowEvent = cycleEvent.Timestamp;
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 11)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == DataLoggerEnum.PhaseEndRedClearance)
                 {
                     cycle.SetEndTime(cycleEvent.Timestamp);
                     Cycles.Add(cycle);
@@ -68,7 +69,7 @@ namespace ATSPM.Application.Business.Common
         public int PhaseNumber { get; set; }
 
 
-        public void SetPedTimesForCycle(List<ControllerEventLog> PedEventsForCycle, AnalysisPhaseCycle Cycle)
+        public void SetPedTimesForCycle(List<IndianaEvent> PedEventsForCycle, AnalysisPhaseCycle Cycle)
         {
             if (PedEventsForCycle.Count > 0)
             {
@@ -86,7 +87,7 @@ namespace ATSPM.Application.Business.Common
                             continue;
 
                         //If the first event is 'Off', then set duration to 0
-                        if (i == 0 && current.EventCode == 23)
+                        if (i == 0 && current.EventCode == DataLoggerEnum.PedestrianBeginSolidDontWalk)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
@@ -94,7 +95,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //This is the prefered sequence; an 'On'  followed by an 'off'
-                        if (current.EventCode == 21 && next.EventCode == 23)
+                        if (current.EventCode == DataLoggerEnum.PedestrianBeginWalk && next.EventCode == DataLoggerEnum.PedestrianBeginSolidDontWalk)
                         {
                             if (Cycle.PedStartTime == DateTime.MinValue)
                                 Cycle.SetPedStart(current.Timestamp);
@@ -110,7 +111,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //if we are at the penultimate event, and the last event is 'on' then set duration to 0.
-                        if (i + 2 == eventsInOrder.Count() && next.EventCode == 21)
+                        if (i + 2 == eventsInOrder.Count() && next.EventCode == DataLoggerEnum.PedestrianBeginWalk)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(cycle.YellowEvent);
@@ -124,14 +125,14 @@ namespace ATSPM.Application.Business.Common
                     switch (current.EventCode)
                     {
                         //if the only event is off
-                        case 23:
+                        case DataLoggerEnum.PedestrianBeginSolidDontWalk:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on
-                        case 21:
+                        case DataLoggerEnum.PedestrianBeginWalk:
 
                             Cycle.SetPedStart(current.Timestamp);
                             Cycle.SetPedEnd(current.Timestamp);

@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,12 @@ namespace ATSPM.Application.Business.ApproachSpeed
 
         public ApproachSpeedResult GetChartData(
             ApproachSpeedOptions options,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> cycleEvents,
+            List<IndianaEvent> planEvents,
             List<SpeedEvent> speedEvents,
             Detector detector)
         {
-            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.TimeStamp >= options.Start && d.TimeStamp < options.End).ToList();
+            var speedEventsForDetector = speedEvents.Where(d => d.DetectorId == detector.DectectorIdentifier && d.Timestamp >= options.Start && d.Timestamp < options.End).ToList();
             var speedDetector = GetSpeedDetector(
                 detector,
                 options.Start,
@@ -89,8 +90,8 @@ namespace ATSPM.Application.Business.ApproachSpeed
             DateTime start,
             DateTime end,
             int binSize,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> cycleEvents,
+            List<IndianaEvent> planEvents,
+            List<IndianaEvent> cycleEvents,
             List<SpeedEvent> speedEventsForDetector)
         {
             var cycles = cycleService.GetSpeedCycles(start, end, cycleEvents);

@@ -1,7 +1,8 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Models;
-using ATSPM.Application.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace ATSPM.Application.Business.WaitTime
     public class WaitTimeService
     {
 
-        public const int PHASE_BEGIN_GREEN = 1;
-        public const int PHASE_END_RED_CLEARANCE = 11;
-        public const int PHASE_CALL_REGISTERED = 43;
-        public const int PHASE_CALL_DROPPED = 44;
+        //public const int PHASE_BEGIN_GREEN = 1;
+        //public const int PHASE_END_RED_CLEARANCE = 11;
+        //public const int PHASE_CALL_REGISTERED = 43;
+        //public const int PHASE_CALL_DROPPED = 44;
         private readonly CycleService cycleService;
 
         public WaitTimeService(CycleService cycleService)
@@ -59,7 +60,7 @@ namespace ATSPM.Application.Business.WaitTime
         public async Task<WaitTimeResult> GetChartData(
             WaitTimeOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> events,
+            IReadOnlyList<IndianaEvent> events,
             AnalysisPhaseData analysisPhaseData,
             IReadOnlyList<PlanSplitMonitorData> plans
             )
@@ -67,21 +68,21 @@ namespace ATSPM.Application.Business.WaitTime
             var volume = new VolumeCollection(
            options.Start,
             options.End,
-               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
+               events.Where(e => e.EventCode == DataLoggerEnum.DetectorOn && e.EventParam == phaseDetail.PhaseNumber).ToList(),
                options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
             var cycleEvents = events.Where(x =>
-                (x.EventCode == PHASE_END_RED_CLEARANCE || x.EventCode == PHASE_BEGIN_GREEN)
+                (x.EventCode == DataLoggerEnum.PhaseEndRedClearance || x.EventCode == DataLoggerEnum.PhaseBeginGreen)
                 && x.EventParam == phaseDetail.PhaseNumber);
             //var greenList = events.Where(x =>
             //x.EventCode == PHASE_BEGIN_GREEN
             //&& x.EventParam == phaseDetail.PhaseNumber)
             //.OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = events.Where(x =>
-                (x.EventCode == PHASE_CALL_REGISTERED ||
-                x.EventCode == PHASE_CALL_DROPPED)
+                (x.EventCode == DataLoggerEnum.PedestrianCallRegistered ||
+                x.EventCode == DataLoggerEnum.PhaseCallDropped)
                 && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
             var gapOuts = new List<DataPointForDouble>();
@@ -110,15 +111,15 @@ namespace ATSPM.Application.Business.WaitTime
                     var exportList = new List<string>();
                     foreach (var row in cycle.PhaseRegisterDroppedCalls)
                     {
-                        exportList.Add($"{row.SignalIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
+                        exportList.Add($"{row.LocationIdentifier}, {row.Timestamp}, {row.EventCode}, {row.EventParam}");
                     }
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
                     if (useDroppingAlgorithm &&
-                        cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == PHASE_CALL_DROPPED))
+                        cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == DataLoggerEnum.PhaseCallDropped))
                     {
                         var lastDroppedPhaseCall =
-                            cycle.PhaseRegisterDroppedCalls.LastOrDefault(x => x.EventCode == PHASE_CALL_DROPPED);
+                            cycle.PhaseRegisterDroppedCalls.LastOrDefault(x => x.EventCode == DataLoggerEnum.PhaseCallDropped);
                         if (lastDroppedPhaseCall != null)
                         {
                             var lastIndex = cycle.PhaseRegisterDroppedCalls.IndexOf(lastDroppedPhaseCall);
@@ -133,9 +134,9 @@ namespace ATSPM.Application.Business.WaitTime
                             };
                         }
                     }
-                    else if (cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == PHASE_CALL_REGISTERED))
+                    else if (cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == DataLoggerEnum.PhaseCallRegistered))
                     {
-                        var firstPhaseCall = cycle.PhaseRegisterDroppedCalls.First(x => x.EventCode == PHASE_CALL_REGISTERED);
+                        var firstPhaseCall = cycle.PhaseRegisterDroppedCalls.First(x => x.EventCode == DataLoggerEnum.PhaseCallRegistered);
                         //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
@@ -157,15 +158,15 @@ namespace ATSPM.Application.Business.WaitTime
                         waitTimeTrackerList.Add(waitTimeTrackerToFill);
                         switch (priorPhase.TerminationEvent)
                         {
-                            case 4: //Gap Out
+                            case DataLoggerEnum.PhaseGapOut: //Gap Out
                                 gapOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
-                            case 5: //Max Out
+                            case DataLoggerEnum.PhaseMaxOut: //Max Out
                                 maxOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
-                            case 6: //Force Off
+                            case DataLoggerEnum.PhaseForceOff: //Force Off
                                 forceOffs.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;

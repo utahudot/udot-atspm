@@ -1,5 +1,6 @@
-﻿using ATSPM.Application.Business.Common;
-using ATSPM.Data.Models;
+﻿
+using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace ATSPM.Application.Business.ApproachSpeed
                 SpeedEvents = new List<SpeedEvent>();
             else
                 SpeedEvents = speeds.Where(s =>
-                    s.TimeStamp >= GreenEvent.AddSeconds(15) && s.TimeStamp < YellowEvent && s.Mph >= 5).ToList();
+                    s.Timestamp >= GreenEvent.AddSeconds(15) && s.Timestamp < YellowEvent && s.Mph >= 5).ToList();
         }
     }
 }

@@ -6,6 +6,7 @@ using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Application.Enums;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Newtonsoft.Json;

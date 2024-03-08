@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace ATSPM.Application.Business.Common
             }
         }
 
-        public VolumeCollection(DateTime startTime, DateTime endTime, List<ControllerEventLog> detectorEvents,
+        public VolumeCollection(DateTime startTime, DateTime endTime, List<IndianaEvent> detectorEvents,
             int binSize)
         {
             for (DateTime start = startTime; start < endTime; start = start.AddMinutes(binSize))

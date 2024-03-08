@@ -8,7 +8,7 @@ namespace ATSPM.Data.Enums
     /// Traffic Location Hi Resolution Data Logger Enumerations
     /// <seealso cref="Reference" href="https://docs.lib.purdue.edu/cgi/viewcontent.cgi?article=1002&context=jtrpdata"/>
     /// </summary>
-    public enum DataLoggerEnum
+    public enum DataLoggerEnum : ushort
     {
         ///<summary>
         ///Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first

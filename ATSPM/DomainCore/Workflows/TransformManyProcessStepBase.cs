@@ -27,7 +27,7 @@ namespace ATSPM.Domain.Workflows
             workflowProcess.Completion.ContinueWith(t => Console.WriteLine($"!!!Task {options.NameFormat} is complete!!! {t.Status}"));
         }
 
-        #region IExecuteAsyncWithProgress
+        #region IExecuteAsync
 
         /// <inheritdoc/>
         public virtual bool CanExecute(T1 parameter)

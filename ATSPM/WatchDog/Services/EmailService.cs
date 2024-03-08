@@ -1,4 +1,5 @@
 ﻿using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using WatchDog.Models;

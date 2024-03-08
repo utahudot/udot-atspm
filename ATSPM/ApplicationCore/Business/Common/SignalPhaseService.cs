@@ -1,6 +1,6 @@
-﻿
+﻿using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
-using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -57,9 +57,9 @@ namespace ATSPM.Application.Business.Common
             bool showVolume,
             int? pcdCycleTime,
             int binSize,
-            List<ControllerEventLog> cycleEvents,
-            List<ControllerEventLog> planEvents,
-            List<ControllerEventLog> detectorEvents)
+            List<IndianaEvent> cycleEvents,
+            List<IndianaEvent> planEvents,
+            List<IndianaEvent> detectorEvents)
         {
             if (phaseDetail == null || phaseDetail.Approach == null)
             {
@@ -88,8 +88,8 @@ namespace ATSPM.Application.Business.Common
             DateTime end,
             int binSize,
             DetectionType detectionType,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             bool getVolume)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(
