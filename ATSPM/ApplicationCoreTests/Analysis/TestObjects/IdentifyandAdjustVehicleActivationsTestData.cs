@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Analysis.Common;
 using ATSPM.Application.Analysis.PreemptionDetails;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using System.Collections.Generic;
 
 namespace ApplicationCoreTests.Analysis.TestObjects

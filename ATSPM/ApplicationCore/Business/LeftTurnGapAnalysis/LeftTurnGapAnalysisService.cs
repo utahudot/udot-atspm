@@ -1,8 +1,9 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Extensions;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.Application.Business.Common;
-using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +13,17 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisService
     {
-        public const int EVENT_GREEN = 1;
-        public const int EVENT_RED = 10;
-        public const int EVENT_DET = 81;
+        public const DataLoggerEnum EVENT_GREEN = DataLoggerEnum.PhaseBeginGreen;
+        public const DataLoggerEnum EVENT_RED = DataLoggerEnum.PhaseBeginRedClearance;
+        public const DataLoggerEnum EVENT_DET = DataLoggerEnum.DetectorOff;
 
         public LeftTurnGapAnalysisService()
         {
         }
 
-        public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<ControllerEventLog> eventLogs, LeftTurnGapAnalysisOptions options)
+        public async Task<LeftTurnGapAnalysisResult> GetAnalysisForPhase(Approach approach, List<IndianaEvent> eventLogs, LeftTurnGapAnalysisOptions options)
         {
-            var cycleEventsByPhase = new List<ControllerEventLog>();
+            var cycleEventsByPhase = new List<IndianaEvent>();
 
             cycleEventsByPhase.AddRange(eventLogs.Where(x =>
                 x.EventParam == approach.ProtectedPhaseNumber &&
@@ -43,7 +44,7 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
                 if (!detectorsToUse.Any())
                     return null;
             }
-            var detectorEvents = new List<ControllerEventLog>();
+            var detectorEvents = new List<IndianaEvent>();
             foreach (var detector in detectorsToUse)
             {
                 // Check for thru, right, thru-right, and thru-left
@@ -88,8 +89,8 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
         }
 
         protected LeftTurnGapAnalysisResult GetData(
-            List<ControllerEventLog> cycleEventsByPhase,
-            List<ControllerEventLog> detectorEvents,
+            List<IndianaEvent> cycleEventsByPhase,
+            List<IndianaEvent> detectorEvents,
             LeftTurnGapAnalysisOptions options,
             string detectionTypeStr,
             Approach approach)
@@ -345,9 +346,9 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
         }
 
         private List<PhaseLeftTurnGapTracker> GetGapsFromControllerData(
-            List<ControllerEventLog> greenList,
-            List<ControllerEventLog> redList,
-            List<ControllerEventLog> orderedDetectorCallList,
+            List<IndianaEvent> greenList,
+            List<IndianaEvent> redList,
+            List<IndianaEvent> orderedDetectorCallList,
             LeftTurnGapAnalysisOptions options,
             out double sumDuration1,
             out double sumDuration2,
@@ -375,7 +376,7 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
                     var phaseTracker = new PhaseLeftTurnGapTracker
                     { GreenTime = green.Timestamp };
 
-                    var gapsList = new List<ControllerEventLog>();
+                    var gapsList = new List<IndianaEvent>();
                     gapsList.Add(green);
                     gapsList.AddRange(orderedDetectorCallList.Where(x =>
                         x.Timestamp > green.Timestamp && x.Timestamp < red.Timestamp));

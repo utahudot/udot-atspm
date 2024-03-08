@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 

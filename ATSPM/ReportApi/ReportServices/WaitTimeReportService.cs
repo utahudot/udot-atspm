@@ -1,8 +1,10 @@
-﻿using ATSPM.Application.Repositories;
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -14,7 +16,7 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly WaitTimeService waitTimeService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
@@ -22,7 +24,7 @@ namespace ATSPM.ReportApi.ReportServices
         public WaitTimeReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             WaitTimeService waitTimeService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService
             )
@@ -45,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<WaitTimeResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -56,20 +58,20 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var eventCodes = new List<int>() {
-                    82,
-                    WaitTimeService.PHASE_BEGIN_GREEN,
-                    WaitTimeService.PHASE_CALL_DROPPED,
-                    WaitTimeService.PHASE_END_RED_CLEARANCE,
-                    WaitTimeService.PHASE_CALL_REGISTERED};
+            var eventCodes = new List<DataLoggerEnum>() {
+                    DataLoggerEnum.DetectorOn,
+                    DataLoggerEnum.PhaseBeginGreen,
+                    DataLoggerEnum.PhaseCallDropped,
+                    DataLoggerEnum.PhaseEndRedClearance,
+                    DataLoggerEnum.PhaseCallRegistered};
             var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, eventCodes);
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                new List<DataLoggerEnum> { DataLoggerEnum.PhaseGapOut, DataLoggerEnum.PhaseMaxOut, DataLoggerEnum.PhaseForceOff, DataLoggerEnum.PhaseGreenTermination }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<int>();
-            for (var i = 130; i <= 151; i++)
-                splitsEventCodes.Add(i);
+            var splitsEventCodes = new List<DataLoggerEnum>();
+            for (var i = 130; i <= 149; i++)
+                splitsEventCodes.Add((DataLoggerEnum)i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start

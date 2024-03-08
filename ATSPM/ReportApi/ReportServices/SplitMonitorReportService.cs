@@ -1,7 +1,9 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Business;
+﻿using ATSPM.Application.Business;
 using ATSPM.Application.Business.SplitMonitor;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -12,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     public class SplitMonitorReportService : ReportServiceBase<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>
     {
         private readonly SplitMonitorService splitMonitorService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public SplitMonitorReportService(
             SplitMonitorService splitMonitorService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository)
         {
             this.splitMonitorService = splitMonitorService;
@@ -37,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitMonitorResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -49,22 +51,41 @@ namespace ATSPM.ReportApi.ReportServices
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var pedEvents = controllerEventLogs.Where(e =>
-                new List<int> { 21, 23 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PedestrianBeginWalk,
+                    DataLoggerEnum.PedestrianBeginSolidDontWalk
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var cycleEvents = controllerEventLogs.Where(e =>
-                new List<int> { 1, 4, 5, 6, 7, 8, 11 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PhaseBeginGreen,
+                    DataLoggerEnum.PhaseGapOut,
+                    DataLoggerEnum.PhaseMaxOut,
+                    DataLoggerEnum.PhaseForceOff,
+                    DataLoggerEnum.PhaseGreenTermination,
+                    DataLoggerEnum.PhaseBeginYellowChange,
+                    DataLoggerEnum.PhaseEndRedClearance
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<int>();
-            for (var i = 130; i <= 151; i++)
-                splitsEventCodes.Add(i);
+            var splitsEventCodes = new List<DataLoggerEnum>();
+            for (var i = 130; i <= 149; i++)
+                splitsEventCodes.Add((DataLoggerEnum)i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PhaseGapOut,
+                    DataLoggerEnum.PhaseMaxOut,
+                    DataLoggerEnum.PhaseForceOff,
+                    DataLoggerEnum.PhaseGreenTermination
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
 

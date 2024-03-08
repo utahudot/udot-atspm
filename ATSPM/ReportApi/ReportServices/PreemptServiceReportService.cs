@@ -1,8 +1,9 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
-using ATSPM.Application.Business;
+﻿using ATSPM.Application.Business;
 using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -13,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     public class PreemptServiceReportService : ReportServiceBase<PreemptServiceOptions, PreemptServiceResult>
     {
         private readonly PreemptServiceService preemptServiceService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PreemptServiceReportService(
             PreemptServiceService preemptServiceService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository
             )
         {
@@ -37,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<PreemptServiceResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(parameter.locationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(parameter.locationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -46,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<int>() { 105 });
+            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<DataLoggerEnum>() { DataLoggerEnum.PreemptEntryStarted });
             PreemptServiceResult result = preemptServiceService.GetChartData(
                 parameter,
                 planEvents.ToList(),

@@ -59,6 +59,8 @@ dkms.conf
 /ATSPM/ApplicationCore/bin
 /ATSPM/ApplicationCoreTests/obj
 /ATSPM/ApplicationCoreTests/bin
+/ATSPM/ArchiveLogs/obj
+/ATSPM/ArchiveLogs/bin
 /ATSPM/ConfigApi/obj
 /ATSPM/ConfigApi/bin
 /ATSPM/Data/obj
@@ -98,3 +100,8 @@ dkms.conf
 /ATSPM/WatchDogTests/obj/
 /ATSPM/WatchDogTests/bin/
 
+/ATSPM/TempReportTests/bin/
+/ATSPM/TempReportTests/obj/
+
+/ATSPM/WatchDog/bin/Debug/net7.0/ReportApi.xml
+/ATSPM/WatchDogTests/bin/Debug/net7.0/ReportApi.xml
