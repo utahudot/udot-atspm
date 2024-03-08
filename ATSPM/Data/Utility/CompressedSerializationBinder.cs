@@ -15,7 +15,7 @@ namespace ATSPM.Data.Utility
         /// <inheritdoc/>
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-            if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) && 
+            if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) &&
                 serializedType.IsGenericType &&
                 serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)))
             {
@@ -31,9 +31,10 @@ namespace ATSPM.Data.Utility
         /// <inheritdoc/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            if (string.IsNullOrEmpty(assemblyName) && typeof(T).Assembly.GetTypes().Where(w => w.Name == typeName).Count() > 0)
+            var type = typeof(T).Assembly.GetTypes().FirstOrDefault(t => t.Name == typeName);
+            if (type != null)
             {
-                return typeof(List<>).MakeGenericType(Type.GetType($"{typeof(T).Namespace}.{typeName}"));
+                return typeof(List<>).MakeGenericType(type);
             }
 
             return base.BindToType(assemblyName, typeName);
