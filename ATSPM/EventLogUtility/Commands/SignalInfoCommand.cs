@@ -17,9 +17,9 @@ using Microsoft.Extensions.Options;
 using System.Reflection.Metadata;
 using ATSPM.Domain.Extensions;
 using Microsoft.Extensions.Logging;
-using ATSPM.Application.Repositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 
 namespace ATSPM.EventLogUtility.Commands
 {

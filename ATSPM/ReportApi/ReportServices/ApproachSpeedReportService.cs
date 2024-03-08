@@ -2,9 +2,11 @@
 using ATSPM.Application.Business.ApproachSpeed;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -15,18 +17,18 @@ namespace ATSPM.ReportApi.ReportServices
     public class ApproachSpeedReportService : ReportServiceBase<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>
     {
         private readonly ApproachSpeedService approachSpeedService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly IApproachRepository approachRepository;
-        private readonly ISpeedEventRepository speedEventRepository;
+        private readonly ISpeedEventLogRepository speedEventRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public ApproachSpeedReportService(
             ApproachSpeedService approachSpeedService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             IApproachRepository approachRepository,
-            ISpeedEventRepository speedEventRepository,
+            ISpeedEventLogRepository speedEventRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
@@ -42,7 +44,7 @@ namespace ATSPM.ReportApi.ReportServices
         public override async Task<IEnumerable<ApproachSpeedResult>> ExecuteAsync(ApproachSpeedOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -74,8 +76,8 @@ namespace ATSPM.ReportApi.ReportServices
 
         private async Task<ApproachSpeedResult> GetChartDataByApproach(
             ApproachSpeedOptions options,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             PhaseDetail phaseDetail,
             string LocationDescription)
         {

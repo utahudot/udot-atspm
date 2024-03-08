@@ -3,6 +3,9 @@ using ATSPM.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ATSPM.Data.Models.AggregationModels;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.AggregationRepositories;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
@@ -28,7 +31,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
 
             var approach = _approachRepository.Lookup(approachId);
             var phaseNumber = approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
-            List<Data.Models.ApproachSplitFailAggregation> splitFailsAggregates = GetSplitFailAggregates(approachId, phaseNumber, start, end, startTime, endTime, daysOfWeek);
+            List<ApproachSplitFailAggregation> splitFailsAggregates = GetSplitFailAggregates(approachId, phaseNumber, start, end, startTime, endTime, daysOfWeek);
             Dictionary<DateTime, double> percentCyclesWithSplitFail = GetPercentCyclesWithSplitFails(start, end, startTime, endTime, daysOfWeek, splitFailsAggregates);
             int cycles = splitFailsAggregates.Sum(s => s.Cycles);
             int splitFails = splitFailsAggregates.Sum(s => s.SplitFailures);
@@ -44,7 +47,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
 
         }
 
-        private List<Data.Models.ApproachSplitFailAggregation> GetSplitFailAggregates(int approachId,
+        private List<ApproachSplitFailAggregation> GetSplitFailAggregates(int approachId,
                                                                                  int phaseNumber,
                                                                                  DateTime start,
                                                                                  DateTime end,
@@ -53,13 +56,15 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                                                                                  int[] daysOfWeek)
         {
             var approach = _approachRepository.Lookup(approachId);
-            List<Data.Models.ApproachSplitFailAggregation> splitFailsAggregates = new List<Data.Models.ApproachSplitFailAggregation>();
+            List<ApproachSplitFailAggregation> splitFailsAggregates = new List<ApproachSplitFailAggregation>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {
                 if (daysOfWeek.Contains((int)start.DayOfWeek))
                 {
-                    splitFailsAggregates.AddRange(_approachSplitFailAggregationRepository.GetApproachSplitFailsAggregationByApproachIdAndDateRange(
-                        approach.Id, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime), approach.ProtectedPhaseNumber == phaseNumber));
+                    //HACK: had to change this, but it needs location identifier. I put null in here for now
+                    splitFailsAggregates.AddRange(_approachSplitFailAggregationRepository
+                        .GetAggregationsBetweenDates(null, tempDate.Date.Add(startTime), tempDate.Date.Add(endTime))
+                        .GetByApproachId(approach.Id, approach.ProtectedPhaseNumber == phaseNumber));
                 }
             }
 
@@ -71,7 +76,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                                                                                    TimeSpan startTime,
                                                                                    TimeSpan endTime,
                                                                                    int[] daysOfWeek,
-                                                                                   List<Data.Models.ApproachSplitFailAggregation> splitFailsAggregates)
+                                                                                   List<ApproachSplitFailAggregation> splitFailsAggregates)
         {
             Dictionary<DateTime, double> percentCyclesWithSplitFail = new Dictionary<DateTime, double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))

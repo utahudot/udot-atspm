@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -39,7 +39,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="200">Items successfully retrieved.</response>
         // GET /Entity
         //[HttpGet()]
-        [EnableQuery]
+        [EnableQuery(MaxExpansionDepth = 5)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -57,7 +57,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// <response code="404">Item does not exist.</response>
         // GET /Entity(1)
         //[HttpGet("{key}")]
-        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand, MaxExpansionDepth = 4)]
+        [EnableQuery(AllowedQueryOptions = AllowedQueryOptions.Select | AllowedQueryOptions.Expand, MaxExpansionDepth = 5)]
         [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -95,31 +95,37 @@ namespace ATSPM.ConfigApi.Controllers
             return Created(item);
         }
 
-        // PUT /Entity(1)
-        //[ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key">Key value of object to update</param>
+        /// <param name="item">Properites to update</param>
+        /// <returns></returns>
+        //PUT /Entity(1)
+        [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Put))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public virtual async Task<IActionResult> Put(TKey key, [FromBody] T item)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    var i = await _repository.LookupAsync(key);
+            var i = await _repository.LookupAsync(key);
 
-        //    if (i == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (i == null)
+            {
+                return NotFound();
+            }
 
-        //    item.Id = i.Id;
+            item.Id = i.Id;
 
-        //    await _repository.UpdateAsync(item);
+            await _repository.UpdateAsync(item);
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
 
         /// <summary>
         /// Update object of specified type
@@ -148,8 +154,6 @@ namespace ATSPM.ConfigApi.Controllers
             }
 
             item.Patch(i);
-
-            Console.WriteLine($"patching: {i}");
 
             await _repository.UpdateAsync(i);
 

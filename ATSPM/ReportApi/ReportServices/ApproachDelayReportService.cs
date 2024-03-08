@@ -1,9 +1,10 @@
-﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business;
 using ATSPM.Application.Business.AppoachDelay;
 using ATSPM.Application.Business.Common;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -16,7 +17,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ApproachDelayService _approachDelayService;
         private readonly LocationPhaseService _LocationPhaseService;
         private readonly ILocationRepository _LocationRepository;
-        private readonly IControllerEventLogRepository _controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository _controllerEventLogRepository;
         private readonly PhaseService _phaseService;
 
         /// <inheritdoc/>
@@ -24,7 +25,7 @@ namespace ATSPM.ReportApi.ReportServices
             ApproachDelayService approachDelayService,
             LocationPhaseService LocationPhaseService,
             ILocationRepository LocationRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             PhaseService phaseService
             )
         {
@@ -46,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = _controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier,
+            var controllerEventLogs = _controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier,
                 parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
 
@@ -85,8 +86,8 @@ namespace ATSPM.ReportApi.ReportServices
         protected async Task<ApproachDelayResult> GetChartDataByApproach(
             ApproachDelayOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var LocationPhase = await _LocationPhaseService.GetLocationPhaseData(
