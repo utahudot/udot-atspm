@@ -1,4 +1,3 @@
-
 using Asp.Versioning;
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.AppoachDelay;
@@ -109,7 +108,9 @@ builder.Host.ConfigureServices((h, s) =>
     });
 
     s.AddAtspmDbContext(h);
-    s.AddAtspmEFRepositories();
+    s.AddAtspmEFEventLogRepositories();
+    s.AddAtspmEFConfigRepositories();
+    s.AddAtspmEFAggregationRepositories();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
@@ -120,7 +121,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();

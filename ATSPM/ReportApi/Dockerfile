@@ -38,6 +38,11 @@ COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
+COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
+COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
+COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
+COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
 COPY ["ReportAPI/ReportApi.csproj", "ReportAPI/"]
 RUN dotnet restore "ReportAPI/ReportApi.csproj"
 COPY . .

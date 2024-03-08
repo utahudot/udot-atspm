@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

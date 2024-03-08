@@ -1,5 +1,4 @@
 ﻿using ATSPM.Data.Models;
-using ATSPM.Application.Services.LocationControllerProtocols;
 using System;
 using System.Collections.Generic;
 using System.Text;

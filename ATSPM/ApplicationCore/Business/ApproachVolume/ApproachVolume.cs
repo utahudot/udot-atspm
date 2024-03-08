@@ -11,11 +11,11 @@
 //{
 //    public class ApproachVolume
 //    {
-//        private readonly IControllerEventLogRepository controllerEventLogRepository;
+//        private readonly IIndianaEventLogRepository controllerEventLogRepository;
 //        private readonly IDetectionTypeRepository detectionTypeRepository;
 
 //        public ApproachVolume(
-//            IControllerEventLogRepository controllerEventLogRepository,
+//            IIndianaEventLogRepository controllerEventLogRepository,
 //            IDetectionTypeRepository detectionTypeRepository)
 //        {
 //            this.controllerEventLogRepository = controllerEventLogRepository;
@@ -234,8 +234,8 @@
 //        public DetectionType DetectionType { get; set; }
 //        public List<Data.Models.Detector> Detectors { get; set; } = new List<Data.Models.Detector>();
 //        public MetricInfo MetricInfo { get; set; } = new MetricInfo();
-//        public List<ControllerEventLog> PrimaryDetectorEvents { get; set; } = new List<ControllerEventLog>();
-//        public List<ControllerEventLog> OpposingDetectorEvents { get; set; } = new List<ControllerEventLog>();
+//        public List<IndianaEvent> PrimaryDetectorEvents { get; set; } = new List<IndianaEvent>();
+//        public List<IndianaEvent> OpposingDetectorEvents { get; set; } = new List<IndianaEvent>();
 //    }
 //}
 
@@ -255,7 +255,7 @@
 ////    public class ApproachVolume
 ////    {
 ////        private readonly ApproachVolumeOptions _approachVolumeOptions;
-////        private readonly IControllerEventLogRepository _controllerEventLogRepository;
+////        private readonly IIndianaEventLogRepository _controllerEventLogRepository;
 ////        private readonly List<Approach> _primaryDirectionApproaches;
 ////        private readonly List<Approach> _opposingDirectionApproaches;
 ////        public VolumeCollection PrimaryDirectionVolume { get; private set; }
@@ -266,8 +266,8 @@
 ////        public DetectionType DetectionType { get; set; }
 ////        public List<Data.Models.Detector> Detectors { get; set; } = new List<Data.Models.Detector>();
 ////        public MetricInfo MetricInfo { get; set; } = new MetricInfo();
-////        public List<ControllerEventLog> PrimaryDetectorEvents { get; set; } = new List<ControllerEventLog>();
-////        public List<ControllerEventLog> OpposingDetectorEvents { get; set; } = new List<ControllerEventLog>();
+////        public List<IndianaEvent> PrimaryDetectorEvents { get; set; } = new List<IndianaEvent>();
+////        public List<IndianaEvent> OpposingDetectorEvents { get; set; } = new List<IndianaEvent>();
 
 
 ////        public ApproachVolume(
@@ -277,7 +277,7 @@
 ////            DirectionTypes opposingDirection,
 ////            DetectionTypes detectionType,
 ////            IDetectionTypeRepository detectionTypeRepository,
-////            IControllerEventLogRepository controllerEventLogRepository)
+////            IIndianaEventLogRepository controllerEventLogRepository)
 ////        {
 ////            //var detectionTypeRepository = DetectionTypeRepositoryFactory.Create();
 ////            DetectionType = detectionTypeRepository.Lookup(detectionType);
@@ -299,7 +299,7 @@
 ////            OpposingDirectionVolume = SetVolumeByDetection(_opposingDirectionApproaches, OpposingDetectorEvents);
 ////        }
 
-////        private VolumeCollection SetVolumeByDetection(List<Approach> approaches, List<ControllerEventLog> detectorEvents)
+////        private VolumeCollection SetVolumeByDetection(List<Approach> approaches, List<IndianaEvent> detectorEvents)
 ////        {
 
 ////            foreach (var approach in approaches)

@@ -10,10 +10,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configuration\Aggregation\ApproachPcdAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\ApproachSpeedAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\ApproachSplitFailAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\ApproachYellowRedActivationAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\DetectorEventCountAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PhaseCycleAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PhaseLeftTurnGapAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PhaseSplitMonitorAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PhaseTerminationAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PreemptionAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\PriorityAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\SignalEventCountAggregationConfiguration.cs" />
+    <Compile Remove="Configuration\Aggregation\SignalPlanAggregationConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Configuration\Aggregation\ApproachPcdAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\ApproachSpeedAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\ApproachSplitFailAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\ApproachYellowRedActivationAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\DetectorEventCountAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PhaseCycleAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PhaseLeftTurnGapAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PhaseSplitMonitorAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PhaseTerminationAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PreemptionAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\PriorityAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\SignalEventCountAggregationConfiguration.cs" />
+    <None Include="Configuration\Aggregation\SignalPlanAggregationConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Duende.IdentityServer.EntityFramework.Storage" Version="6.3.6" />
     <PackageReference Include="EFCore.BulkExtensions" Version="7.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

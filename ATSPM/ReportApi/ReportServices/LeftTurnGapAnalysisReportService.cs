@@ -1,6 +1,7 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Application.Business;
+﻿using ATSPM.Application.Business;
 using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -12,14 +13,14 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly LeftTurnGapAnalysisService leftTurnGapAnalysisService;
         private readonly IApproachRepository approachRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public LeftTurnGapAnalysisReportService(
             LeftTurnGapAnalysisService leftTurnGapAnalysisService,
             IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository)
         {
             this.leftTurnGapAnalysisService = leftTurnGapAnalysisService;
@@ -38,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<LeftTurnGapAnalysisResult>>(new NullReferenceException("Location not found"));
             }
             var eventCodes = new List<int> { 1, 10, 81 };
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(
                 Location.LocationIdentifier,
                 parameter.Start,
                 parameter.End)
