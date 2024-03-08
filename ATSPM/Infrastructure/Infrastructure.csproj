@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\ConfigContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,13 +40,6 @@
     <Reference Include="PipelineManagerLibrary">
       <HintPath>..\..\..\udot-pipelinemanager\PipelineManager\PipelineManagerLibrary\bin\Debug\netcoreapp3.1\PipelineManagerLibrary.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\Aggregation\" />
-    <Folder Include="Migrations\Config\" />
-    <Folder Include="Migrations\EventLog\" />
-    <Folder Include="Migrations\Speed\" />
   </ItemGroup>
 
 </Project>

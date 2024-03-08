@@ -1,7 +1,6 @@
 using ATSPM.Application;
 using ATSPM.Application.Configuration;
 using ATSPM.Data.Models;
-using ATSPM.Application.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ATSPM.Application.Services;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 
 namespace LocationControllerLogger
 {

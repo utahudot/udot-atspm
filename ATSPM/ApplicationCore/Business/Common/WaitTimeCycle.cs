@@ -1,4 +1,4 @@
-﻿using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 
@@ -11,12 +11,12 @@ namespace ATSPM.Application.Business.Common
     {
         public WaitTimeCycle(DateTime redEvent, DateTime greenEvent)
         {
-            PhaseRegisterDroppedCalls = new List<ControllerEventLog>();
+            PhaseRegisterDroppedCalls = new List<IndianaEvent>();
             RedEvent = redEvent;
             GreenEvent = greenEvent;
         }
 
-        public List<ControllerEventLog> PhaseRegisterDroppedCalls { get; set; }
+        public List<IndianaEvent> PhaseRegisterDroppedCalls { get; set; }
         public DateTime RedEvent { get; }
         public DateTime GreenEvent { get; }
     }

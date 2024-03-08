@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Repositories;
 using ATSPM.Data;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Repositories;
 using AutoFixture;

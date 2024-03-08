@@ -1,4 +1,4 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Application.ValueObjects;
 using ATSPM.Data.Enums;

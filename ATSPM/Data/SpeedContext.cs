@@ -19,7 +19,7 @@ namespace ATSPM.Data
         {
         }
 
-        public virtual DbSet<SpeedEvent> SpeedEvents { get; set; }
+        public virtual DbSet<OldSpeedEvent> SpeedEvents { get; set; }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {

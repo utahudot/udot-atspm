@@ -1,9 +1,11 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.GreenTimeUtilization;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -14,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     public class GreenTimeUtilizationReportService : ReportServiceBase<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>
     {
         private readonly GreenTimeUtilizationService greenTimeUtilizationService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public GreenTimeUtilizationReportService(
             GreenTimeUtilizationService GreenTimeUtilizationService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
@@ -40,7 +42,7 @@ namespace ATSPM.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<GreenTimeUtilizationResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -73,12 +75,12 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<GreenTimeUtilizationResult> GetChartDataForApproach(
             GreenTimeUtilizationOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> controllerEventLogs,
-            IReadOnlyList<ControllerEventLog> planEvents,
+            IReadOnlyList<IndianaEvent> controllerEventLogs,
+            IReadOnlyList<IndianaEvent> planEvents,
             bool usePermissivePhase)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false).ToList();
-            var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<int>() { 1, 8, 11 }).ToList();
+            var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<DataLoggerEnum>() { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndRedClearance }).ToList();
 
             GreenTimeUtilizationResult viewModel = greenTimeUtilizationService.GetChartData(
                 phaseDetail,
