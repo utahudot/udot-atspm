@@ -290,8 +290,15 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<string>("DeviceStatus")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
+                        .HasDefaultValue("Unknown");
+
+                    b.Property<string>("DeviceType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("Ipaddress")
@@ -332,10 +339,19 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ConnectionTimeout")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("((2000))");
+
+                    b.Property<string>("DataModel")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
                     b.Property<string>("Directory")
-                        .HasMaxLength(1024)
+                        .HasMaxLength(512)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1024)");
+                        .HasColumnType("varchar(512)");
 
                     b.Property<string>("Firmware")
                         .IsRequired()
@@ -347,6 +363,11 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .HasMaxLength(512)
                         .IsUnicode(false)
                         .HasColumnType("varchar(512)");
+
+                    b.Property<int>("OperationTimout")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("((2000))");
 
                     b.Property<string>("Password")
                         .HasMaxLength(50)
@@ -364,8 +385,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<string>("Protocol")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
                         .HasDefaultValue("Unknown");
 
                     b.Property<string>("SearchTerms")
@@ -814,9 +835,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Ipaddress")
-                        .HasColumnType("nvarchar(45)");
 
                     b.Property<int>("JurisdictionId")
                         .ValueGeneratedOnAdd()
@@ -1361,13 +1379,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DeviceType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
-                        .HasDefaultValue("Unknown");
-
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(48)
@@ -1630,7 +1641,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 12, 18, 10, 9, 17, 676, DateTimeKind.Local).AddTicks(6928));
+                        .HasDefaultValue(new DateTime(2024, 1, 18, 9, 24, 20, 718, DateTimeKind.Local).AddTicks(9750));
 
                     b.Property<string>("Name")
                         .IsRequired()

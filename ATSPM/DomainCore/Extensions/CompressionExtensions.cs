@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ATSPM.Domain.Extensions
 {
@@ -19,27 +20,29 @@ namespace ATSPM.Domain.Extensions
         /// <returns>byte array of compressed string</returns>
         public static byte[] GZipCompressToByte(this string str)
         {
-            var bytes = Encoding.UTF8.GetBytes(str);
+            using (var mso = new MemoryStream())
+            {
+                using (var cs = new GZipStream(mso, CompressionLevel.SmallestSize))
+                using (var msi = new MemoryStream(Encoding.UTF8.GetBytes(str)))
+                    msi.CopyTo(cs);
 
-            using var stream = new MemoryStream();
-            using var compressionStream = new GZipStream(stream, CompressionMode.Compress);
-            compressionStream.Write(bytes, 0, bytes.Length);
-
-            return stream.ToArray();
+                return mso.ToArray();
+            }
         }
 
         /// <summary>
         /// GZip stream and encode to <see cref="MemoryStream"/>
         /// </summary>
-        /// <param name="stream">Stream to compress and convert</param>
+        /// <param name="msi">Stream to compress and convert</param>
         /// <returns><see cref="MemoryStream"/> of compressed stream</returns>
-        public static MemoryStream GZipDecompressToStream(this Stream stream)
+        public static MemoryStream GZipDecompressToStream(this Stream msi)
         {
-            using var gs = new GZipStream(stream, CompressionMode.Decompress);
-            var mso = new MemoryStream();
-            gs.CopyTo(mso);
-            mso.Position = 0;
-            return mso;
+            using (var cs = new GZipStream(msi, CompressionMode.Decompress))
+            using (var mso = new MemoryStream())
+            {
+                cs.CopyTo(mso);
+                return mso;
+            }
         }
 
         /// <summary>

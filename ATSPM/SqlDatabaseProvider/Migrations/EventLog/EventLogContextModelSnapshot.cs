@@ -22,25 +22,58 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.EventLog
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ATSPM.Data.Models.ControllerLogArchive", b =>
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEventsBase", b =>
                 {
                     b.Property<string>("LocationIdentifier")
                         .HasMaxLength(10)
                         .IsUnicode(false)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<DateTime>("ArchiveDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
 
-                    b.Property<byte[]>("LogData")
+                    b.Property<DateTime>("ArchiveDate")
+                        .HasColumnType("Date");
+
+                    b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
 
-                    b.HasKey("LocationIdentifier", "ArchiveDate");
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
-                    b.ToTable("ControllerLogArchives", t =>
+                    b.HasKey("LocationIdentifier", "DeviceId", "ArchiveDate");
+
+                    b.ToTable("CompressedEvents", t =>
                         {
-                            t.HasComment("Compressed Event Log Data");
+                            t.HasComment("Compressed device data log events");
                         });
+
+                    b.HasDiscriminator<string>("DataType");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEvents<ATSPM.Data.Models.EventModels.IndiannaEvent>", b =>
+                {
+                    b.HasBaseType("ATSPM.Data.Models.CompressedEventsBase");
+
+                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.EventModels.IndiannaEvent, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEvents<ATSPM.Data.Models.EventModels.PedestrianCounter>", b =>
+                {
+                    b.HasBaseType("ATSPM.Data.Models.CompressedEventsBase");
+
+                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.EventModels.PedestrianCounter, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.CompressedEvents<ATSPM.Data.Models.EventModels.SpeedEvent>", b =>
+                {
+                    b.HasBaseType("ATSPM.Data.Models.CompressedEventsBase");
+
+                    b.HasDiscriminator().HasValue("ATSPM.Data.Models.EventModels.SpeedEvent, ATSPM.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
                 });
 #pragma warning restore 612, 618
         }

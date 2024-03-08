@@ -3,7 +3,7 @@ using ATSPM.Application.Common.EqualityComparers;
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Exceptions;
 using ATSPM.Application.LogMessages;
-using ATSPM.Application.Services.LocationControllerProtocols;
+using ATSPM.Application.Services;
 using ATSPM.Data.Models;
 using ATSPM.Domain.BaseClasses;
 using ATSPM.Domain.Common;
