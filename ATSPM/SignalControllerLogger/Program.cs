@@ -1,13 +1,16 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
+using AutoFixture;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -148,14 +151,36 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
+                //var repo = scope.ServiceProvider.GetService<IAggregationRepository>();
 
-                var t = repo.GetList().Take(1).First();
+                //var aggs = new Fixture().CreateMany<PhaseCycleAggregation>(100).ToList();
 
-                Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
+                //var comp = new CompressedAggregations<PhaseCycleAggregation>()
+                //{
+                //    LocationIdentifier = "1001",
+                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                //    //DataType = typeof(PhaseCycleAggregation),
+                //    Data = aggs
+                //};
 
-                foreach (var r in t.Data.Take(10))
-                    Console.WriteLine($"{r}");
+                //await repo.AddAsync(comp);
+
+                //var t = repo.GetList().ToList();
+                //foreach (var i in t)
+                //{
+                //    Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DataType.Name} - {i.Data.Count()}");
+                //}
+
+                //var t = repo.GetArchivedAggregations<PhaseCycleAggregation>("1001", DateOnly.Parse("2024-03-11"), DateOnly.Parse("2024-03-11"));
+
+                var repo = scope.ServiceProvider.GetService<IPhaseCycleAggregationRepository>();
+
+                var t = repo.GetAggregationsBetweenDates("1001", DateTime.Parse("2024-03-11"), DateTime.Parse("2024-03-11"));
+
+                foreach (var i in t)
+                {
+                    Console.WriteLine($"{i}");
+                }
             }
 
             Console.ReadLine();
