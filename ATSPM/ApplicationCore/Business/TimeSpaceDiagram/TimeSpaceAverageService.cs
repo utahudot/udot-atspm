@@ -4,6 +4,7 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
@@ -46,12 +47,16 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             int topSequenceIndex = getIndexOfCoordPhaseInSequence(topSequence, coordPhases);
             int bottomSequenceIndex = getIndexOfCoordPhaseInSequence(bottomSequence, coordPhases);
 
-            var (selectedSequence, selectedPhase) = getSelectedSequence(topSequence, bottomSequence, programSplits, topSequenceIndex, bottomSequenceIndex);
-            //int phaseToCalculateEventsFor = GetPhaseToCalculateEventsFor(topSequence, bottomSequence, programSplits, topSequenceIndex, bottomSequenceIndex);
+            var (selectedSequence, selectedPhase, sequenceAdjustment) = CalculateSelectedSequenceAdjustment(topSequence,
+                bottomSequence,
+                programSplits, 
+                topSequenceIndex,
+                bottomSequenceIndex,
+                phaseDetail);
             int programmedSplit = programSplits.Find(s => s.EventCode == phaseToProgramPhases[selectedPhase]).EventParam;
 
             GreenToGreenCycle percentileSplitCycle = GetPercentileSplitCycle(options, controllerEventLogs, selectedPhase, phaseDetail.UseOverlap);
-            int startOfRefPoint = 0;
+            double startOfRefPoint = 0;
 
             if (isCoordPhasesMatchRoutePhases)
             {
@@ -86,7 +91,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 phaseNumberSort,
                 distanceToNextLocation,
                 speedLimit,
-                startOfRefPoint,
+                offset,
                 programmedSplit,
                 isCoordPhasesMatchRoutePhases,
                 cycleLength,
@@ -94,7 +99,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 greenTimeEventsResult);
         }
 
-        private int CalculateStartOfRefPointForNonCoordPhases(TimeSpaceDiagramAverageOptions options,
+        private double CalculateStartOfRefPointForNonCoordPhases(TimeSpaceDiagramAverageOptions options,
             int offset,
             int selectedPhase,
             int[] selectedSequence,
@@ -109,30 +114,44 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return offset + (sumOfPercentileSplits - sumOfProgramSplits);
         }
 
-        private int getSumOfPercentileSplits(TimeSpaceDiagramAverageOptions options,
+        private double getSumOfPercentileSplits(TimeSpaceDiagramAverageOptions options,
             int[] selectedSequence,
             int selectedPhaseIndex,
             List<IndianaEvent> controllerEventLogs,
             bool useOverlap)
         {
-            int sumOfPercentileSplits = 0;
+            double sumOfPercentileSplits = 0;
             for (int i = 0; i < selectedPhaseIndex; i++)
             {
                 var phase = selectedSequence[i];
                 var percentileSplit = GetPercentileSplitCycle(options, controllerEventLogs, phase, useOverlap);
 
-                sumOfPercentileSplits += (int)(percentileSplit.TotalGreenTime + percentileSplit.TotalYellowTime);
+                sumOfPercentileSplits += percentileSplit.TotalGreenTime + percentileSplit.TotalYellowTime;
             }
 
             return sumOfPercentileSplits;
         }
 
-        private (int[], int) getSelectedSequence(int[] topSequence, int[] bottomSequence, List<IndianaEvent> programSplits, int topSequenceIndex, int bottomSequenceIndex)
+        private (int[], int, int) CalculateSelectedSequenceAdjustment(int[] topSequence,
+            int[] bottomSequence,
+            List<IndianaEvent> programSplits,
+            int topSequenceIndex,
+            int bottomSequenceIndex,
+            PhaseDetail phaseDetail)
         {
             var timeBeforeFirstPhase = CalculateSplitSumBeforePhase(topSequence, programSplits, topSequenceIndex);
             var timeBeforeSecondPhase = CalculateSplitSumBeforePhase(bottomSequence, programSplits, bottomSequenceIndex);
 
-            return timeBeforeFirstPhase < timeBeforeSecondPhase ? (topSequence, topSequence[topSequenceIndex]) : (bottomSequence, bottomSequence[bottomSequenceIndex]);
+            var minTimeBeforePhase = Math.Min(timeBeforeSecondPhase, timeBeforeFirstPhase);
+
+            if (topSequence.Contains(phaseDetail.PhaseNumber))
+            {
+                return (topSequence, topSequence[topSequenceIndex], timeBeforeFirstPhase - minTimeBeforePhase);
+            }
+            else
+            {
+                return (bottomSequence, bottomSequence[bottomSequenceIndex], timeBeforeSecondPhase - minTimeBeforePhase);
+            }
         }
 
         private int getIndexOfCoordPhaseInSequence(int[] sequence, int[] coordPhases)
@@ -145,7 +164,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return index;
         }
 
-        private List<CycleEventsDto> CreateCyclesEvents(int startOfGreen,
+        private List<CycleEventsDto> CreateCyclesEvents(double startOfGreen,
             TimeOnly endTime,
             DateTime start,
             int cycleLength,
@@ -214,9 +233,9 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return cycles[medianIndex];
         }
 
-        private int CalculateStartOfRefPointForCoordPhases(int offset, int programmedSplit, GreenToGreenCycle percentileSplit)
+        private double CalculateStartOfRefPointForCoordPhases(int offset, int programmedSplit, GreenToGreenCycle percentileSplit)
         {
-            return offset - ((int)(percentileSplit.TotalGreenTime + percentileSplit.TotalYellowTime) - programmedSplit);
+            return offset - ((percentileSplit.TotalGreenTime + percentileSplit.TotalYellowTime) - programmedSplit);
         }
     }
 }

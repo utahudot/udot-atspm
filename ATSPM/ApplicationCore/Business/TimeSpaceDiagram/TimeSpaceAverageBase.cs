@@ -9,8 +9,8 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         public List<List<IndianaEvent>> ControllerEventLogsList { get; set; }
         public List<PhaseDetail> PrimaryPhaseDetails { get; set; }
         public List<PhaseDetail> OpposingPhaseDetails { get; set; }
-        public List<IndianaEvent> ProgramSplits { get; set; }
-        public int ProgrammedCycleLength { get; set; }
-        public int Offset { get; set; }
+        public List<List<IndianaEvent>> ProgramSplits { get; set; }
+        public List<int> ProgrammedCycleLength { get; set; }
+        public List<int> Offset { get; set; }
     }
 }

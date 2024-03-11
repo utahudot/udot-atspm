@@ -22,7 +22,11 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly PhaseService phaseService;
         private readonly IRouteLocationsRepository routeLocationsRepository;
 
-        public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository, ILocationRepository locationRepository, TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService, PhaseService phaseService, IRouteLocationsRepository routeLocationsRepository)
+        public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository,
+            ILocationRepository locationRepository,
+            TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService,
+            PhaseService phaseService,
+            IRouteLocationsRepository routeLocationsRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;

@@ -16,7 +16,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             string phaseNumberSort,
             double distanceToNextLocation,
             int speed,
-            int refPoint,
+            double refPoint,
             int programmedSplit,
             bool coordinatedPhases,
             int cycleLength,
@@ -38,7 +38,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         public bool CoordinatedPhases { get; set; }
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
-        public int Offset { get; }
+        public double Offset { get; }
         public int ProgrammedSplit { get; set; }
         public string PhaseType { get; set; }
         public int CycleLength { get; }

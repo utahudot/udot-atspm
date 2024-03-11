@@ -13,12 +13,12 @@ namespace ATSPM.ReportApi.ReportServices
 {
     public class TimeSpaceDiagramAverageReportService : ReportServiceBase<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>
     {
-        private readonly IIndianaEventLogRepository _controllerEventLogRepository;
-        private readonly ILocationRepository _locationRepository;
-        private readonly PhaseService _phaseService;
-        private readonly IRouteLocationsRepository _routeLocationsRepository;
-        private readonly PlanService _planService;
-        private readonly TimeSpaceAverageService _timeSpaceAverageService;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
+        private readonly ILocationRepository locationRepository;
+        private readonly PhaseService phaseService;
+        private readonly IRouteLocationsRepository routeLocationsRepository;
+        private readonly PlanService planService;
+        private readonly TimeSpaceAverageService timeSpaceAverageService;
 
         public TimeSpaceDiagramAverageReportService(IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository locationRepository,
@@ -27,12 +27,12 @@ namespace ATSPM.ReportApi.ReportServices
             PlanService planService,
             TimeSpaceAverageService timeSpaceAverageService)
         {
-            _controllerEventLogRepository = controllerEventLogRepository;
-            _locationRepository = locationRepository;
-            _phaseService = phaseService;
-            _routeLocationsRepository = routeLocationsRepository;
-            _planService = planService;
-            _timeSpaceAverageService = timeSpaceAverageService;
+            this.controllerEventLogRepository = controllerEventLogRepository;
+            this.locationRepository = locationRepository;
+            this.phaseService = phaseService;
+            this.routeLocationsRepository = routeLocationsRepository;
+            this.planService = planService;
+            this.timeSpaceAverageService = timeSpaceAverageService;
         }
 
         public override async Task<IEnumerable<TimeSpaceDiagramAverageResult>> ExecuteAsync(TimeSpaceDiagramAverageOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
@@ -81,7 +81,7 @@ namespace ATSPM.ReportApi.ReportServices
             var sequenceForLocation = parameter.Sequence.Find(item => item.LocationIdentifier == locationIdentifier).Sequence ?? new int[4][];
             var coordPhasesForLocation = parameter.CoordinatedPhases.Find(item => item.LocationIdentifier == locationIdentifier).CoordinatedPhases ?? new int[2];
             bool isCoordPhasesMatchRoutePhases = IsCoordPhasesMatchRoutePhases(coordPhasesForLocation, currRouteLocation.PrimaryPhase, currRouteLocation.OpposingPhase);
-            var viewModel = _timeSpaceAverageService.GetChartData(
+            var viewModel = timeSpaceAverageService.GetChartData(
                 parameter,
                 primaryPhase,
                 approachEvents,
@@ -119,9 +119,9 @@ namespace ATSPM.ReportApi.ReportServices
                     routeLocations[i],
                     averageParamsBase.ControllerEventLogsList[i],
                     averageParamsBase.PrimaryPhaseDetails[i],
-                    averageParamsBase.ProgramSplits,
-                    averageParamsBase.Offset,
-                    averageParamsBase.ProgrammedCycleLength,
+                    averageParamsBase.ProgramSplits[i],
+                    averageParamsBase.Offset[i],
+                    averageParamsBase.ProgrammedCycleLength[i],
                     eventCodes,
                     nextLocationDistance,
                     isLastElement: i == routeLocations.Count - 1,
@@ -137,9 +137,9 @@ namespace ATSPM.ReportApi.ReportServices
                     routeLocations[i],
                     averageParamsBase.ControllerEventLogsList[i],
                     averageParamsBase.OpposingPhaseDetails[i],
-                    averageParamsBase.ProgramSplits,
-                    averageParamsBase.Offset,
-                    averageParamsBase.ProgrammedCycleLength,
+                    averageParamsBase.ProgramSplits[i],
+                    averageParamsBase.Offset[i],
+                    averageParamsBase.ProgrammedCycleLength[i],
                     eventCodes,
                     nextLocationDistance,
                     isLastElement: i == 0,
@@ -156,15 +156,15 @@ namespace ATSPM.ReportApi.ReportServices
             var controllerEventLogsList = new List<List<IndianaEvent>>();
             var primaryPhaseDetails = new List<PhaseDetail>();
             var opposingPhaseDetails = new List<PhaseDetail>();
-            int programmedCycleLength = 0;
-            int offset = 0;
-            var programmedSplitsForTimePeriod = new List<IndianaEvent>();
+            var programmedCycleLength = new List<int>();
+            var offset = new List<int>();
+            var programmedSplitsForTimePeriod = new List<List<IndianaEvent>>();
             var daysToProcess = GetDaysToProcess(parameter.StartDate, parameter.EndDate, parameter.DaysOfWeek);
 
             foreach (var routeLocation in routeLocations)
             {
                 var planEventsForPeriod = new List<Plan>();
-                var location = _locationRepository.GetLatestVersionOfLocation(routeLocation.LocationIdentifier);
+                var location = locationRepository.GetLatestVersionOfLocation(routeLocation.LocationIdentifier);
 
                 if (location == null)
                 {
@@ -172,42 +172,45 @@ namespace ATSPM.ReportApi.ReportServices
                 }
 
                 var controllerEventLogs = new List<IndianaEvent>();
+                int currentProgrammedCycleLength = 0;
+                int currentOffset = 0;
+                var currentProgrammedSplitsForTimePeriod = new List<IndianaEvent>();
 
                 foreach (DateOnly date in daysToProcess)
                 {
                     var start = date.ToDateTime(parameter.StartTime);
                     var end = date.ToDateTime(parameter.EndTime);
-                    var logs = _controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
+                    var logs = controllerEventLogRepository.GetEventsBetweenDates(location.LocationIdentifier, start.AddHours(-12), end.AddHours(12)).ToList();
                     var planEvents = logs.GetPlanEvents(start.AddHours(-12), end.AddHours(12));
-                    var plan = _planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
+                    var plan = planService.GetBasicPlans(start, end, routeLocation.LocationIdentifier, planEvents).FirstOrDefault();
 
-                    if (programmedCycleLength == 0)
+                    if(currentProgrammedCycleLength == 0)
                     {
                         var programmedCycleForPlan = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<DataLoggerEnum>() { DataLoggerEnum.CycleLengthChange });
-                        programmedCycleLength = GetEventOverallapingTime(start, programmedCycleForPlan, "CycleLength").FirstOrDefault().EventParam;
+                        currentProgrammedCycleLength = GetEventOverallapingTime(start, programmedCycleForPlan, "CycleLength").FirstOrDefault().EventParam;
                     }
 
-                    if (offset == 0)
+                    if(currentOffset == 0)
                     {
                         var offsets = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<DataLoggerEnum>() { DataLoggerEnum.OffsetLengthChange });
-                        offset = GetEventOverallapingTime(start, offsets, "Offset").FirstOrDefault().EventParam;
+                        currentOffset = GetEventOverallapingTime(start, offsets, "Offset").FirstOrDefault().EventParam;
                     }
 
-                    if (!programmedSplitsForTimePeriod.Any())
+                    if (!currentProgrammedSplitsForTimePeriod.Any())
                     {
                         var programmedSplits = logs.GetEventsByEventCodes(
                             start.AddHours(-12),
                             end.AddHours(12),
                             new List<DataLoggerEnum>() {
-                                DataLoggerEnum.Split1Change,
-                                DataLoggerEnum.Split2Change,
-                                DataLoggerEnum.Split3Change,
-                                DataLoggerEnum.Split3Change,
-                                DataLoggerEnum.Split4Change,
-                                DataLoggerEnum.Split5Change,
-                                DataLoggerEnum.Split6Change,
-                                DataLoggerEnum.Split7Change });
-                        programmedSplitsForTimePeriod = GetEventOverallapingTime(start, programmedSplits, "Program Splits");
+                            DataLoggerEnum.Split1Change,
+                            DataLoggerEnum.Split2Change,
+                            DataLoggerEnum.Split3Change,
+                            DataLoggerEnum.Split3Change,
+                            DataLoggerEnum.Split4Change,
+                            DataLoggerEnum.Split5Change,
+                            DataLoggerEnum.Split6Change,
+                            DataLoggerEnum.Split7Change });
+                        currentProgrammedSplitsForTimePeriod.AddRange(GetEventOverallapingTime(start, programmedSplits, "Program Splits"));
                     }
 
                     planEventsForPeriod.Add(plan);
@@ -224,8 +227,8 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new NullReferenceException("Select different time period since plans dont match for each day");
                 }
 
-                var primaryPhaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
-                var opposingPhaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
                 //var phaseToSearch = routeLocation.PrimaryPhase;
                 //var phaseDetail = _phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
 
@@ -237,6 +240,9 @@ namespace ATSPM.ReportApi.ReportServices
                 controllerEventLogsList.Add(controllerEventLogs);
                 primaryPhaseDetails.Add(primaryPhaseDetail);
                 opposingPhaseDetails.Add(opposingPhaseDetail);
+                programmedCycleLength.Add(currentProgrammedCycleLength);
+                offset.Add(currentOffset);
+                programmedSplitsForTimePeriod.Add(currentProgrammedSplitsForTimePeriod);
             }
 
             return new TimeSpaceAverageBase()
@@ -306,7 +312,7 @@ namespace ATSPM.ReportApi.ReportServices
 
         private List<RouteLocation> GetLocationsFromRouteId(int routeId)
         {
-            var routeLocations = _routeLocationsRepository.GetList().Where(l => l.RouteId == routeId).ToList();
+            var routeLocations = routeLocationsRepository.GetList().Where(l => l.RouteId == routeId).ToList();
             return routeLocations ?? new List<RouteLocation>();
         }
     }
