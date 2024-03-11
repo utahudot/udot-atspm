@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
-    public class TimeSpaceDiagramResult : ApproachResult
+    public class TimeSpaceDiagramResultForPhase : ApproachResult
     {
-        public TimeSpaceDiagramResult(
+        public TimeSpaceDiagramResultForPhase(
             int approachId,
             string locationId,
             DateTime start,
@@ -35,6 +35,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
+        public string PhaseType { get; set; }
         public string PhaseNumberSort { get; set; }
         public double DistanceToNextLocation { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
