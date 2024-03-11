@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class ApproachPcdAggregationEFRepository : AggregationEFRepositoryBase<ApproachPcdAggregation>, IApproachPcdAggregationRepository
     {
         ///<inheritdoc/>
-        public ApproachPcdAggregationEFRepository(EventLogContext db, ILogger<ApproachPcdAggregationEFRepository> log) : base(db, log) { }
+        public ApproachPcdAggregationEFRepository(AggregationContext db, ILogger<ApproachPcdAggregationEFRepository> log) : base(db, log) { }
 
         #region IApproachPcdAggregationRepository
 
