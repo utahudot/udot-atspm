@@ -20,7 +20,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             _cycleService = cycleService;
         }
 
-        public TimeSpaceDiagramResult GetChartData(
+        public TimeSpaceDiagramResultForPhase GetChartDataForPhase(
            TimeSpaceDiagramOptions options,
            PhaseDetail phaseDetail,
            List<IndianaEvent> controllerEventLogs,
@@ -30,52 +30,49 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
            bool isLastElement
            )
         {
-            var countEvents = new List<TimeSpaceDetectorEventDto>();
-            var stopBarPresenceEvents = new List<TimeSpaceDetectorEventDto>();
-            var advanceCountEvents = new List<TimeSpaceDetectorEventDto>();
             var greenTimeEventsResult = new List<TimeSpaceEventBase>();
             var countEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var stopBarPresenceEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var advanceCountEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs, options, out List<GreenToGreenCycle> resultCycles);
-            var speed = options.SpeedLimit ?? phaseDetail.Approach.Mph;
+            var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
 
-            if (!speed.HasValue)
+            if (speedLimit == 0)
             {
                 throw new ArgumentNullException($"No speed available for {phaseDetail.PhaseNumber}");
             }
 
             if (isFirstElement)
             {
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+                greenTimeEventsResult = TimeSpaceService.GetGreenTimeEvents(cycleAllEvents, speedLimit, distanceToNextLocation);
 
-                countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
+                var countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
-                stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
+                var stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
                 stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, resultCycles);
             }
             else if (isLastElement)
             {
-                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
+                var advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
                 advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
             else
             {
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+                greenTimeEventsResult = TimeSpaceService.GetGreenTimeEvents(cycleAllEvents, speedLimit, distanceToNextLocation);
 
-                countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
+                var countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
-                stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
+                var stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
                 stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, resultCycles);
 
-                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
+                var advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
                 advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
 
-            var phaseNumberSort = GetPhaseSort(phaseDetail);
-            var timeSpaceDiagramResult = new TimeSpaceDiagramResult(
+            var phaseNumberSort = TimeSpaceService.GetPhaseSort(phaseDetail);
+            var timeSpaceDiagramResult = new TimeSpaceDiagramResultForPhase(
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Location.LocationIdentifier,
                 options.Start,
@@ -83,7 +80,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 phaseDetail.PhaseNumber,
                 phaseNumberSort,
                 distanceToNextLocation,
-                (int)speed,
+                speedLimit,
                 cycleAllEvents,
                 countEventsTimeSpaceResult,
                 advanceCountEventsTimeSpaceResult,
@@ -126,7 +123,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 //If overlaps with yellow event, we want the result off to use yellow time
                 GreenToGreenCycle overlappingYellowEvent = cycles.Find(e => currentDetectorOn <= e.YellowEvent && currentDetectorOff > e.YellowEvent);
 
-                GetArrivalTime(
+                TimeSpaceService.GetArrivalTime(
                     distanceToNextLocation,
                     speedLimit,
                     currentDetectorOn,
@@ -140,7 +137,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
                 results.Add(resultOn);
 
-                GetArrivalTime(
+                TimeSpaceService.GetArrivalTime(
                     distanceToNextLocation,
                     speedLimit,
                     overlappingYellowEvent == null ? currentDetectorOff : overlappingYellowEvent.YellowEvent,
@@ -171,7 +168,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             {
                 double speed = options.SpeedLimit ?? speedLimit;
                 DateTime start = gEvent.Start;
-                GetArrivalTime(distanceToNextLocation, speedLimit, start, out _, out DateTime arrivalTime);
+                TimeSpaceService.GetArrivalTime(distanceToNextLocation, speedLimit, start, out _, out DateTime arrivalTime);
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     start,
                     arrivalTime,
@@ -201,7 +198,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 }
                 double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
                 DateTime currentDetectorOn = detectorEvent.DetectorOn.Value;
-                GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOn.Value, out _, out DateTime arrivalTimeOn);
+                TimeSpaceService.GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOn.Value, out _, out DateTime arrivalTimeOn);
 
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     currentDetectorOn,
@@ -241,7 +238,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 }
                 double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
 
-                GetArrivalTime(detectorEvent.DistanceToStopBar, speedLimit, detectorEvent.DetectorOn.Value, out double speedInFeetPerSecond, out DateTime arrivalTime);
+                TimeSpaceService.GetArrivalTime(detectorEvent.DistanceToStopBar, speedLimit, detectorEvent.DetectorOn.Value, out double speedInFeetPerSecond, out DateTime arrivalTime);
 
                 results.Add(new TimeSpaceEventBase(arrivalTime.AddSeconds(-distanceToNextLocation / speedInFeetPerSecond), arrivalTime, null));
             }
@@ -289,7 +286,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             out List<GreenToGreenCycle> cycles)
         {
 
-            List<DataLoggerEnum> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            List<DataLoggerEnum> cycleEventCodes = TimeSpaceService.GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
