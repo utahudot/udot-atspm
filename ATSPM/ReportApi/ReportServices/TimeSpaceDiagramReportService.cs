@@ -14,16 +14,19 @@ namespace ATSPM.ReportApi.ReportServices
     /// <summary>
     /// Time space diagram report service
     /// </summary>
-    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>
+    public class TimeSpaceDiagramReportService : ReportServiceBase<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>
     {
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService;
         private readonly PhaseService phaseService;
         private readonly IRouteLocationsRepository routeLocationsRepository;
-        private readonly static double defaultDistanceToNextLocation = 1584;
 
-        public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository, ILocationRepository locationRepository, TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService, PhaseService phaseService, IRouteLocationsRepository routeLocationsRepository)
+        public TimeSpaceDiagramReportService(IIndianaEventLogRepository controllerEventLogRepository,
+            ILocationRepository locationRepository,
+            TimeSpaceDiagramForPhaseService timeSpaceDiagramReportService,
+            PhaseService phaseService,
+            IRouteLocationsRepository routeLocationsRepository)
         {
             this.controllerEventLogRepository = controllerEventLogRepository;
             LocationRepository = locationRepository;
@@ -33,7 +36,7 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<TimeSpaceDiagramResult>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<IEnumerable<TimeSpaceDiagramResultForPhase>> ExecuteAsync(TimeSpaceDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var routeLocations = GetLocationsFromRouteId(parameter.RouteId);
             if (routeLocations.Count == 0)
@@ -42,7 +45,7 @@ namespace ATSPM.ReportApi.ReportServices
             }
 
             var eventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOn, DataLoggerEnum.DetectorOff };
-            var tasks = new List<Task<TimeSpaceDiagramResult>>();
+            var tasks = new List<Task<TimeSpaceDiagramResultForPhase>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
             //Throw exception when no distance is found
@@ -54,20 +57,37 @@ namespace ATSPM.ReportApi.ReportServices
                 }
             }
 
-            var (controllerEventLogsList, phaseDetails) = ProcessRouteLocations(routeLocations, parameter);
+            var (controllerEventLogsList, primaryPhaseDetails, opposingPhaseDetails) = ProcessRouteLocations(routeLocations, parameter);
 
-            for (var i = 0; i < routeLocations.Count; i++)
+            for (int i = 0; i < routeLocations.Count; i++)
             {
                 var nextLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
                 var previousLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
                 tasks.Add(GetChartDataForPhase(parameter,
                     controllerEventLogsList[i],
-                    phaseDetails[i],
+                    primaryPhaseDetails[i],
                     eventCodes,
                     nextLocationDistance,
                     previousLocationDistance,
                     isFirstElement: i == 0,
-                    isLastElement: i == routeLocations.Count - 1
+                    isLastElement: i == routeLocations.Count - 1,
+                    "Primary"
+                ));
+            }
+
+            for (int i = routeLocations.Count - 1; i >= 0; i--)
+            {
+                var nextLocationDistance = i == 0 ? 0 : routeLocations[i].PreviousLocationDistance.Distance;
+                var previousLocationDistance = i == routeLocations.Count - 1 ? 0 : routeLocations[i].NextLocationDistance.Distance;
+                tasks.Add(GetChartDataForPhase(parameter,
+                    controllerEventLogsList[i],
+                    opposingPhaseDetails[i],
+                    eventCodes,
+                    nextLocationDistance,
+                    previousLocationDistance,
+                    isFirstElement: i == routeLocations.Count - 1,
+                    isLastElement: i == 0,
+                    "Opposing"
                 ));
             }
 
@@ -75,10 +95,14 @@ namespace ATSPM.ReportApi.ReportServices
             return results;
         }
 
-        private (List<List<IndianaEvent>> controllerEventLogsList, List<PhaseDetail> phaseDetails) ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
+        private (List<List<IndianaEvent>> controllerEventLogsList,
+           List<PhaseDetail> primaryPhaseDetails,
+           List<PhaseDetail> opposingPhaseDetails)
+           ProcessRouteLocations(IEnumerable<RouteLocation> routeLocations, TimeSpaceDiagramOptions parameter)
         {
             var controllerEventLogsList = new List<List<IndianaEvent>>();
-            var phaseDetails = new List<PhaseDetail>();
+            var primaryPhaseDetails = new List<PhaseDetail>();
+            var opposingPhaseDetails = new List<PhaseDetail>();
 
             foreach (var routeLocation in routeLocations)
             {
@@ -96,22 +120,23 @@ namespace ATSPM.ReportApi.ReportServices
                     throw new NullReferenceException("No Controller Event Logs found for Location");
                 }
 
-                var phaseToSearch = /*parameter.OpposingPhase == true ? routeLocation.OpposingPhase :*/ routeLocation.PrimaryPhase;
-                var phaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == phaseToSearch);
+                var primaryPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.PrimaryPhase);
+                var opposingPhaseDetail = phaseService.GetPhases(location).Find(p => p.PhaseNumber == routeLocation.OpposingPhase);
 
-                if (phaseDetail == null)
+                if (primaryPhaseDetail == null || opposingPhaseDetail == null)
                 {
                     throw new NullReferenceException("Error grabbing phase details");
                 }
 
                 controllerEventLogsList.Add(controllerEventLogs);
-                phaseDetails.Add(phaseDetail);
+                primaryPhaseDetails.Add(primaryPhaseDetail);
+                opposingPhaseDetails.Add(opposingPhaseDetail);
             }
 
-            return (controllerEventLogsList, phaseDetails);
+            return (controllerEventLogsList, primaryPhaseDetails, opposingPhaseDetails);
         }
 
-        private async Task<TimeSpaceDiagramResult> GetChartDataForPhase(
+        private async Task<TimeSpaceDiagramResultForPhase> GetChartDataForPhase(
             TimeSpaceDiagramOptions parameter,
             List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail currentPhase,
@@ -119,14 +144,15 @@ namespace ATSPM.ReportApi.ReportServices
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             bool isFirstElement,
-            bool isLastElement)
+            bool isLastElement,
+            string phaseType)
         {
             eventCodes.AddRange(timeSpaceDiagramReportService.GetCycleCodes(currentPhase.UseOverlap));
             var approachEvents = currentControllerEventLogs.GetEventsByEventCodes(
                 parameter.Start.AddMinutes(-15),
                 parameter.End.AddMinutes(15),
                 eventCodes).ToList();
-            var viewModel = timeSpaceDiagramReportService.GetChartData(parameter,
+            var viewModel = timeSpaceDiagramReportService.GetChartDataForPhase(parameter,
                 currentPhase,
                 approachEvents,
                 distanceToNextLocation,
@@ -135,6 +161,7 @@ namespace ATSPM.ReportApi.ReportServices
                 isLastElement);
             viewModel.LocationDescription = currentPhase.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = currentPhase.Approach.Description;
+            viewModel.PhaseType = phaseType;
             return viewModel;
         }
 

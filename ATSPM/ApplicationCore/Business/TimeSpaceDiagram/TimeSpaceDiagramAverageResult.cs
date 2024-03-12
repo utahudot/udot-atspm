@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Business.TimeSpaceDiagram
 {
-    public class TimeSpaceDiagramResult : ApproachResult
+    public class TimeSpaceDiagramAverageResult : ApproachResult
     {
-        public TimeSpaceDiagramResult(
+        public TimeSpaceDiagramAverageResult(
             int approachId,
             string locationId,
             DateTime start,
@@ -16,31 +16,35 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             string phaseNumberSort,
             double distanceToNextLocation,
             int speed,
+            double refPoint,
+            int programmedSplit,
+            bool coordinatedPhases,
+            int cycleLength,
             List<CycleEventsDto> cycleAllEvents,
-            List<TimeSpaceEventBase> laneByLaneCountDetectors,
-            List<TimeSpaceEventBase> advanceCountDetectors,
-            List<TimeSpaceEventBase> stopBarPresenceDetectors,
             List<TimeSpaceEventBase> greenTimeEvents) : base(approachId, locationId, start, end)
         {
             PhaseNumber = phaseNumber;
             PhaseNumberSort = phaseNumberSort;
             DistanceToNextLocation = distanceToNextLocation;
             Speed = speed;
+            Offset = refPoint;
+            ProgrammedSplit = programmedSplit;
+            CoordinatedPhases = coordinatedPhases;
+            CycleLength = cycleLength;
             CycleAllEvents = cycleAllEvents;
-            LaneByLaneCountDetectors = laneByLaneCountDetectors;
-            AdvanceCountDetectors = advanceCountDetectors;
-            StopBarPresenceDetectors = stopBarPresenceDetectors;
             GreenTimeEvents = greenTimeEvents;
         }
 
+        public bool CoordinatedPhases { get; set; }
         public int PhaseNumber { get; set; }
         public int Speed { get; set; }
+        public double Offset { get; }
+        public int ProgrammedSplit { get; set; }
+        public string PhaseType { get; set; }
+        public int CycleLength { get; }
         public string PhaseNumberSort { get; set; }
         public double DistanceToNextLocation { get; set; }
         public List<CycleEventsDto> CycleAllEvents { get; set; }
         public List<TimeSpaceEventBase> GreenTimeEvents { get; set; }
-        public List<TimeSpaceEventBase> LaneByLaneCountDetectors { get; set; }
-        public List<TimeSpaceEventBase> AdvanceCountDetectors { get; set; }
-        public List<TimeSpaceEventBase> StopBarPresenceDetectors { get; set; }
     }
 }
