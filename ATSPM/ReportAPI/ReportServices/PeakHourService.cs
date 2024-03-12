@@ -11,7 +11,7 @@ namespace ATSPM.ReportApi.ReportServices
     /// <summary>
     /// Left turn gap analysis report service
     /// </summary>
-    public class LeftTurnGapReportDataCheckService : ReportServiceBase<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>
+    public class PeakHourService : ReportServiceBase<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>
     {
         private readonly IApproachRepository approachRepository;
         private readonly ILocationRepository LocationRepository;
@@ -25,7 +25,7 @@ namespace ATSPM.ReportApi.ReportServices
         private readonly ILogger<LeftTurnGapReportDataCheckService> logger;
 
         /// <inheritdoc/>
-        public LeftTurnGapReportDataCheckService(
+        public PeakHourService(
             IApproachRepository approachRepository,
             ILocationRepository LocationRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
@@ -50,96 +50,29 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<LeftTurnGapDataCheckResult> ExecuteAsync(LeftTurnGapDataCheckOptions options, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<PeakHourResult> ExecuteAsync(PeakHourOptions options, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
 
             var amStartTime = new TimeSpan(6, 0, 0);
             var amEndTime = new TimeSpan(9, 0, 0);
             var pmStartTime = new TimeSpan(15, 0, 0);
             var pmEndTime = new TimeSpan(19, 0, 0);
+            PeakHourResult result = new PeakHourResult();
+            var peakResult = leftTurnReportService.GetAMPMPeakFlowRate(options.LocationIdentifier, options.ApproachId, options.Start, options.End, amStartTime,
+            amEndTime, pmStartTime, pmEndTime, options.DaysOfWeek, );
+            var amPeak = peakResult.First();
+            result.AmStartHour = amPeak.Key.Hours;
+            result.AmStartMinute = amPeak.Key.Minutes;
+            result.AmEndHour = amPeak.Key.Hours + 1;
+            result.AmEndMinute = amPeak.Key.Minutes;
 
-            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
-            LeftTurnGapDataCheckResult dataCheck = InitializeDataCheckObject(approach, options);
-            var detectors = new List<Detector>();
-            List<DetectorEventCountAggregation> detectorAggregations;
-            List<PhaseCycleAggregation> cycleAggregations;
-            List<PhaseTerminationAggregation> terminationAggregations;
-            List<ApproachSplitFailAggregation> splitFailAggregations;
-            List<PhaseLeftTurnGapAggregation> leftTurnAggregations;
-            List<PhasePedAggregation> pedAggregations;
+            var pmPeak = peakResult.Last();
+            result.PmStartHour = pmPeak.Key.Hours;
+            result.PmStartMinute = pmPeak.Key.Minutes;
+            result.PmEndHour = pmPeak.Key.Hours + 1;
+            result.PmEndMinute = pmPeak.Key.Minutes;
 
-            GetAggregations(
-                options,
-                out detectorAggregations,
-                out cycleAggregations,
-                out terminationAggregations,
-                out splitFailAggregations,
-                out leftTurnAggregations,
-                out pedAggregations);
-
-            if (!detectorAggregations.Any())
-            {
-                dataCheck.InsufficientDetectorEventCount = true;
-            }
-            if (!cycleAggregations.Any())
-            {
-                dataCheck.InsufficientCycleAggregation = true;
-            }
-            if (!terminationAggregations.Any())
-            {
-                dataCheck.InsufficientPhaseTermination = true;
-            }
-            if (!splitFailAggregations.Any())
-            {
-                dataCheck.InsufficientSplitFailAggregations = true;
-            }
-            if (!leftTurnAggregations.Any())
-            {
-                dataCheck.InsufficientLeftTurnGapAggregations = true;
-            }
-            if (!pedAggregations.Any())
-            {
-                dataCheck.InsufficientPedAggregations = true;
-            }
-            if (dataCheck.InsufficientDetectorEventCount && dataCheck.InsufficientCycleAggregation && dataCheck.InsufficientPhaseTermination && dataCheck.InsufficientSplitFailAggregations && dataCheck.InsufficientLeftTurnGapAggregations && dataCheck.InsufficientPedAggregations)
-            {
-                return dataCheck;
-            }
-
-            var primaryPhase = approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : throw new Exception("Invalid Phase Number");
-            var opposingPhase = leftTurnReportService.GetOpposingPhase(approach);
-
-            CheckPeakPeriods(
-                options,
-                amStartTime,
-                amEndTime,
-                pmStartTime,
-                pmEndTime,
-                approach,
-                primaryPhase,
-                opposingPhase,
-                dataCheck,
-                detectorAggregations,
-                cycleAggregations,
-                terminationAggregations,
-                splitFailAggregations,
-                leftTurnAggregations);
-
-            if (dataCheck.InsufficientDetectorEventCount || dataCheck.InsufficientCycleAggregation || dataCheck.InsufficientPhaseTermination)
-                return dataCheck;
-
-
-            var flowRate = leftTurnReportService.GetAMPMPeakFlowRate(approach, options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime, options.DaysOfWeek, detectorAggregations);
-
-
-            dataCheck.LeftTurnVolumeOk = flowRate.First().Value >= options.VolumePerHourThreshold
-            || flowRate.Last().Value >= options.VolumePerHourThreshold;
-            var gapOut = leftTurnReportService.GetAMPMPeakGapOut(flowRate, approach, options.Start, options.End, amStartTime, cycleAggregations, terminationAggregations);
-            dataCheck.GapOutOk = gapOut.First().Value <= options.GapOutThreshold && gapOut.Last().Value <= options.GapOutThreshold;
-            var pedestrianPercentage = leftTurnReportService.GetAMPMPeakPedCyclesPercentages(flowRate, approach, opposingPhase, options.Start, options.End, cycleAggregations, pedAggregations);
-            dataCheck.PedCycleOk = pedestrianPercentage.First().Value <= options.PedestrianThreshold && pedestrianPercentage.Last().Value <= options.PedestrianThreshold;
-
-            return dataCheck;
+            return result;
         }
 
 

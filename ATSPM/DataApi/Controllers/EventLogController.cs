@@ -131,7 +131,7 @@ namespace ATSPM.DataApi.Controllers
             Type type;
             //var eventCode = new List<int>();
 
-            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
+            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", LocationIdentifier, eventCode, start, end);
 
             try
             {
