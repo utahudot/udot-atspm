@@ -17,6 +17,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public string LocationIdentifier { get; set; }
 
         [Obsolete("this has bee replaced with StartEndRange")]
+        [JsonIgnore]
         public DateTime BinStartTime { get; set; }
     }
 
