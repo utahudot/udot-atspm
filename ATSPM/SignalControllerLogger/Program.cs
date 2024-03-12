@@ -151,31 +151,30 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                //var repo = scope.ServiceProvider.GetService<IAggregationRepository>();
+                var repo = scope.ServiceProvider.GetService<IAggregationRepository>();
 
-                //var aggs = new Fixture().CreateMany<PhaseCycleAggregation>(100).ToList();
+                var aggs = new Fixture().CreateMany<PhaseCycleAggregation>(100).ToList();
 
-                //var comp = new CompressedAggregations<PhaseCycleAggregation>()
-                //{
-                //    LocationIdentifier = "1001",
-                //    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                //    //DataType = typeof(PhaseCycleAggregation),
-                //    Data = aggs
-                //};
+                aggs.ForEach(f =>
+                {
+                    f.Start = DateTime.Now.AddMinutes(-5);
+                    f.End = DateTime.Now.AddMinutes(5);
+                });
 
-                //await repo.AddAsync(comp);
+                var comp = new CompressedAggregations<PhaseCycleAggregation>()
+                {
+                    LocationIdentifier = "1001",
+                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
+                    //DataType = typeof(PhaseCycleAggregation),
+                    Data = aggs
+                };
 
-                //var t = repo.GetList().ToList();
-                //foreach (var i in t)
-                //{
-                //    Console.WriteLine($"{i.LocationIdentifier} - {i.ArchiveDate} - {i.DataType.Name} - {i.Data.Count()}");
-                //}
+                await repo.AddAsync(comp);
 
-                //var t = repo.GetArchivedAggregations<PhaseCycleAggregation>("1001", DateOnly.Parse("2024-03-11"), DateOnly.Parse("2024-03-11"));
 
-                var repo = scope.ServiceProvider.GetService<IPhaseCycleAggregationRepository>();
+                var repo2 = scope.ServiceProvider.GetService<IPhaseCycleAggregationRepository>();
 
-                var t = repo.GetAggregationsBetweenDates("1001", DateTime.Parse("2024-03-11"), DateTime.Parse("2024-03-11"));
+                var t = repo2.GetAggregationsBetweenDates("1001", DateTime.Now.AddMinutes(-10), DateTime.Now.AddMinutes(10));
 
                 foreach (var i in t)
                 {
