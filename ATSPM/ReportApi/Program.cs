@@ -126,6 +126,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
+    s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
     s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
     s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
@@ -147,8 +148,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<ApproachVolumeService>();
     s.AddScoped<ArrivalOnRedService>();
     s.AddScoped<LeftTurnGapAnalysisService>();
-    s.AddScoped<LeftTurnReportPreCheckService>();
-    s.AddScoped<LeftTurnVolumeAnalysisService>();
+    s.AddScoped<LeftTurnGapReportDataCheckService>();
+    //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();
     s.AddScoped<PreemptServiceService>();
@@ -172,6 +173,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<AnalysisPhaseService>();
     s.AddScoped<PreemptDetailService>();
     s.AddScoped<PhaseService>();
+    s.AddScoped<LeftTurnReportService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

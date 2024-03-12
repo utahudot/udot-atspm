@@ -20,14 +20,14 @@ namespace ATSPM.Data.Models.AggregationModels
         public DateTime BinStartTime { get; set; }
     }
 
-    public partial class ApproachPcdAggregation : AggregationModelBase, ILocationApproachLayer
+    public partial class ApproachPcdAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
 
         ///<inheritdoc/>
         public int ApproachId { get; set; }
-        
+
         public bool IsProtectedPhase { get; set; }
         public int ArrivalsOnGreen { get; set; }
         public int ArrivalsOnRed { get; set; }
@@ -49,7 +49,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public int Speed15th { get; set; }
     }
 
-    public partial class ApproachSplitFailAggregation : AggregationModelBase, ILocationApproachLayer
+    public partial class ApproachSplitFailAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
@@ -66,7 +66,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public int Cycles { get; set; }
     }
 
-    public partial class ApproachYellowRedActivationAggregation : AggregationModelBase, ILocationApproachLayer
+    public partial class ApproachYellowRedActivationAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
         public int PhaseNumber { get; set; }
@@ -108,13 +108,12 @@ namespace ATSPM.Data.Models.AggregationModels
         public override string ToString() => JsonConvert.SerializeObject(this);
     }
 
-    public partial class PhaseCycleAggregation : AggregationModelBase, ILocationApproachLayer
+    public partial class PhaseCycleAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
 
         ///<inheritdoc/>
         public int ApproachId { get; set; }
-
         public int PhaseNumber { get; set; }
         public int RedTime { get; set; }
         public int YellowTime { get; set; }
@@ -150,13 +149,28 @@ namespace ATSPM.Data.Models.AggregationModels
         public double SumGreenTime { get; set; }
     }
 
+    public partial class PhasePedAggregation : AggregationModelBase, ILocationPhaseLayer
+    {
+        ///<inheritdoc/>
+        public int PhaseNumber { get; set; }
+        public int PedCycles { get; set; }
+        public int PedDelay { get; set; }
+        public int MinPedDelay { get; set; }
+        public int MaxPedDelay { get; set; }
+        public int ImputedPedCallsRegistered { get; set; }
+        public int UniquePedDetections { get; set; }
+        public int PedBeginWakCount { get; set; }
+        public int PedCallsRegisteredCount { get; set; }
+        public int PedRequests { get; set; }
+    }
+
     public partial class PhaseSplitMonitorAggregation : AggregationModelBase, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
 
         ///<inheritdoc/>
         public int PhaseNumber { get; set; }
-        
+
         public int EightyFifthPercentileSplit { get; set; }
         public int SkippedCount { get; set; }
     }
