@@ -159,7 +159,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public int MaxPedDelay { get; set; }
         public int ImputedPedCallsRegistered { get; set; }
         public int UniquePedDetections { get; set; }
-        public int PedBeginWakCount { get; set; }
+        public int PedBeginWalkCount { get; set; }
         public int PedCallsRegisteredCount { get; set; }
         public int PedRequests { get; set; }
     }

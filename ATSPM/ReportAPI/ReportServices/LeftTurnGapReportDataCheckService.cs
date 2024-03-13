@@ -14,7 +14,7 @@ namespace ATSPM.ReportApi.ReportServices
     public class LeftTurnGapReportDataCheckService : ReportServiceBase<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>
     {
         private readonly IApproachRepository approachRepository;
-        private readonly ILocationRepository LocationRepository;
+        private readonly ILocationRepository locationRepository;
         private readonly IPhaseCycleAggregationRepository phaseCycleAggregationRepository;
         private readonly IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository;
         private readonly IPhasePedAggregationRepository phasePedAggregationRepository;
@@ -27,7 +27,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public LeftTurnGapReportDataCheckService(
             IApproachRepository approachRepository,
-            ILocationRepository LocationRepository,
+            ILocationRepository locationRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             IPhaseCycleAggregationRepository phaseCycleAggregationRepository,
             IPhaseTerminationAggregationRepository phaseTerminationAggregationRepository,
@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
             ILogger<LeftTurnGapReportDataCheckService> logger)
         {
             this.approachRepository = approachRepository;
-            this.LocationRepository = LocationRepository;
+            this.locationRepository = locationRepository;
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
             this.phaseTerminationAggregationRepository = phaseTerminationAggregationRepository;
             this.phasePedAggregationRepository = phasePedAggregationRepository;
@@ -58,7 +58,8 @@ namespace ATSPM.ReportApi.ReportServices
             var pmStartTime = new TimeSpan(15, 0, 0);
             var pmEndTime = new TimeSpan(19, 0, 0);
 
-            var approach = approachRepository.GetList().Where(a => a.Id == options.ApproachId).FirstOrDefault();
+            var location = locationRepository.GetLatestVersionOfLocation(options.LocationIdentifier, options.Start);
+            var approach = location.Approaches.Where(a => a.Id == options.ApproachId).FirstOrDefault();
             LeftTurnGapDataCheckResult dataCheck = InitializeDataCheckObject(approach, options);
             var detectors = new List<Detector>();
             List<DetectorEventCountAggregation> detectorAggregations;
@@ -106,7 +107,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return dataCheck;
             }
 
-            var primaryPhase = approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : throw new Exception("Invalid Phase Number");
+            var primaryPhase = approach.ProtectedPhaseNumber == 0 && approach.PermissivePhaseNumber.HasValue ? approach.PermissivePhaseNumber.Value : approach.ProtectedPhaseNumber;
             var opposingPhase = leftTurnReportService.GetOpposingPhase(approach);
 
             CheckPeakPeriods(
@@ -141,8 +142,6 @@ namespace ATSPM.ReportApi.ReportServices
 
             return dataCheck;
         }
-
-
 
         private void CheckPeakPeriods(
             LeftTurnGapDataCheckOptions options,
@@ -179,7 +178,6 @@ namespace ATSPM.ReportApi.ReportServices
             }
 
             dataCheck.InsufficientCycleAggregation = CheckDataForPeakPeriods(cycleAggregations.Where(a => a.ApproachId == approach.Id), options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime);
-            dataCheck.InsufficientPhaseTermination = CheckDataForPeakPeriods(terminationAggregations.Where(a => a.PhaseNumber == primaryPhase), options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime);
             dataCheck.InsufficientPhaseTermination = CheckDataForPeakPeriods(terminationAggregations.Where(a => a.PhaseNumber == opposingPhase), options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime);
             dataCheck.InsufficientSplitFailAggregations = CheckDataForPeakPeriods(splitFailAggregations.Where(a => a.PhaseNumber == primaryPhase), options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime);
             dataCheck.InsufficientLeftTurnGapAggregations = CheckDataForPeakPeriods(leftTurnAggregations.Where(a => a.PhaseNumber == opposingPhase), options.Start, options.End, amStartTime, amEndTime, pmStartTime, pmEndTime);
@@ -214,8 +212,6 @@ namespace ATSPM.ReportApi.ReportServices
         {
             try
             {
-
-                var test = phaseCycleAggregationRepository.GetList().ToList();
                 cycleAggregations = phaseCycleAggregationRepository.GetAggregationsBetweenDates(options.LocationIdentifier, options.Start, options.End).ToList();
                 detectorAggregations = detectorEventCountAggregationRepository.GetAggregationsBetweenDates(options.LocationIdentifier, options.Start, options.End).ToList();
                 terminationAggregations = phaseTerminationAggregationRepository.GetAggregationsBetweenDates(options.LocationIdentifier, options.Start, options.End).ToList();
@@ -229,17 +225,33 @@ namespace ATSPM.ReportApi.ReportServices
             }
         }
 
-        private bool CheckDataForPeakPeriods(IEnumerable<AggregationModelBase> aggregations, DateTime start, DateTime end, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime,
-            TimeSpan pmEndTime)
+        private bool CheckDataForPeakPeriods(IEnumerable<AggregationModelBase> aggregations, DateTime start, DateTime end, TimeSpan amStartTime, TimeSpan amEndTime, TimeSpan pmStartTime, TimeSpan pmEndTime)
         {
-            if (!aggregations.Any(d => d.Start >= start.Add(amStartTime) && d.Start <= start.Add(amEndTime)) &&
-                    !aggregations.Any(d => d.Start >= start.Add(pmEndTime) && d.Start <= start.Add(pmEndTime)))
+            // Iterate over each day in the range
+            for (var date = start.Date; date <= end.Date; date = date.AddDays(1))
             {
-                return true;
-            }
-            return false;
-        }
+                // Calculate the start and end DateTime for AM and PM periods for the current day
+                var amStart = date.Add(amStartTime);
+                var amEnd = date.Add(amEndTime);
+                var pmStart = date.Add(pmStartTime);
+                var pmEnd = date.Add(pmEndTime);
 
+                // Check if there are any aggregations in the AM period for the current day
+                bool hasAMAggregations = aggregations.Any(d => d.Start >= amStart && d.Start <= amEnd);
+
+                // Check if there are any aggregations in the PM period for the current day
+                bool hasPMAggregations = aggregations.Any(d => d.Start >= pmStart && d.Start <= pmEnd);
+
+                // If there are aggregations in either the AM or PM period, return false
+                if (hasAMAggregations || hasPMAggregations)
+                {
+                    return false;
+                }
+            }
+
+            // If we went through all days and found no aggregations in the AM or PM periods, return true
+            return true;
+        }
 
     }
 }

@@ -26,8 +26,8 @@
 //            List<PhasePedAggregation> phasePedAggregations,
 //            int opposingPhase,
 //            List<PhaseCycleAggregation> phaseCycleAggregations
-//            )
-//        {
+//            )a
+//        {a
 //            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
 //            var cycleAverage = GetCycleAverage(
 //                start,

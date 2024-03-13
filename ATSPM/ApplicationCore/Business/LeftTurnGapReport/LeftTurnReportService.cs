@@ -165,7 +165,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             {
                 throw new NotSupportedException("No Detector Activation Aggregations found");
             }
-            List<TimeSpan> distinctTimeSpans = volumeAggregations.Select(v => v.BinStartTime.TimeOfDay).Distinct().OrderBy(v => v).ToList();
+            List<TimeSpan> distinctTimeSpans = volumeAggregations.Select(v => v.Start.TimeOfDay).Distinct().OrderBy(v => v).ToList();
 
             Dictionary<TimeSpan, int> averageByBin = GetAveragesForBinsByTimeSpan(volumeAggregations, distinctTimeSpans);
 
