@@ -3,9 +3,12 @@ using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
+using ATSPM.Data;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
@@ -16,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Index.HPRtree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -134,7 +138,7 @@ namespace ATSPM.LocationControllerLogger
                         o.PingControllerToVerify = false;
                         o.ConnectionTimeout = 3000;
                         o.ReadTimeout = 3000;
-                        o.DeleteFile = true;
+                        o.DeleteFile = false;
                     });
 
                     
@@ -151,36 +155,39 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetService<IAggregationRepository>();
+                var repo = scope.ServiceProvider.GetService<IRouteRepository>();
+                var context = scope.ServiceProvider.GetService<ConfigContext>();
 
-                var aggs = new Fixture().CreateMany<PhaseCycleAggregation>(100).ToList();
+                var route = repo.Lookup(77);
 
-                aggs.ForEach(f =>
+                //var test = context.Entry(route).GetDatabaseValues();
+
+                //foreach (var c in context.Entry(route).Collections)
+                //{
+                //    c.Load();
+                //}
+
+                var boo = context.Entry(route).Navigations;
+
+                foreach (var b in boo)
                 {
-                    f.Start = DateTime.Now.AddMinutes(-5);
-                    f.End = DateTime.Now.AddMinutes(5);
-                });
-
-                var comp = new CompressedAggregations<PhaseCycleAggregation>()
-                {
-                    LocationIdentifier = "1001",
-                    ArchiveDate = DateOnly.FromDateTime(DateTime.Now),
-                    //DataType = typeof(PhaseCycleAggregation),
-                    Data = aggs
-                };
-
-                await repo.AddAsync(comp);
-
-
-                var repo2 = scope.ServiceProvider.GetService<IPhaseCycleAggregationRepository>();
-
-                var t = repo2.GetAggregationsBetweenDates("1001", DateTime.Now.AddMinutes(-10), DateTime.Now.AddMinutes(10));
-
-                foreach (var i in t)
-                {
-                    Console.WriteLine($"{i}");
+                    await b.LoadAsync();
+                    Console.WriteLine($"{b.Metadata.Name} - {b.IsLoaded}");
                 }
+
+                Console.WriteLine($"{route}");
             }
+
+
+
+
+
+
+
+
+
+
+
 
             Console.ReadLine();
         }

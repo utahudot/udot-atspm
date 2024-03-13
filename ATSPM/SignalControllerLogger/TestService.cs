@@ -104,9 +104,9 @@ namespace ATSPM.LocationControllerLogger
                     .Where(w => w.Ipaddress.IsValidIPAddress())
                     .Where(w => w.DeviceConfiguration.Protocol == TransportProtocols.Sftp)
                     //.Where(w => w.DeviceConfiguration.Protocol != TransportProtocols.Http)
-                    .OrderBy(o => o.Ipaddress.ToString());
+                    .OrderBy(o => o.Ipaddress.ToString())
                     //.Skip(2)
-                    //.Take(1);
+                    .Take(8);
 
                 //var devices = sftpDevices.Where(w => w.Ipaddress.IsValidIPAddress(true));
                 var devices = sftpDevices;
@@ -157,7 +157,7 @@ namespace ATSPM.LocationControllerLogger
 
                 try
                 {
-                    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"));
+                    await actionResult.Completion.ContinueWith(t => Console.WriteLine($"!!!Task actionResult is complete!!! {t.Status}"), cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -218,8 +218,6 @@ namespace ATSPM.LocationControllerLogger
                 using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     var decoder = scope.ServiceProvider.GetServices<ILocationControllerDecoder<T>>().First(c => c.CanExecute(input));
-
-                    //Console.WriteLine($"device: {input.DeviceConfiguration.Protocol} - downloader: {downloader.GetType().Name}");
 
                     return decoder.Execute(input, cancelToken);
                 }
