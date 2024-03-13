@@ -41,30 +41,40 @@ namespace ATSPM.Domain.Workflows
         /// <inheritdoc/>
         public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            if (parameter != null)
+            //if (parameter != null)
+            //{
+            //    if (!cancelToken.IsCancellationRequested)
+            //    {
+
+
+            //        List<T2> result = new();
+
+            //        try
+            //        {
+            //            await foreach (var p in Process(parameter, cancelToken))
+            //            {
+            //                result.Add(p);
+            //            }
+
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            //Console.WriteLine($"{parameter}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
+            //        }
+
+            //        foreach (var r in result)
+            //        {
+            //            Console.WriteLine($"returning: {r}");
+
+
+            //            yield return r;
+            //        }
+            //    }
+            //}
+
+            await foreach (var p in Process(parameter, cancelToken))
             {
-                if (!cancelToken.IsCancellationRequested)
-                {
-                    List<T2> result = new();
-
-                    try
-                    {
-                        await foreach (var p in Process(parameter, cancelToken))
-                        {
-                            result.Add(p);
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        //Console.WriteLine($"{parameter}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
-                    }
-
-                    foreach (var r in result)
-                    {
-                        yield return r;
-                    }
-                }
+                yield return p;
             }
         }
 
