@@ -124,6 +124,7 @@ builder.Host.ConfigureServices((h, s) =>
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
+    s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, GapDurationService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
@@ -149,9 +150,11 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<ApproachVolumeService>();
     s.AddScoped<ArrivalOnRedService>();
     s.AddScoped<LeftTurnGapAnalysisService>();
+    s.AddScoped<LeftTurnGapDurationService>();
     s.AddScoped<LeftTurnGapReportDataCheckService>();
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
+    s.AddScoped<GapDurationService>();
     s.AddScoped<GreenTimeUtilizationService>();
     s.AddScoped<PeakHourService>();
     s.AddScoped<PreemptServiceService>();

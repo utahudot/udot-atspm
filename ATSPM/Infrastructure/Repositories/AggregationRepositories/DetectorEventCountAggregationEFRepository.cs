@@ -13,6 +13,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
 
         #region IDetectorEventCountAggregationRepository
 
+
         #endregion
     }
 }

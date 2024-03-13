@@ -29,15 +29,14 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
             var result = table
                 .FromSpecification(new AggregationDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
                 .AsNoTracking()
-                .AsEnumerable();
-            var test = result
-            .SelectMany(m => m.Data)
-            .Where(c => c.Start >= startTime && c.End <= endTime)
-            //.FromSpecification(new AggregationDateTimeRangeSpecification(locationId, startTime, endTime))
-            .Cast<T>()
-            .ToList();
+                .AsEnumerable()
+                .SelectMany(m => m.Data)
+                .Where(c => c.Start >= startTime && c.End <= endTime)
+                .FromSpecification(new AggregationDateTimeRangeSpecification(locationId, startTime, endTime))
+                .Cast<T>()
+                .ToList();
 
-            return test;
+            return result;
         }
 
         #endregion
