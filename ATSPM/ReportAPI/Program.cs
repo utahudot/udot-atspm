@@ -124,10 +124,13 @@ builder.Host.ConfigureServices((h, s) =>
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
-    s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, GapDurationService>();
+    s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, LeftTurnGapDurationService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
+    s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
+    s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
     s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, PeakHourService>();
     s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
@@ -150,11 +153,13 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<ApproachVolumeService>();
     s.AddScoped<ArrivalOnRedService>();
     s.AddScoped<LeftTurnGapAnalysisService>();
-    s.AddScoped<LeftTurnGapDurationService>();
     s.AddScoped<LeftTurnGapReportDataCheckService>();
+    s.AddScoped<LeftTurnSplitFailService>();
+    s.AddScoped<LeftTurnPedActuationService>();
+    s.AddScoped<LeftTurnGapDurationService>();
+    s.AddScoped<LeftTurnVolumeService>();
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
-    s.AddScoped<GapDurationService>();
     s.AddScoped<GreenTimeUtilizationService>();
     s.AddScoped<PeakHourService>();
     s.AddScoped<PreemptServiceService>();
@@ -171,14 +176,18 @@ builder.Host.ConfigureServices((h, s) =>
 
     //Common Services
     s.AddScoped<PlanService>();
+    s.AddScoped<PedActuationService>();
     s.AddScoped<LocationPhaseService>();
     s.AddScoped<CycleService>();
     s.AddScoped<PedPhaseService>();
+    s.AddScoped<GapDurationService>();
     s.AddScoped<AnalysisPhaseCollectionService>();
     s.AddScoped<AnalysisPhaseService>();
     s.AddScoped<PreemptDetailService>();
     s.AddScoped<PhaseService>();
+    s.AddScoped<SplitFailService>();
     s.AddScoped<LeftTurnReportService>();
+    s.AddScoped<VolumeService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
