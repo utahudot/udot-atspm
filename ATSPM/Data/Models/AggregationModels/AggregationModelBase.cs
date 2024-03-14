@@ -16,8 +16,8 @@ namespace ATSPM.Data.Models.AggregationModels
         [JsonIgnore]
         public string LocationIdentifier { get; set; }
 
-        [Obsolete("this has bee replaced with StartEndRange")]
-        public DateTime BinStartTime { get; set; }
+        //[Obsolete("this has bee replaced with StartEndRange")]
+        //public DateTime BinStartTime { get; set; }
     }
 
     public partial class ApproachPcdAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer

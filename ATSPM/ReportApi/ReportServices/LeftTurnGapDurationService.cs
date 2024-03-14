@@ -9,23 +9,23 @@ namespace ATSPM.ReportApi.ReportServices
     /// <summary>
     /// Left turn gap analysis report service
     /// </summary>
-    public class GapDurationService : ReportServiceBase<GapDurationOptions, GapDurationResult>
+    public class LeftTurnGapDurationService : ReportServiceBase<GapDurationOptions, GapDurationResult>
     {
         private readonly ILocationRepository locationRepository;
         private readonly IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository;
         private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
-        private readonly LeftTurnGapDurationService leftTurnGapDurationService;
+        private readonly GapDurationService leftTurnGapDurationService;
         private readonly LeftTurnReportService leftTurnReportService;
-        private readonly ILogger<GapDurationService> logger;
+        private readonly ILogger<LeftTurnGapDurationService> logger;
 
         /// <inheritdoc/>
-        public GapDurationService(
+        public LeftTurnGapDurationService(
             ILocationRepository locationRepository,
             IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
-            LeftTurnGapDurationService leftTurnGapDurationService,
+            GapDurationService leftTurnGapDurationService,
             LeftTurnReportService leftTurnReportService,
-            ILogger<GapDurationService> logger)
+            ILogger<LeftTurnGapDurationService> logger)
         {
             this.locationRepository = locationRepository;
             this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;

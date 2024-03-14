@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Interfaces;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
@@ -12,6 +13,15 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
     {
         public LeftTurnReportService()
         {
+        }
+
+        public List<Detector> GetOpposingDetectors(int opposingPhase, Location location, List<MovementTypes> movementTypes)
+        {
+            return location.Approaches
+                            .Where(a => a.ProtectedPhaseNumber == opposingPhase)
+                            .SelectMany(a => a.Detectors)
+                            .Where(d => movementTypes.Contains(d.MovementType) && d.DetectionTypes.Select(d => d.Id).Contains(Data.Enums.DetectionTypes.LLC))
+                            .ToList();
         }
 
         public Dictionary<TimeSpan, double> GetAMPMPeakGapOut(
@@ -332,7 +342,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             var detectorAggregations = new List<DetectorEventCountAggregation>();
             for (var tempDate = startDate.Date; tempDate <= endDate; tempDate = tempDate.AddDays(1))
             {
-                if (daysOfWeek.Contains((int)startDate.DayOfWeek))
+                if (daysOfWeek.Contains((int)tempDate.DayOfWeek))
                     foreach (var detector in detectors)
                     {
                         detectorAggregations.AddRange(detectorEventCountAggregations.Where(d => d.DetectorPrimaryId == detector.Id && d.Start >= tempDate.Add(amStartTime) && d.Start <= tempDate.Add(amEndTime)));
@@ -472,7 +482,17 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
 
         }
 
-
+        public List<Detector> GetLeftTurnDetectors(Approach approach)
+        {
+            if (approach.Detectors.Any(d => d.MovementType == Data.Enums.MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(Data.Enums.DetectionTypes.LLC)))
+            {
+                return approach.Detectors.Where(d => d.MovementType == Data.Enums.MovementTypes.L && d.DetectionTypes.Select(dt => dt.Id).Contains(Data.Enums.DetectionTypes.LLC)).ToList();
+            }
+            else
+            {
+                return new List<Detector>();
+            }
+        }
     }
 
 }

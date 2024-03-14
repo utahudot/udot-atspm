@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
-    public class LeftTurnGapDurationService
+    public class GapDurationService
     {
 
-        public LeftTurnGapDurationService()
+        public GapDurationService()
         {
         }
 

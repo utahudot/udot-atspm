@@ -12,9 +12,9 @@ namespace ATSPM.ReportApi.Controllers
     [ApiVersion(1.0)]
     [ApiController]
     [Route("v{version:apiVersion}/[controller]")]
-    public class PeakHoursController : ReportControllerBase<PeakHourOptions, PeakHourResult>
+    public class LeftTurnPedActuationController : ReportControllerBase<PedActuationOptions, PedActuationResult>
     {
         /// <inheritdoc/>
-        public PeakHoursController(IReportService<PeakHourOptions, PeakHourResult> reportService) : base(reportService) { }
+        public LeftTurnPedActuationController(IReportService<PedActuationOptions, PedActuationResult> reportService) : base(reportService) { }
     }
 }

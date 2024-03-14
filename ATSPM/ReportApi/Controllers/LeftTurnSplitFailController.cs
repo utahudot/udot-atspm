@@ -12,9 +12,9 @@ namespace ATSPM.ReportApi.Controllers
     [ApiVersion(1.0)]
     [ApiController]
     [Route("v{version:apiVersion}/[controller]")]
-    public class GapDurationController : ReportControllerBase<GapDurationOptions, GapDurationResult>
+    public class LeftTurnSplitFailController : ReportControllerBase<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>
     {
         /// <inheritdoc/>
-        public GapDurationController(IReportService<GapDurationOptions, GapDurationResult> reportService) : base(reportService) { }
+        public LeftTurnSplitFailController(IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult> reportService) : base(reportService) { }
     }
 }
