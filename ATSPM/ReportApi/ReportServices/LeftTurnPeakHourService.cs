@@ -8,19 +8,19 @@ namespace ATSPM.ReportApi.ReportServices
     /// <summary>
     /// Left turn gap analysis report service
     /// </summary>
-    public class PeakHourService : ReportServiceBase<PeakHourOptions, PeakHourResult>
+    public class LeftTurnPeakHourService : ReportServiceBase<PeakHourOptions, PeakHourResult>
     {
         private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
         private readonly ILocationRepository locationRepository;
         private readonly LeftTurnReportService leftTurnReportService;
-        private readonly ILogger<PeakHourService> logger;
+        private readonly ILogger<LeftTurnPeakHourService> logger;
 
         /// <inheritdoc/>
-        public PeakHourService(
+        public LeftTurnPeakHourService(
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             ILocationRepository locationRepository,
             LeftTurnReportService leftTurnReportPreCheckService,
-            ILogger<PeakHourService> logger)
+            ILogger<LeftTurnPeakHourService> logger)
         {
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             this.locationRepository = locationRepository;

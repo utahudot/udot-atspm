@@ -28,7 +28,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             return new LeftTurnSplitFailResult
             {
                 CyclesWithSplitFails = splitFails,
-                SplitFailPercent = Convert.ToDouble(splitFails) / Convert.ToDouble(cycles),
+                SplitFailPercent = (Convert.ToDouble(splitFails) / Convert.ToDouble(cycles)) * 100,
                 PercentCyclesWithSplitFailList = percentCyclesWithSplitFail,
                 Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType,
             };
@@ -55,7 +55,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                         var tempCycles = splitFails.Sum(s => s.Cycles);
                         double tempPercentFails = 0;
                         if (tempCycles != 0)
-                            tempPercentFails = tempSplitFails / tempCycles;
+                            tempPercentFails = (tempSplitFails / tempCycles) * 100;
                         percentCyclesWithSplitFail.Add(tempstart, tempPercentFails);
                     }
                 }

@@ -132,7 +132,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
     s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
-    s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, PeakHourService>();
+    s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, LeftTurnPeakHourService>();
     s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
     s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
     s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
@@ -161,7 +161,7 @@ builder.Host.ConfigureServices((h, s) =>
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();
-    s.AddScoped<PeakHourService>();
+    s.AddScoped<LeftTurnPeakHourService>();
     s.AddScoped<PreemptServiceService>();
     s.AddScoped<PreemptServiceRequestService>();
     s.AddScoped<PurdueCoordinationDiagramService>();

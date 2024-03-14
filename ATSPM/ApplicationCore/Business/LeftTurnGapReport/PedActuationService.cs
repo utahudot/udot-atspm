@@ -43,7 +43,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 if (avg.Value != 0)
                 {
                     var pedAvg = pedCycleAverage.PedCycleAverageList.FirstOrDefault(p => p.Key == avg.Key);
-                    cycleList.Add(avg.Key, pedAvg.Value / avg.Value);
+                    cycleList.Add(avg.Key, (pedAvg.Value / avg.Value) * 100);
                 }
             }
             var result = new PedActuationResult();
@@ -54,7 +54,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             }
             else
             {
-                result.CyclesWithPedCallsPercent = pedCycleAverage.PedCycleAverage / cycleAverage.CycleAverage;
+                result.CyclesWithPedCallsPercent = (pedCycleAverage.PedCycleAverage / cycleAverage.CycleAverage) * 100;
                 result.CyclesWithPedCallsNum = (int)pedCycleAverage.PedCycleAverage;
             }
             result.PercentCyclesWithPedsList = cycleList;

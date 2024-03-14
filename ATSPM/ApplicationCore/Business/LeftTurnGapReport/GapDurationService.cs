@@ -39,7 +39,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             };
             if (gapDurationResult.Capacity == 0)
                 throw new ArithmeticException("Gap Count cannot be zero");
-            gapDurationResult.GapDurationPercent = gapDurationResult.Demand / gapDurationResult.Capacity;
+            gapDurationResult.GapDurationPercent = (gapDurationResult.Demand / gapDurationResult.Capacity) * 100;
             return gapDurationResult;
         }
 
