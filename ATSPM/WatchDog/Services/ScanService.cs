@@ -1,9 +1,8 @@
 ﻿using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Mail;
 using WatchDog.Models;
 
 namespace WatchDog.Services
@@ -56,7 +55,8 @@ namespace WatchDog.Services
         }
         public async Task StartScan(
             LoggingOptions loggingOptions,
-            EmailOptions emailOptions)
+            EmailOptions emailOptions,
+            CancellationToken cancellationToken)
         {
             //need a version of this that gets the Location version for date of the scan
             var locations = LocationRepository.GetLatestVersionOfAllLocations(emailOptions.ScanDate).ToList();
@@ -67,31 +67,25 @@ namespace WatchDog.Services
             }
             else
             {
-                errors = await logService.GetWatchDogIssues(loggingOptions, locations);
+                errors = await logService.GetWatchDogIssues(loggingOptions, locations, cancellationToken);
                 SaveErrorLogs(errors);
             }
-            if (emailOptions != null)
+
+            var regions = regionsRepository.GetList().ToList();
+            var userRegions = userRegionRepository.GetList();
+
+            var areas = areaRepository.GetList().ToList();
+            var userAreas = userAreaRepository.GetList().ToList();
+
+            var jurisdictions = jurisdictionRepository.GetList().ToList();
+            var userJurisdictions = userJurisdictionRepository.GetList();
+
+            var users = await GetUsersWithWatchDogClaimAsync();
+
+
+            if (!emailOptions.WeekdayOnly || (emailOptions.WeekdayOnly && emailOptions.ScanDate.DayOfWeek != DayOfWeek.Saturday &&
+               emailOptions.ScanDate.DayOfWeek != DayOfWeek.Sunday))
             {
-                SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
-                if (emailOptions.Port.HasValue)
-                    smtp.Port = emailOptions.Port.Value;
-                if (emailOptions.Password != null)
-                    smtp.Credentials = new NetworkCredential(emailOptions.UserName, emailOptions.Password);
-                if (emailOptions.EnableSsl.HasValue)
-                    smtp.EnableSsl = emailOptions.EnableSsl.Value;
-
-                var regions = regionsRepository.GetList().ToList();
-                var userRegions = userRegionRepository.GetList();
-
-                var areas = areaRepository.GetList().ToList();
-                var userAreas = userAreaRepository.GetList().ToList();
-
-                var jurisdictions = jurisdictionRepository.GetList().ToList();
-                var userJurisdictions = userJurisdictionRepository.GetList();
-
-                var users = await GetUsersWithWatchDogClaimAsync();
-
-
                 var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
                 if (!emailOptions.EmailAllErrors)
                 {
@@ -111,7 +105,6 @@ namespace WatchDog.Services
                     emailOptions,
                     errors,
                     locations,
-                    smtp,
                     users,
                     jurisdictions,
                     userJurisdictions.ToList(),
@@ -122,6 +115,7 @@ namespace WatchDog.Services
                     recordsFromTheDayBefore);
             }
         }
+
 
         public void SaveErrorLogs(List<WatchDogLogEvent> errors)
         {

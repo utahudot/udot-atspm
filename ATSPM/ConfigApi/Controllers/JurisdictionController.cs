@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -12,7 +12,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// Jurisdiction Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class JurisdictionController : AtspmConfigControllerBase<Jurisdiction, int>
+    public class JurisdictionController : AtspmGeneralConfigBase<Jurisdiction, int>
     {
         private readonly IJurisdictionRepository _repository;
 
@@ -29,7 +29,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]

@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -12,7 +14,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// Area Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class AreaController : AtspmConfigControllerBase<Area, int>
+    public class AreaController : AtspmGeneralConfigBase<Area, int>
     {
         private readonly IAreaRepository _repository;
 
@@ -29,7 +31,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]

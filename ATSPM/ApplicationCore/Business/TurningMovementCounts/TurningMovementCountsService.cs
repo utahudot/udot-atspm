@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             MovementTypes movementType,
             DirectionTypes directionType,
             TurningMovementCountsOptions options,
-            List<ControllerEventLog> detectorEvents,
+            List<IndianaEvent> detectorEvents,
             List<Plan> plans,
             string locationIdentifier,
             string LocationDescription)
@@ -109,13 +110,13 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             List<Detector> tmcDetectors,
             DateTime start,
             DateTime end,
-            List<ControllerEventLog> detectorEvents,
+            List<IndianaEvent> detectorEvents,
             int binSize)
         {
             var laneVolumes = new Dictionary<Detector, VolumeCollection>();
             foreach (var detector in tmcDetectors)
             {
-                laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == 82 && e.EventParam == detector.DetectorChannel).ToList(), binSize));
+                laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == DataLoggerEnum.DetectorOn && e.EventParam == detector.DetectorChannel).ToList(), binSize));
             }
             return laneVolumes;
         }

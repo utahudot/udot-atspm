@@ -4,6 +4,7 @@ using ATSPM.Application.Analysis.Plans;
 using ATSPM.Application.Analysis.WorkflowFilters;
 using ATSPM.Application.Analysis.WorkflowSteps;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Domain.Common;
 using ATSPM.Domain.Workflows;
 using System;
@@ -21,7 +22,7 @@ namespace ATSPM.Application.Analysis.Workflows
         public CancellationToken CancellationToken { get; set; }
     }
     
-    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : ATSPMAggregationBase
+    public abstract class AggregationWorkflowBase<T> : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<T>> where T : AggregationModelBase
     {
         protected AggregationWorkflowOptions workflowOptions;
         protected ExecutionDataflowBlockOptions executionBlockOptions;
@@ -131,7 +132,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class LocationPlansAggregationWorkflow : AggregationWorkflowBase<LocationPlanAggregation>
+    public class LocationPlansAggregationWorkflow : AggregationWorkflowBase<SignalPlanAggregation>
     {
         /// <inheritdoc/>
         public LocationPlansAggregationWorkflow(AggregationWorkflowOptions options = default) : base(options)
@@ -252,7 +253,7 @@ namespace ATSPM.Application.Analysis.Workflows
         }
     }
 
-    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<ATSPMAggregationBase>>
+    public class AggregateControllerDataWorkflow : WorkflowBase<Tuple<Location, IEnumerable<ControllerEventLog>>, IEnumerable<AggregationModelBase>>
     {
         //aggregate detector events
         //public FilteredDetectorData FilteredDetectorData { get; private set; }

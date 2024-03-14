@@ -1,9 +1,11 @@
-﻿using ATSPM.Application.Repositories;
-using ATSPM.Data.Models;
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.YellowRedActivations;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -14,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     public class YellowRedActivationsReportService : ReportServiceBase<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>
     {
         private readonly YellowRedActivationsService yellowRedActivationsService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public YellowRedActivationsReportService(
             YellowRedActivationsService yellowRedActivationsService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
@@ -42,7 +44,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -81,8 +83,8 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<YellowRedActivationsResult> GetChartDataForApproach(
             YellowRedActivationsOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
@@ -111,11 +113,22 @@ namespace ATSPM.ReportApi.ReportServices
             return viewModel;
         }
 
-        private List<int> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
+        private List<DataLoggerEnum> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
         {
             return useOverlap
-                ? new List<int> { 62, 63, 64 }
-                : new List<int> { 1, 8, 9, 11 };
+                ? new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
+                    DataLoggerEnum.OverlapBeginYellow,
+                    DataLoggerEnum.OverlapBeginRedClearance
+                }
+                : new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.PhaseBeginGreen,
+                    DataLoggerEnum.PhaseBeginYellowChange,
+                    DataLoggerEnum.PhaseEndYellowChange,
+                    DataLoggerEnum.PhaseEndRedClearance
+                };
         }
     }
 }

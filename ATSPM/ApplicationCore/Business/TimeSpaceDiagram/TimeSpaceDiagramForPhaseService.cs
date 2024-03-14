@@ -1,7 +1,8 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
-using ATSPM.Application.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Data.Enums;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,62 +20,59 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             _cycleService = cycleService;
         }
 
-        public TimeSpaceDiagramResult GetChartData(
+        public TimeSpaceDiagramResultForPhase GetChartDataForPhase(
            TimeSpaceDiagramOptions options,
            PhaseDetail phaseDetail,
-           List<ControllerEventLog> controllerEventLogs,
+           List<IndianaEvent> controllerEventLogs,
            double distanceToNextLocation,
            double distanceToPreviousLocation,
            bool isFirstElement,
            bool isLastElement
            )
         {
-            var countEvents = new List<TimeSpaceDetectorEventDto>();
-            var stopBarPresenceEvents = new List<TimeSpaceDetectorEventDto>();
-            var advanceCountEvents = new List<TimeSpaceDetectorEventDto>();
             var greenTimeEventsResult = new List<TimeSpaceEventBase>();
             var countEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var stopBarPresenceEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var advanceCountEventsTimeSpaceResult = new List<TimeSpaceEventBase>();
             var cycleAllEvents = GetCycleEvents(phaseDetail, controllerEventLogs, options, out List<GreenToGreenCycle> resultCycles);
-            var speed = options.SpeedLimit ?? phaseDetail.Approach.Mph;
+            var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
 
-            if (!speed.HasValue)
+            if (speedLimit == 0)
             {
                 throw new ArgumentNullException($"No speed available for {phaseDetail.PhaseNumber}");
             }
 
             if (isFirstElement)
             {
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+                greenTimeEventsResult = TimeSpaceService.GetGreenTimeEvents(cycleAllEvents, speedLimit, distanceToNextLocation);
 
-                countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
+                var countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
-                stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
+                var stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
                 stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, resultCycles);
             }
             else if (isLastElement)
             {
-                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
+                var advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
                 advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
             else
             {
-                greenTimeEventsResult = GetGreenTimeEvents(phaseDetail, cycleAllEvents, options, distanceToNextLocation, phaseDetail.Approach.Mph ?? 0);
+                greenTimeEventsResult = TimeSpaceService.GetGreenTimeEvents(cycleAllEvents, speedLimit, distanceToNextLocation);
 
-                countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
+                var countEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
                 countEventsTimeSpaceResult = CalculateTimeSpaceResult(countEvents, options, distanceToNextLocation);
 
-                stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
+                var stopBarPresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
                 stopBarPresenceEventsTimeSpaceResult = CalculateTimeSpaceResultForStopBar(stopBarPresenceEvents, options, distanceToNextLocation, resultCycles);
 
-                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
+                var advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
                 advanceCountEventsTimeSpaceResult = CalculateTimeSpaceResultForAdvanceCount(advanceCountEvents, options, distanceToPreviousLocation);
             }
 
-            var phaseNumberSort = GetPhaseSort(phaseDetail);
-            var timeSpaceDiagramResult = new TimeSpaceDiagramResult(
+            var phaseNumberSort = TimeSpaceService.GetPhaseSort(phaseDetail);
+            var timeSpaceDiagramResult = new TimeSpaceDiagramResultForPhase(
                 phaseDetail.Approach.Id,
                 phaseDetail.Approach.Location.LocationIdentifier,
                 options.Start,
@@ -82,7 +80,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 phaseDetail.PhaseNumber,
                 phaseNumberSort,
                 distanceToNextLocation,
-                (int)speed,
+                speedLimit,
                 cycleAllEvents,
                 countEventsTimeSpaceResult,
                 advanceCountEventsTimeSpaceResult,
@@ -125,7 +123,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 //If overlaps with yellow event, we want the result off to use yellow time
                 GreenToGreenCycle overlappingYellowEvent = cycles.Find(e => currentDetectorOn <= e.YellowEvent && currentDetectorOff > e.YellowEvent);
 
-                GetArrivalTime(
+                TimeSpaceService.GetArrivalTime(
                     distanceToNextLocation,
                     speedLimit,
                     currentDetectorOn,
@@ -139,7 +137,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
                 results.Add(resultOn);
 
-                GetArrivalTime(
+                TimeSpaceService.GetArrivalTime(
                     distanceToNextLocation,
                     speedLimit,
                     overlappingYellowEvent == null ? currentDetectorOff : overlappingYellowEvent.YellowEvent,
@@ -170,7 +168,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             {
                 double speed = options.SpeedLimit ?? speedLimit;
                 DateTime start = gEvent.Start;
-                GetArrivalTime(distanceToNextLocation, speedLimit, start, out _, out DateTime arrivalTime);
+                TimeSpaceService.GetArrivalTime(distanceToNextLocation, speedLimit, start, out _, out DateTime arrivalTime);
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     start,
                     arrivalTime,
@@ -200,7 +198,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 }
                 double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
                 DateTime currentDetectorOn = detectorEvent.DetectorOn.Value;
-                GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOn.Value, out _, out DateTime arrivalTimeOn);
+                TimeSpaceService.GetArrivalTime(distanceToNextLocation, speedLimit, detectorEvent.DetectorOn.Value, out _, out DateTime arrivalTimeOn);
 
                 TimeSpaceEventBase resultOn = new TimeSpaceEventBase(
                     currentDetectorOn,
@@ -240,7 +238,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                 }
                 double speedLimit = options.SpeedLimit ?? detectorEvent.SpeedLimit;
 
-                GetArrivalTime(detectorEvent.DistanceToStopBar, speedLimit, detectorEvent.DetectorOn.Value, out double speedInFeetPerSecond, out DateTime arrivalTime);
+                TimeSpaceService.GetArrivalTime(detectorEvent.DistanceToStopBar, speedLimit, detectorEvent.DetectorOn.Value, out double speedInFeetPerSecond, out DateTime arrivalTime);
 
                 results.Add(new TimeSpaceEventBase(arrivalTime.AddSeconds(-distanceToNextLocation / speedInFeetPerSecond), arrivalTime, null));
             }
@@ -258,12 +256,24 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             arrivalTime = currentDetectorOn.AddSeconds(timeToTravel);
         }
 
-        public List<int> GetCycleCodes(bool getOverlapCodes)
+        public List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<int> { 1, 8, 9 };
+            var phaseEventCodesForCycles = new List<DataLoggerEnum>
+            {
+                DataLoggerEnum.PhaseBeginGreen,
+                DataLoggerEnum.PhaseBeginYellowChange,
+                DataLoggerEnum.PhaseEndYellowChange
+            };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<int> { 61, 62, 63, 64, 65 };
+                phaseEventCodesForCycles = new List<DataLoggerEnum>
+                {
+                    DataLoggerEnum.OverlapBeginGreen,
+                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
+                    DataLoggerEnum.OverlapBeginYellow,
+                    DataLoggerEnum.OverlapBeginRedClearance,
+                    DataLoggerEnum.OverlapOffInactivewithredindication
+                };
             }
 
             return phaseEventCodesForCycles;
@@ -271,12 +281,12 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
         public List<CycleEventsDto> GetCycleEvents(
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             TimeSpaceDiagramOptions options,
             out List<GreenToGreenCycle> cycles)
         {
 
-            List<int> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            List<DataLoggerEnum> cycleEventCodes = TimeSpaceService.GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
@@ -284,7 +294,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             if (controllerEventLogs.Any())
             {
                 var distinctTimeStamps = new HashSet<string>();
-                var tempEvents = controllerEventLogs.Aggregate(new List<ControllerEventLog>(), (result, c) =>
+                var tempEvents = controllerEventLogs.Aggregate(new List<IndianaEvent>(), (result, c) =>
                 {
                     if (cycleEventCodes.Contains(c.EventCode) && c.EventParam == phaseDetail.PhaseNumber)
                     {
@@ -325,14 +335,14 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         public List<TimeSpaceDetectorEventDto> GetDetectionEvents(
             Approach approach,
             TimeSpaceDiagramOptions options,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             DetectionTypes detectionType
             )
         {
             var DetEvents = new List<TimeSpaceDetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType));
             //  82 is on, 81 is off
-            var detectorActivationCodes = new List<int> { 81, 82 };
+            var detectorActivationCodes = new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn };
             foreach (var detector in localSortedDetectors)
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
@@ -347,21 +357,21 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                         var detectorEvents = new List<TimeSpaceDetectorEventDto>();
                         for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i == 0 && filteredEvents[i].EventCode == 81)
+                            if (i == 0 && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                    filteredEvents[i].Timestamp,
                                    approach.Mph ?? 0,
                                    detector.DistanceFromStopBar ?? 0));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode != 81)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode != DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i].Timestamp,
                                     approach.Mph ?? 0,
                                     detector.DistanceFromStopBar ?? 0));
                             }
-                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
+                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i + 1].Timestamp,

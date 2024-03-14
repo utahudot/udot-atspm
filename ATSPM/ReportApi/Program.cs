@@ -1,4 +1,3 @@
-
 using Asp.Versioning;
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.AppoachDelay;
@@ -109,7 +108,9 @@ builder.Host.ConfigureServices((h, s) =>
     });
 
     s.AddAtspmDbContext(h);
-    s.AddAtspmEFRepositories();
+    s.AddAtspmEFEventLogRepositories();
+    s.AddAtspmEFConfigRepositories();
+    s.AddAtspmEFAggregationRepositories();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
@@ -120,7 +121,7 @@ builder.Host.ConfigureServices((h, s) =>
 
     //report services
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
@@ -133,7 +134,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramAverageOptions, IEnumerable<TimeSpaceDiagramAverageResult>>, TimeSpaceDiagramAverageReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
@@ -156,6 +158,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<SplitFailPhaseService>();
     s.AddScoped<SplitMonitorService>();
     s.AddScoped<TimeSpaceDiagramForPhaseService>();
+    s.AddScoped<TimeSpaceAverageService>();
     s.AddScoped<TimingAndActuationsForPhaseService>();
     s.AddScoped<TurningMovementCountsService>();
     s.AddScoped<WaitTimeService>();

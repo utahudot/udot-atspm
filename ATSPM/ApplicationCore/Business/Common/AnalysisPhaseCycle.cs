@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATSPM.Data.Enums;
+using System;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -33,7 +34,7 @@ namespace ATSPM.Application.Business.Common
             PhaseNumber = phasenumber;
             StartTime = starttime;
             HasPed = false;
-            TerminationEvent = 0;
+            TerminationEvent = null;
         }
 
         public int PhaseNumber { get; }
@@ -48,7 +49,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime PedEndTime { get; private set; }
 
-        public int TerminationEvent { get; private set; }
+        public DataLoggerEnum? TerminationEvent { get; private set; }
 
         public TimeSpan Duration { get; private set; }
 
@@ -67,7 +68,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime YellowEvent { get; set; }
 
-        public void SetTerminationEvent(int terminatonCode)
+        public void SetTerminationEvent(DataLoggerEnum terminatonCode)
         {
             TerminationEvent = terminatonCode;
         }

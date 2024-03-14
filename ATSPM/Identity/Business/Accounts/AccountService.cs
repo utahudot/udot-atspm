@@ -1,5 +1,4 @@
-﻿using Identity.Business.Agency;
-using Identity.Business.Tokens;
+﻿using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Business.Accounts
@@ -9,17 +8,18 @@ namespace Identity.Business.Accounts
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly TokenService tokenService;
-        private readonly IAgencyService _agencyService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
-            IAgencyService agencyService,
             SignInManager<ApplicationUser> signInManager,
-            TokenService tokenService)
+            TokenService tokenService,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             this.tokenService = tokenService;
+            this._roleManager = roleManager;
         }
 
         public async Task<AccountResult> CreateUser(ApplicationUser user, string password)
@@ -32,7 +32,7 @@ namespace Identity.Business.Accounts
                 return await Login(user.Email, password);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest, "",
+            return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(),
                 createUserResult.Errors.First().Description);
         }
 
@@ -42,19 +42,45 @@ namespace Identity.Business.Accounts
             var user = await _signInManager.UserManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return new AccountResult("", StatusCodes.Status400BadRequest, "", "User not found");
+                return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(), "User not found");
             }
 
-            var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
                 var token = await tokenService.GenerateJwtTokenAsync(user);
-                return new AccountResult(user.UserName, StatusCodes.Status200OK, token, null);
+                var viewClaims = await GetViewClaimsForUser(user);
+                return new AccountResult(user.UserName, StatusCodes.Status200OK, token, viewClaims, null);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest, "", "Incorrect username or password");
+            return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
         }
 
+        private async Task<List<string>> GetViewClaimsForUser(ApplicationUser user)
+        {
+            var claims = new List<string>();
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin"))
+            {
+                claims.Add("Admin");
+            } else
+            {
+                foreach (var roleName in roles)
+                {
+                    var role = await _roleManager.FindByNameAsync(roleName);
+                    var roleClaims = await _roleManager.GetClaimsAsync(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        if (roleClaim.Value.ToLower().Contains("view"))
+                        {
+                           claims.Add(roleClaim.Value);
+                        }
+                    }
+                }
+            }
+            
+            return claims;
+        }
     }
 }

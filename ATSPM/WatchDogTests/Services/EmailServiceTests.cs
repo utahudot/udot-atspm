@@ -1,9 +1,9 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Net;
-using System.Net.Mail;
 using WatchDog.Models;
 using Xunit;
 
@@ -15,7 +15,10 @@ namespace WatchDog.Services.Tests
         public async void CreateAndSendEmailTest()
         {
             var loggerMock = new Mock<ILogger<EmailService>>();
-            var emailService = new EmailService(loggerMock.Object);
+            var smtpLoggerMock = new Mock<ILogger<SMTPMailService>>();
+            var configurationMock = new Mock<IConfiguration>();
+            var mailMock = new SMTPMailService(configurationMock.Object, smtpLoggerMock.Object);
+            var emailService = new EmailService(loggerMock.Object, mailMock);
             var emailOptions = new EmailOptions
             {
                 PreviousDayPMPeakEnd = 17,
@@ -24,13 +27,6 @@ namespace WatchDog.Services.Tests
                 ScanDayEndHour = 5,
                 ScanDayStartHour = 1,
                 WeekdayOnly = false,
-                EmailServer = "smtp.freesmtpservers.com",
-                Port = 25,
-                //EmailServer = "sandbox.smtp.mailtrap.io",
-                //UserName = "241b4c03c87968",
-                //Password = "0f894391e4e8d3",
-                //Port = 587,
-                //EnableSsl = true,
                 DefaultEmailAddress = "derekjlowe@gmail.com",
                 EmailAllErrors = true
             };
@@ -84,7 +80,7 @@ namespace WatchDog.Services.Tests
             mockDetector1.Object.DecisionPoint = null;
             mockDetector1.Object.DetectorChannel = 22;
             mockDetector1.Object.MovementType = MovementTypes.T;
-            mockDetector1.Object.LaneType = LaneTypes.V ;
+            mockDetector1.Object.LaneType = LaneTypes.V;
             //mockDetector1.Object.DetectionHardwareId = DetectionHardwareTypes.WavetronixMatrix;
             mockDetector1.Object.DectectorIdentifier = "638722";
             mockDetector1.Object.DistanceFromStopBar = null;
@@ -158,19 +154,19 @@ namespace WatchDog.Services.Tests
 
             var Locations = new List<Location> { region1MockLocation.Object };
 
-            SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
-            if (emailOptions.Port.HasValue)
-                smtp.Port = emailOptions.Port.Value;
-            if (emailOptions.Password != null)
-                smtp.Credentials = new NetworkCredential(emailOptions.UserName, emailOptions.Password);
-            if (emailOptions.EnableSsl.HasValue)
-                smtp.EnableSsl = emailOptions.EnableSsl.Value;
+            //SmtpClient smtp = new SmtpClient(emailOptions.EmailServer);
+            //if (emailOptions.Port.HasValue)
+            //    smtp.Port = emailOptions.Port.Value;
+            //if (emailOptions.Password != null)
+            //    smtp.Credentials = new NetworkCredential(emailOptions.UserName, emailOptions.Password);
+            //if (emailOptions.EnableSsl.HasValue)
+            //    smtp.EnableSsl = emailOptions.EnableSsl.Value;
 
 
             var recordsFromTheDayBefore = new List<WatchDogLogEvent>();
 
 
-            await emailService.SendAllEmails(emailOptions, errors, Locations, smtp, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
+            await emailService.SendAllEmails(emailOptions, errors, Locations, users, jurisdictions, userJurisdictions.ToList(), areas, userAreas.ToList(), regions, userRegions.ToList(), recordsFromTheDayBefore);
 
             Assert.Equal(1, 1);
         }

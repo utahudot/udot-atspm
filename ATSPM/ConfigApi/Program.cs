@@ -76,7 +76,7 @@ builder.Host.ConfigureServices((h, s) =>
         });
 
     s.AddAtspmDbContext(h);
-    s.AddAtspmEFRepositories();
+    s.AddAtspmEFConfigRepositories();
 
     s.AddAtspmAuthentication(h, builder);
     s.AddAtspmAuthorization(h);
@@ -132,9 +132,10 @@ app.UseSwaggerUI(o =>
     });
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
-app.UseRouting();
 app.MapControllers();
 app.Run();
 

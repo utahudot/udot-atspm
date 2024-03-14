@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
@@ -12,7 +14,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// Approaches Controller
     /// </summary>
     [ApiVersion(1.0)]
-    public class ApproachController : AtspmConfigControllerBase<Approach, int>
+    public class ApproachController : AtspmGeneralConfigBase<Approach, int>
     {
         private readonly IApproachRepository _repository;
 
@@ -22,6 +24,24 @@ namespace ATSPM.ConfigApi.Controllers
             _repository = repository;
         }
 
+        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        public override Task<IActionResult> Post([FromBody] Approach item)
+        {
+            return base.Post(item);
+        }
+
+        [Authorize(Policy = "CanEditGeneralConfigurations")]
+        public override Task<IActionResult> Patch(int key, [FromBody] Delta<Approach> item)
+        {
+            return base.Patch(key, item);
+        }
+
+        [Authorize(Policy = "CanDeleteGeneralConfigurations")]
+        public override Task<IActionResult> Delete(int key)
+        {
+            return base.Delete(key);
+        }
+
         #region NavigationProperties
 
         /// <summary>
@@ -29,7 +49,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
+        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]

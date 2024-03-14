@@ -1,6 +1,6 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Application.Business.Common;
+﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.PedDelay;
+using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +24,9 @@ namespace ATSPM.Application.Business.YellowRedActivations
         public YellowRedActivationsResult GetChartData(
             YellowRedActivationsOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> cycleEvents,
-            IReadOnlyList<ControllerEventLog> detectorEvents,
-            IReadOnlyList<ControllerEventLog> planEvents)
+            IReadOnlyList<IndianaEvent> cycleEvents,
+            IReadOnlyList<IndianaEvent> detectorEvents,
+            IReadOnlyList<IndianaEvent> planEvents)
         {
 
             var cycles = cycleService.GetYellowRedActivationsCycles(
