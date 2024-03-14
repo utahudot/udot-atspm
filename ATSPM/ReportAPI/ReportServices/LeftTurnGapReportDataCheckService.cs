@@ -58,6 +58,9 @@ namespace ATSPM.ReportApi.ReportServices
             var pmStartTime = new TimeSpan(15, 0, 0);
             var pmEndTime = new TimeSpan(19, 0, 0);
 
+            options.GapOutThreshold = options.GapOutThreshold / 100;
+            options.PedestrianThreshold = options.PedestrianThreshold / 100;
+
             var location = locationRepository.GetLatestVersionOfLocation(options.LocationIdentifier, options.Start);
             var approach = location.Approaches.Where(a => a.Id == options.ApproachId).FirstOrDefault();
             LeftTurnGapDataCheckResult dataCheck = InitializeDataCheckObject(approach, options);
