@@ -21,12 +21,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<IEnumerable<T>> Process(Tuple<Location, IEnumerable<ControllerEventLog>, int> input, CancellationToken cancelToken = default)
         {
             //var result = Tuple.Create(input.Item1, input.Item2
-            //    .Where(w => w.locationIdentifier == input.Item1.locationIdentifier)
+            //    .Where(w => w.LocationIdentifier == input.Item1.LocationIdentifier)
             //    .Where(w => w.EventParam == input.Item3)
             //    .TimeSpanFromConsecutiveCodes(first, second)
             //    .Select(s => new T()
             //    {
-            //        locationIdentifier = input.Item1.locationIdentifier,
+            //        LocationIdentifier = input.Item1.LocationIdentifier,
             //        PreemptNumber = input.Item3,
             //        Start = s.Item1[0].Timestamp,
             //        End = s.Item1[1].Timestamp,
@@ -59,12 +59,12 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
     //    protected override Task<IEnumerable<IEnumerable<T>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
     //    {
-    //        var result = input.GroupBy(g => g.locationIdentifier)
+    //        var result = input.GroupBy(g => g.LocationIdentifier)
     //            .SelectMany(s => s.GroupBy(g => g.EventParam)
     //            .Select(s => s.TimeSpanFromConsecutiveCodes(first, second)
     //            .Select(s => new T()
     //            {
-    //                locationIdentifier = s.Item1[0].locationIdentifier == s.Item1[1].locationIdentifier ? s.Item1[0].locationIdentifier : string.Empty,
+    //                LocationIdentifier = s.Item1[0].LocationIdentifier == s.Item1[1].LocationIdentifier ? s.Item1[0].LocationIdentifier : string.Empty,
     //                PreemptNumber = Convert.ToInt32(s.Item1.Average(a => a.EventParam)),
     //                Start = s.Item1[0].Timestamp,
     //                End = s.Item1[1].Timestamp,

@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class PhaseLeftTurnGapAggregationEFRepository : AggregationEFRepositoryBase<PhaseLeftTurnGapAggregation>, IPhaseLeftTurnGapAggregationRepository
     {
         ///<inheritdoc/>
-        public PhaseLeftTurnGapAggregationEFRepository(EventLogContext db, ILogger<PhaseLeftTurnGapAggregationEFRepository> log) : base(db, log) { }
+        public PhaseLeftTurnGapAggregationEFRepository(AggregationContext db, ILogger<PhaseLeftTurnGapAggregationEFRepository> log) : base(db, log) { }
 
         #region IPhaseLeftTurnGapAggregationRepository
 

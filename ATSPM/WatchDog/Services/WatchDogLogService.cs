@@ -41,7 +41,7 @@ namespace WatchDog.Services
             {
                 var errors = new ConcurrentBag<WatchDogLogEvent>();
 
-                foreach (var Location in locations)//.Where(s => s.locationIdentifier == "7115"))
+                foreach (var Location in locations)//.Where(s => s.LocationIdentifier == "7115"))
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {

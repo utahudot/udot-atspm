@@ -80,7 +80,7 @@ namespace ATSPM.Application.Business.SplitMonitor
                 splits.Add(new DataPointForDouble(plan.Start, splitForPhase.Value));
             }
 
-            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.locationIdentifier, options.Start, options.End)
+            var splitMonitorResult = new SplitMonitorResult(phase.PhaseNumber, phase.PhaseDescription, options.LocationIdentifier, options.Start, options.End)
             {
                 PercentileSplit = options.PercentileSplit,
                 ProgrammedSplits = splits,
