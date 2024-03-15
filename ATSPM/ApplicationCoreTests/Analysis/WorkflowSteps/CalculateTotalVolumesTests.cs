@@ -84,8 +84,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             //var approachP = _testLocation.Approaches.FirstOrDefault(f => f.Id == 2880);
             //var approachO = _testLocation.Approaches.FirstOrDefault(f => f.Id == 2882);
 
-            //var primaryVolumes = GenerateVolumes(_testLocation.locationIdentifier, approachP.ProtectedPhaseNumber, 2, approachP.DirectionTypeId, start, end, 10);
-            //var opposingVolumes = GenerateVolumes(_testLocation.locationIdentifier, approachO.ProtectedPhaseNumber, 6, approachO.DirectionTypeId, start, end, 10);
+            //var primaryVolumes = GenerateVolumes(_testLocation.LocationIdentifier, approachP.ProtectedPhaseNumber, 2, approachP.DirectionTypeId, start, end, 10);
+            //var opposingVolumes = GenerateVolumes(_testLocation.LocationIdentifier, approachO.ProtectedPhaseNumber, 6, approachO.DirectionTypeId, start, end, 10);
 
             //var t1 = Tuple.Create(approachP, primaryVolumes);
             //var t2 = Tuple.Create(approachO, opposingVolumes);
@@ -115,14 +115,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             //var testEvents = new List<CorrectedDetectorEvent>
             //{
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
 
             //}.AsEnumerable();
 
@@ -153,14 +153,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             //var testEvents = new List<CorrectedDetectorEvent>
             //{
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
-            //    new CorrectedDetectorEvent() { locationIdentifier = _testApproach.Location.locationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:01:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:14:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:15:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:16:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:20:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:45:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:50:00"), DetectorChannel = detector.DetectorChannel},
+            //    new CorrectedDetectorEvent() { LocationIdentifier = _testApproach.Location.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 8:55:00"), DetectorChannel = detector.DetectorChannel},
 
             //}.AsEnumerable();
 
@@ -209,7 +209,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             //var testLogs = Enumerable.Range(1, 5).Select(s => new CorrectedDetectorEvent()
             //{
-            //    locationIdentifier = "1001",
+            //    LocationIdentifier = "1001",
             //    Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
             //    DetectorChannel = 5
             //});
