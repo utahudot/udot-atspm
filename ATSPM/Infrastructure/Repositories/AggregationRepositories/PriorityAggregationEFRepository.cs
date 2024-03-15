@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class PriorityAggregationEFRepository : AggregationEFRepositoryBase<PriorityAggregation>, IPriorityAggregationRepository
     {
         ///<inheritdoc/>
-        public PriorityAggregationEFRepository(EventLogContext db, ILogger<PriorityAggregationEFRepository> log) : base(db, log) { }
+        public PriorityAggregationEFRepository(AggregationContext db, ILogger<PriorityAggregationEFRepository> log) : base(db, log) { }
 
         #region IPriorityAggregationRepository
 

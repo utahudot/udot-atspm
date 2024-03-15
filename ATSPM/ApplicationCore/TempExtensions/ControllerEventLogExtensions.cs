@@ -251,14 +251,14 @@ namespace ATSPM.Application.TempExtensions
 
     //    public static IReadOnlyList<ControllerEventLog> GetEvents(
     //        this IEnumerable<ControllerEventLog> events,
-    //        string locationIdentifier,
+    //        string LocationIdentifier,
     //        DateTime startTime,
     //        DateTime endTime,
     //        IEnumerable<int> eventParameters,
     //        IEnumerable<int> eventCodes)
     //    {
     //        var result = events
-    //            .Where(e => e.SignalIdentifier == locationIdentifier
+    //            .Where(e => e.SignalIdentifier == LocationIdentifier
     //            && e.Timestamp >= startTime
     //            && e.Timestamp < endTime
     //            && eventCodes.Contains(e.EventCode)
