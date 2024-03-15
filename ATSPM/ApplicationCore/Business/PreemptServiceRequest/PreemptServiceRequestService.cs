@@ -23,7 +23,7 @@ namespace ATSPM.Application.Business.PreemptServiceRequest
             IReadOnlyList<IndianaEvent> events)
         {
             var preemptEvents = events.Where(row => row.EventCode == DataLoggerEnum.PreemptCallInputOn).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
-            var plans = planService.GetBasicPlans(options.Start, options.End, options.locationIdentifier, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
             IReadOnlyList<Common.Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),
                 pl.Start,
@@ -31,7 +31,7 @@ namespace ATSPM.Application.Business.PreemptServiceRequest
                 preemptEvents.Count(p => p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
             return new PreemptServiceRequestResult(
                 "Preempt Service",
-                options.locationIdentifier,
+                options.LocationIdentifier,
                 options.Start,
                 options.End,
                 preemptPlans,

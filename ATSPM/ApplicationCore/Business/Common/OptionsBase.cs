@@ -28,6 +28,6 @@ namespace ATSPM.Application.Business.Common
                 _end = DateTime.SpecifyKind(value, DateTimeKind.Unspecified);
             }
         }
-        public string locationIdentifier { get; set; }
+        public string LocationIdentifier { get; set; }
     }
 }
