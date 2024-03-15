@@ -288,6 +288,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IDetectorEventCountAggregationRepository, DetectorEventCountAggregationEFRepository>();
             services.AddScoped<IPhaseCycleAggregationRepository, PhaseCycleAggregationEFRepository>();
             services.AddScoped<IPhaseLeftTurnGapAggregationRepository, PhaseLeftTurnGapAggregationEFRepository>();
+            services.AddScoped<IPhasePedAggregationRepository, PhasePedAggregationEFRepository>();
             services.AddScoped<IPhaseSplitMonitorAggregationRepository, PhaseSplitMonitorAggregationEFRepository>();
             services.AddScoped<IPhaseTerminationAggregationRepository, PhaseTerminationAggregationEFRepository>();
             services.AddScoped<IPreemptionAggregationRepository, PreemptionAggregationEFRepository>();

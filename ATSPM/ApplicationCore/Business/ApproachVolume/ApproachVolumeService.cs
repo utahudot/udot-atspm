@@ -100,7 +100,7 @@ namespace ATSPM.Application.Business.ApproachVolume
             var detector = primaryApproaches.First().GetAllDetectorsOfDetectionType(detectionType).FirstOrDefault();
 
             return new ApproachVolumeResult(
-                options.locationIdentifier,
+                options.LocationIdentifier,
                 options.Start,
                 options.End,
                 detectionType.Id.GetDisplayAttribute()?.Name,

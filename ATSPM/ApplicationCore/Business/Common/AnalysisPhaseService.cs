@@ -103,11 +103,11 @@ namespace ATSPM.Application.Business.Common
         //{
         //    var analysisPhaseData = new AnalysisPhaseData();
         //    analysisPhaseData.PhaseNumber = phasenumber;
-        //    analysisPhaseData.locationIdentifier = Location.locationIdentifier;
+        //    analysisPhaseData.LocationIdentifier = Location.LocationIdentifier;
         //    analysisPhaseData.IsOverlap = false;
         //    var pedEvents = FindPedEvents(CycleEventsTable, phasenumber);
         //    var phaseEvents = FindPhaseEvents(CycleEventsTable, phasenumber);
-        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.locationIdentifier, phaseEvents, pedEvents);
+        //    analysisPhaseData.Cycles = new AnalysisPhaseCycleCollection(phasenumber, analysisPhaseData.LocationIdentifier, phaseEvents, pedEvents);
         //    var approach = Location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == phasenumber);
         //    analysisPhaseData.Direction = approach != null ? approach.DirectionType.Description : "Unknown";
         //    analysisPhaseData.Location = Location;

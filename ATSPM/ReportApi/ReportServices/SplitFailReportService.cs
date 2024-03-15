@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<SplitFailsResult>> ExecuteAsync(SplitFailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -145,7 +145,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents,
                 phaseDetail.Approach);
             var result = new SplitFailsResult(
-                options.locationIdentifier,
+                options.LocationIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.PhaseNumber,
                 options.Start,
@@ -185,7 +185,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (firstEvent != null && firstEvent.EventCode == DataLoggerEnum.DetectorOff)
                 {
                     var newDetectorOn = new IndianaEvent();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = DataLoggerEnum.DetectorOn;
                     newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);
@@ -196,7 +196,7 @@ namespace ATSPM.ReportApi.ReportServices
                 if (lastEvent != null && lastEvent.EventCode == DataLoggerEnum.DetectorOn)
                 {
                     var newDetectorOn = new IndianaEvent();
-                    newDetectorOn.LocationIdentifier = options.locationIdentifier;
+                    newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = DataLoggerEnum.DetectorOff;
                     newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);

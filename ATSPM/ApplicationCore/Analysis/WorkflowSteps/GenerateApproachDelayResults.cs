@@ -24,18 +24,18 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var result = Tuple.Create(input.Item1, new ApproachDelayResult());
             
-            //var result = input.Item2.GroupBy(g => g.locationIdentifier, (Location, x) =>
+            //var result = input.Item2.GroupBy(g => g.LocationIdentifier, (Location, x) =>
             //x.GroupBy(g => g.PhaseNumber, (phase, y) =>
             //y.GroupBy(g => g.DetectorChannel, (det, z) => new ApproachDelayResult()
             //{
-            //    locationIdentifier = Location,
+            //    LocationIdentifier = Location,
             //    PhaseNumber = phase,
             //    Start = z.Min(m => m.Start),
             //    End = z.Max(m => m.End),
             //    Plans = new List<ApproachDelayPlan>() {
             //        new ApproachDelayPlan()
             //        {
-            //            locationIdentifier = Location,
+            //            LocationIdentifier = Location,
             //            Start = z.Min(m => m.Start),
             //            End = z.Max(m => m.End),
             //            Vehicles = z.ToList()
