@@ -1,13 +1,10 @@
-﻿using System;
+﻿using ATSPM.Application.Business.Common;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
-    public class DataCheckParameters
+    public class LeftTurnGapDataCheckOptions : OptionsBase
     {
-        public string locationId { get; set; }
         public int ApproachId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
         public int VolumePerHourThreshold { get; set; }
         public double GapOutThreshold { get; set; }
         public double PedestrianThreshold { get; set; }
