@@ -1,9 +1,6 @@
 ﻿using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,40 +38,24 @@ namespace ATSPM.Domain.Workflows
         /// <inheritdoc/>
         public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            //if (parameter != null)
-            //{
-            //    if (!cancelToken.IsCancellationRequested)
-            //    {
-
-
-            //        List<T2> result = new();
-
-            //        try
-            //        {
-            //            await foreach (var p in Process(parameter, cancelToken))
-            //            {
-            //                result.Add(p);
-            //            }
-
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            //Console.WriteLine($"{parameter}$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$${e}");
-            //        }
-
-            //        foreach (var r in result)
-            //        {
-            //            Console.WriteLine($"returning: {r}");
-
-
-            //            yield return r;
-            //        }
-            //    }
-            //}
-
-            await foreach (var p in Process(parameter, cancelToken))
+            await using (IAsyncEnumerator<T2> process = Process(parameter, cancelToken).GetAsyncEnumerator(cancelToken))
             {
-                yield return p;
+                bool active = true;
+                
+                while (active)
+                {
+                    try
+                    {
+                        active = await process.MoveNextAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                    if (active)
+                        yield return process.Current;
+                }
             }
         }
 

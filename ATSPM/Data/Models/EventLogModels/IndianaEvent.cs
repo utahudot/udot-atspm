@@ -11,9 +11,9 @@ namespace ATSPM.Data.Models.EventLogModels
     public class IndianaEvent : EventLogModelBase
     {
         /// <summary>
-        /// Event code from <see cref="DataLoggerEnum"/>
+        /// Event code from <see cref="IndianaEnumerations"/>
         /// </summary>
-        public DataLoggerEnum EventCode { get; set; }
+        public IndianaEnumerations EventCode { get; set; }
         
         /// <summary>
         /// Event parameter that is specific to <see cref="EventCode"/>

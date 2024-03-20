@@ -20,16 +20,16 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// <term>Identify the Beginning of Each Cycle</term>
     /// <description>
     /// The beginning of the cycle
-    /// for a given phase is defined as the end of <see cref="DataLoggerEnum.PhaseEndYellowChange"/>. The
+    /// for a given phase is defined as the end of <see cref="IndianaEnumerations.PhaseEndYellowChange"/>. The
     /// event log is queried to find the records where the Event Code is 9. Each instance
-    /// of <see cref="DataLoggerEnum.PhaseEndYellowChange"/> is indicated as the start of the cycle.
+    /// of <see cref="IndianaEnumerations.PhaseEndYellowChange"/> is indicated as the start of the cycle.
     /// </description>
     /// </item>
     /// 
     /// <item>
     /// <term>Identify the Change to Green for Each Cycle</term>
     /// <description>
-    /// During this step, the event log is queried to find the records where the Event Code <see cref="DataLoggerEnum.PhaseBeginGreen"/>.
+    /// During this step, the event log is queried to find the records where the Event Code <see cref="IndianaEnumerations.PhaseBeginGreen"/>.
     /// The duration from the beginning of the cycle to when the given phasechanges to green(total red interval)
     /// is calculated in reference to the first redevent (begin) of the cycle
     /// </description>
@@ -38,7 +38,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// <item>
     /// <term>Identify the Change to Yellow for Each Cycle</term>
     /// <description>
-    /// During this step, the event log is queried to find the record where the Event Code <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>.
+    /// During this step, the event log is queried to find the record where the Event Code <see cref="IndianaEnumerations.PhaseBeginYellowChange"/>.
     /// The duration from the beginning of the cycle to when the given phase
     /// changes to yellow(total green interval) is calculated in reference to the first red event (begin) of the cycle
     /// </description>
@@ -47,7 +47,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// <item>
     /// <term>Identify the Change to Red at the End of Each Cycle</term>
     /// <description>
-    /// During this step, the event log is queried to find the records where the Event Code <see cref="DataLoggerEnum.PhaseEndYellowChange"/>. 
+    /// During this step, the event log is queried to find the records where the Event Code <see cref="IndianaEnumerations.PhaseEndYellowChange"/>. 
     /// The duration from the beginning of the cycle to when the given phase changes to red(yellow clearance interval)
     /// is calculated in reference to the firstred event (begin) of the cycle
     /// </description>
@@ -67,7 +67,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var result = Tuple.Create(input.Item1, input.Item2?
                 .Where(w => w.SignalIdentifier == input?.Item1?.Location.LocationIdentifier)
                 .Where(w => w.EventParam == input?.Item1?.ProtectedPhaseNumber)
-                .Where(w => w.EventCode == (int)DataLoggerEnum.PhaseBeginGreen || w.EventCode == (int)DataLoggerEnum.PhaseBeginYellowChange || w.EventCode == (int)DataLoggerEnum.PhaseEndYellowChange)
+                .Where(w => w.EventCode == (int)IndianaEnumerations.PhaseBeginGreen || w.EventCode == (int)IndianaEnumerations.PhaseBeginYellowChange || w.EventCode == (int)IndianaEnumerations.PhaseEndYellowChange)
                 .OrderBy(o => o.Timestamp)
                 .GroupBy(g => g.SignalIdentifier, (s, x) => x
                 .GroupBy(g => g.EventParam, (p, y) => y

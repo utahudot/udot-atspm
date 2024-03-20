@@ -7,26 +7,26 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseMinComplete"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseMaxOut"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndYellowChange"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.OverlapBeginGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.OverlapBeginTrailingGreenExtension"/></item>
-    /// <item><see cref="DataLoggerEnum.OverlapBeginYellow"/></item>
-    /// <item><see cref="DataLoggerEnum.OverlapBeginRedClearance"/></item>
-    /// <item><see cref="DataLoggerEnum.OverlapOffInactivewithredindication"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.DetectorOff"/></item>
-    /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
-    /// <item><see cref="DataLoggerEnum.PedDetectorOff"/></item>
-    /// <item><see cref="DataLoggerEnum.PedDetectorOn"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseBeginGreen"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseMinComplete"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseMaxOut"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseEndYellowChange"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseEndRedClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginChangeInterval"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginSolidDontWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.OverlapBeginGreen"/></item>
+    /// <item><see cref="IndianaEnumerations.OverlapBeginTrailingGreenExtension"/></item>
+    /// <item><see cref="IndianaEnumerations.OverlapBeginYellow"/></item>
+    /// <item><see cref="IndianaEnumerations.OverlapBeginRedClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.OverlapOffInactivewithredindication"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.DetectorOff"/></item>
+    /// <item><see cref="IndianaEnumerations.DetectorOn"/></item>
+    /// <item><see cref="IndianaEnumerations.PedDetectorOff"/></item>
+    /// <item><see cref="IndianaEnumerations.PedDetectorOn"/></item>
     /// </list>
     /// </summary>
     public class FilteredTimingActuationData : FilterEventCodeBase
@@ -34,26 +34,26 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredTimingActuationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
-            filteredList.Add((int)DataLoggerEnum.PhaseMinComplete);
-            filteredList.Add((int)DataLoggerEnum.PhaseMaxOut);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndYellowChange);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndRedClearance);
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginWalk);
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginChangeInterval);
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginSolidDontWalk);
-            filteredList.Add((int)DataLoggerEnum.OverlapBeginGreen);
-            filteredList.Add((int)DataLoggerEnum.OverlapBeginTrailingGreenExtension);
-            filteredList.Add((int)DataLoggerEnum.OverlapBeginYellow);
-            filteredList.Add((int)DataLoggerEnum.OverlapBeginRedClearance);
-            filteredList.Add((int)DataLoggerEnum.OverlapOffInactivewithredindication);
-            filteredList.Add((int)DataLoggerEnum.PedestrianOverlapBeginWalk);
-            filteredList.Add((int)DataLoggerEnum.PedestrianOverlapBeginClearance);
-            filteredList.Add((int)DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk);
-            filteredList.Add((int)DataLoggerEnum.DetectorOff);
-            filteredList.Add((int)DataLoggerEnum.DetectorOn);
-            filteredList.Add((int)DataLoggerEnum.PedDetectorOff);
-            filteredList.Add((int)DataLoggerEnum.PedDetectorOn);
+            filteredList.Add((int)IndianaEnumerations.PhaseBeginGreen);
+            filteredList.Add((int)IndianaEnumerations.PhaseMinComplete);
+            filteredList.Add((int)IndianaEnumerations.PhaseMaxOut);
+            filteredList.Add((int)IndianaEnumerations.PhaseEndYellowChange);
+            filteredList.Add((int)IndianaEnumerations.PhaseEndRedClearance);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginChangeInterval);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginSolidDontWalk);
+            filteredList.Add((int)IndianaEnumerations.OverlapBeginGreen);
+            filteredList.Add((int)IndianaEnumerations.OverlapBeginTrailingGreenExtension);
+            filteredList.Add((int)IndianaEnumerations.OverlapBeginYellow);
+            filteredList.Add((int)IndianaEnumerations.OverlapBeginRedClearance);
+            filteredList.Add((int)IndianaEnumerations.OverlapOffInactivewithredindication);
+            filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginClearance);
+            filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk);
+            filteredList.Add((int)IndianaEnumerations.DetectorOff);
+            filteredList.Add((int)IndianaEnumerations.DetectorOn);
+            filteredList.Add((int)IndianaEnumerations.PedDetectorOff);
+            filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
         }
     }
 }
