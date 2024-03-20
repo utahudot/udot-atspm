@@ -17,8 +17,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
     {
         public FilteredDetectorDataTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)DataLoggerEnum.DetectorOff);
-            filteredList.Add((int)DataLoggerEnum.DetectorOn);
+            filteredList.Add((int)IndianaEnumerations.DetectorOff);
+            filteredList.Add((int)IndianaEnumerations.DetectorOn);
 
             sut = new FilteredDetectorData();
         }
