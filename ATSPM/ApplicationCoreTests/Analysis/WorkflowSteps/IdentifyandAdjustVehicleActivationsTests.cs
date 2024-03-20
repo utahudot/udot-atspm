@@ -34,7 +34,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 2
             });
 
@@ -42,7 +42,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = "1001",
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 2
             });
 
@@ -83,7 +83,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 2
             });
 
@@ -91,7 +91,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 100
             });
 
@@ -132,7 +132,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 2
             });
 
@@ -164,7 +164,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
                 _output.WriteLine($"corrected event: {l}");
             }
 
-            var expected = correct.Select(s => s.EventCode).Where(w => w == (int)DataLoggerEnum.DetectorOn).Count();
+            var expected = correct.Select(s => s.EventCode).Where(w => w == (int)IndianaEnumerations.DetectorOn).Count();
             var actual = result.Item2.Count();
 
             _output.WriteLine($"expected: {expected}");
@@ -183,7 +183,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             {
                 SignalIdentifier = _testApproach.Location.LocationIdentifier,
                 Timestamp = DateTime.Now.AddMilliseconds(Random.Shared.Next(1, 1000)),
-                EventCode = (int)DataLoggerEnum.DetectorOn,
+                EventCode = (int)IndianaEnumerations.DetectorOn,
                 EventParam = 2
             };
 
