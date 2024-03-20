@@ -8,8 +8,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateTimeToGateDown(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptGateDownInputReceived;
+            first = IndianaEnumerations.PreemptCallInputOn;
+            second = IndianaEnumerations.PreemptGateDownInputReceived;
         }
     }
 }

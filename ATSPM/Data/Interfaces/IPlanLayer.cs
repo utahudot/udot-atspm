@@ -13,7 +13,7 @@ namespace ATSPM.Data.Interfaces
     public interface IPlanLayer : ILocationLayer
     {
         /// <summary>
-        /// Plan number as derrived from the event parameter on <see cref="DataLoggerEnum.CoordPatternChange"/> event
+        /// Plan number as derrived from the event parameter on <see cref="IndianaEnumerations.CoordPatternChange"/> event
         /// </summary>
         int PlanNumber { get; set; }
     }
