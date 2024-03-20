@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ATSPM.Application.Analysis.Common
 {
     /// <summary>
-    /// Defines <see cref="DataLoggerEnum.DetectorOn"/> event arrival ratios for cycle
+    /// Defines <see cref="IndianaEnumerations.DetectorOn"/> event arrival ratios for cycle
     /// </summary>
     public interface ICycleRatios : ICycleArrivals
     {

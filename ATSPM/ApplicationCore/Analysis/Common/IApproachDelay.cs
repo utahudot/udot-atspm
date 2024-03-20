@@ -14,17 +14,17 @@ namespace ATSPM.Application.Analysis.Common
     public interface IApproachDelay : IStartEndRange
     {
         /// <summary>
-        /// The average delay of <see cref="DataLoggerEnum.DetectorOn"/> arrival on red events
+        /// The average delay of <see cref="IndianaEnumerations.DetectorOn"/> arrival on red events
         /// </summary>
         double AverageDelay { get; }
 
         /// <summary>
-        /// The total delay of <see cref="DataLoggerEnum.DetectorOn"/> arrival on red events
+        /// The total delay of <see cref="IndianaEnumerations.DetectorOn"/> arrival on red events
         /// </summary>
         double TotalDelay { get; }
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.DetectorOn"/> arrival on red events
+        /// <see cref="IndianaEnumerations.DetectorOn"/> arrival on red events
         /// </summary>
         IReadOnlyList<Vehicle> Vehicles { get; }
     }
