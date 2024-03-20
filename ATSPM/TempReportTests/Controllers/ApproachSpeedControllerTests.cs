@@ -5,6 +5,9 @@ using CsvHelper;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -18,8 +21,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             CycleService cycleService = new CycleService();
             ApproachSpeedService approachSpeedService = new ApproachSpeedService(cycleService,planService);
             ILoggerFactory loggerFactory = new LoggerFactory();
-            ILogger<SignalPhaseService> logger = loggerFactory.CreateLogger<SignalPhaseService>();
-            SignalPhaseService signalPhaseService = new SignalPhaseService(planService, cycleService, logger); 
+            ILogger<LocationPhaseService> logger = loggerFactory.CreateLogger<LocationPhaseService>();
+            LocationPhaseService LocationPhaseService = new LocationPhaseService(planService, cycleService, logger); 
             
             System.DateTime start = new System.DateTime(2023, 6, 14, 12, 0, 0);
             System.DateTime end = new System.DateTime(2023, 6, 14, 13, 0, 0);
@@ -34,7 +37,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 29724; // Updated Id
-            approach.Object.SignalId = 4938; // Updated SignalId
+            approach.Object.LocationId = 4938; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.WB;
             approach.Object.Description = "WBT Ph2";
             approach.Object.ProtectedPhaseNumber = 2;
@@ -56,7 +59,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             detector.Object.ApproachId = 29724; //int
             detector.Object.DateAdded = new System.DateTime(2023, 04, 18); //DateTime
             detector.Object.DateDisabled = null; //DateTime
-            detector.Object.DectectorIdentifier = "500006"; // Updated SignalId
+            detector.Object.DectectorIdentifier = "500006"; // Updated LocationId
             detector.Object.DetectorChannel = 6; //int
             detector.Object.DetectionHardware = DetectionHardwareTypes.WavetronixAdvance;
             detector.Object.MovementType = MovementTypes.T;
@@ -80,39 +83,39 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             detector.Setup(d => d.DetectionTypes).Returns(new  List<DetectionType>() { detectionType.Object });
 
             //Need this
-            var mockSignal = new Mock<Signal>();
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 4938; // Updated Id
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.235.5.15");
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.LoggingEnabled = true;
-            mockSignal.Object.Note = "Copy of Now a Cobalt (32.67.20)";
-            mockSignal.Object.JurisdictionId = 4;
-            mockSignal.Object.SignalIdentifier = "5000"; // Updated SignalId
-            mockSignal.Object.VersionAction = SignalVersionActions.NewVersion;
-            mockSignal.Object.Start = new System.DateTime(2023, 4, 18);
-            mockSignal.Object.ControllerTypeId = 9; // Updated ControllerTypeId
-            mockSignal.Object.RegionId = 1;
-            mockSignal.Object.PrimaryName = "Riverdale Road";
-            mockSignal.Object.SecondaryName = "700 West";
-            mockSignal.Object.Latitude = 41.18003983;
-            mockSignal.Object.Longitude = -111.9956664;
-            mockSignal.Object.Pedsare1to1 = true;
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 4938; // Updated Id
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.235.5.15");
+            mockLocation.Object.ChartEnabled = true;
+            //mockLocation.Object.LoggingEnabled = true;
+            mockLocation.Object.Note = "Copy of Now a Cobalt (32.67.20)";
+            mockLocation.Object.JurisdictionId = 4;
+            mockLocation.Object.LocationIdentifier = "5000"; // Updated LocationId
+            mockLocation.Object.VersionAction = LocationVersionActions.NewVersion;
+            mockLocation.Object.Start = new System.DateTime(2023, 4, 18);
+            mockLocation.Object.LocationTypeId = 9; // Updated ControllerTypeId
+            mockLocation.Object.RegionId = 1;
+            mockLocation.Object.PrimaryName = "Riverdale Road";
+            mockLocation.Object.SecondaryName = "700 West";
+            mockLocation.Object.Latitude = 41.18003983;
+            mockLocation.Object.Longitude = -111.9956664;
+            mockLocation.Object.PedsAre1to1 = true;
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
             approach.Setup(a => a.Detectors).Returns(new List<Detector>() { detector.Object });
             detector.Setup(a => a.Approach).Returns(approach.Object);
             detector.Setup(a => a.DetectionTypes).Returns(new List<DetectionType> { detectionType.Object });
-            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
+            mockLocation.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach.Object });
 
             ApproachSpeedOptions options = new ApproachSpeedOptions()
             {
-                //ApproachId = 2770, //CA - looks like this changed to SignalIdentifier??
-                SignalIdentifier = "5000",
+                //ApproachId = 2770, //CA - looks like this changed to LocationIdentifier??
+                LocationIdentifier = "5000",
                 End = end,
-                SelectedBinSize = 15,
+                BinSize = 15,
                 Start = start
             };
 
@@ -157,7 +160,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Assert
             Assert.Equal(approach.Object.Id, viewModel.ApproachId);
-            Assert.Equal(approach.Object.Signal.SignalIdentifier, viewModel.SignalIdentifier);
+            Assert.Equal(approach.Object.Location.LocationIdentifier, viewModel.LocationIdentifier);
             //Assert.Equal("Wavetronix Advance: Speed Accuracy +/- 2mph", viewModel.DetectionType);
             Assert.Equal(255, viewModel.DistanceFromStopBar);
             Assert.Equal(start, viewModel.Start);

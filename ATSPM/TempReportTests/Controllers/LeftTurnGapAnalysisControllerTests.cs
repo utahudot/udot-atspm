@@ -1,7 +1,6 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
-using ATSPM.ReportApi.Business.PedDelay;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -109,7 +108,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             var approach2 = new Mock<Approach>();
             // Set the properties of the mock Approach object
             approach2.Object.Id = 15255; // Updated Id
-            approach2.Object.SignalId = 2934; // Updated SignalId
+            approach2.Object.LocationId = 2934; // Updated LocationId
             approach2.Object.DirectionTypeId = DirectionTypes.NB;
             approach2.Object.Description = "NBT Ph2";
             approach2.Object.Mph = null;
@@ -127,7 +126,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             var approach6 = new Mock<Approach>();
             // Set the properties of the mock Approach object
             approach6.Object.Id = 15257; // Updated Id
-            approach6.Object.SignalId = 2934; // Updated SignalId
+            approach6.Object.LocationId = 2934; // Updated LocationId
             approach6.Object.DirectionTypeId = DirectionTypes.SB;
             approach6.Object.Description = "SBT Ph6";
             approach6.Object.Mph = null;
@@ -142,36 +141,36 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             var approaches = new List<Approach>() { approach2.Object, approach6.Object };
 
-            var mockSignal = new Mock<Signal>();
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 2840; // Updated Id
-            mockSignal.Object.SignalIdentifier = "6387"; // Updated SignalId
-            mockSignal.Object.Latitude = 40.62398502;
-            mockSignal.Object.Longitude = -111.9387819;
-            mockSignal.Object.PrimaryName = "Redwood Road";
-            mockSignal.Object.SecondaryName = "7000 South";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
-            mockSignal.Object.RegionId = 2;
-            mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Delete;
-            mockSignal.Object.Note = "Updated missing zones";
-            mockSignal.Object.Start = new System.DateTime(1900, 1, 1);
-            mockSignal.Object.JurisdictionId = 35;
-            mockSignal.Object.Pedsare1to1 = true;
-            mockSignal.Object.Approaches = approaches;
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            mockSignal.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach2.Object, approach6.Object });
-            approach2.Setup(a => a.Signal).Returns(mockSignal.Object);
-            approach6.Setup(a => a.Signal).Returns(mockSignal.Object);
-            mockSignal.Setup(a => a.Approaches).Returns(approaches);
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 2840; // Updated Id
+            mockLocation.Object.LocationIdentifier = "6387"; // Updated LocationId
+            mockLocation.Object.Latitude = 40.62398502;
+            mockLocation.Object.Longitude = -111.9387819;
+            mockLocation.Object.PrimaryName = "Redwood Road";
+            mockLocation.Object.SecondaryName = "7000 South";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
+            mockLocation.Object.RegionId = 2;
+            mockLocation.Object.LocationTypeId = 2; // Updated ControllerTypeId
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Delete;
+            mockLocation.Object.Note = "Updated missing zones";
+            mockLocation.Object.Start = new System.DateTime(1900, 1, 1);
+            mockLocation.Object.JurisdictionId = 35;
+            mockLocation.Object.PedsAre1to1 = true;
+            mockLocation.Object.Approaches = approaches;
+            // Create the mock Approach object and set its Location property to the mock Location object
+            mockLocation.Setup(mock => mock.Approaches).Returns(new List<Approach>() { approach2.Object, approach6.Object });
+            approach2.Setup(a => a.Location).Returns(mockLocation.Object);
+            approach6.Setup(a => a.Location).Returns(mockLocation.Object);
+            mockLocation.Setup(a => a.Approaches).Returns(approaches);
 
 
             var options = new LeftTurnGapAnalysisOptions()
             {
                 BinSize = 15,
-                SignalIdentifier = "7115", //2934 is Id of this signal
+                LocationIdentifier = "7115", //2934 is Id of this location
                 Start = new System.DateTime(2023, 6, 13, 6, 0, 0),
                 End = new System.DateTime(2023, 6, 13, 7, 00, 0),
                 Gap1Min = 1,

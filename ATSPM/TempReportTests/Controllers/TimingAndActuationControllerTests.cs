@@ -4,9 +4,11 @@ using CsvHelper;
 using Moq;
 using System.Globalization;
 using System.Net;
-using ATSPM.ReportApi.TempExtensions;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Application.Business.Common;
+using ATSPM.Domain.Extensions;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
@@ -20,32 +22,32 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             WaitTimeService waitTimeService = new WaitTimeService();
             List<ControllerEventLog> allEvents = LoadDetectorEventsFromCsv("ControllerEventLogs (89).csv");
             
-            // Mock signal
-            var mockSignal = new Mock<Signal>();
+            // Mock location
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 1680; // Updated Id
-            mockSignal.Object.SignalIdentifier = "7115"; // Updated SignalId
-            mockSignal.Object.Latitude = 40.62398502;
-            mockSignal.Object.Longitude = -111.9387819;
-            mockSignal.Object.PrimaryName = "Redwood Road";
-            mockSignal.Object.SecondaryName = "7000 South";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
-            mockSignal.Object.RegionId = 2;
-            mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            mockSignal.Object.Note = "10";
-            mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
-            mockSignal.Object.JurisdictionId = 35;
-            mockSignal.Object.Pedsare1to1 = true;
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 1680; // Updated Id
+            mockLocation.Object.LocationIdentifier = "7115"; // Updated LocationId
+            mockLocation.Object.Latitude = 40.62398502;
+            mockLocation.Object.Longitude = -111.9387819;
+            mockLocation.Object.PrimaryName = "Redwood Road";
+            mockLocation.Object.SecondaryName = "7000 South";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.210.14.39");
+            mockLocation.Object.RegionId = 2;
+            mockLocation.Object.LocationTypeId = 2; // Updated ControllerTypeId
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            mockLocation.Object.Note = "10";
+            mockLocation.Object.Start = new System.DateTime(2011, 1, 1);
+            mockLocation.Object.JurisdictionId = 35;
+            mockLocation.Object.PedsAre1to1 = true;
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 2880; // Updated Id
-            approach.Object.SignalId = 1680; // Updated SignalId
+            approach.Object.LocationId = 1680; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.NB;
             approach.Object.Description = "NBT Ph2";
             approach.Object.Mph = 45;
@@ -58,8 +60,8 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
 
             // Create mock detector
             var mockDetector1 = new Mock<Detector>();
@@ -103,7 +105,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
 
             TimingAndActuationsOptions options = new TimingAndActuationsOptions
             {
-                SignalIdentifier = "7115",
+                LocationIdentifier = "7115",
                 Start = Convert.ToDateTime("6/14/2023 8:00:00.0"),
                 End = Convert.ToDateTime("6/14/2023 8:05:00.0"),
                 ExtendStartStopSearch = 2,
@@ -181,7 +183,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 eventCodes,
                 phaseDetail.PhaseNumber).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
-            viewModel.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             viewModel.ApproachDescription = phaseDetail.Approach.Description;
             return viewModel;
         }

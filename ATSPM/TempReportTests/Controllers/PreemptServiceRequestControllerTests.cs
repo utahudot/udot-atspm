@@ -1,6 +1,6 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PreemptServiceRequest;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PreemptServiceRequest;
+using ATSPM.Data.Models;
 using CsvHelper;
 using System.Globalization;
 
@@ -21,7 +21,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
             //List<ControllerEventLog> preemptEvents = events.Where(e => new List<int> { 105 }.Contains(e.EventCode)).ToList(); // Load preempt events from CSV
 
-            var options = new PreemptServiceRequestOptions() { SignalIdentifier = "7573", Start = start, End = end };
+            var options = new PreemptServiceRequestOptions() { LocationIdentifier = "7573", Start = start, End = end };
 
             //SignalPhase signalPhase = signalPhaseService.GetSignalPhaseData(start, end, true, 0, 15, approach.Object, cycleEvents, planEvents, detectorEvents);
             var viewModel = preemptServiceRequestService.GetChartData(options, planEvents, events);
