@@ -1,7 +1,6 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Business.AppoachDelay;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.Common;
 using CsvHelper;
 using Microsoft.Extensions.Logging;
 using Moq;

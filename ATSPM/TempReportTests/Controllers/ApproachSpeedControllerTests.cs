@@ -5,8 +5,6 @@ using CsvHelper;
 using System.Globalization;
 using Microsoft.Extensions.Logging;
 using System.Net;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.ApproachSpeed;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {

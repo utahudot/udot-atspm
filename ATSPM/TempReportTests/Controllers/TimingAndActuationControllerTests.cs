@@ -1,14 +1,12 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.Business.WaitTime;
 using CsvHelper;
 using Moq;
 using System.Globalization;
 using System.Net;
 using ATSPM.ReportApi.TempExtensions;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.Business.WaitTime;
 
 namespace ReportsATSPM.Application.Reports.Controllers.Tests
 {
