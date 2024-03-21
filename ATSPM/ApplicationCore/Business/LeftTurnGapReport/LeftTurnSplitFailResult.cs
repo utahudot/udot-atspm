@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
-    public class SplitFailResult
+    public class LeftTurnSplitFailResult
     {
         public double SplitFailPercent { get; set; }
         public int CyclesWithSplitFails { get; set; }

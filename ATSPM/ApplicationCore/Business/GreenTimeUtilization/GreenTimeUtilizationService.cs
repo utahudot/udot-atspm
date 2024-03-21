@@ -31,8 +31,8 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             List<IndianaEvent> controllerEventLogs
             ) // the plans/splits input is still TBD
         {
-            //var Location = LocationRepository.GetLatestVersionOfLocation(options.locationIdentifier, options.Start);
-            //var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.locationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
+            //var Location = LocationRepository.GetLatestVersionOfLocation(options.LocationIdentifier, options.Start);
+            //var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
 
             var isPermissivePhase = phaseDetail.PhaseNumber != phaseDetail.Approach.ProtectedPhaseNumber;
@@ -69,7 +69,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
 
             //get a list of detections for that phase
             //var detectorsToUse = approach.GetAllDetectorsOfDetectionType(4);  //should this really be approach-based and not phase-based? - I think so because of getpermissivephase
-            //var allDetectionEvents = cel.GetLocationEventsByEventCode(options.locationIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
+            //var allDetectionEvents = cel.GetLocationEventsByEventCode(options.LocationIdentifier, options.Start, options.End.AddMinutes(options.SelectedAggSize), DETECTOR_ON);
             //var detectionEvents = new List<IndianaEvent>();
             //foreach (var detector in detectorsToUse)
             //{
@@ -172,7 +172,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             }
 
             //get plans
-            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.locationIdentifier, planEvents);
+            var plans = planService.GetSplitMonitorPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
             var durYellowRed = GetYellowRedTimeSeconds(options, phaseDetail.PhaseNumber, cycleEvents);
             var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)
