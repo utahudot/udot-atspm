@@ -47,7 +47,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests that only events with a locationIdentifier matching the test Location are forwarded
+        /// Tests that only events with a LocationIdentifier matching the test Location are forwarded
         /// </summary>
         [Fact]
         [Trait(nameof(AggregateDetectorEvents), "Location")]

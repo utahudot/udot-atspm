@@ -193,7 +193,7 @@ namespace ATSPM.Application.Business.SplitFail
                     Timestamp = options.End,
                     EventCode = DataLoggerEnum.DetectorOff,
                     EventParam = Convert.ToByte(detector.DetectorChannel),
-                    LocationIdentifier = options.locationIdentifier
+                    LocationIdentifier = options.LocationIdentifier
                 });
         }
 
@@ -206,7 +206,7 @@ namespace ATSPM.Application.Business.SplitFail
                     Timestamp = options.Start,
                     EventCode = DataLoggerEnum.DetectorOn,
                     EventParam = Convert.ToByte(detector.DetectorChannel),
-                    LocationIdentifier = options.locationIdentifier
+                    LocationIdentifier = options.LocationIdentifier
                 });
         }
     }

@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class ApproachSpeedAggregationEFRepository : AggregationEFRepositoryBase<ApproachSpeedAggregation>, IApproachSpeedAggregationRepository
     {
         ///<inheritdoc/>
-        public ApproachSpeedAggregationEFRepository(EventLogContext db, ILogger<ApproachSpeedAggregationEFRepository> log) : base(db, log) { }
+        public ApproachSpeedAggregationEFRepository(AggregationContext db, ILogger<ApproachSpeedAggregationEFRepository> log) : base(db, log) { }
 
         #region IApproachSpeedAggregationRepository
 
