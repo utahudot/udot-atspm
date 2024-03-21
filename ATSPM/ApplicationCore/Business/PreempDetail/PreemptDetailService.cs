@@ -28,7 +28,7 @@ namespace ATSPM.Application.Business.PreempDetail
 
             var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();
             var preemptDetails = new List<PreemptDetail>();
-            PreemptRequestAndServices preemptSummary = new PreemptRequestAndServices(preemptDetailOptions.locationIdentifier,
+            PreemptRequestAndServices preemptSummary = new PreemptRequestAndServices(preemptDetailOptions.LocationIdentifier,
                 preemptDetailOptions.Start,
                 preemptDetailOptions.End);
             var requestAndServices = new List<RequestAndServices>();
@@ -51,7 +51,7 @@ namespace ATSPM.Application.Business.PreempDetail
                 requestAndServices.Add(new RequestAndServices() { PreemptionNumber = preemptNumber, Requests = requests, Services = services });
 
                 preemptDetails.Add(new PreemptDetail(
-                    preemptDetailOptions.locationIdentifier,
+                    preemptDetailOptions.LocationIdentifier,
                     preemptDetailOptions.Start,
                     preemptDetailOptions.End,
                     preemptNumber,

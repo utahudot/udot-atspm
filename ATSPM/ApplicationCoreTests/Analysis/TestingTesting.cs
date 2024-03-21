@@ -62,12 +62,12 @@ namespace ApplicationCoreTests.Analysis
 
         //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
         //{
-        //    var result = items.GroupBy(g => g.locationIdentifier, (Location, l1) =>
+        //    var result = items.GroupBy(g => g.LocationIdentifier, (Location, l1) =>
         //    l1.GroupBy(g => g.EventParam, (preempt, l2) =>
         //    l2.TimeSpanFromConsecutiveCodes(first, second)
         //    .Select(s => new T()
         //    {
-        //        locationIdentifier = Location,
+        //        LocationIdentifier = Location,
         //        PreemptNumber = preempt,
         //        Start = s.Item1[0].Timestamp,
         //        End = s.Item1[1].Timestamp,
@@ -121,15 +121,15 @@ namespace ApplicationCoreTests.Analysis
 
             //var logs = new List<ControllerEventLog>
             //{
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 12:23:01.2"), EventCode = 111, EventParam = 1},
 
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
-            //    new ControllerEventLog() { locationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:01:01.1"), EventCode = 102, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:02:01.1"), EventCode = 105, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:03:01.1"), EventCode = 104, EventParam = 1},
+            //    new ControllerEventLog() { LocationIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 13:23:01.2"), EventCode = 111, EventParam = 1},
             //};
 
 
@@ -247,7 +247,7 @@ namespace ApplicationCoreTests.Analysis
 
             //cycles.ForEach(f =>
             //{
-            //    //f.locationIdentifier = Location.Key;
+            //    //f.LocationIdentifier = Location.Key;
             //    //f.PreemptNumber = item.Key;
             //    //f.Start = item.Min(m => m.Start);
             //    //f.End = item.Max(m => m.End);
@@ -301,7 +301,7 @@ namespace ApplicationCoreTests.Analysis
 
             //    return f.Select(s => new PreemptDetailResult()
             //    {
-            //        //locationIdentifier = Location.Key,
+            //        //LocationIdentifier = Location.Key,
             //        //PreemptNumber = item.Key,
             //        //Start = item.Min(m => m.Start),
             //        //End = item.Max(m => m.End),
@@ -414,7 +414,7 @@ namespace ApplicationCoreTests.Analysis
         //           .Select(x => x.Split(','))
         //           .Select(x => new ControllerEventLog
         //           {
-        //               locationIdentifier = x[0],
+        //               LocationIdentifier = x[0],
         //               Timestamp = DateTime.Parse(x[1]),
         //               EventCode = int.Parse(x[2]),
         //               EventParam = int.Parse(x[3])
@@ -422,7 +422,7 @@ namespace ApplicationCoreTests.Analysis
 
         //    var Location = new Location()
         //    {
-        //        locationIdentifier = "7573",
+        //        LocationIdentifier = "7573",
         //        PrimaryName = "Test Controller"
         //    };
 

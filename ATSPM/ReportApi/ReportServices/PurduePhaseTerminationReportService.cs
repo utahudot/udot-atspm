@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PhaseTerminationResult> ExecuteAsync(PurduePhaseTerminationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
@@ -85,7 +85,7 @@ namespace ATSPM.ReportApi.ReportServices
             GC.Collect();
 
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                parameter.locationIdentifier,
+                parameter.LocationIdentifier,
                 parameter.Start,
                 parameter.End,
                 planEvents,
