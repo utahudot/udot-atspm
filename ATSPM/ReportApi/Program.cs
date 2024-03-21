@@ -8,6 +8,7 @@ using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.GreenTimeUtilization;
 using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Business.LeftTurnGapReport;
+using ATSPM.Application.Business.LinkPivot;
 using ATSPM.Application.Business.PedDelay;
 using ATSPM.Application.Business.PhaseTermination;
 using ATSPM.Application.Business.PreempDetail;
@@ -141,6 +142,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
+    s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
+    s.AddScoped<LinkPivotReportService>();
 
     //Chart Services
     s.AddScoped<ApproachDelayService>();
@@ -164,6 +167,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<WaitTimeService>();
     s.AddScoped<YellowRedActivationsService>();
     s.AddScoped<WatchDogReportService>();
+    s.AddScoped<LinkPivotService>();
+    s.AddScoped<LinkPivotPairService>();
+    s.AddScoped<LinkPivotPcdService>();
 
     //Common Services
     s.AddScoped<PlanService>();

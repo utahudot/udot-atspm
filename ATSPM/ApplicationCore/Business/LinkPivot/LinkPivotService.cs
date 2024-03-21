@@ -1,250 +1,270 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATSPM.Application.Business.LinkPivot
 {
     public class LinkPivotService
     {
-        private readonly IRouteRepository routeRepository;
         private readonly ILocationRepository locationRepository;
+        private readonly LinkPivotPairService linkPivotPairService;
 
-        public LinkPivotService(IRouteRepository routeRepository, ILocationRepository locationRepository)
+        public LinkPivotService(ILocationRepository locationRepository, LinkPivotPairService linkPivotPairService)
         {
-            this.routeRepository = routeRepository;
             this.locationRepository = locationRepository;
+            this.linkPivotPairService = linkPivotPairService;
         }
 
-        protected LinkPivotResult GetData(LinkPivotOptions options)
+        public async Task<LinkPivotResult> GetData(LinkPivotOptions options, List<RouteLocation> routeLocations)
         {
-            List<DayOfWeek> daysList = new List<DayOfWeek>();
-            if (options.Monday)
+            LinkPivot linkPivot = new LinkPivot(options.StartDate.ToDateTime(options.StartTime), options.EndDate.ToDateTime(options.EndTime));
+            var (lp, pairedApproches) = await GetAdjustmentObjectsAsync(options, routeLocations);
+            linkPivot.Adjustments = lp;
+            linkPivot.PairedApproaches = pairedApproches;
+
+            LinkPivotResult linkPivotResult = new LinkPivotResult();
+            double totalVolume = 0;
+            double totalDownstreamVolume = 0;
+            double totalUpstreamVolume = 0;
+
+            foreach (var a in linkPivot.Adjustments)
             {
-                daysList.Add(DayOfWeek.Monday);
-            }
-            if (options.Tuesday)
-            {
-                daysList.Add(DayOfWeek.Tuesday);
-            }
-            if (options.Wednesday)
-            {
-                daysList.Add(DayOfWeek.Wednesday);
-            }
-            if (options.Thursday)
-            {
-                daysList.Add(DayOfWeek.Thursday);
-            }
-            if (options.Friday)
-            {
-                daysList.Add(DayOfWeek.Friday);
-            }
-            if (options.Saturday)
-            {
-                daysList.Add(DayOfWeek.Saturday);
-            }
-            if (options.Sunday)
-            {
-                daysList.Add(DayOfWeek.Sunday);
+                linkPivotResult.Adjustments.Add(new LinkPivotAdjustment(a.LinkNumber,
+                    a.LocationIdentifier,
+                    a.Location.ToString(),
+                    a.Delta,
+                    a.Adjustment));
+
+                linkPivotResult.ApproachLinks.Add(new LinkPivotApproachLink(a.LocationIdentifier,
+                    a.Location, a.UpstreamApproachDirection,
+                    a.DownLocationIdentifier, a.DownstreamLocation, a.DownstreamApproachDirection, a.PAOGUpstreamBefore,
+                    a.PAOGUpstreamPredicted, a.PAOGDownstreamBefore, a.PAOGDownstreamPredicted,
+                    a.AOGUpstreamBefore, a.AOGUpstreamPredicted, a.AOGDownstreamBefore,
+                    a.AOGDownstreamPredicted, a.Delta, a.ResultChartLocation, a.AogTotalBefore,
+                    a.PAogTotalBefore, a.AogTotalPredicted, a.PAogTotalPredicted, a.LinkNumber
+                    ));
+
+                totalVolume = totalVolume + a.DownstreamVolume + a.UpstreamVolume;
+                totalDownstreamVolume = totalDownstreamVolume + a.DownstreamVolume;
+                totalUpstreamVolume = totalUpstreamVolume + a.UpstreamVolume;
             }
 
-            //Generate a Link Pivot Object
-            var lp = GetLinkPivot(options, daysList);
+            //Remove the last row from approch links because it will always be 0
+            linkPivotResult.ApproachLinks.RemoveAt(linkPivotResult.ApproachLinks.Count - 1);
 
-            //Instantiate the return object
+            //Get the totals
+            linkPivotResult.TotalAogDownstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore);
+            linkPivotResult.TotalPaogDownstreamBefore = Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamBefore) / totalDownstreamVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogDownstreamBefore))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogDownstreamBefore = 0;
+            }
+            linkPivotResult.TotalAogDownstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted);
+            linkPivotResult.TotalPaogDownstreamPredicted = Math.Round((linkPivot.Adjustments.Sum(a => a.AOGDownstreamPredicted) / totalDownstreamVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogDownstreamPredicted))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogDownstreamPredicted = 0;
+            }
+
+            linkPivotResult.TotalAogUpstreamBefore = linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore);
+            linkPivotResult.TotalPaogUpstreamBefore = Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamBefore) / totalUpstreamVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogUpstreamBefore))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogUpstreamBefore = 0;
+            }
+            linkPivotResult.TotalAogUpstreamPredicted = linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted);
+            linkPivotResult.TotalPaogUpstreamPredicted = Math.Round((linkPivot.Adjustments.Sum(a => a.AOGUpstreamPredicted) / totalUpstreamVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogUpstreamPredicted))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogUpstreamPredicted = 0;
+            }
+
+            linkPivotResult.TotalAogBefore = linkPivotResult.TotalAogUpstreamBefore + linkPivotResult.TotalAogDownstreamBefore;
+            linkPivotResult.TotalPaogBefore = Math.Round((linkPivotResult.TotalAogBefore / totalVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogBefore))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogBefore = 0;
+            }
+
+            linkPivotResult.TotalAogPredicted = linkPivotResult.TotalAogUpstreamPredicted + linkPivotResult.TotalAogDownstreamPredicted;
+            linkPivotResult.TotalPaogPredicted = Math.Round((linkPivotResult.TotalAogPredicted / totalVolume) * 100);
+            if (double.IsNaN(linkPivotResult.TotalPaogPredicted))
+            {
+                // If result is NaN, set it to 0
+                linkPivotResult.TotalPaogPredicted = 0;
+            }
+
+            return linkPivotResult;
+        }
+
+        private async Task<(List<AdjustmentObject>, List<LinkPivotPair>)> GetAdjustmentObjectsAsync(LinkPivotOptions options, List<RouteLocation> routeLocations)
+        {
+            List<LinkPivotPair> pairedApproaches = new List<LinkPivotPair>();
             List<AdjustmentObject> adjustments = new List<AdjustmentObject>();
-
-            //Add the data from the Link Pivot Object to the return object
-            foreach (MOE.Common.Data.LinkPivot.LinkPivotAdjustmentRow row in lp.Adjustment)
-            {
-                AdjustmentObject a = new AdjustmentObject();
-                a.SignalId = row.SignalId;
-                a.Location = row.Location;
-                a.DownstreamLocation = row.DownstreamLocation;
-                a.Delta = row.Delta;
-                a.Adjustment = row.Adjustment;
-                a.PAOGDownstreamBefore = row.PAOGDownstreamBefore;
-                a.PAOGDownstreamPredicted = row.PAOGDownstreamPredicted;
-                a.PAOGUpstreamBefore = row.PAOGUpstreamBefore;
-                a.PAOGUpstreamPredicted = row.PAOGUpstreamPredicted;
-                a.AOGDownstreamBefore = row.AOGDownstreamBefore;
-                a.AOGDownstreamPredicted = row.AOGDownstreamPredicted;
-                a.AOGUpstreamBefore = row.AOGUpstreamBefore;
-                a.AOGUpstreamPredicted = row.AOGUpstreamPredicted;
-                a.DownSignalId = row.DownstreamSignalID;
-                a.DownstreamApproachDirection = row.DownstreamApproachDirection;
-                a.UpstreamApproachDirection = row.UpstreamApproachDirection;
-                a.ResultChartLocation = row.ResultChartLocation;
-                a.AogTotalBefore = row.AOGTotalBefore;
-                a.PAogTotalBefore = row.PAOGToatalBefore;
-                a.AogTotalPredicted = row.AOGTotalPredicted;
-                a.PAogTotalPredicted = row.PAOGTotalPredicted;
-                a.LinkNumber = row.LinkNumber;
-                a.DownstreamVolume = row.DownstreamVolume;
-                a.UpstreamVolume = row.UpstreamVolume;
-                adjustments.Add(a);
-            }
-
-            return adjustments.ToArray();
-        }
-
-        public LinkPivotResult GetLinkPivot(LinkPivotOptions options, List<DayOfWeek> days)
-        {
-            var route = routeRepository.GetList().Include(r => r.RouteLocations).Where(r => r.Id == options.RouteId).FirstOrDefault();
-            //var signalList = new Dictionary<string, Location>();
-            //foreach (var location in route.RouteLocations)
-            //{
-            //    signalList.Add(location.LocationIdentifier, locationRepository.GetVersionOfLocationByDate(location.LocationIdentifier, options.Start));
-            //}
-            var routeLocations = route.RouteLocations.OrderBy(r => r.Order).ToList();
-            // Get a list of dates that matches the parameters passed by the user
-            var dates = GetDates(options.Start, options.End, days);
-            //Make a list of numbers to use as indices to perform parallelism 
             var indices = new List<int>();
+
             if (options.Direction == "Upstream")
             {
-                for (var i = route.RouteLocations.Count - 1; i > 0; i--)
-                    indices.Add(i);
-                //Parallel.ForEach(indices, i =>
-                foreach (var i in indices)
+                for (var i = routeLocations.Count - 1; i > 0; i--)
                 {
-                    var previousLocation = routeLocations[i - 1];
-                    var signal = locationRepository.GetLatestVersionOfLocation(routeLocations[i - 1].LocationIdentifier, options.Start);
-                    //var primaryRouteLocation =
-                    //    routeLocations[i].PhaseDirections.FirstOrDefault(p => p.IsPrimaryApproach);
-                    //var opposingRouteLocation =
-                    //    route.RouteSignals[i - 1].PhaseDirections.FirstOrDefault(p => p.IsPrimaryApproach == false);
-
-                    //TODO: Not sure if I should use OpposingDirection or If I should use OpposingDirectionID
-                    if (previousLocation.OpposingDirection != null)
-                    {
-                        var downstreamSignal =
-                            signalRepository.GetVersionOfSignalByDate(route.RouteSignals[i].SignalId, startDate);
-                        var downstreamApproach = signal.Approaches.FirstOrDefault(a =>
-                            a.DirectionTypeID == primaryPhaseDirection.DirectionTypeId &&
-                            a.IsProtectedPhaseOverlap == primaryPhaseDirection.IsOverlap &&
-                            a.ProtectedPhaseNumber == primaryPhaseDirection.Phase);
-                        var approach = downstreamSignal.Approaches.FirstOrDefault(a =>
-                            a.DirectionTypeID == downstreamPrimaryPhaseDirection.DirectionTypeId &&
-                            a.IsProtectedPhaseOverlap == downstreamPrimaryPhaseDirection.IsOverlap &&
-                            a.ProtectedPhaseNumber == downstreamPrimaryPhaseDirection.Phase);
-                        PairedApproaches.Add(new LinkPivotPair(approach, downstreamApproach, startDate, endDate,
-                            cycleTime,
-                            bias, biasDirection, dates, i + 1));
-                    }
+                    indices.Add(i);
                 }
-                //);
             }
             else
             {
                 for (var i = 0; i < routeLocations.Count - 1; i++)
-                    indices.Add(i);
-                //Parallel.ForEach(indices, i =>
-                foreach (var i in indices)
                 {
-                    var signal = locationRepository.GetLatestVersionOfLocation(routeLocations[i].LocationIdentifier, options.Start);
-                    var primaryRouteLocation = routeLocations[i];
-                    var opposingRouteLocation = routeLocations[i + 1];
-                    if (opposingRouteLocation != null)
-                    {
-                        var downstreamSignal = locationRepository.GetLatestVersionOfLocation(routeLocations[i + 1].LocationIdentifier, options.Start);
-                        var approach = signal.Approaches.FirstOrDefault(a =>
-                            a.DirectionTypeId == primaryRouteLocation.PrimaryDirectionId &&
-                            a.IsProtectedPhaseOverlap == primaryRouteLocation.IsPrimaryOverlap &&
-                            a.ProtectedPhaseNumber == primaryRouteLocation.PrimaryPhase);
-                        var downstreamApproach = downstreamSignal.Approaches.FirstOrDefault(a =>
-                            a.DirectionTypeId == opposingRouteLocation.OpposingDirectionId &&
-                            a.IsProtectedPhaseOverlap == opposingRouteLocation.IsOpposingOverlap &&
-                            a.ProtectedPhaseNumber == opposingRouteLocation.OpposingPhase);
-                        PairedApproaches.Add(new LinkPivotPair(approach, downstreamApproach, startDate, endDate,
-                            cycleTime,
-                            bias, biasDirection, dates, i + 1));
-                    }
+                    indices.Add(i);
                 }
-                //);
             }
 
-            if (Adjustment != null)
+            var daysToInclude = GetDaysToProcess(options.StartDate, options.EndDate, options.DaysOfWeek);
+            await CreatePairedApproaches(options, routeLocations, pairedApproaches, indices, daysToInclude);
+
+            //Cycle through the LinkPivotPair list and add the statistics to the LinkPivotadjustmentTable
+            foreach (var i in indices)
             {
-                //Cycle through the LinkPivotPair list and add the statistics to the LinkPivotadjustmentTable
-                foreach (var i in indices)
+                //Make sure the list is in the correct order after parrallel processing
+                var lpp = pairedApproaches.FirstOrDefault(p =>
+                    p.UpstreamLocationApproach.Location.LocationIdentifier == routeLocations[i].LocationIdentifier);
+                if (lpp != null)
                 {
-                    //Make sure the list is in the correct order after parrallel processing
-                    var lpp = PairedApproaches.FirstOrDefault(p =>
-                        p.SignalApproach.SignalID == route.RouteSignals[i].SignalId);
-                    if (lpp != null)
-                        Adjustment.AddLinkPivotAdjustmentRow(
-                            lpp.SignalApproach.SignalID,
-                            Convert.ToInt32(lpp.SecondsAdded),
-                            0,
-                            lpp.PaogUpstreamBefore,
-                            lpp.PaogDownstreamBefore,
-                            lpp.AogUpstreamBefore,
-                            lpp.AogDownstreamBefore,
-                            lpp.PaogUpstreamPredicted,
-                            lpp.PaogDownstreamPredicted,
-                            lpp.AogUpstreamPredicted,
-                            lpp.AogDownstreamPredicted,
-                            lpp.SignalApproach.Signal.SignalDescription,
-                            lpp.DownSignalApproach.Signal.SignalID,
-                            lpp.DownSignalApproach.DirectionType.Description,
-                            lpp.SignalApproach.DirectionType.Description,
-                            lpp.ResultChartLocation,
-                            lpp.DownSignalApproach.Signal.SignalDescription,
-                            lpp.AogTotalBefore,
-                            lpp.PaogTotalBefore,
-                            lpp.AogTotalPredicted,
-                            lpp.PaogTotalPredicted,
-                            lpp.LinkNumber,
-                            lpp.TotalVolumeDownstream,
-                            lpp.TotalVolumeUpstream);
+                    var a = new AdjustmentObject()
+                    {
+                        LocationIdentifier = lpp.UpstreamLocationApproach.Location.LocationIdentifier,
+                        Location = lpp.UpstreamLocationApproach.Location.ToString(),
+                        DownstreamLocation = lpp.DownstreamLocationApproach.Location.ToString(),
+                        Delta = Convert.ToInt32(lpp.SecondsAdded),
+                        PAOGDownstreamBefore = lpp.PaogDownstreamBefore,
+                        PAOGDownstreamPredicted = lpp.PaogDownstreamPredicted,
+                        PAOGUpstreamBefore = lpp.PaogUpstreamBefore,
+                        PAOGUpstreamPredicted = lpp.PaogUpstreamPredicted,
+                        AOGDownstreamBefore = lpp.AogDownstreamBefore,
+                        AOGDownstreamPredicted = lpp.AogDownstreamPredicted,
+                        AOGUpstreamBefore = lpp.AogUpstreamBefore,
+                        AOGUpstreamPredicted = lpp.AogUpstreamPredicted,
+                        DownstreamLocationIdentifier = lpp.DownstreamLocationApproach.Location.LocationIdentifier,
+                        DownstreamApproachDirection = lpp.DownstreamLocationApproach.DirectionTypeId,
+                        UpstreamApproachDirection = lpp.UpstreamLocationApproach.DirectionTypeId,
+                        ResultChartLocation = lpp.ResultChartLocation,
+                        AogTotalBefore = lpp.AogTotalBefore,
+                        PAogTotalBefore = lpp.PaogTotalBefore,
+                        AogTotalPredicted = lpp.AogTotalPredicted,
+                        PAogTotalPredicted = lpp.PaogTotalPredicted,
+                        LinkNumber = lpp.LinkNumber,
+                        DownstreamVolume = lpp.TotalVolumeDownstream,
+                        UpstreamVolume = lpp.TotalVolumeUpstream
+                    };
+                    adjustments.Add(a);
                 }
+            }
 
-                //Set the end row to have zero for the ajustments. No adjustment can be made because 
-                //downstream is unknown. The end row is determined by the starting point seleceted by the user
-                if (direction == "Upstream")
-                    Adjustment.AddLinkPivotAdjustmentRow(route.RouteSignals.FirstOrDefault().SignalId, 0, 0, 0, 0, 0, 0,
-                        0,
-                        0, 0, 0,
-                        route.RouteSignals.FirstOrDefault().Signal.SignalDescription,
-                        "", "", "", "", "", 0, 0, 0, 0, 1, 0, 0);
+            //Set the end row to have zero for the ajustments. No adjustment can be made because 
+            //downstream is unknown. The end row is determined by the starting point seleceted by the user
+            if (options.Direction == "Upstream")
+            {
+                AddLastAdjusment(routeLocations.FirstOrDefault(), adjustments);
+            }
+            else
+            {
+                AddLastAdjusment(routeLocations.LastOrDefault(), adjustments);
+            }
+
+            var cumulativeChange = 0;
+
+            //Determine the adjustment by adding the previous rows adjustment to the current rows delta
+            for (var i = adjustments.Count - 1; i >= 0; i--)
+            {
+                //if the new adjustment is greater than the cycle time than the adjustment should subtract
+                // the cycle time from the current adjustment and the result should be the new adjustment
+                if (cumulativeChange + adjustments[i].Delta > options.CycleLength)
+                {
+                    adjustments[i].Adjustment = cumulativeChange + adjustments[i].Delta - options.CycleLength;
+                    cumulativeChange = cumulativeChange + adjustments[i].Delta - options.CycleLength;
+                }
                 else
-                    Adjustment.AddLinkPivotAdjustmentRow(
-                        route.RouteSignals.LastOrDefault().SignalId, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        0, route.RouteSignals.LastOrDefault().Signal.SignalDescription, "", "",
-                        "",
-                        "", "", 0, 0, 0, 0,
-                        route.RouteSignals.Count, 0, 0);
+                {
+                    adjustments[i].Adjustment = cumulativeChange + adjustments[i].Delta;
+                    cumulativeChange = cumulativeChange + adjustments[i].Delta;
+                }
+            }
+            return (adjustments, pairedApproaches);
+        }
 
-                var cumulativeChange = 0;
+        private static void AddLastAdjusment(RouteLocation routeLocation, List<AdjustmentObject> adjustments)
+        {
+            adjustments.Add(new AdjustmentObject()
+            {
+                LocationIdentifier = routeLocation.LocationIdentifier,
+                Location = routeLocation.ToString(),
+                DownstreamLocation = "",
+                Delta = 0,
+                PAOGDownstreamBefore = 0,
+                PAOGDownstreamPredicted = 0,
+                PAOGUpstreamBefore = 0,
+                PAOGUpstreamPredicted = 0,
+                AOGDownstreamBefore = 0,
+                AOGDownstreamPredicted = 0,
+                AOGUpstreamBefore = 0,
+                AOGUpstreamPredicted = 0,
+                DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
+                DownstreamApproachDirection = routeLocation.PrimaryDirectionId,
+                UpstreamApproachDirection = routeLocation.PrimaryDirectionId,
+                ResultChartLocation = "",
+                AogTotalBefore = 0,
+                PAogTotalBefore = 0,
+                AogTotalPredicted = 0,
+                PAogTotalPredicted = 0,
+                LinkNumber = 0,
+                DownstreamVolume = 0,
+                UpstreamVolume = 0
+            });
+        }
 
-                //Determine the adjustment by adding the previous rows adjustment to the current rows delta
-                for (var i = Adjustment.Count - 1; i >= 0; i--)
-                    //if the new adjustment is greater than the cycle time than the adjustment should subtract
-                    // the cycle time from the current adjustment and the result should be the new adjustment
-                    if (cumulativeChange + Adjustment[i].Delta > cycleTime)
-                    {
-                        Adjustment[i].Adjustment = cumulativeChange + Adjustment[i].Delta - cycleTime;
-                        cumulativeChange = cumulativeChange + Adjustment[i].Delta - cycleTime;
-                    }
-                    else
-                    {
-                        Adjustment[i].Adjustment = cumulativeChange + Adjustment[i].Delta;
-                        cumulativeChange = cumulativeChange + Adjustment[i].Delta;
-                    }
+        private async Task CreatePairedApproaches(LinkPivotOptions options, List<RouteLocation> routeLocations, List<LinkPivotPair> PairedApproaches, List<int> indices, List<DateOnly> daysToInclude)
+        {
+            foreach (var i in indices)
+            {
+                var location = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i - 1 : i].LocationIdentifier);
+                var primaryPhase = routeLocations[i].PrimaryPhase;
+                var downstreamPrimaryPhase = routeLocations[options.Direction == "Upstream" ? i - 1 : i + 1].OpposingPhase;
+                if (downstreamPrimaryPhase != null)
+                {
+                    var downstreamLocation = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i : i + 1].LocationIdentifier);
+                    var downstreamApproach = downstreamLocation.Approaches.FirstOrDefault(a =>
+                        a.ProtectedPhaseNumber == downstreamPrimaryPhase);
+                    var approach = location.Approaches.FirstOrDefault(a =>
+                        a.ProtectedPhaseNumber == primaryPhase);
+                    var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(approach, downstreamApproach, options, daysToInclude, i + 1);
+                    PairedApproaches.Add(linkPivotPair);
+                }
             }
         }
 
-        private static List<DateTime> GetDates(DateTime startDate, DateTime endDate, List<DayOfWeek> days)
+        private List<DateOnly> GetDaysToProcess(DateOnly startDate, DateOnly endDate, int[] daysOfWeek)
         {
-            //Find each day in the given period that matches one of the specified day types and add it to the return list
-            var dates = new List<DateTime>();
-            for (var dt = startDate; dt <= endDate; dt = dt.AddDays(1))
-                if (days.Contains(dt.DayOfWeek))
-                    dates.Add(dt);
-            return dates;
+            List<DateOnly> datesToInclude = new List<DateOnly>();
+            var days = endDate.DayNumber - startDate.DayNumber;
+
+            for (int i = 0; i <= days; i++)
+            {
+                var date = startDate.AddDays(i);
+                if (daysOfWeek.Contains(((int)date.DayOfWeek)))
+                {
+                    datesToInclude.Add(date);
+                }
+            }
+
+            return datesToInclude;
         }
     }
 }
