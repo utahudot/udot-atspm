@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class ApproachSplitFailAggregationEFRepository : AggregationEFRepositoryBase<ApproachSplitFailAggregation>, IApproachSplitFailAggregationRepository
     {
         ///<inheritdoc/>
-        public ApproachSplitFailAggregationEFRepository(EventLogContext db, ILogger<ApproachSplitFailAggregationEFRepository> log) : base(db, log) { }
+        public ApproachSplitFailAggregationEFRepository(AggregationContext db, ILogger<ApproachSplitFailAggregationEFRepository> log) : base(db, log) { }
 
         #region IApproachSplitFailAggregationRepository
 
