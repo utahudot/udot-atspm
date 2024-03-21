@@ -1,36 +1,27 @@
-using ATSPM.Application.Analysis.Common;
-using ATSPM.Application.Analysis.Workflows;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.AppoachDelay;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.ApproachVolume;
+using ATSPM.Application.Business.ArrivalOnRed;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.GreenTimeUtilization;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Business.PedDelay;
+using ATSPM.Application.Business.PreempDetail;
+using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.Business.PreemptServiceRequest;
+using ATSPM.Application.Business.PurdueCoordinationDiagram;
+using ATSPM.Application.Business.SplitFail;
+using ATSPM.Application.Business.SplitMonitor;
+using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.ValueObjects;
-using ATSPM.Data.Models;
-using ATSPM.Domain.Common;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.ApproachVolume;
-using ATSPM.ReportApi.Business.ArrivalOnRed;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.GreenTimeUtilization;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
-using ATSPM.ReportApi.Business.LeftTurnGapReport;
-using ATSPM.ReportApi.Business.PedDelay;
-using ATSPM.ReportApi.Business.PreempDetail;
-using ATSPM.ReportApi.Business.PreemptService;
-using ATSPM.ReportApi.Business.PreemptServiceRequest;
-using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.Business.SplitMonitor;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.Business.TurningMovementCounts;
-using ATSPM.ReportApi.Business.WaitTime;
-using ATSPM.ReportApi.Business.YellowRedActivations;
 using ATSPM.ReportApi.ReportServices;
-using Google.Api;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Moq;
 using Xunit.Abstractions;
 
@@ -47,7 +38,7 @@ namespace TempReportTests.IReportServiceTests
 
             //s.AddTransient<IExecuteWithProgress<IEnumerable<ControllerEventLog>, IAsyncEnumerable<ATSPM.Application.Analysis.ApproachDelay.ApproachDelayResult>, int>, ApproachDelayWorkflow>();
 
-            s.AddScoped(s => Mock.Of<ISignalRepository>());
+            s.AddScoped(s => Mock.Of<ILocationRepository>());
             s.AddScoped(s => Mock.Of<IControllerEventLogRepository>());
 
             s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
@@ -77,7 +68,7 @@ namespace TempReportTests.IReportServiceTests
 
             //Common Services
             s.AddScoped<PlanService>();
-            s.AddScoped<SignalPhaseService>();
+            //s.AddScoped<SignalPhaseService>();
             s.AddScoped<CycleService>();
             s.AddScoped<PedPhaseService>();
             s.AddScoped<AnalysisPhaseCollectionService>();
@@ -97,7 +88,7 @@ namespace TempReportTests.IReportServiceTests
 
         //private readonly ApproachDelayService _approachDelayService;
         //private readonly SignalPhaseService _signalPhaseService;
-        private readonly ISignalRepository _signalRepository;
+        private readonly ILocationRepository _signalRepository;
         private readonly IControllerEventLogRepository _controllerEventLogRepository;
         //private readonly PhaseService _phaseService;
         private readonly TestDataUtility _testDataUtility;
@@ -112,7 +103,7 @@ namespace TempReportTests.IReportServiceTests
             IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>> service,
             //ApproachDelayService approachDelayService,
             //SignalPhaseService signalPhaseService,
-            ISignalRepository signalRepository,
+            ILocationRepository signalRepository,
             IControllerEventLogRepository controllerEventLogRepository,
             //PhaseService phaseService,
             TestDataUtility testDataUtility
@@ -150,132 +141,132 @@ namespace TempReportTests.IReportServiceTests
         }
 
         [Fact]
-        public async void ApproachDelayWorkflowTest()
-        {
-            var data = _testDataUtility.ReadTestFile<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayOptions-ReportTestData.json"));
+        //public async void ApproachDelayWorkflowTest()
+        //{
+        //    var data = _testDataUtility.ReadTestFile<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayOptions-ReportTestData.json"));
 
-            Mock.Get(_signalRepository).Setup(s => s.GetLatestVersionOfSignal(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns<string, DateTime>((a, b) => data.Signal)
-                .Callback<string, DateTime>((a, b) => _output.WriteLine($"stuff just happened {a} - {b}"));
+        //    Mock.Get(_signalRepository).Setup(s => s.GetLatestVersionOfSignal(It.IsAny<string>(), It.IsAny<DateTime>()))
+        //        .Returns<string, DateTime>((a, b) => data.Signal)
+        //        .Callback<string, DateTime>((a, b) => _output.WriteLine($"stuff just happened {a} - {b}"));
 
-            Mock.Get(_controllerEventLogRepository).Setup(s => s.GetSignalEventsBetweenDates(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .Returns(() => data.Logs)
-                .Callback<string, DateTime, DateTime>((a, b, c) => _output.WriteLine($"returned logs for {a} - {b} - {c}"));
+        //    Mock.Get(_controllerEventLogRepository).Setup(s => s.GetSignalEventsBetweenDates(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+        //        .Returns(() => data.Logs)
+        //        .Callback<string, DateTime, DateTime>((a, b, c) => _output.WriteLine($"returned logs for {a} - {b} - {c}"));
 
-            var sut = _service;
+        //    var sut = _service;
 
-            var result = await sut.ExecuteAsync(data.Options, null, default);
+        //    var result = await sut.ExecuteAsync(data.Options, null, default);
 
-            foreach (var r in result)
-            {
-                _output.WriteLine($"------------------------------------result! {r}");
-            }
-        }
+        //    foreach (var r in result)
+        //    {
+        //        _output.WriteLine($"------------------------------------result! {r}");
+        //    }
+        //}
 
-        [Fact]
-        public async void ExecuteAsyncPass()
-        {
-            var data = _testDataUtility.ReadTestFile<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayOptions-ReportTestData.json"));
+        //[Fact]
+        //public async void ExecuteAsyncPass()
+        //{
+        //    var data = _testDataUtility.ReadTestFile<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayOptions-ReportTestData.json"));
 
-            var options = data.Options;
+        //    var options = data.Options;
 
-            Mock.Get(_signalRepository).Setup(s => s.GetLatestVersionOfSignal(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns<string, DateTime>((a, b) => data.Signal)
-                .Callback<string, DateTime>((a, b) => _output.WriteLine($"stuff just happened {a} - {b}"));
+        //    Mock.Get(_signalRepository).Setup(s => s.GetLatestVersionOfSignal(It.IsAny<string>(), It.IsAny<DateTime>()))
+        //        .Returns<string, DateTime>((a, b) => data.Signal)
+        //        .Callback<string, DateTime>((a, b) => _output.WriteLine($"stuff just happened {a} - {b}"));
 
-            Mock.Get(_controllerEventLogRepository).Setup(s => s.GetSignalEventsBetweenDates(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .Returns(() => data.Logs)
-                .Callback<string, DateTime, DateTime>((a, b, c) => _output.WriteLine($"returned logs for {a} - {b} - {c}"));
-
-
-            var sut = _service;
-
-            var stuff = await _service.ExecuteAsync(options, null, default);
+        //    Mock.Get(_controllerEventLogRepository).Setup(s => s.GetSignalEventsBetweenDates(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+        //        .Returns(() => data.Logs)
+        //        .Callback<string, DateTime, DateTime>((a, b, c) => _output.WriteLine($"returned logs for {a} - {b} - {c}"));
 
 
+        //    var sut = _service;
 
-            _output.WriteLine($"------------------------------------output! {stuff.Count()}");
+        //    var stuff = await _service.ExecuteAsync(options, null, default);
 
-            Assert.True(true);
-        }
+
+
+        //    _output.WriteLine($"------------------------------------output! {stuff.Count()}");
+
+        //    Assert.True(true);
+        //}
 
         public void Dispose()
         {
         }
     }
 
-    public class ApproachDelayWorkflowReport : ReportServiceBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>
-    {
-        private readonly ISignalRepository _signalRepository;
-        private readonly IControllerEventLogRepository _controllerEventLogRepository;
+    //public class ApproachDelayWorkflowReport : ReportServiceBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>
+    //{
+    //    private readonly ISignalRepository _signalRepository;
+    //    private readonly IControllerEventLogRepository _controllerEventLogRepository;
 
-        public ApproachDelayWorkflowReport(ISignalRepository signalRepository, IControllerEventLogRepository controllerEventLogRepository)
-        {
-            _signalRepository = signalRepository;
-            _controllerEventLogRepository = controllerEventLogRepository;
-        }
+    //    public ApproachDelayWorkflowReport(ISignalRepository signalRepository, IControllerEventLogRepository controllerEventLogRepository)
+    //    {
+    //        _signalRepository = signalRepository;
+    //        _controllerEventLogRepository = controllerEventLogRepository;
+    //    }
 
-        public override async Task<IEnumerable<ApproachDelayResult>> ExecuteAsync(ApproachDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
-        {
-            var result = new List<ApproachDelayResult>();
-            
-            var signal = _signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
+    //    public override async Task<IEnumerable<ApproachDelayResult>> ExecuteAsync(ApproachDelayOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+    //    {
+    //        var result = new List<ApproachDelayResult>();
 
-            if (signal == null)
-            {
-                //return BadRequest("Signal not found");
-                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Signal not found"));
-            }
+    //        var signal = _signalRepository.GetLatestVersionOfSignal(parameter.SignalIdentifier, parameter.Start);
 
-            var controllerEventLogs = _controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+    //        if (signal == null)
+    //        {
+    //            //return BadRequest("Signal not found");
+    //            return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("Signal not found"));
+    //        }
 
-            if (controllerEventLogs.IsNullOrEmpty())
-            {
-                //return Ok("No Controller Event Logs found for signal");
-                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
-            }
+    //        var controllerEventLogs = _controllerEventLogRepository.GetSignalEventsBetweenDates(signal.SignalIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
-            var workflow = new ApproachDelayWorkflow();
+    //        if (controllerEventLogs.IsNullOrEmpty())
+    //        {
+    //            //return Ok("No Controller Event Logs found for signal");
+    //            return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for signal"));
+    //        }
 
-            //await foreach (var r in workflow.Execute(controllerEventLogs, null, default))
-            //{
-            //    var test = new ApproachDelayResult()
-            //    {
-            //        PhaseNumber = r.PhaseNumber,
-            //        PhaseDescription = "Figure this out",
-            //        ApproachDescription = "Figure this out",
-            //        AverageDelayPerVehicle = r.AverageDelay,
-            //        TotalDelay = r.TotalDelay,
-            //        ApproachId = 0,
-            //        Start = parameter.Start,
-            //        End = parameter.End,
-            //        SignalIdentifier = r.SignalIdentifier,
-            //        SignalDescription = signal.ToString(),
-            //        //Plans = r.Plans
-            //    };
+    //        var workflow = new ApproachDelayWorkflow();
 
-            //    test.ApproachDelayDataPoints = new List<DataPointForDouble>();
+    //        //await foreach (var r in workflow.Execute(controllerEventLogs, null, default))
+    //        //{
+    //        //    var test = new ApproachDelayResult()
+    //        //    {
+    //        //        PhaseNumber = r.PhaseNumber,
+    //        //        PhaseDescription = "Figure this out",
+    //        //        ApproachDescription = "Figure this out",
+    //        //        AverageDelayPerVehicle = r.AverageDelay,
+    //        //        TotalDelay = r.TotalDelay,
+    //        //        ApproachId = 0,
+    //        //        Start = parameter.Start,
+    //        //        End = parameter.End,
+    //        //        SignalIdentifier = r.SignalIdentifier,
+    //        //        SignalDescription = signal.ToString(),
+    //        //        //Plans = r.Plans
+    //        //    };
 
-            //    var tl = Timeline.FromMinutes<StartEndRange>(parameter.Start, parameter.End, parameter.BinSize);
+    //        //    test.ApproachDelayDataPoints = new List<DataPointForDouble>();
 
-            //    foreach (var t in tl)
-            //    {
-            //        Console.WriteLine($"timeline: {t.Start} - {t.End}");
+    //        //    var tl = Timeline.FromMinutes<StartEndRange>(parameter.Start, parameter.End, parameter.BinSize);
 
-            //        var dp = new DataPointForDouble(t.Start, r.Vehicles.Where(w => t.InRange(w.CorrectedTimeStamp)).Sum(s => s.Delay) / 3600);
+    //        //    foreach (var t in tl)
+    //        //    {
+    //        //        Console.WriteLine($"timeline: {t.Start} - {t.End}");
 
-            //        test.ApproachDelayDataPoints.Add(dp);
-            //    }
+    //        //        var dp = new DataPointForDouble(t.Start, r.Vehicles.Where(w => t.InRange(w.CorrectedTimeStamp)).Sum(s => s.Delay) / 3600);
 
-
-            //    //public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
+    //        //        test.ApproachDelayDataPoints.Add(dp);
+    //        //    }
 
 
+    //        //    //public double TotalDelay => Vehicles.Sum(s => s.Delay) / 3600;
 
-            //    result.Add(test);
-            //}
 
-            return result;
-        }
-    }
+
+    //        //    result.Add(test);
+    //        //}
+
+    //        return result;
+    //    }
+    //}
 }

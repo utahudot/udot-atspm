@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
-    public class LeftTurnGapDurationAnalysis
+    public class GapDurationService
     {
 
-        public LeftTurnGapDurationAnalysis()
+        public GapDurationService()
         {
         }
 
@@ -22,7 +22,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             TimeSpan endTime,
             int[] daysOfWeek,
             Location Location,
-            int totalActivations,
+            int leftTurnDetectorActivations,
             List<PhaseLeftTurnGapAggregation> phaseLeftTurnGapAggregations,
             int opposingPhase)
         {
@@ -33,13 +33,13 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             {
                 Capacity = GetGapSummedTotal(criticalGap, phaseLeftTurnGapAggregations),
                 AcceptableGaps = GetGapsList(start, end, startTime, endTime, criticalGap, daysOfWeek, phaseLeftTurnGapAggregations),
-                Demand = CalculateGapDemand(criticalGap, totalActivations),
+                Demand = CalculateGapDemand(criticalGap, leftTurnDetectorActivations),
                 Direction = approach.DirectionType.Abbreviation + approach.Detectors.FirstOrDefault()?.MovementType,
                 OpposingDirection = GetOpposingPhaseDirection(Location, opposingPhase)
             };
             if (gapDurationResult.Capacity == 0)
                 throw new ArithmeticException("Gap Count cannot be zero");
-            gapDurationResult.GapDurationPercent = gapDurationResult.Demand / gapDurationResult.Capacity;
+            gapDurationResult.GapDurationPercent = (gapDurationResult.Demand / gapDurationResult.Capacity) * 100;
             return gapDurationResult;
         }
 
@@ -62,7 +62,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 {
                     if (daysOfWeek.Contains((int)start.DayOfWeek))
                     {
-                        var leftTurnGaps = phaseLeftTurnGapAggregations.Where(p => p.BinStartTime >= tempStart && p.BinStartTime < tempStart.Add(startTime).AddMinutes(15));
+                        var leftTurnGaps = phaseLeftTurnGapAggregations.Where(p => p.Start >= tempStart && p.Start < tempStart.Add(startTime).AddMinutes(15));
                         int count = 0;
                         double sum = 0;
                         if (gapColumn == 12)

@@ -92,7 +92,7 @@ namespace ATSPM.Application.Analysis.Common
     //    #region ILocationPhaseLayer
 
     //    /// <inheritdoc/>
-    //    public string locationIdentifier { get; set; }
+    //    public string LocationIdentifier { get; set; }
 
     //    /// <inheritdoc/>
     //    public int PhaseNumber { get; set; }
@@ -126,7 +126,7 @@ namespace ATSPM.Application.Analysis.Common
 
     //    public override string ToString()
     //    {
-    //        return $"{locationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+    //        return $"{LocationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
     //    }
     //}
 
@@ -183,7 +183,7 @@ namespace ATSPM.Application.Analysis.Common
 
     //    /// <inheritdoc/>
     //    [JsonProperty]
-    //    public string locationIdentifier { get; set; }
+    //    public string LocationIdentifier { get; set; }
 
     //    /// <inheritdoc/>
     //    [JsonProperty]
@@ -233,7 +233,7 @@ namespace ATSPM.Application.Analysis.Common
 
     //    public override string ToString()
     //    {
-    //        return $"{locationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
+    //        return $"{LocationIdentifier} - {PhaseNumber} - {Direction} - {Start} - {End} - {DetectorCount}";
     //    }
     //}
 

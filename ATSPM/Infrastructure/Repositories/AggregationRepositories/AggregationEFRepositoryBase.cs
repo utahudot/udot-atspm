@@ -19,7 +19,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public abstract class AggregationEFRepositoryBase<T> : ATSPMRepositoryEFBase<CompressedAggregations<T>>, IAggregationRepository<T> where T : AggregationModelBase
     {
         ///<inheritdoc/>
-        public AggregationEFRepositoryBase(EventLogContext db, ILogger<AggregationEFRepositoryBase<T>> log) : base(db, log) { }
+        public AggregationEFRepositoryBase(AggregationContext db, ILogger<AggregationEFRepositoryBase<T>> log) : base(db, log) { }
 
         #region IAggregationRepository
 
@@ -31,6 +31,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)
+                .Where(c => c.Start >= startTime && c.End <= endTime)
                 .FromSpecification(new AggregationDateTimeRangeSpecification(locationId, startTime, endTime))
                 .Cast<T>()
                 .ToList();
