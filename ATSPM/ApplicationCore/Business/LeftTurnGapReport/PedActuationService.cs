@@ -6,42 +6,35 @@ using System.Linq;
 
 namespace ATSPM.Application.Business.LeftTurnGapReport
 {
-    public class LeftTurnPedestrianAnalysisService
+    public class PedActuationService
     {
-        private readonly LeftTurnReportPreCheckService leftTurnReportPreCheckService;
+        private readonly LeftTurnReportService leftTurnReportPreCheckService;
 
-        public LeftTurnPedestrianAnalysisService(
-            LeftTurnReportPreCheckService leftTurnReportPreCheckService)
+        public PedActuationService(
+            LeftTurnReportService leftTurnReportService)
         {
-            this.leftTurnReportPreCheckService = leftTurnReportPreCheckService;
+            this.leftTurnReportPreCheckService = leftTurnReportService;
         }
         public PedActuationResult GetPedestrianPercentage(
             Location Location,
             Approach approach,
-            DateTime start,
-            DateTime end,
+            PedActuationOptions options,
             TimeSpan startTime,
             TimeSpan endTime,
-            int[] daysOfWeek,
             List<PhasePedAggregation> phasePedAggregations,
             int opposingPhase,
             List<PhaseCycleAggregation> phaseCycleAggregations
             )
         {
-            var detectors = leftTurnReportPreCheckService.GetLeftTurnDetectors(approach);
             var cycleAverage = GetCycleAverage(
-                start,
-                end,
+                options,
                 startTime,
                 endTime,
-                daysOfWeek,
                 phaseCycleAggregations);
             var pedCycleAverage = GetPedCycleAverage(
-                start,
-                end,
+                options,
                 startTime,
                 endTime,
-                daysOfWeek,
                 phasePedAggregations);
 
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
@@ -50,7 +43,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 if (avg.Value != 0)
                 {
                     var pedAvg = pedCycleAverage.PedCycleAverageList.FirstOrDefault(p => p.Key == avg.Key);
-                    cycleList.Add(avg.Key, pedAvg.Value / avg.Value);
+                    cycleList.Add(avg.Key, (pedAvg.Value / avg.Value) * 100);
                 }
             }
             var result = new PedActuationResult();
@@ -61,7 +54,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             }
             else
             {
-                result.CyclesWithPedCallsPercent = pedCycleAverage.PedCycleAverage / cycleAverage.CycleAverage;
+                result.CyclesWithPedCallsPercent = (pedCycleAverage.PedCycleAverage / cycleAverage.CycleAverage) * 100;
                 result.CyclesWithPedCallsNum = (int)pedCycleAverage.PedCycleAverage;
             }
             result.PercentCyclesWithPedsList = cycleList;
@@ -72,25 +65,23 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         }
 
         private PedCycleAverageResult GetPedCycleAverage(
-            DateTime start,
-            DateTime end,
+            PedActuationOptions options,
             TimeSpan startTime,
             TimeSpan endTime,
-            int[] daysOfWeek,
             List<PhasePedAggregation> phasePedAggregations
             )
         {
             List<double> hourlyPedCycles = new List<double>();
-            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
+            for (var tempDate = options.Start.Date; tempDate <= options.End; tempDate = tempDate.AddDays(1))
             {
                 hourlyPedCycles.Add(phasePedAggregations
-                    .Where(p => p.BinStartTime >= tempDate.Date.Add(startTime)
-                        && p.BinStartTime < tempDate.Date.Add(endTime))
+                    .Where(p => p.Start >= tempDate.Date.Add(startTime)
+                        && p.Start < tempDate.Date.Add(endTime))
                     .Sum(p => p.PedCycles));
             }
             foreach (var aggregation in phasePedAggregations)
             {
-                aggregation.BinStartTime = aggregation.BinStartTime.AddMinutes(-aggregation.BinStartTime.Minute % 15);
+                aggregation.Start = aggregation.Start.AddMinutes(-aggregation.Start.Minute % 15);
             }
             double averagePedCycles = 0;
             if (phasePedAggregations.Any())
@@ -98,14 +89,14 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 averagePedCycles = hourlyPedCycles.Average(a => a);
             }
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
-            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
+            for (var tempDate = options.Start.Date; tempDate <= options.End; tempDate = tempDate.AddDays(1))
             {
-                if (daysOfWeek.Contains((int)start.DayOfWeek))
+                if (options.DaysOfWeek.Contains((int)tempDate.DayOfWeek))
                     for (var tempstart = tempDate.Date.Add(startTime); tempstart < tempDate.Add(endTime); tempstart = tempstart.AddMinutes(15))
                     {
-                        if (phasePedAggregations.Where(c => c.BinStartTime >= tempstart && c.BinStartTime < tempstart.AddMinutes(15)).Any())
+                        if (phasePedAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Any())
                         {
-                            cycleList.Add(tempstart, phasePedAggregations.Where(c => c.BinStartTime >= tempstart && c.BinStartTime < tempstart.AddMinutes(15)).Average(c => c.PedCycles));
+                            cycleList.Add(tempstart, phasePedAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Average(c => c.PedCycles));
                         }
                         else
                         {
@@ -122,22 +113,20 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         }
 
         private CycleAverageResult GetCycleAverage(
-            DateTime start,
-            DateTime end,
+            PedActuationOptions options,
             TimeSpan startTime,
             TimeSpan endTime,
-            int[] daysOfWeek,
             List<PhaseCycleAggregation> cycleAggregations)
         {
             List<double> hourlyCycles = new List<double>();
-            for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
+            for (var tempDate = options.Start.Date; tempDate < options.End; tempDate = tempDate.AddDays(1))
             {
                 hourlyCycles.Add(cycleAggregations
-                    .Where(p => p.BinStartTime >= tempDate.Date.Add(startTime)
-                        && p.BinStartTime < tempDate.Date.Add(endTime))
+                    .Where(p => p.Start >= tempDate.Date.Add(startTime)
+                        && p.Start < tempDate.Date.Add(endTime))
                     .Sum(p => p.TotalRedToRedCycles));
             }
-            Dictionary<DateTime, double> cycleList = GetAverageCycles(start, end, startTime, endTime, daysOfWeek, cycleAggregations);
+            Dictionary<DateTime, double> cycleList = GetAverageCycles(options.Start, options.End, startTime, endTime, options.DaysOfWeek, cycleAggregations);
             var cycleAverage = new CycleAverageResult
             {
                 CycleAverage = hourlyCycles.Average(a => a),
@@ -157,10 +146,10 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
             Dictionary<DateTime, double> cycleList = new Dictionary<DateTime, double>();
             for (var tempDate = start.Date; tempDate <= end; tempDate = tempDate.AddDays(1))
             {
-                if (daysOfWeek.Contains((int)start.DayOfWeek))
+                if (daysOfWeek.Contains((int)tempDate.DayOfWeek))
                     for (var tempstart = tempDate.Date.Add(startTime); tempstart < tempDate.Add(endTime); tempstart = tempstart.AddMinutes(15))
                     {
-                        cycleList.Add(tempstart, cycleAggregations.Where(c => c.BinStartTime >= tempstart && c.BinStartTime < tempstart.AddMinutes(15)).Average(c => c.TotalRedToRedCycles));
+                        cycleList.Add(tempstart, cycleAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Average(c => c.TotalRedToRedCycles));
                     }
             }
 

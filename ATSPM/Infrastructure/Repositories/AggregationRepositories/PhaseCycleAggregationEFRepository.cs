@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class PhaseCycleAggregationEFRepository : AggregationEFRepositoryBase<PhaseCycleAggregation>, IPhaseCycleAggregationRepository
     {
         ///<inheritdoc/>
-        public PhaseCycleAggregationEFRepository(EventLogContext db, ILogger<PhaseCycleAggregationEFRepository> log) : base(db, log) { }
+        public PhaseCycleAggregationEFRepository(AggregationContext db, ILogger<PhaseCycleAggregationEFRepository> log) : base(db, log) { }
 
         #region IPhaseCycleAggregationRepository
 

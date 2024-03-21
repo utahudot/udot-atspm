@@ -32,7 +32,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PreemptDetailResult> ExecuteAsync(PreemptDetailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
@@ -44,7 +44,7 @@ namespace ATSPM.ReportApi.ReportServices
                 codes.Add((DataLoggerEnum)i);
 
             var events = controllerEventLogRepository.GetLocationEventsByEventCodes(
-                parameter.locationIdentifier,
+                parameter.LocationIdentifier,
                 parameter.Start,
                 parameter.End,
                 codes).ToList();

@@ -9,9 +9,10 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class DetectorEventCountAggregationEFRepository : AggregationEFRepositoryBase<DetectorEventCountAggregation>, IDetectorEventCountAggregationRepository
     {
         ///<inheritdoc/>
-        public DetectorEventCountAggregationEFRepository(EventLogContext db, ILogger<DetectorEventCountAggregationEFRepository> log) : base(db, log) { }
+        public DetectorEventCountAggregationEFRepository(AggregationContext db, ILogger<DetectorEventCountAggregationEFRepository> log) : base(db, log) { }
 
         #region IDetectorEventCountAggregationRepository
+
 
         #endregion
     }
