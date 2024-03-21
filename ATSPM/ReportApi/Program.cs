@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using ATSPM.Application.Business;
+using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.AppoachDelay;
 using ATSPM.Application.Business.ApproachSpeed;
 using ATSPM.Application.Business.ApproachVolume;
@@ -120,6 +121,7 @@ builder.Host.ConfigureServices((h, s) =>
 
 
     //report services
+    s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
@@ -147,7 +149,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
 
-    //Chart Services
+    //AggregationResult Services
+    s.AddScoped<AggregationReportService>();
     s.AddScoped<ApproachDelayService>();
     s.AddScoped<ApproachSpeedService>();
     s.AddScoped<ApproachVolumeService>();
@@ -175,6 +178,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<WatchDogReportService>();
 
     //Common Services
+    s.AddScoped<AggregationEngineService>();
     s.AddScoped<PlanService>();
     s.AddScoped<PedActuationService>();
     s.AddScoped<LocationPhaseService>();
