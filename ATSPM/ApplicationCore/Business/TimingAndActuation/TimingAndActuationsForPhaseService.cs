@@ -83,12 +83,12 @@ namespace ATSPM.Application.Business.TimingAndActuation
         {
             return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of 'options' is true
                 phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
-                    : "Phase - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    $"zOverlap - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1"  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1" // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
                 :  // If 'PhaseType' is false
                 phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
-                    : "Phase - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    $"zOverlap - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2"  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2";  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
         }
 
         public List<CycleEventsDto> GetCycleEvents(
