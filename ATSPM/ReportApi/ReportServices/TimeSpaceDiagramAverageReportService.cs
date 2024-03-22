@@ -161,6 +161,11 @@ namespace ATSPM.ReportApi.ReportServices
             var programmedSplitsForTimePeriod = new List<List<IndianaEvent>>();
             var daysToProcess = GetDaysToProcess(parameter.StartDate, parameter.EndDate, parameter.DaysOfWeek);
 
+            if(daysToProcess.Count == 0)
+            {
+                throw new Exception("No Data for Days Selected");
+            }
+
             foreach (var routeLocation in routeLocations)
             {
                 var planEventsForPeriod = new List<Plan>();
