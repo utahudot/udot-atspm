@@ -66,7 +66,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             {
                 startOfRefPoint = CalculateStartOfRefPointForNonCoordPhases(options, offset, selectedPhase, selectedSequence, programSplits, controllerEventLogs, phaseDetail);
             }
-            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.EndTime, options.StartDate.ToDateTime(options.StartTime), cycleLength, percentileSplitCycle);
+            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.StartDate.ToDateTime(options.EndTime), options.StartDate.ToDateTime(options.StartTime), cycleLength, percentileSplitCycle);
 
             var greenTimeEventsResult = new List<TimeSpaceEventBase>();
             var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
@@ -165,7 +165,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         }
 
         private List<CycleEventsDto> CreateCyclesEvents(double startOfGreen,
-            TimeOnly endTime,
+            DateTime end,
             DateTime start,
             int cycleLength,
             GreenToGreenCycle percentileSplitCycle)
@@ -178,7 +178,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
             var events = new List<CycleEventsDto>();
 
-            while (startTime.Minute <= endTime.AddMinutes(2).Minute)
+            while (startTime <= end.AddMinutes(2))
             {
                 var startOfYellowTime = startTime.AddSeconds(greenTime);
                 var startOfRedTime = startOfYellowTime.AddSeconds(yellowTime);
