@@ -34,7 +34,6 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             //var Location = LocationRepository.GetLatestVersionOfLocation(options.LocationIdentifier, options.Start);
             //var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, options.Start.AddHours(-12), options.End.AddHours(12)).ToList();
 
-
             var isPermissivePhase = phaseDetail.PhaseNumber != phaseDetail.Approach.ProtectedPhaseNumber;
             //define properties
             string phaseNumberSort;
@@ -192,7 +191,8 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
                 programmedSplits.Select(p => new DataPointForDouble(p.Timestamp, p.ProgValue)).ToList(),
                 phaseDetail.PhaseNumber,
                 options.YAxisBinSize,
-                options.XAxisBinSize
+                options.XAxisBinSize,
+                plans.ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
             result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
