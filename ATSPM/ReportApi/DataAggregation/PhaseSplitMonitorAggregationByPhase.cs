@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Business.Bins;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -8,27 +9,32 @@ namespace MOE.Common.Business.DataAggregation
 {
     public class PhaseSplitMonitorAggregationByPhase : AggregationByPhase
     {
-        public const string EIGHTY_FIFTH_PERCENTILE_SPLIT = "EightyFifthPercentileSplit";
-        public const string SKIPPED_COUNT = "SkippedCount";
         private readonly IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository;
 
         public PhaseSplitMonitorAggregationByPhase(
             Location signal,
             int phaseNumber,
-            PhaseSplitMonitorAggregationOptions options,
-            AggregatedDataType dataType,
-            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregation,
+            int dataType,
+            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository,
+            AggregationOptions options
             )
-            : base(signal, phaseNumber, options, dataType)
+            : base(signal, phaseNumber, phaseSplitMonitorAggregation, dataType, options)
         {
             this.phaseSplitMonitorAggregationRepository = phaseSplitMonitorAggregationRepository;
-            LoadBins(signal, phaseNumber, options, dataType);
+            LoadBins(signal, phaseNumber, phaseSplitMonitorAggregation, dataType, options);
         }
 
 
-        protected override void LoadBins(Location signal, int phaseNumber, PhaseAggregationMetricOptions options,
-            AggregatedDataType dataType)
+        protected override void LoadBins(
+            Location signal,
+            int phaseNumber,
+            PhaseAggregationMetricOptions phaseAggregationMetricOptions,
+            int dataType,
+            AggregationOptions options
+            )
         {
+            var dataTypeEnum = (SplitMonitorDataTypes)dataType;
             var splitFails = phaseSplitMonitorAggregationRepository.GetAggregationsBetweenDates(signal.LocationIdentifier, options.Start, options.End).Where(a => a.PhaseNumber == phaseNumber).ToList();
             if (splitFails != null)
             {
@@ -45,14 +51,14 @@ namespace MOE.Common.Business.DataAggregation
                         if (splitFails.Any(s => s.Start >= bin.Start && s.Start < bin.End))
                         {
                             var terminationCount = 0;
-                            switch (dataType.DataName)
+                            switch (dataTypeEnum)
                             {
-                                case EIGHTY_FIFTH_PERCENTILE_SPLIT:
+                                case SplitMonitorDataTypes.EightyFifthPercentileSplit:
                                     terminationCount =
                                         splitFails.Where(s => s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.EightyFifthPercentileSplit);
                                     break;
-                                case SKIPPED_COUNT:
+                                case SplitMonitorDataTypes.SkippedCount:
                                     terminationCount =
                                         splitFails.Where(s => s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.SkippedCount);

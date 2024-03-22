@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -12,23 +13,27 @@ namespace MOE.Common.Business.DataAggregation
         public List<PhaseCycleAggregationByApproach> ApproachCycles { get; }
 
         public PhaseCycleAggregationBySignal(
-            PhaseCycleAggregationOptions options,
+            PhaseCycleAggregationOptions phaseCycleAggregationOptions,
             Location signal,
-            IPhaseCycleAggregationRepository phaseCycleAggregationRepository) : base(
-            options, signal)
+            IPhaseCycleAggregationRepository phaseCycleAggregationRepository,
+            AggregationOptions options
+            ) : base(
+            phaseCycleAggregationOptions, signal, options)
         {
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
             ApproachCycles = new List<PhaseCycleAggregationByApproach>();
-            GetApproachCycleAggregationContainersForAllApporaches(options, signal);
-            LoadBins(null, null);
+            GetApproachCycleAggregationContainersForAllApporaches(phaseCycleAggregationOptions, signal, options);
+            LoadBins(null, null, options);
         }
 
 
         public PhaseCycleAggregationBySignal(
-            PhaseCycleAggregationOptions options,
+            PhaseCycleAggregationOptions phaseCycleAggregationOptions,
             Location signal,
             int phaseNumber,
-            IPhaseCycleAggregationRepository phaseCycleAggregationRepository) : base(options, signal)
+            IPhaseCycleAggregationRepository phaseCycleAggregationRepository,
+            AggregationOptions options
+            ) : base(phaseCycleAggregationOptions, signal, options)
         {
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
             ApproachCycles = new List<PhaseCycleAggregationByApproach>();
@@ -38,28 +43,36 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachCycles.Add(
                         new PhaseCycleAggregationByApproach(
                             approach,
-                            options,
+                            phaseCycleAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            phaseCycleAggregationRepository));
+                            options.DataType,
+                            phaseCycleAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null && approach.PermissivePhaseNumber == phaseNumber)
                         ApproachCycles.Add(
                             new PhaseCycleAggregationByApproach(
                                 approach,
-                                options,
+                                phaseCycleAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                phaseCycleAggregationRepository));
+                                options.DataType,
+                                phaseCycleAggregationRepository,
+                                options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        public PhaseCycleAggregationBySignal(PhaseCycleAggregationOptions options, Location signal,
-            DirectionTypes direction) : base(options, signal)
+        public PhaseCycleAggregationBySignal(
+            PhaseCycleAggregationOptions phaseCycleAggregationOptions,
+            Location signal,
+            DirectionTypes direction,
+            AggregationOptions options
+            ) : base(phaseCycleAggregationOptions, signal, options)
         {
             ApproachCycles = new List<PhaseCycleAggregationByApproach>();
             foreach (var approach in signal.Approaches)
@@ -68,27 +81,30 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachCycles.Add(
                         new PhaseCycleAggregationByApproach(
                             approach,
-                            options,
+                            phaseCycleAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            phaseCycleAggregationRepository));
+                            options.DataType,
+                            phaseCycleAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null)
                         ApproachCycles.Add(
                             new PhaseCycleAggregationByApproach(
                                 approach,
-                                options,
+                                phaseCycleAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                phaseCycleAggregationRepository));
+                                options.DataType,
+                                phaseCycleAggregationRepository, options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        protected override void LoadBins(SignalAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(SignalAggregationMetricOptions signalAggregationMetricOptions, Location signal, AggregationOptions options)
         {
 
             for (var i = 0; i < BinsContainers.Count; i++)
@@ -104,7 +120,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(ApproachAggregationMetricOptions approachAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -120,29 +136,35 @@ namespace MOE.Common.Business.DataAggregation
 
 
         private void GetApproachCycleAggregationContainersForAllApporaches(
-            PhaseCycleAggregationOptions options, Location signal)
+            PhaseCycleAggregationOptions phaseCycleAggregationOptions,
+            Location signal,
+            AggregationOptions options)
         {
             foreach (var approach in signal.Approaches)
             {
                 ApproachCycles.Add(
                     new PhaseCycleAggregationByApproach(
                         approach,
-                        options,
+                        phaseCycleAggregationOptions,
                         options.Start,
                         options.End,
                         true,
-                        options.SelectedAggregatedDataType,
-                        phaseCycleAggregationRepository));
+                        options.DataType,
+                        phaseCycleAggregationRepository,
+                        options
+                        ));
                 if (approach.PermissivePhaseNumber != null)
                     ApproachCycles.Add(
                         new PhaseCycleAggregationByApproach(
                             approach,
-                            options,
+                            phaseCycleAggregationOptions,
                             options.Start,
                             options.End,
                             false,
-                            options.SelectedAggregatedDataType,
-                            phaseCycleAggregationRepository));
+                            options.DataType,
+                            phaseCycleAggregationRepository,
+                            options
+                            ));
             }
         }
 

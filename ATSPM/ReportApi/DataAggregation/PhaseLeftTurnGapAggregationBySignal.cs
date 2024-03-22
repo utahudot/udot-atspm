@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -12,21 +13,26 @@ namespace MOE.Common.Business.DataAggregation
         public List<PhaseLeftTurnGapAggregationByApproach> ApproachLeftTurnGaps { get; }
 
         public PhaseLeftTurnGapAggregationBySignal(
-            PhaseLeftTurnGapAggregationOptions options,
+            PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
             Location signal,
-            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
+            AggregationOptions options
             ) : base(
-            options, signal)
+            phaseLeftTurnGapAggregationOptions, signal, options)
         {
             this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
             ApproachLeftTurnGaps = new List<PhaseLeftTurnGapAggregationByApproach>();
-            GetApproachLeftTurnGapAggregationContainersForAllApporaches(options, signal);
-            LoadBins(null, null);
+            GetApproachLeftTurnGapAggregationContainersForAllApporaches(phaseLeftTurnGapAggregationOptions, signal, options);
+            LoadBins(null, null, options);
         }
 
 
-        public PhaseLeftTurnGapAggregationBySignal(PhaseLeftTurnGapAggregationOptions options, Location signal,
-            int phaseNumber) : base(options, signal)
+        public PhaseLeftTurnGapAggregationBySignal(
+            PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
+            Location signal,
+            int phaseNumber,
+            AggregationOptions options
+            ) : base(phaseLeftTurnGapAggregationOptions, signal, options)
         {
             ApproachLeftTurnGaps = new List<PhaseLeftTurnGapAggregationByApproach>();
             foreach (var approach in signal.Approaches)
@@ -35,28 +41,35 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachLeftTurnGaps.Add(
                         new PhaseLeftTurnGapAggregationByApproach(
                             approach,
-                            options,
+                            phaseLeftTurnGapAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            phaseLeftTurnGapAggregationRepository));
+                            options.DataType,
+                            phaseLeftTurnGapAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null && approach.PermissivePhaseNumber == phaseNumber)
                         ApproachLeftTurnGaps.Add(
                             new PhaseLeftTurnGapAggregationByApproach(
                                 approach,
-                                options,
+                                phaseLeftTurnGapAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                phaseLeftTurnGapAggregationRepository));
+                                options.DataType,
+                                phaseLeftTurnGapAggregationRepository, options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        public PhaseLeftTurnGapAggregationBySignal(PhaseLeftTurnGapAggregationOptions options, Location signal,
-            DirectionTypes direction) : base(options, signal)
+        public PhaseLeftTurnGapAggregationBySignal(
+            PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
+            Location signal,
+            DirectionTypes direction,
+            AggregationOptions options
+            ) : base(phaseLeftTurnGapAggregationOptions, signal, options)
         {
             ApproachLeftTurnGaps = new List<PhaseLeftTurnGapAggregationByApproach>();
             foreach (var approach in signal.Approaches)
@@ -65,27 +78,31 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachLeftTurnGaps.Add(
                         new PhaseLeftTurnGapAggregationByApproach(
                             approach,
-                            options,
+                            phaseLeftTurnGapAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            phaseLeftTurnGapAggregationRepository));
+                            options.DataType,
+                            phaseLeftTurnGapAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null)
                         ApproachLeftTurnGaps.Add(
                             new PhaseLeftTurnGapAggregationByApproach(
                                 approach,
-                                options,
+                                phaseLeftTurnGapAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                phaseLeftTurnGapAggregationRepository));
+                                options.DataType,
+                                phaseLeftTurnGapAggregationRepository,
+                                options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        protected override void LoadBins(SignalAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(SignalAggregationMetricOptions signalAggregationMetricOptions, Location signal, AggregationOptions options)
         {
 
             for (var i = 0; i < BinsContainers.Count; i++)
@@ -101,7 +118,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(ApproachAggregationMetricOptions approachAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -117,29 +134,35 @@ namespace MOE.Common.Business.DataAggregation
 
 
         private void GetApproachLeftTurnGapAggregationContainersForAllApporaches(
-            PhaseLeftTurnGapAggregationOptions options, Location signal)
+            PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
+            Location signal,
+            AggregationOptions options)
         {
             foreach (var approach in signal.Approaches)
             {
                 ApproachLeftTurnGaps.Add(
                     new PhaseLeftTurnGapAggregationByApproach(
                         approach,
-                        options,
+                        phaseLeftTurnGapAggregationOptions,
                         options.Start,
                         options.End,
                         true,
-                        options.SelectedAggregatedDataType,
-                        phaseLeftTurnGapAggregationRepository));
+                        options.DataType,
+                        phaseLeftTurnGapAggregationRepository,
+                        options
+                        ));
                 if (approach.PermissivePhaseNumber != null)
                     ApproachLeftTurnGaps.Add(
                         new PhaseLeftTurnGapAggregationByApproach(
                             approach,
-                            options,
+                            phaseLeftTurnGapAggregationOptions,
                             options.Start,
                             options.End,
                             false,
-                            options.SelectedAggregatedDataType,
-                            phaseLeftTurnGapAggregationRepository));
+                            options.DataType,
+                            phaseLeftTurnGapAggregationRepository,
+                            options
+                            ));
             }
         }
 

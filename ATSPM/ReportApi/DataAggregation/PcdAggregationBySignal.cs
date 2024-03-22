@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -9,19 +10,25 @@ namespace MOE.Common.Business.DataAggregation
     {
         private readonly IApproachPcdAggregationRepository approachPcdAggregationRepository;
 
-        public PcdAggregationBySignal(ApproachPcdAggregationOptions options, Location signal) : base(
-            options, signal)
+        public PcdAggregationBySignal(
+            ApproachPcdAggregationOptions approachPcdAggregationOptions,
+            Location signal,
+            AggregationOptions options
+            ) : base(
+            approachPcdAggregationOptions, signal, options)
         {
             ApproachPcds = new List<PcdAggregationByApproach>();
-            GetApproachPcdAggregationContainersForAllApporaches(options, signal);
-            LoadBins(null, null);
+            GetApproachPcdAggregationContainersForAllApporaches(approachPcdAggregationOptions, signal, options);
+            LoadBins(null, null, options);
         }
 
         public PcdAggregationBySignal(
-            ApproachPcdAggregationOptions options,
+            ApproachPcdAggregationOptions approachPcdAggregationOptions,
             Location signal,
             int phaseNumber,
-            IApproachPcdAggregationRepository approachPcdAggregationRepository) : base(options, signal)
+            IApproachPcdAggregationRepository approachPcdAggregationRepository,
+            AggregationOptions options
+            ) : base(approachPcdAggregationOptions, signal, options)
         {
             ApproachPcds = new List<PcdAggregationByApproach>();
             foreach (var approach in signal.Approaches)
@@ -30,29 +37,37 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachPcds.Add(
                         new PcdAggregationByApproach(
                             approach,
-                            options,
+                            approachPcdAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            approachPcdAggregationRepository));
+                            options.DataType,
+                            approachPcdAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null && approach.PermissivePhaseNumber == phaseNumber)
                         ApproachPcds.Add(
                             new PcdAggregationByApproach(
                                 approach,
-                                options,
+                                approachPcdAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                approachPcdAggregationRepository));
+                                options.DataType,
+                                approachPcdAggregationRepository,
+                                options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
             this.approachPcdAggregationRepository = approachPcdAggregationRepository;
         }
 
-        public PcdAggregationBySignal(ApproachPcdAggregationOptions options, Location signal,
-            DirectionTypes direction) : base(options, signal)
+        public PcdAggregationBySignal(
+            ApproachPcdAggregationOptions approachPcdAggregationOptions,
+            Location signal,
+            DirectionTypes direction,
+            AggregationOptions options
+            ) : base(approachPcdAggregationOptions, signal, options)
         {
             ApproachPcds = new List<PcdAggregationByApproach>();
             foreach (var approach in signal.Approaches)
@@ -61,29 +76,33 @@ namespace MOE.Common.Business.DataAggregation
                     ApproachPcds.Add(
                         new PcdAggregationByApproach(
                             approach,
-                            options,
+                            approachPcdAggregationOptions,
                             options.Start,
                             options.End,
                             true,
-                            options.SelectedAggregatedDataType,
-                            approachPcdAggregationRepository));
+                            options.DataType,
+                            approachPcdAggregationRepository,
+                            options
+                            ));
                     if (approach.PermissivePhaseNumber != null)
                         ApproachPcds.Add(
                             new PcdAggregationByApproach(
                                 approach,
-                                options,
+                                approachPcdAggregationOptions,
                                 options.Start,
                                 options.End,
                                 false,
-                                options.SelectedAggregatedDataType,
-                                approachPcdAggregationRepository));
+                                options.DataType,
+                                approachPcdAggregationRepository,
+                                options
+                                ));
                 }
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
         public List<PcdAggregationByApproach> ApproachPcds { get; }
 
-        protected override void LoadBins(SignalAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(SignalAggregationMetricOptions signalAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -97,7 +116,7 @@ namespace MOE.Common.Business.DataAggregation
             }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(ApproachAggregationMetricOptions approachAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -113,29 +132,33 @@ namespace MOE.Common.Business.DataAggregation
 
 
         private void GetApproachPcdAggregationContainersForAllApporaches(
-            ApproachPcdAggregationOptions options, Location signal)
+            ApproachPcdAggregationOptions approachPcdAggregationOptions, Location signal, AggregationOptions options)
         {
             foreach (var approach in signal.Approaches)
             {
                 ApproachPcds.Add(
                     new PcdAggregationByApproach(
                         approach,
-                        options,
+                        approachPcdAggregationOptions,
                         options.Start,
                         options.End,
                         true,
-                        options.SelectedAggregatedDataType,
-                        approachPcdAggregationRepository));
+                        options.DataType,
+                        approachPcdAggregationRepository,
+                        options
+                        ));
                 if (approach.PermissivePhaseNumber != null)
                     ApproachPcds.Add(
                         new PcdAggregationByApproach(
                             approach,
-                            options,
+                            approachPcdAggregationOptions,
                             options.Start,
                             options.End,
                             false,
-                            options.SelectedAggregatedDataType,
-                            approachPcdAggregationRepository));
+                            options.DataType,
+                            approachPcdAggregationRepository,
+                            options
+                            ));
             }
         }
 

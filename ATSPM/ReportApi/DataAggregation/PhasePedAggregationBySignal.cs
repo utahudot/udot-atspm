@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
 
@@ -10,32 +11,36 @@ namespace MOE.Common.Business.DataAggregation
 
         public List<PhasePedAggregationByPhase> PedAggregations { get; }
         public PhasePedAggregationBySignal(
-            PhasePedAggregationOptions options,
+            PhasePedAggregationOptions phasePedAggregationOptions,
             Location signal,
-            IPhasePedAggregationRepository phasePedAggregationRepository) : base(
-            options, signal)
+            IPhasePedAggregationRepository phasePedAggregationRepository,
+            AggregationOptions options
+            ) : base(
+            phasePedAggregationOptions, signal, options)
         {
             this.phasePedAggregationRepository = phasePedAggregationRepository;
             PedAggregations = new List<PhasePedAggregationByPhase>();
-            GetPhasePedAggregationContainersForAllPhases(options, signal);
-            LoadBins(null, null);
+            GetPhasePedAggregationContainersForAllPhases(phasePedAggregationOptions, signal, options);
+            LoadBins(null, null, options);
         }
 
         public PhasePedAggregationBySignal(
-            PhasePedAggregationOptions options,
+            PhasePedAggregationOptions phasePedAggregationOptions,
             Location signal,
             int phaseNumber,
-            IPhasePedAggregationRepository phasePedAggregationRepository) : base(options, signal)
+            IPhasePedAggregationRepository phasePedAggregationRepository,
+            AggregationOptions options
+            ) : base(phasePedAggregationOptions, signal, options)
         {
             this.phasePedAggregationRepository = phasePedAggregationRepository;
             PedAggregations = new List<PhasePedAggregationByPhase>
             {
-                new PhasePedAggregationByPhase(signal, phaseNumber, options, options.SelectedAggregatedDataType, phasePedAggregationRepository)
+                new PhasePedAggregationByPhase(signal, phaseNumber, phasePedAggregationOptions, options.DataType, phasePedAggregationRepository, options)
             };
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        protected override void LoadBins(SignalAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(SignalAggregationMetricOptions signalAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
                 for (var binIndex = 0; binIndex < BinsContainers[i].Bins.Count; binIndex++)
@@ -49,7 +54,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(ApproachAggregationMetricOptions approachAggregationMetricOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -64,22 +69,24 @@ namespace MOE.Common.Business.DataAggregation
         }
 
         private void GetPhasePedAggregationContainersForAllPhases(
-            PhasePedAggregationOptions options, Location signal)
+            PhasePedAggregationOptions phasePedAggregationOptions, Location signal, AggregationOptions options)
         {
-            List<int> availablePhases = GetAvailablePhasesForSignal(options, signal);
+            List<int> availablePhases = GetAvailablePhasesForSignal(phasePedAggregationOptions, signal, options);
             foreach (var phaseNumber in availablePhases)
             {
                 PedAggregations.Add(
                     new PhasePedAggregationByPhase(
                         signal,
                         phaseNumber,
-                        options,
-                        options.SelectedAggregatedDataType,
-                        phasePedAggregationRepository));
+                        phasePedAggregationOptions,
+                        options.DataType,
+                        phasePedAggregationRepository,
+                        options
+                        ));
             }
         }
 
-        private List<int> GetAvailablePhasesForSignal(PhasePedAggregationOptions options, Location signal)
+        private List<int> GetAvailablePhasesForSignal(PhasePedAggregationOptions phasePedAggregationOptions, Location signal, AggregationOptions options)
         {
             var availablePhases = phasePedAggregationRepository.GetAggregationsBetweenDates(signal.LocationIdentifier, options.Start, options.End).Select(x => x.PhaseNumber).Distinct().ToList();
             return availablePhases;

@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Business.Bins;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -12,23 +13,28 @@ namespace MOE.Common.Business.DataAggregation
 
         public PhaseLeftTurnGapAggregationByApproach(
             Approach approach,
-            ApproachAggregationMetricOptions options,
+            ApproachAggregationMetricOptions approachAggregationMetricOptions,
             DateTime startDate,
             DateTime endDate,
             bool getProtectedPhase,
-            AggregatedDataType dataType,
-            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository
-            ) : base(approach, options, startDate, endDate,
-            getProtectedPhase, dataType)
+            int dataType,
+            IPhaseLeftTurnGapAggregationRepository phaseLeftTurnGapAggregationRepository,
+            AggregationOptions options
+            ) : base(approach, approachAggregationMetricOptions, startDate, endDate, getProtectedPhase, dataType, options)
+
         {
-            LoadBins(approach, options, getProtectedPhase, dataType);
+            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
             this.phaseLeftTurnGapAggregationRepository = phaseLeftTurnGapAggregationRepository;
         }
 
-        protected override void LoadBins(Approach approach, ApproachAggregationMetricOptions options,
+        protected override void LoadBins(
+            Approach approach,
+            ApproachAggregationMetricOptions approachAggregationMetricOptions,
             bool getProtectedPhase,
-            AggregatedDataType dataType)
+            int dataType,
+            AggregationOptions options)
         {
+            var dataTypeEnum = (LeftTurnGapDataTypes)dataType;
             var approachLeftTurnGaps = phaseLeftTurnGapAggregationRepository.GetAggregationsBetweenDates(
                     approach.Location.LocationIdentifier, options.Start, options.End);
             if (approachLeftTurnGaps != null)
@@ -46,93 +52,93 @@ namespace MOE.Common.Business.DataAggregation
                         if (approachLeftTurnGaps.Any(s => s.Start >= bin.Start && s.Start < bin.End))
                         {
                             var approachCycleCount = 0.0;
-                            switch (dataType.DataName)
+                            switch (dataTypeEnum)
                             {
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_1:
+                                case LeftTurnGapDataTypes.GapCount1:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount1);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_2:
+                                case LeftTurnGapDataTypes.GapCount2:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount2);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_3:
+                                case LeftTurnGapDataTypes.GapCount3:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount3);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_4:
+                                case LeftTurnGapDataTypes.GapCount4:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount4);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_5:
+                                case LeftTurnGapDataTypes.GapCount5:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount5);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_6:
+                                case LeftTurnGapDataTypes.GapCount6:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount6);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_7:
+                                case LeftTurnGapDataTypes.GapCount7:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount7);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_8:
+                                case LeftTurnGapDataTypes.GapCount8:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount8);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_9:
+                                case LeftTurnGapDataTypes.GapCount9:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount9);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_10:
+                                case LeftTurnGapDataTypes.GapCount10:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount10);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.GAP_COUNT_11:
+                                case LeftTurnGapDataTypes.GapCount11:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.GapCount11);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.SUM_GAP_DURATION_1:
+                                case LeftTurnGapDataTypes.SumGapDuration1:
                                     approachCycleCount =
                                         approachLeftTurnGaps.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.SumGapDuration1);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.SUM_GAP_DURATION_2:
+                                case LeftTurnGapDataTypes.SumGapDuration2:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.SumGapDuration2);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.SUM_GAP_DURATION_3:
+                                case LeftTurnGapDataTypes.SumGapDuration3:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.SumGapDuration3);
                                     break;
-                                case PhaseLeftTurnGapAggregationOptions.SUM_GREEN_TIME:
+                                case LeftTurnGapDataTypes.SumGreenTime:
                                     approachCycleCount =
                                         (int)approachLeftTurnGaps.Where(s =>
                                                s.Start >= bin.Start && s.Start < bin.End)

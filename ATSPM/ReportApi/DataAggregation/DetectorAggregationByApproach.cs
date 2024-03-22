@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
 
@@ -8,14 +9,22 @@ namespace MOE.Common.Business.DataAggregation
     {
         protected readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
 
-        public DetectorAggregationByApproach(Approach approach, DetectorVolumeAggregationOptions options,
-            bool getProtectedPhase, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository) : base(approach, options, options.Start, options.End,
-            getProtectedPhase, options.SelectedAggregatedDataType)
+        public DetectorAggregationByApproach(
+            Approach approach,
+            DetectorVolumeAggregationOptions detectorVolumeAggregationOptions,
+            bool getProtectedPhase,
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            AggregationOptions options) : base(approach, detectorVolumeAggregationOptions, options.Start, options.End,
+            getProtectedPhase, options.DataType, options)
         {
 
-            GetApproachDetectorVolumeAggregationContainersForAllDetectors(options, approach);
-            LoadBins(approach, options, getProtectedPhase,
-                options.SelectedAggregatedDataType);
+            GetApproachDetectorVolumeAggregationContainersForAllDetectors(detectorVolumeAggregationOptions, approach);
+            LoadBins(
+                approach,
+                detectorVolumeAggregationOptions,
+                getProtectedPhase,
+                options.DataType,
+                options);
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
         }
 
@@ -30,8 +39,12 @@ namespace MOE.Common.Business.DataAggregation
                 DetectorAggregationByDetectors.Add(new DetectorAggregationByDetector(detector, options, detectorEventCountAggregationRepository));
         }
 
-        protected override void LoadBins(Approach approach, ApproachAggregationMetricOptions options, bool getProtectedPhase,
-            AggregatedDataType dataType)
+        protected override void LoadBins(
+            Approach approach,
+            ApproachAggregationMetricOptions approachAggregationMetricOptions,
+            bool getProtectedPhase,
+            int dataType,
+            AggregationOptions options)
         {
             //var bins = DetectorAggregationByDetectors.SelectMany(b => b.BinsContainers.SelectMany(bc => bc.Bins)).ToList().GroupBy(g => g.Start, g => g.Sum, (key, a)=> new(Start = key, Sum = a.Sum().ToList();
             //var sum = bins.Sum(b => b.Sum);

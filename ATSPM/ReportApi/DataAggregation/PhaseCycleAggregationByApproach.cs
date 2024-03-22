@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Business.Bins;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
@@ -12,26 +13,33 @@ namespace MOE.Common.Business.DataAggregation
 
         public PhaseCycleAggregationByApproach(
             Approach approach,
-            ApproachAggregationMetricOptions options,
+            ApproachAggregationMetricOptions approachAggregationMetricOptions,
             DateTime startDate,
             DateTime endDate,
             bool getProtectedPhase,
-            AggregatedDataType dataType,
-            IPhaseCycleAggregationRepository phaseCycleAggregationRepository) : base(approach, options, startDate, endDate,
-            getProtectedPhase, dataType)
+            int dataType,
+            IPhaseCycleAggregationRepository phaseCycleAggregationRepository,
+            AggregationOptions options
+            ) : base(approach, approachAggregationMetricOptions, startDate, endDate,
+            getProtectedPhase, dataType, options)
         {
-            LoadBins(approach, options, getProtectedPhase, dataType);
+            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
         }
 
-        protected override void LoadBins(Approach approach, ApproachAggregationMetricOptions options,
+        protected override void LoadBins(
+            Approach approach,
+            ApproachAggregationMetricOptions approachAggregationMetricOptions,
             bool getProtectedPhase,
-            AggregatedDataType dataType)
+            int dataType,
+            AggregationOptions options
+            )
         {
             var approachCycles =
                 phaseCycleAggregationRepository.GetAggregationsBetweenDates(approach.Location.LocationIdentifier, options.Start, options.End).Where(a => a.ApproachId == approach.Id);
             if (approachCycles != null)
             {
+                var dataTypeEnum = (PhaseCycleDataTypes)dataType;
                 var concurrentBinContainers = new ConcurrentBag<BinsContainer>();
                 //foreach (var binsContainer in binsContainers)
                 Parallel.ForEach(BinsContainers, binsContainer =>
@@ -45,33 +53,33 @@ namespace MOE.Common.Business.DataAggregation
                         if (approachCycles.Any(s => s.Start >= bin.Start && s.Start < bin.End))
                         {
                             var approachCycleCount = 0;
-                            switch (dataType.DataName)
+                            switch (dataTypeEnum)
                             {
-                                case PhaseCycleAggregationOptions.TOTAL_RED_TO_RED_CYCLES:
+                                case PhaseCycleDataTypes.TotalRedToRedCycles:
                                     approachCycleCount =
                                         approachCycles.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.TotalRedToRedCycles);
                                     break;
-                                case PhaseCycleAggregationOptions.TOTAL_GREEN_TO_GREEN_CYCLES:
+                                case PhaseCycleDataTypes.TotalGreenToGreenCycles:
                                     approachCycleCount =
                                         approachCycles.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.TotalGreenToGreenCycles);
                                     break;
-                                case PhaseCycleAggregationOptions.RED_TIME:
+                                case PhaseCycleDataTypes.RedTime:
                                     approachCycleCount =
                                         (int)approachCycles.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.RedTime);
                                     break;
-                                case PhaseCycleAggregationOptions.YELLOW_TIME:
+                                case PhaseCycleDataTypes.YellowTime:
                                     approachCycleCount =
                                         (int)approachCycles.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)
                                             .Sum(s => s.YellowTime);
                                     break;
-                                case PhaseCycleAggregationOptions.GREEN_TIME:
+                                case PhaseCycleDataTypes.GreenTime:
                                     approachCycleCount =
                                         (int)approachCycles.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)

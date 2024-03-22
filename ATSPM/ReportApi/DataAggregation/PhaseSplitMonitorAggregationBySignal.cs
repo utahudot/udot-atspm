@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Repositories.AggregationRepositories;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using MOE.Common.Business.WCFServiceLibrary;
 
@@ -10,34 +11,36 @@ namespace MOE.Common.Business.DataAggregation
 
         public List<PhaseSplitMonitorAggregationByPhase> SplitMonitorAggregations { get; }
         public PhaseSplitMonitorAggregationBySignal(
-            PhaseSplitMonitorAggregationOptions options,
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions,
             Location signal,
-            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository
+            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository,
+            AggregationOptions options
             ) : base(
-            options, signal)
+            phaseSplitMonitorAggregationOptions, signal, options)
         {
             this.phaseSplitMonitorAggregationRepository = phaseSplitMonitorAggregationRepository;
             SplitMonitorAggregations = new List<PhaseSplitMonitorAggregationByPhase>();
-            GetSplitMonitorAggregationContainersForAllPhases(options, signal);
-            LoadBins(null, null);
+            GetSplitMonitorAggregationContainersForAllPhases(phaseSplitMonitorAggregationOptions, signal, options);
+            LoadBins(null, null, options);
         }
 
         public PhaseSplitMonitorAggregationBySignal(
-            PhaseSplitMonitorAggregationOptions options,
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions,
             Location signal,
             int phaseNumber,
-            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository
-            ) : base(options, signal)
+            IPhaseSplitMonitorAggregationRepository phaseSplitMonitorAggregationRepository,
+            AggregationOptions options
+            ) : base(phaseSplitMonitorAggregationOptions, signal, options)
         {
             this.phaseSplitMonitorAggregationRepository = phaseSplitMonitorAggregationRepository;
             SplitMonitorAggregations = new List<PhaseSplitMonitorAggregationByPhase>
             {
-                new PhaseSplitMonitorAggregationByPhase(signal, phaseNumber, options, options.SelectedAggregatedDataType, phaseSplitMonitorAggregationRepository)
+                new PhaseSplitMonitorAggregationByPhase(signal, phaseNumber, phaseSplitMonitorAggregationOptions, options.DataType, phaseSplitMonitorAggregationRepository, options)
             };
-            LoadBins(null, null);
+            LoadBins(null, null, options);
         }
 
-        protected override void LoadBins(SignalAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(SignalAggregationMetricOptions phaseSplitMonitorAggregationOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
                 for (var binIndex = 0; binIndex < BinsContainers[i].Bins.Count; binIndex++)
@@ -51,7 +54,7 @@ namespace MOE.Common.Business.DataAggregation
                 }
         }
 
-        protected override void LoadBins(ApproachAggregationMetricOptions options, Location signal)
+        protected override void LoadBins(ApproachAggregationMetricOptions phaseSplitMonitorAggregationOptions, Location signal, AggregationOptions options)
         {
             for (var i = 0; i < BinsContainers.Count; i++)
             {
@@ -66,24 +69,25 @@ namespace MOE.Common.Business.DataAggregation
         }
 
         private void GetSplitMonitorAggregationContainersForAllPhases(
-            PhaseSplitMonitorAggregationOptions options, Location signal)
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions, Location signal, AggregationOptions options)
         {
-            List<int> availablePhases = GetAvailablePhasesForSignal(options, signal);
+            List<int> availablePhases = GetAvailablePhasesForSignal(phaseSplitMonitorAggregationOptions, signal, options);
             foreach (var phaseNumber in availablePhases)
             {
                 SplitMonitorAggregations.Add(
                     new PhaseSplitMonitorAggregationByPhase(
                         signal,
                         phaseNumber,
-                        options,
-                        options.SelectedAggregatedDataType,
-                        phaseSplitMonitorAggregationRepository));
+                        phaseSplitMonitorAggregationOptions,
+                        options.DataType,
+                        phaseSplitMonitorAggregationRepository,
+                        options));
             }
         }
 
         private List<int> GetAvailablePhasesForSignal(
-            PhaseSplitMonitorAggregationOptions options,
-            Location signal
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions,
+            Location signal, AggregationOptions options
             )
         {
             var availablePhases = phaseSplitMonitorAggregationRepository.GetAggregationsBetweenDates(signal.LocationIdentifier, options.Start, options.End).Select(x => x.PhaseNumber).Distinct().ToList();
