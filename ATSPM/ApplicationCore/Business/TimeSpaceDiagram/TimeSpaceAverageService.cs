@@ -173,7 +173,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             var startTime = start.AddSeconds(startOfGreen);
             var greenTime = percentileSplitCycle.TotalGreenTime;
             var yellowTime = percentileSplitCycle.TotalYellowTime;
-            var redTime = cycleLength - (greenTime + yellowTime);
+            var redTime = cycleLength - (greenTime + yellowTime) > 0 ? cycleLength - (greenTime + yellowTime) : percentileSplitCycle.TotalRedTime;
 
             List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
             var events = new List<CycleEventsDto>();
@@ -215,7 +215,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             for (var i = 0; i < phaseIndex; i++)
             {
                 var programPhase = phaseToProgramPhases[sequence[i]];
-                timeBeforePhase += programSplits.Find(s => s.EventCode == programPhase).EventParam;
+                timeBeforePhase += programSplits.Find(s => s.EventCode == programPhase)?.EventParam ?? 0;
             }
             return timeBeforePhase;
         }
