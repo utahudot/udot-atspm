@@ -141,7 +141,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
 
                     //Find all events between the green and yellow
                     var greenDetectionsList = aggDetections
-                        .Where(x => x.Timestamp >= green.Timestamp && x.Timestamp < yellow.Timestamp)
+                        .Where(x => x.Timestamp >= green.Timestamp && x.Timestamp <= yellow.Timestamp)
                         .OrderBy(x => x.Timestamp).ToList();
                     if (!greenDetectionsList.Any())
                         continue;
@@ -152,7 +152,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
                     foreach (var detection in greenDetectionsList)
                     {
                         TimeSpan timeSinceGreenStart = detection.Timestamp - green.Timestamp;
-                        var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.XAxisBinSize);
+                        var yAxisBinNumber = (int)(timeSinceGreenStart.TotalSeconds / options.YAxisBinSize);
                         if (BinValueList.Count < yAxisBinNumber)
                         {
                             int howMany = yAxisBinNumber - BinValueList.Count + 1;  //check the numbering on this, might need to add 1, etc)
