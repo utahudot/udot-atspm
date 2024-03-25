@@ -81,7 +81,7 @@ namespace ATSPM.ReportApi.ReportServices
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false).ToList();
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<DataLoggerEnum>() { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndRedClearance }).ToList();
-
+            cycleEvents = cycleEvents.Where(c => c.EventParam == phaseDetail.PhaseNumber).ToList();
             GreenTimeUtilizationResult viewModel = greenTimeUtilizationService.GetChartData(
                 phaseDetail,
                 options,
