@@ -16,7 +16,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             List<DataPointForDouble> progSplits,
             int phaseNumber,
             int YAxisBinSize,
-            int XAxisBinSize) : base(approachId, locationIdentifier, start, end)
+            int XAxisBinSize, List<PlanSplitMonitorData> plans) : base(approachId, locationIdentifier, start, end)
         {
             Bins = stacks;
             AverageSplits = avgSplits;
@@ -24,6 +24,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             PhaseNumber = phaseNumber;
             this.YAxisBinSize = YAxisBinSize;
             this.XAxisBinSize = XAxisBinSize;
+            Plans = plans;
         }
 
         public List<BarStack> Bins { get; set; } = new List<BarStack>();
@@ -32,5 +33,6 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
         public int PhaseNumber { get; set; }
         public int YAxisBinSize { get; set; }
         public int XAxisBinSize { get; set; }
+        public List<PlanSplitMonitorData> Plans { get; }
     }
 }
