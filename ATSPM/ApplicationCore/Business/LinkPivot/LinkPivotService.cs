@@ -224,7 +224,7 @@ namespace ATSPM.Application.Business.LinkPivot
                 PAogTotalBefore = 0,
                 AogTotalPredicted = 0,
                 PAogTotalPredicted = 0,
-                LinkNumber = 0,
+                LinkNumber = routeLocation.Order,
                 DownstreamVolume = 0,
                 UpstreamVolume = 0
             });
@@ -240,13 +240,34 @@ namespace ATSPM.Application.Business.LinkPivot
                 if (downstreamPrimaryPhase != null)
                 {
                     var downstreamLocation = locationRepository.GetLatestVersionOfLocation(routeLocations[options.Direction == "Upstream" ? i : i + 1].LocationIdentifier);
-                    var downstreamApproach = downstreamLocation.Approaches.FirstOrDefault(a =>
-                        a.ProtectedPhaseNumber == downstreamPrimaryPhase);
-                    var approach = location.Approaches.FirstOrDefault(a =>
-                        a.ProtectedPhaseNumber == primaryPhase);
+                    var downstreamApproach = getDownstreamApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
+                    var approach = getApproach(location, downstreamLocation, primaryPhase, downstreamPrimaryPhase, options.Direction);
                     var linkPivotPair = await linkPivotPairService.GetLinkPivotPairAsync(approach, downstreamApproach, options, daysToInclude, i + 1);
                     PairedApproaches.Add(linkPivotPair);
                 }
+            }
+        }
+
+        private Approach getDownstreamApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
+        {
+            if(direction == "Upstream")
+            {
+                return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
+            } else
+            {
+                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase);
+            }
+        }
+
+        private Approach getApproach(Location location, Location downstreamLocation, int primaryPhase, int downstreamPrimaryPhase, string direction)
+        {
+            if (direction == "Upstream")
+            {
+                return downstreamLocation.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == downstreamPrimaryPhase); 
+            }
+            else
+            {
+                return location.Approaches.FirstOrDefault(a => a.ProtectedPhaseNumber == primaryPhase);
             }
         }
 
