@@ -59,7 +59,7 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.UpstreamResultsGraph.Add(0, linkPivotPair.AogUpstreamBefore * upstreamBias);
                     linkPivotPair.DownstreamResultsGraph.Add(0, linkPivotPair.AogDownstreamBefore * downstreamBias);
                     linkPivotPair.AogUpstreamPredicted = linkPivotPair.AogUpstreamBefore;
-                    linkPivotPair.PaogUpstreamPredicted = Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                    linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
                     for (var i = 1; i <= options.CycleLength; i++)
@@ -87,7 +87,7 @@ namespace ATSPM.Application.Business.LinkPivot
                             maxBiasArrivalOnGreen = totalBiasArrivalOnGreen;
                             linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                             linkPivotPair.AogUpstreamPredicted = totalUpstreamAog;
-                            linkPivotPair.PaogUpstreamPredicted = Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                            linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                             linkPivotPair.SecondsAdded = i;
                         }
                     }
@@ -101,8 +101,8 @@ namespace ATSPM.Application.Business.LinkPivot
                     //set the original values to compare against
                     linkPivotPair.AogTotalBefore = linkPivotPair.AogDownstreamBefore + linkPivotPair.AogUpstreamBefore;
                     linkPivotPair.MaxArrivalOnGreen = linkPivotPair.AogUpstreamBefore;
-                    linkPivotPair.PaogTotalBefore = Math.Round(linkPivotPair.AogTotalBefore / (linkPivotPair.TotalVolumeDownstream + linkPivotPair.TotalVolumeUpstream), 2) *
-                                      100;
+                    linkPivotPair.PaogTotalBefore = (int)(Math.Round(linkPivotPair.AogTotalBefore / (linkPivotPair.TotalVolumeDownstream + linkPivotPair.TotalVolumeUpstream), 2) *
+                                      100);
 
 
                     //Add the total aog to the dictionary
@@ -110,7 +110,7 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.UpstreamResultsGraph.Add(0, linkPivotPair.AogUpstreamBefore);
                     linkPivotPair.DownstreamResultsGraph.Add(0, linkPivotPair.AogDownstreamBefore);
                     linkPivotPair.AogUpstreamPredicted = linkPivotPair.AogUpstreamBefore;
-                    linkPivotPair.PaogUpstreamPredicted = Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                    linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
                     for (var i = 1; i <= options.CycleLength; i++)
                     {
@@ -132,7 +132,7 @@ namespace ATSPM.Application.Business.LinkPivot
                         {
                             linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                             linkPivotPair.AogUpstreamPredicted = totalUpstreamAog;
-                            linkPivotPair.PaogUpstreamPredicted = Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                            linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                             linkPivotPair.SecondsAdded = i;
                         }
                         //Get the link totals
@@ -157,7 +157,7 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.ResultsGraph.Add(0, linkPivotPair.MaxArrivalOnGreen);
                     linkPivotPair.DownstreamResultsGraph.Add(0, linkPivotPair.AogDownstreamBefore * downstreamBias);
                     linkPivotPair.AogDownstreamPredicted = linkPivotPair.AogDownstreamBefore;
-                    linkPivotPair.PaogDownstreamPredicted = Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100;
+                    linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
                     for (var i = 1; i <= options.CycleLength; i++)
@@ -181,7 +181,7 @@ namespace ATSPM.Application.Business.LinkPivot
                             maxBiasArrivalOnGreen = totalBiasArrivalOnGreen;
                             linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                             linkPivotPair.AogDownstreamPredicted = totalDownstreamAog;
-                            linkPivotPair.PaogDownstreamPredicted = Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100;
+                            linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                             linkPivotPair.SecondsAdded = i;
                         }
                     }
@@ -198,7 +198,7 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.ResultsGraph.Add(0, linkPivotPair.MaxArrivalOnGreen);
                     linkPivotPair.DownstreamResultsGraph.Add(0, linkPivotPair.AogDownstreamBefore);
                     linkPivotPair.AogDownstreamPredicted = linkPivotPair.AogDownstreamBefore;
-                    linkPivotPair.PaogDownstreamPredicted = Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100;
+                    linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                     linkPivotPair.SecondsAdded = 0;
 
                     for (var i = 1; i <= options.CycleLength; i++)
@@ -219,7 +219,7 @@ namespace ATSPM.Application.Business.LinkPivot
                         {
                             linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                             linkPivotPair.AogDownstreamPredicted = totalDownstreamAog;
-                            linkPivotPair.PaogDownstreamPredicted = Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100;
+                            linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100);
                             linkPivotPair.SecondsAdded = i;
                         }
                     }
@@ -236,7 +236,7 @@ namespace ATSPM.Application.Business.LinkPivot
             //set the original values to compare against
             linkPivotPair.AogTotalBefore = linkPivotPair.AogDownstreamBefore + linkPivotPair.AogUpstreamBefore;
             linkPivotPair.MaxArrivalOnGreen = linkPivotPair.AogTotalBefore;
-            linkPivotPair.PaogTotalBefore = Math.Round(linkPivotPair.AogTotalBefore / (linkPivotPair.TotalVolumeDownstream + linkPivotPair.TotalVolumeUpstream), 2) * 100;
+            linkPivotPair.PaogTotalBefore = (int)(Math.Round(linkPivotPair.AogTotalBefore / (linkPivotPair.TotalVolumeDownstream + linkPivotPair.TotalVolumeUpstream), 2) * 100);
             //add the total to the results grid
             linkPivotPair.ResultsGraph.Add(0, linkPivotPair.MaxArrivalOnGreen);
             linkPivotPair.UpstreamResultsGraph.Add(0, linkPivotPair.AogUpstreamBefore);
@@ -244,8 +244,8 @@ namespace ATSPM.Application.Business.LinkPivot
 
             linkPivotPair.AogUpstreamPredicted = linkPivotPair.AogUpstreamBefore;
             linkPivotPair.AogDownstreamPredicted = linkPivotPair.AogDownstreamBefore;
-            linkPivotPair.PaogDownstreamPredicted = Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100;
-            linkPivotPair.PaogUpstreamPredicted = Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+            linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
+            linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
             linkPivotPair.SecondsAdded = 0;
 
             for (var i = 1; i <= cycleTime; i++)
@@ -273,14 +273,14 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                     linkPivotPair.AogUpstreamPredicted = totalUpstreamAog;
                     linkPivotPair.AogDownstreamPredicted = totalDownstreamAog;
-                    linkPivotPair.PaogDownstreamPredicted = Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100;
-                    linkPivotPair.PaogUpstreamPredicted = Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                    linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100);
+                    linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.SecondsAdded = i;
                 }
             }
             //Get the link totals
             linkPivotPair.AogTotalPredicted = linkPivotPair.MaxArrivalOnGreen;
-            linkPivotPair.PaogTotalPredicted = Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100;
+            linkPivotPair.PaogTotalPredicted = (int)(Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100);
         }
 
         private void GetBiasedLinkPivot(int cycleTime, double bias, string biasDirection, List<DateOnly> dates, LinkPivotPair linkPivotPair)
@@ -295,9 +295,9 @@ namespace ATSPM.Application.Business.LinkPivot
             linkPivotPair.AogTotalBefore = linkPivotPair.AogDownstreamBefore * downstreamBias +
                              linkPivotPair.AogUpstreamBefore * upstreamBias;
             linkPivotPair.PaogTotalBefore =
-                Math.Round(
+                (int)(Math.Round(
                     linkPivotPair.AogTotalBefore / (linkPivotPair.TotalVolumeDownstream * downstreamBias + linkPivotPair.TotalVolumeUpstream * upstreamBias), 2) *
-                100;
+                100);
             var maxBiasArrivalOnGreen = linkPivotPair.AogTotalBefore;
             linkPivotPair.MaxArrivalOnGreen = linkPivotPair.AogDownstreamBefore + linkPivotPair.AogUpstreamBefore;
 
@@ -308,8 +308,8 @@ namespace ATSPM.Application.Business.LinkPivot
             linkPivotPair.DownstreamResultsGraph.Add(0, linkPivotPair.AogDownstreamBefore * downstreamBias);
             linkPivotPair.AogUpstreamPredicted = linkPivotPair.AogUpstreamBefore;
             linkPivotPair.AogDownstreamPredicted = linkPivotPair.AogDownstreamBefore;
-            linkPivotPair.PaogDownstreamPredicted = Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100;
-            linkPivotPair.PaogUpstreamPredicted = Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+            linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
+            linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
             linkPivotPair.SecondsAdded = 0;
 
             for (var i = 1; i <= cycleTime; i++)
@@ -341,15 +341,15 @@ namespace ATSPM.Application.Business.LinkPivot
                     linkPivotPair.MaxArrivalOnGreen = totalArrivalOnGreen;
                     linkPivotPair.AogUpstreamPredicted = totalUpstreamAog;
                     linkPivotPair.AogDownstreamPredicted = totalDownstreamAog;
-                    linkPivotPair.PaogDownstreamPredicted = Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100;
-                    linkPivotPair.PaogUpstreamPredicted = Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100;
+                    linkPivotPair.PaogDownstreamPredicted = (int)(Math.Round(totalDownstreamAog / linkPivotPair.TotalVolumeDownstream, 2) * 100);
+                    linkPivotPair.PaogUpstreamPredicted = (int)(Math.Round(totalUpstreamAog / linkPivotPair.TotalVolumeUpstream, 2) * 100);
                     linkPivotPair.MaxPercentAog =
                         linkPivotPair.SecondsAdded = i;
                 }
             }
             //Get the link totals
             linkPivotPair.AogTotalPredicted = linkPivotPair.MaxArrivalOnGreen;
-            linkPivotPair.PaogTotalPredicted = Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100;
+            linkPivotPair.PaogTotalPredicted = (int)(Math.Round(linkPivotPair.AogTotalPredicted / (linkPivotPair.TotalVolumeUpstream + linkPivotPair.TotalVolumeDownstream), 2) * 100);
         }
 
         private async Task SetPcds(TimeOnly startTime, TimeOnly endTime, List<DateOnly> daysToInclude, int cycleTime, LinkPivotPair linkPivotPair)
@@ -367,8 +367,8 @@ namespace ATSPM.Application.Business.LinkPivot
                 linkPivotPair.AogDownstreamBefore += downstreamPcd.TotalArrivalOnGreen;
                 linkPivotPair.TotalVolumeDownstream += downstreamPcd.TotalVolume;
             }
-            linkPivotPair.PaogUpstreamBefore = Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100;
-            linkPivotPair.PaogDownstreamBefore = Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100;
+            linkPivotPair.PaogUpstreamBefore = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
+            linkPivotPair.PaogDownstreamBefore = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
         }
 
         private async Task<LocationPhase> getPcd(int cycleTime, Approach approach, DateTime tempStartDate, DateTime tempEndDate)

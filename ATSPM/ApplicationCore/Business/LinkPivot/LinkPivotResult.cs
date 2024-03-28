@@ -18,17 +18,17 @@ namespace ATSPM.Application.Business.LinkPivot
         //Summary Info
         public double TotalAogDownstreamBefore { get; set; }
 
-        public double TotalPaogDownstreamBefore { get; set; }
+        public int TotalPaogDownstreamBefore { get; set; }
         public double TotalAogDownstreamPredicted { get; set; }
-        public double TotalPaogDownstreamPredicted { get; set; }
+        public int TotalPaogDownstreamPredicted { get; set; }
         public double TotalAogUpstreamBefore { get; set; }
-        public double TotalPaogUpstreamBefore { get; set; }
+        public int TotalPaogUpstreamBefore { get; set; }
         public double TotalAogUpstreamPredicted { get; set; }
-        public double TotalPaogUpstreamPredicted { get; set; }
+        public int TotalPaogUpstreamPredicted { get; set; }
         public double TotalAogBefore { get; set; }
-        public double TotalPaogBefore { get; set; }
+        public int TotalPaogBefore { get; set; }
         public double TotalAogPredicted { get; set; }
-        public double TotalPaogPredicted { get; set; }
+        public int TotalPaogPredicted { get; set; }
 
         //Total change chart
         //public double TotalChartExisting { get; set; }

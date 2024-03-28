@@ -9,12 +9,12 @@ namespace ATSPM.Application.Business.LinkPivot
         public LinkPivotApproachLink(string signalId, string location,
             DirectionTypes upstreamApproachDirection, string downstreamLocationIdentifier,
             string downstreamLocation, DirectionTypes downstreamApproachDirection,
-            double pAOGUpstreamBefore, double pAOGUpstreamPredicted,
-            double pAOGDownstreamBefore, double pAOGDownstreamPredicted,
+            int pAOGUpstreamBefore, int pAOGUpstreamPredicted,
+            int pAOGDownstreamBefore, int pAOGDownstreamPredicted,
             double aOGUpstreamBefore, double aOGUpstreamPredicted,
             double aOGDownstreamBefore, double aOGDownstreamPredicted,
             double delta, string resultChartLocation, double aogTotalBefore,
-            double pAogTotalBefore, double aogTotalPredicted, double pAogTotalPredicted,
+            int pAogTotalBefore, double aogTotalPredicted, int pAogTotalPredicted,
             int linkNumber)
         {
             SignalId = signalId;
@@ -96,10 +96,10 @@ namespace ATSPM.Application.Business.LinkPivot
         public string DownstreamLocationIdentifier { get; set; }
         public string DownstreamLocation { get; set; }
         public DirectionTypes DownstreamApproachDirection { get; set; }
-        public double PAOGUpstreamBefore { get; set; }
-        public double PAOGUpstreamPredicted { get; set; }
-        public double PAOGDownstreamBefore { get; set; }
-        public double PAOGDownstreamPredicted { get; set; }
+        public int PAOGUpstreamBefore { get; set; }
+        public int PAOGUpstreamPredicted { get; set; }
+        public int PAOGDownstreamBefore { get; set; }
+        public int PAOGDownstreamPredicted { get; set; }
         public double AOGUpstreamBefore { get; set; }
         public double AOGUpstreamPredicted { get; set; }
         public double AOGDownstreamBefore { get; set; }
@@ -109,24 +109,24 @@ namespace ATSPM.Application.Business.LinkPivot
         public string UpstreamCombinedLocation => SignalId + "\n" + UpstreamApproachDirection;
         public string DownstreamCombinedLocation => DownstreamLocationIdentifier + "\n" + DownstreamApproachDirection;
         public double AogTotalBefore { get; set; }
-        public double PAogTotalBefore { get; set; }
+        public int PAogTotalBefore { get; set; }
         public double AogTotalPredicted { get; set; }
-        public double PAogTotalPredicted { get; set; }
+        public int PAogTotalPredicted { get; set; }
 
         public double TotalChartExisting { get; set; }
-        public double TotalChartPositiveChange { get; set; }
-        public double TotalChartNegativeChange { get; set; }
+        public int TotalChartPositiveChange { get; set; }
+        public int TotalChartNegativeChange { get; set; }
         public double TotalChartRemaining { get; set; }
 
-        public double UpstreamChartExisting { get; set; }
-        public double UpstreamChartPositiveChange { get; set; }
-        public double UpstreamChartNegativeChange { get; set; }
-        public double UpstreamChartRemaining { get; set; }
+        public int UpstreamChartExisting { get; set; }
+        public int UpstreamChartPositiveChange { get; set; }
+        public int UpstreamChartNegativeChange { get; set; }
+        public int UpstreamChartRemaining { get; set; }
 
-        public double DownstreamChartExisting { get; set; }
-        public double DownstreamChartPositiveChange { get; set; }
-        public double DownstreamChartNegativeChange { get; set; }
-        public double DownstreamChartRemaining { get; set; }
+        public int DownstreamChartExisting { get; set; }
+        public int DownstreamChartPositiveChange { get; set; }
+        public int DownstreamChartNegativeChange { get; set; }
+        public int DownstreamChartRemaining { get; set; }
 
         public string TotalChartName => "Total" + SignalId + "Chart";
         public string UpstreamChartName => "Up" + SignalId + "Chart";

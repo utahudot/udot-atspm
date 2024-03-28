@@ -17,10 +17,10 @@ namespace ATSPM.Application.Business.LinkPivot
         public double MaxPercentAog { get; set; }
         public List<LocationPhase> UpstreamPcd { get; set; } = new List<LocationPhase>();
         public List<LocationPhase> DownstreamPcd { get; set; } = new List<LocationPhase>();
-        public double PaogUpstreamBefore { get; set; } = 0;
-        public double PaogDownstreamBefore { get; set; }
-        public double PaogDownstreamPredicted { get; set; }
-        public double PaogUpstreamPredicted { get; set; }
+        public int PaogUpstreamBefore { get; set; } = 0;
+        public int PaogDownstreamBefore { get; set; }
+        public int PaogDownstreamPredicted { get; set; }
+        public int PaogUpstreamPredicted { get; set; }
         public double AogUpstreamBefore { get; set; }
         public double AogDownstreamBefore { get; set; }
         public double AogDownstreamPredicted { get; set; }
@@ -33,9 +33,9 @@ namespace ATSPM.Application.Business.LinkPivot
         public Dictionary<int, double> DownstreamResultsGraph { get; set; } = new Dictionary<int, double>();
         //public List<LinkPivotPCDDisplay> Display { get; set; } = new List<LinkPivotPCDDisplay>();
         public double AogTotalBefore { get; set; }
-        public double PaogTotalBefore { get; set; }
+        public int PaogTotalBefore { get; set; }
         public double AogTotalPredicted { get; set; }
-        public double PaogTotalPredicted { get; set; }
+        public int PaogTotalPredicted { get; set; }
         public Approach UpstreamLocationApproach { get; set; }
         public Approach DownstreamLocationApproach { get; set; }
         public DateOnly StartDate { get; set; }
