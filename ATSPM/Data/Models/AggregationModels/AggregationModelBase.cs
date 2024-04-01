@@ -101,7 +101,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public int DetectorPrimaryId { get; set; }
 
         /// <summary>
-        /// Sum of <see cref="IndianaEnumerations.DetectorOn"/> events
+        /// Sum of <see cref="IndianaEnumerations.VehicleDetectorOn"/> events
         /// </summary>
         public int EventCount { get; set; }
 

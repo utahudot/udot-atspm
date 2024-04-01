@@ -23,8 +23,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginWalk"/></item>
     /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginClearance"/></item>
     /// <item><see cref="IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk"/></item>
-    /// <item><see cref="IndianaEnumerations.DetectorOff"/></item>
-    /// <item><see cref="IndianaEnumerations.DetectorOn"/></item>
+    /// <item><see cref="IndianaEnumerations.VehicleDetectorOff"/></item>
+    /// <item><see cref="IndianaEnumerations.VehicleDetectorOn"/></item>
     /// <item><see cref="IndianaEnumerations.PedDetectorOff"/></item>
     /// <item><see cref="IndianaEnumerations.PedDetectorOn"/></item>
     /// </list>
@@ -50,8 +50,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
             filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginWalk);
             filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginClearance);
             filteredList.Add((int)IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk);
-            filteredList.Add((int)IndianaEnumerations.DetectorOff);
-            filteredList.Add((int)IndianaEnumerations.DetectorOn);
+            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOff);
+            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOn);
             filteredList.Add((int)IndianaEnumerations.PedDetectorOff);
             filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
         }
