@@ -44,22 +44,22 @@ namespace ATSPM.ReportApi.Business.SplitFail
         //{
         //    double d = 0;
         //    //After start, before end
-        //    if ((a.DetectorOn >= startTime && a.DetectorOn <= endTime) && (a.DetectorOff >= startTime && a.DetectorOff <= endTime))
+        //    if ((a.VehicleDetectorOn >= startTime && a.VehicleDetectorOn <= endTime) && (a.VehicleDetectorOff >= startTime && a.VehicleDetectorOff <= endTime))
         //    {
         //        d = a.Duration;
         //    }
         //    //Before start, before end
-        //    else if ((a.DetectorOn <= startTime && a.DetectorOn <= endTime) && (a.DetectorOff <= endTime && a.DetectorOff >= startTime))
+        //    else if ((a.VehicleDetectorOn <= startTime && a.VehicleDetectorOn <= endTime) && (a.VehicleDetectorOff <= endTime && a.VehicleDetectorOff >= startTime))
         //    {
-        //        d = (a.DetectorOff - startTime).TotalMilliseconds;
+        //        d = (a.VehicleDetectorOff - startTime).TotalMilliseconds;
         //    }
         //    //After start, After end
-        //    else if ((a.DetectorOn >= startTime && a.DetectorOn <= endTime) && (a.DetectorOff >= endTime && a.DetectorOff >= startTime))
+        //    else if ((a.VehicleDetectorOn >= startTime && a.VehicleDetectorOn <= endTime) && (a.VehicleDetectorOff >= endTime && a.VehicleDetectorOff >= startTime))
         //    {
-        //        d = (endTime - a.DetectorOn).TotalMilliseconds;
+        //        d = (endTime - a.VehicleDetectorOn).TotalMilliseconds;
         //    }
         //    //Before Start, After end
-        //    else if ((a.DetectorOn <= startTime && a.DetectorOn <= endTime) && (a.DetectorOff >= endTime && a.DetectorOff >= startTime))
+        //    else if ((a.VehicleDetectorOn <= startTime && a.VehicleDetectorOn <= endTime) && (a.VehicleDetectorOff >= endTime && a.VehicleDetectorOff >= startTime))
         //    {
         //        d = (endTime - startTime).TotalMilliseconds;
         //    }

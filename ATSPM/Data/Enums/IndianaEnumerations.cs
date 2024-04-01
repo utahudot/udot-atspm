@@ -9,8 +9,6 @@ namespace ATSPM.Data.Enums
     /// </summary>
     public enum IndianaEnumerations : ushort
     {
-        /*
-        
         #region Indiana Specification
 
         ///<summary>
@@ -401,14 +399,14 @@ namespace ATSPM.Data.Enums
         ///<summary>
         ///Detector on and off events shall be triggered post any detector delay/extension processing
         ///</summary>
-        [Display(Name = "Detector Off")]
-        DetectorOff = 81,
+        [Display(Name = "Vehicle Detector Off")]
+        VehicleDetectorOff = 81,
 
         ///<summary>
         ///Detector on and off events shall be triggered post any detector delay/extension processing
         ///</summary>
-        [Display(Name = "Detector On")]
-        DetectorOn = 82,
+        [Display(Name = "Vehicle Detector On")]
+        VehicleDetectorOn = 82,
 
         ///<summary>
         ///Detector restored to non-failed state by either manual restoration or re-enabling via continued diagnostics
@@ -982,9 +980,9 @@ namespace ATSPM.Data.Enums
 
         #endregion
 
-        */
-
         #region QFree Specification
+
+        /*
 
         ///<summary>
         ///Set when NEMA Phase On becomes active, either upon start of green or walk interval, whichever occurs first.
@@ -3246,6 +3244,8 @@ namespace ATSPM.Data.Enums
         ///</summary>
         [Display(Name = "Barrier Entry Ring 16")]
         BarrierEntryRing16 = 916,
+
+        */
 
         #endregion
 

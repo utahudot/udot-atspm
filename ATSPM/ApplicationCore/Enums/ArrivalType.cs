@@ -3,7 +3,7 @@
 namespace ATSPM.Application.Enums
 {
     /// <summary>
-    /// Arrival type of <see cref="IndianaEnumerations.DetectorOn"/> events
+    /// Arrival type of <see cref="IndianaEnumerations.VehicleDetectorOn"/> events
     /// </summary>
     public enum ArrivalType
     {
@@ -13,17 +13,17 @@ namespace ATSPM.Application.Enums
         Unknown,
 
         /// <summary>
-        /// <see cref="IndianaEnumerations.DetectorOn"/> arrival on green
+        /// <see cref="IndianaEnumerations.VehicleDetectorOn"/> arrival on green
         /// </summary>
         ArrivalOnGreen,
 
         /// <summary>
-        /// <see cref="IndianaEnumerations.DetectorOn"/> arrival on yellow
+        /// <see cref="IndianaEnumerations.VehicleDetectorOn"/> arrival on yellow
         /// </summary>
         ArrivalOnYellow,
 
         /// <summary>
-        /// <see cref="IndianaEnumerations.DetectorOn"/> arrival on red
+        /// <see cref="IndianaEnumerations.VehicleDetectorOn"/> arrival on red
         /// </summary>
         ArrivalOnRed
     }
