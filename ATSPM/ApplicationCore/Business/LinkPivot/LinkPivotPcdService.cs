@@ -74,7 +74,7 @@ namespace ATSPM.Application.Business.LinkPivot
                     ShowPlanStatistics = true,
                     Start = startDate,
                     End = endDate,
-                    locationIdentifier = approach.Location.LocationIdentifier
+                    LocationIdentifier = approach.Location.LocationIdentifier
                 };
 
                 //Check the direction of the Link Pivot
