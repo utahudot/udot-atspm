@@ -7,6 +7,8 @@ using System.Net;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -21,8 +23,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             System.DateTime start = new System.DateTime(2023, 5, 16, 8, 56, 0);
             System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"TMCEventcodes.csv"); // Sampleevents
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"TMCEventcodes.csv"); // Sampleevents
+            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock DirectionType object
             var directionType = new Mock<DirectionType>();
@@ -184,7 +186,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -192,7 +194,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }

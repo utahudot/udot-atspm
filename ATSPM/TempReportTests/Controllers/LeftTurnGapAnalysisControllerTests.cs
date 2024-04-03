@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -17,8 +18,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //PlanService planService = new PlanService();
             LeftTurnGapAnalysisService leftTurnGapAnalysisService = new LeftTurnGapAnalysisService(); //might need to change the service to have inputs
 
-            List<ControllerEventLog> allEvents = LoadAllEventsFromCsv(@"LTGap_EventLogs.csv"); // Sampleevents
-            //List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> allEvents = LoadAllEventsFromCsv(@"LTGap_EventLogs.csv"); // Sampleevents
+            //List<IndianaEvent> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create a mock DetectionType object
             var detectionTypeSBP = new Mock<DetectionType>();
@@ -240,7 +241,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
         }
 
-        private List<ControllerEventLog> LoadAllEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadAllEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -248,7 +249,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> allevents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> allevents = csv.GetRecords<IndianaEvent>().ToList();
                 return allevents;
             }
         }

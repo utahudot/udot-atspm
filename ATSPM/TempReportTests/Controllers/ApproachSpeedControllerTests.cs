@@ -8,6 +8,7 @@ using System.Net;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.ApproachSpeed;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Application.TempExtensions;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -26,10 +27,10 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             
             System.DateTime start = new System.DateTime(2023, 6, 14, 12, 0, 0);
             System.DateTime end = new System.DateTime(2023, 6, 14, 13, 0, 0);
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"ECsForApproachSpeedTest.csv"); // Sampleevents
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ECsForApproachSpeedTest.csv"); // Sampleevents
             List<SpeedEvent> speedEvents = LoadSpeedEventsFromCsv(@"SpeedEvents5000-20230614.csv");
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
+            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
 
             // Create the mock Approach object
@@ -160,7 +161,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Assert
             Assert.Equal(approach.Object.Id, viewModel.ApproachId);
-            Assert.Equal(approach.Object.Location.LocationIdentifier, viewModel.LocationIdentifier);
+            Assert.Equal(approach.Object.Location.LocationIdentifier, viewModel.locationIdentifier);
             //Assert.Equal("Wavetronix Advance: Speed Accuracy +/- 2mph", viewModel.DetectionType);
             Assert.Equal(255, viewModel.DistanceFromStopBar);
             Assert.Equal(start, viewModel.Start);
@@ -175,7 +176,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //Assert.Equal(expectedEightyFifthSpeeds.ToString(),viewModel.EightyFifthSpeeds.ToString());
             //Assert.Equal(expectedFifteenthSpeeds.ToString(),viewModel.FifteenthSpeeds.ToString());
         }
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -183,7 +184,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }

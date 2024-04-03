@@ -1,5 +1,6 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
@@ -54,12 +55,12 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             DateTime startTime = new DateTime(2023, 1, 1, 0, 0, 0);
             DateTime endTime = new DateTime(2023, 1, 1, 1, 0, 0);
 
-            List<ControllerEventLog> detectorEvents = new List<ControllerEventLog>();
+            List<IndianaEvent> detectorEvents = new List<IndianaEvent>();
             for (DateTime time = startTime; time < endTime; time = time.AddMinutes(15))
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    detectorEvents.Add(new ControllerEventLog { Timestamp = time.AddMinutes(i) });
+                    detectorEvents.Add(new IndianaEvent { Timestamp = time.AddMinutes(i) });
                 }
             }
 

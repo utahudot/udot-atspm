@@ -1,5 +1,7 @@
 ﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using CsvHelper;
 using System.Globalization;
 
@@ -14,8 +16,8 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             // Arrange
             DateTime startDate = new DateTime(2023, 1, 1);
             DateTime endDate = new DateTime(2023, 1, 31);
-            List<ControllerEventLog> detectorEvents = new List<ControllerEventLog>();
-            List<ControllerEventLog> cycleEvents = new List<ControllerEventLog>();
+            List<IndianaEvent> detectorEvents = new List<IndianaEvent>();
+            List<IndianaEvent> cycleEvents = new List<IndianaEvent>();
             int? pcdCycleTime = 10;
             var cycleService = new CycleService();
 
@@ -32,9 +34,9 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             // Arrange
             DateTime startDate = new DateTime(2023, 4, 17, 8, 0, 0);
             DateTime endDate = new DateTime(2023, 4, 17, 9, 1, 0);
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7115-Phase2-DetectorCycle-20230417-800-901.csv"); // Sampleevents
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<ControllerEventLog> detectorEvents = events.Where(e => new List<int> { 82 }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7115-Phase2-DetectorCycle-20230417-800-901.csv"); // Sampleevents
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
+            List<IndianaEvent> detectorEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.DetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
             int? pcdCycleTime = 10;
 
             // Act
@@ -47,12 +49,12 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             for (int i = 0; i < result.Count; i++)
             {
                 var cyclePcd = result[i];
-                var startOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i].Timestamp;
-                var endOfCycle = cycleEvents.Where(c => c.EventCode == 9).ToList()[i + 1].Timestamp;
-                var greenEvents = cycleEvents.Where(c => c.EventCode == 1).ToList();
+                var startOfCycle = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseEndYellowChange).ToList()[i].Timestamp;
+                var endOfCycle = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseEndYellowChange).ToList()[i + 1].Timestamp;
+                var greenEvents = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseBeginGreen).ToList();
                 greenEvents.RemoveAt(0);
                 var greenEvent = greenEvents[i].Timestamp;
-                var yellowEvents = cycleEvents.Where(c => c.EventCode == 8).ToList();
+                var yellowEvents = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseBeginYellowChange).ToList();
                 yellowEvents.RemoveAt(0);
                 var yellowEvent = yellowEvents[i].Timestamp;
                 Assert.True(cyclePcd != null);
@@ -110,7 +112,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
 
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -118,7 +120,7 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }

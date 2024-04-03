@@ -2,6 +2,7 @@
 using ATSPM.Application.Business.PedDelay;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -23,11 +24,11 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime start = new(2023, 5, 16, 8, 59, 0);
             System.DateTime end = new(2023, 5, 16, 12, 0, 5);
 
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
 
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
+            List<IndianaEvent> pedEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PedestrianBeginWalk, DataLoggerEnum.PedestrianBeginChangeInterval, DataLoggerEnum.PedestrianCallRegistered, DataLoggerEnum.PedDetectorOn }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();
@@ -127,7 +128,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -135,7 +136,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }

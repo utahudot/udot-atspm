@@ -15,7 +15,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
         {
             // Arrange
             //PlanService planService = new PlanService();
-            WaitTimeService waitTimeService = new WaitTimeService(); //might need to change the service to have inputs
+            CycleService cycleService = new CycleService();
+            WaitTimeService waitTimeService = new WaitTimeService(cycleService); //might need to change the service to have inputs
 
             List<ControllerEventLog> allEvents = LoadAllEventsFromCsv(@"WaitTime_EventLogs.csv"); // Sampleevents
             List<ControllerEventLog> planEvents = allEvents.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
