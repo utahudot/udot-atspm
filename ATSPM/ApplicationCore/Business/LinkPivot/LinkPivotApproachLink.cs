@@ -6,9 +6,9 @@ namespace ATSPM.Application.Business.LinkPivot
 {
     public class LinkPivotApproachLink
     {
-        public LinkPivotApproachLink(string signalId, string location,
-            DirectionTypes upstreamApproachDirection, string downstreamLocationIdentifier,
-            string downstreamLocation, DirectionTypes downstreamApproachDirection,
+        public LinkPivotApproachLink(string locationIdentifier, string location,
+            string upstreamApproachDirection, string downstreamLocationIdentifier,
+            string downstreamLocation, string downstreamApproachDirection,
             int pAOGUpstreamBefore, int pAOGUpstreamPredicted,
             int pAOGDownstreamBefore, int pAOGDownstreamPredicted,
             double aOGUpstreamBefore, double aOGUpstreamPredicted,
@@ -17,7 +17,7 @@ namespace ATSPM.Application.Business.LinkPivot
             int pAogTotalBefore, double aogTotalPredicted, int pAogTotalPredicted,
             int linkNumber)
         {
-            SignalId = signalId;
+            LocationIdentifier = locationIdentifier;
             Location = location;
             UpstreamApproachDirection = upstreamApproachDirection;
             DownstreamLocationIdentifier = downstreamLocationIdentifier;
@@ -90,12 +90,12 @@ namespace ATSPM.Application.Business.LinkPivot
                 100 - (DownstreamChartExisting + DownstreamChartPositiveChange + DownstreamChartNegativeChange);
         }
 
-        public string SignalId { get; set; }
+        public string LocationIdentifier { get; set; }
         public string Location { get; set; }
-        public DirectionTypes UpstreamApproachDirection { get; set; }
+        public string UpstreamApproachDirection { get; set; }
         public string DownstreamLocationIdentifier { get; set; }
         public string DownstreamLocation { get; set; }
-        public DirectionTypes DownstreamApproachDirection { get; set; }
+        public string DownstreamApproachDirection { get; set; }
         public int PAOGUpstreamBefore { get; set; }
         public int PAOGUpstreamPredicted { get; set; }
         public int PAOGDownstreamBefore { get; set; }
@@ -106,7 +106,7 @@ namespace ATSPM.Application.Business.LinkPivot
         public double AOGDownstreamPredicted { get; set; }
         public double Delta { get; set; }
         public string ResultChartLocation { get; set; }
-        public string UpstreamCombinedLocation => SignalId + "\n" + UpstreamApproachDirection;
+        public string UpstreamCombinedLocation => LocationIdentifier + "\n" + UpstreamApproachDirection;
         public string DownstreamCombinedLocation => DownstreamLocationIdentifier + "\n" + DownstreamApproachDirection;
         public double AogTotalBefore { get; set; }
         public int PAogTotalBefore { get; set; }
@@ -128,9 +128,9 @@ namespace ATSPM.Application.Business.LinkPivot
         public int DownstreamChartNegativeChange { get; set; }
         public int DownstreamChartRemaining { get; set; }
 
-        public string TotalChartName => "Total" + SignalId + "Chart";
-        public string UpstreamChartName => "Up" + SignalId + "Chart";
-        public string DownstreamChartName => "Down" + SignalId + "Chart";
+        public string TotalChartName => "Total" + LocationIdentifier + "Chart";
+        public string UpstreamChartName => "Up" + LocationIdentifier + "Chart";
+        public string DownstreamChartName => "Down" + LocationIdentifier + "Chart";
 
         public int LinkNumber { get; set; }
     }

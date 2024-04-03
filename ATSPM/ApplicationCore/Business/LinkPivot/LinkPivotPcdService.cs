@@ -32,15 +32,18 @@ namespace ATSPM.Application.Business.LinkPivot
             var startDate = options.StartDate.ToDateTime(options.StartTime);
             var endDate = options.EndDate.ToDateTime(options.EndTime);
             var upstreamLocation = locationRepository.GetLatestVersionOfLocation(options.LocationIdentifier);
-            var downstreamLocation = locationRepository.GetLatestVersionOfLocation(options.DownLocationIdentifier);
+            var downstreamLocation = locationRepository.GetLatestVersionOfLocation(options.DownstreamLocationIdentifier);
 
-            var upApproachToAnalyze = GetApproachToAnalyze(upstreamLocation, options.UpstreamDirection);
-            var downApproachToAnalyze = GetApproachToAnalyze(downstreamLocation, options.DownDirection);
+            var upApproachToAnalyze = GetApproachToAnalyze(upstreamLocation, options.UpstreamApproachDirection);
+            var downApproachToAnalyze = GetApproachToAnalyze(downstreamLocation, options.DownstreamApproachDirection);
 
             if (upApproachToAnalyze != null)
                 await GeneratePcdAsync(result, upApproachToAnalyze, options.Delta, startDate, endDate, true);
             if (downApproachToAnalyze != null)
                 await GeneratePcdAsync(result, downApproachToAnalyze, options.Delta, startDate, endDate, false);
+
+            result.ExistingTotalPAOG = (int)(Math.Round(result.ExistingTotalAOG / result.ExistingVolume, 2) * 100);
+            result.PredictedTotalPAOG = (int)(Math.Round(result.PredictedTotalAOG / result.PredictedVolume, 2) * 100);
 
             return result;
         }

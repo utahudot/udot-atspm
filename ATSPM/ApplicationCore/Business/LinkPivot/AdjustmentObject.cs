@@ -15,8 +15,8 @@ namespace ATSPM.Application.Business.LinkPivot
         public string ResultChartLocation { get; set; }
         public string DownstreamLocation { get; set; }
         public string DownLocationIdentifier { get; set; }
-        public DirectionTypes DownstreamApproachDirection { get; set; }
-        public DirectionTypes UpstreamApproachDirection { get; set; }
+        public string DownstreamApproachDirection { get; set; }
+        public string UpstreamApproachDirection { get; set; }
         public double AOGDownstreamPredicted { get; set; }
         public double AOGUpstreamPredicted { get; set; }
         public double AOGDownstreamBefore { get; set; }

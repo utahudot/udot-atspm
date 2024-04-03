@@ -41,7 +41,7 @@ namespace ATSPM.Application.Business.LinkPivot
 
                 linkPivotResult.ApproachLinks.Add(new LinkPivotApproachLink(a.LocationIdentifier,
                     a.Location, a.UpstreamApproachDirection,
-                    a.DownLocationIdentifier, a.DownstreamLocation, a.DownstreamApproachDirection, a.PAOGUpstreamBefore,
+                    a.DownstreamLocationIdentifier, a.DownstreamLocation, a.DownstreamApproachDirection, a.PAOGUpstreamBefore,
                     a.PAOGUpstreamPredicted, a.PAOGDownstreamBefore, a.PAOGDownstreamPredicted,
                     a.AOGUpstreamBefore, a.AOGUpstreamPredicted, a.AOGDownstreamBefore,
                     a.AOGDownstreamPredicted, a.Delta, a.ResultChartLocation, a.AogTotalBefore,
@@ -103,6 +103,8 @@ namespace ATSPM.Application.Business.LinkPivot
                 linkPivotResult.TotalPaogPredicted = 0;
             }
 
+            linkPivotResult.SetSummary();
+
             return linkPivotResult;
         }
 
@@ -153,8 +155,8 @@ namespace ATSPM.Application.Business.LinkPivot
                         AOGUpstreamBefore = lpp.AogUpstreamBefore,
                         AOGUpstreamPredicted = lpp.AogUpstreamPredicted,
                         DownstreamLocationIdentifier = lpp.DownstreamLocationApproach.Location.LocationIdentifier,
-                        DownstreamApproachDirection = lpp.DownstreamLocationApproach.DirectionTypeId,
-                        UpstreamApproachDirection = lpp.UpstreamLocationApproach.DirectionTypeId,
+                        DownstreamApproachDirection = lpp.DownstreamLocationApproach.DirectionType.Description,
+                        UpstreamApproachDirection = lpp.UpstreamLocationApproach.DirectionType.Description,
                         ResultChartLocation = lpp.ResultChartLocation,
                         AogTotalBefore = lpp.AogTotalBefore,
                         PAogTotalBefore = lpp.PaogTotalBefore,
@@ -217,8 +219,8 @@ namespace ATSPM.Application.Business.LinkPivot
                 AOGUpstreamBefore = 0,
                 AOGUpstreamPredicted = 0,
                 DownstreamLocationIdentifier = routeLocation.LocationIdentifier,
-                DownstreamApproachDirection = routeLocation.PrimaryDirectionId,
-                UpstreamApproachDirection = routeLocation.PrimaryDirectionId,
+                DownstreamApproachDirection = routeLocation.PrimaryDirection.Description,
+                UpstreamApproachDirection = routeLocation.PrimaryDirection.Description,
                 ResultChartLocation = "",
                 AogTotalBefore = 0,
                 PAogTotalBefore = 0,
