@@ -72,20 +72,20 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override int GetAverageByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository);
+                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override int GetSumByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository);
+                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override List<BinsContainer> GetBinsContainersBySignal(Location signal, AggregationOptions options)
         {
-            var phaseTerminationAggregationBySignal = new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository);
+            var phaseTerminationAggregationBySignal = new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository, options);
             return phaseTerminationAggregationBySignal.BinsContainers;
         }
 
@@ -93,14 +93,14 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override List<BinsContainer> GetBinsContainersByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var phaseTerminationAggregationBySignal =
-                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseNumber, phaseSplitMonitorAggregationRepository);
+                new PhaseSplitMonitorAggregationBySignal(this, signal, phaseNumber, phaseSplitMonitorAggregationRepository, options);
             return phaseTerminationAggregationBySignal.BinsContainers;
         }
 
         public override List<BinsContainer> GetBinsContainersByRoute(List<Location> signals, AggregationOptions options)
         {
             var aggregations = new ConcurrentBag<PhaseSplitMonitorAggregationBySignal>();
-            Parallel.ForEach(signals, signal => { aggregations.Add(new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository)); });
+            Parallel.ForEach(signals, signal => { aggregations.Add(new PhaseSplitMonitorAggregationBySignal(this, signal, phaseSplitMonitorAggregationRepository, options)); });
             var binsContainers = BinFactory.GetBins(options.TimeOptions);
             foreach (var splitFailAggregationBySignal in aggregations)
                 for (var i = 0; i < binsContainers.Count; i++)

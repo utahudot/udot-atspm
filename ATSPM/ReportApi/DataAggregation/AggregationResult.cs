@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
+using System.Runtime.Serialization;
 
 namespace ATSPM.ReportApi.DataAggregation
 {
@@ -19,14 +20,16 @@ namespace ATSPM.ReportApi.DataAggregation
         public List<Series> Series { get; set; }
     }
 
+
+    [KnownType(typeof(DataPointDateDouble))]
     public class Series
     {
         public Series()
         {
-            DataPoints = new List<IAggregationDataPoint>();
+            DataPoints = new List<AggregationDataPoint>();
         }
 
         public string Identifier { get; set; }
-        public List<IAggregationDataPoint> DataPoints { get; set; }
+        public List<AggregationDataPoint> DataPoints { get; set; }
     }
 }

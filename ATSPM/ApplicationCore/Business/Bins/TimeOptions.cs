@@ -26,23 +26,21 @@ namespace ATSPM.Application.Business.Bins
         }
 
 
-        public TimeOptions(DateTime start, DateTime end, int? timeOfDayStartHour, int? timeOfDayStartMinute,
-            int? timeOfDayEndHour, int? timeOfDayEndMinute, List<DayOfWeek> daysOfWeek, BinSize binSize,
-            TimePeriodOptions timeOption)
-        {
-            DaysOfWeek = new List<DayOfWeek>();
-            Start = start;
-            End = end;
-            TimeOfDayStartHour = timeOfDayStartHour;
-            TimeOfDayStartMinute = timeOfDayStartMinute;
-            TimeOfDayEndHour = timeOfDayEndHour;
-            TimeOfDayEndMinute = timeOfDayEndMinute;
-            int dayOfWeekCounter = 0;
-            DateTime oneDay = Start;
-            DaysOfWeek = daysOfWeek;
-            SelectedBinSize = binSize;
-            TimeOption = timeOption;
-        }
+        //public TimeOptions(DateTime start, DateTime end, int? timeOfDayStartHour, int? timeOfDayStartMinute,
+        //    int? timeOfDayEndHour, int? timeOfDayEndMinute, List<DayOfWeek> daysOfWeek, BinSize binSize,
+        //    TimePeriodOptions timeOption)
+        //{
+        //    DaysOfWeek = new List<DayOfWeek>();
+        //    Start = start;
+        //    End = end;
+        //    TimeOfDayStartHour = timeOfDayStartHour;
+        //    TimeOfDayStartMinute = timeOfDayStartMinute;
+        //    TimeOfDayEndHour = timeOfDayEndHour;
+        //    TimeOfDayEndMinute = timeOfDayEndMinute;
+        //    DaysOfWeek = daysOfWeek;
+        //    SelectedBinSize = binSize;
+        //    TimeOption = timeOption;
+        //}
 
 
         public DateTime Start { get; set; }

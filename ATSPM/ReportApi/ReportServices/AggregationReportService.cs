@@ -1,8 +1,9 @@
 using ATSPM.Application.Business;
 using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.ReportApi.DataAggregation;
-using Microsoft.AspNetCore.Mvc;
+using MOE.Common.Business.WCFServiceLibrary;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -14,13 +15,58 @@ namespace ATSPM.ReportApi.ReportServices
     public class AggregationReportService : ReportServiceBase<AggregationOptions, IEnumerable<AggregationResult>>
     {
         private readonly ILocationRepository locationRepository;
+        private readonly DetectorVolumeAggregationOptions detectorVolumeAggregationOptions;
+        private readonly ApproachSpeedAggregationOptions approachSpeedAggregationOptions;
+        private readonly ApproachPcdAggregationOptions approachPcdAggregationOptions;
+        private readonly PhaseCycleAggregationOptions phaseCycleAggregationOptions;
+        private readonly ApproachSplitFailAggregationOptions approachSplitFailAggregationOptions;
+        private readonly ApproachYellowRedActivationsAggregationOptions approachYellowRedActivationsAggregationOptions;
+        private readonly PreemptionAggregationOptions preemptionAggregationOptions;
+        private readonly PriorityAggregationOptions priorityAggregationOptions;
+        private readonly SignalEventCountAggregationOptions signalEventCountAggregationOptions;
+        private readonly PhaseTerminationAggregationOptions phaseTerminationAggregationOptions;
+        private readonly PhasePedAggregationOptions phasePedAggregationOptions;
+        private readonly PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions;
+        private readonly PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions;
+        private readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
+        private readonly ILogger<AggregationReportService> logger;
 
         /// <inheritdoc/>
         public AggregationReportService(
-            ILocationRepository locationRepository
+            ILocationRepository locationRepository,
+            DetectorVolumeAggregationOptions detectorVolumeAggregationOptions,
+            ApproachSpeedAggregationOptions approachSpeedAggregationOptions,
+            ApproachPcdAggregationOptions approachPcdAggregationOptions,
+            PhaseCycleAggregationOptions phaseCycleAggregationOptions,
+            ApproachSplitFailAggregationOptions approachSplitFailAggregationOptions,
+            ApproachYellowRedActivationsAggregationOptions approachYellowRedActivationsAggregationOptions,
+            PreemptionAggregationOptions preemptionAggregationOptions,
+            PriorityAggregationOptions priorityAggregationOptions,
+            SignalEventCountAggregationOptions signalEventCountAggregationOptions,
+            PhaseTerminationAggregationOptions phaseTerminationAggregationOptions,
+            PhasePedAggregationOptions phasePedAggregationOptions,
+            PhaseLeftTurnGapAggregationOptions phaseLeftTurnGapAggregationOptions,
+            PhaseSplitMonitorAggregationOptions phaseSplitMonitorAggregationOptions,
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            ILogger<AggregationReportService> logger
             )
         {
             this.locationRepository = locationRepository;
+            this.detectorVolumeAggregationOptions = detectorVolumeAggregationOptions;
+            this.approachSpeedAggregationOptions = approachSpeedAggregationOptions;
+            this.approachPcdAggregationOptions = approachPcdAggregationOptions;
+            this.phaseCycleAggregationOptions = phaseCycleAggregationOptions;
+            this.approachSplitFailAggregationOptions = approachSplitFailAggregationOptions;
+            this.approachYellowRedActivationsAggregationOptions = approachYellowRedActivationsAggregationOptions;
+            this.preemptionAggregationOptions = preemptionAggregationOptions;
+            this.priorityAggregationOptions = priorityAggregationOptions;
+            this.signalEventCountAggregationOptions = signalEventCountAggregationOptions;
+            this.phaseTerminationAggregationOptions = phaseTerminationAggregationOptions;
+            this.phasePedAggregationOptions = phasePedAggregationOptions;
+            this.phaseLeftTurnGapAggregationOptions = phaseLeftTurnGapAggregationOptions;
+            this.phaseSplitMonitorAggregationOptions = phaseSplitMonitorAggregationOptions;
+            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -28,42 +74,42 @@ namespace ATSPM.ReportApi.ReportServices
         {
             switch (options.AggregationType)
             {
-                case 16:
-                    return GetLaneByLaneChart(options);
-                //case 25:
-                //    return GetApproachSpeedAggregationChart(aggDataExportViewModel);
-                //case 18:
-                //    return GetPCDChart(aggDataExportViewModel);
-                //case 19:
-                //    return GetCycleChart(aggDataExportViewModel);
-                //case 20:
-                //    return GetSplitFailChart(aggDataExportViewModel);
-                //case 26:
-                //    return GetYraChart(aggDataExportViewModel);
-                //case 22:
-                //    return GetPreemptionChart(aggDataExportViewModel);
-                //case 24:
-                //    return GetPriorityChart(aggDataExportViewModel);
-                //case 27:
-                //    return GetSignalEventCountChart(aggDataExportViewModel);
-                //case 29:
-                //    return GetPhaseTerminationChart(aggDataExportViewModel);
-                //case 30:
-                //    return GetPhasePedChart(aggDataExportViewModel);
-                //case 34:
-                //    return GetLeftTurnGapChart(aggDataExportViewModel);
-                //case 35:
-                //    return GetSplitMonitorChart(aggDataExportViewModel);
+                case Application.Enums.AggregationType.DetectorEventCount:
+                    return detectorVolumeAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.Speed:
+                    return approachSpeedAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.Pcd:
+                    return approachPcdAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.PhaseCycle:
+                    return phaseCycleAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.SplitFail:
+                    return approachSplitFailAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.YellowRedActivation:
+                    return approachYellowRedActivationsAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.Preemption:
+                    return preemptionAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.Priority:
+                    return priorityAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.SignalEventCount:
+                    return signalEventCountAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.PhaseTermination:
+                    return phaseTerminationAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.Ped:
+                    return phasePedAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.PhaseLeftTurn:
+                    return phaseLeftTurnGapAggregationOptions.CreateMetric(options);
+                case Application.Enums.AggregationType.SplitMonitor:
+                    return phaseSplitMonitorAggregationOptions.CreateMetric(options);
                 default:
                     throw new Exception("Unknown Chart Type");
             }
 
         }
 
-        private ActionResult GetLaneByLaneChart(AggregationOptions aggDataExportViewModel)
-        {
-            return GetChart(aggDataExportViewModel, options);
-        }
+        //private ActionResult GetLaneByLaneChart(AggregationOptions aggDataExportViewModel)
+        //{
+        //    return GetChart(aggDataExportViewModel, options);
+        //}
 
         //private void SetLocations(AggregationOptions options, List<Location> locations)
         //{

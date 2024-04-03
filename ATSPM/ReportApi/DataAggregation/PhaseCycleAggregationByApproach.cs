@@ -23,8 +23,8 @@ namespace MOE.Common.Business.DataAggregation
             ) : base(approach, approachAggregationMetricOptions, startDate, endDate,
             getProtectedPhase, dataType, options)
         {
-            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
+            LoadBins(approach, approachAggregationMetricOptions, getProtectedPhase, dataType, options);
         }
 
         protected override void LoadBins(

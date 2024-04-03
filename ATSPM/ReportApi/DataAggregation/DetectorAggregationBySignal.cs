@@ -18,10 +18,10 @@ namespace MOE.Common.Business.DataAggregation
             ) : base(
             detectorVolumeAggregationOptions, signal, options)
         {
+            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             ApproachDetectorVolumes = new List<DetectorAggregationByApproach>();
             GetApproachDetectorVolumeAggregationContainersForAllApporaches(detectorVolumeAggregationOptions, signal, options);
             LoadBins(null, null, options);
-            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
         }
 
         public DetectorAggregationBySignal(

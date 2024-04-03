@@ -26,6 +26,7 @@ using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.ReportApi.DataAggregation;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
@@ -34,6 +35,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MOE.Common.Business.WCFServiceLibrary;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -177,8 +179,22 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<YellowRedActivationsService>();
     s.AddScoped<WatchDogReportService>();
 
+    //Aggregation Services
+    s.AddScoped<DetectorVolumeAggregationOptions>();
+    s.AddScoped<ApproachSpeedAggregationOptions>();
+    s.AddScoped<ApproachPcdAggregationOptions>();
+    s.AddScoped<PhaseCycleAggregationOptions>();
+    s.AddScoped<ApproachSplitFailAggregationOptions>();
+    s.AddScoped<ApproachYellowRedActivationsAggregationOptions>();
+    s.AddScoped<PreemptionAggregationOptions>();
+    s.AddScoped<PriorityAggregationOptions>();
+    s.AddScoped<SignalEventCountAggregationOptions>();
+    s.AddScoped<PhaseTerminationAggregationOptions>();
+    s.AddScoped<PhasePedAggregationOptions>();
+    s.AddScoped<PhaseLeftTurnGapAggregationOptions>();
+    s.AddScoped<PhaseSplitMonitorAggregationOptions>();
+
     //Common Services
-    s.AddScoped<AggregationEngineService>();
     s.AddScoped<PlanService>();
     s.AddScoped<PedActuationService>();
     s.AddScoped<LocationPhaseService>();

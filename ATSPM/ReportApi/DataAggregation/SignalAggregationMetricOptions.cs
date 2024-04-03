@@ -26,13 +26,13 @@ namespace MOE.Common.Business.WCFServiceLibrary
     //}
 
 
-    public abstract class SignalAggregationMetricOptions
+    public abstract class SignalAggregationMetricOptions : ISignalAggregationMetricOptions
     {
         //public List<AggregatedDataType> AggregatedDataTypes;
         private readonly ILocationRepository locationRepository;
-        private readonly ILogger<SignalAggregationMetricOptions> logger;
+        private readonly ILogger logger;
 
-        protected SignalAggregationMetricOptions(ILocationRepository locationRepository, ILogger<SignalAggregationMetricOptions> logger)
+        protected SignalAggregationMetricOptions(ILocationRepository locationRepository, ILogger logger)
         {
             this.locationRepository = locationRepository;
             this.logger = logger;
@@ -62,7 +62,6 @@ namespace MOE.Common.Business.WCFServiceLibrary
         public virtual List<AggregationResult> CreateMetric(AggregationOptions options)
         {
             //Y2AxisTitle = "Event Count";
-            GetSignalObjects(options);
             if (options.SelectedXAxisType == XAxisType.TimeOfDay &&
                 options.TimeOptions.TimeOption == TimeOptions.TimePeriodOptions.StartToEnd)
             {
@@ -88,14 +87,15 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
         protected virtual List<AggregationResult> GetChartByXAxisAggregation(AggregationOptions options)
         {
+            var signals = GetSignalObjects(options);
             switch (options.SelectedXAxisType)
             {
                 case XAxisType.Time:
-                    return GetTimeCharts(options);
+                    return GetTimeCharts(options, signals);
                 case XAxisType.TimeOfDay:
-                    return GetTimeOfDayCharts(options);
+                    return GetTimeOfDayCharts(options, signals);
                 case XAxisType.Signal:
-                    return GetSignalCharts(options);
+                    return GetSignalCharts(options, signals);
                 default:
                     throw new Exception("Invalid X-Axis");
             }
@@ -112,27 +112,27 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected void GetSignalObjects(AggregationOptions options)
+        protected List<Location> GetSignalObjects(AggregationOptions options)
         {
+            var signals = new List<Location>();
             try
             {
-                if (options.Signals == null)
-                    options.Signals = new List<Location>();
-                if (options.Signals.Count == 0)
+                if (options.LocationIdentifiers.Any())
                 {
                     foreach (var filterSignal in options.FilterSignals)
                         if (!filterSignal.Exclude)
                         {
-                            var signals =
-                                locationRepository.GetLocationsBetweenDates(filterSignal.SignalId, options.TimeOptions.Start, options.TimeOptions.End);
+                            signals =
+                                locationRepository.GetLocationsBetweenDates(filterSignal.SignalId, options.TimeOptions.Start, options.TimeOptions.End).ToList();
                             foreach (var signal in signals)
                             {
                                 RemoveApproachesByFilter(filterSignal, signal, options);
                                 signal.Approaches = signal.Approaches.OrderBy(a => a.ProtectedPhaseNumber).ToList();
                             }
-                            options.Signals.AddRange(signals);
+                            signals.AddRange(signals);
                         }
                 }
+                return signals;
             }
             catch (Exception e)
             {
@@ -142,17 +142,17 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected virtual List<AggregationResult> GetTimeCharts(AggregationOptions options)
+        protected virtual List<AggregationResult> GetTimeCharts(AggregationOptions options, List<Location> signals)
         {
             AggregationResult chart;
             switch (options.SelectedSeries)
             {
                 case SeriesType.Signal:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    return new List<AggregationResult> { GetTimeXAxisSignalSeriesChart(options.Signals, options) };
+                    return new List<AggregationResult> { GetTimeXAxisSignalSeriesChart(signals, options) };
                 case SeriesType.Route:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    return new List<AggregationResult> { GetTimeXAxisRouteSeriesChart(options.Signals, options) };
+                    return new List<AggregationResult> { GetTimeXAxisRouteSeriesChart(signals, options) };
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
             }
@@ -163,7 +163,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             //SaveChartImage(chart);
         }
 
-        protected virtual List<AggregationResult> GetSignalCharts(AggregationOptions options)
+        protected virtual List<AggregationResult> GetSignalCharts(AggregationOptions options, List<Location> signals)
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             var chart = new AggregationResult();
@@ -172,7 +172,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             {
                 case SeriesType.Signal:
                     //chart = ChartFactory.CreateStringXIntYChart(this);
-                    chart.Series.Add(GetSignalsXAxisSignalSeries(options.Signals, options));
+                    chart.Series.Add(GetSignalsXAxisSignalSeries(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -193,7 +193,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var signal in signals)
             {
                 var binsContainers = GetBinsContainersBySignal(signal, options);
-                var dataPoint = new DataPointStringDouble
+                var dataPoint = new AggregationDataPoint
                 {
                     Identifier = signal.LocationDescription(),
                     Value = options.SelectedAggregationType == AggregationCalculationType.Sum
@@ -229,16 +229,16 @@ namespace MOE.Common.Business.WCFServiceLibrary
             return series;
         }
 
-        protected virtual List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options)
+        protected virtual List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options, List<Location> signals)
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -327,7 +327,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             {
                 if (binsContainers.Count > 1)
                 {
-                    DataPointDateDouble dataPoint;
+                    AggregationDataPoint dataPoint;
                     if (container != null)
                     {
                         if (options.SelectedAggregationType == AggregationCalculationType.Sum)
@@ -345,7 +345,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 {
                     foreach (var bin in container.Bins)
                     {
-                        DataPointDateDouble dataPoint;
+                        AggregationDataPoint dataPoint;
                         if (bin != null)
                         {
                             if (options.SelectedAggregationType == AggregationCalculationType.Sum)
@@ -435,28 +435,28 @@ namespace MOE.Common.Business.WCFServiceLibrary
             }
         }
 
-        protected DataPointDateDouble GetDataPointForSum(Bin bin)
+        protected AggregationDataPoint GetDataPointForSum(Bin bin)
         {
-            var dataPoint = new DataPointDateDouble(bin.Start, bin.Sum);
+            var dataPoint = new AggregationDataPoint { Start = bin.Start, Value = bin.Sum };
             //dataPoint.Label = bin.Start.Month.ToString();
             return dataPoint;
         }
 
-        protected DataPointDateDouble GetDataPointForAverage(Bin bin)
+        protected AggregationDataPoint GetDataPointForAverage(Bin bin)
         {
-            var dataPoint = new DataPointDateDouble(bin.Start, bin.Average);
+            var dataPoint = new AggregationDataPoint { Start = bin.Start, Value = bin.Average };
             return dataPoint;
         }
 
-        protected DataPointDateDouble GetContainerDataPointForSum(BinsContainer bin)
+        protected AggregationDataPoint GetContainerDataPointForSum(BinsContainer bin)
         {
-            var dataPoint = new DataPointDateDouble(bin.Start, bin.SumValue);
+            var dataPoint = new AggregationDataPoint { Start = bin.Start, Value = bin.SumValue };
             return dataPoint;
         }
 
-        protected DataPointDateDouble GetContainerDataPointForAverage(BinsContainer bin)
+        protected AggregationDataPoint GetContainerDataPointForAverage(BinsContainer bin)
         {
-            var dataPoint = new DataPointDateDouble(bin.Start, bin.AverageValue);
+            var dataPoint = new AggregationDataPoint { Start = bin.Start, Value = bin.AverageValue };
             return dataPoint;
         }
 
@@ -507,11 +507,11 @@ namespace MOE.Common.Business.WCFServiceLibrary
                         {
                             if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                             {
-                                series.DataPoints.Add(new DataPointDateDouble(binContainer.Start.Date, binContainer.SumValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = binContainer.Start.Date, Value = binContainer.SumValue });
                             }
                             else
                             {
-                                series.DataPoints.Add(new DataPointDateDouble(binContainer.Start.Date, binContainer.AverageValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = binContainer.Start.Date, Value = binContainer.AverageValue });
                             }
                         }
                         break;
@@ -522,11 +522,11 @@ namespace MOE.Common.Business.WCFServiceLibrary
                         {
                             if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                             {
-                                series.DataPoints.Add(new DataPointDateDouble(binContainer.Start.Date, binContainer.SumValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = binContainer.Start.Date, Value = binContainer.SumValue });
                             }
                             else
                             {
-                                series.DataPoints.Add(new DataPointDateDouble(binContainer.Start.Date, binContainer.AverageValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = binContainer.Start.Date, Value = binContainer.AverageValue });
                             }
                         }
                         break;
@@ -543,7 +543,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                             {
                                 var sumValue = binsContainers.FirstOrDefault().Bins.Where(b =>
                                     b.Start.Date == startTime.Date).Sum(b => b.Sum);
-                                series.DataPoints.Add(new DataPointDateDouble(startTime.Date, sumValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = startTime.Date, Value = sumValue });
                             }
                             else
                             {
@@ -553,7 +553,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                                     averageValue = binsContainers.FirstOrDefault().Bins.Where(b =>
                                             b.Start.Date == startTime.Date)
                                         .Average(b => b.Sum);
-                                series.DataPoints.Add(new DataPointDateInt(startTime.Date, Convert.ToInt32(Math.Round(averageValue))));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = startTime.Date, Value = averageValue });
                             }
                         }
                         break;
@@ -570,7 +570,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                             {
                                 var sumValue = binsContainers.FirstOrDefault().Bins.Where(b =>
                                     b.Start.Hour == startTime.Hour && b.Start.Minute == startTime.Minute).Sum(b => b.Sum);
-                                series.DataPoints.Add(new DataPointDateDouble(startTime, sumValue));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = startTime, Value = sumValue });
                             }
                             else
                             {
@@ -580,7 +580,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                                     averageValue = binsContainers.FirstOrDefault().Bins.Where(b =>
                                             b.Start.Hour == startTime.Hour && b.Start.Minute == startTime.Minute)
                                         .Average(b => b.Sum);
-                                series.DataPoints.Add(new DataPointDateInt(startTime, Convert.ToInt32(Math.Round(averageValue))));
+                                series.DataPoints.Add(new AggregationDataPoint { Start = startTime, Value = averageValue });
                             }
                         }
                         break;

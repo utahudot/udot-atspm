@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Business.Bins;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
@@ -9,24 +10,34 @@ namespace MOE.Common.Business.DataAggregation
 {
     public class DetectorAggregationByDetector : AggregationByDetector
     {
-        public DetectorAggregationByDetector(Detector detector, DetectorVolumeAggregationOptions options, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository) : base(
-            detector, options, detectorEventCountAggregationRepository)
+        public DetectorAggregationByDetector(
+            Detector detector,
+            DetectorVolumeAggregationOptions detectorVolumeAggregationOptions,
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            AggregationOptions options
+            ) : base(
+            detector, detectorVolumeAggregationOptions, detectorEventCountAggregationRepository, options)
         {
-            LoadBins(detector, options);
+            LoadBins(detector, detectorVolumeAggregationOptions, options);
         }
 
-        public override void LoadBins(Detector detector, DetectorAggregationMetricOptions options)
+        public override void LoadBins(
+            Detector detector,
+            DetectorAggregationMetricOptions detectorAggregationMetricOptions,
+            AggregationOptions options)
         {
-            var detectorAggregations = detectorEventCountAggregationRepository.GetAggregationsBetweenDates(detector.Approach.Location.LocationIdentifier, options.Start, options.End).Where(d => d.DetectorPrimaryId == detector.Id).ToList();
-            BinsContainers = GetBinsContainers(options, detectorAggregations, BinsContainers);
+            var detectorAggregations = detectorAggregationMetricOptions.detectorEventCountAggregation.GetAggregationsBetweenDates(detector.Approach.Location.LocationIdentifier, options.Start, options.End).Where(d => d.DetectorPrimaryId == detector.Id).ToList();
+            BinsContainers = GetBinsContainers(detectorAggregationMetricOptions, detectorAggregations, BinsContainers, options);
         }
 
         public static List<BinsContainer> GetBinsContainers(
-            DetectorAggregationMetricOptions options,
+            DetectorAggregationMetricOptions detectorAggregationMetricOptions,
             List<DetectorEventCountAggregation> detectorAggregations,
-            List<BinsContainer> binsContainers
+            List<BinsContainer> binsContainers,
+            AggregationOptions options
             )
         {
+            var dataTypeEnum = (DetectorVolumeDataTypes)options.DataType;
             var concurrentBinContainers = new ConcurrentBag<BinsContainer>();
             if (detectorAggregations != null)
             {
@@ -42,9 +53,9 @@ namespace MOE.Common.Business.DataAggregation
                         if (detectorAggregations.Any(s => s.Start >= bin.Start && s.Start < bin.End))
                         {
                             var volume = 0;
-                            switch (options.SelectedAggregatedDataType.DataName)
+                            switch (dataTypeEnum)
                             {
-                                case "DetectorActivationCount":
+                                case DetectorVolumeDataTypes.DetectorActivationCount:
                                     volume =
                                         detectorAggregations.Where(s =>
                                                 s.Start >= bin.Start && s.Start < bin.End)

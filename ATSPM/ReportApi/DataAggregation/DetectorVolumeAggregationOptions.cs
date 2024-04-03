@@ -23,73 +23,42 @@ namespace MOE.Common.Business.WCFServiceLibrary
         public DetectorVolumeAggregationOptions(
             IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
             ILocationRepository locationRepository,
-            ILogger<DetectorVolumeAggregationOptions> logger) : base(locationRepository, logger)
+            ILogger<DetectorVolumeAggregationOptions> logger) : base(locationRepository, logger, detectorEventCountAggregationRepository)
         {
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
         }
 
-        //public override string ChartTitle
-        //{
-        //    get
-        //    {
-        //        string chartTitle;
-        //        chartTitle = "Detector Aggregation Chart\n";
-        //        chartTitle += TimePeriodOptions.Start.ToString();
-        //        if (TimePeriodOptions.End > TimePeriodOptions.Start)
-        //            chartTitle += " to " + TimePeriodOptions.End + "\n";
-        //        if (TimePeriodOptions.DaysOfWeek != null)
-        //            foreach (var dayOfWeek in TimePeriodOptions.DaysOfWeek)
-        //                chartTitle += dayOfWeek + " ";
-        //        if (TimePeriodOptions.TimeOfDayStartHour != null && TimePeriodOptions.TimeOfDayStartMinute != null &&
-        //            TimePeriodOptions.TimeOfDayEndHour != null && TimePeriodOptions.TimeOfDayEndMinute != null)
-        //            chartTitle += "Limited to: " +
-        //                          new TimeSpan(0, TimePeriodOptions.TimeOfDayStartHour.Value,
-        //                              TimePeriodOptions.TimeOfDayStartMinute.Value, 0) + " to " + new TimeSpan(0,
-        //                              TimePeriodOptions.TimeOfDayEndHour.Value,
-        //                              TimePeriodOptions.TimeOfDayEndMinute.Value, 0) + "\n";
-        //        chartTitle += TimePeriodOptions.SelectedBinSize + " bins ";
-        //        chartTitle += SelectedXAxisType + " Aggregation ";
-        //        chartTitle += SelectedAggregationType.ToString();
-        //        return chartTitle;
-        //    }
-        //}
-
-        //public override string YAxisTitle => Regex.Replace(
-        //                                         SelectedAggregationType + SelectedAggregatedDataType.DataName,
-        //                                         @"(\B[A-Z]+?(?=[A-Z][^A-Z])|\B[A-Z]+?(?=[^A-Z]))", " $1") + " " +
-        //                                     TimePeriodOptions.SelectedBinSize + " bins";
-
         protected override int GetAverageByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var detectorAggregationBySignal =
-                new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository, options);
             return detectorAggregationBySignal.Average;
         }
 
         protected override double GetSumByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var detectorAggregationBySignal =
-                new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository, options);
             return detectorAggregationBySignal.Total;
         }
 
         protected override int GetAverageByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var detectorAggregationBySignal =
-                new DetectorAggregationBySignal(this, signal, direction, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, direction, detectorEventCountAggregationRepository, options);
             return detectorAggregationBySignal.Average;
         }
 
         protected override double GetSumByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var detectorAggregationByDetector =
-                new DetectorAggregationBySignal(this, signal, direction, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, direction, detectorEventCountAggregationRepository, options);
             return detectorAggregationByDetector.Total;
         }
 
         protected override List<BinsContainer> GetBinsContainersBySignal(Location signal, AggregationOptions options)
         {
-            var detectorAggregationByDetector = new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository);
+            var detectorAggregationByDetector = new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository, options);
             return detectorAggregationByDetector.BinsContainers;
         }
 
@@ -97,21 +66,21 @@ namespace MOE.Common.Business.WCFServiceLibrary
             Location signal, AggregationOptions options)
         {
             var detectorAggregationBySignal =
-                new DetectorAggregationBySignal(this, signal, directionType, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, directionType, detectorEventCountAggregationRepository, options);
             return detectorAggregationBySignal.BinsContainers;
         }
 
         protected override List<BinsContainer> GetBinsContainersByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var detectorAggregationBySignal =
-                new DetectorAggregationBySignal(this, signal, phaseNumber, detectorEventCountAggregationRepository);
+                new DetectorAggregationBySignal(this, signal, phaseNumber, detectorEventCountAggregationRepository, options);
             return detectorAggregationBySignal.BinsContainers;
         }
 
         public override List<BinsContainer> GetBinsContainersByRoute(List<Location> signals, AggregationOptions options)
         {
             var aggregations = new ConcurrentBag<DetectorAggregationBySignal>();
-            Parallel.ForEach(signals, signal => { aggregations.Add(new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository)); });
+            Parallel.ForEach(signals, signal => { aggregations.Add(new DetectorAggregationBySignal(this, signal, detectorEventCountAggregationRepository, options)); });
             var binsContainers = BinFactory.GetBins(options.TimeOptions);
             foreach (var splitFailAggregationBySignal in aggregations)
                 for (var i = 0; i < binsContainers.Count; i++)
@@ -124,16 +93,16 @@ namespace MOE.Common.Business.WCFServiceLibrary
             return binsContainers;
         }
 
-        protected override List<BinsContainer> GetBinsContainersByDetector(Detector detector)
+        protected override List<BinsContainer> GetBinsContainersByDetector(Detector detector, AggregationOptions options, IDetectorEventCountAggregationRepository repository)
         {
-            var detectorAggregationByDetector = new DetectorAggregationByDetector(detector, this, detectorEventCountAggregationRepository);
+            var detectorAggregationByDetector = new DetectorAggregationByDetector(detector, this, repository, options);
             return detectorAggregationByDetector.BinsContainers;
         }
 
 
         protected override List<BinsContainer> GetBinsContainersByApproach(Approach approach, bool getprotectedPhase, AggregationOptions options)
         {
-            var detectorAggregationByDetector = new DetectorAggregationByApproach(approach, this, getprotectedPhase, detectorEventCountAggregationRepository);
+            var detectorAggregationByDetector = new DetectorAggregationByApproach(approach, this, getprotectedPhase, detectorEventCountAggregationRepository, options);
             return detectorAggregationByDetector.BinsContainers;
         }
     }

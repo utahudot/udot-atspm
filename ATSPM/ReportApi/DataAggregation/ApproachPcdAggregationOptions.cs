@@ -68,21 +68,21 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override int GetAverageByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal);
+                new PcdAggregationBySignal(this, signal, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override double GetSumByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal);
+                new PcdAggregationBySignal(this, signal, options);
             return splitFailAggregationBySignal.Average;
         }
 
         protected override int GetAverageByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, direction);
+                new PcdAggregationBySignal(this, signal, direction, options);
             return splitFailAggregationBySignal.Average;
         }
 
@@ -90,34 +90,34 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override double GetSumByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, direction);
+                new PcdAggregationBySignal(this, signal, direction, options);
             return splitFailAggregationBySignal.Average;
         }
 
-        protected override List<BinsContainer> GetBinsContainersBySignal(Location signal, AggregationOptions optionsl)
+        protected override List<BinsContainer> GetBinsContainersBySignal(Location signal, AggregationOptions options)
         {
-            var splitFailAggregationBySignal = new PcdAggregationBySignal(this, signal);
+            var splitFailAggregationBySignal = new PcdAggregationBySignal(this, signal, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
         protected override List<BinsContainer> GetBinsContainersByDirection(DirectionTypes directionType, Location signal, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, directionType);
+                new PcdAggregationBySignal(this, signal, directionType, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
         protected override List<BinsContainer> GetBinsContainersByPhaseNumber(Location signal, int phaseNumber, AggregationOptions options)
         {
             var splitFailAggregationBySignal =
-                new PcdAggregationBySignal(this, signal, phaseNumber, approachPcdAggregationRepository);
+                new PcdAggregationBySignal(this, signal, phaseNumber, approachPcdAggregationRepository, options);
             return splitFailAggregationBySignal.BinsContainers;
         }
 
         public override List<BinsContainer> GetBinsContainersByRoute(List<Location> signals, AggregationOptions options)
         {
             var aggregations = new ConcurrentBag<PcdAggregationBySignal>();
-            Parallel.ForEach(signals, signal => { aggregations.Add(new PcdAggregationBySignal(this, signal)); });
+            Parallel.ForEach(signals, signal => { aggregations.Add(new PcdAggregationBySignal(this, signal, options)); });
             var binsContainers = BinFactory.GetBins(options.TimeOptions);
             foreach (var splitFailAggregationBySignal in aggregations)
                 for (var i = 0; i < binsContainers.Count; i++)

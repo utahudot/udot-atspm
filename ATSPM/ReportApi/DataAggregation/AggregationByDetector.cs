@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Business.Bins;
+﻿using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.AggregationModels;
@@ -11,27 +12,33 @@ namespace MOE.Common.Business.DataAggregation
         protected readonly IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository;
 
         protected List<DetectorEventCountAggregation> DetectorEventCountAggregations { get; set; }
-        protected AggregationByDetector(Detector detector, DetectorAggregationMetricOptions options, IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository)
+        protected AggregationByDetector(
+            Detector detector,
+            DetectorAggregationMetricOptions detectorAggregationMetricOptions,
+            IDetectorEventCountAggregationRepository detectorEventCountAggregationRepository,
+            AggregationOptions options)
         {
             Detector = detector;
             this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
             BinsContainers = BinFactory.GetBins(options.TimeOptions);
-            if (options.ShowEventCount)
-            {
-                DetectorEventCountAggregations = GetdetectorEventCountAggregations(options, detector);
-            }
-            LoadBins(detector, options);
+            LoadBins(detector, detectorAggregationMetricOptions, options);
         }
 
 
         public Detector Detector { get; }
         public List<BinsContainer> BinsContainers { get; set; }
 
-        protected List<DetectorEventCountAggregation> GetdetectorEventCountAggregations(DetectorAggregationMetricOptions options, Detector detector)
+        protected List<DetectorEventCountAggregation> GetdetectorEventCountAggregations(
+            DetectorAggregationMetricOptions detectorAggregationMetricOptions,
+            Detector detector,
+            AggregationOptions options)
         {
-            return detectorEventCountAggregationRepository.GetAggregationsBetweenDates(detector.Approach.Location.LocationIdentifier, options.Start, options.End).Where(d => d.DetectorPrimaryId == detector.Id).ToList();
+            return detectorEventCountAggregationRepository.GetAggregationsBetweenDates(
+                detector.Approach.Location.LocationIdentifier,
+                options.Start,
+                options.End).Where(d => d.DetectorPrimaryId == detector.Id).ToList();
         }
 
-        public abstract void LoadBins(Detector detector, DetectorAggregationMetricOptions options);
+        public abstract void LoadBins(Detector detector, DetectorAggregationMetricOptions detectorAggregationMetricOptions, AggregationOptions options);
     }
 }

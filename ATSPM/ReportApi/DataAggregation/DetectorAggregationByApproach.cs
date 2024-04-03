@@ -17,15 +17,14 @@ namespace MOE.Common.Business.DataAggregation
             AggregationOptions options) : base(approach, detectorVolumeAggregationOptions, options.Start, options.End,
             getProtectedPhase, options.DataType, options)
         {
-
-            GetApproachDetectorVolumeAggregationContainersForAllDetectors(detectorVolumeAggregationOptions, approach);
+            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
+            GetApproachDetectorVolumeAggregationContainersForAllDetectors(detectorVolumeAggregationOptions, approach, options);
             LoadBins(
                 approach,
                 detectorVolumeAggregationOptions,
                 getProtectedPhase,
                 options.DataType,
                 options);
-            this.detectorEventCountAggregationRepository = detectorEventCountAggregationRepository;
         }
 
         public List<DetectorAggregationByDetector> DetectorAggregationByDetectors { get; set; } =
@@ -33,10 +32,10 @@ namespace MOE.Common.Business.DataAggregation
 
 
         private void GetApproachDetectorVolumeAggregationContainersForAllDetectors(
-            DetectorVolumeAggregationOptions options, Approach approach)
+            DetectorVolumeAggregationOptions detectorVolumeAggregationOptions, Approach approach, AggregationOptions options)
         {
             foreach (var detector in approach.Detectors)
-                DetectorAggregationByDetectors.Add(new DetectorAggregationByDetector(detector, options, detectorEventCountAggregationRepository));
+                DetectorAggregationByDetectors.Add(new DetectorAggregationByDetector(detector, detectorVolumeAggregationOptions, detectorEventCountAggregationRepository, options));
         }
 
         protected override void LoadBins(

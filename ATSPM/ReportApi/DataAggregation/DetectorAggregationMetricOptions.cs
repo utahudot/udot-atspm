@@ -2,6 +2,7 @@
 using ATSPM.Application.Business.Bins;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Enums;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
@@ -14,15 +15,17 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
     public abstract class DetectorAggregationMetricOptions : ApproachAggregationMetricOptions
     {
-        protected DetectorAggregationMetricOptions(ILocationRepository locationRepository, ILogger<ApproachAggregationMetricOptions> logger) : base(locationRepository, logger)
+        public readonly IDetectorEventCountAggregationRepository detectorEventCountAggregation;
+
+        protected DetectorAggregationMetricOptions(ILocationRepository locationRepository, ILogger logger, IDetectorEventCountAggregationRepository detectorEventCountAggregation) : base(locationRepository, logger)
         {
+            this.detectorEventCountAggregation = detectorEventCountAggregation;
         }
 
         //public override string YAxisTitle { get; }
 
         public override List<AggregationResult> CreateMetric(AggregationOptions options)
         {
-            GetSignalObjects(options);
             if (options.SelectedXAxisType == XAxisType.TimeOfDay &&
                 options.TimeOptions.TimeOption == TimeOptions.TimePeriodOptions.StartToEnd)
             {
@@ -49,38 +52,39 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
         protected override List<AggregationResult> GetChartByXAxisAggregation(AggregationOptions options)
         {
+            var signals = GetSignalObjects(options);
             switch (options.SelectedXAxisType)
             {
                 case XAxisType.Time:
-                    return GetTimeCharts(options);
+                    return GetTimeCharts(options, signals);
                 case XAxisType.TimeOfDay:
-                    return GetTimeOfDayCharts(options);
+                    return GetTimeOfDayCharts(options, signals);
                 case XAxisType.Approach:
-                    return GetApproachCharts(options);
+                    return GetApproachCharts(options, signals);
                 case XAxisType.Direction:
-                    return GetDirectionCharts(options);
+                    return GetDirectionCharts(options, signals);
                 case XAxisType.Signal:
-                    return GetSignalCharts(options);
+                    return GetSignalCharts(options, signals);
                 case XAxisType.Detector:
-                    return GetDetectorCharts(options);
+                    return GetDetectorCharts(options, signals);
                 default:
                     throw new Exception("Invalid X-Axis");
             }
         }
 
-        private List<AggregationResult> GetDetectorCharts(AggregationOptions options)
+        private List<AggregationResult> GetDetectorCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetApproachXAxisChart(signal, options));
                     }
                     break;
                 case SeriesType.Detector:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetApproachXAxisDetectorSeriesChart(signal, options));
                     }
@@ -98,8 +102,8 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var approach in signal.Approaches)
                 foreach (var detector in approach.Detectors)
                 {
-                    var binsContainers = GetBinsContainersByDetector(detector);
-                    var dataPoint = new DataPointStringDouble();
+                    var binsContainers = GetBinsContainersByDetector(detector, options, detectorEventCountAggregation);
+                    var dataPoint = new AggregationDataPoint();
                     if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                         dataPoint.Value = binsContainers.FirstOrDefault().SumValue;
                     else
@@ -112,34 +116,34 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected override List<AggregationResult> GetTimeCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetTimeCharts(AggregationOptions options, List<Location> signals)
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeXAxisApproachSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Direction:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeXAxisDirectionSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Detector:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeXAxisDetectorSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeXAxisSignalSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeXAxisSignalSeriesChart(signals, options));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeXAxisRouteSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeXAxisRouteSeriesChart(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -153,7 +157,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var approach in signal.Approaches)
                 foreach (var detector in approach.Detectors)
                 {
-                    var binsContainers = GetBinsContainersByDetector(detector);
+                    var binsContainers = GetBinsContainersByDetector(detector, options, detectorEventCountAggregation);
                     var series = CreateSeries(detector.DectectorIdentifier);
                     if ((options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Month ||
                          options.TimeOptions.SelectedBinSize == TimeOptions.BinSize.Year) &&
@@ -178,7 +182,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             return chart;
         }
 
-        protected override List<AggregationResult> GetSignalCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetSignalCharts(AggregationOptions options, List<Location> signals)
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
@@ -186,13 +190,13 @@ namespace MOE.Common.Business.WCFServiceLibrary
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    chart.Series.AddRange(GetSignalsXAxisPhaseNumberSeries(options.Signals, options));
+                    chart.Series.AddRange(GetSignalsXAxisPhaseNumberSeries(signals, options));
                     break;
                 case SeriesType.Direction:
-                    chart.Series.AddRange(GetSignalsXAxisDirectionSeries(options.Signals, options));
+                    chart.Series.AddRange(GetSignalsXAxisDirectionSeries(signals, options));
                     break;
                 case SeriesType.Signal:
-                    chart.Series.Add(GetSignalsXAxisSignalSeries(options.Signals, options));
+                    chart.Series.Add(GetSignalsXAxisSignalSeries(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -201,31 +205,31 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected override List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options, List<Location> signals)
         {
             List<AggregationResult> charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeOfDayXAxisApproachSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Direction:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeOfDayXAxisDirectionSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
                     break;
                 case SeriesType.Detector:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeOfDayXAxisDetectorSeriesChart(signal, options));
                     }
@@ -245,7 +249,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 var detectors = approach.Detectors.ToList();
                 Parallel.For(0, detectors.Count, i =>
                 {
-                    var binsContainers = GetBinsContainersByDetector(detectors[i]);
+                    var binsContainers = GetBinsContainersByDetector(detectors[i], options, detectorEventCountAggregation);
                     var series = CreateSeries(detectors[i].DectectorIdentifier);
                     SetTimeAggregateSeries(series, binsContainers, options);
                     seriesList.Add(series);
@@ -261,6 +265,6 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected abstract List<BinsContainer> GetBinsContainersByDetector(Detector detector);
+        protected abstract List<BinsContainer> GetBinsContainersByDetector(Detector detector, AggregationOptions options, IDetectorEventCountAggregationRepository repository);
     }
 }

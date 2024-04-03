@@ -17,31 +17,32 @@ namespace MOE.Common.Business.WCFServiceLibrary
     public abstract class ApproachAggregationMetricOptions : SignalAggregationMetricOptions
     {
 
-        protected ApproachAggregationMetricOptions(ILocationRepository locationRepository, ILogger<ApproachAggregationMetricOptions> logger) : base(locationRepository, logger)
+        protected ApproachAggregationMetricOptions(ILocationRepository locationRepository, ILogger logger) : base(locationRepository, logger)
         {
         }
 
         protected override List<AggregationResult> GetChartByXAxisAggregation(AggregationOptions options)
         {
+            var signals = GetSignalObjects(options);
             switch (options.SelectedXAxisType)
             {
                 case XAxisType.Time:
-                    return GetTimeCharts(options);
+                    return GetTimeCharts(options, signals);
                 case XAxisType.TimeOfDay:
-                    return GetTimeOfDayCharts(options);
+                    return GetTimeOfDayCharts(options, signals);
                 case XAxisType.Approach:
-                    return GetApproachCharts(options);
+                    return GetApproachCharts(options, signals);
                 case XAxisType.Direction:
-                    return GetDirectionCharts(options);
+                    return GetDirectionCharts(options, signals);
                 case XAxisType.Signal:
-                    return GetSignalCharts(options);
+                    return GetSignalCharts(options, signals);
                 default:
                     throw new Exception("Invalid X-Axis");
             }
         }
 
 
-        protected List<AggregationResult> GetDirectionCharts(AggregationOptions options)
+        protected List<AggregationResult> GetDirectionCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
@@ -49,7 +50,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             switch (options.SelectedSeries)
             {
                 case SeriesType.Direction:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         chart.Series.Add(GetDirectionXAxisDirectionSeries(signal, options));
                     }
@@ -72,7 +73,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             var directionsList = GetFilteredDirections(options);
             foreach (var direction in directionsList)
             {
-                var dataPoint = new DataPointStringDouble { Identifier = direction.GetDescription() };
+                var dataPoint = new AggregationDataPoint { Identifier = direction.GetDescription() };
                 if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                     dataPoint.Value = GetSumByDirection(signal, direction, options);
                 else
@@ -83,13 +84,13 @@ namespace MOE.Common.Business.WCFServiceLibrary
             return series;
         }
 
-        protected List<AggregationResult> GetApproachCharts(AggregationOptions options)
+        protected List<AggregationResult> GetApproachCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetApproachXAxisChart(signal, options));
                     }
@@ -101,7 +102,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected override List<AggregationResult> GetTimeCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetTimeCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             var chart = new AggregationResult();
@@ -109,14 +110,14 @@ namespace MOE.Common.Business.WCFServiceLibrary
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         //chart = ChartFactory.CreateTimeXIntYChart(this, new List<Location> { signal });
                         charts.Add(GetTimeXAxisApproachSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Direction:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         //chart = ChartFactory.CreateTimeXIntYChart(this, new List<Location> { signal });
                         charts.Add(GetTimeXAxisDirectionSeriesChart(signal, options));
@@ -125,10 +126,10 @@ namespace MOE.Common.Business.WCFServiceLibrary
                     break;
                 case SeriesType.Signal:
                     //chart = ChartFactory.CreateTimeXIntYChart(this, Signals);
-                    charts.Add(GetTimeXAxisSignalSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeXAxisSignalSeriesChart(signals, options));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeXAxisRouteSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeXAxisRouteSeriesChart(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -137,7 +138,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected override List<AggregationResult> GetSignalCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetSignalCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             AggregationResult chart = new AggregationResult();
@@ -145,13 +146,13 @@ namespace MOE.Common.Business.WCFServiceLibrary
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    chart.Series.AddRange(GetSignalsXAxisPhaseNumberSeries(options.Signals, options));
+                    chart.Series.AddRange(GetSignalsXAxisPhaseNumberSeries(signals, options));
                     break;
                 case SeriesType.Direction:
-                    chart.Series.AddRange(GetSignalsXAxisDirectionSeries(options.Signals, options));
+                    chart.Series.AddRange(GetSignalsXAxisDirectionSeries(signals, options));
                     break;
                 case SeriesType.Signal:
-                    chart.Series.Add(GetSignalsXAxisSignalSeries(options.Signals, options));
+                    chart.Series.Add(GetSignalsXAxisSignalSeries(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -174,7 +175,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 foreach (var signal in signals)
                 {
                     var binsContainers = GetBinsContainersByDirection(directionType, signal, options);
-                    var dataPoint = new DataPointStringDouble
+                    var dataPoint = new AggregationDataPoint
                     {
                         Identifier = signal.LocationDescription(),
                         Value = options.SelectedAggregationType == AggregationCalculationType.Sum
@@ -218,29 +219,28 @@ namespace MOE.Common.Business.WCFServiceLibrary
         }
 
 
-        protected override List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options)
+        protected override List<AggregationResult> GetTimeOfDayCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
                         charts.Add(GetTimeOfDayXAxisApproachSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Direction:
-                    foreach (var signal in options.Signals)
+                    foreach (var signal in signals)
                     {
-                        var signals = new List<Location> { signal };
                         charts.Add(GetTimeOfDayXAxisDirectionSeriesChart(signal, options));
                     }
                     break;
                 case SeriesType.Signal:
-                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisSignalSeriesChart(signals, options));
                     break;
                 case SeriesType.Route:
-                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(options.Signals, options));
+                    charts.Add(GetTimeOfDayXAxisRouteSeriesChart(signals, options));
                     break;
                 default:
                     throw new Exception("Invalid X-Axis Series Combination");
@@ -347,7 +347,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var signal in signals)
             {
                 var binsContainers = GetBinsContainersByPhaseNumber(signal, phaseNumber, options);
-                var dataPoint = new DataPointStringDouble
+                var dataPoint = new AggregationDataPoint
                 {
                     Identifier = signal.LocationDescription(),
                     Value = options.SelectedAggregationType == AggregationCalculationType.Sum
@@ -374,7 +374,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             foreach (var approach in signal.Approaches)
             {
                 var binsContainers = GetBinsContainersByApproach(approach, true, options);
-                var dataPoint = new DataPointStringDouble();
+                var dataPoint = new AggregationDataPoint();
                 if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                     dataPoint.Value = binsContainers.FirstOrDefault().SumValue;
                 else
@@ -385,7 +385,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 if (approach.PermissivePhaseNumber != null)
                 {
                     var binsContainers2 = GetBinsContainersByApproach(approach, false, options);
-                    var dataPoint2 = new DataPointStringDouble();
+                    var dataPoint2 = new AggregationDataPoint();
                     if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                         dataPoint2.Value = binsContainers2.FirstOrDefault().SumValue;
                     else
@@ -410,7 +410,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             var phaseNumbers = signal.GetPhasesForSignal();
             foreach (var phaseNumber in phaseNumbers)
             {
-                var dataPoint = new DataPointStringDouble();
+                var dataPoint = new AggregationDataPoint();
                 if (options.SelectedAggregationType == AggregationCalculationType.Sum)
                     dataPoint.Value = GetSumByPhaseNumber(signal, phaseNumber, options);
                 else
