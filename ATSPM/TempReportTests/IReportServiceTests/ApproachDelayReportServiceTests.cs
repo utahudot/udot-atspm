@@ -78,7 +78,7 @@ namespace TempReportTests.IReportServiceTests
         }
     }
 
-    public class ApproachDelayReportServiceTests : IDisposable
+    public class ApproachDelayReportServiceTests //: IDisposable
     {
         private readonly ITestOutputHelper _output;
 
@@ -140,7 +140,7 @@ namespace TempReportTests.IReportServiceTests
             //_output.WriteLine($"log count: {logs.Count}");
         }
 
-        [Fact]
+        //[Fact]
         //public async void ApproachDelayWorkflowTest()
         //{
         //    var data = _testDataUtility.ReadTestFile<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>(new FileInfo(@"C:\Users\christianbaker\source\repos\udot-atspm\TempReportTests\TestFiles\7115-ApproachDelayOptions-ReportTestData.json"));
@@ -190,9 +190,9 @@ namespace TempReportTests.IReportServiceTests
         //    Assert.True(true);
         //}
 
-        public void Dispose()
-        {
-        }
+        //public void Dispose()
+        //{
+        //}
     }
 
     //public class ApproachDelayWorkflowReport : ReportServiceBase<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>

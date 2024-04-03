@@ -135,8 +135,8 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn });
             if (options.ShowPedestrianIntervals)
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
-            if (options.PhaseEventCodesList != null)
-                eventCodes.AddRange(options.PhaseEventCodesList);
+            //if (options.PhaseEventCodesList != null)
+            //    eventCodes.AddRange(options.PhaseEventCodesList);
             
             var result = GetChartDataForPhase(options, allEvents, phaseDetails, eventCodes, false);
 
