@@ -55,9 +55,9 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, [FromQuery] DateOnly start, [FromQuery] DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || start > end)
                 return BadRequest("Invalid date range");
 
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
@@ -131,7 +131,7 @@ namespace ATSPM.DataApi.Controllers
             Type type;
             //var eventCode = new List<int>();
 
-            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", locationIdentifier, eventCode, start, end);
+            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", LocationIdentifier, eventCode, start, end);
 
             try
             {

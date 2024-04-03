@@ -36,7 +36,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<GreenTimeUtilizationResult>> ExecuteAsync(GreenTimeUtilizationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
@@ -81,7 +81,7 @@ namespace ATSPM.ReportApi.ReportServices
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false).ToList();
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<DataLoggerEnum>() { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndRedClearance }).ToList();
-
+            cycleEvents = cycleEvents.Where(c => c.EventParam == phaseDetail.PhaseNumber).ToList();
             GreenTimeUtilizationResult viewModel = greenTimeUtilizationService.GetChartData(
                 phaseDetail,
                 options,
