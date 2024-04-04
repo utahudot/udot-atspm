@@ -9,6 +9,7 @@ using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.GreenTimeUtilization;
 using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Business.LeftTurnGapReport;
+using ATSPM.Application.Business.LinkPivot;
 using ATSPM.Application.Business.PedDelay;
 using ATSPM.Application.Business.PhaseTermination;
 using ATSPM.Application.Business.PreempDetail;
@@ -133,6 +134,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
     s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
@@ -208,6 +210,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<SplitFailService>();
     s.AddScoped<LeftTurnReportService>();
     s.AddScoped<VolumeService>();
+    s.AddScoped<LinkPivotService>();
+    s.AddScoped<LinkPivotPairService>();
+    s.AddScoped<LinkPivotPcdService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,20 @@ namespace ATSPM.Application.TempExtensions
                         break;
                     }
             //return approachesForMeticType;
+            return detectorsForMetricType;
+        }
+
+        public static List<Detector> GetDetectorsForSignalThatSupportAMetricByApproachDirection(this Location location, int metricTypeId,
+            DirectionTypes direction)
+        {
+            var detectorsForMetricType = new List<Detector>();
+            foreach (var a in location.Approaches.Where(a => a.DirectionTypeId == direction))
+                foreach (var d in a.Detectors)
+                    if (d.SupportsMetricType(metricTypeId))
+                    {
+                        detectorsForMetricType.Add(d);
+                        break;
+                    }
             return detectorsForMetricType;
         }
 
