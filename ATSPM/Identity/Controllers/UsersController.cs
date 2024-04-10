@@ -1,4 +1,5 @@
-﻿using Identity.Business.Users;
+﻿using ATSPM.Identity.Business.Users;
+using Identity.Business.Users;
 using Identity.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -72,28 +73,22 @@ namespace Identity.Controllers
         }
 
         [HttpPost("role/assign")]
-        //[Authorize(Policy = "CanEditUsers")]
-        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
+        [Authorize(Policy = "CanEditUsers")]
+        public async Task<IActionResult> AssignRole(AssignRoleViewModel model, [FromServices] UsersService usersService)
         {
-            if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)
+            if (model.UserName == null || model.RoleNames == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var user = await userManager.FindByIdAsync(model.UserId);
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
-
-            var result = await userManager.AddToRoleAsync(user, model.RoleName);
-            if (result != null && result.Succeeded)
-            {
+                await usersService.AssignRolesToUser(model.UserName, model.RoleNames);
                 return Ok();
             }
-            else
+            catch (ArgumentException ex)
             {
-                return BadRequest(result?.Errors);
+                return BadRequest(ex.Message);
             }
         }
 
