@@ -23,8 +23,8 @@ namespace ATSPM.Application.Business.PreempDetail
             PreemptDetailOptions preemptDetailOptions,
             List<IndianaEvent> preemptEvents)
         {
-            var preemptServiceEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptEntryStarted };
-            var preemptServiceRequestEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptCallInputOn };
+            var preemptServiceEventCodes = new List<IndianaEnumerations>() { IndianaEnumerations.PreemptEntryStarted };
+            var preemptServiceRequestEventCodes = new List<IndianaEnumerations>() { IndianaEnumerations.PreemptCallInputOn };
 
             var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();
             var preemptDetails = new List<PreemptDetail>();

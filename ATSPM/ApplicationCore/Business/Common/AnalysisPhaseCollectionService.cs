@@ -90,7 +90,7 @@ namespace ATSPM.Application.Business.Common
             }
             var analysisPhaseCollectionData = new AnalysisPhaseCollectionData();
             analysisPhaseCollectionData.locationId = locationIdentifier;
-            var phasesInUse = cycleEvents.Where(d => d.EventCode == Data.Enums.DataLoggerEnum.PhaseBeginGreen).Select(d => d.EventParam).Distinct();
+            var phasesInUse = cycleEvents.Where(d => d.EventCode == Data.Enums.IndianaEnumerations.PhaseBeginGreen).Select(d => d.EventParam).Distinct();
             analysisPhaseCollectionData.Plans = planService.GetSplitMonitorPlans(startTime, endTime, locationIdentifier, planEvents.ToList());
             foreach (var phaseNumber in phasesInUse)
             {
@@ -158,96 +158,96 @@ namespace ATSPM.Application.Business.Common
         public void SetProgrammedSplits(PlanSplitMonitorData plan, List<IndianaEvent> LocationEvents)
         {
             plan.Splits.Clear();
-            var eventCodes = new List<DataLoggerEnum>();
+            var eventCodes = new List<IndianaEnumerations>();
             for (var i = 130; i <= 151; i++)
-                eventCodes.Add((DataLoggerEnum)i);
+                eventCodes.Add((IndianaEnumerations)i);
             var splitsDt = LocationEvents.Where(s => s.Timestamp >= plan.Start && s.Timestamp < plan.Start.AddSeconds(2) && eventCodes.Contains(s.EventCode)).OrderBy(s => s.Timestamp); // controllerEventLogRepository.GetLocationEventsByEventCodes(locationId, plan.StartTime, plan.StartTime.AddSeconds(2), l);
             foreach (var row in splitsDt)
             {
-                if (row.EventCode == DataLoggerEnum.CycleLengthChange)
+                if (row.EventCode == IndianaEnumerations.CycleLengthChange)
                     plan.CycleLength = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.OffsetLengthChange)
+                if (row.EventCode == IndianaEnumerations.OffsetLengthChange)
                     plan.OffsetLength = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split1Change && !plan.Splits.ContainsKey(1))
+                if (row.EventCode == IndianaEnumerations.Split1Change && !plan.Splits.ContainsKey(1))
                     plan.Splits.Add(1, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split1Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split1Change && row.EventParam > 0)
                     plan.Splits[1] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split2Change && !plan.Splits.ContainsKey(2))
+                if (row.EventCode == IndianaEnumerations.Split2Change && !plan.Splits.ContainsKey(2))
                     plan.Splits.Add(2, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split2Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split2Change && row.EventParam > 0)
                     plan.Splits[2] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split3Change && !plan.Splits.ContainsKey(3))
+                if (row.EventCode == IndianaEnumerations.Split3Change && !plan.Splits.ContainsKey(3))
                     plan.Splits.Add(3, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split3Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split3Change && row.EventParam > 0)
                     plan.Splits[3] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split4Change && !plan.Splits.ContainsKey(4))
+                if (row.EventCode == IndianaEnumerations.Split4Change && !plan.Splits.ContainsKey(4))
                     plan.Splits.Add(4, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split4Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split4Change && row.EventParam > 0)
                     plan.Splits[4] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split5Change && !plan.Splits.ContainsKey(5))
+                if (row.EventCode == IndianaEnumerations.Split5Change && !plan.Splits.ContainsKey(5))
                     plan.Splits.Add(5, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split5Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split5Change && row.EventParam > 0)
                     plan.Splits[5] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split6Change && !plan.Splits.ContainsKey(6))
+                if (row.EventCode == IndianaEnumerations.Split6Change && !plan.Splits.ContainsKey(6))
                     plan.Splits.Add(6, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split6Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split6Change && row.EventParam > 0)
                     plan.Splits[6] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split7Change && !plan.Splits.ContainsKey(7))
+                if (row.EventCode == IndianaEnumerations.Split7Change && !plan.Splits.ContainsKey(7))
                     plan.Splits.Add(7, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split7Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split7Change && row.EventParam > 0)
                     plan.Splits[7] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split8Change && !plan.Splits.ContainsKey(8))
+                if (row.EventCode == IndianaEnumerations.Split8Change && !plan.Splits.ContainsKey(8))
                     plan.Splits.Add(8, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split8Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split8Change && row.EventParam > 0)
                     plan.Splits[8] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split9Change && !plan.Splits.ContainsKey(9))
+                if (row.EventCode == IndianaEnumerations.Split9Change && !plan.Splits.ContainsKey(9))
                     plan.Splits.Add(9, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split9Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split9Change && row.EventParam > 0)
                     plan.Splits[9] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split10Change && !plan.Splits.ContainsKey(10))
+                if (row.EventCode == IndianaEnumerations.Split10Change && !plan.Splits.ContainsKey(10))
                     plan.Splits.Add(10, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split10Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split10Change && row.EventParam > 0)
                     plan.Splits[10] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split11Change && !plan.Splits.ContainsKey(11))
+                if (row.EventCode == IndianaEnumerations.Split11Change && !plan.Splits.ContainsKey(11))
                     plan.Splits.Add(11, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split11Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split11Change && row.EventParam > 0)
                     plan.Splits[11] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split12Change && !plan.Splits.ContainsKey(12))
+                if (row.EventCode == IndianaEnumerations.Split12Change && !plan.Splits.ContainsKey(12))
                     plan.Splits.Add(12, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split12Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split12Change && row.EventParam > 0)
                     plan.Splits[12] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split13Change && !plan.Splits.ContainsKey(13))
+                if (row.EventCode == IndianaEnumerations.Split13Change && !plan.Splits.ContainsKey(13))
                     plan.Splits.Add(13, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split13Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split13Change && row.EventParam > 0)
                     plan.Splits[13] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split14Change && !plan.Splits.ContainsKey(14))
+                if (row.EventCode == IndianaEnumerations.Split14Change && !plan.Splits.ContainsKey(14))
                     plan.Splits.Add(14, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split14Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split14Change && row.EventParam > 0)
                     plan.Splits[14] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split15Change && !plan.Splits.ContainsKey(15))
+                if (row.EventCode == IndianaEnumerations.Split15Change && !plan.Splits.ContainsKey(15))
                     plan.Splits.Add(15, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split15Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split15Change && row.EventParam > 0)
                     plan.Splits[15] = row.EventParam;
 
-                if (row.EventCode == DataLoggerEnum.Split16Change && !plan.Splits.ContainsKey(16))
+                if (row.EventCode == IndianaEnumerations.Split16Change && !plan.Splits.ContainsKey(16))
                     plan.Splits.Add(16, row.EventParam);
-                else if (row.EventCode == DataLoggerEnum.Split16Change && row.EventParam > 0)
+                else if (row.EventCode == IndianaEnumerations.Split16Change && row.EventParam > 0)
                     plan.Splits[16] = row.EventParam;
             }
 
