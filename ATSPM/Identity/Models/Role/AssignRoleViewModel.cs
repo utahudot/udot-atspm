@@ -5,10 +5,10 @@ namespace Identity.Models.Role
     public class AssignRoleViewModel
     {
         [Required]
-        public string UserId { get; set; }
+        public string UserName { get; set; }
 
         [Required]
-        public string RoleName { get; set; }
+        public string[] RoleNames { get; set; }
     }
 
 }
