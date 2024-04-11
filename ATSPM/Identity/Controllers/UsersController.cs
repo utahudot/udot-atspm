@@ -72,18 +72,18 @@ namespace Identity.Controllers
             }
         }
 
-        [HttpPost("role/assign")]
+        [HttpPost("update")]
         [Authorize(Policy = "CanEditUsers")]
-        public async Task<IActionResult> AssignRole(AssignRoleViewModel model, [FromServices] UsersService usersService)
+        public async Task<IActionResult> updateUser(UserDTO model, [FromServices] UsersService usersService)
         {
-            if (model.UserName == null || model.RoleNames == null || !ModelState.IsValid)
+            if (model == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             try
             {
-                await usersService.AssignRolesToUser(model.UserName, model.RoleNames);
+                await usersService.updateUserFields(model);
                 return Ok();
             }
             catch (ArgumentException ex)

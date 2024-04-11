@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Identity.Business.Users;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +16,29 @@ namespace ATSPM.Identity.Business.Users
             this.userManager = userManager;
         }
 
-        public async Task AssignRolesToUser(string userName, IEnumerable<string> roleNames)
+        public async Task updateUserFields(UserDTO model)
         {
-            var user = await userManager.FindByNameAsync(userName);
+            var user = await userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
-                throw new ArgumentException("User not found", nameof(userName));
+                throw new ArgumentException("User not found", nameof(model.UserId));
+            }
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Agency = model.Agency;
+            user.Email = model.Email;
+            user.UserName = model.UserName;
+
+            var result = await userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new ArgumentException("Failed to update user details");
             }
 
             var existingRoles = await userManager.GetRolesAsync(user);
-            var rolesToAdd = roleNames.Except(existingRoles).ToList();
-            var rolesToRemove = existingRoles.Except(roleNames).ToList();
+            var rolesToAdd = model.Roles.Except(existingRoles).ToList();
+            var rolesToRemove = existingRoles.Except(model.Roles).ToList();
             try {
             await userManager.AddToRolesAsync(user, rolesToAdd);
             await userManager.RemoveFromRolesAsync(user, rolesToRemove);
