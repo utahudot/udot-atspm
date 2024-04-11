@@ -11,10 +11,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseBeginYellowChange"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndYellowChange"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseBeginGreen"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseBeginYellowChange"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseEndYellowChange"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseEndRedClearance"/></item>
     /// </list>
     /// </summary>
     public class FilteredPhaseIntervalChanges : FilterEventCodeLocationBase
@@ -22,10 +22,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginYellowChange);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndYellowChange);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndRedClearance);
+            filteredList.Add((int)IndianaEnumerations.PhaseBeginGreen);
+            filteredList.Add((int)IndianaEnumerations.PhaseBeginYellowChange);
+            filteredList.Add((int)IndianaEnumerations.PhaseEndYellowChange);
+            filteredList.Add((int)IndianaEnumerations.PhaseEndRedClearance);
         }
     }
 }

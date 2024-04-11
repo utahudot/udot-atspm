@@ -32,17 +32,17 @@ namespace ATSPM.Application.Business.Common
 
             foreach (var cycleEvent in combinedEvents)
             {
-                if (cycleEvent.EventCode == DataLoggerEnum.PhaseBeginGreen && cycleEvent.EventParam == phasenumber)
+                if (cycleEvent.EventCode == IndianaEnumerations.PhaseBeginGreen && cycleEvent.EventParam == phasenumber)
                     cycle = new AnalysisPhaseCycle(locationId, phasenumber, cycleEvent.Timestamp);
 
                 if (cycle != null && cycleEvent.EventParam == phasenumber &&
-                    (cycleEvent.EventCode == DataLoggerEnum.PhaseGapOut || cycleEvent.EventCode == DataLoggerEnum.PhaseMaxOut || cycleEvent.EventCode == DataLoggerEnum.PhaseForceOff))
+                    (cycleEvent.EventCode == IndianaEnumerations.PhaseGapOut || cycleEvent.EventCode == IndianaEnumerations.PhaseMaxOut || cycleEvent.EventCode == IndianaEnumerations.PhaseForceOff))
                     cycle.SetTerminationEvent(cycleEvent.EventCode);
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == DataLoggerEnum.PhaseBeginYellowChange)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == IndianaEnumerations.PhaseBeginYellowChange)
                     cycle.YellowEvent = cycleEvent.Timestamp;
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == DataLoggerEnum.PhaseEndRedClearance)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == IndianaEnumerations.PhaseEndRedClearance)
                 {
                     cycle.SetEndTime(cycleEvent.Timestamp);
                     Cycles.Add(cycle);
@@ -87,7 +87,7 @@ namespace ATSPM.Application.Business.Common
                             continue;
 
                         //If the first event is 'Off', then set duration to 0
-                        if (i == 0 && current.EventCode == DataLoggerEnum.PedestrianBeginSolidDontWalk)
+                        if (i == 0 && current.EventCode == IndianaEnumerations.PedestrianBeginSolidDontWalk)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
@@ -95,7 +95,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //This is the prefered sequence; an 'On'  followed by an 'off'
-                        if (current.EventCode == DataLoggerEnum.PedestrianBeginWalk && next.EventCode == DataLoggerEnum.PedestrianBeginSolidDontWalk)
+                        if (current.EventCode == IndianaEnumerations.PedestrianBeginWalk && next.EventCode == IndianaEnumerations.PedestrianBeginSolidDontWalk)
                         {
                             if (Cycle.PedStartTime == DateTime.MinValue)
                                 Cycle.SetPedStart(current.Timestamp);
@@ -111,7 +111,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //if we are at the penultimate event, and the last event is 'on' then set duration to 0.
-                        if (i + 2 == eventsInOrder.Count() && next.EventCode == DataLoggerEnum.PedestrianBeginWalk)
+                        if (i + 2 == eventsInOrder.Count() && next.EventCode == IndianaEnumerations.PedestrianBeginWalk)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(cycle.YellowEvent);
@@ -125,14 +125,14 @@ namespace ATSPM.Application.Business.Common
                     switch (current.EventCode)
                     {
                         //if the only event is off
-                        case DataLoggerEnum.PedestrianBeginSolidDontWalk:
+                        case IndianaEnumerations.PedestrianBeginSolidDontWalk:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on
-                        case DataLoggerEnum.PedestrianBeginWalk:
+                        case IndianaEnumerations.PedestrianBeginWalk:
 
                             Cycle.SetPedStart(current.Timestamp);
                             Cycle.SetPedEnd(current.Timestamp);

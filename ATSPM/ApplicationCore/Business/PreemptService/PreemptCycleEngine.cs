@@ -20,8 +20,8 @@ namespace ATSPM.Application.Business.PreemptService
                 if (x + 1 < controllerEvents.Count)
                 {
                     var t = controllerEvents[x + 1].Timestamp - controllerEvents[x].Timestamp;
-                    if (cycle != null && t.TotalMinutes > 20 && controllerEvents[x].EventCode != DataLoggerEnum.PreemptionBeginExitInterval &&
-                        controllerEvents[x].EventCode != DataLoggerEnum.PreemptEntryStarted)
+                    if (cycle != null && t.TotalMinutes > 20 && controllerEvents[x].EventCode != IndianaEnumerations.PreemptionBeginExitInterval &&
+                        controllerEvents[x].EventCode != IndianaEnumerations.PreemptEntryStarted)
                     {
                         EndCycle(cycle, controllerEvents[x], CycleCollection);
                         cycle = null;
@@ -31,23 +31,23 @@ namespace ATSPM.Application.Business.PreemptService
 
                 switch (controllerEvents[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptCallInputOn:
+                    case IndianaEnumerations.PreemptCallInputOn:
                         cycle?.InputOn.Add(controllerEvents[x].Timestamp);
                         if (cycle == null && controllerEvents[x].Timestamp != controllerEvents[x + 1].Timestamp &&
-                            controllerEvents[x + 1].EventCode == DataLoggerEnum.PreemptEntryStarted)
+                            controllerEvents[x + 1].EventCode == IndianaEnumerations.PreemptEntryStarted)
                             cycle = StartCycle(controllerEvents[x]);
                         break;
 
-                    case DataLoggerEnum.PreemptGateDownInputReceived:
+                    case IndianaEnumerations.PreemptGateDownInputReceived:
                         if (cycle != null && cycle.GateDown == DateTime.MinValue)
                             cycle.GateDown = controllerEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptCallInputOff:
+                    case IndianaEnumerations.PreemptCallInputOff:
                         cycle?.InputOff.Add(controllerEvents[x].Timestamp);
                         break;
 
-                    case DataLoggerEnum.PreemptEntryStarted:
+                    case IndianaEnumerations.PreemptEntryStarted:
                         ////If we run into an entry start after cycle start (event 102)
                         if (cycle != null && cycle.HasDelay)
                         {
@@ -65,7 +65,7 @@ namespace ATSPM.Application.Business.PreemptService
                         cycle ??= StartCycle(controllerEvents[x]);
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginTrackClearance:
+                    case IndianaEnumerations.PreemptionBeginTrackClearance:
                         if (cycle != null)
                         {
                             cycle.BeginTrackClearance = controllerEvents[x].Timestamp;
@@ -76,7 +76,7 @@ namespace ATSPM.Application.Business.PreemptService
                         }
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginDwellService:
+                    case IndianaEnumerations.PreemptionBeginDwellService:
 
                         if (cycle != null)
                         {
@@ -94,22 +94,22 @@ namespace ATSPM.Application.Business.PreemptService
                         }
                         break;
 
-                    case DataLoggerEnum.PreemptionLinkActiveOn:
+                    case IndianaEnumerations.PreemptionLinkActiveOn:
                         if (cycle != null)
                             cycle.LinkActive = controllerEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptionLinkActiveOff:
+                    case IndianaEnumerations.PreemptionLinkActiveOff:
                         if (cycle != null)
                             cycle.LinkInactive = controllerEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptionMaxPresenceExceeded:
+                    case IndianaEnumerations.PreemptionMaxPresenceExceeded:
                         if (cycle != null)
                             cycle.MaxPresenceExceeded = controllerEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case IndianaEnumerations.PreemptionBeginExitInterval:
                         // 111 can usually be considered "cycle complete"
                         if (cycle != null)
                         {
@@ -136,7 +136,7 @@ namespace ATSPM.Application.Business.PreemptService
         {
             var Next111Event = new DateTime();
             for (var x = counter; x < DTTB.Count; x++)
-                if (DTTB[x].EventCode == DataLoggerEnum.PreemptionBeginExitInterval)
+                if (DTTB[x].EventCode == IndianaEnumerations.PreemptionBeginExitInterval)
                 {
                     Next111Event = DTTB[x].Timestamp;
                     x = DTTB.Count;
@@ -151,16 +151,16 @@ namespace ATSPM.Application.Business.PreemptService
             for (var x = counter; x < ControllerEventLogs.Count; x++)
                 switch (ControllerEventLogs[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptCallInputOn:
+                    case IndianaEnumerations.PreemptCallInputOn:
                         foundEvent111 = false;
                         x = ControllerEventLogs.Count;
                         break;
-                    case DataLoggerEnum.PreemptEntryStarted:
+                    case IndianaEnumerations.PreemptEntryStarted:
                         foundEvent111 = false;
                         x = ControllerEventLogs.Count;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case IndianaEnumerations.PreemptionBeginExitInterval:
                         foundEvent111 = true;
                         x = ControllerEventLogs.Count;
                         break;
@@ -176,12 +176,12 @@ namespace ATSPM.Application.Business.PreemptService
             for (var x = counter; x < DTTB.Count; x++)
                 switch (DTTB[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptionBeginDwellService:
+                    case IndianaEnumerations.PreemptionBeginDwellService:
                         foundEvent107 = true;
                         x = DTTB.Count;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case IndianaEnumerations.PreemptionBeginExitInterval:
                         foundEvent107 = false;
                         x = DTTB.Count;
                         break;
@@ -205,13 +205,13 @@ namespace ATSPM.Application.Business.PreemptService
                 CycleStart = controllerEventLog.Timestamp
             };
 
-            if (controllerEventLog.EventCode == DataLoggerEnum.PreemptEntryStarted)
+            if (controllerEventLog.EventCode == IndianaEnumerations.PreemptEntryStarted)
             {
                 cycle.EntryStarted = controllerEventLog.Timestamp;
                 cycle.HasDelay = false;
             }
 
-            if (controllerEventLog.EventCode == DataLoggerEnum.PreemptCallInputOn)
+            if (controllerEventLog.EventCode == IndianaEnumerations.PreemptCallInputOn)
             {
                 cycle.StartInputOn = controllerEventLog.Timestamp;
                 cycle.HasDelay = true;

@@ -8,25 +8,25 @@ namespace ATSPM.Application.Analysis.Common
 {
 
     /// <summary>
-    /// A cycle which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
-    /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
+    /// A cycle which is the time between two <see cref="IndianaEnumerations.PhaseEndYellowChange"/> events including
+    /// <see cref="IndianaEnumerations.PhaseBeginGreen"/> and <see cref="IndianaEnumerations.PhaseBeginYellowChange"/>
     /// </summary>
     public interface IRedToRedCycle : IStartEndRange, ILocationPhaseLayer, ICycleTotal
     {
         /// <summary>
-        /// Timestamp of <see cref="DataLoggerEnum.PhaseBeginGreen"/> event
+        /// Timestamp of <see cref="IndianaEnumerations.PhaseBeginGreen"/> event
         /// </summary>
         DateTime GreenEvent { get; set; }
 
         /// <summary>
-        /// Timestamp of <see cref="DataLoggerEnum.PhaseBeginYellowChange"/> event
+        /// Timestamp of <see cref="IndianaEnumerations.PhaseBeginYellowChange"/> event
         /// </summary>
         DateTime YellowEvent { get; set; }
     }
 
     /// <summary>
-    /// A cycle which is the time between two <see cref="DataLoggerEnum.PhaseEndYellowChange"/> events including
-    /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> and <see cref="DataLoggerEnum.PhaseBeginYellowChange"/>
+    /// A cycle which is the time between two <see cref="IndianaEnumerations.PhaseEndYellowChange"/> events including
+    /// <see cref="IndianaEnumerations.PhaseBeginGreen"/> and <see cref="IndianaEnumerations.PhaseBeginYellowChange"/>
     /// </summary>
     public class RedToRedCycle : StartEndRange, IRedToRedCycle
     {

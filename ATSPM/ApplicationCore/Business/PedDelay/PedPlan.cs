@@ -28,14 +28,14 @@ namespace ATSPM.Application.Business.PedDelay
         {
             get
             {
-                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianBeginWalk || e.EventCode == DataLoggerEnum.PedestrianOverlapBeginWalk).Count();
+                return Events.Where(e => e.EventCode == IndianaEnumerations.PedestrianBeginWalk || e.EventCode == IndianaEnumerations.PedestrianOverlapBeginWalk).Count();
             }
         }
         public double PedCallsRegisteredCount
         {
             get
             {
-                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianCallRegistered).Count();
+                return Events.Where(e => e.EventCode == IndianaEnumerations.PedestrianCallRegistered).Count();
             }
         }
         public double MinDelay
