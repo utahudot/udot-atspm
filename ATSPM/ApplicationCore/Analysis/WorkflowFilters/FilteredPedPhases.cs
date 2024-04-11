@@ -7,8 +7,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginWalk"/></item>
+    /// <item><see cref="IndianaEnumerations.PedestrianBeginSolidDontWalk"/></item>
     /// </list>
     /// </summary>
     public class FilteredPedPhases : FilterEventCodeBase
@@ -16,8 +16,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPedPhases(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginWalk);
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginSolidDontWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginWalk);
+            filteredList.Add((int)IndianaEnumerations.PedestrianBeginSolidDontWalk);
         }
     }
 }
