@@ -11,8 +11,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateDwellTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = DataLoggerEnum.PreemptionBeginDwellService;
-            second = DataLoggerEnum.PreemptionBeginExitInterval;
+            first = IndianaEnumerations.PreemptionBeginDwellService;
+            second = IndianaEnumerations.PreemptionBeginExitInterval;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.DetectorOff"/></item>
-    /// <item><see cref="DataLoggerEnum.DetectorOn"/></item>
+    /// <item><see cref="IndianaEnumerations.VehicleDetectorOff"/></item>
+    /// <item><see cref="IndianaEnumerations.VehicleDetectorOn"/></item>
     /// </list>
     /// </summary>
     public class FilteredDetectorData : FilterEventCodeLocationBase
@@ -20,8 +20,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredDetectorData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.DetectorOff);
-            filteredList.Add((int)DataLoggerEnum.DetectorOn);
+            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOff);
+            filteredList.Add((int)IndianaEnumerations.VehicleDetectorOn);
         }
     }
 }

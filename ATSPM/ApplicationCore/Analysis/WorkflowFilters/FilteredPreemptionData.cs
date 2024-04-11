@@ -7,14 +7,14 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptCallInputOn"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptGateDownInputReceived"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptCallInputOff"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptEntryStarted"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptionBeginTrackClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptionBeginDwellService"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptionMaxPresenceExceeded"/></item>
+    /// <item><see cref="IndianaEnumerations.PreemptionBeginExitInterval"/></item>
     /// </list>
     /// </summary>
     public class FilteredPreemptionData : FilterEventCodeLocationBase
@@ -22,14 +22,14 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PreemptCallInputOn);
-            filteredList.Add((int)DataLoggerEnum.PreemptGateDownInputReceived);
-            filteredList.Add((int)DataLoggerEnum.PreemptCallInputOff);
-            filteredList.Add((int)DataLoggerEnum.PreemptEntryStarted);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginTrackClearance);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginDwellService);
-            filteredList.Add((int)DataLoggerEnum.PreemptionMaxPresenceExceeded);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginExitInterval);
+            filteredList.Add((int)IndianaEnumerations.PreemptCallInputOn);
+            filteredList.Add((int)IndianaEnumerations.PreemptGateDownInputReceived);
+            filteredList.Add((int)IndianaEnumerations.PreemptCallInputOff);
+            filteredList.Add((int)IndianaEnumerations.PreemptEntryStarted);
+            filteredList.Add((int)IndianaEnumerations.PreemptionBeginTrackClearance);
+            filteredList.Add((int)IndianaEnumerations.PreemptionBeginDwellService);
+            filteredList.Add((int)IndianaEnumerations.PreemptionMaxPresenceExceeded);
+            filteredList.Add((int)IndianaEnumerations.PreemptionBeginExitInterval);
         }
     }
 }
