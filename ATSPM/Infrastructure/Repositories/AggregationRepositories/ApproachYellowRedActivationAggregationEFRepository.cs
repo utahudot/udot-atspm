@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class ApproachYellowRedActivationAggregationEFRepository : AggregationEFRepositoryBase<ApproachYellowRedActivationAggregation>, IApproachYellowRedActivationAggregationRepository
     {
         ///<inheritdoc/>
-        public ApproachYellowRedActivationAggregationEFRepository(EventLogContext db, ILogger<ApproachYellowRedActivationAggregationEFRepository> log) : base(db, log) { }
+        public ApproachYellowRedActivationAggregationEFRepository(AggregationContext db, ILogger<ApproachYellowRedActivationAggregationEFRepository> log) : base(db, log) { }
 
         #region IApproachYellowRedActivationAggregationRepository
 

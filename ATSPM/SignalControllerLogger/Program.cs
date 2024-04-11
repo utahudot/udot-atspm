@@ -1,27 +1,39 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Services;
+using ATSPM.Data;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.AggregationModels;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Extensions;
+using ATSPM.Domain.Workflows;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
+using AutoFixture;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Index.HPRtree;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -127,11 +139,11 @@ namespace ATSPM.LocationControllerLogger
 
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
                     {
-                        o.LocalPath = "C:\\temp";
+                        o.LocalPath = "C:\\temp2";
                         o.PingControllerToVerify = false;
                         o.ConnectionTimeout = 3000;
                         o.ReadTimeout = 3000;
-                        o.DeleteFile = true;
+                        o.DeleteFile = false;
                     });
 
                     
@@ -143,35 +155,10 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            //await host.StartAsync();
-            //await host.StopAsync();
+            await host.StartAsync();
+            await host.StopAsync();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var repo = scope.ServiceProvider.GetService<IIndianaEventLogRepository>();
-
-                var t = repo.GetList().Take(1).First();
-
-                Console.WriteLine($"{t.LocationIdentifier} - {t.ArchiveDate} - {t.DeviceId} - {t.DataType} - {t.Data.Count()}");
-
-                foreach (var r in t.Data.Take(10))
-                    Console.WriteLine($"{r}");
-            }
-
-            Console.ReadLine();
-        }
-    }
-
-    public class IpAddressJsonConverter : JsonConverter<IPAddress>
-    {
-        public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return IPAddress.Parse(reader.GetString());
-        }
-
-        public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
+            //Console.ReadLine();
         }
     }
 }

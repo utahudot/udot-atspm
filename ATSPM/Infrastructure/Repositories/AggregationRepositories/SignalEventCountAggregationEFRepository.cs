@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class SignalEventCountAggregationEFRepository : AggregationEFRepositoryBase<SignalEventCountAggregation>, ISignalEventCountAggregationRepository
     {
         ///<inheritdoc/>
-        public SignalEventCountAggregationEFRepository(EventLogContext db, ILogger<SignalEventCountAggregationEFRepository> log) : base(db, log) { }
+        public SignalEventCountAggregationEFRepository(AggregationContext db, ILogger<SignalEventCountAggregationEFRepository> log) : base(db, log) { }
 
         #region ISignalEventCountAggregationRepository
 

@@ -9,7 +9,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
     public class PhaseSplitMonitorAggregationEFRepository : AggregationEFRepositoryBase<PhaseSplitMonitorAggregation>, IPhaseSplitMonitorAggregationRepository
     {
         ///<inheritdoc/>
-        public PhaseSplitMonitorAggregationEFRepository(EventLogContext db, ILogger<PhaseSplitMonitorAggregationEFRepository> log) : base(db, log) { }
+        public PhaseSplitMonitorAggregationEFRepository(AggregationContext db, ILogger<PhaseSplitMonitorAggregationEFRepository> log) : base(db, log) { }
 
         #region IPhaseSplitMonitorAggregationRepository
 

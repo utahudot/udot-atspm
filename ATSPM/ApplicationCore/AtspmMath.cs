@@ -43,7 +43,7 @@ namespace ATSPM.Application
         }
 
         /// <summary>
-        /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="DataLoggerEnum"/>
+        /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="IndianaEnumerations"/>
         /// <list type="bullet">
         /// <listheader>Used in the following steps of Preemption Details:</listheader>
         /// <item>
@@ -72,11 +72,11 @@ namespace ATSPM.Application
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="items"><see cref="ControllerEventLog"/> list the <see cref="DataLoggerEnum"/> are sorted</param>
+        /// <param name="items"><see cref="ControllerEventLog"/> list the <see cref="IndianaEnumerations"/> are sorted</param>
         /// <param name="first">Starting event code</param>
         /// <param name="second">Ending event code</param>
         /// <returns><see cref="TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
-        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second)
         {
             var preFilter = items.OrderBy(o => o.Timestamp)
                 .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
