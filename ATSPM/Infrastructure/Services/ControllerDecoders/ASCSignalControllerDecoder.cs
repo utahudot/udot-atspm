@@ -99,7 +99,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                         {
                             //getting the EventCode
                             if (eventPart == 1)
-                                log.EventCode = (IndianaEnumerations)Convert.ToInt16(br.ReadByte());
+                                log.EventCode = Convert.ToInt16(br.ReadByte());
 
                             if (eventPart == 2)
                                 log.EventParam = br.ReadByte();

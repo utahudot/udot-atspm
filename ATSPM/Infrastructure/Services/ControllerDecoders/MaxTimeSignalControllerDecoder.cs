@@ -81,7 +81,7 @@ namespace ATSPM.Infrastructure.Services.ControllerDecoders
                     log = new IndianaEvent()
                     {
                         LocationIdentifier = locationId,
-                        EventCode = (IndianaEnumerations)Convert.ToInt16(l.Attribute("EventTypeID").Value),
+                        EventCode = Convert.ToInt16(l.Attribute("EventTypeID").Value),
                         EventParam = Convert.ToByte(l.Attribute("Parameter").Value),
                         Timestamp = Convert.ToDateTime(l.Attribute("TimeStamp").Value)
                     };
