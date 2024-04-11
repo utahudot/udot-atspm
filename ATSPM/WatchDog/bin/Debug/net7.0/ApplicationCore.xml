@@ -21,7 +21,7 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.CorrectedDetectorEvent">
             <summary>
-            Events that coorelate to <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            Events that coorelate to <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/>
             and that have been timestamp corrected for detector distances and latency
             using the <see cref="M:ATSPM.Application.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
             </summary>
@@ -48,7 +48,7 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.CycleArrivals">
             <summary>
-            A cycle with <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event arrivals
+            A cycle with <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> event arrivals
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.CycleArrivals.LocationIdentifier">
@@ -94,47 +94,47 @@
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IApproachDelay.AverageDelay">
             <summary>
-            The average delay of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on red events
+            The average delay of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on red events
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IApproachDelay.TotalDelay">
             <summary>
-            The total delay of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on red events
+            The total delay of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on red events
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IApproachDelay.Vehicles">
             <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on red events
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on red events
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.ICycleArrivals">
             <summary>
-            Defines <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event arrivals for cycle
+            Defines <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> event arrivals for cycle
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleArrivals.TotalArrivalOnGreen">
             <summary>
-            Total number of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events arriving on green
+            Total number of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events arriving on green
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleArrivals.TotalArrivalOnYellow">
             <summary>
-            Total number of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events arriving on yellow
+            Total number of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events arriving on yellow
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleArrivals.TotalArrivalOnRed">
             <summary>
-            Total number of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events arriving on yellow
+            Total number of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events arriving on yellow
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleArrivals.Vehicles">
             <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events arriving during cycle
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events arriving during cycle
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.ICycleRatios">
             <summary>
-            Defines <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event arrival ratios for cycle
+            Defines <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> event arrival ratios for cycle
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleRatios.PercentArrivalOnGreen">
@@ -180,50 +180,50 @@
         <member name="T:ATSPM.Application.Analysis.Common.ICycleTotal">
             <summary>
             Defines the start and end of a red to red cycle
-            which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
+            which is the time between two <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> events including
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/>
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalGreenTime">
             <summary>
-            The total green time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> to the start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> in seconds
+            The total green time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> to the start of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/> in seconds
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalYellowTime">
             <summary>
-            The total yellow time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> to the second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
+            The total yellow time is defined as the time from start of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/> to the second <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> in seconds
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalRedTime">
             <summary>
-            The total red time is defined as the first <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> to the <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> in seconds
+            The total red time is defined as the first <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> to the <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> in seconds
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleTotal.TotalTime">
             <summary>
-            The total time is defined as the time between the first and second <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> in seconds
+            The total time is defined as the time between the first and second <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> in seconds
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.ICycleVolume">
             <summary>
-            Defines <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> event volume information for cycles
+            Defines <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> event volume information for cycles
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleVolume.TotalDelay">
             <summary>
-            The total delay of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events
-            arriving on red before a <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> event
+            The total delay of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events
+            arriving on red before a <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> event
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.ICycleVolume.TotalVolume">
             <summary>
-            The total amount of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events with corrected timestamps
+            The total amount of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events with corrected timestamps
             arriving within cycle
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.IDetectorEvent">
             <summary>
-            Events that coorelate to <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            Events that coorelate to <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/>
             and that have been timestamp corrected for detector distances and latency
             using the <see cref="M:ATSPM.Application.AtspmMath.AdjustTimeStamp(System.DateTime,System.Int32,System.Int32,System.Double)"/> calculation.
             </summary>
@@ -235,24 +235,24 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.IRedToRedCycle">
             <summary>
-            A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
+            A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> events including
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/>
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IRedToRedCycle.GreenEvent">
             <summary>
-            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> event
+            Timestamp of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> event
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IRedToRedCycle.YellowEvent">
             <summary>
-            Timestamp of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/> event
+            Timestamp of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/> event
             </summary>
         </member>
         <member name="T:ATSPM.Application.Analysis.Common.RedToRedCycle">
             <summary>
-            A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> events including
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>
+            A cycle which is the time between two <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> events including
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> and <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/>
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.RedToRedCycle.GreenEvent">
@@ -290,14 +290,14 @@
         <member name="P:ATSPM.Application.Analysis.Common.IVehicle.ArrivalType">
             <summary>
             Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
-            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/>.
+            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/>.
             The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Common.IVehicle.Delay">
             <summary>
             Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
-            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/>.
+            Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> and <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/>.
             The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
             </summary>
         </member>
@@ -370,7 +370,7 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.Plans.IPlan">
             <summary>
-            Definition for Location controller plans which are derrived from <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> events
+            Definition for Location controller plans which are derrived from <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.CoordPatternChange"/> events
             </summary>
         </member>
         <member name="M:ATSPM.Application.Analysis.Plans.IPlan.AssignToPlan``1(System.Collections.Generic.IEnumerable{``0})">
@@ -382,7 +382,7 @@
         </member>
         <member name="T:ATSPM.Application.Analysis.Plans.Plan">
             <summary>
-            Base for Location controller plans which are derrived from <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/> events
+            Base for Location controller plans which are derrived from <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.CoordPatternChange"/> events
             </summary>
         </member>
         <member name="P:ATSPM.Application.Analysis.Plans.Plan.LocationIdentifier">
@@ -571,8 +571,8 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseCallRegistered"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseCallDropped"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseCallRegistered"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseCallDropped"/></item>
             </list>
             </summary>
         </member>
@@ -583,8 +583,8 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOff"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/></item>
             </list>
             </summary>
         </member>
@@ -595,8 +595,8 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginRedClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginRedClearance"/></item>
             </list>
             </summary>
         </member>
@@ -607,8 +607,8 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianCallRegistered"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedDetectorOn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianCallRegistered"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedDetectorOn"/></item>
             </list>
             </summary>
         </member>
@@ -619,10 +619,10 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginChangeInterval"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianOverlapBeginWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianOverlapBeginClearance"/></item>
             </list>
             </summary>
         </member>
@@ -633,8 +633,8 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginSolidDontWalk"/></item>
             </list>
             </summary>
         </member>
@@ -645,10 +645,10 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndRedClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndRedClearance"/></item>
             </list>
             </summary>
         </member>
@@ -659,7 +659,7 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.CoordPatternChange"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.CoordPatternChange"/></item>
             </list>
             </summary>
         </member>
@@ -670,14 +670,14 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOn"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptGateDownInputReceived"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptCallInputOff"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptEntryStarted"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginDwellService"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PreemptionBeginExitInterval"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptCallInputOn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptGateDownInputReceived"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptCallInputOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptEntryStarted"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptionBeginTrackClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptionBeginDwellService"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptionMaxPresenceExceeded"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PreemptionBeginExitInterval"/></item>
             </list>
             </summary>
         </member>
@@ -687,7 +687,7 @@
         <member name="T:ATSPM.Application.Analysis.WorkflowFilters.FilteredSplitsData">
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/> through <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.Split16Change"/>
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/> through <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.Split16Change"/>
             </summary>
         </member>
         <member name="M:ATSPM.Application.Analysis.WorkflowFilters.FilteredSplitsData.#ctor(System.Threading.Tasks.Dataflow.DataflowBlockOptions)">
@@ -697,10 +697,10 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGapOut"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseForceOff"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseGapOut"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseMaxOut"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseForceOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseGreenTermination"/></item>
             </list>
             </summary>
         </member>
@@ -711,7 +711,7 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseGreenTermination"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseGreenTermination"/></item>
             </list>
             </summary>
         </member>
@@ -722,26 +722,26 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMinComplete"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseMaxOut"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndRedClearance"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianBeginSolidDontWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginTrailingGreenExtension"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginYellow"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapBeginRedClearance"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.OverlapOffInactivewithredindication"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOff"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedDetectorOff"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PedDetectorOn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseMinComplete"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseMaxOut"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndRedClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginChangeInterval"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianBeginSolidDontWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.OverlapBeginGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.OverlapBeginTrailingGreenExtension"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.OverlapBeginYellow"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.OverlapBeginRedClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.OverlapOffInactivewithredindication"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianOverlapBeginWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianOverlapBeginClearance"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedDetectorOff"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PedDetectorOn"/></item>
             </list>
             </summary>
         </member>
@@ -778,9 +778,9 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPCheckIn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPAdjustmenttoEarlyGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPAdjustmenttoExtendGreen"/></item>
             </list>
             </summary>
         </member>
@@ -791,10 +791,10 @@
             <summary>
             Filters <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> workflow events to
             <list type="bullet">
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckIn"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
-            <item><see cref="F:ATSPM.Data.Enums.DataLoggerEnum.TSPCheckOut"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPCheckIn"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPAdjustmenttoEarlyGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPAdjustmenttoExtendGreen"/></item>
+            <item><see cref="F:ATSPM.Data.Enums.IndianaEnumerations.TSPCheckOut"/></item>
             </list>
             </summary>
         </member>
@@ -804,7 +804,7 @@
         <member name="T:ATSPM.Application.Analysis.WorkflowSteps.AggregateDetectorEvents">
             <summary>
             Transforms <see cref="T:ATSPM.Data.Models.ControllerEventLog"/> into <see cref="T:ATSPM.Data.Models.AggregationModels.DetectorEventCountAggregation"/>
-            where <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            where <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/>
             and <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventParam"/> equals <see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>.
             </summary>
         </member>
@@ -857,16 +857,16 @@
             <term>Identify the Beginning of Each Cycle</term>
             <description>
             The beginning of the cycle
-            for a given phase is defined as the end of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/>. The
+            for a given phase is defined as the end of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/>. The
             event log is queried to find the records where the Event Code is 9. Each instance
-            of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/> is indicated as the start of the cycle.
+            of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/> is indicated as the start of the cycle.
             </description>
             </item>
             
             <item>
             <term>Identify the Change to Green for Each Cycle</term>
             <description>
-            During this step, the event log is queried to find the records where the Event Code <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginGreen"/>.
+            During this step, the event log is queried to find the records where the Event Code <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginGreen"/>.
             The duration from the beginning of the cycle to when the given phasechanges to green(total red interval)
             is calculated in reference to the first redevent (begin) of the cycle
             </description>
@@ -875,7 +875,7 @@
             <item>
             <term>Identify the Change to Yellow for Each Cycle</term>
             <description>
-            During this step, the event log is queried to find the record where the Event Code <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseBeginYellowChange"/>.
+            During this step, the event log is queried to find the record where the Event Code <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseBeginYellowChange"/>.
             The duration from the beginning of the cycle to when the given phase
             changes to yellow(total green interval) is calculated in reference to the first red event (begin) of the cycle
             </description>
@@ -884,7 +884,7 @@
             <item>
             <term>Identify the Change to Red at the End of Each Cycle</term>
             <description>
-            During this step, the event log is queried to find the records where the Event Code <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.PhaseEndYellowChange"/>. 
+            During this step, the event log is queried to find the records where the Event Code <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.PhaseEndYellowChange"/>. 
             The duration from the beginning of the cycle to when the given phase changes to red(yellow clearance interval)
             is calculated in reference to the firstred event (begin) of the cycle
             </description>
@@ -914,7 +914,7 @@
             <summary>
             Breaks out all the <see cref="T:ATSPM.Data.Models.Detector"/> from <see cref="T:ATSPM.Data.Models.Approach"/>
             and returns separate Tuples of <see cref="T:ATSPM.Data.Models.Detector"/>/<see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>/<see cref="T:ATSPM.Data.Models.ControllerEventLog"/> sets
-            where the <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/>
+            where the <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventCode"/> equals <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/>
             and <see cref="P:ATSPM.Data.Models.ControllerEventLog.EventParam"/> equals <see cref="P:ATSPM.Data.Models.Detector.DetectorChannel"/>
             sorted by <see cref="P:ATSPM.Data.Models.ControllerEventLog.Timestamp"/>.
             </summary>
@@ -942,7 +942,7 @@
             <summary>
             <c>Identify and Adjust Vehicle Actuations</c>
             During this step, the event log is queried to find detector activations for the subject phase
-            (the records where the Event Code is <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> and Event Parameter is a detector channel assigned to the subject phase). 
+            (the records where the Event Code is <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> and Event Parameter is a detector channel assigned to the subject phase). 
             The timestamps of the EC 82 events are noted.
             Timestamps for detector on events may need to be adjusted to represent vehicle arrivals at the stop bar
             rather than at the detector location or toadjust based on possible detector latency differences.
@@ -1087,9 +1087,9 @@
             <param name="binSize">Bin size to break up hours</param>
             <returns></returns>
         </member>
-        <member name="M:ATSPM.Application.AtspmMath.TimeSpanFromConsecutiveCodes(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog},ATSPM.Data.Enums.DataLoggerEnum,ATSPM.Data.Enums.DataLoggerEnum)">
+        <member name="M:ATSPM.Application.AtspmMath.TimeSpanFromConsecutiveCodes(System.Collections.Generic.IEnumerable{ATSPM.Data.Models.ControllerEventLog},ATSPM.Data.Enums.IndianaEnumerations,ATSPM.Data.Enums.IndianaEnumerations)">
             <summary>
-            Calculates the <see cref="T:System.TimeSpan"/> difference between the first and second <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/>
+            Calculates the <see cref="T:System.TimeSpan"/> difference between the first and second <see cref="T:ATSPM.Data.Enums.IndianaEnumerations"/>
             <list type="bullet">
             <listheader>Used in the following steps of Preemption Details:</listheader>
             <item>
@@ -1118,7 +1118,7 @@
             </item>
             </list>
             </summary>
-            <param name="items"><see cref="T:ATSPM.Data.Models.ControllerEventLog"/> list the <see cref="T:ATSPM.Data.Enums.DataLoggerEnum"/> are sorted</param>
+            <param name="items"><see cref="T:ATSPM.Data.Models.ControllerEventLog"/> list the <see cref="T:ATSPM.Data.Enums.IndianaEnumerations"/> are sorted</param>
             <param name="first">Starting event code</param>
             <param name="second">Ending event code</param>
             <returns><see cref="T:System.TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
@@ -1196,7 +1196,7 @@
         </member>
         <member name="T:ATSPM.Application.Enums.ArrivalType">
             <summary>
-            Arrival type of <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> events
+            Arrival type of <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> events
             </summary>
         </member>
         <member name="F:ATSPM.Application.Enums.ArrivalType.Unknown">
@@ -1206,17 +1206,17 @@
         </member>
         <member name="F:ATSPM.Application.Enums.ArrivalType.ArrivalOnGreen">
             <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on green
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on green
             </summary>
         </member>
         <member name="F:ATSPM.Application.Enums.ArrivalType.ArrivalOnYellow">
             <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on yellow
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on yellow
             </summary>
         </member>
         <member name="F:ATSPM.Application.Enums.ArrivalType.ArrivalOnRed">
             <summary>
-            <see cref="F:ATSPM.Data.Enums.DataLoggerEnum.DetectorOn"/> arrival on red
+            <see cref="F:ATSPM.Data.Enums.IndianaEnumerations.VehicleDetectorOn"/> arrival on red
             </summary>
         </member>
         <member name="M:ATSPM.Application.Exceptions.ATSPMException.#ctor(System.String)">

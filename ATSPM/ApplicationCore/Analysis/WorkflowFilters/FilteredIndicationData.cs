@@ -7,8 +7,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseBeginRedClearance"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseBeginGreen"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseBeginRedClearance"/></item>
     /// </list>
     /// </summary>
     public class FilteredIndicationData : FilterEventCodeBase
@@ -16,8 +16,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredIndicationData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginRedClearance);
+            filteredList.Add((int)IndianaEnumerations.PhaseBeginGreen);
+            filteredList.Add((int)IndianaEnumerations.PhaseBeginRedClearance);
         }
     }
 }

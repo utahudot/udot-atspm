@@ -17,6 +17,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public string LocationIdentifier { get; set; }
 
         [Obsolete("this has bee replaced with StartEndRange")]
+        [JsonIgnore]
         public DateTime BinStartTime { get; set; }
     }
 
@@ -100,7 +101,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public int DetectorPrimaryId { get; set; }
 
         /// <summary>
-        /// Sum of <see cref="DataLoggerEnum.DetectorOn"/> events
+        /// Sum of <see cref="IndianaEnumerations.VehicleDetectorOn"/> events
         /// </summary>
         public int EventCount { get; set; }
 
@@ -173,22 +174,22 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PhaseNumber { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="DataLoggerEnum.PhaseGapOut"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseGapOut"/> events
         /// </summary>
         public int GapOuts { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="DataLoggerEnum.PhaseMaxOut"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseMaxOut"/> events
         /// </summary>
         public int ForceOffs { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="DataLoggerEnum.PhaseForceOff"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseForceOff"/> events
         /// </summary>
         public int MaxOuts { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="DataLoggerEnum.PhaseGreenTermination"/> events
+        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseGreenTermination"/> events
         /// </summary>
         public int Unknown { get; set; }
 
@@ -210,12 +211,12 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PreemptNumber { get; set; }
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.PreemptCallInputOn"/> Set when preemption input is activated
+        /// <see cref="IndianaEnumerations.PreemptCallInputOn"/> Set when preemption input is activated
         /// </summary>
         public int PreemptRequests { get; set; }
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.PreemptEntryStarted"/> Set when preemption delay expires
+        /// <see cref="IndianaEnumerations.PreemptEntryStarted"/> Set when preemption delay expires
         /// </summary>
         public int PreemptServices { get; set; }
 
@@ -237,17 +238,17 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PriorityNumber { get; set; }
 
         ///<summary>
-        /// <see cref="DataLoggerEnum.TSPCheckIn"/> Set when request for priority is received
+        /// <see cref="IndianaEnumerations.TSPCheckIn"/> Set when request for priority is received
         ///</summary>
         public int PriorityRequests { get; set; }
 
         ///<summary>
-        /// <see cref="DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
+        /// <see cref="IndianaEnumerations.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
         ///</summary>
         public int PriorityServiceEarlyGreen { get; set; }
 
         ///<summary>
-        /// <see cref="DataLoggerEnum.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
+        /// <see cref="IndianaEnumerations.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
         ///</summary>
         public int PriorityServiceExtendedGreen { get; set; }
 
