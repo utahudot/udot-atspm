@@ -22,7 +22,7 @@ namespace ATSPM.Application.Business.PreemptServiceRequest
             IReadOnlyList<IndianaEvent> planEvents,
             IReadOnlyList<IndianaEvent> events)
         {
-            var preemptEvents = events.Where(row => row.EventCode == DataLoggerEnum.PreemptCallInputOn).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
+            var preemptEvents = events.Where(row => row.EventCode == IndianaEnumerations.PreemptCallInputOn).Select(row => new DataPointForInt(row.Timestamp, row.EventParam));
             var plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
             IReadOnlyList<Common.Plan> preemptPlans = plans.Select(pl => new PreemptPlan(
                 pl.PlanNumber.ToString(),

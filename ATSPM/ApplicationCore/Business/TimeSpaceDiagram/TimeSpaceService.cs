@@ -51,7 +51,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return speedLimit * FeetPerMile / SecondsInHour;
         }
 
-        public static List<IndianaEvent> GetEvents(int phaseNumber, List<IndianaEvent> controllerEventLogs, List<DataLoggerEnum> cycleEventCodes)
+        public static List<IndianaEvent> GetEvents(int phaseNumber, List<IndianaEvent> controllerEventLogs, List<IndianaEnumerations> cycleEventCodes)
         {
             var distinctTimeStamps = new HashSet<string>();
             var tempEvents = controllerEventLogs.Aggregate(new List<IndianaEvent>(), (result, c) =>
@@ -69,17 +69,17 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return tempEvents;
         }
 
-        public static List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
+        public static List<IndianaEnumerations> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange };
+            var phaseEventCodesForCycles = new List<IndianaEnumerations> { IndianaEnumerations.PhaseBeginGreen, IndianaEnumerations.PhaseBeginYellowChange, IndianaEnumerations.PhaseEndYellowChange };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<DataLoggerEnum> {
-                    DataLoggerEnum.OverlapBeginGreen,
-                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance,
-                    DataLoggerEnum.OverlapOffInactivewithredindication };
+                phaseEventCodesForCycles = new List<IndianaEnumerations> {
+                    IndianaEnumerations.OverlapBeginGreen,
+                    IndianaEnumerations.OverlapBeginTrailingGreenExtension,
+                    IndianaEnumerations.OverlapBeginYellow,
+                    IndianaEnumerations.OverlapBeginRedClearance,
+                    IndianaEnumerations.OverlapOffInactivewithredindication };
             }
 
             return phaseEventCodesForCycles;

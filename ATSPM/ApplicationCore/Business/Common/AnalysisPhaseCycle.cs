@@ -49,7 +49,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime PedEndTime { get; private set; }
 
-        public DataLoggerEnum? TerminationEvent { get; private set; }
+        public IndianaEnumerations? TerminationEvent { get; private set; }
 
         public TimeSpan Duration { get; private set; }
 
@@ -68,7 +68,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime YellowEvent { get; set; }
 
-        public void SetTerminationEvent(DataLoggerEnum terminatonCode)
+        public void SetTerminationEvent(IndianaEnumerations terminatonCode)
         {
             TerminationEvent = terminatonCode;
         }

@@ -11,16 +11,16 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
     public class TimeSpaceAverageService
     {
         private readonly CycleService _cycleService;
-        private readonly Dictionary<int, DataLoggerEnum> phaseToProgramPhases = new Dictionary<int, DataLoggerEnum>()
+        private readonly Dictionary<int, IndianaEnumerations> phaseToProgramPhases = new Dictionary<int, IndianaEnumerations>()
         {
-            { 1, DataLoggerEnum.Split1Change },
-            { 2, DataLoggerEnum.Split2Change },
-            { 3, DataLoggerEnum.Split3Change },
-            { 4, DataLoggerEnum.Split4Change },
-            { 5, DataLoggerEnum.Split5Change },
-            { 6, DataLoggerEnum.Split6Change },
-            { 7, DataLoggerEnum.Split7Change },
-            { 8, DataLoggerEnum.Split8Change },
+            { 1, IndianaEnumerations.Split1Change },
+            { 2, IndianaEnumerations.Split2Change },
+            { 3, IndianaEnumerations.Split3Change },
+            { 4, IndianaEnumerations.Split4Change },
+            { 5, IndianaEnumerations.Split5Change },
+            { 6, IndianaEnumerations.Split6Change },
+            { 7, IndianaEnumerations.Split7Change },
+            { 8, IndianaEnumerations.Split8Change },
         };
 
         public TimeSpaceAverageService(CycleService cycleService)

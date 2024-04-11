@@ -23,7 +23,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                 options.GlobalEventCodesList.Any() && options.GlobalEventCodesList.Count > 0 &&
                 options.GlobalEventParamsList.Any() && options.GlobalEventParamsList.Count > 0)
             {
-                foreach (var globalEventCode in options.GlobalEventCodesList.Select(g => (DataLoggerEnum)g))
+                foreach (var globalEventCode in options.GlobalEventCodesList.Select(g => (IndianaEnumerations)g))
                 {
                     foreach (var globalEventParam in options.GlobalEventParamsList)
                     {
@@ -33,7 +33,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                             locationId,
                             options.Start,
                             options.End,
-                            new List<DataLoggerEnum> { globalEventCode },
+                            new List<IndianaEnumerations> { globalEventCode },
                             globalEventParam
                         )
                         .ToList();

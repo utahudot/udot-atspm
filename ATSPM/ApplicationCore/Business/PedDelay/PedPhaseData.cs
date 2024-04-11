@@ -30,8 +30,8 @@ namespace ATSPM.Application.Business.PedDelay
         public int PedBeginWalkCount { get; set; }
         public List<IndianaEvent> PedBeginWalkEvents { get; set; }
         public int PedCallsRegisteredCount { get; set; }
-        public DataLoggerEnum BeginWalkEvent { get; set; }
-        public DataLoggerEnum BeginClearanceEvent { get; set; }
+        public IndianaEnumerations BeginWalkEvent { get; set; }
+        public IndianaEnumerations BeginClearanceEvent { get; set; }
     }
 
 }
