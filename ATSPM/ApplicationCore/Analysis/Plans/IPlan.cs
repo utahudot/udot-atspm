@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace ATSPM.Application.Analysis.Plans
 {
     /// <summary>
-    /// Definition for Location controller plans which are derrived from <see cref="DataLoggerEnum.CoordPatternChange"/> events
+    /// Definition for Location controller plans which are derrived from <see cref="IndianaEnumerations.CoordPatternChange"/> events
     /// </summary>
     public interface IPlan : IStartEndRange, ILocationLayer, IPlanLayer
     {

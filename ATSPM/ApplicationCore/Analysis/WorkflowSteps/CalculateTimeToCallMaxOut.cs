@@ -8,8 +8,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateTimeToCallMaxOut(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = DataLoggerEnum.PreemptCallInputOn;
-            second = DataLoggerEnum.PreemptionMaxPresenceExceeded;
+            first = IndianaEnumerations.PreemptCallInputOn;
+            second = IndianaEnumerations.PreemptionMaxPresenceExceeded;
         }
     }
 }
