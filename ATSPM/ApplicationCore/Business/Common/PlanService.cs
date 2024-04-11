@@ -66,7 +66,7 @@ namespace ATSPM.Application.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = DataLoggerEnum.CoordPatternChange, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = IndianaEnumerations.CoordPatternChange, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -120,7 +120,7 @@ namespace ATSPM.Application.Business.Common
                 firstPlanEvent = new IndianaEvent
                 {
                     Timestamp = startDate,
-                    EventCode = DataLoggerEnum.CoordPatternChange,
+                    EventCode = IndianaEnumerations.CoordPatternChange,
                     EventParam = 0,
                     LocationIdentifier = locationId
                 };

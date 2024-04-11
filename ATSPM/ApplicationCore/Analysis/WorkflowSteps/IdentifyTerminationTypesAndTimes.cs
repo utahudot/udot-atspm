@@ -26,10 +26,10 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var filters = new List<int>()
             {
-                (int)DataLoggerEnum.PhaseGapOut,
-                (int)DataLoggerEnum.PhaseMaxOut,
-                (int)DataLoggerEnum.PhaseForceOff,
-                (int)DataLoggerEnum.PhaseGreenTermination
+                (int)IndianaEnumerations.PhaseGapOut,
+                (int)IndianaEnumerations.PhaseMaxOut,
+                (int)IndianaEnumerations.PhaseForceOff,
+                (int)IndianaEnumerations.PhaseGreenTermination
             };
             
             var approach = input.Item1;
@@ -39,11 +39,11 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
                 .Where(w => filters.Contains(w.EventCode))
                 .OrderBy(o => o.Timestamp).ToList();
 
-            //if there are two consecutive )DataLoggerEnum.PhaseGreenTermination then the second denotes an unknown termination
-            var consecGreenTerminations = logs.GetLastConsecutiveEvent(2).Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).ToList();
+            //if there are two consecutive )IndianaEnumerations.PhaseGreenTermination then the second denotes an unknown termination
+            var consecGreenTerminations = logs.GetLastConsecutiveEvent(2).Where(w => w.EventCode == (int)IndianaEnumerations.PhaseGreenTermination).ToList();
 
-            //remove DataLoggerEnum.PhaseGreenTermination and get the consecutive terminations
-            var consecTerminations = logs.Where(r => r.EventCode != (int)DataLoggerEnum.PhaseGreenTermination).GetLastConsecutiveEvent(_consecutiveCounts).ToList();
+            //remove IndianaEnumerations.PhaseGreenTermination and get the consecutive terminations
+            var consecTerminations = logs.Where(r => r.EventCode != (int)IndianaEnumerations.PhaseGreenTermination).GetLastConsecutiveEvent(_consecutiveCounts).ToList();
 
             var stuff = new PhaseTerminations(consecTerminations.Union(consecGreenTerminations))
             {
