@@ -6,14 +6,14 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
 {
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
-    /// <see cref="DataLoggerEnum.PhaseBeginGreen"/> through <see cref="DataLoggerEnum.Split16Change"/>
+    /// <see cref="IndianaEnumerations.PhaseBeginGreen"/> through <see cref="IndianaEnumerations.Split16Change"/>
     /// </summary>
     public class FilteredSplitsData : FilterEventCodeBase
     {
         /// <inheritdoc/>
         public FilteredSplitsData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            for (int i = (int)DataLoggerEnum.Split1Change; i <= (int)DataLoggerEnum.Split16Change; i++)
+            for (int i = (int)IndianaEnumerations.Split1Change; i <= (int)IndianaEnumerations.Split16Change; i++)
             {
                 filteredList.Add(i);
             }

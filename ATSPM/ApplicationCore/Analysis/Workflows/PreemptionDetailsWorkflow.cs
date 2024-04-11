@@ -49,16 +49,16 @@ namespace ATSPM.Application.Analysis.Workflows
 
     //    protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
     //    {
-    //        var cycles = PreemptDetailRange<PreemptCycle>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+    //        var cycles = PreemptDetailRange<PreemptCycle>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginExitInterval);
 
-    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptCallInputOff, DataLoggerEnum.PreemptionBeginExitInterval);
+    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, IndianaEnumerations.PreemptCallInputOff, IndianaEnumerations.PreemptionBeginExitInterval);
 
-    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
-    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
-    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
-    //        var delay = PreemptDetailRange<DelayTimeValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
-    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
-    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, IndianaEnumerations.PreemptionBeginDwellService, IndianaEnumerations.PreemptionBeginExitInterval);
+    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, IndianaEnumerations.PreemptionBeginTrackClearance, IndianaEnumerations.PreemptionBeginDwellService);
+    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
+    //        var delay = PreemptDetailRange<DelayTimeValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
+    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
+    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionMaxPresenceExceeded);
 
     //        var result = new List<PreemptCycle>();
 
@@ -92,7 +92,7 @@ namespace ATSPM.Application.Analysis.Workflows
     //        return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
     //    }
 
-    //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+    //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second) where T : PreempDetailValueBase, new()
     //    {
     //        var result = items.GroupBy(g => g.LocationIdentifier, (Location, l1) =>
     //        l1.GroupBy(g => g.EventParam, (preempt, l2) =>
@@ -444,7 +444,7 @@ namespace ATSPM.Application.Analysis.Workflows
             return cycle;
         }
 
-        private IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        private IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second)
         {
             var preFilter = items.OrderBy(o => o.Timestamp)
                 .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)

@@ -17,7 +17,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
         protected override Task<IEnumerable<Tuple<Detector, IEnumerable<ControllerEventLog>>>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
         {
-            var result = input.Where(l => l.EventCode == (int)DataLoggerEnum.DetectorOn)
+            var result = input.Where(l => l.EventCode == (int)IndianaEnumerations.DetectorOn)
                 .GroupBy(g => g.SignalIdentifier)
                 .Select(Location => Location.AsEnumerable()
                 .GroupBy(g => g.EventParam)

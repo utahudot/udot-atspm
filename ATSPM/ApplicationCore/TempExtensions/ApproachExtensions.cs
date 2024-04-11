@@ -57,20 +57,20 @@ namespace ATSPM.Application.TempExtensions
                 : new List<int> { 1, 3, 8, 9, 11 };
         }
 
-        public static List<DataLoggerEnum> GetPedestrianCycleEventCodes(this Approach approach)
+        public static List<IndianaEnumerations> GetPedestrianCycleEventCodes(this Approach approach)
         {
-            return approach.IsPedestrianPhaseOverlap ? new List<DataLoggerEnum>
+            return approach.IsPedestrianPhaseOverlap ? new List<IndianaEnumerations>
             {
-                DataLoggerEnum.PedestrianOverlapBeginWalk,
-                DataLoggerEnum.PedestrianOverlapBeginClearance,
-                DataLoggerEnum.PedestrianCallRegistered,
-                DataLoggerEnum.PedDetectorOn
-            } : new List<DataLoggerEnum>
+                IndianaEnumerations.PedestrianOverlapBeginWalk,
+                IndianaEnumerations.PedestrianOverlapBeginClearance,
+                IndianaEnumerations.PedestrianCallRegistered,
+                IndianaEnumerations.PedDetectorOn
+            } : new List<IndianaEnumerations>
             {
-                DataLoggerEnum.PedestrianBeginWalk,
-                DataLoggerEnum.PedestrianBeginChangeInterval,
-                DataLoggerEnum.PedestrianCallRegistered,
-                DataLoggerEnum.PedDetectorOn
+                IndianaEnumerations.PedestrianBeginWalk,
+                IndianaEnumerations.PedestrianBeginChangeInterval,
+                IndianaEnumerations.PedestrianCallRegistered,
+                IndianaEnumerations.PedDetectorOn
             };
 
         }
