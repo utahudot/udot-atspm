@@ -7,10 +7,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PhaseGapOut"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseMaxOut"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseForceOff"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseGreenTermination"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseGapOut"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseMaxOut"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseForceOff"/></item>
+    /// <item><see cref="IndianaEnumerations.PhaseGreenTermination"/></item>
     /// </list>
     /// </summary>
     public class FilteredTerminations : FilterEventCodeLocationBase
@@ -18,10 +18,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredTerminations(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PhaseGapOut);
-            filteredList.Add((int)DataLoggerEnum.PhaseMaxOut);
-            filteredList.Add((int)DataLoggerEnum.PhaseForceOff);
-            filteredList.Add((int)DataLoggerEnum.PhaseGreenTermination);
+            filteredList.Add((int)IndianaEnumerations.PhaseGapOut);
+            filteredList.Add((int)IndianaEnumerations.PhaseMaxOut);
+            filteredList.Add((int)IndianaEnumerations.PhaseForceOff);
+            filteredList.Add((int)IndianaEnumerations.PhaseGreenTermination);
         }
     }
 }
