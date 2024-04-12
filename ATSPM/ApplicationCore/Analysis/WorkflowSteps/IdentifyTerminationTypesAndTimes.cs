@@ -26,9 +26,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         {
             var filters = new List<int>()
             {
-                (int)IndianaEnumerations.PhaseGapOut,
-                (int)IndianaEnumerations.PhaseMaxOut,
-                (int)IndianaEnumerations.PhaseForceOff,
+                (int)4,
+                (int)5,
+                (int)6,
                 (int)IndianaEnumerations.PhaseGreenTermination
             };
             

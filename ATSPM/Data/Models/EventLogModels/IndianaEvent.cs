@@ -1,6 +1,4 @@
-﻿using ATSPM.Data.Enums;
-
-#nullable disable
+﻿#nullable disable
 
 namespace ATSPM.Data.Models.EventLogModels
 {
@@ -13,7 +11,7 @@ namespace ATSPM.Data.Models.EventLogModels
         /// <summary>
         /// Event code from <see cref="IndianaEnumerations"/>
         /// </summary>
-        public IndianaEnumerations EventCode { get; set; }
+        public short EventCode { get; set; }
 
         /// <summary>
         /// Event parameter that is specific to <see cref="EventCode"/>

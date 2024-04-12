@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -68,21 +67,21 @@ namespace ATSPM.Application.Business.WaitTime
             var volume = new VolumeCollection(
            options.Start,
             options.End,
-               events.Where(e => e.EventCode == IndianaEnumerations.DetectorOn && e.EventParam == phaseDetail.PhaseNumber).ToList(),
+               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
                options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
             var cycleEvents = events.Where(x =>
-                (x.EventCode == IndianaEnumerations.PhaseEndRedClearance || x.EventCode == IndianaEnumerations.PhaseBeginGreen)
+                (x.EventCode == 11 || x.EventCode == 1)
                 && x.EventParam == phaseDetail.PhaseNumber);
             //var greenList = events.Where(x =>
             //x.EventCode == PHASE_BEGIN_GREEN
             //&& x.EventParam == phaseDetail.PhaseNumber)
             //.OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = events.Where(x =>
-                (x.EventCode == IndianaEnumerations.PedestrianCallRegistered ||
-                x.EventCode == IndianaEnumerations.PhaseCallDropped)
+                (x.EventCode == 45 ||
+                x.EventCode == 44)
                 && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
             var gapOuts = new List<DataPointForDouble>();
@@ -116,10 +115,10 @@ namespace ATSPM.Application.Business.WaitTime
 
                     WaitTimeTracker waitTimeTrackerToFill = null;
                     if (useDroppingAlgorithm &&
-                        cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == IndianaEnumerations.PhaseCallDropped))
+                        cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == 44))
                     {
                         var lastDroppedPhaseCall =
-                            cycle.PhaseRegisterDroppedCalls.LastOrDefault(x => x.EventCode == IndianaEnumerations.PhaseCallDropped);
+                            cycle.PhaseRegisterDroppedCalls.LastOrDefault(x => x.EventCode == 44);
                         if (lastDroppedPhaseCall != null)
                         {
                             var lastIndex = cycle.PhaseRegisterDroppedCalls.IndexOf(lastDroppedPhaseCall);
@@ -134,9 +133,9 @@ namespace ATSPM.Application.Business.WaitTime
                             };
                         }
                     }
-                    else if (cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == IndianaEnumerations.PhaseCallRegistered))
+                    else if (cycle.PhaseRegisterDroppedCalls.Any(x => x.EventCode == 43))
                     {
-                        var firstPhaseCall = cycle.PhaseRegisterDroppedCalls.First(x => x.EventCode == IndianaEnumerations.PhaseCallRegistered);
+                        var firstPhaseCall = cycle.PhaseRegisterDroppedCalls.First(x => x.EventCode == 43);
                         //waitTimeTrackerList.Add(new WaitTimeTracker { Time = green.TimeStamp, WaitTimeSeconds = (green.TimeStamp - firstPhaseCall.TimeStamp).TotalSeconds });
                         waitTimeTrackerToFill = new WaitTimeTracker
                         {
@@ -158,15 +157,15 @@ namespace ATSPM.Application.Business.WaitTime
                         waitTimeTrackerList.Add(waitTimeTrackerToFill);
                         switch (priorPhase.TerminationEvent)
                         {
-                            case IndianaEnumerations.PhaseGapOut: //Gap Out
+                            case 4: //Gap Out
                                 gapOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
-                            case IndianaEnumerations.PhaseMaxOut: //Max Out
+                            case 5: //Max Out
                                 maxOuts.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;
-                            case IndianaEnumerations.PhaseForceOff: //Force Off
+                            case 6: //Force Off
                                 forceOffs.Add(new DataPointForDouble(waitTimeTrackerToFill.Time,
                                     waitTimeTrackerToFill.WaitTimeSeconds));
                                 break;

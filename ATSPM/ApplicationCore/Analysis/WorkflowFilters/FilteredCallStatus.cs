@@ -7,8 +7,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="IndianaEnumerations.PhaseCallRegistered"/></item>
-    /// <item><see cref="IndianaEnumerations.PhaseCallDropped"/></item>
+    /// <item><see cref="43"/></item>
+    /// <item><see cref="44"/></item>
     /// </list>
     /// </summary>
     public class FilteredCallStatus : FilterEventCodeBase
@@ -16,8 +16,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredCallStatus(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)IndianaEnumerations.PhaseCallRegistered);
-            filteredList.Add((int)IndianaEnumerations.PhaseCallDropped);
+            filteredList.Add((int)43);
+            filteredList.Add((int)44);
         }
     }
 }

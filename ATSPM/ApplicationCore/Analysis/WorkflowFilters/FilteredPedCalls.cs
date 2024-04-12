@@ -7,8 +7,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="IndianaEnumerations.PedestrianCallRegistered"/></item>
-    /// <item><see cref="IndianaEnumerations.PedDetectorOn"/></item>
+    /// <item><see cref="45"/></item>
+    /// <item><see cref="90"/></item>
     /// </list>
     /// </summary>
     public class FilteredPedCalls : FilterEventCodeBase
@@ -16,8 +16,8 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPedCalls(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)IndianaEnumerations.PedestrianCallRegistered);
-            filteredList.Add((int)IndianaEnumerations.PedDetectorOn);
+            filteredList.Add((int)45);
+            filteredList.Add((int)90);
         }
     }
 }

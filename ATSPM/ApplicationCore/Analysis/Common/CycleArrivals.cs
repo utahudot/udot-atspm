@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+
 namespace ATSPM.Application.Analysis.Common
 {
     /// <summary>
-    /// A cycle with <see cref="IndianaEnumerations.DetectorOn"/> event arrivals
+    /// A cycle with <see cref="IndianaEnumerations.VehicleDetectorOn"/> event arrivals
     /// </summary>
     public class CycleArrivals : StartEndRange, ICycleArrivals, ILocationPhaseLayer
     {
