@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models.EventLogModels;
+﻿using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -32,17 +31,17 @@ namespace ATSPM.Application.Business.Common
 
             foreach (var cycleEvent in combinedEvents)
             {
-                if (cycleEvent.EventCode == IndianaEnumerations.PhaseBeginGreen && cycleEvent.EventParam == phasenumber)
+                if (cycleEvent.EventCode == (short)1 && cycleEvent.EventParam == phasenumber)
                     cycle = new AnalysisPhaseCycle(locationId, phasenumber, cycleEvent.Timestamp);
 
                 if (cycle != null && cycleEvent.EventParam == phasenumber &&
-                    (cycleEvent.EventCode == IndianaEnumerations.PhaseGapOut || cycleEvent.EventCode == IndianaEnumerations.PhaseMaxOut || cycleEvent.EventCode == IndianaEnumerations.PhaseForceOff))
+                    (cycleEvent.EventCode == 4 || cycleEvent.EventCode == 5 || cycleEvent.EventCode == 6))
                     cycle.SetTerminationEvent(cycleEvent.EventCode);
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == IndianaEnumerations.PhaseBeginYellowChange)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 8)
                     cycle.YellowEvent = cycleEvent.Timestamp;
 
-                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == IndianaEnumerations.PhaseEndRedClearance)
+                if (cycle != null && cycleEvent.EventParam == phasenumber && cycleEvent.EventCode == 11)
                 {
                     cycle.SetEndTime(cycleEvent.Timestamp);
                     Cycles.Add(cycle);
@@ -87,7 +86,7 @@ namespace ATSPM.Application.Business.Common
                             continue;
 
                         //If the first event is 'Off', then set duration to 0
-                        if (i == 0 && current.EventCode == IndianaEnumerations.PedestrianBeginSolidDontWalk)
+                        if (i == 0 && current.EventCode == 23)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
@@ -95,7 +94,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //This is the prefered sequence; an 'On'  followed by an 'off'
-                        if (current.EventCode == IndianaEnumerations.PedestrianBeginWalk && next.EventCode == IndianaEnumerations.PedestrianBeginSolidDontWalk)
+                        if (current.EventCode == 21 && next.EventCode == 23)
                         {
                             if (Cycle.PedStartTime == DateTime.MinValue)
                                 Cycle.SetPedStart(current.Timestamp);
@@ -111,7 +110,7 @@ namespace ATSPM.Application.Business.Common
                         }
 
                         //if we are at the penultimate event, and the last event is 'on' then set duration to 0.
-                        if (i + 2 == eventsInOrder.Count() && next.EventCode == IndianaEnumerations.PedestrianBeginWalk)
+                        if (i + 2 == eventsInOrder.Count() && next.EventCode == 21)
                         {
                             Cycle.SetPedStart(Cycle.StartTime);
                             //cycle.SetPedEnd(cycle.YellowEvent);
@@ -125,14 +124,14 @@ namespace ATSPM.Application.Business.Common
                     switch (current.EventCode)
                     {
                         //if the only event is off
-                        case IndianaEnumerations.PedestrianBeginSolidDontWalk:
+                        case 23:
                             Cycle.SetPedStart(Cycle.StartTime);
                             Cycle.SetPedEnd(Cycle.StartTime);
                             //cycle.SetPedEnd(current.TimeStamp);
 
                             break;
                         //if the only event is on
-                        case IndianaEnumerations.PedestrianBeginWalk:
+                        case 21:
 
                             Cycle.SetPedStart(current.Timestamp);
                             Cycle.SetPedEnd(current.Timestamp);

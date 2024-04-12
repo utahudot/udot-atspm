@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -20,11 +19,11 @@ namespace ATSPM.Application.TempExtensions
             bool detectorOn,
             bool detectorOff)
         {
-            var eventCodes = new List<IndianaEnumerations>();
+            var eventCodes = new List<short>();
             if (detectorOn)
-                eventCodes.Add(IndianaEnumerations.DetectorOn);
+                eventCodes.Add(82);
             if (detectorOff)
-                eventCodes.Add(IndianaEnumerations.DetectorOff);
+                eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var events = new List<IndianaEvent>();
@@ -53,7 +52,7 @@ namespace ATSPM.Application.TempExtensions
                 locationId,
                 start.AddHours(-12),
                 end.AddHours(12),
-                IndianaEnumerations.CoordPatternChange)
+                131)
                 .OrderBy(e => e.Timestamp)
                 .ToList();
 
@@ -94,7 +93,7 @@ namespace ATSPM.Application.TempExtensions
                 {
                     LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = IndianaEnumerations.CoordPatternChange,
+                    EventCode = 131,
                     EventParam = 0
                 };
 
@@ -124,7 +123,7 @@ namespace ATSPM.Application.TempExtensions
                 {
                     LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = IndianaEnumerations.CoordPatternChange,
+                    EventCode = 131,
                     EventParam = 0
                 };
 

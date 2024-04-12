@@ -85,15 +85,15 @@ namespace ATSPM.Application.Business.SplitMonitor
                 PercentileSplit = options.PercentileSplit,
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == IndianaEnumerations.PhaseGapOut)
+                                .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 MaxOuts = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == IndianaEnumerations.PhaseMaxOut)
+                                .Where(c => c.TerminationEvent == 5)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 ForceOffs = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == IndianaEnumerations.PhaseForceOff)
+                                .Where(c => c.TerminationEvent == 6)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 Unknowns = phase.Cycles.Cycles
@@ -145,7 +145,7 @@ namespace ATSPM.Application.Business.SplitMonitor
                         End = plan.End,
                         PlanNumber = plan.PlanNumber,
                         PercentSkips = highCycleCount > 0 ? SkippedPhases / highCycleCount : 0,
-                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == IndianaEnumerations.PhaseGapOut)) / highCycleCount : 0,
+                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / highCycleCount : 0,
                         PercentMaxOuts = GetPercentMaxOuts(cycles, highCycleCount, plan.PlanNumber),
                         PercentForceOffs = GetPercentForceOffs(cycles, highCycleCount, plan.PlanNumber),
                         AverageSplit = cycles.Count > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / cycles.Count : 0,
@@ -160,7 +160,7 @@ namespace ATSPM.Application.Business.SplitMonitor
         private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double highCycleCounts, string planNumber)
         {
             if (planNumber != "254")
-                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == IndianaEnumerations.PhaseForceOff)) / highCycleCounts : 0;
+                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCounts : 0;
             else
                 return 0;
         }
@@ -168,7 +168,7 @@ namespace ATSPM.Application.Business.SplitMonitor
         private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double highCycleCount, string planNumber)
         {
             if (planNumber == "254")
-                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == IndianaEnumerations.PhaseMaxOut)) / highCycleCount : 0;
+                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount : 0;
             else
                 return 0;
         }
