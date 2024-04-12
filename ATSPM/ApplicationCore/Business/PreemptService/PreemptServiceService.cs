@@ -24,7 +24,7 @@ namespace ATSPM.Application.Business.PreemptService
                 pl.PlanNumber.ToString(),
                 pl.Start,
                 pl.End,
-                preemptEvents.Count(p => p.EventCode == IndianaEnumerations.PreemptEntryStarted && p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
+                preemptEvents.Count(p => p.EventCode == 105 && p.Timestamp >= pl.Start && p.Timestamp < pl.End))).ToList();
 
             return new PreemptServiceResult(
                 options.LocationIdentifier,

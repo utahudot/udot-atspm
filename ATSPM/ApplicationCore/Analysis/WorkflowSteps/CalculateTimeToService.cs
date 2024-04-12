@@ -8,8 +8,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateTimeToService(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = IndianaEnumerations.PreemptCallInputOn;
-            second = IndianaEnumerations.PreemptionBeginDwellService;
+            first = 102;
+            second = 107;
         }
     }
 }

@@ -1,26 +1,32 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-#ENV DOTNET_ENVIRONMENT=Development
-ENV GOOGLE_APPLICATION_CREDENTIALS=/keys/FILE_NAME.json
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["LocationControllerLogger/LocationControllerLogger.csproj", "LocationControllerLogger/"]
+COPY ["SignalControllerLogger/LocationControllerLogger.csproj", "SignalControllerLogger/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
-COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-RUN dotnet restore "LocationControllerLogger/LocationControllerLogger.csproj"
+COPY ["MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
+COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
+COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
+COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
+COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+RUN dotnet restore "SignalControllerLogger/LocationControllerLogger.csproj"
 COPY . .
-WORKDIR "/src/LocationControllerLogger"
+WORKDIR "/src/SignalControllerLogger"
 RUN dotnet build "LocationControllerLogger.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "LocationControllerLogger.csproj" -c Release -o /app/publish
+RUN dotnet publish "LocationControllerLogger.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
+
+ENV DOTNET_ENVIRONMENT Development
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "LocationControllerLogger.dll"]

@@ -4,7 +4,6 @@ using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
@@ -96,11 +95,11 @@ namespace ATSPM.ReportApi.ReportServices
             var terminationEvents = controllerEventLogs.GetEventsByEventCodes(
                  options.Start,
                  options.End,
-                 new List<DataLoggerEnum>
+                 new List<short>
                  {
-                     DataLoggerEnum.PhaseGapOut,
-                     DataLoggerEnum.PhaseMaxOut,
-                     DataLoggerEnum.PhaseForceOff
+                     4,
+                     5,
+                     6
                  },
                  phaseDetail.PhaseNumber);
             var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
@@ -182,23 +181,23 @@ namespace ATSPM.ReportApi.ReportServices
                 var firstEvent = detectorEvents.Where(d => d.EventParam == channel.DetectorChannel).FirstOrDefault();
                 var lastEvent = detectorEvents.Where(d => d.EventParam == channel.DetectorChannel).LastOrDefault();
 
-                if (firstEvent != null && firstEvent.EventCode == DataLoggerEnum.DetectorOff)
+                if (firstEvent != null && firstEvent.EventCode == 81)
                 {
                     var newDetectorOn = new IndianaEvent();
                     newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
-                    newDetectorOn.EventCode = DataLoggerEnum.DetectorOn;
+                    newDetectorOn.EventCode = 82;
                     newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);
                     detectorEvents.Add(newDetectorOn);
                 }
 
                 //add an EC 81 at the end if the last EC code is 82
-                if (lastEvent != null && lastEvent.EventCode == DataLoggerEnum.DetectorOn)
+                if (lastEvent != null && lastEvent.EventCode == 82)
                 {
                     var newDetectorOn = new IndianaEvent();
                     newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.End;
-                    newDetectorOn.EventCode = DataLoggerEnum.DetectorOff;
+                    newDetectorOn.EventCode = 81;
                     newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);
                     detectorEvents.Add(newDetectorOn);
                 }

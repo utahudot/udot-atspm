@@ -14,7 +14,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     /// <summary>
     /// Transforms <see cref="ControllerEventLog"/> into <see cref="DetectorEventCountAggregation"/>
-    /// where <see cref="ControllerEventLog.EventCode"/> equals <see cref="IndianaEnumerations.DetectorOn"/>
+    /// where <see cref="ControllerEventLog.EventCode"/> equals <see cref="IndianaEnumerations.VehicleDetectorOn"/>
     /// and <see cref="ControllerEventLog.EventParam"/> equals <see cref="Detector.DetectorChannel"/>.
     /// </summary>
     public class AggregateDetectorEvents : TransformProcessStepBase<Tuple<Detector, int, IEnumerable<ControllerEventLog>>, IEnumerable<DetectorEventCountAggregation>>
@@ -29,7 +29,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             var detectorChannel = input.Item2;
             var logs = input.Item3
                 .Where(w => w.SignalIdentifier == detector.Approach?.Location?.LocationIdentifier)
-                .Where(w => w.EventCode == (int)IndianaEnumerations.DetectorOn)
+                .Where(w => w.EventCode == (int)IndianaEnumerations.VehicleDetectorOn)
                 .Where(w => w.EventParam == detectorChannel);
 
             var tl = new Timeline<DetectorEventCountAggregation>(logs, TimeSpan.FromMinutes(15));

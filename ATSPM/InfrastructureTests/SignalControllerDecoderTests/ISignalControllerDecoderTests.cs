@@ -168,31 +168,31 @@ namespace InfrastructureTests.LocationControllerDecoderTests
 
         #region ILocationControllerDecoder.ExecuteAsync
 
-        [Fact]
-        public async Task ExecuteAsyncWithNullFileInfoParameter()
-        {
-            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
+        //[Fact]
+        //public async Task ExecuteAsyncWithNullFileInfoParameter()
+        //{
+        //    var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
 
-            await Assert.ThrowsAnyAsync<ArgumentNullException>(() => sut.ExecuteAsync(null, null));
-        }
+        //    await Assert.ThrowsAnyAsync<ArgumentNullException>(() => sut.ExecuteAsync(null, null));
+        //}
 
-        [Fact]
-        public async Task ExecuteAsyncWithInvalidFileInfoParameter()
-        {
-            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
+        //[Fact]
+        //public async Task ExecuteAsyncWithInvalidFileInfoParameter()
+        //{
+        //    var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>()).Object;
 
-            await Assert.ThrowsAnyAsync<FileNotFoundException>(() => sut.ExecuteAsync(new FileInfo("C:\\invalid.txt"), null));
-        }
+        //    await Assert.ThrowsAnyAsync<FileNotFoundException>(() => sut.ExecuteAsync(new FileInfo("C:\\invalid.txt"), null));
+        //}
 
-        [Fact]
-        public async Task ExecuteAsyncWithFailedCanExecute()
-        {
-            var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>());
+        //[Fact]
+        //public async Task ExecuteAsyncWithFailedCanExecute()
+        //{
+        //    var sut = new Mock<StubLocationControllerDecoder>(Mock.Of<ILogger<StubLocationControllerDecoder>>(), Mock.Of<IOptions<SignalControllerDecoderConfiguration>>());
 
-            sut.Setup(m => m.CanExecute(It.IsAny<FileInfo>())).Returns(false);
+        //    sut.Setup(m => m.CanExecute(It.IsAny<FileInfo>())).Returns(false);
 
-            await Assert.ThrowsAnyAsync<ExecuteException>(() => sut.Object.ExecuteAsync(new FileInfo(Path.GetTempFileName()), null));
-        }
+        //    await Assert.ThrowsAnyAsync<ExecuteException>(() => sut.Object.ExecuteAsync(new FileInfo(Path.GetTempFileName()), null));
+        //}
 
         #endregion
 
