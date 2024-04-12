@@ -30,8 +30,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             {
                 f.LocationIdentifier = Location.LocationIdentifier;
                 f.PreemptNumber = preempt;
-                f.PreemptServices = logs.Count(c => c.EventCode == (int)IndianaEnumerations.PreemptCallInputOn && f.InRange(c));
-                f.PreemptServices = logs.Count(c => c.EventCode == (int)IndianaEnumerations.PreemptEntryStarted && f.InRange(c));
+                f.PreemptServices = logs.Count(c => c.EventCode == (int)102 && f.InRange(c));
+                f.PreemptServices = logs.Count(c => c.EventCode == (int)105 && f.InRange(c));
             });
 
             var result = tl.Segments.AsEnumerable();

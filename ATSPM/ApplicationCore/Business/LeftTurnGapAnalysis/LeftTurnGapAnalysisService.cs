@@ -13,9 +13,9 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisService
     {
-        public const IndianaEnumerations EVENT_GREEN = IndianaEnumerations.PhaseBeginGreen;
-        public const IndianaEnumerations EVENT_RED = IndianaEnumerations.PhaseBeginRedClearance;
-        public const IndianaEnumerations EVENT_DET = IndianaEnumerations.DetectorOff;
+        public const short EVENT_GREEN = 1;
+        public const short EVENT_RED = 10;
+        public const short EVENT_DET = 81;
 
         public LeftTurnGapAnalysisService()
         {

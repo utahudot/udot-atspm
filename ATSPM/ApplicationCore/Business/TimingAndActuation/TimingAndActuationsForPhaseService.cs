@@ -97,7 +97,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             TimingAndActuationsOptions options)
         {
 
-            List<IndianaEnumerations> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            List<short> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
@@ -117,25 +117,25 @@ namespace ATSPM.Application.Business.TimingAndActuation
             return events;
         }
 
-        public List<IndianaEnumerations> GetCycleCodes(bool getOverlapCodes)
+        public List<short> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<IndianaEnumerations>
+            var phaseEventCodesForCycles = new List<short>
             {
-                IndianaEnumerations.PhaseBeginGreen,
-                IndianaEnumerations.PhaseMinComplete,
-                IndianaEnumerations.PhaseBeginYellowChange,
-                IndianaEnumerations.PhaseEndYellowChange,
-                IndianaEnumerations.PhaseEndRedClearance
+                1,
+                3,
+                8,
+                9,
+                11
             };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<IndianaEnumerations>
+                phaseEventCodesForCycles = new List<short>
                 {
-                    IndianaEnumerations.OverlapBeginGreen,
-                    IndianaEnumerations.OverlapBeginTrailingGreenExtension,
-                    IndianaEnumerations.OverlapBeginYellow,
-                    IndianaEnumerations.OverlapBeginRedClearance,
-                    IndianaEnumerations.OverlapOffInactivewithredindication
+                    61,
+                    62,
+                    63,
+                    64,
+                    65
                 };
             }
 
@@ -152,7 +152,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
             if (options.PhaseEventCodesList != null && options.PhaseEventCodesList.Any())
             {
-                foreach (var phaseEventCode in options.PhaseEventCodesList.Select(e => (IndianaEnumerations)e))
+                foreach (var phaseEventCode in options.PhaseEventCodesList)
                 {
 
                     var phaseEvents = controllerEventLogs.Where(c => c.EventCode == phaseEventCode
@@ -204,7 +204,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
                 .ThenByDescending(l => l.LaneNumber).ToList();
-            var detectorActivationCodes = new List<IndianaEnumerations> { IndianaEnumerations.DetectorOff, IndianaEnumerations.DetectorOn };
+            var detectorActivationCodes = new List<short> { 81, 82 };
             foreach (var detector in localSortedDetectors)
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
@@ -227,28 +227,28 @@ namespace ATSPM.Application.Business.TimingAndActuation
                         var detectorEvents = new List<DetectorEventBase>();
                         for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i == 0 && filteredEvents[i].EventCode == IndianaEnumerations.DetectorOff)
+                            if (i == 0 && filteredEvents[i].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == IndianaEnumerations.DetectorOff)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == IndianaEnumerations.DetectorOn)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 82)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, null));
                             }
-                            else if (filteredEvents[i].EventCode == IndianaEnumerations.DetectorOn && filteredEvents[i + 1].EventCode == IndianaEnumerations.DetectorOff)
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
                                 i++;
                             }
-                            else if (filteredEvents[i].EventCode == IndianaEnumerations.DetectorOff && filteredEvents[i + 1].EventCode == IndianaEnumerations.DetectorOff)
+                            else if (filteredEvents[i].EventCode == 81 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i + 1].Timestamp));
                             }
-                            else if (filteredEvents[i].EventCode == IndianaEnumerations.DetectorOn && filteredEvents[i + 1].EventCode == IndianaEnumerations.DetectorOn)
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 82)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i + 1].Timestamp, null));
                             }
@@ -280,7 +280,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.PedsAre1to1 && approach.IsProtectedPhaseOverlap
                 || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
-            var pedEventCodes = new List<IndianaEnumerations> { IndianaEnumerations.PedDetectorOff, IndianaEnumerations.PedDetectorOn };
+            var pedEventCodes = new List<short> { 89, 90 };
             foreach (var pedDetector in approach.Detectors)
             {
                 var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector.DetectorChannel}";
@@ -314,7 +314,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             List<IndianaEvent> controllerEventLogs,
             TimingAndActuationsOptions options)
         {
-            List<IndianaEnumerations> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
+            List<short> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
             var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
             return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode)
                                                     && c.EventParam == pedPhase
@@ -322,17 +322,17 @@ namespace ATSPM.Application.Business.TimingAndActuation
                                                     && c.Timestamp <= options.End).Select(s => new CycleEventsDto(s.Timestamp, (int)s.EventCode)).ToList();
         }
 
-        public List<IndianaEnumerations> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        public List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
         {
-            var overlapCodes = new List<IndianaEnumerations>
+            var overlapCodes = new List<short>
             {
-                IndianaEnumerations.PedestrianBeginWalk,
-                IndianaEnumerations.PedestrianBeginChangeInterval,
-                IndianaEnumerations.PedestrianBeginSolidDontWalk
+                21,
+                22,
+                23
             };
             if (isPhaseOrOverlap)
             {
-                overlapCodes = new List<IndianaEnumerations> { IndianaEnumerations.PedestrianOverlapBeginWalk, IndianaEnumerations.PedestrianOverlapBeginClearance, IndianaEnumerations.PedestrianOverlapBeginSolidDontWalk };
+                overlapCodes = new List<short> { 67, 68, 69 };
             }
 
             return overlapCodes;

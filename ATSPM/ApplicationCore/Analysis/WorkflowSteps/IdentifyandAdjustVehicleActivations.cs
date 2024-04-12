@@ -14,7 +14,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     /// <summary>
     /// <c>Identify and Adjust Vehicle Actuations</c>
     /// During this step, the event log is queried to find detector activations for the subject phase
-    /// (the records where the Event Code is <see cref="IndianaEnumerations.DetectorOn"/> and Event Parameter is a detector channel assigned to the subject phase). 
+    /// (the records where the Event Code is <see cref="IndianaEnumerations.VehicleDetectorOn"/> and Event Parameter is a detector channel assigned to the subject phase). 
     /// The timestamps of the EC 82 events are noted.
     /// Timestamps for detector on events may need to be adjusted to represent vehicle arrivals at the stop bar
     /// rather than at the detector location or toadjust based on possible detector latency differences.
@@ -28,7 +28,7 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
         protected override Task<Tuple<Approach, IEnumerable<CorrectedDetectorEvent>>> Process(Tuple<Approach, IEnumerable<ControllerEventLog>> input, CancellationToken cancelToken = default)
         {
             var result = Tuple.Create(input.Item1, input.Item1?.Detectors.GroupJoin(input.Item2, o => o.DetectorChannel, i => i.EventParam, (o, i) =>
-            i.Where(w => w.SignalIdentifier == input.Item1?.Location?.LocationIdentifier && w.EventCode == (int)IndianaEnumerations.DetectorOn)
+            i.Where(w => w.SignalIdentifier == input.Item1?.Location?.LocationIdentifier && w.EventCode == (int)IndianaEnumerations.VehicleDetectorOn)
             .Select(s => new CorrectedDetectorEvent()
             {
                 LocationIdentifier = s.SignalIdentifier,

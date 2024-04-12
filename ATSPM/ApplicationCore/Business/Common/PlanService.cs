@@ -1,7 +1,6 @@
 ﻿using ATSPM.Application.Business.ApproachSpeed;
 using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Business.YellowRedActivations;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
@@ -66,7 +65,7 @@ namespace ATSPM.Application.Business.Common
             SetLastPlan(startDate, endDate, tempPlanEvents);
             if (!tempPlanEvents.Any())
             {
-                tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = IndianaEnumerations.CoordPatternChange, EventParam = 254, Timestamp = endDate });
+                tempPlanEvents.Add(new IndianaEvent { LocationIdentifier = locationId, EventCode = 131, EventParam = 254, Timestamp = endDate });
             }
 
             //var planEvents = tempPlanEvents
@@ -120,7 +119,7 @@ namespace ATSPM.Application.Business.Common
                 firstPlanEvent = new IndianaEvent
                 {
                     Timestamp = startDate,
-                    EventCode = IndianaEnumerations.CoordPatternChange,
+                    EventCode = 131,
                     EventParam = 0,
                     LocationIdentifier = locationId
                 };
