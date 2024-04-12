@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalControllerLogger", "SignalControllerLogger\SignalControllerLogger.csproj", "{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocationControllerLogger", "SignalControllerLogger\LocationControllerLogger.csproj", "{D490CA96-2C0C-4E3F-8C2A-0F05850657C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationCore", "ApplicationCore\ApplicationCore.csproj", "{28293DD5-2476-46EB-92B5-77FFD257EAC9}"
 EndProject

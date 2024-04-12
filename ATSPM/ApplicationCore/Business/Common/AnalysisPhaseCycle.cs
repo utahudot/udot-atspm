@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Enums;
-using System;
+﻿using System;
 
 namespace ATSPM.Application.Business.Common
 {
@@ -49,7 +48,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime PedEndTime { get; private set; }
 
-        public IndianaEnumerations? TerminationEvent { get; private set; }
+        public short? TerminationEvent { get; private set; }
 
         public TimeSpan Duration { get; private set; }
 
@@ -68,7 +67,7 @@ namespace ATSPM.Application.Business.Common
 
         public DateTime YellowEvent { get; set; }
 
-        public void SetTerminationEvent(IndianaEnumerations terminatonCode)
+        public void SetTerminationEvent(short terminatonCode)
         {
             TerminationEvent = terminatonCode;
         }

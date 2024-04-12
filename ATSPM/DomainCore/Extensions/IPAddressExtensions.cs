@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 
 namespace ATSPM.Domain.Extensions
 {
@@ -63,11 +58,12 @@ namespace ATSPM.Domain.Extensions
         public static bool PingIPAddress(this IPAddress ipaddress, int timeout = 4000)
         {
             Ping pingSender = new();
-            byte[] buffer = new byte[32];
+            //byte[] buffer = new byte[32];
 
             try
             {
-                PingReply reply = pingSender.Send(ipaddress, timeout, buffer, new PingOptions(128, true));
+                //PingReply reply = pingSender.Send(ipaddress, timeout, buffer, new PingOptions(128, true));
+                PingReply reply = pingSender.Send(ipaddress, timeout);
                 return reply != null && reply.Status == IPStatus.Success;
             }
             catch

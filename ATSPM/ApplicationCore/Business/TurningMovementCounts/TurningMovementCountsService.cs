@@ -116,7 +116,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             var laneVolumes = new Dictionary<Detector, VolumeCollection>();
             foreach (var detector in tmcDetectors)
             {
-                laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == IndianaEnumerations.DetectorOn && e.EventParam == detector.DetectorChannel).ToList(), binSize));
+                laneVolumes.Add(detector, new VolumeCollection(start, end, detectorEvents.Where(e => e.EventCode == 82 && e.EventParam == detector.DetectorChannel).ToList(), binSize));
             }
             return laneVolumes;
         }

@@ -1,7 +1,7 @@
 ﻿using ATSPM.Domain.Common;
-using ATSPM.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -36,20 +36,26 @@ namespace ATSPM.Domain.Workflows
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<T2> Execute(T1 parameter, CancellationToken cancelToken = default)
+        public virtual async IAsyncEnumerable<T2> Execute(T1 parameter, [EnumeratorCancellation] CancellationToken cancelToken = default)
         {
-            cancelToken.ThrowIfCancellationRequested();
-
-            if (!CanExecute(parameter))
-                throw new ExecuteException();
-
-            try
+            await using (IAsyncEnumerator<T2> process = Process(parameter, cancelToken).GetAsyncEnumerator(cancelToken))
             {
-                return Process(parameter, cancelToken);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                bool active = true;
+
+                while (active)
+                {
+                    try
+                    {
+                        active = await process.MoveNextAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                    if (active)
+                        yield return process.Current;
+                }
             }
         }
 

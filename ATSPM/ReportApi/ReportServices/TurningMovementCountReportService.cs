@@ -150,7 +150,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents.AddRange(controllerEventLogs.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
                     options.Start,
                     options.End,
-                    new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOn },
+                    new List<short>() { 82 },
                     detector.DetectorChannel,
                     detector.GetOffset(),
                     detector.LatencyCorrection).ToList());

@@ -211,7 +211,7 @@ namespace ApplicationCoreTests.Analysis
             //var timetoservice = PreemptDetailRange<TimeToServiceValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
             //var delay = PreemptDetailRange<DelayTimeValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
             //var gatedown = PreemptDetailRange<TimeToGateDownValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
-            //var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionMaxPresenceExceeded);
+            //var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(logs, IndianaEnumerations.PreemptCallInputOn, 110);
 
 
             //foreach (var c in cycles)
@@ -236,7 +236,7 @@ namespace ApplicationCoreTests.Analysis
             //var timetoservice = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
             //var delay = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
             //var gatdown = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
-            //var maxout = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionMaxPresenceExceeded);
+            //var maxout = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, 110);
 
             //var cycles = cycle.Select(s => new PreemptDetailResult()
             //{

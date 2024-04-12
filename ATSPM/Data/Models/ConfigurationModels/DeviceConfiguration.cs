@@ -67,7 +67,7 @@ namespace ATSPM.Data.Models
         /// </summary>
         public string Password { get; set; }
 
-        #region IRelatedDeviceConfiguration
+        #region IRelatedProduct
 
         /// <inheritdoc/>
         public int ProductId { get; set; }

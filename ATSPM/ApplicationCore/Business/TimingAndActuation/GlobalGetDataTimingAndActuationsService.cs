@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                 options.GlobalEventCodesList.Any() && options.GlobalEventCodesList.Count > 0 &&
                 options.GlobalEventParamsList.Any() && options.GlobalEventParamsList.Count > 0)
             {
-                foreach (var globalEventCode in options.GlobalEventCodesList.Select(g => (IndianaEnumerations)g))
+                foreach (var globalEventCode in options.GlobalEventCodesList)
                 {
                     foreach (var globalEventParam in options.GlobalEventParamsList)
                     {
@@ -33,7 +32,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                             locationId,
                             options.Start,
                             options.End,
-                            new List<IndianaEnumerations> { globalEventCode },
+                            new List<short> { globalEventCode },
                             globalEventParam
                         )
                         .ToList();
