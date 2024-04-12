@@ -49,16 +49,16 @@ namespace ATSPM.Application.Analysis.Workflows
 
     //    protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
     //    {
-    //        var cycles = PreemptDetailRange<PreemptCycle>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginExitInterval);
+    //        var cycles = PreemptDetailRange<PreemptCycle>(input, 102, 111);
 
-    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, IndianaEnumerations.PreemptCallInputOff, IndianaEnumerations.PreemptionBeginExitInterval);
+    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, 104, 111);
 
-    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, IndianaEnumerations.PreemptionBeginDwellService, IndianaEnumerations.PreemptionBeginExitInterval);
-    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, IndianaEnumerations.PreemptionBeginTrackClearance, IndianaEnumerations.PreemptionBeginDwellService);
-    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
-    //        var delay = PreemptDetailRange<DelayTimeValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
-    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
-    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionMaxPresenceExceeded);
+    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, 107, 111);
+    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, 106, 107);
+    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, 102, 107);
+    //        var delay = PreemptDetailRange<DelayTimeValue>(input, 102, 105);
+    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, 102, 103);
+    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, 102, 110);
 
     //        var result = new List<PreemptCycle>();
 

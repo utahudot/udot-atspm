@@ -8,9 +8,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
     {
         public FilteredTerminationsTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)IndianaEnumerations.PhaseGapOut);
-            filteredList.Add((int)IndianaEnumerations.PhaseMaxOut);
-            filteredList.Add((int)IndianaEnumerations.PhaseForceOff);
+            filteredList.Add((int)4);
+            filteredList.Add((int)5);
+            filteredList.Add((int)6);
             filteredList.Add((int)IndianaEnumerations.PhaseGreenTermination);
 
             sut = new FilteredTerminations();
