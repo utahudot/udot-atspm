@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.Specifications;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Extensions;
 using System;
@@ -11,7 +10,7 @@ namespace ATSPM.Application.Extensions
 {
     public static class IndianaEventLogRepositoryExtensions
     {
-        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<DataLoggerEnum> eventCodes, int param)
+        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes, int param)
         {
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCodes, param))
@@ -24,7 +23,7 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<DataLoggerEnum> eventCodes, int param, double latencyCorrection)
+        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes, int param, double latencyCorrection)
         {
             var result = repo.GetEventsByEventCodesParam(locationId, startTime, endTime, eventCodes, param);
 
@@ -36,7 +35,7 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<DataLoggerEnum> eventCodes, int param, double offset, double latencyCorrection)
+        public static IReadOnlyList<IndianaEvent> GetEventsByEventCodesParam(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes, int param, double offset, double latencyCorrection)
         {
             var result = repo.GetEventsByEventCodesParam(locationId, startTime, endTime, eventCodes, param);
 
@@ -49,7 +48,7 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<IndianaEvent> GetRecordsByParameterAndEvent(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<DataLoggerEnum> eventCodes)
+        public static IReadOnlyList<IndianaEvent> GetRecordsByParameterAndEvent(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<short> eventCodes)
         {
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCodes, eventParameters))
@@ -59,22 +58,22 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static int GetRecordCountByParameterAndEvent(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<DataLoggerEnum> eventCodes)
+        public static int GetRecordCountByParameterAndEvent(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<int> eventParameters, IEnumerable<short> eventCodes)
         {
             return repo.GetRecordsByParameterAndEvent(locationId, startTime, endTime, eventParameters, eventCodes).Count;
         }
 
         public static IReadOnlyList<IndianaEvent> GetAllAggregationCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime)
         {
-            var codes = new List<DataLoggerEnum>
+            var codes = new List<short>
             {
-                DataLoggerEnum.Coordcyclestatechange,
-                DataLoggerEnum.TSPAdjustmenttoExtendGreen,
-                DataLoggerEnum.TSPAdjustmenttoEarlyGreen,
-                DataLoggerEnum.TSPCheckIn,
-                DataLoggerEnum.PreemptEntryStarted,
-                DataLoggerEnum.PreemptCallInputOn,
-                DataLoggerEnum.PhaseBeginGreen
+                150,
+                114,
+                113,
+                112,
+                105,
+                102,
+                1
             };
 
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
@@ -87,7 +86,7 @@ namespace ATSPM.Application.Extensions
         public static int GetDetectorActivationCount(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, int detectorChannel)
         {
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
-                .FromSpecification(new IndianaLogCodeAndParamSpecification(DataLoggerEnum.DetectorOn, detectorChannel))
+                .FromSpecification(new IndianaLogCodeAndParamSpecification(82, detectorChannel))
                 .ToList().Count;
 
             return result;
@@ -95,7 +94,7 @@ namespace ATSPM.Application.Extensions
 
 
 
-        public static IReadOnlyList<IndianaEvent> GetLocationEventsByEventCode(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, DataLoggerEnum eventCode)
+        public static IReadOnlyList<IndianaEvent> GetLocationEventsByEventCode(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, short eventCode)
         {
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCode))
@@ -105,7 +104,7 @@ namespace ATSPM.Application.Extensions
             return result;
         }
 
-        public static IReadOnlyList<IndianaEvent> GetLocationEventsByEventCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<DataLoggerEnum> eventCodes)
+        public static IReadOnlyList<IndianaEvent> GetLocationEventsByEventCodes(this IIndianaEventLogRepository repo, string locationId, DateTime startTime, DateTime endTime, IEnumerable<short> eventCodes)
         {
             var result = repo.GetEventsBetweenDates(locationId, startTime, endTime)
                 .FromSpecification(new IndianaLogCodeAndParamSpecification(eventCodes))

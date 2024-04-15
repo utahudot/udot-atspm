@@ -4,7 +4,6 @@ using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ATSPM.Application
 {
@@ -43,7 +42,7 @@ namespace ATSPM.Application
         }
 
         /// <summary>
-        /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="DataLoggerEnum"/>
+        /// Calculates the <see cref="TimeSpan"/> difference between the first and second <see cref="IndianaEnumerations"/>
         /// <list type="bullet">
         /// <listheader>Used in the following steps of Preemption Details:</listheader>
         /// <item>
@@ -72,20 +71,20 @@ namespace ATSPM.Application
         /// </item>
         /// </list>
         /// </summary>
-        /// <param name="items"><see cref="ControllerEventLog"/> list the <see cref="DataLoggerEnum"/> are sorted</param>
+        /// <param name="items"><see cref="ControllerEventLog"/> list the <see cref="IndianaEnumerations"/> are sorted</param>
         /// <param name="first">Starting event code</param>
         /// <param name="second">Ending event code</param>
         /// <returns><see cref="TimeSpan"/> difference of <paramref name="second"/> minus <paramref name="first"/></returns>
-        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        public static IEnumerable<Tuple<ControllerEventLog[], TimeSpan>> TimeSpanFromConsecutiveCodes(this IEnumerable<ControllerEventLog> items, short first, short second)
         {
             var preFilter = items.OrderBy(o => o.Timestamp)
-                .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)
+                .Where(w => w.EventCode == first || w.EventCode == second)
                 //.Where(w => w.Timestamp > DateTime.MinValue && w.Timestamp < DateTime.MaxValue)
                 .ToList();
 
             var result = preFilter.Where((x, y) =>
-                    (y < preFilter.Count - 1 && x.EventCode == (int)first && preFilter[y + 1].EventCode == (int)second) ||
-                    (y > 0 && x.EventCode == (int)second && preFilter[y - 1].EventCode == (int)first))
+                    (y < preFilter.Count - 1 && x.EventCode == first && preFilter[y + 1].EventCode == second) ||
+                    (y > 0 && x.EventCode == second && preFilter[y - 1].EventCode == first))
                         .Chunk(2)
                         .Select(l => new Tuple<ControllerEventLog[], TimeSpan>(new ControllerEventLog[] { l[0], l[1] }, l[1].Timestamp - l[0].Timestamp));
 

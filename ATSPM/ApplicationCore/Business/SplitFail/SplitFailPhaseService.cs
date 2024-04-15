@@ -1,7 +1,6 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -176,7 +175,7 @@ namespace ATSPM.Application.Business.SplitFail
         {
             events = events.OrderBy(e => e.Timestamp).ToList();
             for (var i = 0; i < events.Count - 1; i++)
-                if (events[i].EventCode == DataLoggerEnum.DetectorOn && events[i + 1].EventCode == DataLoggerEnum.DetectorOff)
+                if (events[i].EventCode == 82 && events[i + 1].EventCode == 81)
                     splitFailPhaseData.DetectorActivations.Add(new SplitFailDetectorActivation
                     {
                         DetectorOn = events[i].Timestamp,
@@ -187,11 +186,11 @@ namespace ATSPM.Application.Business.SplitFail
         private static void AddDetectorOffToEndIfNecessary(SplitFailOptions options, Detector detector,
             List<IndianaEvent> events)
         {
-            if (events.LastOrDefault()?.EventCode == DataLoggerEnum.DetectorOn)
+            if (events.LastOrDefault()?.EventCode == 82)
                 events.Insert(events.Count, new IndianaEvent
                 {
                     Timestamp = options.End,
-                    EventCode = DataLoggerEnum.DetectorOff,
+                    EventCode = 81,
                     EventParam = Convert.ToByte(detector.DetectorChannel),
                     LocationIdentifier = options.LocationIdentifier
                 });
@@ -200,11 +199,11 @@ namespace ATSPM.Application.Business.SplitFail
         private static void AddDetectorOnToBeginningIfNecessary(SplitFailOptions options, Detector detector,
             List<IndianaEvent> events)
         {
-            if (events.FirstOrDefault()?.EventCode == DataLoggerEnum.DetectorOff)
+            if (events.FirstOrDefault()?.EventCode == 81)
                 events.Insert(0, new IndianaEvent
                 {
                     Timestamp = options.Start,
-                    EventCode = DataLoggerEnum.DetectorOn,
+                    EventCode = 82,
                     EventParam = Convert.ToByte(detector.DetectorChannel),
                     LocationIdentifier = options.LocationIdentifier
                 });

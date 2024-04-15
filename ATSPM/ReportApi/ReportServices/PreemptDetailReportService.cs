@@ -4,7 +4,6 @@ using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -38,10 +37,10 @@ namespace ATSPM.ReportApi.ReportServices
                 //return BadRequest("Location not found");
                 return await Task.FromException<PreemptDetailResult>(new NullReferenceException("Location not found"));
             }
-            var codes = new List<DataLoggerEnum>();
+            var codes = new List<short>();
 
-            for (var i = 101; i <= 111; i++)
-                codes.Add((DataLoggerEnum)i);
+            for (short i = 101; i <= 111; i++)
+                codes.Add(i);
 
             var events = controllerEventLogRepository.GetLocationEventsByEventCodes(
                 parameter.LocationIdentifier,

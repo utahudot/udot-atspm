@@ -55,9 +55,9 @@ namespace ATSPM.DataApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetArchivedEvents(string locationIdentifier, [FromQuery] DateOnly start, [FromQuery] DateOnly end)
+        public IActionResult GetArchivedEvents(string locationIdentifier, DateOnly start, DateOnly end)
         {
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue || start > end)
+            if (start == DateOnly.MinValue || end == DateOnly.MinValue || end > start)
                 return BadRequest("Invalid date range");
 
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end);
@@ -94,9 +94,6 @@ namespace ATSPM.DataApi.Controllers
             if (deviceId == 0)
                 return BadRequest("Invalid device id");
 
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue)
-                return BadRequest("Invalid datetime range on start/end");
-
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end, deviceId);
 
             if (result.Count == 0)
@@ -129,9 +126,6 @@ namespace ATSPM.DataApi.Controllers
                 return BadRequest("Invalid date range");
 
             Type type;
-            //var eventCode = new List<int>();
-
-            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", LocationIdentifier, eventCode, start, end);
 
             try
             {
