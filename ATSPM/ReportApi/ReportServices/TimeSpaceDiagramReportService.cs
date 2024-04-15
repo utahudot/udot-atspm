@@ -4,7 +4,6 @@ using ATSPM.Application.Business.TimeSpaceDiagram;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +43,7 @@ namespace ATSPM.ReportApi.ReportServices
                 throw new Exception($"No locations present for route");
             }
 
-            var eventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOn, DataLoggerEnum.DetectorOff };
+            var eventCodes = new List<short>() { 82, 81 };
             var tasks = new List<Task<TimeSpaceDiagramResultForPhase>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
@@ -140,7 +139,7 @@ namespace ATSPM.ReportApi.ReportServices
             TimeSpaceDiagramOptions parameter,
             List<IndianaEvent> currentControllerEventLogs,
             PhaseDetail currentPhase,
-            List<DataLoggerEnum> eventCodes,
+            List<short> eventCodes,
             double distanceToNextLocation,
             double distanceToPreviousLocation,
             bool isFirstElement,

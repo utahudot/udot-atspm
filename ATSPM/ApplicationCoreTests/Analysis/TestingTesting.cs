@@ -60,7 +60,7 @@ namespace ApplicationCoreTests.Analysis
             _output = output;
         }
 
-        //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+        //IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second) where T : PreempDetailValueBase, new()
         //{
         //    var result = items.GroupBy(g => g.LocationIdentifier, (Location, l1) =>
         //    l1.GroupBy(g => g.EventParam, (preempt, l2) =>
@@ -204,14 +204,14 @@ namespace ApplicationCoreTests.Analysis
 
 
 
-            //var cycles = PreemptDetailRange<PreemptCycle1>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+            //var cycles = PreemptDetailRange<PreemptCycle1>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginExitInterval);
 
-            //var dwell = PreemptDetailRange<DwellTimeValue>(logs, DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
-            //var trackclear = PreemptDetailRange<TrackClearTimeValue>(logs, DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
-            //var timetoservice = PreemptDetailRange<TimeToServiceValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
-            //var delay = PreemptDetailRange<DelayTimeValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
-            //var gatedown = PreemptDetailRange<TimeToGateDownValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
-            //var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(logs, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+            //var dwell = PreemptDetailRange<DwellTimeValue>(logs, IndianaEnumerations.PreemptionBeginDwellService, IndianaEnumerations.PreemptionBeginExitInterval);
+            //var trackclear = PreemptDetailRange<TrackClearTimeValue>(logs, IndianaEnumerations.PreemptionBeginTrackClearance, IndianaEnumerations.PreemptionBeginDwellService);
+            //var timetoservice = PreemptDetailRange<TimeToServiceValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
+            //var delay = PreemptDetailRange<DelayTimeValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
+            //var gatedown = PreemptDetailRange<TimeToGateDownValue>(logs, IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
+            //var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(logs, IndianaEnumerations.PreemptCallInputOn, 110);
 
 
             //foreach (var c in cycles)
@@ -230,13 +230,13 @@ namespace ApplicationCoreTests.Analysis
 
             //var codes = new List<int>() { 102, 103, 104, 105, 107, 110, 111 };
 
-            //var cycle = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
-            //var dwell = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
-            //var trackclear = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
-            //var timetoservice = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
-            //var delay = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
-            //var gatdown = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
-            //var maxout = logs.TimeSpanFromConsecutiveCodes(DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+            //var cycle = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginExitInterval);
+            //var dwell = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptionBeginDwellService, IndianaEnumerations.PreemptionBeginExitInterval);
+            //var trackclear = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptionBeginTrackClearance, IndianaEnumerations.PreemptionBeginDwellService);
+            //var timetoservice = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptionBeginDwellService);
+            //var delay = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptEntryStarted);
+            //var gatdown = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, IndianaEnumerations.PreemptGateDownInputReceived);
+            //var maxout = logs.TimeSpanFromConsecutiveCodes(IndianaEnumerations.PreemptCallInputOn, 110);
 
             //var cycles = cycle.Select(s => new PreemptDetailResult()
             //{
