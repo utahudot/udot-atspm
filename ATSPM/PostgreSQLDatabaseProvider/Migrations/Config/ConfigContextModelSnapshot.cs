@@ -383,8 +383,9 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
+                        .IsUnicode(false)
                         .HasColumnType("character varying(15)")
-                        .HasDefaultValueSql("('10.0.0.1')");
+                        .HasDefaultValueSql("('0.0.0.0')");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");
@@ -1619,7 +1620,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 2, 7, 14, 31, 28, 886, DateTimeKind.Local).AddTicks(9695));
+                        .HasDefaultValue(new DateTime(2024, 4, 12, 14, 47, 56, 407, DateTimeKind.Local).AddTicks(1689));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1883,7 +1884,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.MeasureOption", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.MeasureType", "MeasureType")
-                        .WithMany()
+                        .WithMany("MeasureOptions")
                         .HasForeignKey("MeasureTypeId");
 
                     b.Navigation("MeasureType");
@@ -2056,6 +2057,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Navigation("Approaches");
 
                     b.Navigation("Devices");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.MeasureType", b =>
+                {
+                    b.Navigation("MeasureOptions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MenuItem", b =>
