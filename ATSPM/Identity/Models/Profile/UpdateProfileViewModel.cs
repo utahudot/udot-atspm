@@ -20,6 +20,9 @@ namespace Identity.Models.Profile
         [EmailAddress]
         public string Email { get; set; }
 
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
         // Include other profile properties as needed
     }
 }

@@ -1,4 +1,5 @@
-﻿using Identity.Models.Token;
+﻿using Identity.Business.Tokens;
+using Identity.Models.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,12 @@ namespace Identity.Controllers
     public class TokenController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IConfiguration configuration;
+        private readonly TokenService _tokenService;
 
-        public TokenController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public TokenController(UserManager<ApplicationUser> userManager, TokenService tokenService)
         {
             _userManager = userManager;
-            this.configuration = configuration;
+            _tokenService = tokenService;
         }
 
         [HttpPost("verify/reset")]
@@ -23,14 +24,14 @@ namespace Identity.Controllers
         {
             if (string.IsNullOrEmpty(model.Token))
             {
-                return BadRequest(new { message = "Token is required." });
+                return BadRequest(new { Message = "Token is required." });
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Username);
+            var user = await _userManager.FindByNameAsync(model.Username);
 
             if (user == null)
             {
-                return NotFound(new { message = "User not found." });
+                return Unauthorized(new { Message = "User not found." });
             }
 
             // Verify the reset token
@@ -38,21 +39,21 @@ namespace Identity.Controllers
 
             if (result)
             {
-                return Ok(new { message = "OK" });
+                var token = await _tokenService.GenerateJwtTokenAsync(user);
+                return Ok(new { Token = token, Message = "OK" });
             }
             else
             {
-                return Unauthorized(new { message = "Unauthorized" });
+                return Unauthorized(new { Message = "Unauthorized" });
             }
         }
 
-        [Authorize("RequireValidToken")]
         [HttpPost("verify/connect")]
         public async Task<IActionResult> VerifyConnectToken(VerifyConnectTokenViewModel model)
         {
             if (string.IsNullOrEmpty(model.Username))
             {
-                return BadRequest(new { message = "Username is required." });
+                return BadRequest(new { Message = "Username is required." });
             }
 
             var user = await _userManager.FindByEmailAsync(model.Username);

@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models;
+﻿using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using ATSPM.Domain.Specifications;
 using System;
@@ -40,35 +39,35 @@ namespace ATSPM.Application.Specifications
 
     public class IndianaLogCodeAndParamSpecification : BaseSpecification<IndianaEvent>
     {
-        public IndianaLogCodeAndParamSpecification(DataLoggerEnum eventCode) : base()
+        public IndianaLogCodeAndParamSpecification(short eventCode) : base()
         {
             base.Criteria = c => c.EventCode == eventCode;
 
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public IndianaLogCodeAndParamSpecification(DataLoggerEnum eventCode, int param) : base()
+        public IndianaLogCodeAndParamSpecification(short eventCode, int param) : base()
         {
             base.Criteria = c => c.EventCode == eventCode && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public IndianaLogCodeAndParamSpecification(IEnumerable<DataLoggerEnum> eventCodes) : base()
+        public IndianaLogCodeAndParamSpecification(IEnumerable<short> eventCodes) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode);
 
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public IndianaLogCodeAndParamSpecification(IEnumerable<DataLoggerEnum> eventCodes, int param) : base()
+        public IndianaLogCodeAndParamSpecification(IEnumerable<short> eventCodes, int param) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && c.EventParam == param;
 
             ApplyOrderBy(o => o.Timestamp);
         }
 
-        public IndianaLogCodeAndParamSpecification(IEnumerable<DataLoggerEnum> eventCodes, IEnumerable<int> paramCodes) : base()
+        public IndianaLogCodeAndParamSpecification(IEnumerable<short> eventCodes, IEnumerable<int> paramCodes) : base()
         {
             base.Criteria = c => eventCodes != null && eventCodes.Contains(c.EventCode) && paramCodes != null && paramCodes.Contains(c.EventParam);
 

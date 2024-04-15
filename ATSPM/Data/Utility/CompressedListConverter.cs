@@ -11,12 +11,12 @@ namespace ATSPM.Data.Utility
     /// to/from gzip compressed json
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class CompressedListComverter<T> : ValueConverter<IEnumerable<T>, byte[]>
+    internal class CompressedListConverter<T> : ValueConverter<IEnumerable<T>, byte[]>
     {
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public CompressedListComverter() : base(
+        public CompressedListConverter() : base(
             v => Newtonsoft.Json.JsonConvert.SerializeObject(v, new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Arrays,
