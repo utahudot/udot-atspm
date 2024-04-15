@@ -60,7 +60,10 @@ namespace Identity.Controllers
             user.LastName = model.LastName;
             user.Email = model.Email;
             user.Agency = model.Agency;
-            // Update other profile properties as needed
+            if(model.PhoneNumber != null)
+            {
+                user.PhoneNumber = model.PhoneNumber;
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
