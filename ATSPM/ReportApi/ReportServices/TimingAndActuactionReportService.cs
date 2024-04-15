@@ -4,7 +4,6 @@ using ATSPM.Application.Business.TimingAndActuation;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
@@ -58,15 +57,15 @@ namespace ATSPM.ReportApi.ReportServices
 
             foreach (var phase in phaseDetails)
             {
-                var eventCodes = new List<DataLoggerEnum> { };
+                var eventCodes = new List<short> { };
                 if (parameter.ShowAdvancedCount || parameter.ShowAdvancedDilemmaZone || parameter.ShowLaneByLaneCount || parameter.ShowStopBarPresence)
-                    eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn });
+                    eventCodes.AddRange(new List<short> { 81, 82 });
                 if (parameter.ShowPedestrianActuation)
-                    eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn });
+                    eventCodes.AddRange(new List<short> { 89, 90 });
                 if (parameter.ShowPedestrianIntervals)
                     eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
-                    eventCodes.AddRange(parameter.PhaseEventCodesList.Select(e => (DataLoggerEnum)e));
+                    eventCodes.AddRange(parameter.PhaseEventCodesList);
                 tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
             }
             var results = await Task.WhenAll(tasks);
@@ -86,7 +85,7 @@ namespace ATSPM.ReportApi.ReportServices
             TimingAndActuationsOptions options,
             List<IndianaEvent> controllerEventLogs,
             PhaseDetail phaseDetail,
-            List<DataLoggerEnum> eventCodes,
+            List<short> eventCodes,
             bool usePermissivePhase)
         {
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));

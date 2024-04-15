@@ -69,12 +69,12 @@ namespace WatchDog.Services
 
         private async Task CheckDetectors(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors)
         {
-            var detectorEventCodes = new List<DataLoggerEnum> { DataLoggerEnum.DetectorOn, DataLoggerEnum.DetectorOff };
+            var detectorEventCodes = new List<short> { 82, 81 };
             CheckForUnconfiguredDetectors(location, options, locationEvents, errors, detectorEventCodes);
             CheckForLowDetectorHits(location, options, locationEvents, errors, detectorEventCodes);
         }
 
-        private void CheckForLowDetectorHits(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<DataLoggerEnum> detectorEventCodes)
+        private void CheckForLowDetectorHits(Location location, LoggingOptions options, List<IndianaEvent> locationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)
         {
             var detectors = location.GetDetectorsForLocationThatSupportMetric(6);
             //Parallel.ForEach(detectors, options, detector =>
@@ -121,7 +121,7 @@ namespace WatchDog.Services
                 }
         }
 
-        private static void CheckForUnconfiguredDetectors(Location Location, LoggingOptions options, List<IndianaEvent> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<DataLoggerEnum> detectorEventCodes)
+        private static void CheckForUnconfiguredDetectors(Location Location, LoggingOptions options, List<IndianaEvent> LocationEvents, ConcurrentBag<WatchDogLogEvent> errors, List<short> detectorEventCodes)
         {
             var detectorChannelsFromEvents = LocationEvents.Where(e => detectorEventCodes.Contains(e.EventCode)).Select(e => e.EventParam).Distinct().ToList();
             var detectorChannelsFromDetectors = Location.GetDetectorsForLocation().Select(d => d.DetectorChannel).Distinct().ToList();
@@ -155,36 +155,36 @@ namespace WatchDog.Services
             options.AnalysisEnd).ToList();
             //Do we want to use the ped events extension here?
             var pedEvents = LocationEvents.Where(e =>
-                new List<DataLoggerEnum>
+                new List<short>
                 {
-                    DataLoggerEnum.PedestrianBeginWalk,
-                    DataLoggerEnum.PedestrianBeginSolidDontWalk
+                    21,
+                    23
                 }.Contains(e.EventCode)
                 && e.Timestamp >= options.AnalysisStart
                 && e.Timestamp <= options.AnalysisEnd).ToList();
             var cycleEvents = LocationEvents.Where(e =>
-                new List<DataLoggerEnum>
+                new List<short>
                 {
-                    DataLoggerEnum.PhaseBeginGreen,
-                    DataLoggerEnum.PhaseBeginYellowChange,
-                    DataLoggerEnum.PhaseEndRedClearance
+                    1,
+                    8,
+                    11
                 }.Contains(e.EventCode)
                 && e.Timestamp >= options.AnalysisStart
                 && e.Timestamp <= options.AnalysisEnd).ToList();
-            var splitsEventCodes = new List<DataLoggerEnum>();
-            for (var i = 130; i <= 149; i++)
-                splitsEventCodes.Add((DataLoggerEnum)i);
+            var splitsEventCodes = new List<short>();
+            for (short i = 130; i <= 149; i++)
+                splitsEventCodes.Add(i);
             var splitsEvents = LocationEvents.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= options.AnalysisStart
                 && e.Timestamp <= options.AnalysisEnd).ToList();
             var terminationEvents = LocationEvents.Where(e =>
-            new List<DataLoggerEnum>
+            new List<short>
             {
-                DataLoggerEnum.PhaseGapOut,
-                DataLoggerEnum.PhaseMaxOut,
-                DataLoggerEnum.PhaseForceOff,
-                DataLoggerEnum.PhaseGreenTermination
+                4,
+                5,
+                6,
+                7
             }.Contains(e.EventCode)
             && e.Timestamp >= options.AnalysisStart
             && e.Timestamp <= options.AnalysisEnd).ToList();
@@ -257,7 +257,7 @@ namespace WatchDog.Services
 
         private void CheckForUnconfiguredApproaches(Location Location, LoggingOptions options, ConcurrentBag<WatchDogLogEvent> errors, List<IndianaEvent> cycleEvents)
         {
-            var phasesInUse = cycleEvents.Where(d => d.EventCode == DataLoggerEnum.PhaseBeginGreen).Select(d => d.EventParam).Distinct();
+            var phasesInUse = cycleEvents.Where(d => d.EventCode == 1).Select(d => d.EventParam).Distinct();
             foreach (var phaseNumber in phasesInUse)
             {
                 var phase = phaseService.GetPhases(Location).Find(p => p.PhaseNumber == phaseNumber);
@@ -309,7 +309,7 @@ namespace WatchDog.Services
         private async Task CheckForForceOff(AnalysisPhaseData phase, Approach approach, LoggingOptions options, ConcurrentBag<WatchDogLogEvent> errors)
         {
             if (phase.PercentForceOffs > options.PercentThreshold &&
-                phase.TerminationEvents.Where(t => t.EventCode != DataLoggerEnum.PhaseGreenTermination).Count() > options.MinPhaseTerminations)
+                phase.TerminationEvents.Where(t => t.EventCode != 7).Count() > options.MinPhaseTerminations)
             {
                 var error = new WatchDogLogEvent
                 (
