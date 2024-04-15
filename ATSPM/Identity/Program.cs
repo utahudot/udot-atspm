@@ -6,6 +6,8 @@ using Identity.Business.EmailSender;
 using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using ATSPM.Identity.Business.Users;
+
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -28,6 +30,8 @@ builder.Host.ConfigureServices((host, services) =>
     services.AddScoped<TokenService, TokenService>();
     services.AddScoped<RoleManager<IdentityRole>>();
     services.AddScoped<UserManager<ApplicationUser>>();
+    services.AddScoped<UsersService>();
+
 
     services.AddControllers();
 

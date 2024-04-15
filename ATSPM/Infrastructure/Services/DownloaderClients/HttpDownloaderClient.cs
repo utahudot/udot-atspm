@@ -22,7 +22,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
 
         public bool IsConnected => Client != null && Client.BaseAddress.Host.IsValidIPAddress();
 
-        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2, int operationTImeout = 2, CancellationToken token = default)
+        public async Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
@@ -31,7 +31,7 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                 //if (string.IsNullOrEmpty(credentials.UserName) || string.IsNullOrEmpty(credentials.Password) || string.IsNullOrEmpty(credentials.Domain))
                 //    throw new ArgumentNullException("Network Credentials can't be null");
 
-                Client ??= new HttpClient() { Timeout = TimeSpan.FromSeconds(connectionTimeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
+                Client ??= new HttpClient() { Timeout = TimeSpan.FromMilliseconds(connectionTimeout), BaseAddress = new Uri($"http://{credentials.Domain}/") };
 
                 Client.DefaultRequestHeaders.Accept.Clear();
                 Client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/xml"));

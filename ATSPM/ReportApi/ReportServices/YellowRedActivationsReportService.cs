@@ -4,7 +4,6 @@ using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
@@ -113,21 +112,21 @@ namespace ATSPM.ReportApi.ReportServices
             return viewModel;
         }
 
-        private List<DataLoggerEnum> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
+        private List<short> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
         {
             return useOverlap
-                ? new List<DataLoggerEnum>
+                ? new List<short>
                 {
-                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance
+                    62,
+                    63,
+                    64
                 }
-                : new List<DataLoggerEnum>
+                : new List<short>
                 {
-                    DataLoggerEnum.PhaseBeginGreen,
-                    DataLoggerEnum.PhaseBeginYellowChange,
-                    DataLoggerEnum.PhaseEndYellowChange,
-                    DataLoggerEnum.PhaseEndRedClearance
+                    1,
+                    8,
+                    9,
+                    11
                 };
         }
     }
