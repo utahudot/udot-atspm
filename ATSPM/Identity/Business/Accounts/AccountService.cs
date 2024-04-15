@@ -32,7 +32,7 @@ namespace Identity.Business.Accounts
                 return await Login(user.Email, password);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(),
+            return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(),
                 createUserResult.Errors.First().Description);
         }
 
@@ -42,7 +42,7 @@ namespace Identity.Business.Accounts
             var user = await _signInManager.UserManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(), "User not found");
+                return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "User not found");
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
@@ -51,10 +51,10 @@ namespace Identity.Business.Accounts
             {
                 var token = await tokenService.GenerateJwtTokenAsync(user);
                 var viewClaims = await GetViewClaimsForUser(user);
-                return new AccountResult(user.UserName, StatusCodes.Status200OK, token, viewClaims, null);
+                return new AccountResult( StatusCodes.Status200OK, token, viewClaims, null);
             }
 
-            return new AccountResult("", StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
+            return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
         }
 
         private async Task<List<string>> GetViewClaimsForUser(ApplicationUser user)
