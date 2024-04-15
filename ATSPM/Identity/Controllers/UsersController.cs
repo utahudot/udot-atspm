@@ -72,7 +72,7 @@ namespace Identity.Controllers
         }
 
         [HttpPost("role/assign")]
-        //[Authorize(Policy = "CanEditUsers")]
+        [Authorize(Policy = "CanEditUsers")]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
             if (model.UserId == null || model.RoleName == null || !ModelState.IsValid)
