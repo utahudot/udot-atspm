@@ -13,10 +13,12 @@ namespace Identity.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly UsersService usersService;
 
-        public UsersController(UserManager<ApplicationUser> userManager)
+        public UsersController(UserManager<ApplicationUser> userManager, UsersService usersService)
         {
             this.userManager = userManager;
+            this.usersService = usersService;
         }
 
         [HttpGet]
@@ -74,7 +76,7 @@ namespace Identity.Controllers
 
         [HttpPost("update")]
         [Authorize(Policy = "CanEditUsers")]
-        public async Task<IActionResult> updateUser(UserDTO model, [FromServices] UsersService usersService)
+        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
             if (model == null || !ModelState.IsValid)
             {

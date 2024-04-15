@@ -35,8 +35,8 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
@@ -47,7 +47,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests that only events with a LocationIdentifier matching the test Location are forwarded
+        /// Tests that only events with a locationIdentifier matching the test Location are forwarded
         /// </summary>
         [Fact]
         [Trait(nameof(AggregateDetectorEvents), "Location")]
@@ -55,10 +55,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = "1001", Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
@@ -90,10 +90,10 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = 100},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = 100},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:01:01.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:02:02.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:03:03.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = 100},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:04:04.5"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = 100},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
@@ -117,7 +117,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         }
 
         /// <summary>
-        /// Tests that only DataLoggerEnum.DetectorOn events are forwarded
+        /// Tests that only IndianaEnumerations.VehicleDetectorOn events are forwarded
         /// </summary>
         [Fact]
         [Trait(nameof(AggregateDetectorEvents), "Event Code Filter")]
@@ -160,9 +160,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
         {
             var testLogs = new List<ControllerEventLog>
             {
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);
@@ -195,14 +195,14 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
             var testLogs = new List<ControllerEventLog>
             {
                 //group a
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:00:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:05:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:10:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
 
                 //group b
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:15:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:20:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
-                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:25:00.0"), EventCode = (int)DataLoggerEnum.DetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:15:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:20:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
+                new ControllerEventLog() { SignalIdentifier = _testLocation.LocationIdentifier, Timestamp = DateTime.Parse("4/17/2023 00:25:00.0"), EventCode = (int)IndianaEnumerations.VehicleDetectorOn, EventParam = _testDetector.DetectorChannel},
             }.AsEnumerable();
 
             var testData = Tuple.Create(_testDetector, _testDetector.DetectorChannel, testLogs);

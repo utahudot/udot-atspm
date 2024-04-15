@@ -22,11 +22,11 @@ namespace ATSPM.Application.Analysis.Common
 
         public List<ControllerEventLog> TerminationEvents { get; set; } = new List<ControllerEventLog>();
 
-        public IReadOnlyList<ITimestamp> GapOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGapOut).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> MaxOuts => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseMaxOut).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> ForceOffs => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseForceOff).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> PedWalkBegins => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PedestrianBeginWalk).Cast<ITimestamp>().ToList();
-        public IReadOnlyList<ITimestamp> UnknownTerminations => TerminationEvents.Where(w => w.EventCode == (int)DataLoggerEnum.PhaseGreenTermination).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> GapOuts => TerminationEvents.Where(w => w.EventCode == (int)4).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> MaxOuts => TerminationEvents.Where(w => w.EventCode == (int)5).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> ForceOffs => TerminationEvents.Where(w => w.EventCode == (int)6).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> PedWalkBegins => TerminationEvents.Where(w => w.EventCode == (int)21).Cast<ITimestamp>().ToList();
+        public IReadOnlyList<ITimestamp> UnknownTerminations => TerminationEvents.Where(w => w.EventCode == (int)IndianaEnumerations.PhaseGreenTermination).Cast<ITimestamp>().ToList();
 
         public override string ToString()
         {

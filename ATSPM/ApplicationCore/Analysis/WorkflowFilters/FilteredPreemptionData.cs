@@ -7,14 +7,14 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PreemptCallInputOn"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptGateDownInputReceived"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptCallInputOff"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptEntryStarted"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginTrackClearance"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginDwellService"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionMaxPresenceExceeded"/></item>
-    /// <item><see cref="DataLoggerEnum.PreemptionBeginExitInterval"/></item>
+    /// <item><see cref="102"/></item>
+    /// <item><see cref="103"/></item>
+    /// <item><see cref="104"/></item>
+    /// <item><see cref="105"/></item>
+    /// <item><see cref="106"/></item>
+    /// <item><see cref="107"/></item>
+    /// <item><see cref="110"/></item>
+    /// <item><see cref="111"/></item>
     /// </list>
     /// </summary>
     public class FilteredPreemptionData : FilterEventCodeLocationBase
@@ -22,14 +22,14 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPreemptionData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PreemptCallInputOn);
-            filteredList.Add((int)DataLoggerEnum.PreemptGateDownInputReceived);
-            filteredList.Add((int)DataLoggerEnum.PreemptCallInputOff);
-            filteredList.Add((int)DataLoggerEnum.PreemptEntryStarted);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginTrackClearance);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginDwellService);
-            filteredList.Add((int)DataLoggerEnum.PreemptionMaxPresenceExceeded);
-            filteredList.Add((int)DataLoggerEnum.PreemptionBeginExitInterval);
+            filteredList.Add((int)102);
+            filteredList.Add((int)103);
+            filteredList.Add((int)104);
+            filteredList.Add((int)105);
+            filteredList.Add((int)106);
+            filteredList.Add((int)107);
+            filteredList.Add((int)110);
+            filteredList.Add((int)111);
         }
     }
 }
