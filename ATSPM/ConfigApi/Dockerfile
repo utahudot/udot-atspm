@@ -12,6 +12,11 @@ COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
+COPY ["MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
+COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
+COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
+COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
+COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
 RUN dotnet restore "ConfigApi/ConfigApi.csproj"
 COPY . .
 WORKDIR "/src/ConfigApi"
@@ -24,3 +29,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ConfigApi.dll"]
+
+
+
+
+
