@@ -76,7 +76,7 @@ namespace Identity.Controllers
 
         [HttpPost("update")]
         [Authorize(Policy = "CanEditUsers")]
-        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
+        public async Task<IActionResult> AssignRole(UserDTO model)
         {
             if (model == null || !ModelState.IsValid)
             {
