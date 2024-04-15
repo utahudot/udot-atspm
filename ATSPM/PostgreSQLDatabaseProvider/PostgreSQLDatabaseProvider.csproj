@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\Aggregation\" />
+    <Folder Include="Migrations\Config\" />
   </ItemGroup>
 
 </Project>

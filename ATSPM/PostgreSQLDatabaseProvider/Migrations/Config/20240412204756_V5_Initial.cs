@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 2, 7, 14, 31, 28, 886, DateTimeKind.Local).AddTicks(9695)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 4, 12, 14, 47, 56, 407, DateTimeKind.Local).AddTicks(1689)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -606,7 +606,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LoggingEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    Ipaddress = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
+                    Ipaddress = table.Column<string>(type: "character varying(15)", unicode: false, maxLength: 15, nullable: false, defaultValueSql: "('0.0.0.0')"),
                     DeviceStatus = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false, defaultValue: "Unknown"),
                     DeviceType = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false, defaultValue: "Unknown"),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
