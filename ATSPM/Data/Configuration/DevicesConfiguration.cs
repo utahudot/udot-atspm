@@ -18,7 +18,7 @@ namespace ATSPM.Data.Configuration
             builder.Property(e => e.Ipaddress)
                 .IsRequired()
                 .HasMaxLength(15)
-                .HasDefaultValueSql("('10.0.0.1')");
+                .HasDefaultValueSql("('0.0.0.0')");
 
             builder.Property(e => e.DeviceStatus)
                 .HasMaxLength(Enum.GetNames(typeof(DeviceStatus)).Max(m => m.Length))

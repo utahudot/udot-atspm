@@ -7,10 +7,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianBeginChangeInterval"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginWalk"/></item>
-    /// <item><see cref="DataLoggerEnum.PedestrianOverlapBeginClearance"/></item>
+    /// <item><see cref="21"/></item>
+    /// <item><see cref="22"/></item>
+    /// <item><see cref="67"/></item>
+    /// <item><see cref="68"/></item>
     /// </list>
     /// </summary>
     public class FilteredPedPhaseData : FilterEventCodeBase
@@ -18,10 +18,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPedPhaseData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginWalk);
-            filteredList.Add((int)DataLoggerEnum.PedestrianBeginChangeInterval);
-            filteredList.Add((int)DataLoggerEnum.PedestrianOverlapBeginWalk);
-            filteredList.Add((int)DataLoggerEnum.PedestrianOverlapBeginClearance);
+            filteredList.Add((int)21);
+            filteredList.Add((int)22);
+            filteredList.Add((int)67);
+            filteredList.Add((int)68);
         }
     }
 }
