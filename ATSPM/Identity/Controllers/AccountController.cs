@@ -53,7 +53,7 @@ namespace Identity.Controllers
             }
             if (result.Code == StatusCodes.Status500InternalServerError)
             {
-                return new ObjectResult(result) { StatusCode = result.Code };
+                return StatusCode(StatusCodes.Status500InternalServerError, result);
             }
             //check agencyExists
             // if no, then create user with admin roles
@@ -74,7 +74,7 @@ namespace Identity.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest( new { Error = "Not a valid Request"});
             }
 
             var authenticationResult = await _accountService.Login(model.Email, model.Password, model.RememberMe);
@@ -83,17 +83,17 @@ namespace Identity.Controllers
             {
                 // Assuming the authenticationResult includes the generated JWT token
                 var token = authenticationResult.Token;
-                var viewClaims = authenticationResult.Claims;
 
                 if (string.IsNullOrEmpty(token))
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Error generating token.");
+                    authenticationResult.Message = "Error generating token.";
+                    return StatusCode(StatusCodes.Status500InternalServerError, authenticationResult);
                 }
 
-                return Ok(new { AccessToken = token, ViewClaims = viewClaims });
+                return Ok(authenticationResult);
             }
 
-            return BadRequest(authenticationResult.Error);
+            return BadRequest(authenticationResult);
         }
 
 
@@ -146,7 +146,7 @@ namespace Identity.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { Error = "Not a valid Request"});
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -187,7 +187,7 @@ namespace Identity.Controllers
             //    "Account",
             //    new { email = user.Email, token },
             //    protocol: HttpContext.Request.Scheme);
-            var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&code=" + token;
+            var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&token=" + token;
 
             await _emailService.SendEmailAsync(
                 model.Email,
@@ -197,6 +197,26 @@ namespace Identity.Controllers
             // You can return a success message or any other relevant information
             return Ok();
         }
-    }
 
+        [Authorize]
+        [HttpPost("verifyUserPasswordReset")]
+        public async Task<IActionResult> VerifyUserPasswordReset(VerifyUserPasswordResetViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("User not found");
+            }
+
+            var isUserVerified = await _userManager.CheckPasswordAsync(user, model.Password);
+
+            if (isUserVerified)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                return Ok( new {token, Username = user.UserName});
+            }
+
+            return BadRequest(new {Message = "Password provided doesn't match"});
+        }
+    }
 }
