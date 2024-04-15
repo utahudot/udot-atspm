@@ -13,9 +13,9 @@ namespace ATSPM.Application.Business.LeftTurnGapAnalysis
 {
     public class LeftTurnGapAnalysisService
     {
-        public const DataLoggerEnum EVENT_GREEN = DataLoggerEnum.PhaseBeginGreen;
-        public const DataLoggerEnum EVENT_RED = DataLoggerEnum.PhaseBeginRedClearance;
-        public const DataLoggerEnum EVENT_DET = DataLoggerEnum.DetectorOff;
+        public const short EVENT_GREEN = 1;
+        public const short EVENT_RED = 10;
+        public const short EVENT_DET = 81;
 
         public LeftTurnGapAnalysisService()
         {

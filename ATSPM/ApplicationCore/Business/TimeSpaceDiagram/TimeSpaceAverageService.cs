@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TimingAndActuation;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
@@ -11,16 +10,16 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
     public class TimeSpaceAverageService
     {
         private readonly CycleService _cycleService;
-        private readonly Dictionary<int, DataLoggerEnum> phaseToProgramPhases = new Dictionary<int, DataLoggerEnum>()
+        private readonly Dictionary<int, short> phaseToProgramPhases = new Dictionary<int, short>()
         {
-            { 1, DataLoggerEnum.Split1Change },
-            { 2, DataLoggerEnum.Split2Change },
-            { 3, DataLoggerEnum.Split3Change },
-            { 4, DataLoggerEnum.Split4Change },
-            { 5, DataLoggerEnum.Split5Change },
-            { 6, DataLoggerEnum.Split6Change },
-            { 7, DataLoggerEnum.Split7Change },
-            { 8, DataLoggerEnum.Split8Change },
+            { 1, 134 },
+            { 2, 135 },
+            { 3, 136 },
+            { 4, 137 },
+            { 5, 138 },
+            { 6, 139 },
+            { 7, 140 },
+            { 8, 141},
         };
 
         public TimeSpaceAverageService(CycleService cycleService)
@@ -49,7 +48,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
             var (selectedSequence, selectedPhase, sequenceAdjustment) = CalculateSelectedSequenceAdjustment(topSequence,
                 bottomSequence,
-                programSplits, 
+                programSplits,
                 topSequenceIndex,
                 bottomSequenceIndex,
                 phaseDetail);

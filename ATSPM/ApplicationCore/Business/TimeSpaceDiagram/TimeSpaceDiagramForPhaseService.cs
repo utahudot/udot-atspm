@@ -256,23 +256,23 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             arrivalTime = currentDetectorOn.AddSeconds(timeToTravel);
         }
 
-        public List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
+        public List<short> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<DataLoggerEnum>
+            var phaseEventCodesForCycles = new List<short>
             {
-                DataLoggerEnum.PhaseBeginGreen,
-                DataLoggerEnum.PhaseBeginYellowChange,
-                DataLoggerEnum.PhaseEndYellowChange
+                1,
+                8,
+                9
             };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<DataLoggerEnum>
+                phaseEventCodesForCycles = new List<short>
                 {
-                    DataLoggerEnum.OverlapBeginGreen,
-                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance,
-                    DataLoggerEnum.OverlapOffInactivewithredindication
+                    61,
+                    62,
+                    63,
+                    64,
+                    65
                 };
             }
 
@@ -286,7 +286,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             out List<GreenToGreenCycle> cycles)
         {
 
-            List<DataLoggerEnum> cycleEventCodes = TimeSpaceService.GetCycleCodes(phaseDetail.UseOverlap);
+            List<short> cycleEventCodes = TimeSpaceService.GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
@@ -342,7 +342,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             var DetEvents = new List<TimeSpaceDetectorEventDto>();
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType));
             //  82 is on, 81 is off
-            var detectorActivationCodes = new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn };
+            var detectorActivationCodes = new List<short> { 81, 82 };
             foreach (var detector in localSortedDetectors)
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
@@ -357,21 +357,21 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
                         var detectorEvents = new List<TimeSpaceDetectorEventDto>();
                         for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i == 0 && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
+                            if (i == 0 && filteredEvents[i].EventCode == 81)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                    filteredEvents[i].Timestamp,
                                    approach.Mph ?? 0,
                                    detector.DistanceFromStopBar ?? 0));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode != DataLoggerEnum.DetectorOff)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode != 81)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i].Timestamp,
                                     approach.Mph ?? 0,
                                     detector.DistanceFromStopBar ?? 0));
                             }
-                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new TimeSpaceDetectorEventDto(filteredEvents[i].Timestamp,
                                     filteredEvents[i + 1].Timestamp,

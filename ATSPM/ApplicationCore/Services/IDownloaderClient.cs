@@ -26,7 +26,7 @@ namespace ATSPM.Application.Services
         /// <param name="operationTImeout">Timeout for operations</param>
         /// <param name="token">Cancellation token</param>
         /// <returns></returns>
-        Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 1000, int operationTImeout = 1000, CancellationToken token = default);
+        Task ConnectAsync(NetworkCredential credentials, int connectionTimeout = 2000, int operationTImeout = 2000, CancellationToken token = default);
 
         /// <summary>
         /// List files in directory

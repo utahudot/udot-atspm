@@ -8,9 +8,9 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
     {
         public FilterPriorityDataTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)DataLoggerEnum.TSPCheckIn);
-            filteredList.Add((int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen);
-            filteredList.Add((int)DataLoggerEnum.TSPAdjustmenttoExtendGreen);
+            filteredList.Add((int)112);
+            filteredList.Add((int)113);
+            filteredList.Add((int)114);
 
             sut = new FilterPriorityData();
         }
