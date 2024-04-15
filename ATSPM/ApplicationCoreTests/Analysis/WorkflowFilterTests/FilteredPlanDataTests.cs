@@ -8,7 +8,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
     {
         public FilteredPlanDataTests(ITestOutputHelper output) : base(output)
         {
-            filteredList.Add((int)DataLoggerEnum.CoordPatternChange);
+            filteredList.Add((int)IndianaEnumerations.CoordPatternChange);
 
             sut = new FilteredPlanData();
         }

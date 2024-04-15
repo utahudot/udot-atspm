@@ -11,8 +11,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateTrackClearTime(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = DataLoggerEnum.PreemptionBeginTrackClearance;
-            second = DataLoggerEnum.PreemptionBeginDwellService;
+            first = 106;
+            second = 107;
         }
     }
 }
