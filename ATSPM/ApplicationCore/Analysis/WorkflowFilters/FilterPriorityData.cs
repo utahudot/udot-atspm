@@ -7,9 +7,9 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.TSPCheckIn"/></item>
-    /// <item><see cref="DataLoggerEnum.TSPAdjustmenttoEarlyGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.TSPAdjustmenttoExtendGreen"/></item>
+    /// <item><see cref="112"/></item>
+    /// <item><see cref="113"/></item>
+    /// <item><see cref="114"/></item>
     /// </list>
     /// </summary>
     public class FilterPriorityData : FilterEventCodeLocationBase
@@ -17,9 +17,9 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilterPriorityData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.TSPCheckIn);
-            filteredList.Add((int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen);
-            filteredList.Add((int)DataLoggerEnum.TSPAdjustmenttoExtendGreen);
+            filteredList.Add((int)112);
+            filteredList.Add((int)113);
+            filteredList.Add((int)114);
         }
     }
 }

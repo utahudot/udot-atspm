@@ -32,12 +32,12 @@ namespace ATSPM.Infrastructure.Services.DownloaderClients
                 credentials.UserName,
                 new PasswordAuthenticationMethod(credentials.UserName, credentials.Password))
                 {
-                    Timeout = TimeSpan.FromSeconds(connectionTimeout)
+                    Timeout = TimeSpan.FromMilliseconds(connectionTimeout)
                 };
 
                 Client ??= new SftpClientWrapper(connectionInfo);
 
-                Client.OperationTimeout = TimeSpan.FromSeconds(operationTImeout);
+                Client.OperationTimeout = TimeSpan.FromMilliseconds(operationTImeout);
 
                 //await Task.Run(() => Client.Connect(), token);
                 Client.Connect();

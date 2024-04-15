@@ -49,16 +49,16 @@ namespace ATSPM.Application.Analysis.Workflows
 
     //    protected override Task<IReadOnlyList<PreemptCycle>> Process(IEnumerable<ControllerEventLog> input, CancellationToken cancelToken = default)
     //    {
-    //        var cycles = PreemptDetailRange<PreemptCycle>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginExitInterval);
+    //        var cycles = PreemptDetailRange<PreemptCycle>(input, 102, 111);
 
-    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptCallInputOff, DataLoggerEnum.PreemptionBeginExitInterval);
+    //        //var inputon = PreemptDetailRange<DwellTimeValue>(input, 104, 111);
 
-    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, DataLoggerEnum.PreemptionBeginDwellService, DataLoggerEnum.PreemptionBeginExitInterval);
-    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, DataLoggerEnum.PreemptionBeginTrackClearance, DataLoggerEnum.PreemptionBeginDwellService);
-    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionBeginDwellService);
-    //        var delay = PreemptDetailRange<DelayTimeValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptEntryStarted);
-    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptGateDownInputReceived);
-    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, DataLoggerEnum.PreemptCallInputOn, DataLoggerEnum.PreemptionMaxPresenceExceeded);
+    //        var dwell = PreemptDetailRange<DwellTimeValue>(input, 107, 111);
+    //        var trackclear = PreemptDetailRange<TrackClearTimeValue>(input, 106, 107);
+    //        var timetoservice = PreemptDetailRange<TimeToServiceValue>(input, 102, 107);
+    //        var delay = PreemptDetailRange<DelayTimeValue>(input, 102, 105);
+    //        var gatedown = PreemptDetailRange<TimeToGateDownValue>(input, 102, 103);
+    //        var maxout = PreemptDetailRange<TimeToCallMaxOutValue>(input, 102, 110);
 
     //        var result = new List<PreemptCycle>();
 
@@ -92,7 +92,7 @@ namespace ATSPM.Application.Analysis.Workflows
     //        return Task.FromResult<IReadOnlyList<PreemptCycle>>(result);
     //    }
 
-    //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second) where T : PreempDetailValueBase, new()
+    //    private IEnumerable<T> PreemptDetailRange<T>(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second) where T : PreempDetailValueBase, new()
     //    {
     //        var result = items.GroupBy(g => g.LocationIdentifier, (Location, l1) =>
     //        l1.GroupBy(g => g.EventParam, (preempt, l2) =>
@@ -444,7 +444,7 @@ namespace ATSPM.Application.Analysis.Workflows
             return cycle;
         }
 
-        private IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable<ControllerEventLog> items, DataLoggerEnum first, DataLoggerEnum second)
+        private IEnumerable<StartEndRange> TimeSpanFromConsecutiveCodes(IEnumerable<ControllerEventLog> items, IndianaEnumerations first, IndianaEnumerations second)
         {
             var preFilter = items.OrderBy(o => o.Timestamp)
                 .Where(w => w.EventCode == (int)first || w.EventCode == (int)second)

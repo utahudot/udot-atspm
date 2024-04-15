@@ -22,7 +22,7 @@ namespace ATSPM.Domain.Workflows
         protected DataflowBlockOptions blockOptions;
 
         /// <inheritdoc/>
-        public WorkflowBase(DataflowBlockOptions dataflowBlockOptions = default)
+        public WorkflowBase(DataflowBlockOptions dataflowBlockOptions = default) :base(true)
         {
             blockOptions = dataflowBlockOptions ?? new();
             blockOptions.NameFormat = GetType().Name;

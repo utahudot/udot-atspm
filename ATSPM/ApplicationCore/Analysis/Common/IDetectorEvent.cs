@@ -6,7 +6,7 @@ using System;
 namespace ATSPM.Application.Analysis.Common
 {
     /// <summary>
-    /// Events that coorelate to <see cref="DataLoggerEnum.DetectorOn"/>
+    /// Events that coorelate to <see cref="IndianaEnumerations.VehicleDetectorOn"/>
     /// and that have been timestamp corrected for detector distances and latency
     /// using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
     /// </summary>
