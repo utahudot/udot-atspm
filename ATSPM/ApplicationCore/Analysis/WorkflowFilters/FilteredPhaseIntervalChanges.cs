@@ -11,10 +11,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="DataLoggerEnum.PhaseBeginGreen"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseBeginYellowChange"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndYellowChange"/></item>
-    /// <item><see cref="DataLoggerEnum.PhaseEndRedClearance"/></item>
+    /// <item><see cref="1"/></item>
+    /// <item><see cref="8"/></item>
+    /// <item><see cref="9"/></item>
+    /// <item><see cref="11"/></item>
     /// </list>
     /// </summary>
     public class FilteredPhaseIntervalChanges : FilterEventCodeLocationBase
@@ -22,10 +22,10 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPhaseIntervalChanges(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginGreen);
-            filteredList.Add((int)DataLoggerEnum.PhaseBeginYellowChange);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndYellowChange);
-            filteredList.Add((int)DataLoggerEnum.PhaseEndRedClearance);
+            filteredList.Add((int)1);
+            filteredList.Add((int)8);
+            filteredList.Add((int)9);
+            filteredList.Add((int)11);
         }
     }
 }

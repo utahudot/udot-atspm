@@ -4,7 +4,6 @@ using ATSPM.Application.Business.PhaseTermination;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -49,34 +48,34 @@ namespace ATSPM.ReportApi.ReportServices
                 parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<DataLoggerEnum>
+                new List<short>
                 {
-                    DataLoggerEnum.PhaseGapOut,
-                    DataLoggerEnum.PhaseMaxOut,
-                    DataLoggerEnum.PhaseForceOff,
-                    DataLoggerEnum.PhaseGreenTermination
+                    4,
+                    5,
+                    6,
+                    7
                 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var pedEvents = controllerEventLogs.Where(e =>
-                new List<DataLoggerEnum>
+                new List<short>
                 {
-                    DataLoggerEnum.PedestrianBeginWalk,
-                    DataLoggerEnum.PedestrianBeginSolidDontWalk
+                    21,
+                    23
                 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var cycleEvents = controllerEventLogs.Where(e =>
-                new List<DataLoggerEnum>
+                new List<short>
                 {
-                    DataLoggerEnum.PhaseBeginGreen,
-                    DataLoggerEnum.PhaseEndRedClearance
+                    1,
+                    11
                 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<DataLoggerEnum>();
-            for (var i = 130; i <= 151; i++)
-                splitsEventCodes.Add((DataLoggerEnum)i);
+            var splitsEventCodes = new List<short>();
+            for (short i = 130; i <= 151; i++)
+                splitsEventCodes.Add(i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start

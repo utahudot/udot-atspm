@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Analysis.PreemptionDetails;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Workflows;
 using System;
@@ -13,8 +12,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 {
     public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<Tuple<Location, IEnumerable<ControllerEventLog>, int>, T> where T : PreempDetailValueBase, new()
     {
-        protected DataLoggerEnum first;
-        protected DataLoggerEnum second;
+        protected short first;
+        protected short second;
 
         public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 
@@ -52,8 +51,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
 
     //public abstract class PreemptiveProcessBase<T> : TransformManyProcessStepBase<IEnumerable<ControllerEventLog>, IEnumerable<T>> where T : PreempDetailValueBase, new()
     //{
-    //    protected DataLoggerEnum first;
-    //    protected DataLoggerEnum second;
+    //    protected IndianaEnumerations first;
+    //    protected IndianaEnumerations second;
 
     //    public PreemptiveProcessBase(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions) { }
 

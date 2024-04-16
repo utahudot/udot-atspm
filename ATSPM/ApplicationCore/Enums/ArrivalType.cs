@@ -3,7 +3,7 @@
 namespace ATSPM.Application.Enums
 {
     /// <summary>
-    /// Arrival type of <see cref="DataLoggerEnum.DetectorOn"/> events
+    /// Arrival type of <see cref="82"/> events
     /// </summary>
     public enum ArrivalType
     {
@@ -13,17 +13,17 @@ namespace ATSPM.Application.Enums
         Unknown,
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.DetectorOn"/> arrival on green
+        /// <see cref="82"/> arrival on green
         /// </summary>
         ArrivalOnGreen,
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.DetectorOn"/> arrival on yellow
+        /// <see cref="82"/> arrival on yellow
         /// </summary>
         ArrivalOnYellow,
 
         /// <summary>
-        /// <see cref="DataLoggerEnum.DetectorOn"/> arrival on red
+        /// <see cref="82"/> arrival on red
         /// </summary>
         ArrivalOnRed
     }
