@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TimingAndActuation;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return speedLimit * FeetPerMile / SecondsInHour;
         }
 
-        public static List<IndianaEvent> GetEvents(int phaseNumber, List<IndianaEvent> controllerEventLogs, List<DataLoggerEnum> cycleEventCodes)
+        public static List<IndianaEvent> GetEvents(int phaseNumber, List<IndianaEvent> controllerEventLogs, List<short> cycleEventCodes)
         {
             var distinctTimeStamps = new HashSet<string>();
             var tempEvents = controllerEventLogs.Aggregate(new List<IndianaEvent>(), (result, c) =>
@@ -69,17 +68,17 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             return tempEvents;
         }
 
-        public static List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
+        public static List<short> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange };
+            var phaseEventCodesForCycles = new List<short> { 1, 8, 9 };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<DataLoggerEnum> {
-                    DataLoggerEnum.OverlapBeginGreen,
-                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance,
-                    DataLoggerEnum.OverlapOffInactivewithredindication };
+                phaseEventCodesForCycles = new List<short> {
+                    61,
+                    62,
+                    63,
+                    64,
+                    65 };
             }
 
             return phaseEventCodesForCycles;

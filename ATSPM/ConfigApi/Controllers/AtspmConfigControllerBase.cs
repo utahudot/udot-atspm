@@ -120,7 +120,12 @@ namespace ATSPM.ConfigApi.Controllers
                 return NotFound();
             }
 
-            item.Id = i.Id;
+            if (!key.Equals(item.Id))
+            {
+                return BadRequest();
+            }
+
+            //item.Id = i.Id;
 
             await _repository.UpdateAsync(item);
 
