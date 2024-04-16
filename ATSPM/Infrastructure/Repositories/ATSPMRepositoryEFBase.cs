@@ -1,8 +1,5 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Domain.Services;
+﻿using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
-using Google.Api;
-using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;

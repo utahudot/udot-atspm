@@ -28,7 +28,7 @@ namespace ATSPM.Data.Models.AggregationModels
 
         ///<inheritdoc/>
         public int ApproachId { get; set; }
-        
+
         public bool IsProtectedPhase { get; set; }
         public int ArrivalsOnGreen { get; set; }
         public int ArrivalsOnRed { get; set; }
@@ -109,7 +109,7 @@ namespace ATSPM.Data.Models.AggregationModels
         public override string ToString() => JsonConvert.SerializeObject(this);
     }
 
-    public partial class PhaseCycleAggregation : AggregationModelBase, ILocationApproachLayer
+    public partial class PhaseCycleAggregation : AggregationModelBase, ILocationApproachLayer, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
 
@@ -151,13 +151,27 @@ namespace ATSPM.Data.Models.AggregationModels
         public double SumGreenTime { get; set; }
     }
 
+    public partial class PhasePedAggregation : AggregationModelBase, ILocationPhaseLayer
+    {
+        ///<inheritdoc/>
+        public int PhaseNumber { get; set; }
+        public int PedCycles { get; set; }
+        public int PedDelay { get; set; }
+        public int MinPedDelay { get; set; }
+        public int MaxPedDelay { get; set; }
+        public int ImputedPedCallsRegistered { get; set; }
+        public int UniquePedDetections { get; set; }
+        public int PedBeginWalkCount { get; set; }
+        public int PedCallsRegisteredCount { get; set; }
+        public int PedRequests { get; set; }
+    }
     public partial class PhaseSplitMonitorAggregation : AggregationModelBase, ILocationPhaseLayer
     {
         //public string LocationIdentifier { get; set; }
 
         ///<inheritdoc/>
         public int PhaseNumber { get; set; }
-        
+
         public int EightyFifthPercentileSplit { get; set; }
         public int SkippedCount { get; set; }
     }
@@ -174,17 +188,17 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PhaseNumber { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseGapOut"/> events
+        /// Sum of consecutive <see cref="4"/> events
         /// </summary>
         public int GapOuts { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseMaxOut"/> events
+        /// Sum of consecutive <see cref="5"/> events
         /// </summary>
         public int ForceOffs { get; set; }
 
         /// <summary>
-        /// Sum of consecutive <see cref="IndianaEnumerations.PhaseForceOff"/> events
+        /// Sum of consecutive <see cref="6"/> events
         /// </summary>
         public int MaxOuts { get; set; }
 
@@ -238,17 +252,17 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PriorityNumber { get; set; }
 
         ///<summary>
-        /// <see cref="IndianaEnumerations.TSPCheckIn"/> Set when request for priority is received
+        /// <see cref="112"/> Set when request for priority is received
         ///</summary>
         public int PriorityRequests { get; set; }
 
         ///<summary>
-        /// <see cref="IndianaEnumerations.TSPAdjustmenttoEarlyGreen"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
+        /// <see cref="113"/> Set when controller is adjusting active cycle to accommodate early service to TSP phases
         ///</summary>
         public int PriorityServiceEarlyGreen { get; set; }
 
         ///<summary>
-        /// <see cref="IndianaEnumerations.TSPAdjustmenttoExtendGreen"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
+        /// <see cref="114"/> Set when controller is adjusting active cycle to accommodate extended service to TSP phases
         ///</summary>
         public int PriorityServiceExtendedGreen { get; set; }
 

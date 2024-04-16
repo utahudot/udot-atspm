@@ -1,10 +1,10 @@
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.YellowRedActivations;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -15,14 +15,14 @@ namespace ATSPM.ReportApi.ReportServices
     public class YellowRedActivationsReportService : ReportServiceBase<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>
     {
         private readonly YellowRedActivationsService yellowRedActivationsService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public YellowRedActivationsReportService(
             YellowRedActivationsService yellowRedActivationsService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
         {
@@ -35,7 +35,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<YellowRedActivationsResult>> ExecuteAsync(YellowRedActivationsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -43,7 +43,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<YellowRedActivationsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -82,8 +82,8 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<YellowRedActivationsResult> GetChartDataForApproach(
             YellowRedActivationsOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
             string LocationDescription)
         {
             var cycleEvents = controllerEventLogs.GetEventsByEventCodes(
@@ -112,11 +112,22 @@ namespace ATSPM.ReportApi.ReportServices
             return viewModel;
         }
 
-        private List<int> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
+        private List<short> GetYellowRedActivationsCycleEventCodes(bool useOverlap)
         {
             return useOverlap
-                ? new List<int> { 62, 63, 64 }
-                : new List<int> { 1, 8, 9, 11 };
+                ? new List<short>
+                {
+                    62,
+                    63,
+                    64
+                }
+                : new List<short>
+                {
+                    1,
+                    8,
+                    9,
+                    11
+                };
         }
     }
 }

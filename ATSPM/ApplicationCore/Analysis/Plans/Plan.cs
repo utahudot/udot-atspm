@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace ATSPM.Application.Analysis.Plans
 {
     /// <summary>
-    /// Base for Location controller plans which are derrived from <see cref="IndianaEnumerations.CoordPatternChange"/> events
+    /// Base for Location controller plans which are derrived from <see cref="131"/> events
     /// </summary>
     public class Plan : StartEndRange, IPlan
     {

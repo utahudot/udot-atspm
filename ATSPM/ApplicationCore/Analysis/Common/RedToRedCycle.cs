@@ -8,25 +8,25 @@ namespace ATSPM.Application.Analysis.Common
 {
 
     /// <summary>
-    /// A cycle which is the time between two <see cref="IndianaEnumerations.PhaseEndYellowChange"/> events including
-    /// <see cref="IndianaEnumerations.PhaseBeginGreen"/> and <see cref="IndianaEnumerations.PhaseBeginYellowChange"/>
+    /// A cycle which is the time between two <see cref="9"/> events including
+    /// <see cref="1"/> and <see cref="8"/>
     /// </summary>
     public interface IRedToRedCycle : IStartEndRange, ILocationPhaseLayer, ICycleTotal
     {
         /// <summary>
-        /// Timestamp of <see cref="IndianaEnumerations.PhaseBeginGreen"/> event
+        /// Timestamp of <see cref="1"/> event
         /// </summary>
         DateTime GreenEvent { get; set; }
 
         /// <summary>
-        /// Timestamp of <see cref="IndianaEnumerations.PhaseBeginYellowChange"/> event
+        /// Timestamp of <see cref="8"/> event
         /// </summary>
         DateTime YellowEvent { get; set; }
     }
 
     /// <summary>
-    /// A cycle which is the time between two <see cref="IndianaEnumerations.PhaseEndYellowChange"/> events including
-    /// <see cref="IndianaEnumerations.PhaseBeginGreen"/> and <see cref="IndianaEnumerations.PhaseBeginYellowChange"/>
+    /// A cycle which is the time between two <see cref="9"/> events including
+    /// <see cref="1"/> and <see cref="8"/>
     /// </summary>
     public class RedToRedCycle : StartEndRange, IRedToRedCycle
     {

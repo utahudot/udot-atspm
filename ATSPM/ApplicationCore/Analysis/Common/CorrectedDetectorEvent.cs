@@ -33,7 +33,7 @@ namespace ATSPM.Application.Analysis.Common
         /// Coreected timestamp of event using the <see cref="ATSPM.Application.AtspmMath.AdjustTimeStamp"/> calculation.
         /// </summary>
         public DateTime Timestamp { get; set; }
-        
+
         #endregion
 
         /// <inheritdoc/>

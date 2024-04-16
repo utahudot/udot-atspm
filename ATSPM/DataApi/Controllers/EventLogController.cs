@@ -2,9 +2,8 @@
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-#nullable disable
 
 namespace ATSPM.DataApi.Controllers
 {
@@ -15,6 +14,7 @@ namespace ATSPM.DataApi.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/[controller]")]
+    [Authorize(Policy = "CanViewData")]
     public class EventLogController : ControllerBase
     {
         private readonly IEventLogRepository _repository;
