@@ -2,20 +2,17 @@
 {
     public class AccountResult
     {
-        public AccountResult(string username, int code, string token, List<string> claims, string? error)
+        public AccountResult(int code, string token, List<string> claims, string? message)
         {
-            Username = username;
-            //Roles = roles;
             Claims = claims;
             Token = token;
             Code = code;
             Token = token;
-            Error = error;
+            Message = message;
         }
-        public string Username { get; set; }
         public List<string> Claims { get; set; }
         public string Token { get; set; }
         public int Code { get; }
-        public string? Error { get; }
+        public string? Message { get; set; }
     }
 }

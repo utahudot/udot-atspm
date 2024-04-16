@@ -30,9 +30,9 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
             {
                 f.LocationIdentifier = input.Item1.LocationIdentifier;
                 f.PriorityNumber = priority;
-                f.PriorityRequests = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPCheckIn && f.InRange(c));
-                f.PriorityServiceEarlyGreen = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoEarlyGreen && f.InRange(c));
-                f.PriorityServiceExtendedGreen = logs.Count(c => c.EventCode == (int)DataLoggerEnum.TSPAdjustmenttoExtendGreen && f.InRange(c));
+                f.PriorityRequests = logs.Count(c => c.EventCode == (int)112 && f.InRange(c));
+                f.PriorityServiceEarlyGreen = logs.Count(c => c.EventCode == (int)113 && f.InRange(c));
+                f.PriorityServiceExtendedGreen = logs.Count(c => c.EventCode == (int)114 && f.InRange(c));
             });
 
             var result = tl.Segments.AsEnumerable();

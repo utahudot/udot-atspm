@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 using static Microsoft.AspNetCore.OData.Query.AllowedQueryOptions;
 
-
 namespace ATSPM.ConfigApi.Controllers
 {
     /// <summary>
