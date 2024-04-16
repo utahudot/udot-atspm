@@ -58,7 +58,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowSteps
 
         //    var result = await sut.ExecuteAsync(testData);
 
-        //    var actual = result.Select(s => s.locationIdentifier).Distinct();
+        //    var actual = result.Select(s => s.LocationIdentifier).Distinct();
         //    var expected = new List<string>()
         //    {
         //        "1001", "1002", "1003"

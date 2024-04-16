@@ -38,12 +38,17 @@ COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
 COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
 COPY ["Data/Data.csproj", "Data/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-COPY ["ReportAPI/ReportApi.csproj", "ReportAPI/"]
-RUN dotnet restore "ReportAPI/ReportApi.csproj"
+COPY ["MySqlDatabaseProvider/MySqlDatabaseProvider.csproj", "MySqlDatabaseProvider/"]
+COPY ["OracleDatabaseProvider/OracleDatabaseProvider.csproj", "OracleDatabaseProvider/"]
+COPY ["PostgreSQLDatabaseProvider/PostgreSQLDatabaseProvider.csproj", "PostgreSQLDatabaseProvider/"]
+COPY ["SqlDatabaseProvider/SqlDatabaseProvider.csproj", "SqlDatabaseProvider/"]
+COPY ["SqlLiteDatabaseProvider/SqlLiteDatabaseProvider.csproj", "SqlLiteDatabaseProvider/"]
+COPY ["ReportApi/ReportApi.csproj", "ReportApi/"]
+RUN dotnet restore "ReportApi/ReportApi.csproj"
 COPY . .
 RUN echo "Contents of /src:"
 RUN ls /src
-WORKDIR "/src/ReportAPI"
+WORKDIR "/src/ReportApi"
 ENV DOTNET_BUILD_SUPPRESS_WARNINGS=CS1591
 RUN dotnet build "ReportApi.csproj" -c Release -o /app/build
 

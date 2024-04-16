@@ -8,8 +8,8 @@ namespace ATSPM.Application.Analysis.WorkflowSteps
     {
         public CalculateDelay(ExecutionDataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            first = IndianaEnumerations.PreemptCallInputOn;
-            second = IndianaEnumerations.PreemptEntryStarted;
+            first = 102;
+            second = 105;
         }
     }
 }

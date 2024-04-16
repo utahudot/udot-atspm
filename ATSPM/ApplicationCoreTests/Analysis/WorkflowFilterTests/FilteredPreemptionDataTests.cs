@@ -14,7 +14,7 @@ namespace ApplicationCoreTests.Analysis.WorkflowFilterTests
             filteredList.Add((int)IndianaEnumerations.PreemptEntryStarted);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginTrackClearance);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginDwellService);
-            filteredList.Add((int)IndianaEnumerations.PreemptionMaxPresenceExceeded);
+            filteredList.Add((int)110);
             filteredList.Add((int)IndianaEnumerations.PreemptionBeginExitInterval);
 
             sut = new FilteredPreemptionData();

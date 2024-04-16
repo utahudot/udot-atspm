@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ATSPM\ReportApi\ReportApi.csproj" />
+    <ProjectReference Include="..\ReportApi\ReportApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

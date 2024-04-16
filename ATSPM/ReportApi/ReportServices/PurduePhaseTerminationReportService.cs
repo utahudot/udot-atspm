@@ -1,9 +1,9 @@
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PhaseTermination;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PhaseTermination;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -14,13 +14,13 @@ namespace ATSPM.ReportApi.ReportServices
     public class PurduePhaseTerminationReportService : ReportServiceBase<PurduePhaseTerminationOptions, PhaseTerminationResult>
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public PurduePhaseTerminationReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository)
         {
             this.analysisPhaseCollectionService = analysisPhaseCollectionService;
@@ -31,13 +31,13 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<PhaseTerminationResult> ExecuteAsync(PurduePhaseTerminationOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
                 return await Task.FromException<PhaseTerminationResult>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -48,19 +48,33 @@ namespace ATSPM.ReportApi.ReportServices
                 parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                new List<short>
+                {
+                    4,
+                    5,
+                    6,
+                    7
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var pedEvents = controllerEventLogs.Where(e =>
-                new List<int> { 21, 23 }.Contains(e.EventCode)
+                new List<short>
+                {
+                    21,
+                    23
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
             var cycleEvents = controllerEventLogs.Where(e =>
-                new List<int> { 1, 11 }.Contains(e.EventCode)
+                new List<short>
+                {
+                    1,
+                    11
+                }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<int>();
-            for (var i = 130; i <= 151; i++)
+            var splitsEventCodes = new List<short>();
+            for (short i = 130; i <= 151; i++)
                 splitsEventCodes.Add(i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)
@@ -70,7 +84,7 @@ namespace ATSPM.ReportApi.ReportServices
             GC.Collect();
 
             var phaseCollectionData = analysisPhaseCollectionService.GetAnalysisPhaseCollectionData(
-                parameter.locationIdentifier,
+                parameter.LocationIdentifier,
                 parameter.Start,
                 parameter.End,
                 planEvents,

@@ -1,5 +1,4 @@
 using Asp.Versioning;
-using ATSPM.ConfigApi.Utility;
 using ATSPM.Domain.Extensions;
 using ATSPM.Infrastructure.Extensions;
 using Microsoft.AspNetCore.HttpLogging;
@@ -79,6 +78,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddAtspmDbContext(h);
     s.AddAtspmEFConfigRepositories();
 
+    s.AddAtspmAuthentication(h, builder);
+    s.AddAtspmAuthorization(h);
+
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>
@@ -91,17 +93,17 @@ builder.Host.ConfigureServices((h, s) =>
         l.ResponseBodyLogLimit = 4096;
     });
 
-    //var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
-    //s.AddCors(options =>
-    //{
-    //    options.AddPolicy("CorsPolicy",
-    //    builder =>
-    //    {
-    //        builder.WithOrigins(allowedHosts.Split(','))
-    //               .AllowAnyMethod()
-    //               .AllowAnyHeader();
-    //    });
-    //});
+    var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Get<string>();
+    s.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy",
+        builder =>
+        {
+            builder.WithOrigins(allowedHosts.Split(','))
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 });
 
 var app = builder.Build();
@@ -130,9 +132,10 @@ app.UseSwaggerUI(o =>
     });
 app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseVersionedODataBatching();
-app.UseRouting();
 app.MapControllers();
 app.Run();
 

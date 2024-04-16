@@ -9,22 +9,22 @@
         /// Unknown device type
         /// </summary>
         Unknown,
-        
+
         /// <summary>
         /// Signal controller
         /// </summary>
         SignalController,
-        
+
         /// <summary>
         /// Ramp controller
         /// </summary>
         RampController,
-        
+
         /// <summary>
         /// A.I. Camera
         /// </summary>
         AICamera,
-        
+
         /// <summary>
         /// F.I.R. Camera
         /// </summary>
@@ -33,6 +33,11 @@
         /// <summary>
         /// LIDAR Sensor
         /// </summary>
-        LidarSensor
+        LidarSensor,
+
+        /// <summary>
+        /// Wavetronix Speed sensor
+        /// </summary>
+        WavetronixSpeed
     }
 }
