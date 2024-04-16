@@ -129,7 +129,7 @@ namespace ATSPM.Data
                 .AddCompressedTableDiscriminators(typeof(AggregationModelBase), typeof(CompressedAggregations<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListComverter<AggregationModelBase>, CompressedListComparer<AggregationModelBase>>();
+                .HasConversion<CompressedListConverter<AggregationModelBase>, CompressedListComparer<AggregationModelBase>>();
             });
 
             OnModelCreatingPartial(modelBuilder);

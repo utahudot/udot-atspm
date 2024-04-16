@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -7,38 +8,60 @@ namespace Identity.Business.Tokens
 {
     public class TokenService
     {
-        private readonly string _secretKey;
-        private readonly string _issuer;
-        private readonly string _audience;
+        private readonly IConfiguration configuration;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public TokenService(string secretKey, string issuer, string audience)
+        public TokenService(
+            IConfiguration configuration,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager
+            )
         {
-            _secretKey = secretKey;
-            _issuer = issuer;
-            _audience = audience;
+            this.configuration = configuration;
+            this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
 
-        public string GenerateToken(string userId, string[] role, string agency)
+
+        public async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
         {
-            var roleClaims = new List<Claim>();
-            foreach (var roleClaim in role)
+            var claims = new List<Claim>
             {
-                roleClaims.Add(new Claim(ClaimTypes.Role, roleClaim));
-            }
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim("agency", agency),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
             };
-            claims = claims.Union(roleClaims).ToArray();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+
+            var roleNames = await signInManager.UserManager.GetRolesAsync(user);
+            if (roleNames.Contains("Admin"))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+            else
+            {
+                // Adding roleNames as claims
+                foreach (var roleName in roleNames)
+                {
+                    var role = await roleManager.FindByNameAsync(roleName);
+                    var roleClaims = await roleManager.GetClaimsAsync(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        claims.Add(new Claim(roleClaim.Type, roleClaim.Value));
+                    }
+                }
+            }
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["Jwt:ExpireDays"]));
 
             var token = new JwtSecurityToken(
-                _issuer,
-                _audience,
-                claims,
-                expires: DateTime.Now.AddHours(12),
+                configuration["Jwt:Issuer"],
+                null,
+                claims: claims,
+                expires: expires,
                 signingCredentials: creds
             );
 

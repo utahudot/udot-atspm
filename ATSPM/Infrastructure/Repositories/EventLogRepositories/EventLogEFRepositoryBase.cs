@@ -26,18 +26,16 @@ namespace ATSPM.Infrastructure.Repositories.EventLogRepositories
         ///<inheritdoc/>
         public virtual IReadOnlyList<T> GetEventsBetweenDates(string locationId, DateTime startTime, DateTime endTime)
         {
-            //var result = table
-            //    .FromSpecification(new EventLogDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
-            //    .AsNoTracking()
-            //    .AsEnumerable()
-            //    .SelectMany(m => m.Data)
-            //    .FromSpecification(new EventLogDateTimeRangeSpecification(locationId, startTime, endTime))
-            //    .Cast<T>()
-            //    .ToList();
+            var result = table
+                .FromSpecification(new EventLogDateRangeSpecification(locationId, DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
+                .AsNoTracking()
+                .AsEnumerable()
+                .SelectMany(m => m.Data)
+                .FromSpecification(new EventLogDateTimeRangeSpecification(locationId, startTime, endTime))
+                .Cast<T>()
+                .ToList();
 
-            //return result;
-
-            throw new NotImplementedException();
+            return result;
         }
 
         #endregion

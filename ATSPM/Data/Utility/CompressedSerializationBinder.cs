@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Serialization;
-
 #nullable disable
 
 namespace ATSPM.Data.Utility
@@ -15,7 +14,7 @@ namespace ATSPM.Data.Utility
         /// <inheritdoc/>
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-            if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) && 
+            if (serializedType.IsAssignableTo(typeof(IEnumerable<T>)) &&
                 serializedType.IsGenericType &&
                 serializedType.GetGenericArguments()[0].IsSubclassOf(typeof(T)))
             {
