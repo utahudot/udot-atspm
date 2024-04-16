@@ -1,31 +1,33 @@
-
 using Asp.Versioning;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Aggregation;
+using ATSPM.Application.Business.AppoachDelay;
+using ATSPM.Application.Business.ApproachSpeed;
+using ATSPM.Application.Business.ApproachVolume;
+using ATSPM.Application.Business.ArrivalOnRed;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.GreenTimeUtilization;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Business.LeftTurnGapReport;
+using ATSPM.Application.Business.LinkPivot;
+using ATSPM.Application.Business.PedDelay;
+using ATSPM.Application.Business.PhaseTermination;
+using ATSPM.Application.Business.PreempDetail;
+using ATSPM.Application.Business.PreemptService;
+using ATSPM.Application.Business.PreemptServiceRequest;
+using ATSPM.Application.Business.PurdueCoordinationDiagram;
+using ATSPM.Application.Business.SplitFail;
+using ATSPM.Application.Business.SplitMonitor;
+using ATSPM.Application.Business.TimeSpaceDiagram;
+using ATSPM.Application.Business.TimingAndActuation;
+using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.Business.WaitTime;
+using ATSPM.Application.Business.Watchdog;
+using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.AppoachDelay;
-using ATSPM.ReportApi.Business.ApproachSpeed;
-using ATSPM.ReportApi.Business.ApproachVolume;
-using ATSPM.ReportApi.Business.ArrivalOnRed;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.GreenTimeUtilization;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
-using ATSPM.ReportApi.Business.LeftTurnGapReport;
-using ATSPM.ReportApi.Business.PedDelay;
-using ATSPM.ReportApi.Business.PhaseTermination;
-using ATSPM.ReportApi.Business.PreempDetail;
-using ATSPM.ReportApi.Business.PreemptService;
-using ATSPM.ReportApi.Business.PreemptServiceRequest;
-using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.Business.SplitMonitor;
-using ATSPM.ReportApi.Business.TimeSpaceDiagram;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.Business.TurningMovementCounts;
-using ATSPM.ReportApi.Business.WaitTime;
-using ATSPM.ReportApi.Business.Watchdog;
-using ATSPM.ReportApi.Business.YellowRedActivations;
+using ATSPM.ReportApi.DataAggregation;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
@@ -34,6 +36,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MOE.Common.Business.WCFServiceLibrary;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -109,39 +112,34 @@ builder.Host.ConfigureServices((h, s) =>
     });
 
     s.AddAtspmDbContext(h);
+    s.AddAtspmEFEventLogRepositories();
     s.AddAtspmEFConfigRepositories();
+    s.AddAtspmEFAggregationRepositories();
+
+    s.AddAtspmAuthentication(h, builder);
+    s.AddAtspmAuthorization(h);
+
     s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
 
-    //mocked report services
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachDelayOptions, ApproachDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachSpeedOptions, ApproachSpeedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ApproachVolumeOptions, ApproachVolumeResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<ArrivalOnRedOptions, ArrivalOnRedResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<GreenTimeUtilizationOptions, GreenTimeUtilizationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<LeftTurnGapAnalysisOptions, LeftTurnGapAnalysisResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PedDelayOptions, PedDelayResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptDetailOptions, PreemptDetailResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceOptions, PreemptServiceResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PreemptServiceRequestOptions, PreemptServiceRequestResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<PurdueCoordinationDiagramOptions, PurdueCoordinationDiagramResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceB<PurduePhaseTerminationOptions, PhaseTerminationResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitFailOptions, SplitFailsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<SplitMonitorOptions, SplitMonitorResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimeSpaceDiagramOptions, TimeSpaceDiagramResults>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TimingAndActuationsOptions, TimingAndActuationsForPhaseResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<TurningMovementCountsOptions, TurningMovementCountsResult>());
-    //s.AddScoped(f => GenerateMoqReportServiceA<YellowRedActivationsOptions, YellowRedActivationsResult>());
 
-    //s.AddScoped<TestDataUtility>();
 
     //report services
+    s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
-    s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
+    //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
     s.AddScoped<IReportService<ArrivalOnRedOptions, IEnumerable<ArrivalOnRedResult>>, ArrivalOnRedReportService>();
+    s.AddScoped<IReportService<GapDurationOptions, GapDurationResult>, LeftTurnGapDurationService>();
     s.AddScoped<IReportService<GreenTimeUtilizationOptions, IEnumerable<GreenTimeUtilizationResult>>, GreenTimeUtilizationReportService>();
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
+    s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
+    s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
+    s.AddScoped<LinkPivotReportService>();
+    s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
+    s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
+    s.AddScoped<IReportService<PeakHourOptions, PeakHourResult>, LeftTurnPeakHourService>();
     s.AddScoped<IReportService<PreemptDetailOptions, PreemptDetailResult>, PreemptDetailReportService>();
     s.AddScoped<IReportService<PreemptServiceOptions, PreemptServiceResult>, PreemptServiceReportService>();
     s.AddScoped<IReportService<PreemptServiceRequestOptions, PreemptServiceRequestResult>, PreemptRequestReportService>();
@@ -149,23 +147,29 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<PurduePhaseTerminationOptions, PhaseTerminationResult>, PurduePhaseTerminationReportService>();
     s.AddScoped<IReportService<SplitFailOptions, IEnumerable<SplitFailsResult>>, SplitFailReportService>();
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
-    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResult>>, TimeSpaceDiagramReportService>();
+    s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
     s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
 
-    //Chart Services
+    //AggregationResult Services
+    s.AddScoped<AggregationReportService>();
     s.AddScoped<ApproachDelayService>();
     s.AddScoped<ApproachSpeedService>();
     s.AddScoped<ApproachVolumeService>();
     s.AddScoped<ArrivalOnRedService>();
     s.AddScoped<LeftTurnGapAnalysisService>();
-    s.AddScoped<LeftTurnReportPreCheckService>();
-    s.AddScoped<LeftTurnVolumeAnalysisService>();
+    s.AddScoped<LeftTurnGapReportDataCheckService>();
+    s.AddScoped<LeftTurnSplitFailService>();
+    s.AddScoped<LeftTurnPedActuationService>();
+    s.AddScoped<LeftTurnGapDurationService>();
+    s.AddScoped<LeftTurnVolumeService>();
+    //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();
+    s.AddScoped<LeftTurnPeakHourService>();
     s.AddScoped<PreemptServiceService>();
     s.AddScoped<PreemptServiceRequestService>();
     s.AddScoped<PurdueCoordinationDiagramService>();
@@ -178,15 +182,38 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<YellowRedActivationsService>();
     s.AddScoped<WatchDogReportService>();
 
+    //Aggregation Services
+    s.AddScoped<DetectorVolumeAggregationOptions>();
+    s.AddScoped<ApproachSpeedAggregationOptions>();
+    s.AddScoped<ApproachPcdAggregationOptions>();
+    s.AddScoped<PhaseCycleAggregationOptions>();
+    s.AddScoped<ApproachSplitFailAggregationOptions>();
+    s.AddScoped<ApproachYellowRedActivationsAggregationOptions>();
+    s.AddScoped<PreemptionAggregationOptions>();
+    s.AddScoped<PriorityAggregationOptions>();
+    s.AddScoped<SignalEventCountAggregationOptions>();
+    s.AddScoped<PhaseTerminationAggregationOptions>();
+    s.AddScoped<PhasePedAggregationOptions>();
+    s.AddScoped<PhaseLeftTurnGapAggregationOptions>();
+    s.AddScoped<PhaseSplitMonitorAggregationOptions>();
+
     //Common Services
     s.AddScoped<PlanService>();
+    s.AddScoped<PedActuationService>();
     s.AddScoped<LocationPhaseService>();
     s.AddScoped<CycleService>();
     s.AddScoped<PedPhaseService>();
+    s.AddScoped<GapDurationService>();
     s.AddScoped<AnalysisPhaseCollectionService>();
     s.AddScoped<AnalysisPhaseService>();
     s.AddScoped<PreemptDetailService>();
     s.AddScoped<PhaseService>();
+    s.AddScoped<SplitFailService>();
+    s.AddScoped<LeftTurnReportService>();
+    s.AddScoped<VolumeService>();
+    s.AddScoped<LinkPivotService>();
+    s.AddScoped<LinkPivotPairService>();
+    s.AddScoped<LinkPivotPcdService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

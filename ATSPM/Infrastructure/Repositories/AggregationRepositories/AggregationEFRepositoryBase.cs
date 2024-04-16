@@ -31,6 +31,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
                 .AsNoTracking()
                 .AsEnumerable()
                 .SelectMany(m => m.Data)
+                .Where(c => c.Start >= startTime && c.End <= endTime)
                 .FromSpecification(new AggregationDateTimeRangeSpecification(locationId, startTime, endTime))
                 .Cast<T>()
                 .ToList();

@@ -1,8 +1,7 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Data.Models;
 using CsvHelper;
 using System.Globalization;
-using Xunit;
 
 namespace ATSPM.Application.Reports.Business.Common.Tests
 {

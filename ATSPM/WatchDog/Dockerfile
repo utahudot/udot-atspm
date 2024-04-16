@@ -1,48 +1,30 @@
-## Use the .NET SDK image to build the project
-#FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-#WORKDIR /src
-#COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
-#COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
-#COPY ["Data/Data.csproj", "Data/"]
-#COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-#COPY ["ReportApi/ReportApi.csproj", "ReportApi/"]
-#COPY ["WatchDog/WatchDog.csproj", "WatchDog/"]
-#RUN dotnet restore "WatchDog/WatchDog.csproj"
-#COPY . .
-#WORKDIR "/src/WatchDog"
-#RUN dotnet build "WatchDog.csproj" -c Release -o /app/build/WatchDog
-#
-## Publish the application
-#FROM build AS publish
-#RUN dotnet publish "WatchDog.csproj" -c Release -o /app/publish/WatchDog
-#
-## Generate runtime image
-#FROM mcr.microsoft.com/dotnet/runtime:7.0 AS final
-#WORKDIR /app
-#COPY --from=publish /app/publish/WatchDog .
-#ENTRYPOINT ["dotnet", "WatchDog.dll"]
-#
+# Use the official image as a parent image
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-# Build ReportApi project
-
-
-# Build WatchDog project
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS watchdog-build
+# Use SDK image to build the project
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
+COPY ["DomainCore/DomainCore.csproj", "DomainCore/"]
+COPY ["ApplicationCore/ApplicationCore.csproj", "ApplicationCore/"]
+COPY ["Data/Data.csproj", "Data/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["WatchDog/WatchDog.csproj", "WatchDog/"]
 RUN dotnet restore "WatchDog/WatchDog.csproj"
-COPY ["WatchDog/", "WatchDog/"]
-# Copy ReportApi.dll from the previous stage
-COPY --from=reportapi-build /app/reportapi-build/ReportApi.dll /app/watchdog-build/
+COPY . .
+RUN echo "Contents of /src:"
+RUN ls /src
 WORKDIR "/src/WatchDog"
-RUN dotnet build "WatchDog.csproj" -c Release -o /app/watchdog-build
+ENV DOTNET_BUILD_SUPPRESS_WARNINGS=CS1591
+RUN dotnet build "WatchDog.csproj" -c Release -o /app/build
 
-# Publish the WatchDog application
-FROM watchdog-build AS publish
+FROM build AS publish
 RUN dotnet publish "WatchDog.csproj" -c Release -o /app/publish
 
 # Generate runtime image
-FROM mcr.microsoft.com/dotnet/runtime:7.0 AS final
+FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WatchDog.dll"]

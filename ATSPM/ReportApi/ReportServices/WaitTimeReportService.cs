@@ -1,9 +1,9 @@
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.WaitTime;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.WaitTime;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly AnalysisPhaseCollectionService analysisPhaseCollectionService;
         private readonly WaitTimeService waitTimeService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
@@ -23,7 +23,7 @@ namespace ATSPM.ReportApi.ReportServices
         public WaitTimeReportService(
             AnalysisPhaseCollectionService analysisPhaseCollectionService,
             WaitTimeService waitTimeService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService
             )
@@ -38,7 +38,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<WaitTimeResult>> ExecuteAsync(WaitTimeOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -46,7 +46,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<WaitTimeResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -57,19 +57,19 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var eventCodes = new List<int>() {
+            var eventCodes = new List<short>() {
                     82,
-                    WaitTimeService.PHASE_BEGIN_GREEN,
-                    WaitTimeService.PHASE_CALL_DROPPED,
-                    WaitTimeService.PHASE_END_RED_CLEARANCE,
-                    WaitTimeService.PHASE_CALL_REGISTERED};
+                    1,
+                    44,
+                    11,
+                    43};
             var events = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, eventCodes);
             var terminationEvents = controllerEventLogs.Where(e =>
-                new List<int> { 4, 5, 6, 7 }.Contains(e.EventCode)
+                new List<short> { 4, 5, 6, 7 }.Contains(e.EventCode)
                 && e.Timestamp >= parameter.Start
                 && e.Timestamp <= parameter.End).ToList();
-            var splitsEventCodes = new List<int>();
-            for (var i = 130; i <= 151; i++)
+            var splitsEventCodes = new List<short>();
+            for (short i = 130; i <= 149; i++)
                 splitsEventCodes.Add(i);
             var splitsEvents = controllerEventLogs.Where(e =>
                 splitsEventCodes.Contains(e.EventCode)

@@ -1,7 +1,5 @@
-﻿using Identity.Business.Agency;
-using Identity.Business.Tokens;
+﻿using Identity.Business.Tokens;
 using Microsoft.AspNetCore.Identity;
-
 
 namespace Identity.Business.Accounts
 {
@@ -9,62 +7,80 @@ namespace Identity.Business.Accounts
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IAgencyService _agencyService;
+        private readonly TokenService tokenService;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
-            IAgencyService agencyService,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            TokenService tokenService,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
-            _agencyService = agencyService;
             _signInManager = signInManager;
+            this.tokenService = tokenService;
+            this._roleManager = roleManager;
         }
 
         public async Task<AccountResult> CreateUser(ApplicationUser user, string password)
         {
-            var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
-            var agencyExists = await _agencyService.AgencyExistsAsync(user.Agency);
-            var createUser = await _userManager.CreateAsync(user, password);
+            var createUserResult = await _userManager.CreateAsync(user, password);
 
-            // Just add new people as users
-            await _userManager.AddToRoleAsync(user, "User");
-
-            if (createUser != null && createUser.Succeeded)
+            if (createUserResult.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                var info = await _signInManager.UserManager.FindByEmailAsync(user.Email);
-                var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
-
-                if (info != null)
-                {
-                    return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
-                }
-                else
-                {
-                    return new AccountResult(null, null, "", StatusCodes.Status500InternalServerError, "Server Error");
-                }
+                //await _userManager.AddToRoleAsync(user, "User");
+                return await Login(user.Email, password);
             }
 
-            return new AccountResult(null, null, "", StatusCodes.Status400BadRequest, createUser.Errors.First().Description);
+            return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(),
+                createUserResult.Errors.First().Description);
         }
+
 
         public async Task<AccountResult> Login(string email, string password, bool rememberMe = false)
         {
-            var tokenService = new TokenService("your_long_and_secure_key_here", "yourIssuer", "yourAudience");
-            var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
-
-            if (result != null && result.Succeeded)
+            var user = await _signInManager.UserManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                var user = await _signInManager.UserManager.FindByEmailAsync(email);
-                var roles = await _signInManager.UserManager.GetRolesAsync(user);
-                var token = tokenService.GenerateToken(user.Id, roles?.ToArray() ?? Array.Empty<string>(), user.Agency);
-
-                return new AccountResult(user, roles?.ToList() ?? new List<string>(), token, StatusCodes.Status200OK, "");
+                return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "User not found");
             }
 
-            return new AccountResult(null, null, "", StatusCodes.Status400BadRequest, "Incorrect username or password");
+            var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                var token = await tokenService.GenerateJwtTokenAsync(user);
+                var viewClaims = await GetViewClaimsForUser(user);
+                return new AccountResult( StatusCodes.Status200OK, token, viewClaims, null);
+            }
+
+            return new AccountResult(StatusCodes.Status400BadRequest, "", new List<string>(), "Incorrect username or password");
+        }
+
+        private async Task<List<string>> GetViewClaimsForUser(ApplicationUser user)
+        {
+            var claims = new List<string>();
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Contains("Admin"))
+            {
+                claims.Add("Admin");
+            } else
+            {
+                foreach (var roleName in roles)
+                {
+                    var role = await _roleManager.FindByNameAsync(roleName);
+                    var roleClaims = await _roleManager.GetClaimsAsync(role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        if (roleClaim.Value.ToLower().Contains("view"))
+                        {
+                           claims.Add(roleClaim.Value);
+                        }
+                    }
+                }
+            }
+            
+            return claims;
         }
     }
 }

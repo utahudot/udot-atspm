@@ -1,10 +1,10 @@
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TimingAndActuation;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TimingAndActuation;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -15,14 +15,14 @@ namespace ATSPM.ReportApi.ReportServices
     public class TimingAndActuactionReportService : ReportServiceBase<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>
     {
         private readonly TimingAndActuationsForPhaseService timingAndActuationsForPhaseService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public TimingAndActuactionReportService(
             TimingAndActuationsForPhaseService timingAndActuationsForPhaseService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService
             )
@@ -36,7 +36,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<TimingAndActuationsForPhaseResult>> ExecuteAsync(TimingAndActuationsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -44,7 +44,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<TimingAndActuationsForPhaseResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -57,16 +57,16 @@ namespace ATSPM.ReportApi.ReportServices
 
             foreach (var phase in phaseDetails)
             {
-                var eventCodes = new List<int> { };
+                var eventCodes = new List<short> { };
                 if (parameter.ShowAdvancedCount || parameter.ShowAdvancedDilemmaZone || parameter.ShowLaneByLaneCount || parameter.ShowStopBarPresence)
-                    eventCodes.AddRange(new List<int> { 81, 82 });
+                    eventCodes.AddRange(new List<short> { 81, 82 });
                 if (parameter.ShowPedestrianActuation)
-                    eventCodes.AddRange(new List<int> { 89, 90 });
+                    eventCodes.AddRange(new List<short> { 89, 90 });
                 if (parameter.ShowPedestrianIntervals)
                     eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
-                tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, false));
+                tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
             }
             var results = await Task.WhenAll(tasks);
 
@@ -83,9 +83,9 @@ namespace ATSPM.ReportApi.ReportServices
 
         private async Task<TimingAndActuationsForPhaseResult> GetChartDataForPhase(
             TimingAndActuationsOptions options,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             PhaseDetail phaseDetail,
-            List<int> eventCodes,
+            List<short> eventCodes,
             bool usePermissivePhase)
         {
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));

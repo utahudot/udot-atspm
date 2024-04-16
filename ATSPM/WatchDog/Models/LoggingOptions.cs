@@ -9,7 +9,6 @@
         public int ConsecutiveCount { get; set; }
         public int MinPhaseTerminations { get; set; }
         public double PercentThreshold { get; set; }
-        public int MaxDegreeOfParallelism { get; set; }
         public int PreviousDayPMPeakStart { get; set; }
         public int PreviousDayPMPeakEnd { get; set; }
         public int MinimumRecords { get; set; }
