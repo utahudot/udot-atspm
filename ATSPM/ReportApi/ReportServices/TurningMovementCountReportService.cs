@@ -1,12 +1,13 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TurningMovementCounts;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -16,14 +17,14 @@ namespace ATSPM.ReportApi.ReportServices
     /// </summary>
     public class TurningMovementCountReportService : ReportServiceBase<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>
     {
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
         private readonly ILocationRepository LocationRepository;
         private readonly PlanService planService;
 
         /// <inheritdoc/>
         public TurningMovementCountReportService(
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             TurningMovementCountsService turningMovementCountsService,
             ILocationRepository LocationRepository,
             PlanService planService
@@ -38,7 +39,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<TurningMovementCountsResult>> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -46,7 +47,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -57,7 +58,7 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.locationIdentifier, planEvents);
+            var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.LocationIdentifier, planEvents);
             var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
@@ -87,7 +88,7 @@ namespace ATSPM.ReportApi.ReportServices
             Location Location,
             LaneTypes laneType,
             TurningMovementCountsOptions options,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Plan> plans)
         {
             var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
@@ -135,7 +136,7 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<TurningMovementCountsResult> GetChartDataByMovementType(
             TurningMovementCountsOptions options,
             List<Plan> planEvents,
-            List<ControllerEventLog> controllerEventLogs,
+            List<IndianaEvent> controllerEventLogs,
             List<Detector> detectors,
             MovementTypes movementType,
             LaneTypes laneType,
@@ -143,13 +144,13 @@ namespace ATSPM.ReportApi.ReportServices
             string LocationDescription,
             DirectionTypes directionType)
         {
-            var detectorEvents = new List<ControllerEventLog>();
+            var detectorEvents = new List<IndianaEvent>();
             foreach (var detector in detectors)
             {
                 detectorEvents.AddRange(controllerEventLogs.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
                     options.Start,
                     options.End,
-                    new List<int>() { 82 },
+                    new List<short>() { 82 },
                     detector.DetectorChannel,
                     detector.GetOffset(),
                     detector.LatencyCorrection).ToList());

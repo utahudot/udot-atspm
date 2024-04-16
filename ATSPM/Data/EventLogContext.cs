@@ -16,7 +16,7 @@ namespace ATSPM.Data
     public partial class EventLogContext : DbContext
     {
         /// <inheritdoc/>
-        public EventLogContext() {}
+        public EventLogContext() { }
 
         /// <inheritdoc/>
         public EventLogContext(DbContextOptions<EventLogContext> options) : base(options) { }
@@ -83,7 +83,7 @@ namespace ATSPM.Data
                 .AddCompressedTableDiscriminators(typeof(EventLogModelBase), typeof(CompressedEventLogs<>));
 
                 builder.Property(e => e.Data)
-                .HasConversion<CompressedListComverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
+                .HasConversion<CompressedListConverter<EventLogModelBase>, CompressedListComparer<EventLogModelBase>>();
 
                 //builder.Property(e => e.Data)
                 //    .HasConversion<byte[]>(
@@ -109,5 +109,3 @@ namespace ATSPM.Data
     //update-database -context EventLogContext
     //drop-database -context EventLogContext
 }
-
-

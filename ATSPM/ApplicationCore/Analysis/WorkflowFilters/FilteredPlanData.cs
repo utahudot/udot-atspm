@@ -7,7 +7,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
     /// <summary>
     /// Filters <see cref="ControllerEventLog"/> workflow events to
     /// <list type="bullet">
-    /// <item><see cref="IndianaEnumerations.CoordPatternChange"/></item>
+    /// <item><see cref="131"/></item>
     /// </list>
     /// </summary>
     public class FilteredPlanData : FilterEventCodeLocationBase
@@ -15,7 +15,7 @@ namespace ATSPM.Application.Analysis.WorkflowFilters
         /// <inheritdoc/>
         public FilteredPlanData(DataflowBlockOptions dataflowBlockOptions = default) : base(dataflowBlockOptions)
         {
-            filteredList.Add((int)IndianaEnumerations.CoordPatternChange);
+            filteredList.Add((int)131);
         }
     }
 }

@@ -2,7 +2,6 @@
 using ATSPM.Data;
 using ATSPM.Data.Models.AggregationModels;
 using Microsoft.Extensions.Logging;
-
 namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
 {
     ///<inheritdoc cref="IDetectorEventCountAggregationRepository"/>
@@ -12,6 +11,7 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
         public DetectorEventCountAggregationEFRepository(AggregationContext db, ILogger<DetectorEventCountAggregationEFRepository> log) : base(db, log) { }
 
         #region IDetectorEventCountAggregationRepository
+
 
         #endregion
     }

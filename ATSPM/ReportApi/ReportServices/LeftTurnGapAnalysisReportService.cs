@@ -1,7 +1,7 @@
-﻿using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.LeftTurnGapAnalysis;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -13,14 +13,14 @@ namespace ATSPM.ReportApi.ReportServices
     {
         private readonly LeftTurnGapAnalysisService leftTurnGapAnalysisService;
         private readonly IApproachRepository approachRepository;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
 
         /// <inheritdoc/>
         public LeftTurnGapAnalysisReportService(
             LeftTurnGapAnalysisService leftTurnGapAnalysisService,
             IApproachRepository approachRepository,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository)
         {
             this.leftTurnGapAnalysisService = leftTurnGapAnalysisService;
@@ -32,14 +32,14 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<LeftTurnGapAnalysisResult>> ExecuteAsync(LeftTurnGapAnalysisOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<LeftTurnGapAnalysisResult>>(new NullReferenceException("Location not found"));
             }
             var eventCodes = new List<int> { 1, 10, 81 };
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(
                 Location.LocationIdentifier,
                 parameter.Start,
                 parameter.End)

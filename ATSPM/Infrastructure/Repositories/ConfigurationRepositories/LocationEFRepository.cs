@@ -142,8 +142,9 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         public IReadOnlyList<Location> GetLocationsBetweenDates(string LocationIdentifier, DateTime startDate, DateTime endDate)
         {
             var result = BaseQuery()
+                .Include(i => i.Approaches).ThenInclude(i => i.Detectors).ThenInclude(i => i.DetectionTypes).ThenInclude(i => i.MeasureTypes)
                 .FromSpecification(new LocationIdSpecification(LocationIdentifier))
-                .Where(Location => Location.Start > startDate && Location.Start < endDate)
+                .Where(Location => Location.Start < startDate && Location.Start < endDate)
                 .FromSpecification(new ActiveLocationSpecification())
                 .ToList();
 
