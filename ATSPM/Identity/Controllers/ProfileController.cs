@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Controllers
 {
-    [Authorize(Policy = "AdminActionsPolicy")]
     [ApiController]
-    [Route("api/profile")]
+    [Route("api/[controller]")]
     public class ProfileController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -17,30 +16,36 @@ namespace Identity.Controllers
             _userManager = userManager;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetProfile()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound();
+                return Unauthorized("User not found");
             }
+
+            var roles = await _userManager.GetRolesAsync(user);
 
             var profileViewModel = new ProfileViewModel
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Email = user.Email
-                // Include other profile properties as needed
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Agency = user.Agency,
+                Roles = string.Join(",", roles)
             };
 
             return Ok(profileViewModel);
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateProfile(UpdateProfileViewModel model)
         {
-            if (model == null || model.LastName == null || model.FirstName == null || model.Agency == null || model.Email == null || !ModelState.IsValid)
+            if (model == null || model.LastName == null || model.FirstName == null || model.Email == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -55,7 +60,10 @@ namespace Identity.Controllers
             user.LastName = model.LastName;
             user.Email = model.Email;
             user.Agency = model.Agency;
-            // Update other profile properties as needed
+            if(model.PhoneNumber != null)
+            {
+                user.PhoneNumber = model.PhoneNumber;
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)

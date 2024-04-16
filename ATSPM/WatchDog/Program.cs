@@ -1,16 +1,18 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Repositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
-using ATSPM.ReportApi.Business.Common;
+using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WatchDog.Models;
 using WatchDog.Services;
 
 class Program
@@ -24,14 +26,46 @@ class Program
                //{
                //    webBuilder.UseEnvironment("Development"); // Setting the environment
                //})
+
                .ConfigureLogging((h, l) =>
                {
                })
                .ConfigureServices((h, s) =>
                {
+                   string emailType = h.Configuration.GetValue<string>("EmailType");
+                   if (emailType == "smtp")
+                   {
+                       s.AddScoped<IMailService>(serviceProvider =>
+                       {
+                           var config = h.Configuration;
+                           var smtpHost = config.GetValue<string>("SmtpSettings:Host");
+                           var smtpPort = config.GetValue<int>("SmtpSettings:Port");
+                           var smtpUser = config.GetValue<string>("SmtpSettings:UserName");
+                           var smtpPass = config.GetValue<string>("SmtpSettings:Password");
+                           var enableSsl = config.GetValue<bool>("SmtpSettings:EnableSsl");
+
+                           // Now create the SMTPMailService instance with the parameters
+                           return new SMTPMailService(
+                               config,
+                               serviceProvider.GetRequiredService<ILogger<SMTPMailService>>());
+                       });
+                   }
+                   else
+                   {
+                   }
+
+
+                   s.AddScoped<EmailService>(serviceProvider =>
+                   {
+                       return new EmailService(
+                           serviceProvider.GetRequiredService<ILogger<EmailService>>(),
+                           serviceProvider.GetRequiredService<IMailService>());
+                   }
+                   );
+
                    s.AddAtspmDbContext(h);
                    s.AddScoped<ILocationRepository, LocationEFRepository>();
-                   s.AddScoped<IControllerEventLogRepository, ControllerEventLogEFRepository>();
+                   s.AddScoped<IIndianaEventLogRepository, IndianaEventLogEFRepository>();
                    s.AddScoped<IWatchDogLogEventRepository, WatchDogLogEventEFRepository>();
                    s.AddScoped<IRegionsRepository, RegionEFRepository>();
                    s.AddScoped<IJurisdictionRepository, JurisdictionEFRepository>();
@@ -40,7 +74,6 @@ class Program
                    s.AddScoped<IUserRegionRepository, UserRegionEFRepository>();
                    s.AddScoped<IUserJurisdictionRepository, UserJurisdictionEFRepository>();
                    s.AddScoped<WatchDogLogService>();
-                   s.AddScoped<EmailService>();
                    s.AddTransient<ScanService>();
                    s.AddScoped<PlanService>();
                    s.AddScoped<AnalysisPhaseCollectionService>();
@@ -53,7 +86,8 @@ class Program
                        new ScanHostedService(
                            serviceProvider.GetRequiredService<ScanService>(),
                            serviceProvider.GetRequiredService<ILogger<ScanHostedService>>(),
-                           scanDate // Pass the parsed date here
+                           scanDate,
+                           serviceProvider.GetRequiredService<IHostApplicationLifetime>()
                        ));
                    s.AddLogging(builder =>
                     {

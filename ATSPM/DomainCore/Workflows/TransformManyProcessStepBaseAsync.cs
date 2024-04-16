@@ -41,7 +41,7 @@ namespace ATSPM.Domain.Workflows
             await using (IAsyncEnumerator<T2> process = Process(parameter, cancelToken).GetAsyncEnumerator(cancelToken))
             {
                 bool active = true;
-                
+
                 while (active)
                 {
                     try

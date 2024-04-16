@@ -5,6 +5,7 @@ using ATSPM.Application.Specifications;
 using ATSPM.ConfigApi.Models;
 using ATSPM.Data.Models;
 using ATSPM.Domain.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -15,6 +16,7 @@ namespace ATSPM.ConfigApi.Controllers
     /// <summary>
     /// Location Controller
     /// </summary>
+    /// 
     [ApiVersion(1.0)]
     public class LocationController : AtspmConfigControllerBase<Location, int>
     {
@@ -33,7 +35,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -47,7 +50,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -61,7 +65,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
+        [EnableQuery(AllowedQueryOptions = Count | Expand | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         [ProducesResponseType(Status400BadRequest)]
@@ -79,6 +84,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Location version to copy</param>
         /// <returns>New version of copied <see cref="Location"/></returns>
+        /// 
+        [Authorize(Policy = "CanEditLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(typeof(Location), Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -99,6 +106,8 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="key">Key of <see cref="Location"/> to mark as deleted</param>
         /// <returns></returns>
+        /// 
+        [Authorize(Policy = "CanDeleteLocationConfigurations")]
         [HttpPost]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -125,6 +134,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="identifier">Location controller identifier</param>
         /// <returns>Lastest <see cref="Location"/> version</returns>
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Expand | Select, MaxExpansionDepth = 4)]
         [ProducesResponseType(typeof(Location), Status200OK)]
@@ -157,6 +167,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// </summary>
         /// <param name="identifier">Location controller identifier</param>
         /// <returns>List of <see cref="Location"/> in decescing order of start date</returns>
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
@@ -177,6 +188,7 @@ namespace ATSPM.ConfigApi.Controllers
         /// Get latest version of all <see cref="Location"/>
         /// </summary>
         /// <returns>List of <see cref="Location"/> with newest start date</returns>
+        //[Authorize(Policy = "CanViewLocationConfigurations")]
         [HttpGet]
         [EnableQuery(AllowedQueryOptions = Count | Filter | Select | OrderBy | Top | Skip)]
         [ProducesResponseType(typeof(IEnumerable<Location>), Status200OK)]
@@ -199,6 +211,7 @@ namespace ATSPM.ConfigApi.Controllers
         [ProducesResponseType(Status400BadRequest)]
         public IActionResult GetLocationsForSearch([FromQuery] int? areaId, [FromQuery] int? regionId, [FromQuery] int? jurisdictionId, [FromQuery] int? metricTypeId)
         {
+            var basicCharts = new List<int> { 1, 2, 3, 4, 14, 15, 17, 31 };
             var result = _repository.GetList()
                 .FromSpecification(new ActiveLocationSpecification())
 
@@ -220,12 +233,20 @@ namespace ATSPM.ConfigApi.Controllers
                     Latitude = s.Latitude,
                     ChartEnabled = s.ChartEnabled,
                     Areas = s.Areas.Select(a => a.Id),
-                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id))))
+                    Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
                 })
-
                 .GroupBy(r => r.locationIdentifier)
                 .Select(g => g.OrderByDescending(r => r.Start).FirstOrDefault())
                 .ToList();
+            //TODO: This is a hack to add basic charts to all locations.  Need to discuss with Christian and see if this is the best way to do this.
+            foreach (var location in result)
+            {
+                if (location != null && location.Charts != null)
+                {
+                    location.Charts = location.Charts.Concat(basicCharts).Order();
+                }
+
+            }
 
             return Ok(result);
         }

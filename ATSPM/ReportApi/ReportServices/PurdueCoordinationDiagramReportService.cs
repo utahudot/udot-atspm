@@ -1,10 +1,10 @@
-using ATSPM.Application.Repositories;
+using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PurdueCoordinationDiagram;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
-using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PurdueCoordinationDiagram;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -15,7 +15,7 @@ namespace ATSPM.ReportApi.ReportServices
     public class PurdueCoordinationDiagramReportService : ReportServiceBase<PurdueCoordinationDiagramOptions, IEnumerable<PurdueCoordinationDiagramResult>>
     {
         private readonly PurdueCoordinationDiagramService perdueCoordinationDiagramService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly LocationPhaseService LocationPhaseService;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
@@ -23,7 +23,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public PurdueCoordinationDiagramReportService(
             PurdueCoordinationDiagramService perdueCoordinationDiagramService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             LocationPhaseService LocationPhaseService,
             ILocationRepository LocationRepository,
             PhaseService phaseService)
@@ -38,13 +38,13 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<PurdueCoordinationDiagramResult>> ExecuteAsync(PurdueCoordinationDiagramOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
             if (Location == null)
             {
                 //return BadRequest("Location not found");
                 return await Task.FromException<IEnumerable<PurdueCoordinationDiagramResult>>(new NullReferenceException("Location not found"));
             }
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
@@ -77,8 +77,8 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<PurdueCoordinationDiagramResult> GetChartDataForApproach(
             PurdueCoordinationDiagramOptions options,
             PhaseDetail phaseDetail,
-            IReadOnlyList<ControllerEventLog> controllerEventLogs,
-            IReadOnlyList<ControllerEventLog> planEvents)
+            IReadOnlyList<IndianaEvent> controllerEventLogs,
+            IReadOnlyList<IndianaEvent> planEvents)
         {
             var LocationPhase = await LocationPhaseService.GetLocationPhaseData(
                 phaseDetail,

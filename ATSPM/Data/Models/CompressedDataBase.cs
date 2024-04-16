@@ -54,10 +54,10 @@ namespace ATSPM.Data.Models
         public int DeviceId { get; set; }
 
         ///<inheritdoc cref="CompressedDataBase.Data"/>
-        public new IEnumerable<EventLogModelBase> Data 
-        { 
-            get => base.Data.Cast<EventLogModelBase>().ToList(); 
-            set => base.Data = value; 
+        public new IEnumerable<EventLogModelBase> Data
+        {
+            get => base.Data.Cast<EventLogModelBase>().ToList();
+            set => base.Data = value;
         }
     }
 

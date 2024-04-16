@@ -10,7 +10,7 @@ namespace ATSPM.Application.Analysis.Common
     {
         /// <summary>
         /// The total delay of <see cref="IndianaEnumerations.VehicleDetectorOn"/> events
-        /// arriving on red before a <see cref="IndianaEnumerations.PhaseBeginGreen"/> event
+        /// arriving on red before a <see cref="1"/> event
         /// </summary>
         double TotalDelay { get; }
 

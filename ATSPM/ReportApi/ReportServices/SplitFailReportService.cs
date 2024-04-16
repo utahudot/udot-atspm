@@ -1,11 +1,11 @@
-﻿using ATSPM.Application.Extensions;
-using ATSPM.Application.Repositories;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
+using ATSPM.Application.Repositories.EventLogRepositories;
+using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.SplitFail;
-using ATSPM.ReportApi.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -16,14 +16,14 @@ namespace ATSPM.ReportApi.ReportServices
     public class SplitFailReportService : ReportServiceBase<SplitFailOptions, IEnumerable<SplitFailsResult>>
     {
         private readonly SplitFailPhaseService splitFailPhaseService;
-        private readonly IControllerEventLogRepository controllerEventLogRepository;
+        private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly ILocationRepository LocationRepository;
         private readonly PhaseService phaseService;
 
         /// <inheritdoc/>
         public SplitFailReportService(
             SplitFailPhaseService splitFailPhaseService,
-            IControllerEventLogRepository controllerEventLogRepository,
+            IIndianaEventLogRepository controllerEventLogRepository,
             ILocationRepository LocationRepository,
             PhaseService phaseService
             )
@@ -37,7 +37,7 @@ namespace ATSPM.ReportApi.ReportServices
         /// <inheritdoc/>
         public override async Task<IEnumerable<SplitFailsResult>> ExecuteAsync(SplitFailOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
-            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.locationIdentifier, parameter.Start);
+            var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
@@ -45,7 +45,7 @@ namespace ATSPM.ReportApi.ReportServices
                 return await Task.FromException<IEnumerable<SplitFailsResult>>(new NullReferenceException("Location not found"));
             }
 
-            var controllerEventLogs = controllerEventLogRepository.GetLocationEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
+            var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
 
             if (controllerEventLogs.IsNullOrEmpty())
             {
@@ -81,8 +81,8 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<IEnumerable<SplitFailsResult>> GetChartDataForApproach(
             SplitFailOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents)
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents)
         {
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
@@ -95,7 +95,12 @@ namespace ATSPM.ReportApi.ReportServices
             var terminationEvents = controllerEventLogs.GetEventsByEventCodes(
                  options.Start,
                  options.End,
-                 new List<int> { 4, 5, 6 },
+                 new List<short>
+                 {
+                     4,
+                     5,
+                     6
+                 },
                  phaseDetail.PhaseNumber);
             var detectors = phaseDetail.Approach.GetDetectorsForMetricType(options.MetricTypeId);
             var tasks = new List<Task<SplitFailsResult>>();
@@ -110,10 +115,10 @@ namespace ATSPM.ReportApi.ReportServices
         private async Task<SplitFailsResult> GetChartDataByDetectionType(
             SplitFailOptions options,
             PhaseDetail phaseDetail,
-            List<ControllerEventLog> controllerEventLogs,
-            List<ControllerEventLog> planEvents,
-            IReadOnlyList<ControllerEventLog> cycleEvents,
-            IReadOnlyList<ControllerEventLog> terminationEvents,
+            List<IndianaEvent> controllerEventLogs,
+            List<IndianaEvent> planEvents,
+            IReadOnlyList<IndianaEvent> cycleEvents,
+            IReadOnlyList<IndianaEvent> terminationEvents,
             List<Detector> detectors,
             DetectionType detectionType)
         {
@@ -139,7 +144,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents,
                 phaseDetail.Approach);
             var result = new SplitFailsResult(
-                options.locationIdentifier,
+                options.LocationIdentifier,
                 phaseDetail.Approach.Id,
                 phaseDetail.PhaseNumber,
                 options.Start,
@@ -168,7 +173,7 @@ namespace ATSPM.ReportApi.ReportServices
             return result;
         }
 
-        private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<ControllerEventLog> detectorEvents)
+        private static void AddBeginEndEventsByDetector(SplitFailOptions options, List<Detector> detectors, DetectionType detectionType, List<IndianaEvent> detectorEvents)
         {
             foreach (Detector channel in detectors.Where(d => d.DetectionTypes.Contains(detectionType)))
             {
@@ -178,22 +183,22 @@ namespace ATSPM.ReportApi.ReportServices
 
                 if (firstEvent != null && firstEvent.EventCode == 81)
                 {
-                    var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
+                    var newDetectorOn = new IndianaEvent();
+                    newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.Start;
                     newDetectorOn.EventCode = 82;
-                    newDetectorOn.EventParam = channel.DetectorChannel;
+                    newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);
                     detectorEvents.Add(newDetectorOn);
                 }
 
                 //add an EC 81 at the end if the last EC code is 82
                 if (lastEvent != null && lastEvent.EventCode == 82)
                 {
-                    var newDetectorOn = new ControllerEventLog();
-                    newDetectorOn.SignalIdentifier = options.locationIdentifier;
+                    var newDetectorOn = new IndianaEvent();
+                    newDetectorOn.LocationIdentifier = options.LocationIdentifier;
                     newDetectorOn.Timestamp = options.End;
                     newDetectorOn.EventCode = 81;
-                    newDetectorOn.EventParam = channel.DetectorChannel;
+                    newDetectorOn.EventParam = Convert.ToByte(channel.DetectorChannel);
                     detectorEvents.Add(newDetectorOn);
                 }
             }
