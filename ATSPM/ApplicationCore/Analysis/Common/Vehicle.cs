@@ -11,14 +11,14 @@ namespace ATSPM.Application.Analysis.Common
     {
         /// <summary>
         /// Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
-        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="DataLoggerEnum.PhaseBeginGreen"/>.
+        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="9"/> and <see cref="1"/>.
         /// The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
         /// </summary>
         ArrivalType ArrivalType { get; }
 
         /// <summary>
         /// Delay is only calculated for vehicles that arrive on red. Zero delay is assumed for vehicles that arrive on green.
-        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="DataLoggerEnum.PhaseEndYellowChange"/> and <see cref="DataLoggerEnum.PhaseBeginGreen"/>.
+        /// Arrivals on red are the vehicle actuations with the adjusted time stamp calculated in Step 1 between <see cref="9"/> and <see cref="1"/>.
         /// The delay for each arrival on red is determined from the adjusted detection time to the start of the next green phase
         /// </summary>
         double Delay { get; }

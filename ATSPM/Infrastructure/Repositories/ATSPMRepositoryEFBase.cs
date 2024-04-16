@@ -1,6 +1,5 @@
 ﻿using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
-using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
