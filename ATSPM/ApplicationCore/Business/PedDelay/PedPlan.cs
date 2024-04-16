@@ -1,5 +1,4 @@
-﻿using ATSPM.Data.Enums;
-using ATSPM.Data.Models.EventLogModels;
+﻿using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +27,14 @@ namespace ATSPM.Application.Business.PedDelay
         {
             get
             {
-                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianBeginWalk || e.EventCode == DataLoggerEnum.PedestrianOverlapBeginWalk).Count();
+                return Events.Where(e => e.EventCode == 21 || e.EventCode == 67).Count();
             }
         }
         public double PedCallsRegisteredCount
         {
             get
             {
-                return Events.Where(e => e.EventCode == DataLoggerEnum.PedestrianCallRegistered).Count();
+                return Events.Where(e => e.EventCode == 45).Count();
             }
         }
         public double MinDelay

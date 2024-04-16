@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Extensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -56,7 +55,7 @@ namespace ATSPM.Application.TempExtensions
     //            {
     //                LocationIdentifier = "0",
     //                Timestamp = date,
-    //                EventCode = DataLoggerEnum.CoordPatternChange,
+    //                EventCode = 131,
     //                EventParam = 0
     //            };
 
@@ -204,7 +203,7 @@ namespace ATSPM.Application.TempExtensions
     //        this IEnumerable<ControllerEventLog> events,
     //        DateTime startTime,
     //        DateTime endTime,
-    //        IEnumerable<DataLoggerEnum> eventCodes)
+    //        IEnumerable<IndianaEnumerations> eventCodes)
     //    {
     //        var result = events.Where(e =>
     //        eventCodes.Contains(e.EventCode)
@@ -278,7 +277,7 @@ namespace ATSPM.Application.TempExtensions
            DateTime start,
            DateTime end)
         {
-            var planEvents = events.Where(e => e.EventCode == DataLoggerEnum.CoordPatternChange)
+            var planEvents = events.Where(e => e.EventCode == 131)
                 .OrderBy(e => e.Timestamp)
                 .ToList();
 
@@ -319,7 +318,7 @@ namespace ATSPM.Application.TempExtensions
                 {
                     LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = DataLoggerEnum.CoordPatternChange,
+                    EventCode = 131,
                     EventParam = 0
                 };
 
@@ -349,7 +348,7 @@ namespace ATSPM.Application.TempExtensions
                 {
                     LocationIdentifier = "0",
                     Timestamp = date,
-                    EventCode = DataLoggerEnum.CoordPatternChange,
+                    EventCode = 131,
                     EventParam = 0
                 };
 
@@ -368,11 +367,11 @@ namespace ATSPM.Application.TempExtensions
             bool detectorOff,
             DetectionType detectionType)
         {
-            var eventCodes = new List<DataLoggerEnum>();
+            var eventCodes = new List<short>();
             if (detectorOn)
-                eventCodes.Add(DataLoggerEnum.DetectorOn);
+                eventCodes.Add(82);
             if (detectorOff)
-                eventCodes.Add(DataLoggerEnum.DetectorOff);
+                eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
@@ -401,11 +400,11 @@ namespace ATSPM.Application.TempExtensions
             bool detectorOn,
             bool detectorOff)
         {
-            var eventCodes = new List<DataLoggerEnum>();
+            var eventCodes = new List<short>();
             if (detectorOn)
-                eventCodes.Add(DataLoggerEnum.DetectorOn);
+                eventCodes.Add(82);
             if (detectorOff)
-                eventCodes.Add(DataLoggerEnum.DetectorOff);
+                eventCodes.Add(81);
             if (!detectorOn && !detectorOff)
                 throw new ArgumentException("At least one detector event code must be true (detectorOn or detectorOff");
             var detectorsForMetric = approach.GetDetectorsForMetricType(metricTypeId);
@@ -427,7 +426,7 @@ namespace ATSPM.Application.TempExtensions
             this IEnumerable<IndianaEvent> events,
             DateTime startTime,
             DateTime endTime,
-            IEnumerable<DataLoggerEnum> eventCodes,
+            IEnumerable<short> eventCodes,
             int param,
             double offset,
             double latencyCorrection)
@@ -451,7 +450,7 @@ namespace ATSPM.Application.TempExtensions
             this IEnumerable<IndianaEvent> events,
             DateTime startTime,
             DateTime endTime,
-            IEnumerable<DataLoggerEnum> eventCodes,
+            IEnumerable<short> eventCodes,
             int param)
         {
             var result = events.Where(e =>
@@ -467,7 +466,7 @@ namespace ATSPM.Application.TempExtensions
             this IEnumerable<IndianaEvent> events,
             DateTime startTime,
             DateTime endTime,
-            IEnumerable<DataLoggerEnum> eventCodes)
+            IEnumerable<short> eventCodes)
         {
             var result = events.Where(e =>
             eventCodes.Contains(e.EventCode)
@@ -491,21 +490,21 @@ namespace ATSPM.Application.TempExtensions
                 phaseNumber).OrderBy(e => e.Timestamp).ToList();
         }
 
-        public static List<DataLoggerEnum> GetCycleEventCodes(bool useOvelap)
+        public static List<short> GetCycleEventCodes(bool useOvelap)
         {
             return useOvelap
-                ? new List<DataLoggerEnum>
+                ? new List<short>
                 {
-                    DataLoggerEnum.OverlapBeginGreen,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance,
-                    DataLoggerEnum.OverlapDark
+                    61,
+                    63,
+                    64,
+                    66
                 }
-                : new List<DataLoggerEnum>
+                : new List<short>
                 {
-                    DataLoggerEnum.PhaseBeginGreen,
-                    DataLoggerEnum.PhaseBeginYellowChange,
-                    DataLoggerEnum.PhaseEndYellowChange
+                    1,
+                    8,
+                    9
                 };
         }
 
@@ -529,7 +528,7 @@ namespace ATSPM.Application.TempExtensions
             DateTime startTime,
             DateTime endTime,
             IEnumerable<int> eventParameters,
-            IEnumerable<DataLoggerEnum> eventCodes)
+            IEnumerable<short> eventCodes)
         {
             var result = events
                 .Where(e => e.LocationIdentifier == locationIdentifier

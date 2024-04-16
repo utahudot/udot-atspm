@@ -135,6 +135,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
     s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
+    s.AddScoped<LinkPivotReportService>();
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
     s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
