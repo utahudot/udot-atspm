@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Serialization;
-
 #nullable disable
 
 namespace ATSPM.Data.Utility
@@ -31,10 +30,9 @@ namespace ATSPM.Data.Utility
         /// <inheritdoc/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            var type = typeof(T).Assembly.GetTypes().FirstOrDefault(t => t.Name == typeName);
-            if (type != null)
+            if (string.IsNullOrEmpty(assemblyName) && typeof(T).Assembly.GetTypes().Where(w => w.Name == typeName).Count() > 0)
             {
-                return typeof(List<>).MakeGenericType(type);
+                return typeof(List<>).MakeGenericType(Type.GetType($"{typeof(T).Namespace}.{typeName}"));
             }
 
             return base.BindToType(assemblyName, typeName);

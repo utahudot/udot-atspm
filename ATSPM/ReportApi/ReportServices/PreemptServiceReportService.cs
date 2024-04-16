@@ -3,7 +3,6 @@ using ATSPM.Application.Business.PreemptService;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
@@ -47,7 +46,7 @@ namespace ATSPM.ReportApi.ReportServices
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
-            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<DataLoggerEnum>() { DataLoggerEnum.PreemptEntryStarted });
+            var preemptEvents = controllerEventLogs.GetEventsByEventCodes(parameter.Start, parameter.End, new List<short>() { 105 });
             PreemptServiceResult result = preemptServiceService.GetChartData(
                 parameter,
                 planEvents.ToList(),

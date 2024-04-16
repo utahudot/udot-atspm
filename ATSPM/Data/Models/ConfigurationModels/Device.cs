@@ -4,7 +4,6 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Data.Relationships;
 using System.Net;
-using System.Text.Json.Serialization;
 
 namespace ATSPM.Data.Models
 {
@@ -21,8 +20,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Ipaddress of Location
         /// </summary>
-        [JsonIgnore]
-        public IPAddress Ipaddress { get; set; }
+        public string Ipaddress { get; set; }
 
         /// <summary>
         /// Device status
@@ -60,6 +58,6 @@ namespace ATSPM.Data.Models
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString() => $"{Id} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
+        public override string ToString() => $"{Id} - {Ipaddress} - {Location?.LocationIdentifier} - {DeviceType} - {DeviceStatus} --- {DeviceConfiguration}";
     }
 }
