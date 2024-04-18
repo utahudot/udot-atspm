@@ -24,7 +24,7 @@ namespace ATSPM.Data.Models
         #region IRelatedMeasureType
 
         /// <inheritdoc/>
-        public MeasureType MeasureType { get; set; }
+        public virtual MeasureType MeasureType { get; set; }
 
         #endregion
 
