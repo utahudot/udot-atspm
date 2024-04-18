@@ -53,7 +53,7 @@ namespace ATSPM.Data.Models
         public int DeviceConfigurationId { get; set; }
 
         /// <inheritdoc/>
-        public DeviceConfiguration DeviceConfiguration { get; set; }
+        public virtual DeviceConfiguration DeviceConfiguration { get; set; }
 
         #endregion
 

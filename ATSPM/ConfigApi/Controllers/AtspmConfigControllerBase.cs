@@ -1,6 +1,7 @@
 ﻿using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Domain.Extensions;
 using ATSPM.Domain.Services;
+using Google.Api;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
@@ -152,6 +153,8 @@ namespace ATSPM.ConfigApi.Controllers
             }
 
             var i = await _repository.LookupAsync(key);
+
+            
 
             if (i == null)
             {
