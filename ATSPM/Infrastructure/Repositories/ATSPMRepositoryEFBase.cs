@@ -1,7 +1,9 @@
 ﻿using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
+using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NetTopologySuite.Index.HPRtree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,13 +87,33 @@ namespace ATSPM.Infrastructure.Repositories
 
         public async Task<T> LookupAsync(T item)
         {
-            return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+            var i = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+            
+            foreach (var n in _db.Entry(i).Navigations)
+            {
+                if (!n.IsLoaded)
+                n.Load();
+            }
+
+            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
+
+            return i;
         }
 
         //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public async Task<T> LookupAsync(object key)
         {
-            return await table.FindAsync(key);
+            var item = await table.FindAsync(key);
+
+            foreach (var n in _db.Entry(item).Navigations)
+            {
+                if (!n.IsLoaded)
+                    n.Load();
+            }
+
+            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
+
+            return item;
         }
 
         public void Remove(T item)
@@ -182,10 +204,14 @@ namespace ATSPM.Infrastructure.Repositories
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
 
-                            foreach (var n in _db.Entry(old).Navigations)
-                            {
-                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
-                            }
+                            _db.ChangeTracker.DetectChanges();
+
+                            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
+
+                            //foreach (var n in _db.Entry(old).Navigations)
+                            //{
+                            //    n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                            //}
                         }
                         else
                         {
@@ -204,10 +230,10 @@ namespace ATSPM.Infrastructure.Repositories
                     }
                 case EntityState.Unchanged:
                     {
-                        foreach (var n in _db.Entry(item).Navigations)
-                        {
-                            n.IsModified = true;
-                        }
+                        //foreach (var n in _db.Entry(item).Navigations)
+                        //{
+                        //    n.IsModified = true;
+                        //}
 
                         //await _db.SaveChangesAsync().ConfigureAwait(false);
 
@@ -219,7 +245,7 @@ namespace ATSPM.Infrastructure.Repositories
                     }
             }
 
-            await _db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync(true).ConfigureAwait(false);
         }
 
         //TODO: Check item for changes attach/unattach
