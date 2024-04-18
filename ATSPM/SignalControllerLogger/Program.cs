@@ -16,6 +16,7 @@ using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
 using AutoFixture;
 using Google.Cloud.Diagnostics.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -155,10 +156,58 @@ namespace ATSPM.LocationControllerLogger
             //host.Services.PrintHostInformation();
 
             //await host.RunAsync();
-            await host.StartAsync();
-            await host.StopAsync();
+            //await host.StartAsync();
+            //await host.StopAsync();
 
-            //Console.ReadLine();
+
+
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var config = scope.ServiceProvider.GetService<ConfigContext>();
+                var locations = config.Locations;
+
+                //var loc = locations.Include(i => i.Areas).First(w => w.Id == 2);
+                var loc = locations.Find(2);
+                //config.Entry(loc).re(r => r.Areas).Load();
+
+
+                //foreach (var n in config.Entry(loc).Navigations)
+                //{
+                //    n.Load();
+                //}
+
+                //JsonSerializerOptions options = new()
+                //{
+                //    ReferenceHandler = ReferenceHandler.Preserve,
+                //    WriteIndented = true
+                //};
+
+                //var json = System.Text.Json.JsonSerializer.Serialize(loc, options);
+
+
+                //Console.WriteLine($"{loc.PrimaryName} - {loc.SecondaryName}");
+
+                //foreach (var a in loc.Areas)
+                //{
+                //    Console.WriteLine($"{a}");
+                //}
+
+                var area = new Area { Name = "test1" };
+                loc.Areas.Add(area);
+
+                //var area = loc.Areas.FirstOrDefault(a => a.Id == 2);
+                //loc.Areas.Remove(area);
+
+
+                locations.Update(loc);
+
+                config.SaveChanges();
+            }
+
+
+
+            Console.ReadLine();
         }
     }
 }
