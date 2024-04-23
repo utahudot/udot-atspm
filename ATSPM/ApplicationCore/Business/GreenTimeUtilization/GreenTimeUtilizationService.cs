@@ -175,7 +175,7 @@ namespace ATSPM.Application.Business.GreenTimeUtilization
             var programmedSplits = new List<ProgrammedSplit>();
             foreach (Plan analysisplan in plans)
             {
-                //GetProgrammedSplitTimesInAnalysisPeriod(approach.ProtectedPhaseNumber, analysisplan, options.EndDate);
+                //GetProgrammedSplitTimesInAnalysisPeriod(approach.ProtectedPhaseNumber, analysisplan, options.End);
                 var splitTime = GetProgrammedSplitTime(phaseDetail.PhaseNumber, analysisplan.Start, analysisplan.End.AddMinutes(-1), controllerEventLogs);
                 programmedSplits.Add(new ProgrammedSplit(analysisplan, options.Start, splitTime, durYellowRed));
             }
