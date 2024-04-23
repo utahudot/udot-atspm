@@ -232,6 +232,7 @@ namespace ATSPM.ConfigApi.Controllers
                     Longitude = s.Longitude,
                     Latitude = s.Latitude,
                     ChartEnabled = s.ChartEnabled,
+                    LocationTypeId = s.LocationTypeId,
                     Areas = s.Areas.Select(a => a.Id),
                     Charts = s.Approaches.SelectMany(m => m.Detectors.SelectMany(d => d.DetectionTypes.SelectMany(t => t.MeasureTypes.Select(i => i.Id)))).Distinct()
                 })
