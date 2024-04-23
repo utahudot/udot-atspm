@@ -116,7 +116,7 @@ namespace ATSPM.Application.Business.PedDelay
                 pedPhaseData.Cycles.Add(new PedCycle(mainEvents[1].Timestamp, mainEvents[0].Timestamp));  // Middle of the event
             }
 
-            for (var i = 0; i < mainEvents.Count - 1; i++)
+            for (var i = 0; i < mainEvents.Count - 2; i++)
             {
                 if (mainEvents[i].EventCode == pedPhaseData.BeginClearanceEvent &&
                 mainEvents[i + 1].EventCode == 90 &&
