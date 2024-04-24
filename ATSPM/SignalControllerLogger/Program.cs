@@ -159,7 +159,7 @@ namespace ATSPM.LocationControllerLogger
             //await host.StartAsync();
             //await host.StopAsync();
 
-
+            Location loc;
 
 
             using (var scope = host.Services.CreateScope())
@@ -168,22 +168,14 @@ namespace ATSPM.LocationControllerLogger
                 var locations = config.Locations;
 
                 //var loc = locations.Include(i => i.Areas).First(w => w.Id == 2);
-                var loc = locations.Find(2);
-                //config.Entry(loc).re(r => r.Areas).Load();
+                loc = locations.Find(2);
+                config.Entry(loc).Collection(r => r.Areas).Load();
 
 
                 //foreach (var n in config.Entry(loc).Navigations)
                 //{
                 //    n.Load();
                 //}
-
-                //JsonSerializerOptions options = new()
-                //{
-                //    ReferenceHandler = ReferenceHandler.Preserve,
-                //    WriteIndented = true
-                //};
-
-                //var json = System.Text.Json.JsonSerializer.Serialize(loc, options);
 
 
                 //Console.WriteLine($"{loc.PrimaryName} - {loc.SecondaryName}");
@@ -193,17 +185,56 @@ namespace ATSPM.LocationControllerLogger
                 //    Console.WriteLine($"{a}");
                 //}
 
-                var area = new Area { Name = "test1" };
-                loc.Areas.Add(area);
+                //var area = config.Areas.Find(2);
+                //loc.Areas.Add(area);
 
                 //var area = loc.Areas.FirstOrDefault(a => a.Id == 2);
                 //loc.Areas.Remove(area);
+                //foreach (var a in loc.Areas)
+                //{
+                //    loc.Areas.Remove(a);
+                //}
 
 
-                locations.Update(loc);
+                //locations.Update(loc);
+
+                //config.SaveChanges();
+            }
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var config = scope.ServiceProvider.GetService<ConfigContext>();
+
+                Console.WriteLine(config.ChangeTracker.DebugView.LongView);
+
+                foreach (var a in loc.Areas)
+                {
+                    Console.WriteLine($"{a.Name}1: {config.Entry(a).State}");
+                    config.Attach(a);
+                    Console.WriteLine($"{a.Name}2: {config.Entry(a).State}");
+                    loc.Areas.Remove(a);
+                }
+
+                var area = config.Areas.Find(2);
+                 
+               
+                Console.WriteLine(config.Entry(loc).State);
+
+                config.Attach(loc);
+
+                loc.Areas.Add(area);
+
+                Console.WriteLine(config.Entry(loc).State);
+
+
+                Console.WriteLine(config.ChangeTracker.DebugView.LongView);
+
+                config.Update(loc);
 
                 config.SaveChanges();
+
             }
+
 
 
 
