@@ -1,12 +1,9 @@
-﻿using ATSPM.Data.Models;
-using ATSPM.Domain.Services;
+﻿using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
-using NetTopologySuite.Index.HPRtree;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -94,7 +91,7 @@ namespace ATSPM.Infrastructure.Repositories
             foreach (var n in _db.Entry(i).Navigations)
             {
                 //if (!n.IsLoaded)
-                    n.Load();
+                n.Load();
             }
 
             return i;
@@ -108,7 +105,7 @@ namespace ATSPM.Infrastructure.Repositories
             foreach (var n in _db.Entry(item).Navigations)
             {
                 //if (!n.IsLoaded)
-                    n.Load();
+                n.Load();
             }
 
             return item;
@@ -150,17 +147,18 @@ namespace ATSPM.Infrastructure.Repositories
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
 
-                            foreach (var n in _db.Entry(old).Navigations)
+                            foreach (var i in _db.Entry(old).Collections)
                             {
-                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                                if (!i.IsLoaded)
+                                    i.Load();
+
+                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                             }
                         }
                         else
                         {
                             table.Update(item);
                         }
-
-                        //_db.SaveChanges();
 
                         break;
                     }
@@ -209,6 +207,14 @@ namespace ATSPM.Infrastructure.Repositories
 
                                 UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                             }
+
+                            foreach (var i in _db.Entry(old).References)
+                            {
+                                if (!i.IsLoaded)
+                                    await i.LoadAsync();
+
+                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
+                            }
                         }
                         else
                         {
@@ -237,15 +243,18 @@ namespace ATSPM.Infrastructure.Repositories
             }
 
             await _db.SaveChangesAsync().ConfigureAwait(false);
-
-
-            Console.WriteLine($"***************************************************");
-            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
         }
 
         protected virtual void UpdateCollections(T oldItem, CollectionEntry oldCollection, T newItem, CollectionEntry newCollection)
         {
-            oldCollection.CurrentValue = newCollection.CurrentValue;
+            //oldCollection.CurrentValue = newCollection.CurrentValue;
+        }
+
+        protected virtual void UpdateReferences(T oldItem, ReferenceEntry oldReference, T newItem, ReferenceEntry newReference)
+        {
+            //oldReference.CurrentValue = newReference.CurrentValue;
+
+            Console.WriteLine($"{oldItem} - {oldReference.CurrentValue} - {newItem} - {newReference.CurrentValue}");
         }
 
         //TODO: Check item for changes attach/unattach
