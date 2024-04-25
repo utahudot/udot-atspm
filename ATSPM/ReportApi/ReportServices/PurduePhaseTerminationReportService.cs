@@ -102,7 +102,7 @@ namespace ATSPM.ReportApi.ReportServices
                     phase.ConsecutiveGapOuts.Select(g => g.Timestamp).ToList(),
                     phase.ConsecutiveMaxOut.Select(g => g.Timestamp).ToList(),
                     phase.ConsecutiveForceOff.Select(g => g.Timestamp).ToList(),
-                    phase.PedestrianEvents.Select(g => g.Timestamp).ToList(),
+                    phase.PedestrianEvents.Where(g => g.EventCode == 21).Select(g => g.Timestamp).ToList(),
                     phase.UnknownTermination.Select(g => g.Timestamp).ToList()
                     ));
             }
