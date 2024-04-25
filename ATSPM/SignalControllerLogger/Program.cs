@@ -160,7 +160,8 @@ namespace ATSPM.LocationControllerLogger
             //await host.StopAsync();
 
             Location loc;
-            Area newArea;
+            Area newArea1;
+            Area newArea2;
 
 
             using (var scope = host.Services.CreateScope())
@@ -170,9 +171,10 @@ namespace ATSPM.LocationControllerLogger
 
                 //var loc = locations.Include(i => i.Areas).First(w => w.Id == 2);
                 loc = locations.Find(2);
-                config.Entry(loc).Collection(r => r.Areas).Load();
+                //config.Entry(loc).Collection(r => r.Areas).Load();
 
-                newArea = config.Areas.Find(3);
+                newArea1 = config.Areas.Find(2);
+                newArea2 = config.Areas.Find(3);
 
 
                 //foreach (var n in config.Entry(loc).Navigations)
@@ -206,7 +208,8 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                loc.Areas.Add(newArea);
+                loc.Areas.Add(newArea1);
+                loc.Areas.Add(newArea2);
 
                 //loc.JurisdictionId = 2;
 
