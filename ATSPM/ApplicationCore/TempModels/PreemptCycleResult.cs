@@ -4,7 +4,7 @@ namespace ATSPM.Application.TempModels
 {
     public class PreemptCycleResult
     {
-        public DateTime InputOff { get; set; }
+        public DateTime? InputOff { get; set; }
 
         public DateTime InputOn { get; set; }
 
