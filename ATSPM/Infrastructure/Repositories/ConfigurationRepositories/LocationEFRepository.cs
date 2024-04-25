@@ -3,10 +3,14 @@ using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Data;
 using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
+using ATSPM.Domain.Common;
 using ATSPM.Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,6 +48,36 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         //        .Include(i => i.Areas);
         //    //.Include(i => i.MetricComments);
         //}
+
+        protected override void UpdateCollections(Location oldItem, CollectionEntry oldCollection, Location newItem, CollectionEntry newCollection)
+        {
+            switch (oldCollection.Metadata.Name)
+            {
+                case "Areas":
+                    {
+                        var remove = oldItem.Areas.Except(newItem.Areas, new LambdaEqualityComparer<Area>((a1, a2) => a1.Id == a2.Id));
+                        var add = newItem.Areas.Except(oldItem.Areas, new LambdaEqualityComparer<Area>((a1, a2) => a1.Id == a2.Id));
+
+                        foreach (var r in remove)
+                        {
+                            oldItem.Areas.Remove(r);
+                        }
+
+                        foreach (var a in add)
+                        {
+                            oldItem.Areas.Add(a);
+                        }
+
+                        break;
+                    }
+                default:
+                    {
+                        base.UpdateCollections(oldItem, oldCollection, newItem, newCollection);
+
+                        break;
+                    }
+            }
+        }
 
         #endregion
 
