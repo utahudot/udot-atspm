@@ -1,10 +1,12 @@
-﻿using ATSPM.Domain.Services;
+﻿using ATSPM.Data.Models;
+using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
-using Google.Api;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using NetTopologySuite.Index.HPRtree;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -88,14 +90,12 @@ namespace ATSPM.Infrastructure.Repositories
         public async Task<T> LookupAsync(T item)
         {
             var i = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
-            
+
             foreach (var n in _db.Entry(i).Navigations)
             {
-                if (!n.IsLoaded)
-                n.Load();
+                //if (!n.IsLoaded)
+                    n.Load();
             }
-
-            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
 
             return i;
         }
@@ -107,11 +107,9 @@ namespace ATSPM.Infrastructure.Repositories
 
             foreach (var n in _db.Entry(item).Navigations)
             {
-                if (!n.IsLoaded)
+                //if (!n.IsLoaded)
                     n.Load();
             }
-
-            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
 
             return item;
         }
@@ -204,38 +202,31 @@ namespace ATSPM.Infrastructure.Repositories
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
 
-                            _db.ChangeTracker.DetectChanges();
+                            foreach (var i in _db.Entry(old).Collections)
+                            {
+                                if (!i.IsLoaded)
+                                    await i.LoadAsync();
 
-                            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
-
-                            //foreach (var n in _db.Entry(old).Navigations)
-                            //{
-                            //    n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
-                            //}
+                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                            }
                         }
                         else
                         {
                             table.Update(item);
                         }
 
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
-
                         break;
                     }
                 case EntityState.Modified:
                     {
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
-
                         break;
                     }
                 case EntityState.Unchanged:
                     {
-                        //foreach (var n in _db.Entry(item).Navigations)
+                        //foreach (var n in _db.Entry(item).References)
                         //{
                         //    n.IsModified = true;
                         //}
-
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
 
                         break;
                     }
@@ -245,7 +236,16 @@ namespace ATSPM.Infrastructure.Repositories
                     }
             }
 
-            await _db.SaveChangesAsync(true).ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(false);
+
+
+            Console.WriteLine($"***************************************************");
+            Console.WriteLine(_db.ChangeTracker.DebugView.LongView);
+        }
+
+        protected virtual void UpdateCollections(T oldItem, CollectionEntry oldCollection, T newItem, CollectionEntry newCollection)
+        {
+            oldCollection.CurrentValue = newCollection.CurrentValue;
         }
 
         //TODO: Check item for changes attach/unattach
