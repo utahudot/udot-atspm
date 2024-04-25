@@ -49,6 +49,7 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
         //    //.Include(i => i.MetricComments);
         //}
 
+        /// <inheritdoc/>
         protected override void UpdateCollections(Location oldItem, CollectionEntry oldCollection, Location newItem, CollectionEntry newCollection)
         {
             switch (oldCollection.Metadata.Name)
