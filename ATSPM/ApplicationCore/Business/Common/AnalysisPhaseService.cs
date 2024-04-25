@@ -65,7 +65,7 @@ namespace ATSPM.Application.Business.Common
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
             {
-                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
+                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 21 || t.EventCode == 23)).ToList();
             }
             else
             {
