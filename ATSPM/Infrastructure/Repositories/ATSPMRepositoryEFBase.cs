@@ -75,40 +75,56 @@ namespace ATSPM.Infrastructure.Repositories
 
         public T Lookup(T item)
         {
-            return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+            var result =  table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                n.Load();
+            }
+
+            return result;
         }
 
         //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public T Lookup(object key)
         {
-            return table.Find(key);
-        }
+            var result = table.Find(key);
 
-        public async Task<T> LookupAsync(T item)
-        {
-            var i = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
-
-            foreach (var n in _db.Entry(i).Navigations)
+            foreach (var n in _db.Entry(result).Navigations)
             {
                 //if (!n.IsLoaded)
                 n.Load();
             }
 
-            return i;
+            return result;
+        }
+
+        public async Task<T> LookupAsync(T item)
+        {
+            var result = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                await n.LoadAsync().ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public async Task<T> LookupAsync(object key)
         {
-            var item = await table.FindAsync(key);
+            var result = await table.FindAsync(key);
 
-            foreach (var n in _db.Entry(item).Navigations)
+            foreach (var n in _db.Entry(result).Navigations)
             {
                 //if (!n.IsLoaded)
-                n.Load();
+                await n.LoadAsync().ConfigureAwait(false);
             }
 
-            return item;
+            return result;
         }
 
         public void Remove(T item)
@@ -154,6 +170,14 @@ namespace ATSPM.Infrastructure.Repositories
 
                                 UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
                             }
+
+                            foreach (var i in _db.Entry(old).References)
+                            {
+                                if (!i.IsLoaded)
+                                    i.Load();
+
+                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
+                            }
                         }
                         else
                         {
@@ -164,18 +188,14 @@ namespace ATSPM.Infrastructure.Repositories
                     }
                 case EntityState.Modified:
                     {
-                        //_db.SaveChanges();
-
                         break;
                     }
                 case EntityState.Unchanged:
                     {
-                        foreach (var n in _db.Entry(item).Navigations)
-                        {
-                            n.IsModified = true;
-                        }
-
-                        //_db.SaveChanges();
+                        //foreach (var n in _db.Entry(item).References)
+                        //{
+                        //    n.IsModified = true;
+                        //}
 
                         break;
                     }
@@ -253,8 +273,6 @@ namespace ATSPM.Infrastructure.Repositories
         protected virtual void UpdateReferences(T oldItem, ReferenceEntry oldReference, T newItem, ReferenceEntry newReference)
         {
             //oldReference.CurrentValue = newReference.CurrentValue;
-
-            Console.WriteLine($"{oldItem} - {oldReference.CurrentValue} - {newItem} - {newReference.CurrentValue}");
         }
 
         //TODO: Check item for changes attach/unattach
