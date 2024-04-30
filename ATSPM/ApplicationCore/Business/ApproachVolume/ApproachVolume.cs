@@ -313,8 +313,8 @@
 ////                            Detectors.Add(detector);
 ////                            detectorEvents.AddRange(_controllerEventLogRepository.GetEventsByEventCodesParam(
 ////                                detector.Approach.LocationId,
-////                                _approachVolumeOptions.StartDate,
-////                                _approachVolumeOptions.EndDate,
+////                                _approachVolumeOptions.Start,
+////                                _approachVolumeOptions.End,
 ////                                new List<int> { 82 },
 ////                                detector.DetectorChannel,
 ////                                detector.GetOffset(),
@@ -323,7 +323,7 @@
 ////                    }
 ////                }
 ////            }
-////            return new VolumeCollection(_approachVolumeOptions.StartDate, _approachVolumeOptions.EndDate, detectorEvents, _approachVolumeOptions.SelectedBinSize);
+////            return new VolumeCollection(_approachVolumeOptions.Start, _approachVolumeOptions.End, detectorEvents, _approachVolumeOptions.SelectedBinSize);
 ////        }
 
 ////        public void SetVolumeMetrics()
