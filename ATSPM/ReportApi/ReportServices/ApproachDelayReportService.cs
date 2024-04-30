@@ -54,7 +54,7 @@ namespace ATSPM.ReportApi.ReportServices
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
-                return await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
+                return new List<ApproachDelayResult>(); // await Task.FromException<IEnumerable<ApproachDelayResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
@@ -73,12 +73,6 @@ namespace ATSPM.ReportApi.ReportServices
 
             var results = await Task.WhenAll(tasks);
             var finalResultcheck = results.Where(result => result != null).OrderBy(r => r.PhaseNumber).ToList();
-
-            //if (finalResultcheck.IsNullOrEmpty())
-            //{
-            //    return Ok("No chart data found");
-            //}
-            //return Ok(finalResultcheck);
 
             return finalResultcheck;
         }
