@@ -82,7 +82,7 @@ namespace ATSPM.Application.Business.WaitTime
             //&& x.EventParam == phaseDetail.PhaseNumber)
             //.OrderBy(x => x.Timestamp);
             var orderedPhaseRegisterList = events.Where(x =>
-                (x.EventCode == 45 ||
+                (x.EventCode == 43 ||
                 x.EventCode == 44)
                 && x.EventParam == phaseDetail.PhaseNumber);
             var waitTimeTrackerList = new List<WaitTimeTracker>();
@@ -103,7 +103,7 @@ namespace ATSPM.Application.Business.WaitTime
 
                     //Find all events between the red and green
                     //var phaseCallList = orderedPhaseRegisterList
-                    //    .Where(x => x.Timestamp >= red.Timestamp && x.Timestamp < green.Timestamp)
+                    //    .Where(x => x.Timestamp >= cycle.RedEvent && x.Timestamp < cycle.GreenEvent)
                     //    .OrderBy(x => x.Timestamp).ToList();
 
                     if (!cycle.PhaseRegisterDroppedCalls.Any())
