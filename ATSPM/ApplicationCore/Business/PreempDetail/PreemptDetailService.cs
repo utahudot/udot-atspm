@@ -69,7 +69,7 @@ namespace ATSPM.Application.Business.PreempDetail
         {
             var result = cycles.Select(c => new PreemptCycleResult()
             {
-                InputOff = c.InputOff[0],
+                InputOff = c.InputOff != null && c.InputOff.Count > 0 ? c.InputOff[0] : null,
                 InputOn = c.EntryStarted >= options.Start && c.EntryStarted <= options.End ? c.EntryStarted : c.InputOn[0],
                 GateDown = c.GateDown >= options.Start && c.GateDown <= options.End ? c.GateDown : null,
                 CallMaxOut = c.TimeToCallMaxOut,
