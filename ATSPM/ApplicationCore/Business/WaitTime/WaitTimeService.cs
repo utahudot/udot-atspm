@@ -64,14 +64,16 @@ namespace ATSPM.Application.Business.WaitTime
             IReadOnlyList<PlanSplitMonitorData> plans
             )
         {
-            var volume = new VolumeCollection(
-           options.Start,
-            options.End,
-               events.Where(e => e.EventCode == 82 && e.EventParam == phaseDetail.PhaseNumber).ToList(),
-               options.BinSize);
             bool useDroppingAlgorithm;
             string detectionTypesForApproach;
             GetDetectionTypes(phaseDetail.Approach, out useDroppingAlgorithm, out detectionTypesForApproach);
+            var detectorsForVolume = phaseDetail.Approach.GetDetectorsForMetricType(32);
+            var channels = detectorsForVolume.Select(x => x.DetectorChannel).ToList();
+            var volume = new VolumeCollection(
+           options.Start,
+            options.End,
+               events.Where(e => e.EventCode == 82 && channels.Contains(e.EventParam)).ToList(),
+               options.BinSize);
             var cycleEvents = events.Where(x =>
                 (x.EventCode == 11 || x.EventCode == 1)
                 && x.EventParam == phaseDetail.PhaseNumber);
