@@ -167,11 +167,12 @@ namespace ATSPM.LocationControllerLogger
             using (var scope = host.Services.CreateScope())
             {
                 var config = scope.ServiceProvider.GetService<ConfigContext>();
-                var locations = config.Locations;
+                
+                //var locations = config.Locations;
+                //loc = locations.Find(2);
 
-                //var loc = locations.Include(i => i.Areas).First(w => w.Id == 2);
-                loc = locations.Find(2);
-                //config.Entry(loc).Collection(r => r.Areas).Load();
+                var locations = scope.ServiceProvider.GetService<ILocationRepository>();
+                loc = await locations.LookupAsync(2);
 
                 newArea1 = config.Areas.Find(2);
                 newArea2 = config.Areas.Find(3);
@@ -208,10 +209,10 @@ namespace ATSPM.LocationControllerLogger
 
             using (var scope = host.Services.CreateScope())
             {
-                loc.Areas.Add(newArea1);
-                loc.Areas.Add(newArea2);
+                //loc.Areas.Add(newArea1);
+                //loc.Areas.Add(newArea2);
 
-                //loc.JurisdictionId = 2;
+                loc.JurisdictionId = 2;
 
 
                 var locations = scope.ServiceProvider.GetService<ILocationRepository>();
