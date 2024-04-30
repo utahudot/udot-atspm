@@ -134,6 +134,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<LeftTurnGapReportOptions, IEnumerable<LeftTurnGapReportResult>>, LeftTurnGapReportService>();
     s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
     s.AddScoped<LinkPivotReportService>();
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
@@ -166,6 +167,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LeftTurnPedActuationService>();
     s.AddScoped<LeftTurnGapDurationService>();
     s.AddScoped<LeftTurnVolumeService>();
+    s.AddScoped<LeftTurnGapReportService>();
+
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();

@@ -54,15 +54,18 @@ namespace ATSPM.Application.Business.Common
             var phase = phaseService.GetPhases(Location).Find(p => p.PhaseNumber == phasenumber);
             if (phase == null)
             {
-                return null;
+                analysisPhaseData.PhaseDescription = "Unconfigured";
             }
-            analysisPhaseData.PhaseDescription = phase.Approach.Description;
+            else
+            {
+                analysisPhaseData.PhaseDescription = phase.Approach.Description;
+            }
             analysisPhaseData.PhaseNumber = phasenumber;
             var cycleEventCodes = new List<short> { 1, 8, 11 };
             var phaseEvents = cycleEvents.ToList().Where(p => p.EventParam == phasenumber && cycleEventCodes.Contains(p.EventCode)).ToList();
             if (!pedestrianEvents.IsNullOrEmpty())
             {
-                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber).ToList();
+                analysisPhaseData.PedestrianEvents = pedestrianEvents.Where(t => t.EventParam == phasenumber && (t.EventCode == 21 || t.EventCode == 23)).ToList();
             }
             else
             {
