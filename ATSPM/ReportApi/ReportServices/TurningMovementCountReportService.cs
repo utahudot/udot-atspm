@@ -91,6 +91,10 @@ namespace ATSPM.ReportApi.ReportServices
             List<IndianaEvent> controllerEventLogs,
             List<Plan> plans)
         {
+            if (!Location.Approaches.SelectMany(a => a.Detectors).Select(d => d.LaneType).Distinct().Contains(laneType))
+            {
+                return null;
+            }
             var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
             var tasks = new List<Task<TurningMovementCountsResult>>();
             foreach (var direction in directions)
