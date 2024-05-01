@@ -1,4 +1,5 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Specifications;
 using ATSPM.Data;
@@ -54,8 +55,8 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             {
                 case "Areas":
                     {
-                        var remove = oldItem.Areas.Except(newItem.Areas, new LambdaEqualityComparer<Area>((a1, a2) => a1.Id == a2.Id));
-                        var add = newItem.Areas.Except(oldItem.Areas, new LambdaEqualityComparer<Area>((a1, a2) => a1.Id == a2.Id));
+                        var remove = oldItem.Areas.Except(newItem.Areas, new ConfigEntityIdComparer<Area, int>());
+                        var add = newItem.Areas.Except(oldItem.Areas, new ConfigEntityIdComparer<Area, int>());
 
                         foreach (var r in remove)
                         {
