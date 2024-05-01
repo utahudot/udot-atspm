@@ -105,8 +105,6 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override List<AggregationResult> GetTimeCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
-            var chart = new AggregationResult();
-            charts.Add(chart);
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
