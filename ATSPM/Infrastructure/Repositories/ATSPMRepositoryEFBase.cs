@@ -194,16 +194,7 @@ namespace ATSPM.Infrastructure.Repositories
                     }
                 case EntityState.Unchanged:
                     {
-                        //foreach (var n in _db.Entry(item).References)
-                        //{
-                        //    n.IsModified = true;
-                        //}
-
                         break;
-                    }
-                default:
-                    {
-                        return;
                     }
             }
 
@@ -251,16 +242,7 @@ namespace ATSPM.Infrastructure.Repositories
                     }
                 case EntityState.Unchanged:
                     {
-                        //foreach (var n in _db.Entry(item).References)
-                        //{
-                        //    n.IsModified = true;
-                        //}
-
                         break;
-                    }
-                default:
-                    {
-                        return;
                     }
             }
 
