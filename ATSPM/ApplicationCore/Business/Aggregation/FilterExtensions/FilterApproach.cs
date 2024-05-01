@@ -6,6 +6,6 @@ namespace ATSPM.Application.Business.Aggregation.FilterExtensions
     {
         public int ApproachId { get; set; }
         public bool Exclude { get; set; }
-        public List<FilterDetector> FilterDetectors { get; set; } = new List<FilterDetector>();
+        public List<FilterDetector> Detectors { get; set; } = new List<FilterDetector>();
     }
 }
