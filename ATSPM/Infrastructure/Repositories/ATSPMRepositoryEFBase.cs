@@ -24,6 +24,8 @@ namespace ATSPM.Infrastructure.Repositories
             table = _db.Set<T>();
         }
 
+        #region IAsyncRepository
+
         public void Add(T item)
         {
             table.Add(item);
@@ -75,7 +77,7 @@ namespace ATSPM.Infrastructure.Repositories
 
         public T Lookup(T item)
         {
-            var result =  table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+            var result = table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
 
             foreach (var n in _db.Entry(result).Navigations)
             {
@@ -265,15 +267,7 @@ namespace ATSPM.Infrastructure.Repositories
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        protected virtual void UpdateCollections(T oldItem, CollectionEntry oldCollection, T newItem, CollectionEntry newCollection)
-        {
-            //oldCollection.CurrentValue = newCollection.CurrentValue;
-        }
 
-        protected virtual void UpdateReferences(T oldItem, ReferenceEntry oldReference, T newItem, ReferenceEntry newReference)
-        {
-            //oldReference.CurrentValue = newReference.CurrentValue;
-        }
 
         //TODO: Check item for changes attach/unattach
         public void UpdateRange(IEnumerable<T> items)
@@ -287,6 +281,30 @@ namespace ATSPM.Infrastructure.Repositories
         {
             table.UpdateRange(items);
             await _db.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Determines what to do with related one-to-many and many-to-many entity collections
+        /// </summary>
+        /// <param name="oldItem"></param>
+        /// <param name="oldCollection"></param>
+        /// <param name="newItem"></param>
+        /// <param name="newCollection"></param>
+        protected virtual void UpdateCollections(T oldItem, CollectionEntry oldCollection, T newItem, CollectionEntry newCollection)
+        {
+        }
+
+        /// <summary>
+        /// Determines what to do with related one-to-one entities
+        /// </summary>
+        /// <param name="oldItem"></param>
+        /// <param name="oldReference"></param>
+        /// <param name="newItem"></param>
+        /// <param name="newReference"></param>
+        protected virtual void UpdateReferences(T oldItem, ReferenceEntry oldReference, T newItem, ReferenceEntry newReference)
+        {
         }
     }
 }
