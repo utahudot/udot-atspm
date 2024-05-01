@@ -19,7 +19,7 @@ namespace ATSPM.Application.Business.Aggregation
         public AggregationCalculationType SelectedAggregationType { get; set; }
         public XAxisType SelectedXAxisType { get; set; }
         public SeriesType SelectedSeries { get; set; }
-        public List<FilterSignal> FilterSignals { get; set; } = new List<FilterSignal>();
+        public List<FilterSignal> Locations { get; set; } = new List<FilterSignal>();
         public List<FilterDirection> FilterDirections { get; set; }
         public List<FilterMovement> FilterMovements { get; set; }
     }
