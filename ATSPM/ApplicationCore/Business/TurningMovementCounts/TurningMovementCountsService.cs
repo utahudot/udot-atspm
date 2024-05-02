@@ -5,6 +5,7 @@ using ATSPM.Data.Models.EventLogModels;
 using Microsoft.OpenApi.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -89,9 +90,9 @@ namespace ATSPM.Application.Business.TurningMovementCounts
                 LocationDescription,
                 options.Start,
                 options.End,
-                directionType.GetDisplayName(),
-                laneType.GetDisplayName(),
-                movementType.GetDisplayName(),
+                directionType.GetAttributeOfType<DisplayAttribute>().Name,
+                laneType.GetAttributeOfType<DisplayAttribute>().Name,
+                movementType.GetAttributeOfType<DisplayAttribute>().Name,
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
