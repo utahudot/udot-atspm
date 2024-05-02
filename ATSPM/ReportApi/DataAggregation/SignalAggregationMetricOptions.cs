@@ -114,25 +114,25 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
         protected List<Location> GetSignalObjects(AggregationOptions options)
         {
-            var signals = new List<Location>();
+            var locations = new List<Location>();
             try
             {
                 if (options.LocationIdentifiers.Any())
                 {
-                    foreach (var filterSignal in options.FilterSignals)
+                    foreach (var filterSignal in options.Locations)
                         if (!filterSignal.Exclude)
                         {
-                            signals =
-                                locationRepository.GetLocationsBetweenDates(filterSignal.SignalId, options.TimeOptions.Start, options.TimeOptions.End).ToList();
+                            var signals =
+                                locationRepository.GetLocationsBetweenDates(filterSignal.LocationIdentifier, options.TimeOptions.Start, options.TimeOptions.End).ToList();
                             foreach (var signal in signals)
                             {
                                 RemoveApproachesByFilter(filterSignal, signal, options);
                                 signal.Approaches = signal.Approaches.OrderBy(a => a.ProtectedPhaseNumber).ToList();
                             }
-                            signals.AddRange(signals);
+                            locations.AddRange(signals);
                         }
                 }
-                return signals;
+                return locations;
             }
             catch (Exception e)
             {
@@ -370,7 +370,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             RemoveApproachesFromSignalByDirection(signal, options);
             RemoveDetectorsFromSignalByMovement(signal, options);
             var excludedApproachIds =
-                filterSignal.FilterApproaches.Where(f => f.Exclude).Select(f => f.ApproachId).ToList();
+                filterSignal.Approaches.Where(f => f.Exclude).Select(f => f.ApproachId).ToList();
             var excludedApproaches = signal.Approaches.Where(a => excludedApproachIds.Contains(a.Id));
             foreach (var excludedApproach in excludedApproaches)
             {
@@ -386,7 +386,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
                 foreach (var approachToExclude in approachesToExclude)
                     signal.Approaches.Remove(approachToExclude);
                 foreach (var approach in signal.Approaches)
-                    foreach (var filterApproach in filterSignal.FilterApproaches.Where(f => !f.Exclude))
+                    foreach (var filterApproach in filterSignal.Approaches.Where(f => !f.Exclude))
                         RemoveDetectorsFromApproachByFilter(filterApproach, approach);
             }
         }
@@ -419,7 +419,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
         private static void RemoveDetectorsFromApproachByFilter(FilterApproach filterApproach, Approach approach)
         {
             var excludedDetectorIds =
-                filterApproach.FilterDetectors.Where(f => f.Exclude).Select(f => f.Id).ToList();
+                filterApproach.Detectors.Where(f => f.Exclude).Select(f => f.Id).ToList();
             var excludedDetectors = approach.Detectors.Where(d => excludedDetectorIds.Contains(d.Id));
             foreach (var excludedDetector in excludedDetectors)
             {
