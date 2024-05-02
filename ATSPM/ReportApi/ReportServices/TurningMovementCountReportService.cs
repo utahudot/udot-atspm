@@ -11,6 +11,7 @@ using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -86,7 +87,7 @@ namespace ATSPM.ReportApi.ReportServices
             //Get Lane results by direction and movement type and bin size anc create a list of TurningMovementCountData for each direction and movement type
             foreach (var direction in Location.Approaches.Select(a => a.DirectionTypeId).Distinct())
             {
-                var laneResultsByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetDisplayName()).ToList();
+                var laneResultsByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetAttributeOfType<DisplayAttribute>().Name).ToList();
                 var movementTypes = laneResultsByDirection.Select(r => r.MovementType).Distinct().ToList();
                 foreach (var movementType in movementTypes)
                 {
@@ -95,7 +96,7 @@ namespace ATSPM.ReportApi.ReportServices
                     {
                         continue;
                     }
-                    var turningMovementCountData = new TurningMovementCountData { Direction = direction.GetDisplayName(), LaneType = laneResultsByMovementType.FirstOrDefault().LaneType, MovementType = movementType };
+                    var turningMovementCountData = new TurningMovementCountData { Direction = direction.GetAttributeOfType<DisplayAttribute>().Name, LaneType = laneResultsByMovementType.FirstOrDefault().LaneType, MovementType = movementType };
 
                     //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
                     turningMovementCountData.Volumes = laneResultsByMovementType
