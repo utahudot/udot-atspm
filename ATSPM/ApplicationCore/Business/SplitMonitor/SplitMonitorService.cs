@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -157,6 +156,26 @@ namespace ATSPM.Application.Business.SplitMonitor
                         ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
                         PercentileSplit85th = GetPercentSplit(highCycleCount, .85, cycles),
                         PercentileSplit50th = GetPercentSplit(highCycleCount, .5, cycles),
+                    });
+                }
+                else
+                {
+                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
+                    {
+                        Start = plan.Start,
+                        End = plan.End,
+                        PlanNumber = plan.PlanNumber,
+                        PercentSkips = 0,
+                        PercentGapOuts = 0,
+                        PercentMaxOuts = 0,
+                        PercentForceOffs = 0,
+                        AverageSplit = 0,
+                        PercentileSplit = 0,
+                        Splits = plan.Splits,
+                        MinTime = 0,
+                        ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
+                        PercentileSplit85th = 0,
+                        PercentileSplit50th = 0,
                     });
                 }
             }
