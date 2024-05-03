@@ -27,7 +27,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             this.planService = planService;
         }
 
-        public async Task<TurningMovementCountsResult> GetChartData(
+        public async Task<TurningMovementCountsLanesResult> GetChartData(
             List<Detector> detectorsByDirection,
             LaneTypes laneType,
             MovementTypes movementType,
@@ -85,7 +85,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
                 .Where(i => i.StartTime >= peakHour.Key && i.StartTime < peakHourEnd)
                 .Sum(i => i.DetectorCount);
 
-            return new TurningMovementCountsResult(
+            return new TurningMovementCountsLanesResult(
                 locationIdentifier,
                 LocationDescription,
                 options.Start,
