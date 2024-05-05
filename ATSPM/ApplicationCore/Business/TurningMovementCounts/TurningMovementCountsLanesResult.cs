@@ -19,6 +19,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             string movementType,
             IReadOnlyList<Plan> plans,
             IReadOnlyList<Lane> lanes,
+            IReadOnlyList<DataPointForInt> totalHourlyVolumes,
             IReadOnlyList<DataPointForInt> totalVolumes,
             int totalVolume,
             string peakHour,
@@ -36,6 +37,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             MovementType = movementType;
             Plans = plans;
             Lanes = lanes;
+            TotalHourlyVolumes = totalHourlyVolumes;
             TotalVolumes = totalVolumes;
             TotalVolume = totalVolume;
             PeakHour = peakHour;
@@ -53,6 +55,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
         public string MovementType { get; }
         public IReadOnlyList<Plan> Plans { get; set; }
         public IReadOnlyList<Lane> Lanes { get; set; }
+        public IReadOnlyList<DataPointForInt> TotalHourlyVolumes { get; set; }
         public IReadOnlyList<DataPointForInt> TotalVolumes { get; set; }
         public int TotalVolume { get; set; }
         public string PeakHour { get; }
