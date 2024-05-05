@@ -96,6 +96,7 @@ namespace ATSPM.Application.Business.TurningMovementCounts
                 plans,
                 lanes,
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
+                allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList(),
                 totalDetectorCounts,
                 $"{peakHour.Key.ToShortTimeString()} - {peakHourEnd.ToShortTimeString()}",
                 peakHour.Value / binMultiplier,
