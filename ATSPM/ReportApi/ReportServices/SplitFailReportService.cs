@@ -87,7 +87,7 @@ namespace ATSPM.ReportApi.ReportServices
             //var cycleEventCodes = approach.GetCycleEventCodes(options.UsePermissivePhase);
             var cycleEvents = controllerEventLogs.GetCycleEventsWithTimeExtension(
                 phaseDetail.PhaseNumber,
-                options.GetPermissivePhase,
+                phaseDetail.UseOverlap,
                 options.Start,
                 options.End);
             if (cycleEvents.IsNullOrEmpty())
