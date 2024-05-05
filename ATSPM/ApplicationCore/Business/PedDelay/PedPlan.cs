@@ -22,6 +22,7 @@ namespace ATSPM.Application.Business.PedDelay
         public List<IndianaEvent> Events { get; set; }
         public List<PedCycle> Cycles { get; set; } = new List<PedCycle>();
         public int UniquePedDetections { get; set; }
+        public int PedPresses { get; set; }
         public double CyclesWithPedRequests => Cycles.Count;
         public double PedBeginWalkCount
         {
