@@ -50,21 +50,21 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             var laneNumberVolumes = new Dictionary<int, VolumeCollection>();
             var lanes = new List<Lane>();
 
-            foreach (var laneNumber in tmcDetectors.Select(d => d.LaneNumber).Distinct())
+            foreach (var movement in tmcDetectors.Select(d => d.MovementType).Distinct())
             {
-                var volumes = laneVolumes.Where(l => l.Key.LaneNumber == laneNumber).ToList();
+                var volumes = laneVolumes.Where(l => l.Key.MovementType == movement).ToList();
                 var laneVolume = new VolumeCollection(volumes.Select(l => l.Value).ToList(), options.BinSize);
                 var firstDetector = volumes.FirstOrDefault();
 
                 lanes.Add(new Lane
                 {
-                    LaneNumber = laneNumber,
-                    MovementType = firstDetector.Key?.MovementType.GetDisplayName(),
+                    LaneNumber = firstDetector.Key.LaneNumber,
+                    MovementType = firstDetector.Key?.MovementType.GetAttributeOfType<DisplayAttribute>().Name,
                     LaneType = firstDetector.Key?.LaneType ?? 0,
                     Volume = laneVolume.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList()
                 });
 
-                laneNumberVolumes.Add(laneNumber.Value, laneVolume);
+                laneNumberVolumes.Add((int)firstDetector.Key.MovementType, laneVolume);
             }
 
             var highestDetectorCountByLane = laneNumberVolumes.Values.Max(l => l.TotalDetectorCounts);
@@ -95,8 +95,8 @@ namespace ATSPM.Application.Business.TurningMovementCounts
                 movementType.GetAttributeOfType<DisplayAttribute>().Name,
                 plans,
                 lanes,
-                allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
                 allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.DetectorCount)).ToList(),
+                allLanesMovementVolumes.Items.Select(i => new DataPointForInt(i.StartTime, i.HourlyVolume)).ToList(),
                 totalDetectorCounts,
                 $"{peakHour.Key.ToShortTimeString()} - {peakHourEnd.ToShortTimeString()}",
                 peakHour.Value / binMultiplier,
