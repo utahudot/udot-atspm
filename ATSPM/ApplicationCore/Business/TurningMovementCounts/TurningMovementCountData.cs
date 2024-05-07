@@ -20,6 +20,8 @@ namespace ATSPM.Application.Business.TurningMovementCounts
             public string LaneType { get; set; }
 
             public List<DataPointForInt> Volumes { get; set; }
+
+            public DataPointForInt PeakHourVolume { get; set; }
         }
     }
 }
