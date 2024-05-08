@@ -126,21 +126,10 @@ namespace ATSPM.LocationControllerLogger
 
 
                     //s.AddTransient<IEmailService, SendGridEmailService>();
-                    s.AddTransient<IEmailService, SmtpEmailService>();
+                    //s.AddTransient<IEmailService, SmtpEmailService>();
 
-
-                    var t = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
-                    foreach (var i in t)
-                    {
-                        //var sec = h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}");
-                        //if (sec.Value != null)
-
-
-
-                        if (i.Name == nameof(SmtpEmailService))
-                            //s.Configure<EmailConfiguration>(h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}"));
-                        s.Configure<EmailConfiguration>(i.Name, h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}"));
-                    }
+                    s.AddEmailServices(h);
+                    
 
 
 
@@ -190,7 +179,7 @@ namespace ATSPM.LocationControllerLogger
                 var test = scope.ServiceProvider.GetService<IOptionsSnapshot<EmailConfiguration>>();
                 var huh = test.Get(nameof(SmtpEmailService));
 
-                var email = scope.ServiceProvider.GetService<IEmailService>();
+                var email = scope.ServiceProvider.GetServices<IEmailService>();
 
             }
 
