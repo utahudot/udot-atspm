@@ -172,6 +172,7 @@ namespace ATSPM.ReportApi.ReportServices
                 approachResult.GapDurationConsiderForStudy = gapResult.GapDurationPercent > options.AcceptableGapPercentage;
                 approachResult.Capacity = gapResult.Capacity;
                 approachResult.Demand = gapResult.Demand;
+                approachResult.VCRatio = gapResult.Capacity == 0 ? 0 : gapResult.Demand / gapResult.Capacity;
                 approachResult.GapOutPercent = gapResult.GapDurationPercent;
                 approachResult.AcceptableGapList = gapResult.AcceptableGaps;
             }
