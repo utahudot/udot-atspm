@@ -1,34 +1,26 @@
 using ATSPM.Application.Configuration;
 using ATSPM.Application.Services;
 using ATSPM.Data.Models.EventLogModels;
+using ATSPM.Domain.Configuration;
+using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
+using ATSPM.Infrastructure.Services.EmailServices;
 using Google.Cloud.Diagnostics.Common;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MimeKit;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Mail;
-using System.Net.Mime;
-using System.Net;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using ATSPM.Domain.Configuration;
-using ATSPM.Domain.Services;
-using ATSPM.Infrastructure.Services.EmailServices;
-using Microsoft.OpenApi.Writers;
 
 namespace ATSPM.LocationControllerLogger
 {
@@ -137,6 +129,21 @@ namespace ATSPM.LocationControllerLogger
                     s.AddTransient<IEmailService, SmtpEmailService>();
 
 
+                    var t = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
+                    foreach (var i in t)
+                    {
+                        //var sec = h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}");
+                        //if (sec.Value != null)
+
+
+
+                        if (i.Name == nameof(SmtpEmailService))
+                            //s.Configure<EmailConfiguration>(h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}"));
+                        s.Configure<EmailConfiguration>(i.Name, h.Configuration.GetSection($"{nameof(EmailConfiguration)}:{i.Name}"));
+                    }
+
+
+
 
                     s.PostConfigureAll<SignalControllerDownloaderConfiguration>(o =>
                     {
@@ -147,26 +154,25 @@ namespace ATSPM.LocationControllerLogger
                         o.DeleteFile = false;
                     });
 
-                    s.PostConfigureAll<EmailConfiguration>(o =>
-                    {
-                        o.Host = "smtp.sendgrid.net";
-                        o.Port = 587;
-                        o.EnableSsl = false;
-                        o.UserName = "apikey";
-                        o.Password = "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";
-                        o.Key = "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";
-                    });
+                    //s.PostConfigureAll<EmailConfiguration>(o =>
+                    //{
+                    //    o.Host = "smtp.sendgrid.net";
+                    //    o.Port = 587;
+                    //    o.EnableSsl = false;
+                    //    o.UserName = "apikey";
+                    //    o.Password = "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";
+                    //});
 
-  //              "DefaultEmailAddress": "dlowe@avenueconsultants.com",
-  //"EmailAllErrors": false,
-  //"EmailType": "smtp",
-  //"SmtpSettings": {
-  //              "Host": "smtp-relay.brevo.com",
-  //  "Port": 587,
-  //  "EnableSsl": true,
-  //  "UserName": "dlowe@avenueconsultants.com",
-  //  "Password": "Bb1SkPtsE5hLQYn4"
-  //},
+                    //              "DefaultEmailAddress": "dlowe@avenueconsultants.com",
+                    //"EmailAllErrors": false,
+                    //"EmailType": "smtp",
+                    //"SmtpSettings": {
+                    //              "Host": "smtp-relay.brevo.com",
+                    //  "Port": 587,
+                    //  "EnableSsl": true,
+                    //  "UserName": "dlowe@avenueconsultants.com",
+                    //  "Password": "Bb1SkPtsE5hLQYn4"
+                    //},
                 })
 
                 //.UseConsoleLifetime()
@@ -179,26 +185,41 @@ namespace ATSPM.LocationControllerLogger
             //await host.StopAsync();
 
 
-
             using (var scope = host.Services.CreateScope())
             {
+                var test = scope.ServiceProvider.GetService<IOptionsSnapshot<EmailConfiguration>>();
+                var huh = test.Get(nameof(SmtpEmailService));
+
                 var email = scope.ServiceProvider.GetService<IEmailService>();
 
-                var to = new List<MailAddress>() {
-                    { new MailAddress("christianbaker@utah.gov", "Christian Baker") },
-                    { new MailAddress("beatnikthedan@hotmail.com", "Christian Baker")}};
-
-                var result = await email.SendEmailAsync(
-                    new MailAddress("AtspmWatchdog@utah.gov", "Atspm Watchdog"),
-                    to,
-                    "this is the test subject",
-                    "this is the test body",
-                    false,
-                    MailPriority.Low);
-
-                Console.WriteLine(result);
             }
 
+
+            //using (var scope = host.Services.CreateScope())
+            //{
+            //    var email = scope.ServiceProvider.GetService<IEmailService>();
+
+            //    var to = new List<MailAddress>() {
+            //        { new MailAddress("christianbaker@utah.gov", "Christian Baker") },
+            //        { new MailAddress("beatnikthedan@hotmail.com", "Christian Baker")}};
+
+            //    var result = await email.SendEmailAsync(
+            //        new MailAddress("AtspmWatchdog@utah.gov", "Atspm Watchdog"),
+            //        to,
+            //        "this is the test subject",
+            //        "this is the test body",
+            //        false,
+            //        MailPriority.Low);
+
+            //    Console.WriteLine(result);
+            //}
+
+            Console.WriteLine("asdfasdf");
+            var t = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
+            foreach (var i in t)
+            {
+                Console.WriteLine(i.Name);
+            }
 
 
 
