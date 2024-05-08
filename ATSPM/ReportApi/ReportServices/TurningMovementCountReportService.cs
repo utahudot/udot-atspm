@@ -96,7 +96,12 @@ namespace ATSPM.ReportApi.ReportServices
                     {
                         continue;
                     }
-                    var turningMovementCountData = new TurningMovementCountData { Direction = direction.GetAttributeOfType<DisplayAttribute>().Name, LaneType = laneResultsByMovementType.FirstOrDefault().LaneType, MovementType = movementType };
+                    var turningMovementCountData = new TurningMovementCountData
+                    {
+                        Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
+                        LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
+                        MovementType = movementType
+                    };
 
                     //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
                     turningMovementCountData.Volumes = laneResultsByMovementType
@@ -107,7 +112,69 @@ namespace ATSPM.ReportApi.ReportServices
                     finalResultcheck.Table.Add(turningMovementCountData);
                 }
             }
+            finalResultcheck.PeakHour = FindPeakHour(finalResultcheck.Table);
+            SetPeakHourFactor(finalResultcheck);
+            SetPeakHourVolume(finalResultcheck);
             return finalResultcheck;
+        }
+
+        private void SetPeakHourVolume(TurningMovementCountsResult turningMovementCountsResult)
+        {
+            foreach (var lane in turningMovementCountsResult.Table)
+            {
+                lane.PeakHourVolume = new DataPointForInt(turningMovementCountsResult.PeakHour.Key, lane.Volumes
+                    .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
+                                                   && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
+                    .Sum(t => t.Value));
+            }
+        }
+
+        private void SetPeakHourFactor(TurningMovementCountsResult turningMovementCountsResult)
+        {
+            try
+            {
+                if (turningMovementCountsResult.Table
+                        .Where(t => t.LaneType == "Vehicle")
+                        .SelectMany(t => t.Volumes)
+                        .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
+                                    && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
+                        .Count() > 0)
+                {
+                    var maxCount = turningMovementCountsResult.Table
+                        .Where(t => t.LaneType == "Vehicle")
+                        .SelectMany(t => t.Volumes)
+                        .GroupBy(t => t.Timestamp)
+                        .Select(t => new { Id = t.Key, Count = t.Sum(y => y.Value) })
+                        .Max(t => t.Count);
+                    double denominator = 4 * maxCount;
+                    if (denominator != 0)
+                        turningMovementCountsResult.PeakHourFactor = Math.Round(turningMovementCountsResult.PeakHour.Value / denominator, 2);
+                }
+            }
+            catch
+            {
+                throw new Exception("Error Setting Peak Hour");
+            }
+        }
+
+        private KeyValuePair<DateTime, int> FindPeakHour(List<TurningMovementCountData> turnningMovementCountData)
+        {
+            var binStartTimes = turnningMovementCountData.SelectMany(t => t.Volumes).Select(v => v.Timestamp).Distinct().OrderBy(r => r).ToList();
+            var totalVolume = new KeyValuePair<DateTime, int>(DateTime.MinValue, 0);
+
+            foreach (var date in binStartTimes)
+            {
+                var tempVolume = turnningMovementCountData
+                    .Where(t => t.LaneType == "Vehicle")
+                    .SelectMany(t => t.Volumes)
+                    .Where(t =>
+                        t.Timestamp >= date
+                        && t.Timestamp < date.AddHours(1))
+                    .Sum(t => t.Value);
+                if (tempVolume > totalVolume.Value)
+                    totalVolume = new KeyValuePair<DateTime, int>(date, tempVolume);
+            }
+            return totalVolume;
         }
 
         private async Task<IEnumerable<TurningMovementCountsLanesResult>> GetChartDataForLaneType(
