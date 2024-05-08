@@ -36,7 +36,6 @@ namespace MOE.Common.Business.WCFServiceLibrary
             ILocationRepository locationRepository,
             ILogger<ApproachAggregationMetricOptions> logger) : base(locationRepository, logger)
         {
-
             this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
         }
 
@@ -89,14 +88,14 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override int GetAverageByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseCycleAggregationBySignal(this, signal, direction, options);
+                new PhaseCycleAggregationBySignal(this, signal, direction, options, phaseCycleAggregationRepository);
             return phaseCycleAggregationBySignal.Average;
         }
 
         protected override double GetSumByDirection(Location signal, DirectionTypes direction, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseCycleAggregationBySignal(this, signal, direction, options);
+                new PhaseCycleAggregationBySignal(this, signal, direction, options, phaseCycleAggregationRepository);
             return phaseCycleAggregationBySignal.Average;
         }
 
@@ -110,7 +109,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             Location signal, AggregationOptions options)
         {
             var phaseCycleAggregationBySignal =
-                new PhaseCycleAggregationBySignal(this, signal, directionType, options);
+                new PhaseCycleAggregationBySignal(this, signal, directionType, options, phaseCycleAggregationRepository);
             return phaseCycleAggregationBySignal.BinsContainers;
         }
 
