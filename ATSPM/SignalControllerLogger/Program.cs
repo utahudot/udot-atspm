@@ -133,7 +133,8 @@ namespace ATSPM.LocationControllerLogger
 
 
 
-                    s.AddTransient<IEmailService, SendGridEmailService>();
+                    //s.AddTransient<IEmailService, SendGridEmailService>();
+                    s.AddTransient<IEmailService, SmtpEmailService>();
 
 
 
@@ -148,10 +149,24 @@ namespace ATSPM.LocationControllerLogger
 
                     s.PostConfigureAll<EmailConfiguration>(o =>
                     {
+                        o.Host = "smtp.sendgrid.net";
+                        o.Port = 587;
+                        o.EnableSsl = false;
+                        o.UserName = "apikey";
+                        o.Password = "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";
                         o.Key = "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";
                     });
 
-
+  //              "DefaultEmailAddress": "dlowe@avenueconsultants.com",
+  //"EmailAllErrors": false,
+  //"EmailType": "smtp",
+  //"SmtpSettings": {
+  //              "Host": "smtp-relay.brevo.com",
+  //  "Port": 587,
+  //  "EnableSsl": true,
+  //  "UserName": "dlowe@avenueconsultants.com",
+  //  "Password": "Bb1SkPtsE5hLQYn4"
+  //},
                 })
 
                 //.UseConsoleLifetime()
