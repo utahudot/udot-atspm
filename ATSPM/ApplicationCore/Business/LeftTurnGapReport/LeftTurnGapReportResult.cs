@@ -29,6 +29,7 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
         public bool? VolumesConsiderForStudy { get; set; }
         public double Capacity { get; set; }
         public double Demand { get; set; }
+        public double VCRatio { get; set; }
         public double GapOutPercent { get; set; }
         public int OpposingLanes { get; set; }
         public bool CrossProductReview { get; set; }
