@@ -33,6 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="OData.Swagger" Version="1.0.0" />
     <PackageReference Include="Parquet.Net" Version="3.10.0" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
   </ItemGroup>
 
