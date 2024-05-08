@@ -4,6 +4,8 @@ using ATSPM.Application.Repositories.AggregationRepositories;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Data;
+using ATSPM.Domain.Configuration;
+using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.MySqlDatabaseProvider;
 using ATSPM.Infrastructure.OracleDatabaseProvider;
 using ATSPM.Infrastructure.PostgreSQLDatabaseProvider;
@@ -12,6 +14,7 @@ using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
+using ATSPM.Infrastructure.Services.EmailServices;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,6 +24,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -122,6 +128,7 @@ namespace ATSPM.Infrastructure.Extensions
 
             return services;
         }
+
         public static IServiceCollection AddAtspmAuthorization(this IServiceCollection services, HostBuilderContext host)
         {
             services.AddAuthorization(options =>
@@ -295,6 +302,21 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
             services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddEmailServices(this IServiceCollection services, HostBuilderContext host)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
+            foreach (var t in types)
+            {
+                if (host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}").Exists())
+                {
+                    services.AddTransient(s => (IEmailService)ActivatorUtilities.CreateInstance(s, t));
+                    services.Configure<EmailConfiguration>(t.Name, host.Configuration.GetSection($"{nameof(EmailConfiguration)}:{t.Name}"));
+                }
+            }
 
             return services;
         }
