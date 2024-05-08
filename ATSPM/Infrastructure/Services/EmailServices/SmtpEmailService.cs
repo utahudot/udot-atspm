@@ -18,9 +18,9 @@ namespace ATSPM.Infrastructure.Services.EmailServices
         private readonly EmailConfiguration _options;
         private readonly ILogger _logger;
 
-        public SmtpEmailService(IOptions<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
+        public SmtpEmailService(IOptionsSnapshot<EmailConfiguration> options, ILogger<SmtpEmailService> logger) : base(true)
         {
-            _options = options.Value;
+            _options = options?.Get(this.GetType().Name) ?? options?.Value;
             _logger = logger;
         }
 
