@@ -26,9 +26,9 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
 
-            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
-            List<IndianaEvent> pedEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PedestrianBeginWalk, DataLoggerEnum.PedestrianBeginChangeInterval, DataLoggerEnum.PedestrianCallRegistered, DataLoggerEnum.PedDetectorOn }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
-            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PhaseBeginGreen, (short)IndianaEnumerations.PhaseBeginYellowChange, (short)IndianaEnumerations.PhaseEndYellowChange }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
+            List<IndianaEvent> pedEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PedestrianBeginWalk, (short)IndianaEnumerations.PedestrianBeginChangeInterval, (short)IndianaEnumerations.PedestrianCallRegistered, (short)IndianaEnumerations.PedDetectorOn }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();

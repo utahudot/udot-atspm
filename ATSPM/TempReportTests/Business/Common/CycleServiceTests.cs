@@ -35,8 +35,8 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             DateTime startDate = new DateTime(2023, 4, 17, 8, 0, 0);
             DateTime endDate = new DateTime(2023, 4, 17, 9, 1, 0);
             List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7115-Phase2-DetectorCycle-20230417-800-901.csv"); // Sampleevents
-            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<IndianaEvent> detectorEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.DetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PhaseBeginGreen, (short)IndianaEnumerations.PhaseBeginYellowChange, (short)IndianaEnumerations.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
+            List<IndianaEvent> detectorEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.VehicleDetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
             int? pcdCycleTime = 10;
 
             // Act
@@ -49,12 +49,12 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             for (int i = 0; i < result.Count; i++)
             {
                 var cyclePcd = result[i];
-                var startOfCycle = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseEndYellowChange).ToList()[i].Timestamp;
-                var endOfCycle = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseEndYellowChange).ToList()[i + 1].Timestamp;
-                var greenEvents = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseBeginGreen).ToList();
+                var startOfCycle = cycleEvents.Where(c => c.EventCode == (short)IndianaEnumerations.PhaseEndYellowChange).ToList()[i].Timestamp;
+                var endOfCycle = cycleEvents.Where(c => c.EventCode == (short)IndianaEnumerations.PhaseEndYellowChange).ToList()[i + 1].Timestamp;
+                var greenEvents = cycleEvents.Where(c => c.EventCode == (short)IndianaEnumerations.PhaseBeginGreen).ToList();
                 greenEvents.RemoveAt(0);
                 var greenEvent = greenEvents[i].Timestamp;
-                var yellowEvents = cycleEvents.Where(c => c.EventCode == DataLoggerEnum.PhaseBeginYellowChange).ToList();
+                var yellowEvents = cycleEvents.Where(c => c.EventCode == (short)IndianaEnumerations.PhaseBeginYellowChange).ToList();
                 yellowEvents.RemoveAt(0);
                 var yellowEvent = yellowEvents[i].Timestamp;
                 Assert.True(cyclePcd != null);

@@ -33,9 +33,9 @@ namespace ATSPM.Application.Reports.Business.Common.Tests
             DateTime start = new DateTime(2020, 12, 1, 6, 0, 0);
             DateTime end = new DateTime(2020, 12, 1, 7, 0, 0);
             List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ControllerEventLogs-7119-Phase2-CycleDetectorPlanEvents-20201201-00-24.csv"); // Sampleevents
-            List<IndianaEvent> cycleEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
-            List<IndianaEvent> detectorEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.DetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
-            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PhaseBeginGreen, (short)IndianaEnumerations.PhaseBeginYellowChange, (short)IndianaEnumerations.PhaseEndYellowChange }.Contains(e.EventCode)).ToList(); // Sample cycle events
+            List<IndianaEvent> detectorEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.VehicleDetectorOn }.Contains(e.EventCode)).ToList(); // Load detector events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();

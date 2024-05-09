@@ -20,7 +20,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime start = new System.DateTime(2023, 4, 17, 12, 0, 0);
             System.DateTime end = new System.DateTime(2023, 4, 17, 14, 0, 0);
             List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"ControllerEvents-Preempt.csv"); // Sampleevents
-            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
             //List<IndianaEvent> preemptEvents = events.Where(e => new List<int> { 105 }.Contains(e.EventCode)).ToList(); // Load preempt events from CSV
 
             var options = new PreemptServiceRequestOptions() { LocationIdentifier = "7573", Start = start, End = end };

@@ -24,7 +24,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime start = new System.DateTime(2023, 5, 16, 8, 56, 0);
             System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
             List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"TMCEventcodes.csv"); // Sampleevents
-            List<IndianaEvent> planEvents = events.Where(e => new List<DataLoggerEnum> { DataLoggerEnum.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock DirectionType object
             var directionType = new Mock<DirectionType>();
@@ -159,7 +159,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //    );
             var plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
 
-            TurningMovementCountsResult viewModel = await turningMovementCountsService.GetChartData(
+            TurningMovementCountsLanesResult viewModel = await turningMovementCountsService.GetChartData(
                 detectors,
                 LaneTypes.V,
                 MovementTypes.T,

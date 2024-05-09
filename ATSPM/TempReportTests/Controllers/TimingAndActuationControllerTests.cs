@@ -3,12 +3,9 @@ using ATSPM.Data.Models;
 using CsvHelper;
 using Moq;
 using System.Globalization;
-using System.Net;
-using ATSPM.Application.Extensions;
 using ATSPM.Application.Business.WaitTime;
 using ATSPM.Application.Business.TimingAndActuation;
 using ATSPM.Application.Business.Common;
-using ATSPM.Domain.Extensions;
 using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Models.EventLogModels;
 
@@ -112,10 +109,10 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 Start = Convert.ToDateTime("6/14/2023 8:00:00.0"),
                 End = Convert.ToDateTime("6/14/2023 8:05:00.0"),
                 ExtendStartStopSearch = 2,
-                GlobalEventCodesList = new List<int>(), 
+                GlobalEventCodesList = new List<short>(), 
                 GlobalEventCounter = 1,
-                GlobalEventParamsList = new List<int>(),
-                PhaseEventCodesList = new List<int>(),
+                GlobalEventParamsList = new List<short>(),
+                PhaseEventCodesList = new List<short>(),
                 ShowAdvancedCount = true,
                 ShowAdvancedDilemmaZone = true,
                 ShowAllLanesInfo = true, 
@@ -125,14 +122,14 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
                 ShowStopBarPresence = true,
             };
             // Test one approach
-            var eventCodes = new List<DataLoggerEnum> { };
+            var eventCodes = new List<short> { };
 
             var phaseDetails = new PhaseDetail { PhaseNumber = 19, Approach = approach.Object, UseOverlap = false };
 
             if (options.ShowAdvancedCount || options.ShowAdvancedDilemmaZone || options.ShowLaneByLaneCount || options.ShowStopBarPresence)
-                eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn });
+                eventCodes.AddRange(new List<short> { 81, 82 });
             if (options.ShowPedestrianActuation)
-                eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn });
+                eventCodes.AddRange(new List<short> { 89, 90 });
             if (options.ShowPedestrianIntervals)
                 eventCodes.AddRange(GetPedestrianIntervalEventCodes(false));
             //if (options.PhaseEventCodesList != null)
@@ -159,12 +156,12 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             }
         }
 
-        public List<DataLoggerEnum> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        public List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
         {
-            var overlapCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedestrianBeginWalk, DataLoggerEnum.PedestrianBeginChangeInterval, DataLoggerEnum.PedestrianBeginSolidDontWalk };
+            var overlapCodes = new List<short> { 21, 22, 23 };
             if (isPhaseOrOverlap)
             {
-                overlapCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedestrianOverlapBeginWalk, DataLoggerEnum.PedestrianOverlapBeginClearance, DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk };
+                overlapCodes = new List<short> { 67, 68, 69 };
             }
 
             return overlapCodes;
@@ -174,7 +171,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             TimingAndActuationsOptions options,
             List<IndianaEvent> indianaEvents,
             PhaseDetail phaseDetail,
-            List<DataLoggerEnum> eventCodes,
+            List<short> eventCodes,
             bool usePermissivePhase)
         {
             var timingAndActuationsForPhaseService = new TimingAndActuationsForPhaseService();
