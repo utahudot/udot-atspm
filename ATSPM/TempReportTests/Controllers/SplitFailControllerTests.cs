@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Net;
 using ATSPM.ReportApi.TempExtensions;
 using Microsoft.IdentityModel.Tokens;
+using ATSPM.Application.TempExtensions;
 
 namespace ReportsTests.Controllers
 {
@@ -267,7 +268,7 @@ namespace ReportsTests.Controllers
                 splitFailData.Bins.Select(b => new DataPointForDouble(b.StartTime, b.PercentSplitfails)).ToList()
                 );
             result.ApproachDescription = phaseDetail.Approach.Description;
-            result.SignalDescription = phaseDetail.Approach.Signal.SignalDescription();
+            result.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
             return result;
         }
 
