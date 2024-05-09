@@ -172,6 +172,7 @@ namespace ATSPM.ReportApi.ReportServices
                 approachResult.GapDurationConsiderForStudy = gapResult.GapDurationPercent > options.AcceptableGapPercentage;
                 approachResult.Capacity = gapResult.Capacity;
                 approachResult.Demand = gapResult.Demand;
+                approachResult.VCRatio = gapResult.Capacity == 0 ? 0 : gapResult.Demand / gapResult.Capacity;
                 approachResult.GapOutPercent = gapResult.GapDurationPercent;
                 approachResult.AcceptableGapList = gapResult.AcceptableGaps;
             }
@@ -233,7 +234,7 @@ namespace ATSPM.ReportApi.ReportServices
                     StartHour = options.StartHour == null ? 0 : options.StartHour.Value,
                     StartMinute = options.StartMinute == null ? 0 : options.StartMinute.Value,
                     EndHour = options.EndHour == null ? 23 : options.EndHour.Value,
-                    EndMinute = options.EndMinute == null ? 59 : options.StartHour.Value,
+                    EndMinute = options.EndMinute == null ? 59 : options.EndMinute.Value,
                     LocationIdentifier = approach.Location.LocationIdentifier
                 };
                 var volumeResult = await leftTurnVolumeService.ExecuteAsync(volumeOptions, null);
