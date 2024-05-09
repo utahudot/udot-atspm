@@ -1,5 +1,4 @@
 using ATSPM.Application.Business.Common;
-using ATSPM.Data.Enums;
 using System.Collections.Generic;
 
 namespace ATSPM.Application.Business.TimingAndActuation
