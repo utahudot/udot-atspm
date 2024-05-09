@@ -13,7 +13,7 @@ namespace ATSPM.Data.Models.EventLogModels
         /// Detector id
         /// </summary>
         public string DetectorId { get; set; }
-        
+
         /// <summary>
         /// Miles per hour
         /// </summary>
