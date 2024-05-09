@@ -1,4 +1,4 @@
-SignalId,Timestamp,EventCode,EventParam
+LocationIdentifier,Timestamp,EventCode,EventParam
 5000,01:58.1,8,2
 5000,02:19.8,1,2
 5000,03:47.7,8,2

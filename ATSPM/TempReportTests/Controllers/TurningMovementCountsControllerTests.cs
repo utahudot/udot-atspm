@@ -1,13 +1,14 @@
 ﻿using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.TurningMovementCounts;
 using CsvHelper;
 using Moq;
 using System.Globalization;
 using System.Net;
-using ATSPM.ReportApi.TempExtensions;
 using ATSPM.Application.Extensions;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models.EventLogModels;
 
 namespace ATSPM.Application.Reports.Controllers.Tests
 {
@@ -22,8 +23,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             System.DateTime start = new System.DateTime(2023, 5, 16, 8, 56, 0);
             System.DateTime end = new System.DateTime(2023, 5, 16, 12, 1, 0);
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"TMCEventcodes.csv"); // Sampleevents
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"TMCEventcodes.csv"); // Sampleevents
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock DirectionType object
             var directionType = new Mock<DirectionType>();
@@ -37,7 +38,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 14239; // Updated Id
-            approach.Object.SignalId = 2840; // Updated SignalId
+            approach.Object.LocationId = 2840; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.WB;
             approach.Object.Description = "WBT Ph2";
             approach.Object.Mph = 35;
@@ -50,32 +51,32 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             approach.Object.PedestrianDetectors = null;
             approach.Object.DirectionType = directionType.Object;
 
-            var mockSignal = new Mock<Signal>();
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 2840; // Updated Id
-            mockSignal.Object.SignalIdentifier = "6387"; // Updated SignalId
-            mockSignal.Object.Latitude = 40.326352;
-            mockSignal.Object.Longitude = -111.724889;
-            mockSignal.Object.PrimaryName = "1600 N (SR-241)";
-            mockSignal.Object.SecondaryName = "1200 W";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
-            mockSignal.Object.RegionId = 3;
-            mockSignal.Object.ControllerTypeId = 2; // Updated ControllerTypeId
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            mockSignal.Object.Note = "Initial - WAS #6500";
-            mockSignal.Object.Start = new System.DateTime(1900, 1, 1);
-            mockSignal.Object.JurisdictionId = 21;
-            mockSignal.Object.Pedsare1to1 = true;
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 2840; // Updated Id
+            mockLocation.Object.LocationIdentifier = "6387"; // Updated LocationId
+            mockLocation.Object.Latitude = 40.326352;
+            mockLocation.Object.Longitude = -111.724889;
+            mockLocation.Object.PrimaryName = "1600 N (SR-241)";
+            mockLocation.Object.SecondaryName = "1200 W";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.163.6.51");
+            mockLocation.Object.RegionId = 3;
+            mockLocation.Object.LocationTypeId = 2; // Updated ControllerTypeId
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            mockLocation.Object.Note = "Initial - WAS #6500";
+            mockLocation.Object.Start = new System.DateTime(1900, 1, 1);
+            mockLocation.Object.JurisdictionId = 21;
+            mockLocation.Object.PedsAre1to1 = true;
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
 
             var options = new TurningMovementCountsOptions()
             {
-                SignalIdentifier = "6387",
-                SelectedBinSize = 15,
+                LocationIdentifier = "6387",
+                BinSize = 15,
                 Start = new System.DateTime(2023, 6, 14, 12, 0, 0),
                 End = new System.DateTime(2023, 6, 14, 23, 59, 0)
             };
@@ -156,9 +157,9 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             //    events,
             //    planEvents
             //    );
-            var plans = planService.GetBasicPlans(options.Start, options.End, options.SignalIdentifier, planEvents);
+            var plans = planService.GetBasicPlans(options.Start, options.End, options.LocationIdentifier, planEvents);
 
-            TurningMovementCountsResult viewModel = await turningMovementCountsService.GetChartData(
+            TurningMovementCountsLanesResult viewModel = await turningMovementCountsService.GetChartData(
                 detectors,
                 LaneTypes.V,
                 MovementTypes.T,
@@ -166,8 +167,8 @@ namespace ATSPM.Application.Reports.Controllers.Tests
                 options,
                 events,
                 plans.ToList(),
-                mockSignal.Object.SignalIdentifier,
-                mockSignal.Object.SignalDescription()
+                mockLocation.Object.LocationIdentifier,
+                mockLocation.Object.LocationDescription()
                 );
 
             // Assert
@@ -185,7 +186,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -193,7 +194,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }
