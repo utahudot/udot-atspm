@@ -12,9 +12,9 @@ namespace ATSPM.Application.Business.TimingAndActuation
         public bool ShowLaneByLaneCount { get; set; }
         public bool ShowAdvancedDilemmaZone { get; set; }
         public bool ShowAdvancedCount { get; set; }
-        public List<int>? GlobalEventCodesList { get; set; }
-        public List<int>? GlobalEventParamsList { get; set; }
-        public List<int>? PhaseEventCodesList { get; set; }
+        public List<short>? GlobalEventCodesList { get; set; }
+        public List<short>? GlobalEventParamsList { get; set; }
+        public List<short>? PhaseEventCodesList { get; set; }
         public int GlobalEventCounter { get; set; }
     }
 }

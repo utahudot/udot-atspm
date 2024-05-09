@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -72,7 +71,6 @@ namespace ATSPM.Application.Business.SplitMonitor
         private async Task<SplitMonitorResult> GetChartDataForPhase(SplitMonitorOptions options, AnalysisPhaseCollectionData phaseCollection, AnalysisPhaseData phase)
         {
             var plans = GetSplitMonitorPlansWithStatistics(options, phaseCollection, phase);
-            var test = plans.SelectMany(p => p.Splits.Where(s => s.Key == phase.PhaseNumber));
             var splits = new List<DataPointForDouble>();
             foreach (var plan in plans)
             {
@@ -85,15 +83,15 @@ namespace ATSPM.Application.Business.SplitMonitor
                 PercentileSplit = options.PercentileSplit,
                 ProgrammedSplits = splits,
                 GapOuts = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == DataLoggerEnum.PhaseGapOut)
+                                .Where(c => c.TerminationEvent == 4)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 MaxOuts = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == DataLoggerEnum.PhaseMaxOut)
+                                .Where(c => c.TerminationEvent == 5)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 ForceOffs = phase.Cycles.Cycles
-                                .Where(c => c.TerminationEvent == DataLoggerEnum.PhaseForceOff)
+                                .Where(c => c.TerminationEvent == 6)
                                 .Select(c => new DataPointForDouble(c.StartTime, c.Duration.TotalSeconds))
                                 .ToList(),
                 Unknowns = phase.Cycles.Cycles
@@ -116,7 +114,10 @@ namespace ATSPM.Application.Business.SplitMonitor
                     PercentMaxOuts = p.PercentMaxOuts * 100,
                     PercentForceOffs = p.PercentForceOffs * 100,
                     PercentileSplit = p.PercentileSplit,
-
+                    MinTime = p.MinTime,
+                    ProgrammedSplit = p.ProgrammedSplit,
+                    PercentileSplit85th = p.PercentileSplit85th,
+                    PercentileSplit50th = p.PercentileSplit50th
                 }).ToList(),
                 LocationDescription = phase.Location.LocationDescription()
             };
@@ -145,12 +146,36 @@ namespace ATSPM.Application.Business.SplitMonitor
                         End = plan.End,
                         PlanNumber = plan.PlanNumber,
                         PercentSkips = highCycleCount > 0 ? SkippedPhases / highCycleCount : 0,
-                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == DataLoggerEnum.PhaseGapOut)) / highCycleCount : 0,
+                        PercentGapOuts = highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 4)) / highCycleCount : 0,
                         PercentMaxOuts = GetPercentMaxOuts(cycles, highCycleCount, plan.PlanNumber),
                         PercentForceOffs = GetPercentForceOffs(cycles, highCycleCount, plan.PlanNumber),
                         AverageSplit = cycles.Count > 0 ? Convert.ToDouble(cycles.Sum(c => c.Duration.TotalSeconds)) / cycles.Count : 0,
                         PercentileSplit = GetPercentSplit(highCycleCount, percentile, cycles),
-                        Splits = plan.Splits
+                        Splits = plan.Splits,
+                        MinTime = cycles.Min(c => c.Duration.TotalSeconds),
+                        ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
+                        PercentileSplit85th = GetPercentSplit(highCycleCount, .85, cycles),
+                        PercentileSplit50th = GetPercentSplit(highCycleCount, .5, cycles),
+                    });
+                }
+                else
+                {
+                    phasePlans.Add(new PlanSplitMonitorData(plan.Start, plan.End, plan.PlanNumber)
+                    {
+                        Start = plan.Start,
+                        End = plan.End,
+                        PlanNumber = plan.PlanNumber,
+                        PercentSkips = 0,
+                        PercentGapOuts = 0,
+                        PercentMaxOuts = 0,
+                        PercentForceOffs = 0,
+                        AverageSplit = 0,
+                        PercentileSplit = 0,
+                        Splits = plan.Splits,
+                        MinTime = 0,
+                        ProgrammedSplit = plan.Splits.Where(s => s.Key == phase.PhaseNumber).FirstOrDefault().Value,
+                        PercentileSplit85th = 0,
+                        PercentileSplit50th = 0,
                     });
                 }
             }
@@ -160,7 +185,7 @@ namespace ATSPM.Application.Business.SplitMonitor
         private static double GetPercentForceOffs(List<AnalysisPhaseCycle> cycles, double highCycleCounts, string planNumber)
         {
             if (planNumber != "254")
-                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == DataLoggerEnum.PhaseForceOff)) / highCycleCounts : 0;
+                return highCycleCounts > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 6)) / highCycleCounts : 0;
             else
                 return 0;
         }
@@ -168,7 +193,7 @@ namespace ATSPM.Application.Business.SplitMonitor
         private static double GetPercentMaxOuts(List<AnalysisPhaseCycle> cycles, double highCycleCount, string planNumber)
         {
             if (planNumber == "254")
-                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == DataLoggerEnum.PhaseMaxOut)) / highCycleCount : 0;
+                return highCycleCount > 0 ? Convert.ToDouble(cycles.Count(c => c.TerminationEvent == 5)) / highCycleCount : 0;
             else
                 return 0;
         }

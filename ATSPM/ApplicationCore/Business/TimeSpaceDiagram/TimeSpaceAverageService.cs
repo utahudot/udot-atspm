@@ -1,6 +1,5 @@
 ﻿using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TimingAndActuation;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
@@ -11,16 +10,16 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
     public class TimeSpaceAverageService
     {
         private readonly CycleService _cycleService;
-        private readonly Dictionary<int, DataLoggerEnum> phaseToProgramPhases = new Dictionary<int, DataLoggerEnum>()
+        private readonly Dictionary<int, short> phaseToProgramPhases = new Dictionary<int, short>()
         {
-            { 1, DataLoggerEnum.Split1Change },
-            { 2, DataLoggerEnum.Split2Change },
-            { 3, DataLoggerEnum.Split3Change },
-            { 4, DataLoggerEnum.Split4Change },
-            { 5, DataLoggerEnum.Split5Change },
-            { 6, DataLoggerEnum.Split6Change },
-            { 7, DataLoggerEnum.Split7Change },
-            { 8, DataLoggerEnum.Split8Change },
+            { 1, 134 },
+            { 2, 135 },
+            { 3, 136 },
+            { 4, 137 },
+            { 5, 138 },
+            { 6, 139 },
+            { 7, 140 },
+            { 8, 141},
         };
 
         public TimeSpaceAverageService(CycleService cycleService)
@@ -49,7 +48,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
 
             var (selectedSequence, selectedPhase, sequenceAdjustment) = CalculateSelectedSequenceAdjustment(topSequence,
                 bottomSequence,
-                programSplits, 
+                programSplits,
                 topSequenceIndex,
                 bottomSequenceIndex,
                 phaseDetail);
@@ -66,7 +65,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             {
                 startOfRefPoint = CalculateStartOfRefPointForNonCoordPhases(options, offset, selectedPhase, selectedSequence, programSplits, controllerEventLogs, phaseDetail);
             }
-            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.EndTime, options.StartDate.ToDateTime(options.StartTime), cycleLength, percentileSplitCycle);
+            var cycleEvents = CreateCyclesEvents(startOfRefPoint, options.StartDate.ToDateTime(options.EndTime), options.StartDate.ToDateTime(options.StartTime), cycleLength, percentileSplitCycle);
 
             var greenTimeEventsResult = new List<TimeSpaceEventBase>();
             var speedLimit = options.SpeedLimit ?? phaseDetail.Approach.Mph ?? 0;
@@ -165,7 +164,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
         }
 
         private List<CycleEventsDto> CreateCyclesEvents(double startOfGreen,
-            TimeOnly endTime,
+            DateTime end,
             DateTime start,
             int cycleLength,
             GreenToGreenCycle percentileSplitCycle)
@@ -173,12 +172,12 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             var startTime = start.AddSeconds(startOfGreen);
             var greenTime = percentileSplitCycle.TotalGreenTime;
             var yellowTime = percentileSplitCycle.TotalYellowTime;
-            var redTime = cycleLength - (greenTime + yellowTime);
+            var redTime = cycleLength - (greenTime + yellowTime) > 0 ? cycleLength - (greenTime + yellowTime) : percentileSplitCycle.TotalRedTime;
 
             List<GreenToGreenCycle> cycles = new List<GreenToGreenCycle>();
             var events = new List<CycleEventsDto>();
 
-            while (startTime.Minute <= endTime.AddMinutes(2).Minute)
+            while (startTime <= end.AddMinutes(2))
             {
                 var startOfYellowTime = startTime.AddSeconds(greenTime);
                 var startOfRedTime = startOfYellowTime.AddSeconds(yellowTime);
@@ -215,7 +214,7 @@ namespace ATSPM.Application.Business.TimeSpaceDiagram
             for (var i = 0; i < phaseIndex; i++)
             {
                 var programPhase = phaseToProgramPhases[sequence[i]];
-                timeBeforePhase += programSplits.Find(s => s.EventCode == programPhase).EventParam;
+                timeBeforePhase += programSplits.Find(s => s.EventCode == programPhase)?.EventParam ?? 0;
             }
             return timeBeforePhase;
         }

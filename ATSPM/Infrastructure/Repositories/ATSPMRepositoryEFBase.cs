@@ -120,9 +120,6 @@ namespace ATSPM.Infrastructure.Repositories
 
         public void Update(T item)
         {
-            table.Update(item);
-            _db.SaveChanges();
-
             switch (_db.Entry(item).State)
             {
                 case EntityState.Detached:
@@ -132,23 +129,45 @@ namespace ATSPM.Infrastructure.Repositories
                         if (old != null)
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
+
+                            foreach (var n in _db.Entry(old).Navigations)
+                            {
+                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                            }
                         }
                         else
                         {
                             table.Update(item);
                         }
 
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
 
                         break;
                     }
                 case EntityState.Modified:
                     {
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
 
                         break;
                     }
+                case EntityState.Unchanged:
+                    {
+                        foreach (var n in _db.Entry(item).Navigations)
+                        {
+                            n.IsModified = true;
+                        }
+
+                        //_db.SaveChanges();
+
+                        break;
+                    }
+                default:
+                    {
+                        return;
+                    }
             }
+
+            _db.SaveChanges();
         }
 
         public async Task UpdateAsync(T item)
@@ -158,27 +177,49 @@ namespace ATSPM.Infrastructure.Repositories
                 case EntityState.Detached:
                     {
                         var old = await LookupAsync(item);
-                        
+
                         if (old != null)
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
+
+                            foreach (var n in _db.Entry(old).Navigations)
+                            {
+                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                            }
                         }
                         else
                         {
                             table.Update(item);
                         }
 
-                        await _db.SaveChangesAsync().ConfigureAwait(false);
+                        //await _db.SaveChangesAsync().ConfigureAwait(false);
 
                         break;
                     }
                 case EntityState.Modified:
                     {
-                        await _db.SaveChangesAsync().ConfigureAwait(false);
+                        //await _db.SaveChangesAsync().ConfigureAwait(false);
 
                         break;
                     }
+                case EntityState.Unchanged:
+                    {
+                        foreach (var n in _db.Entry(item).Navigations)
+                        {
+                            n.IsModified = true;
+                        }
+
+                        //await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                        break;
+                    }
+                default:
+                    {
+                        return;
+                    }
             }
+
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         //TODO: Check item for changes attach/unattach

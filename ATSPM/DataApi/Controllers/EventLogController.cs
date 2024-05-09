@@ -94,9 +94,6 @@ namespace ATSPM.DataApi.Controllers
             if (deviceId == 0)
                 return BadRequest("Invalid device id");
 
-            if (start == DateOnly.MinValue || end == DateOnly.MinValue)
-                return BadRequest("Invalid datetime range on start/end");
-
             var result = _repository.GetArchivedEvents(locationIdentifier, start, end, deviceId);
 
             if (result.Count == 0)
@@ -129,9 +126,6 @@ namespace ATSPM.DataApi.Controllers
                 return BadRequest("Invalid date range");
 
             Type type;
-            //var eventCode = new List<int>();
-
-            //_log.LogDebug("Location: {Location} event: {event} start: {start} end: {end}", LocationIdentifier, eventCode, start, end);
 
             try
             {

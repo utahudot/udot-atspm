@@ -83,12 +83,12 @@ namespace ATSPM.Application.Business.TimingAndActuation
         {
             return phaseDetail.IsPermissivePhase ?  // Check if the 'PhaseType' property of 'options' is true
                 phaseDetail.Approach.IsPermissivePhaseOverlap ?  // If true, check if the 'IsPermissivePhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
-                    : "Phase - " + phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")  // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    $"zOverlap - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1"  // If true, concatenate "zOverlap - " with 'PermissivePhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.PermissivePhaseNumber.Value.ToString("D2")}-1" // If false, concatenate "Phase - " with 'PermissivePhaseNumber' formatted as a two-digit string
                 :  // If 'PhaseType' is false
                 phaseDetail.Approach.IsProtectedPhaseOverlap ?  // Check if the 'IsProtectedPhaseOverlap' property of 'approach' is true
-                    "zOverlap - " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
-                    : "Phase = " + phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2");  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    $"zOverlap - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2"  // If true, concatenate "zOverlap - " with 'ProtectedPhaseNumber' formatted as a two-digit string
+                    : $"Phase - {phaseDetail.Approach.ProtectedPhaseNumber.ToString("D2")}-2";  // If false, concatenate "Phase = " with 'ProtectedPhaseNumber' formatted as a two-digit string
         }
 
         public List<CycleEventsDto> GetCycleEvents(
@@ -97,7 +97,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             TimingAndActuationsOptions options)
         {
 
-            List<DataLoggerEnum> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
+            List<short> cycleEventCodes = GetCycleCodes(phaseDetail.UseOverlap);
             var overlapLabel = phaseDetail.UseOverlap == true ? "Overlap" : "";
             string keyLabel = $"Cycles Intervals {phaseDetail.PhaseNumber} {overlapLabel}";
             var events = new List<CycleEventsDto>();
@@ -117,25 +117,25 @@ namespace ATSPM.Application.Business.TimingAndActuation
             return events;
         }
 
-        public List<DataLoggerEnum> GetCycleCodes(bool getOverlapCodes)
+        public List<short> GetCycleCodes(bool getOverlapCodes)
         {
-            var phaseEventCodesForCycles = new List<DataLoggerEnum>
+            var phaseEventCodesForCycles = new List<short>
             {
-                DataLoggerEnum.PhaseBeginGreen,
-                DataLoggerEnum.PhaseMinComplete,
-                DataLoggerEnum.PhaseBeginYellowChange,
-                DataLoggerEnum.PhaseEndYellowChange,
-                DataLoggerEnum.PhaseEndRedClearance
+                1,
+                3,
+                8,
+                9,
+                11
             };
             if (getOverlapCodes)
             {
-                phaseEventCodesForCycles = new List<DataLoggerEnum>
+                phaseEventCodesForCycles = new List<short>
                 {
-                    DataLoggerEnum.OverlapBeginGreen,
-                    DataLoggerEnum.OverlapBeginTrailingGreenExtension,
-                    DataLoggerEnum.OverlapBeginYellow,
-                    DataLoggerEnum.OverlapBeginRedClearance,
-                    DataLoggerEnum.OverlapOffInactivewithredindication
+                    61,
+                    62,
+                    63,
+                    64,
+                    65
                 };
             }
 
@@ -152,7 +152,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
             if (options.PhaseEventCodesList != null && options.PhaseEventCodesList.Any())
             {
-                foreach (var phaseEventCode in options.PhaseEventCodesList.Select(e => (DataLoggerEnum)e))
+                foreach (var phaseEventCode in options.PhaseEventCodesList)
                 {
 
                     var phaseEvents = controllerEventLogs.Where(c => c.EventCode == phaseEventCode
@@ -204,7 +204,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
                 .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
                 .ThenByDescending(l => l.LaneNumber).ToList();
-            var detectorActivationCodes = new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn };
+            var detectorActivationCodes = new List<short> { 81, 82 };
             foreach (var detector in localSortedDetectors)
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
@@ -227,28 +227,28 @@ namespace ATSPM.Application.Business.TimingAndActuation
                         var detectorEvents = new List<DetectorEventBase>();
                         for (var i = 0; i < filteredEvents.Count; i++)
                         {
-                            if (i == 0 && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
+                            if (i == 0 && filteredEvents[i].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i].Timestamp));
                             }
-                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn)
+                            else if (i + 1 == filteredEvents.Count && filteredEvents[i].EventCode == 82)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, null));
                             }
-                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i].Timestamp, filteredEvents[i + 1].Timestamp));
                                 i++;
                             }
-                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOff && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOff)
+                            else if (filteredEvents[i].EventCode == 81 && filteredEvents[i + 1].EventCode == 81)
                             {
                                 detectorEvents.Add(new DetectorEventBase(null, filteredEvents[i + 1].Timestamp));
                             }
-                            else if (filteredEvents[i].EventCode == DataLoggerEnum.DetectorOn && filteredEvents[i + 1].EventCode == DataLoggerEnum.DetectorOn)
+                            else if (filteredEvents[i].EventCode == 82 && filteredEvents[i + 1].EventCode == 82)
                             {
                                 detectorEvents.Add(new DetectorEventBase(filteredEvents[i + 1].Timestamp, null));
                             }
@@ -280,7 +280,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             if (string.IsNullOrEmpty(approach.PedestrianDetectors) && approach.Location.PedsAre1to1 && approach.IsProtectedPhaseOverlap
                 || !approach.Location.PedsAre1to1 && approach.PedestrianPhaseNumber.HasValue)
                 return pedestrianEvents;
-            var pedEventCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn };
+            var pedEventCodes = new List<short> { 89, 90 };
             foreach (var pedDetector in approach.Detectors)
             {
                 var lableName = $"Ped Det. Actuations, ph {approach.ProtectedPhaseNumber}, ch {pedDetector.DetectorChannel}";
@@ -314,7 +314,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             List<IndianaEvent> controllerEventLogs,
             TimingAndActuationsOptions options)
         {
-            List<DataLoggerEnum> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
+            List<short> overlapCodes = GetPedestrianIntervalEventCodes(approach.IsPedestrianPhaseOverlap);
             var pedPhase = approach.PedestrianPhaseNumber ?? approach.ProtectedPhaseNumber;
             return controllerEventLogs.Where(c => overlapCodes.Contains(c.EventCode)
                                                     && c.EventParam == pedPhase
@@ -322,17 +322,17 @@ namespace ATSPM.Application.Business.TimingAndActuation
                                                     && c.Timestamp <= options.End).Select(s => new CycleEventsDto(s.Timestamp, (int)s.EventCode)).ToList();
         }
 
-        public List<DataLoggerEnum> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
+        public List<short> GetPedestrianIntervalEventCodes(bool isPhaseOrOverlap)
         {
-            var overlapCodes = new List<DataLoggerEnum>
+            var overlapCodes = new List<short>
             {
-                DataLoggerEnum.PedestrianBeginWalk,
-                DataLoggerEnum.PedestrianBeginChangeInterval,
-                DataLoggerEnum.PedestrianBeginSolidDontWalk
+                21,
+                22,
+                23
             };
             if (isPhaseOrOverlap)
             {
-                overlapCodes = new List<DataLoggerEnum> { DataLoggerEnum.PedestrianOverlapBeginWalk, DataLoggerEnum.PedestrianOverlapBeginClearance, DataLoggerEnum.PedestrianOverlapBeginSolidDontWalk };
+                overlapCodes = new List<short> { 67, 68, 69 };
             }
 
             return overlapCodes;

@@ -1,5 +1,4 @@
 ﻿using ATSPM.Application.Business.Common;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using System;
@@ -30,8 +29,8 @@ namespace ATSPM.Application.Business.PedDelay
         public int PedBeginWalkCount { get; set; }
         public List<IndianaEvent> PedBeginWalkEvents { get; set; }
         public int PedCallsRegisteredCount { get; set; }
-        public DataLoggerEnum BeginWalkEvent { get; set; }
-        public DataLoggerEnum BeginClearanceEvent { get; set; }
+        public short BeginWalkEvent { get; set; }
+        public short BeginClearanceEvent { get; set; }
     }
 
 }

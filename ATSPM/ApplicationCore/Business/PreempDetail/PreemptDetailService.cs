@@ -2,7 +2,6 @@
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.PreemptService;
 using ATSPM.Application.TempModels;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +22,8 @@ namespace ATSPM.Application.Business.PreempDetail
             PreemptDetailOptions preemptDetailOptions,
             List<IndianaEvent> preemptEvents)
         {
-            var preemptServiceEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptEntryStarted };
-            var preemptServiceRequestEventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.PreemptCallInputOn };
+            var preemptServiceEventCodes = new List<short>() { 105 };
+            var preemptServiceRequestEventCodes = new List<short>() { 102 };
 
             var uniquePreemptNumbers = preemptEvents.Select(x => x.EventParam).Distinct().ToList();
             var preemptDetails = new List<PreemptDetail>();
@@ -70,7 +69,7 @@ namespace ATSPM.Application.Business.PreempDetail
         {
             var result = cycles.Select(c => new PreemptCycleResult()
             {
-                InputOff = c.InputOff[0],
+                InputOff = c.InputOff != null && c.InputOff.Count > 0 ? c.InputOff[0] : null,
                 InputOn = c.EntryStarted >= options.Start && c.EntryStarted <= options.End ? c.EntryStarted : c.InputOn[0],
                 GateDown = c.GateDown >= options.Start && c.GateDown <= options.End ? c.GateDown : null,
                 CallMaxOut = c.TimeToCallMaxOut,

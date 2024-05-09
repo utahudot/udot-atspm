@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using ATSPM.Application.Business;
+using ATSPM.Application.Business.Aggregation;
 using ATSPM.Application.Business.AppoachDelay;
 using ATSPM.Application.Business.ApproachSpeed;
 using ATSPM.Application.Business.ApproachVolume;
@@ -8,6 +9,7 @@ using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.GreenTimeUtilization;
 using ATSPM.Application.Business.LeftTurnGapAnalysis;
 using ATSPM.Application.Business.LeftTurnGapReport;
+using ATSPM.Application.Business.LinkPivot;
 using ATSPM.Application.Business.PedDelay;
 using ATSPM.Application.Business.PhaseTermination;
 using ATSPM.Application.Business.PreempDetail;
@@ -25,6 +27,7 @@ using ATSPM.Application.Business.YellowRedActivations;
 using ATSPM.Application.Repositories;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Repositories;
+using ATSPM.ReportApi.DataAggregation;
 using ATSPM.ReportApi.ReportServices;
 using AutoFixture;
 using Microsoft.AspNetCore.HttpLogging;
@@ -33,6 +36,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MOE.Common.Business.WCFServiceLibrary;
 using Moq;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -120,6 +124,7 @@ builder.Host.ConfigureServices((h, s) =>
 
 
     //report services
+    s.AddScoped<IReportService<AggregationOptions, IEnumerable<AggregationResult>>, AggregationReportService>();
     s.AddScoped<IReportService<ApproachDelayOptions, IEnumerable<ApproachDelayResult>>, ApproachDelayReportService>();
     //s.AddScoped<IReportService<ApproachSpeedOptions, IEnumerable<ApproachSpeedResult>>, ApproachSpeedReportService>();
     s.AddScoped<IReportService<ApproachVolumeOptions, IEnumerable<ApproachVolumeResult>>, ApproachVolumeReportService>();
@@ -129,6 +134,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<LeftTurnGapAnalysisOptions, IEnumerable<LeftTurnGapAnalysisResult>>, LeftTurnGapAnalysisReportService>();
     s.AddScoped<IReportService<LeftTurnGapDataCheckOptions, LeftTurnGapDataCheckResult>, LeftTurnGapReportDataCheckService>();
     s.AddScoped<IReportService<LeftTurnSplitFailOptions, LeftTurnSplitFailResult>, LeftTurnSplitFailService>();
+    s.AddScoped<IReportService<LeftTurnGapReportOptions, IEnumerable<LeftTurnGapReportResult>>, LeftTurnGapReportService>();
+    s.AddScoped<IReportService<LinkPivotOptions, LinkPivotResult>, LinkPivotReportService>();
+    s.AddScoped<LinkPivotReportService>();
     s.AddScoped<IReportService<VolumeOptions, VolumeResult>, LeftTurnVolumeService>();
     s.AddScoped<IReportService<PedActuationOptions, PedActuationResult>, LeftTurnPedActuationService>();
     s.AddScoped<IReportService<PedDelayOptions, IEnumerable<PedDelayResult>>, PedDelayReportService>();
@@ -142,12 +150,13 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<IReportService<SplitMonitorOptions, IEnumerable<SplitMonitorResult>>, SplitMonitorReportService>();
     s.AddScoped<IReportService<TimeSpaceDiagramOptions, IEnumerable<TimeSpaceDiagramResultForPhase>>, TimeSpaceDiagramReportService>();
     s.AddScoped<IReportService<TimingAndActuationsOptions, IEnumerable<TimingAndActuationsForPhaseResult>>, TimingAndActuactionReportService>();
-    s.AddScoped<IReportService<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>, TurningMovementCountReportService>();
+    s.AddScoped<IReportService<TurningMovementCountsOptions, TurningMovementCountsResult>, TurningMovementCountReportService>();
     s.AddScoped<IReportService<YellowRedActivationsOptions, IEnumerable<YellowRedActivationsResult>>, YellowRedActivationsReportService>();
     s.AddScoped<IReportService<WaitTimeOptions, IEnumerable<WaitTimeResult>>, WaitTimeReportService>();
     s.AddScoped<IReportService<WatchDogOptions, WatchDogResult>, WatchDogReportService>();
 
-    //Chart Services
+    //AggregationResult Services
+    s.AddScoped<AggregationReportService>();
     s.AddScoped<ApproachDelayService>();
     s.AddScoped<ApproachSpeedService>();
     s.AddScoped<ApproachVolumeService>();
@@ -158,6 +167,8 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LeftTurnPedActuationService>();
     s.AddScoped<LeftTurnGapDurationService>();
     s.AddScoped<LeftTurnVolumeService>();
+    s.AddScoped<LeftTurnGapReportService>();
+
     //s.AddScoped<LeftTurnVolumeAnalysisService>();
     s.AddScoped<PedDelayService>();
     s.AddScoped<GreenTimeUtilizationService>();
@@ -174,6 +185,21 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<YellowRedActivationsService>();
     s.AddScoped<WatchDogReportService>();
 
+    //Aggregation Services
+    s.AddScoped<DetectorVolumeAggregationOptions>();
+    s.AddScoped<ApproachSpeedAggregationOptions>();
+    s.AddScoped<ApproachPcdAggregationOptions>();
+    s.AddScoped<PhaseCycleAggregationOptions>();
+    s.AddScoped<ApproachSplitFailAggregationOptions>();
+    s.AddScoped<ApproachYellowRedActivationsAggregationOptions>();
+    s.AddScoped<PreemptionAggregationOptions>();
+    s.AddScoped<PriorityAggregationOptions>();
+    s.AddScoped<SignalEventCountAggregationOptions>();
+    s.AddScoped<PhaseTerminationAggregationOptions>();
+    s.AddScoped<PhasePedAggregationOptions>();
+    s.AddScoped<PhaseLeftTurnGapAggregationOptions>();
+    s.AddScoped<PhaseSplitMonitorAggregationOptions>();
+
     //Common Services
     s.AddScoped<PlanService>();
     s.AddScoped<PedActuationService>();
@@ -188,6 +214,9 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<SplitFailService>();
     s.AddScoped<LeftTurnReportService>();
     s.AddScoped<VolumeService>();
+    s.AddScoped<LinkPivotService>();
+    s.AddScoped<LinkPivotPairService>();
+    s.AddScoped<LinkPivotPcdService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

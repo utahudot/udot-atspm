@@ -1,6 +1,7 @@
 ﻿using ATSPM.Application.Business;
 using ATSPM.Application.Business.Common;
 using ATSPM.Application.Business.TurningMovementCounts;
+using ATSPM.Application.Business.TurningMovementCounts.MOE.Common.Business.TMC;
 using ATSPM.Application.Extensions;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
@@ -9,13 +10,15 @@ using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.ReportApi.ReportServices
 {
     /// <summary>
     /// Turning movement count report service
     /// </summary>
-    public class TurningMovementCountReportService : ReportServiceBase<TurningMovementCountsOptions, IEnumerable<TurningMovementCountsResult>>
+    public class TurningMovementCountReportService : ReportServiceBase<TurningMovementCountsOptions, TurningMovementCountsResult>
     {
         private readonly IIndianaEventLogRepository controllerEventLogRepository;
         private readonly TurningMovementCountsService turningMovementCountsService;
@@ -37,14 +40,14 @@ namespace ATSPM.ReportApi.ReportServices
         }
 
         /// <inheritdoc/>
-        public override async Task<IEnumerable<TurningMovementCountsResult>> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
+        public override async Task<TurningMovementCountsResult> ExecuteAsync(TurningMovementCountsOptions parameter, IProgress<int> progress = null, CancellationToken cancelToken = default)
         {
             var Location = LocationRepository.GetLatestVersionOfLocation(parameter.LocationIdentifier, parameter.Start);
 
             if (Location == null)
             {
                 //return BadRequest("Location not found");
-                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("Location not found"));
+                return await Task.FromException<TurningMovementCountsResult>(new NullReferenceException("Location not found"));
             }
 
             var controllerEventLogs = controllerEventLogRepository.GetEventsBetweenDates(Location.LocationIdentifier, parameter.Start.AddHours(-12), parameter.End.AddHours(12)).ToList();
@@ -52,14 +55,14 @@ namespace ATSPM.ReportApi.ReportServices
             if (controllerEventLogs.IsNullOrEmpty())
             {
                 //return Ok("No Controller Event Logs found for Location");
-                return await Task.FromException<IEnumerable<TurningMovementCountsResult>>(new NullReferenceException("No Controller Event Logs found for Location"));
+                return await Task.FromException<TurningMovementCountsResult>(new NullReferenceException("No Controller Event Logs found for Location"));
             }
 
             var planEvents = controllerEventLogs.GetPlanEvents(
             parameter.Start.AddHours(-12),
                 parameter.End.AddHours(12)).ToList();
             var plans = planService.GetBasicPlans(parameter.Start, parameter.End, parameter.LocationIdentifier, planEvents);
-            var tasks = new List<Task<IEnumerable<TurningMovementCountsResult>>>();
+            var tasks = new List<Task<IEnumerable<TurningMovementCountsLanesResult>>>();
             foreach (var laneType in Enum.GetValues(typeof(LaneTypes)))
             {
                 tasks.Add(
@@ -73,26 +76,120 @@ namespace ATSPM.ReportApi.ReportServices
             }
             var results = await Task.WhenAll(tasks);
 
-            var finalResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
+            var finalLaneResultcheck = results.Where(result => result != null).SelectMany(r => r).ToList();
 
-            //if (finalResultcheck.IsNullOrEmpty())
-            //{
-            //    return Ok("No chart data found");
-            //}
-            //return Ok(finalResultcheck);
+            var finalResultcheck = new TurningMovementCountsResult
+            {
+                Charts = finalLaneResultcheck,
+                Table = new List<TurningMovementCountData>()
+            };
 
+            //Get Lane results by direction and movement type and bin size anc create a list of TurningMovementCountData for each direction and movement type
+            foreach (var direction in Location.Approaches.Select(a => a.DirectionTypeId).Distinct())
+            {
+                var laneResultsByDirection = finalLaneResultcheck.Where(r => r.Direction == direction.GetAttributeOfType<DisplayAttribute>().Name).ToList();
+                var movementTypes = laneResultsByDirection.Select(r => r.MovementType).Distinct().ToList();
+                foreach (var movementType in movementTypes)
+                {
+                    var laneResultsByMovementType = laneResultsByDirection.Where(r => r.MovementType == movementType).ToList();
+                    if (laneResultsByMovementType.IsNullOrEmpty())
+                    {
+                        continue;
+                    }
+                    var turningMovementCountData = new TurningMovementCountData
+                    {
+                        Direction = direction.GetAttributeOfType<DisplayAttribute>().Name,
+                        LaneType = laneResultsByMovementType.FirstOrDefault().LaneType,
+                        MovementType = movementType
+                    };
+
+                    //sum the totalVolumes.value grouped by toalVolume.Start and add to turningMovementCountData.Volumes
+                    turningMovementCountData.Volumes = laneResultsByMovementType
+                        .SelectMany(r => r.TotalVolumes)
+                        .GroupBy(v => v.Timestamp)
+                        .Select(g => new DataPointForInt(g.Key, g.Sum(v => v.Value)))
+                        .ToList();
+                    finalResultcheck.Table.Add(turningMovementCountData);
+                }
+            }
+            finalResultcheck.PeakHour = FindPeakHour(finalResultcheck.Table);
+            SetPeakHourFactor(finalResultcheck);
+            SetPeakHourVolume(finalResultcheck);
             return finalResultcheck;
         }
 
-        private async Task<IEnumerable<TurningMovementCountsResult>> GetChartDataForLaneType(
+        private void SetPeakHourVolume(TurningMovementCountsResult turningMovementCountsResult)
+        {
+            foreach (var lane in turningMovementCountsResult.Table)
+            {
+                lane.PeakHourVolume = new DataPointForInt(turningMovementCountsResult.PeakHour.Key, lane.Volumes
+                    .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
+                                                   && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
+                    .Sum(t => t.Value));
+            }
+        }
+
+        private void SetPeakHourFactor(TurningMovementCountsResult turningMovementCountsResult)
+        {
+            try
+            {
+                if (turningMovementCountsResult.Table
+                        .Where(t => t.LaneType == "Vehicle")
+                        .SelectMany(t => t.Volumes)
+                        .Where(t => t.Timestamp >= turningMovementCountsResult.PeakHour.Key
+                                    && t.Timestamp < turningMovementCountsResult.PeakHour.Key.AddHours(1))
+                        .Count() > 0)
+                {
+                    var maxCount = turningMovementCountsResult.Table
+                        .Where(t => t.LaneType == "Vehicle")
+                        .SelectMany(t => t.Volumes)
+                        .GroupBy(t => t.Timestamp)
+                        .Select(t => new { Id = t.Key, Count = t.Sum(y => y.Value) })
+                        .Max(t => t.Count);
+                    double denominator = 4 * maxCount;
+                    if (denominator != 0)
+                        turningMovementCountsResult.PeakHourFactor = Math.Round(turningMovementCountsResult.PeakHour.Value / denominator, 2);
+                }
+            }
+            catch
+            {
+                throw new Exception("Error Setting Peak Hour");
+            }
+        }
+
+        private KeyValuePair<DateTime, int> FindPeakHour(List<TurningMovementCountData> turnningMovementCountData)
+        {
+            var binStartTimes = turnningMovementCountData.SelectMany(t => t.Volumes).Select(v => v.Timestamp).Distinct().OrderBy(r => r).ToList();
+            var totalVolume = new KeyValuePair<DateTime, int>(DateTime.MinValue, 0);
+
+            foreach (var date in binStartTimes)
+            {
+                var tempVolume = turnningMovementCountData
+                    .Where(t => t.LaneType == "Vehicle")
+                    .SelectMany(t => t.Volumes)
+                    .Where(t =>
+                        t.Timestamp >= date
+                        && t.Timestamp < date.AddHours(1))
+                    .Sum(t => t.Value);
+                if (tempVolume > totalVolume.Value)
+                    totalVolume = new KeyValuePair<DateTime, int>(date, tempVolume);
+            }
+            return totalVolume;
+        }
+
+        private async Task<IEnumerable<TurningMovementCountsLanesResult>> GetChartDataForLaneType(
             Location Location,
             LaneTypes laneType,
             TurningMovementCountsOptions options,
             List<IndianaEvent> controllerEventLogs,
             List<Plan> plans)
         {
+            if (!Location.Approaches.SelectMany(a => a.Detectors).Select(d => d.LaneType).Distinct().Contains(laneType))
+            {
+                return null;
+            }
             var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
-            var tasks = new List<Task<TurningMovementCountsResult>>();
+            var tasks = new List<Task<TurningMovementCountsLanesResult>>();
             foreach (var direction in directions)
             {
                 var detectorsForDirection = Location.Approaches.Where(a => a.DirectionTypeId == direction).SelectMany(a => a.GetDetectorsForMetricType(options.MetricTypeId)).ToList();
@@ -133,7 +230,7 @@ namespace ATSPM.ReportApi.ReportServices
             return results.Where(result => result != null).OrderBy(r => r.Direction).ThenBy(r => r.MovementType);
         }
 
-        private async Task<TurningMovementCountsResult> GetChartDataByMovementType(
+        private async Task<TurningMovementCountsLanesResult> GetChartDataByMovementType(
             TurningMovementCountsOptions options,
             List<Plan> planEvents,
             List<IndianaEvent> controllerEventLogs,
@@ -150,7 +247,7 @@ namespace ATSPM.ReportApi.ReportServices
                 detectorEvents.AddRange(controllerEventLogs.GetEventsByEventCodesParamWithOffsetAndLatencyCorrection(
                     options.Start,
                     options.End,
-                    new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOn },
+                    new List<short>() { 82 },
                     detector.DetectorChannel,
                     detector.GetOffset(),
                     detector.LatencyCorrection).ToList());

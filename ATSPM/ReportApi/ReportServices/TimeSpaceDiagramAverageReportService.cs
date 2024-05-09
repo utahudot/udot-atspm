@@ -1,13 +1,12 @@
-﻿using ATSPM.Application.Business.TimeSpaceDiagram;
+﻿using ATSPM.Application.Business;
+using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.TimeSpaceDiagram;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
-using ATSPM.Data.Enums;
-using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Data.Models;
-using Microsoft.IdentityModel.Tokens;
-using ATSPM.Application.Business;
-using ATSPM.Application.Business.Common;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.EventLogModels;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -43,7 +42,7 @@ namespace ATSPM.ReportApi.ReportServices
                 throw new Exception($"No locations present for route");
             }
 
-            var eventCodes = new List<DataLoggerEnum>() { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn };
+            var eventCodes = new List<short>() { 81, 82 };
             var tasks = new List<Task<TimeSpaceDiagramAverageResult>>();
             routeLocations.Sort((r1, r2) => r1.Order - r2.Order);
 
@@ -70,7 +69,7 @@ namespace ATSPM.ReportApi.ReportServices
             List<IndianaEvent> programSplits,
             int offset,
             int cycleLength,
-            List<DataLoggerEnum> eventCodes,
+            List<short> eventCodes,
             double distanceToNextLocation,
             bool isLastElement,
             string phaseType)
@@ -108,7 +107,7 @@ namespace ATSPM.ReportApi.ReportServices
         private List<Task<TimeSpaceDiagramAverageResult>> GetChartData(TimeSpaceDiagramAverageOptions parameter,
             List<RouteLocation> routeLocations,
             TimeSpaceAverageBase averageParamsBase,
-            List<DataLoggerEnum> eventCodes)
+            List<short> eventCodes)
         {
             var results = new List<Task<TimeSpaceDiagramAverageResult>>();
             for (var i = 0; i < routeLocations.Count; i++)
@@ -161,6 +160,11 @@ namespace ATSPM.ReportApi.ReportServices
             var programmedSplitsForTimePeriod = new List<List<IndianaEvent>>();
             var daysToProcess = GetDaysToProcess(parameter.StartDate, parameter.EndDate, parameter.DaysOfWeek);
 
+            if (daysToProcess.Count == 0)
+            {
+                throw new Exception("No Data for Days Selected");
+            }
+
             foreach (var routeLocation in routeLocations)
             {
                 var planEventsForPeriod = new List<Plan>();
@@ -186,13 +190,13 @@ namespace ATSPM.ReportApi.ReportServices
 
                     if (currentProgrammedCycleLength == 0)
                     {
-                        var programmedCycleForPlan = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<DataLoggerEnum>() { DataLoggerEnum.CycleLengthChange });
+                        var programmedCycleForPlan = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<short>() { 132 });
                         currentProgrammedCycleLength = GetEventOverallapingTime(start, programmedCycleForPlan, "CycleLength").FirstOrDefault().EventParam;
                     }
 
                     if (currentOffset == 0)
                     {
-                        var offsets = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<DataLoggerEnum>() { DataLoggerEnum.OffsetLengthChange });
+                        var offsets = logs.GetEventsByEventCodes(start.AddHours(-12), end.AddHours(12), new List<short>() { 133 });
                         currentOffset = GetEventOverallapingTime(start, offsets, "Offset").FirstOrDefault().EventParam;
                     }
 
@@ -201,15 +205,14 @@ namespace ATSPM.ReportApi.ReportServices
                         var programmedSplits = logs.GetEventsByEventCodes(
                             start.AddHours(-12),
                             end.AddHours(12),
-                            new List<DataLoggerEnum>() {
-                            DataLoggerEnum.Split1Change,
-                            DataLoggerEnum.Split2Change,
-                            DataLoggerEnum.Split3Change,
-                            DataLoggerEnum.Split3Change,
-                            DataLoggerEnum.Split4Change,
-                            DataLoggerEnum.Split5Change,
-                            DataLoggerEnum.Split6Change,
-                            DataLoggerEnum.Split7Change });
+                            new List<short>() {
+                            134,
+                            135,
+                            136,
+                            137,
+                            138,
+                            139,
+                            140 });
                         currentProgrammedSplitsForTimePeriod.AddRange(GetEventOverallapingTime(start, programmedSplits, "Program Splits"));
                     }
 
@@ -295,7 +298,7 @@ namespace ATSPM.ReportApi.ReportServices
             return planEventsForPeriod.Select(p => p.PlanNumber).Distinct().Count() == 1;
         }
 
-        private List<IndianaEvent> GetApproachEvents(List<IndianaEvent> currentControllerEventLogs, List<DataLoggerEnum> eventCodes, TimeSpaceDiagramAverageOptions parameter)
+        private List<IndianaEvent> GetApproachEvents(List<IndianaEvent> currentControllerEventLogs, List<short> eventCodes, TimeSpaceDiagramAverageOptions parameter)
         {
             var approachEvents = new List<IndianaEvent>();
             var daysToProcess = GetDaysToProcess(parameter.StartDate, parameter.EndDate, parameter.DaysOfWeek);

@@ -1,4 +1,5 @@
 ﻿using ATSPM.Application.Extensions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,20 @@ namespace ATSPM.Application.TempExtensions
             return detectorsForMetricType;
         }
 
+        public static List<Detector> GetDetectorsForSignalThatSupportAMetricByApproachDirection(this Location location, int metricTypeId,
+            DirectionTypes direction)
+        {
+            var detectorsForMetricType = new List<Detector>();
+            foreach (var a in location.Approaches.Where(a => a.DirectionTypeId == direction))
+                foreach (var d in a.Detectors)
+                    if (d.SupportsMetricType(metricTypeId))
+                    {
+                        detectorsForMetricType.Add(d);
+                        break;
+                    }
+            return detectorsForMetricType;
+        }
+
         public static List<Detector> GetDetectorsForLocation(this Location Location)
         {
             var detectors = new List<Detector>();
@@ -52,6 +67,23 @@ namespace ATSPM.Application.TempExtensions
             }
 
             return detectors.OrderBy(d => d.Id).ToList();
+        }
+        public static List<DirectionTypes> GetAvailableDirections(this Location Location)
+        {
+            var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
+            return directions;
+        }
+
+        public static List<int> GetPhasesForSignal(this Location Location)
+        {
+            var phases = new List<int>();
+            foreach (var a in Location.Approaches)
+            {
+                if (a.PermissivePhaseNumber != null)
+                    phases.Add(a.PermissivePhaseNumber.Value);
+                phases.Add(a.ProtectedPhaseNumber);
+            }
+            return phases.Select(p => p).Distinct().ToList();
         }
     }
 }

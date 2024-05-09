@@ -4,7 +4,6 @@ using ATSPM.Application.Business.GreenTimeUtilization;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
 
@@ -80,8 +79,8 @@ namespace ATSPM.ReportApi.ReportServices
             bool usePermissivePhase)
         {
             var detectorEvents = controllerEventLogs.GetDetectorEvents(options.MetricTypeId, phaseDetail.Approach, options.Start, options.End, true, false).ToList();
-            var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<DataLoggerEnum>() { DataLoggerEnum.PhaseBeginGreen, DataLoggerEnum.PhaseBeginYellowChange, DataLoggerEnum.PhaseEndRedClearance }).ToList();
-
+            var cycleEvents = controllerEventLogs.GetEventsByEventCodes(options.Start, options.End, new List<short>() { 1, 8, 11 }).ToList();
+            cycleEvents = cycleEvents.Where(c => c.EventParam == phaseDetail.PhaseNumber).ToList();
             GreenTimeUtilizationResult viewModel = greenTimeUtilizationService.GetChartData(
                 phaseDetail,
                 options,

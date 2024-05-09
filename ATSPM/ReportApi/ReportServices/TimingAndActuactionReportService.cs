@@ -7,6 +7,8 @@ using ATSPM.Application.TempExtensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -58,16 +60,16 @@ namespace ATSPM.ReportApi.ReportServices
 
             foreach (var phase in phaseDetails)
             {
-                var eventCodes = new List<DataLoggerEnum> { };
+                var eventCodes = new List<short> { };
                 if (parameter.ShowAdvancedCount || parameter.ShowAdvancedDilemmaZone || parameter.ShowLaneByLaneCount || parameter.ShowStopBarPresence)
-                    eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.DetectorOff, DataLoggerEnum.DetectorOn });
+                    eventCodes.AddRange(new List<short> { 81, 82 });
                 if (parameter.ShowPedestrianActuation)
-                    eventCodes.AddRange(new List<DataLoggerEnum> { DataLoggerEnum.PedDetectorOff, DataLoggerEnum.PedDetectorOn });
+                    eventCodes.AddRange(new List<short> { 89, 90 });
                 if (parameter.ShowPedestrianIntervals)
                     eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
-                    eventCodes.AddRange(parameter.PhaseEventCodesList.Select(e => (DataLoggerEnum)e));
-                tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, false));
+                    eventCodes.AddRange(parameter.PhaseEventCodesList);
+                tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
             }
             var results = await Task.WhenAll(tasks);
 
@@ -86,7 +88,7 @@ namespace ATSPM.ReportApi.ReportServices
             TimingAndActuationsOptions options,
             List<IndianaEvent> controllerEventLogs,
             PhaseDetail phaseDetail,
-            List<DataLoggerEnum> eventCodes,
+            List<short> eventCodes,
             bool usePermissivePhase)
         {
             eventCodes.AddRange(timingAndActuationsForPhaseService.GetCycleCodes(phaseDetail.UseOverlap));
@@ -96,8 +98,19 @@ namespace ATSPM.ReportApi.ReportServices
                 eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
-            viewModel.ApproachDescription = phaseDetail.Approach.Description;
+            string approachDescription = GetApproachDescription(phaseDetail);
+            viewModel.ApproachDescription = approachDescription;
             return viewModel;
+        }
+
+        private static string GetApproachDescription(PhaseDetail phaseDetail)
+        {
+            DirectionTypes direction = phaseDetail.Approach.DirectionTypeId;
+            string directionTypeName = direction.GetAttributeOfType<DisplayAttribute>().Name;
+            MovementTypes movementType = phaseDetail.Approach.Detectors.ToList()[0].MovementType;
+            string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
+            string approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
+            return approachDescription;
         }
     }
 }

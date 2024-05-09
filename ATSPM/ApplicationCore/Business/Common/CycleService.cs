@@ -2,7 +2,6 @@
 using ATSPM.Application.Business.PreemptService;
 using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Business.YellowRedActivations;
-using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using System;
 using System.Collections.Generic;
@@ -191,22 +190,22 @@ namespace ATSPM.Application.Business.Common
         }
         private async void AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
         {
-            cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).ToList();
+            cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).OrderBy(e => e.Timestamp).ToList();
         }
 
-        private RedToRedCycle.EventType GetEventType(DataLoggerEnum eventCode)
+        private RedToRedCycle.EventType GetEventType(short eventCode)
         {
             return eventCode switch
             {
-                DataLoggerEnum.PhaseBeginGreen => RedToRedCycle.EventType.ChangeToGreen,
-                DataLoggerEnum.PhaseMinComplete => RedToRedCycle.EventType.ChangeToEndMinGreen,
-                DataLoggerEnum.OverlapBeginGreen => RedToRedCycle.EventType.ChangeToGreen,
-                DataLoggerEnum.PhaseBeginYellowChange => RedToRedCycle.EventType.ChangeToYellow,
-                DataLoggerEnum.OverlapBeginYellow => RedToRedCycle.EventType.ChangeToYellow,
-                DataLoggerEnum.PhaseEndYellowChange => RedToRedCycle.EventType.ChangeToRed,
-                DataLoggerEnum.PhaseEndRedClearance => RedToRedCycle.EventType.ChangeToEndOfRedClearance,
-                DataLoggerEnum.OverlapBeginRedClearance => RedToRedCycle.EventType.ChangeToRed,
-                DataLoggerEnum.OverlapDark => RedToRedCycle.EventType.OverLapDark,
+                1 => RedToRedCycle.EventType.ChangeToGreen,
+                3 => RedToRedCycle.EventType.ChangeToEndMinGreen,
+                61 => RedToRedCycle.EventType.ChangeToGreen,
+                8 => RedToRedCycle.EventType.ChangeToYellow,
+                63 => RedToRedCycle.EventType.ChangeToYellow,
+                9 => RedToRedCycle.EventType.ChangeToRed,
+                11 => RedToRedCycle.EventType.ChangeToEndOfRedClearance,
+                64 => RedToRedCycle.EventType.ChangeToRed,
+                66 => RedToRedCycle.EventType.OverLapDark,
                 _ => RedToRedCycle.EventType.Unknown,
             };
         }
@@ -256,7 +255,7 @@ namespace ATSPM.Application.Business.Common
                             GetEventType(cycleEvents[i + 1].EventCode) == RedToRedCycle.EventType.ChangeToYellow &&
                             GetEventType(cycleEvents[i + 2].EventCode) == RedToRedCycle.EventType.ChangeToRed &&
                             (GetEventType(cycleEvents[i + 3].EventCode) == RedToRedCycle.EventType.ChangeToGreen ||
-                            cycleEvents[i + 3].EventCode == DataLoggerEnum.OverlapDark))
+                            cycleEvents[i + 3].EventCode == 66))
                 .Select(i =>
                 {
                     var termEvent = GetTerminationEventBetweenStartAndEnd(cycleEvents[i].Timestamp, cycleEvents[i + 3].Timestamp, terminationEvents);
@@ -277,30 +276,30 @@ namespace ATSPM.Application.Business.Common
             if (terminationEvent != null)
                 terminationType = terminationEvent.EventCode switch
                 {
-                    DataLoggerEnum.PhaseGapOut => CycleSplitFail.TerminationType.GapOut,
-                    DataLoggerEnum.PhaseMaxOut => CycleSplitFail.TerminationType.MaxOut,
-                    DataLoggerEnum.PhaseForceOff => CycleSplitFail.TerminationType.ForceOff,
+                    4 => CycleSplitFail.TerminationType.GapOut,
+                    5 => CycleSplitFail.TerminationType.MaxOut,
+                    6 => CycleSplitFail.TerminationType.ForceOff,
                     _ => CycleSplitFail.TerminationType.Unknown,
                 };
             return terminationType;
         }
 
 
-        private YellowRedEventType GetYellowToRedEventType(DataLoggerEnum EventCode)
+        private YellowRedEventType GetYellowToRedEventType(short EventCode)
         {
             return EventCode switch
             {
-                DataLoggerEnum.PhaseBeginYellowChange => YellowRedEventType.BeginYellowClearance,
+                8 => YellowRedEventType.BeginYellowClearance,
                 // overlap yellow
-                DataLoggerEnum.OverlapBeginYellow => YellowRedEventType.BeginYellowClearance,
-                DataLoggerEnum.PhaseEndYellowChange => YellowRedEventType.BeginRedClearance,
+                63 => YellowRedEventType.BeginYellowClearance,
+                9 => YellowRedEventType.BeginRedClearance,
                 // overlap red
-                DataLoggerEnum.OverlapBeginRedClearance => YellowRedEventType.BeginRedClearance,
-                DataLoggerEnum.OverlapOffInactivewithredindication => YellowRedEventType.BeginRed,
-                DataLoggerEnum.PhaseEndRedClearance => YellowRedEventType.BeginRed,
-                DataLoggerEnum.PhaseBeginGreen => YellowRedEventType.EndRed,
+                64 => YellowRedEventType.BeginRedClearance,
+                65 => YellowRedEventType.BeginRed,
+                11 => YellowRedEventType.BeginRed,
+                1 => YellowRedEventType.EndRed,
                 // overlap green
-                DataLoggerEnum.OverlapBeginGreen => YellowRedEventType.EndRed,
+                61 => YellowRedEventType.EndRed,
                 _ => YellowRedEventType.Unknown,
             };
         }
@@ -328,8 +327,8 @@ namespace ATSPM.Application.Business.Common
                 if (x + 1 < preemptEvents.Count)
                 {
                     var timeBetweenEvents = preemptEvents[x + 1].Timestamp - preemptEvents[x].Timestamp;
-                    if (cycle != null && timeBetweenEvents.TotalMinutes > 20 && preemptEvents[x].EventCode != DataLoggerEnum.PreemptionBeginExitInterval &&
-                        preemptEvents[x].EventCode != DataLoggerEnum.PreemptEntryStarted)
+                    if (cycle != null && timeBetweenEvents.TotalMinutes > 20 && preemptEvents[x].EventCode != 111 &&
+                        preemptEvents[x].EventCode != 105)
                     {
                         EndCycle(cycle, preemptEvents[x], CycleCollection);
                         cycle = null;
@@ -339,18 +338,18 @@ namespace ATSPM.Application.Business.Common
 
                 switch (preemptEvents[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptCallInputOn:
+                    case 102:
 
                         if (cycle != null)
                             cycle.InputOn.Add(preemptEvents[x].Timestamp);
 
                         if (cycle == null && preemptEvents[x].Timestamp != preemptEvents[x + 1].Timestamp &&
-                            preemptEvents[x + 1].EventCode == DataLoggerEnum.PreemptEntryStarted)
+                            preemptEvents[x + 1].EventCode == 105)
                             cycle = StartCycle(preemptEvents[x]);
 
                         break;
 
-                    case DataLoggerEnum.PreemptGateDownInputReceived:
+                    case 103:
 
                         if (cycle != null && cycle.GateDown == DateTime.MinValue)
                             cycle.GateDown = preemptEvents[x].Timestamp;
@@ -358,14 +357,14 @@ namespace ATSPM.Application.Business.Common
 
                         break;
 
-                    case DataLoggerEnum.PreemptCallInputOff:
+                    case 104:
 
                         if (cycle != null)
                             cycle.InputOff.Add(preemptEvents[x].Timestamp);
 
                         break;
 
-                    case DataLoggerEnum.PreemptEntryStarted:
+                    case 105:
 
 
                         ////If we run into an entry start after cycle start (event 102)
@@ -386,7 +385,7 @@ namespace ATSPM.Application.Business.Common
                             cycle = StartCycle(preemptEvents[x]);
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginTrackClearance:
+                    case 106:
                         if (cycle != null)
                         {
                             cycle.BeginTrackClearance = preemptEvents[x].Timestamp;
@@ -397,7 +396,7 @@ namespace ATSPM.Application.Business.Common
                         }
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginDwellService:
+                    case 107:
 
                         if (cycle != null)
                         {
@@ -417,23 +416,23 @@ namespace ATSPM.Application.Business.Common
 
                         break;
 
-                    case DataLoggerEnum.PreemptionLinkActiveOn:
+                    case 108:
                         if (cycle != null)
                             cycle.LinkActive = preemptEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptionLinkActiveOff:
+                    case 109:
                         if (cycle != null)
                             cycle.LinkInactive = preemptEvents[x].Timestamp;
 
                         break;
 
-                    case DataLoggerEnum.PreemptionMaxPresenceExceeded:
+                    case 110:
                         if (cycle != null)
                             cycle.MaxPresenceExceeded = preemptEvents[x].Timestamp;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case 111:
                         // 111 can usually be considered "cycle complete"
                         if (cycle != null)
                         {
@@ -463,7 +462,7 @@ namespace ATSPM.Application.Business.Common
         {
             var Next111Event = new DateTime();
             for (var x = counter; x < DTTB.Count; x++)
-                if (DTTB[x].EventCode == DataLoggerEnum.PreemptionBeginExitInterval)
+                if (DTTB[x].EventCode == 111)
                 {
                     Next111Event = DTTB[x].Timestamp;
                     x = DTTB.Count;
@@ -478,16 +477,16 @@ namespace ATSPM.Application.Business.Common
             for (var x = counter; x < DTTB.Count; x++)
                 switch (DTTB[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptCallInputOn:
+                    case 102:
                         foundEvent111 = false;
                         x = DTTB.Count;
                         break;
-                    case DataLoggerEnum.PreemptEntryStarted:
+                    case 105:
                         foundEvent111 = false;
                         x = DTTB.Count;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case 111:
                         foundEvent111 = true;
                         x = DTTB.Count;
                         break;
@@ -503,12 +502,12 @@ namespace ATSPM.Application.Business.Common
             for (var x = counter; x < DTTB.Count; x++)
                 switch (DTTB[x].EventCode)
                 {
-                    case DataLoggerEnum.PreemptionBeginDwellService:
+                    case 107:
                         foundEvent107 = true;
                         x = DTTB.Count;
                         break;
 
-                    case DataLoggerEnum.PreemptionBeginExitInterval:
+                    case 111:
                         foundEvent107 = false;
                         x = DTTB.Count;
                         break;
@@ -617,13 +616,13 @@ namespace ATSPM.Application.Business.Common
 
             cycle.CycleStart = controller_Event_Log.Timestamp;
 
-            if (controller_Event_Log.EventCode == DataLoggerEnum.PreemptEntryStarted)
+            if (controller_Event_Log.EventCode == 105)
             {
                 cycle.EntryStarted = controller_Event_Log.Timestamp;
                 cycle.HasDelay = false;
             }
 
-            if (controller_Event_Log.EventCode == DataLoggerEnum.PreemptCallInputOn)
+            if (controller_Event_Log.EventCode == 102)
             {
                 cycle.StartInputOn = controller_Event_Log.Timestamp;
                 cycle.HasDelay = true;
