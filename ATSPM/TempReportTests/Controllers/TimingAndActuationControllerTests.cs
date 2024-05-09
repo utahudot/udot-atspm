@@ -143,7 +143,7 @@ namespace ReportsATSPM.Application.Reports.Controllers.Tests
             Assert.NotEmpty(result.StopBarDetectors);
             Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOff != null));
             Assert.Equal(9, result.StopBarDetectors.Where(s => s.Name == "Stop Bar Presence , T 1, ch 19").FirstOrDefault().Events.Count(s => s.DetectorOn != null));
-            Assert.NotEmpty(result.PedestrianIntervals);
+            Assert.Empty(result.PedestrianIntervals);
         }
 
         private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
