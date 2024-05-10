@@ -287,4 +287,17 @@ namespace ATSPM.Data.Models.AggregationModels
         /// <inheritdoc/>
         public int PlanNumber { get; set; }
     }
+
+    public class SpeedManagement : AggregationModelBase, ILocationLayer
+    {
+        public int SourceId { get; set; }
+        public int ConfidenceId { get; set; }
+        public int Average { get; set; }
+        public int? FifteenthSpeed { get; set; }
+        public int? EightyFifthSpeed { get; set; }
+        public int? NinetyFifthSpeed { get; set; }
+        public int? NinetyNinthSpeed { get; set; }
+        public int? Violation { get; set; }
+        public int? Flow { get; set; }
+    }
 }
