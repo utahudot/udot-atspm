@@ -29,7 +29,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Item uri
         /// </summary>
-        public Uri Link { get; set; }
+        public string Link { get; set; }
 
         /// <summary>
         /// Item document
