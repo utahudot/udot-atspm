@@ -22,7 +22,7 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(1024);
 
             builder.Property(e => e.Link)
-                .HasMaxLength(512);
+                .HasMaxLength(1024);
 
             builder.HasOne(d => d.Parent).WithMany(m => m.Children).HasForeignKey(d => d.ParentId).OnDelete(DeleteBehavior.Restrict);
 
