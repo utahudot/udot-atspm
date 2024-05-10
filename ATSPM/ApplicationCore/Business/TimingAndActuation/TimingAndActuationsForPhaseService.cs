@@ -19,39 +19,21 @@ namespace ATSPM.Application.Business.TimingAndActuation
             bool usePermissivePhase
             )
         {
-            var stopBarEvents = new List<DetectorEventDto>();
             var pedestrianEvents = new List<DetectorEventDto>();
-            var laneByLanes = new List<DetectorEventDto>();
-            var advancePresenceEvents = new List<DetectorEventDto>();
-            var advanceCountEvents = new List<DetectorEventDto>();
             var phaseCustomEvents = new Dictionary<string, List<DataPointForInt>>();
             var pedestrianIntervals = new List<CycleEventsDto>();
 
-
-            if (options.ShowStopBarPresence)
-            {
-                stopBarEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
-            }
-            if (options.ShowPedestrianActuation && !usePermissivePhase)
+            if (!usePermissivePhase)
             {
                 pedestrianEvents = GetPedestrianEventsNew(phaseDetail.Approach, options, controllerEventLogs);
-            }
-            if (options.ShowPedestrianIntervals && !usePermissivePhase)
-            {
                 pedestrianIntervals = GetPedestrianIntervals(phaseDetail.Approach, controllerEventLogs, options);
             }
-            if (options.ShowLaneByLaneCount)
-            {
-                laneByLanes = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
-            }
-            if (options.ShowAdvancedDilemmaZone)
-            {
-                advancePresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AP);
-            }
-            if (options.ShowAdvancedCount)
-            {
-                advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
-            }
+
+            var stopBarEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.SBP);
+            var laneByLanes = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.LLC);
+            var advancePresenceEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AP);
+            var advanceCountEvents = GetDetectionEvents(phaseDetail.Approach, options, controllerEventLogs, DetectionTypes.AC);
+
             if (options.PhaseEventCodesList != null)
             {
                 phaseCustomEvents = GetPhaseCustomEvents(phaseDetail.Approach.Location.LocationIdentifier, phaseDetail.PhaseNumber, options, controllerEventLogs);
@@ -164,7 +146,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                             "Phase Events: " + phaseEventCode, phaseEvents.Select(s => new DataPointForInt(s.Timestamp, (int)s.EventCode)).ToList());
                     }
 
-                    if (phaseCustomEvents.Count == 0 && options.ShowAllLanesInfo)
+                    if (phaseCustomEvents.Count == 0)
                     {
                         var forceEventsForAllLanes = new List<IndianaEvent>();
                         var tempEvent1 = new IndianaEvent()
@@ -209,7 +191,6 @@ namespace ATSPM.Application.Business.TimingAndActuation
             {
                 if (detector.DetectionTypes.Any(d => d.Id == detectionType))
                 {
-                    var extendStartStopLine = options.ExtendStartStopSearch * 60.0;
                     var filteredEvents = controllerEventLogs.Where(c => detectorActivationCodes.Contains(c.EventCode)
                                                                         && c.EventParam == detector.DetectorChannel
                                                                         && c.Timestamp >= options.Start
