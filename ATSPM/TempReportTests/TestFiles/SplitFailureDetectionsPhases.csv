@@ -1,4 +1,4 @@
-SignalIdentifier,EventCode,EventParam,Timestamp
+LocationIdentifier,EventCode,EventParam,Timestamp
 7115,82,21,00:03.9
 7115,82,20,00:04.9
 7115,82,20,00:07.7

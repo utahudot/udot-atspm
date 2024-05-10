@@ -201,7 +201,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
             )
         {
             var DetEvents = new List<DetectorEventDto>();
-            var localSortedDetectors = approach.Detectors.Where(d => d.DetectionTypes.Any(d => d.Id == detectionType))
+            var localSortedDetectors = approach.Detectors
                 .OrderByDescending(d => d.MovementType.GetDisplayAttribute()?.Order)
                 .ThenByDescending(l => l.LaneNumber).ToList();
             var detectorActivationCodes = new List<short> { 81, 82 };
@@ -256,7 +256,7 @@ namespace ATSPM.Application.Business.TimingAndActuation
                         DetEvents.Add(new DetectorEventDto(lableName, detectorEvents));
                     }
 
-                    else if (filteredEvents.Count == 0 && options.ShowAllLanesInfo)
+                    else if (filteredEvents.Count == 0)
                     {
                         var e = new DetectorEventBase(options.Start.AddSeconds(-10), options.Start.AddSeconds(-9));
 
