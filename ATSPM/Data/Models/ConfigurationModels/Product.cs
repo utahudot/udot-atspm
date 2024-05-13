@@ -23,7 +23,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Product web page
         /// </summary>
-        public Uri WebPage { get; set; }
+        public string WebPage { get; set; }
 
         /// <summary>
         /// Configuration notes
