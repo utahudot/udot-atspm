@@ -188,7 +188,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Manufacturer = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
                     Model = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
-                    WebPage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WebPage = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true)
                 },
                 constraints: table =>
