@@ -4,6 +4,7 @@ using Identity.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Identity.Controllers
 {
@@ -11,10 +12,10 @@ namespace Identity.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailService _emailService;
-        private readonly IAccountService _accountService;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IEmailService emailService;
+        private readonly IAccountService accountService;
 
 
         public AccountController(
@@ -23,10 +24,10 @@ namespace Identity.Controllers
             IAccountService accountService,
             IEmailService emailService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _accountService = accountService;
-            _emailService = emailService;
+            this.userManager = userManager;
+            this.signInManager = signInManager;
+            this.accountService = accountService;
+            this.emailService = emailService;
         }
 
         [HttpPost("register")]
@@ -46,7 +47,7 @@ namespace Identity.Controllers
                 LastName = model.LastName
             };
 
-            AccountResult result = await _accountService.CreateUser(user, model.Password);
+            AccountResult result = await accountService.CreateUser(user, model.Password);
             if (result.Code == StatusCodes.Status400BadRequest)
             {
                 return BadRequest(result);
@@ -74,10 +75,10 @@ namespace Identity.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest( new { Error = "Not a valid Request"});
+                return BadRequest(new { Error = "Not a valid Request" });
             }
 
-            var authenticationResult = await _accountService.Login(model.Email, model.Password, model.RememberMe);
+            var authenticationResult = await accountService.Login(model.Email, model.Password, model.RememberMe);
 
             if (authenticationResult.Code == StatusCodes.Status200OK)
             {
@@ -96,47 +97,111 @@ namespace Identity.Controllers
             return BadRequest(authenticationResult);
         }
 
-
-
         [HttpPost("external-login")]
-        public IActionResult ExternalLogin(LoginViewModel model)
+        public IActionResult ExternalLogin([FromBody] LoginViewModel model)
         {
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", "http://localhost:44357/api/account/google-callback");
-            return Challenge(properties, "Google");
-
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = model.ReturnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(model.Provider, redirectUrl);
+            return Challenge(properties, model.Provider);
         }
 
-        [HttpGet("google-callback")]
-        public async Task<IActionResult> GoogleCallback()
+        [HttpGet("external-login-callback")]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            if (remoteError != null)
             {
-                // Handle external login failure
-                return BadRequest();
+                // Handle the error received from the external provider
+                return RedirectToAction(nameof(Login), new { ErrorMessage = remoteError });
             }
 
-            // Sign in the user using external login information
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            // Retrieve the login information from the external provider
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                // No information was returned
+                return RedirectToAction(nameof(Login), new { ErrorMessage = "Error loading external login information." });
+            }
 
+            // Attempt to sign in the user with the external login info
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
-                // Redirect to the desired URL after successful login
-                return Redirect("http://localhost:3000/callback");
+                // Sign-in success, redirect to the return URL or a default page
+                return Redirect(returnUrl ?? "/");
+            }
+            else if (result.IsLockedOut)
+            {
+                // Handle if the user is locked out
+                return RedirectToAction("Lockout");
             }
             else
             {
-                // Handle the case where the user does not have an account yet
-                // You may want to redirect the user to a registration page
-                return BadRequest("User does not have an account");
+                // User does not have a local account, you may need to create one
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var userName = email;
+
+                // You can extract more information from the info object as needed
+                var user = new ApplicationUser { UserName = userName, Email = email };
+
+                var identityResult = await userManager.CreateAsync(user);
+                if (identityResult.Succeeded)
+                {
+                    identityResult = await userManager.AddLoginAsync(user, info);
+                    if (identityResult.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: false);
+                        return Redirect(returnUrl ?? "/");
+                    }
+                }
+
+                // If there were any issues with account creation, handle them appropriately
+                return RedirectToAction(nameof(Login), new { ErrorMessage = "Could not create user account." });
             }
         }
+
+        [Authorize]
+        [HttpPost("link-external-login")]
+        public async Task<IActionResult> LinkExternalLogin()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("User not found");
+            }
+
+            // Retrieve the external login info from the temporary sign-in that occurs during external authentication
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return BadRequest("External login information not available. Make sure you've authenticated with the external provider.");
+            }
+
+            // Check if the external login is already linked
+            var result = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (result != null)
+            {
+                return BadRequest("This external account is already linked to another user.");
+            }
+
+            // Link the external login to the user's account
+            var linkResult = await userManager.AddLoginAsync(user, info);
+            if (linkResult.Succeeded)
+            {
+                // Optionally, sign the user in with the new external login
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return Ok("The external account has been linked successfully.");
+            }
+
+            return BadRequest("Failed to link the external account.");
+        }
+
+
 
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await signInManager.SignOutAsync();
             return Ok(new { Message = "Successfully logged out." });
         }
 
@@ -146,17 +211,17 @@ namespace Identity.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { Error = "Not a valid Request"});
+                return BadRequest(new { Error = "Not a valid Request" });
             }
 
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
 
             if (user == null)
             {
                 return Unauthorized("User not found");
             }
 
-            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 
             if (result != null && result.Succeeded)
             {
@@ -174,13 +239,13 @@ namespace Identity.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return Ok();
             }
 
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
             //var callbackUrl = Url.Action(
             //    "ResetPassword", // Action method to reset password in your web application
@@ -189,7 +254,7 @@ namespace Identity.Controllers
             //    protocol: HttpContext.Request.Scheme);
             var callbackUrl = "http://localhost:3000/changepassword?username=" + user.UserName + "&token=" + token;
 
-            await _emailService.SendEmailAsync(
+            await emailService.SendEmailAsync(
                 model.Email,
                 "Reset Password",
                 $"Please reset your password by clicking here: {callbackUrl}");
@@ -202,21 +267,21 @@ namespace Identity.Controllers
         [HttpPost("verifyUserPasswordReset")]
         public async Task<IActionResult> VerifyUserPasswordReset(VerifyUserPasswordResetViewModel model)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
                 return Unauthorized("User not found");
             }
 
-            var isUserVerified = await _userManager.CheckPasswordAsync(user, model.Password);
+            var isUserVerified = await userManager.CheckPasswordAsync(user, model.Password);
 
             if (isUserVerified)
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                return Ok( new {token, Username = user.UserName});
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                return Ok(new { token, Username = user.UserName });
             }
 
-            return BadRequest(new {Message = "Password provided doesn't match"});
+            return BadRequest(new { Message = "Password provided doesn't match" });
         }
     }
 }
