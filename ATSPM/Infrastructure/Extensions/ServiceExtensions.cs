@@ -118,6 +118,23 @@ namespace ATSPM.Infrastructure.Extensions
                    IssuerSigningKey = new SymmetricSecurityKey(
                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                };
+           })
+           .AddOpenIdConnect(options =>
+           {
+               options.Authority = builder.Configuration["Oidc:Authority"];
+               options.ClientId = builder.Configuration["Oidc:ClientId"];
+               options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
+               options.ResponseType = "code";
+               options.SaveTokens = true;
+
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true
+               };
+
+               options.Scope.Add("email");
+               options.Scope.Add("profile");
+               // Additional configurations as necessary
            });
 
             return services;

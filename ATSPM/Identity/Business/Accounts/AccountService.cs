@@ -28,7 +28,7 @@ namespace Identity.Business.Accounts
 
             if (createUserResult.Succeeded)
             {
-                //await _userManager.AddToRoleAsync(user, "User");
+                //await userManager.AddToRoleAsync(user, "User");
                 return await Login(user.Email, password);
             }
 
