@@ -26,7 +26,7 @@ namespace ATSPM.Application.Extensions
             {
                 var startDateTime = new DateTime(startDate.Year, startDate.Month, startDate.Day, startTime.Hour, startTime.Minute, startTime.Second);
                 var endDateTime = new DateTime(endDate.Year, endDate.Month, endDate.Day, endTime.Hour, endTime.Minute, endTime.Second);
-                string[] selectedDaysOfWeek = daysOfWeek.Split(',').Select(s => s.Trim()).ToArray();
+                int[] selectedDaysOfWeek = daysOfWeek.Split(',').Select(s => Convert.ToInt32(s.Trim())).ToArray();
                 var query = clearguideAggregationRepository.GetAllAggregationsBetweenDates(startDateTime, endDateTime);
                 switch (analysisPeriod)
                 {
@@ -58,7 +58,7 @@ namespace ATSPM.Application.Extensions
                                      TimeOnly.FromDateTime(record.Start) <= endTime);
                         break;
                 }
-                var avgDailyResults = query.ToList().Where(s => selectedDaysOfWeek.Contains(s.Start.DayOfWeek.ToString())).ToList(); //.Where(speed => selectedDaysOfWeek.Contains(speed.Date.DayOfWeek.ToString())).ToList();
+                var avgDailyResults = query.ToList().Where(s => selectedDaysOfWeek.Contains((int)s.Start.DayOfWeek)).ToList(); //.Where(speed => selectedDaysOfWeek.Contains(speed.Date.DayOfWeek.ToString())).ToList();
 
                 var tempRoutes = Enumerable.Range(1, 6000).Select(x => x.ToString()).ToList(); //_dbContext.Routes.ToList();
                 var routes = new Dictionary<string, int>();
