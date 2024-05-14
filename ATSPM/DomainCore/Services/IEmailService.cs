@@ -73,7 +73,7 @@ namespace ATSPM.Domain.Services
         /// <returns></returns>
         public static async Task<bool> SendEmailAsync(this IEmailService service,
                                                 MailAddress from,
-                                                List<MailAddress> to,
+                                                IEnumerable<MailAddress> to,
                                                 string subject,
                                                 string body,
                                                 bool isHtml = false,
