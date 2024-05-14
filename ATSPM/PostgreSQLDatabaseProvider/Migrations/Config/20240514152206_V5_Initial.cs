@@ -165,7 +165,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Name = table.Column<string>(type: "character varying(24)", unicode: false, maxLength: 24, nullable: false),
                     Icon = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
                     DisplayOrder = table.Column<int>(type: "integer", nullable: false),
-                    Link = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    Link = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
                     Document = table.Column<byte[]>(type: "bytea", nullable: true),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -189,7 +189,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Manufacturer = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
                     Model = table.Column<string>(type: "character varying(48)", unicode: false, maxLength: 48, nullable: false),
-                    WebPage = table.Column<string>(type: "text", nullable: true),
+                    WebPage = table.Column<string>(type: "text", unicode: false, nullable: true),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true)
                 },
                 constraints: table =>
@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 4, 12, 14, 47, 56, 407, DateTimeKind.Local).AddTicks(1689)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 5, 14, 9, 22, 6, 361, DateTimeKind.Local).AddTicks(838)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
