@@ -27,6 +27,8 @@ namespace ATSPM.Infrastructure.Services.EmailServices
         /// <inheritdoc/>
         public async Task<bool> SendEmailAsync(MailMessage message)
         {
+            _logger.LogDebug("SendEmail message: {message}", message);
+
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(message.From.DisplayName, message.From.Address));
             email.To.AddRange(message.To.Select(s => new MailboxAddress(s.DisplayName, s.Address)).ToList());
@@ -50,9 +52,11 @@ namespace ATSPM.Infrastructure.Services.EmailServices
 
                     if (smtp.IsConnected && smtp.IsAuthenticated)
                     {
+                        _logger.LogDebug("SendEmail sending: {email}", email);
+
                         var response = await smtp.SendAsync(email);
 
-                        Console.WriteLine($"SmtpEmailService response: {response}");
+                        _logger.LogInformation("SendEmail response: {response}", response);
 
                         return true;
                     }
@@ -65,7 +69,7 @@ namespace ATSPM.Infrastructure.Services.EmailServices
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("Exception connecting to server: {e}", e);
+                    _logger.LogError(e, "Exception sending email");
                 }
             }
 
