@@ -23,15 +23,19 @@
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="44.0.1" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
+    <PackageReference Include="MailKit" Version="4.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.14" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="MimeKit" Version="4.5.0" />
     <PackageReference Include="OData.Swagger" Version="1.0.0" />
     <PackageReference Include="Parquet.Net" Version="3.10.0" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="SSH.NET" Version="2020.0.2" />
   </ItemGroup>
 

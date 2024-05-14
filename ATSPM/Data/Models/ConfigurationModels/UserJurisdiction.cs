@@ -4,6 +4,6 @@
     {
         public string UserId { get; set; }
         public int JurisdictionId { get; set; }
-        public Jurisdiction Jurisdiction { get; set; }
+        public virtual Jurisdiction Jurisdiction { get; set; }
     }
 }
