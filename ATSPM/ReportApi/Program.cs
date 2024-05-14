@@ -16,6 +16,7 @@ using ATSPM.Application.Business.PreempDetail;
 using ATSPM.Application.Business.PreemptService;
 using ATSPM.Application.Business.PreemptServiceRequest;
 using ATSPM.Application.Business.PurdueCoordinationDiagram;
+using ATSPM.Application.Business.RouteSpeed;
 using ATSPM.Application.Business.SplitFail;
 using ATSPM.Application.Business.SplitMonitor;
 using ATSPM.Application.Business.TimeSpaceDiagram;
@@ -217,6 +218,7 @@ builder.Host.ConfigureServices((h, s) =>
     s.AddScoped<LinkPivotService>();
     s.AddScoped<LinkPivotPairService>();
     s.AddScoped<LinkPivotPcdService>();
+    s.AddScoped<RouteSpeedService>();
 
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-logging/?view=aspnetcore-7.0
     s.AddHttpLogging(l =>

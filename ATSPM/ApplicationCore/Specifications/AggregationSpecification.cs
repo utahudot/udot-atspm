@@ -13,6 +13,13 @@ namespace ATSPM.Application.Specifications
 
             ApplyOrderBy(o => o.ArchiveDate);
         }
+
+        public AggregationDateRangeSpecification(DateOnly startDate, DateOnly endDate) : base()
+        {
+            base.Criteria = c => c.ArchiveDate >= startDate && c.ArchiveDate <= endDate;
+
+            ApplyOrderBy(o => o.ArchiveDate);
+        }
     }
 
     public class AggregationDateTimeRangeSpecification : BaseSpecification<AggregationModelBase>
@@ -91,7 +98,7 @@ namespace ATSPM.Application.Specifications
     //    }
     //}
 
-    
+
 
     //public class ControllerLogCodeAndParamSpecification : BaseSpecification<ControllerEventLog>
     //{
@@ -131,5 +138,5 @@ namespace ATSPM.Application.Specifications
     //    }
     //}
 
-    
+
 }

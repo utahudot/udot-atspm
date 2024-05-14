@@ -288,9 +288,8 @@ namespace ATSPM.Data.Models.AggregationModels
         public int PlanNumber { get; set; }
     }
 
-    public class SpeedManagement : AggregationModelBase, ILocationLayer
+    public class ClearGuideAggregation : AggregationModelBase, ILocationLayer
     {
-        public int SourceId { get; set; }
         public int ConfidenceId { get; set; }
         public int Average { get; set; }
         public int? FifteenthSpeed { get; set; }
