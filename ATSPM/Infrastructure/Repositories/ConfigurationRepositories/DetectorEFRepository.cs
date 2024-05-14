@@ -1,8 +1,10 @@
-﻿using ATSPM.Application.Repositories.ConfigurationRepositories;
+﻿using ATSPM.Application.Common.EqualityComparers;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Data;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +29,37 @@ namespace ATSPM.Infrastructure.Repositories.ConfigurationRepositories
             //.Include(i => i.MovementType)
             //.Include(i => i.DetectorComments)
             //.Include(i => i.DetectionTypes);
+        }
+
+        /// <inheritdoc/>
+        protected override void UpdateCollections(Detector oldItem, CollectionEntry oldCollection, Detector newItem, CollectionEntry newCollection)
+        {
+            switch (oldCollection.Metadata.Name)
+            {
+                case "DetectionTypes":
+                    {
+                        var remove = oldItem.DetectionTypes.Except(newItem.DetectionTypes, new ConfigEntityIdComparer<DetectionType, DetectionTypes>());
+                        var add = newItem.DetectionTypes.Except(oldItem.DetectionTypes, new ConfigEntityIdComparer<DetectionType, DetectionTypes>());
+
+                        foreach (var r in remove)
+                        {
+                            oldItem.DetectionTypes.Remove(r);
+                        }
+
+                        foreach (var a in add)
+                        {
+                            oldItem.DetectionTypes.Add(a);
+                        }
+
+                        break;
+                    }
+                default:
+                    {
+                        base.UpdateCollections(oldItem, oldCollection, newItem, newCollection);
+
+                        break;
+                    }
+            }
         }
 
         #endregion

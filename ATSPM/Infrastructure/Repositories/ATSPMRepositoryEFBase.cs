@@ -1,6 +1,7 @@
 ﻿using ATSPM.Domain.Services;
 using ATSPM.Domain.Specifications;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace ATSPM.Infrastructure.Repositories
             _db = db;
             table = _db.Set<T>();
         }
+
+        #region IAsyncRepository
 
         public void Add(T item)
         {
@@ -74,24 +77,56 @@ namespace ATSPM.Infrastructure.Repositories
 
         public T Lookup(T item)
         {
-            return table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+            var result = table.Find(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray());
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                n.Load();
+            }
+
+            return result;
         }
 
         //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public T Lookup(object key)
         {
-            return table.Find(key);
+            var result = table.Find(key);
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                n.Load();
+            }
+
+            return result;
         }
 
         public async Task<T> LookupAsync(T item)
         {
-            return await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+            var result = await table.FindAsync(_db.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties.Select(p => p.PropertyInfo.GetValue(item, null)).ToArray()).ConfigureAwait(false);
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                await n.LoadAsync().ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         //TODO: replace with this for multiple key values (params object?[]? keyValues)
         public async Task<T> LookupAsync(object key)
         {
-            return await table.FindAsync(key);
+            var result = await table.FindAsync(key);
+
+            foreach (var n in _db.Entry(result).Navigations)
+            {
+                //if (!n.IsLoaded)
+                await n.LoadAsync().ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         public void Remove(T item)
@@ -130,9 +165,20 @@ namespace ATSPM.Infrastructure.Repositories
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
 
-                            foreach (var n in _db.Entry(old).Navigations)
+                            foreach (var i in _db.Entry(old).Collections)
                             {
-                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                                if (!i.IsLoaded)
+                                    i.Load();
+
+                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                            }
+
+                            foreach (var i in _db.Entry(old).References)
+                            {
+                                if (!i.IsLoaded)
+                                    i.Load();
+
+                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                             }
                         }
                         else
@@ -140,30 +186,15 @@ namespace ATSPM.Infrastructure.Repositories
                             table.Update(item);
                         }
 
-                        //_db.SaveChanges();
-
                         break;
                     }
                 case EntityState.Modified:
                     {
-                        //_db.SaveChanges();
-
                         break;
                     }
                 case EntityState.Unchanged:
                     {
-                        foreach (var n in _db.Entry(item).Navigations)
-                        {
-                            n.IsModified = true;
-                        }
-
-                        //_db.SaveChanges();
-
                         break;
-                    }
-                default:
-                    {
-                        return;
                     }
             }
 
@@ -182,9 +213,20 @@ namespace ATSPM.Infrastructure.Repositories
                         {
                             _db.Entry(old).CurrentValues.SetValues(item);
 
-                            foreach (var n in _db.Entry(old).Navigations)
+                            foreach (var i in _db.Entry(old).Collections)
                             {
-                                n.CurrentValue = _db.Entry(item).Navigations.First(w => w.Metadata.Name == n.Metadata.Name).CurrentValue;
+                                if (!i.IsLoaded)
+                                    await i.LoadAsync();
+
+                                UpdateCollections(old, i, item, _db.Entry(item).Collections.First(w => w.Metadata.Name == i.Metadata.Name));
+                            }
+
+                            foreach (var i in _db.Entry(old).References)
+                            {
+                                if (!i.IsLoaded)
+                                    await i.LoadAsync();
+
+                                UpdateReferences(old, i, item, _db.Entry(item).References.First(w => w.Metadata.Name == i.Metadata.Name));
                             }
                         }
                         else
@@ -192,35 +234,22 @@ namespace ATSPM.Infrastructure.Repositories
                             table.Update(item);
                         }
 
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
-
                         break;
                     }
                 case EntityState.Modified:
                     {
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
-
                         break;
                     }
                 case EntityState.Unchanged:
                     {
-                        foreach (var n in _db.Entry(item).Navigations)
-                        {
-                            n.IsModified = true;
-                        }
-
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
-
                         break;
-                    }
-                default:
-                    {
-                        return;
                     }
             }
 
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
+
+
 
         //TODO: Check item for changes attach/unattach
         public void UpdateRange(IEnumerable<T> items)
@@ -234,6 +263,30 @@ namespace ATSPM.Infrastructure.Repositories
         {
             table.UpdateRange(items);
             await _db.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Determines what to do with related one-to-many and many-to-many entity collections
+        /// </summary>
+        /// <param name="oldItem"></param>
+        /// <param name="oldCollection"></param>
+        /// <param name="newItem"></param>
+        /// <param name="newCollection"></param>
+        protected virtual void UpdateCollections(T oldItem, CollectionEntry oldCollection, T newItem, CollectionEntry newCollection)
+        {
+        }
+
+        /// <summary>
+        /// Determines what to do with related one-to-one entities
+        /// </summary>
+        /// <param name="oldItem"></param>
+        /// <param name="oldReference"></param>
+        /// <param name="newItem"></param>
+        /// <param name="newReference"></param>
+        protected virtual void UpdateReferences(T oldItem, ReferenceEntry oldReference, T newItem, ReferenceEntry newReference)
+        {
         }
     }
 }
