@@ -56,5 +56,6 @@ namespace ATSPM.Application.Repositories.AggregationRepositories
         /// <param name="endTime">End time</param>
         /// <returns></returns>
         IReadOnlyList<T> GetAggregationsBetweenDates(string locationId, DateTime startTime, DateTime endTime);
+        IReadOnlyList<T> GetAllAggregationsBetweenDates(DateTime startTime, DateTime endTime);
     }
 }

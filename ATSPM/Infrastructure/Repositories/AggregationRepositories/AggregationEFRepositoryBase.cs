@@ -39,6 +39,21 @@ namespace ATSPM.Infrastructure.Repositories.AggregationRepositories
             return result;
         }
 
+        public virtual IReadOnlyList<T> GetAllAggregationsBetweenDates(DateTime startTime, DateTime endTime)
+        {
+            var result = table
+                .FromSpecification(new AggregationDateRangeSpecification(DateOnly.FromDateTime(startTime), DateOnly.FromDateTime(endTime)))
+                .AsNoTracking()
+                .AsEnumerable()
+                .SelectMany(m => m.Data)
+                .Where(c => c.Start >= startTime && c.End <= endTime)
+                .FromSpecification(new AggregationDateTimeRangeSpecification(startTime, endTime))
+                .Cast<T>()
+                .ToList();
+
+            return result;
+        }
+
         #endregion
     }
 }

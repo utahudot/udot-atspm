@@ -295,6 +295,7 @@ namespace ATSPM.Infrastructure.Extensions
             services.AddScoped<IPriorityAggregationRepository, PriorityAggregationEFRepository>();
             services.AddScoped<ISignalEventCountAggregationRepository, SignalEventCountAggregationEFRepository>();
             services.AddScoped<ISignalPlanAggregationRepository, SignalPlanAggregationEFRepository>();
+            services.AddScoped<IClearguideAggregationRepository, ClearGuidAggregationEFRepository>();
 
             return services;
         }
