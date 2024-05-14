@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20240412204756_V5_Initial")]
+    [Migration("20240514152206_V5_Initial")]
     partial class V5_Initial
     {
         /// <inheritdoc />
@@ -1413,8 +1413,9 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Link")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasMaxLength(1024)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(1024)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1461,6 +1462,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(512)");
 
                     b.Property<string>("WebPage")
+                        .IsUnicode(false)
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -1623,7 +1625,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 4, 12, 14, 47, 56, 407, DateTimeKind.Local).AddTicks(1689));
+                        .HasDefaultValue(new DateTime(2024, 5, 14, 9, 22, 6, 361, DateTimeKind.Local).AddTicks(838));
 
                     b.Property<string>("Name")
                         .IsRequired()
