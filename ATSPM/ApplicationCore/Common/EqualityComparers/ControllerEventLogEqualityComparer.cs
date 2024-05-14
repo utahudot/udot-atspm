@@ -1,10 +1,7 @@
-﻿using ATSPM.Application.ValueObjects;
-using ATSPM.Data.Models;
-using ATSPM.Data.Models.EventLogModels;
+﻿using ATSPM.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace ATSPM.Application.Common.EqualityComparers
 {
