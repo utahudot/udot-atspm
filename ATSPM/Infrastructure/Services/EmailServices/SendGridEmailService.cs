@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -25,6 +26,8 @@ namespace ATSPM.Infrastructure.Services.EmailServices
         /// <inheritdoc/>
         public async Task<bool> SendEmailAsync(MailMessage message)
         {
+            _logger.LogDebug("SendEmail message: {message}", message);
+
             if (!string.IsNullOrEmpty(_options.Password))
             {
                 var client = new SendGridClient(_options.Password);
@@ -33,18 +36,28 @@ namespace ATSPM.Infrastructure.Services.EmailServices
                 var subject = message.Subject;
                 var to = message.To.Select(s => new EmailAddress(s.Address, s.DisplayName)).ToList();
                 var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from, to, message.Subject, message.IsBodyHtml ? null : message.Body, message.IsBodyHtml ? message.Body : null);
-                var response = await client.SendEmailAsync(msg);
 
-                _logger.LogDebug("SendEmail Response: {response}", response);
+                try
+                {
+                    _logger.LogDebug("SendEmail sending: {msg}", msg);
 
-                return response.IsSuccessStatusCode;
+                    var response = await client.SendEmailAsync(msg);
+
+                    _logger.LogInformation("SendEmail response: {response}", response);
+
+                    return response.IsSuccessStatusCode;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception sending email");
+                }
             }
             else
             {
-                _logger.LogWarning("Key is empty");
-
-                return false;
+                _logger.LogWarning("Key is null or empty");
             }
+
+            return false;
         }
     }
 }
