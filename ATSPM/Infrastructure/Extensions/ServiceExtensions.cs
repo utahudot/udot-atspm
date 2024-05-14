@@ -14,7 +14,6 @@ using ATSPM.Infrastructure.Repositories.AggregationRepositories;
 using ATSPM.Infrastructure.Repositories.ConfigurationRepositories;
 using ATSPM.Infrastructure.Repositories.EventLogRepositories;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
-using ATSPM.Infrastructure.Services.EmailServices;
 using ATSPM.Infrastructure.SqlDatabaseProvider;
 using ATSPM.Infrastructure.SqlLiteDatabaseProvider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,7 +25,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -306,6 +304,12 @@ namespace ATSPM.Infrastructure.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Adds all implementations of <see cref="IEmailService"/> which have corresponding <see cref="EmailConfiguration"/> definitions
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="host"></param>
+        /// <returns></returns>
         public static IServiceCollection AddEmailServices(this IServiceCollection services, HostBuilderContext host)
         {
             var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
