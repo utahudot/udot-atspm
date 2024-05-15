@@ -32,36 +32,38 @@ class Program
                })
                .ConfigureServices((h, s) =>
                {
-                   string emailType = h.Configuration.GetValue<string>("EmailType");
-                   if (emailType == "smtp")
-                   {
-                       s.AddScoped<IMailService>(serviceProvider =>
-                       {
-                           var config = h.Configuration;
-                           var smtpHost = config.GetValue<string>("SmtpSettings:Host");
-                           var smtpPort = config.GetValue<int>("SmtpSettings:Port");
-                           var smtpUser = config.GetValue<string>("SmtpSettings:UserName");
-                           var smtpPass = config.GetValue<string>("SmtpSettings:Password");
-                           var enableSsl = config.GetValue<bool>("SmtpSettings:EnableSsl");
+                   //string emailType = h.Configuration.GetValue<string>("EmailType");
+                   //if (emailType == "smtp")
+                   //{
+                   //    s.AddScoped<IMailService>(serviceProvider =>
+                   //    {
+                   //        var config = h.Configuration;
+                   //        var smtpHost = config.GetValue<string>("SmtpSettings:Host");
+                   //        var smtpPort = config.GetValue<int>("SmtpSettings:Port");
+                   //        var smtpUser = config.GetValue<string>("SmtpSettings:UserName");
+                   //        var smtpPass = config.GetValue<string>("SmtpSettings:Password");
+                   //        var enableSsl = config.GetValue<bool>("SmtpSettings:EnableSsl");
 
-                           // Now create the SMTPMailService instance with the parameters
-                           return new SMTPMailService(
-                               config,
-                               serviceProvider.GetRequiredService<ILogger<SMTPMailService>>());
-                       });
-                   }
-                   else
-                   {
-                   }
+                   //        // Now create the SMTPMailService instance with the parameters
+                   //        return new SMTPMailService(
+                   //            config,
+                   //            serviceProvider.GetRequiredService<ILogger<SMTPMailService>>());
+                   //    });
+                   //}
+                   //else
+                   //{
+                   //}
 
+                   //s.AddScoped<EmailService>(serviceProvider =>
+                   //{
+                   //    return new EmailService(
+                   //        serviceProvider.GetRequiredService<ILogger<EmailService>>(),
+                   //        serviceProvider.GetRequiredService<IMailService>());
+                   //}
+                   //);
 
-                   s.AddScoped<EmailService>(serviceProvider =>
-                   {
-                       return new EmailService(
-                           serviceProvider.GetRequiredService<ILogger<EmailService>>(),
-                           serviceProvider.GetRequiredService<IMailService>());
-                   }
-                   );
+                   s.AddEmailServices(h);
+                   s.AddScoped<EmailService>();
 
                    s.AddAtspmDbContext(h);
                    s.AddScoped<ILocationRepository, LocationEFRepository>();
