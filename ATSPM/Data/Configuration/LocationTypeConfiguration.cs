@@ -19,7 +19,7 @@ namespace ATSPM.Data.Configuration
                 .HasMaxLength(50);
             
             builder.Property(e => e.Icon)
-                .HasMaxLength(1024);
+                .IsUnicode(true);
 
             //TODO: add this back in later
             //builder.HasData(
