@@ -1,25 +1,22 @@
 using ATSPM.Application.Configuration;
+using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Services;
+using ATSPM.Data;
+using ATSPM.Data.Models;
+using ATSPM.Data.Models.ConfigurationModels;
 using ATSPM.Data.Models.EventLogModels;
-using ATSPM.Domain.Configuration;
-using ATSPM.Domain.Services;
 using ATSPM.Infrastructure.Extensions;
 using ATSPM.Infrastructure.Services.ControllerDecoders;
 using ATSPM.Infrastructure.Services.ControllerDownloaders;
 using ATSPM.Infrastructure.Services.DownloaderClients;
-using ATSPM.Infrastructure.Services.EmailServices;
 using Google.Cloud.Diagnostics.Common;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace ATSPM.LocationControllerLogger
@@ -174,141 +171,63 @@ namespace ATSPM.LocationControllerLogger
             //await host.StopAsync();
 
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var test = scope.ServiceProvider.GetService<IOptionsSnapshot<EmailConfiguration>>();
-                var huh = test.Get(nameof(SmtpEmailService));
-
-                var email = scope.ServiceProvider.GetServices<IEmailService>();
-
-            }
-
-
             //using (var scope = host.Services.CreateScope())
             //{
-            //    var email = scope.ServiceProvider.GetService<IEmailService>();
+            //    var db = scope.ServiceProvider.GetService<ConfigContext>();
 
-            //    var to = new List<MailAddress>() {
-            //        { new MailAddress("christianbaker@utah.gov", "Christian Baker") },
-            //        { new MailAddress("beatnikthedan@hotmail.com", "Christian Baker")}};
+            //    var region = new Region() { Description = "test region" };
+            //    var jurisdiction = new Jurisdiction() { Name = "test jurisdiction" };
+            //    var locType = new LocationType() { Name = "test location type" };
 
-            //    var result = await email.SendEmailAsync(
-            //        new MailAddress("AtspmWatchdog@utah.gov", "Atspm Watchdog"),
-            //        to,
-            //        "this is the test subject",
-            //        "this is the test body",
-            //        false,
-            //        MailPriority.Low);
+            //    var r = db.Add(region);
+            //    var j = db.Add(jurisdiction);
+            //    var l = db.Add(locType);
 
-            //    Console.WriteLine(result);
+            //    await db.SaveChangesAsync();
+
+            //    var loc = new Location()
+            //    {
+            //        LocationIdentifier = "1234",
+            //        PrimaryName = "primary",
+            //        SecondaryName = "secondary",
+            //        VersionAction = Data.Enums.LocationVersionActions.Initial,
+            //        Longitude = 123,
+            //        Latitude = 123,
+            //        Start = DateTime.Now,
+            //        RegionId = r.Entity.Id,
+            //        JurisdictionId = j.Entity.Id,
+            //        LocationTypeId = l.Entity.Id,
+            //    };
+
+            //    db.Add(loc);
+            //    await db.SaveChangesAsync();
             //}
 
-            Console.WriteLine("asdfasdf");
-            var t = AppDomain.CurrentDomain.GetAssemblies().SelectMany(m => m.GetTypes().Where(w => w.GetInterfaces().Contains(typeof(IEmailService)))).ToList();
-            foreach (var i in t)
+            using (var scope = host.Services.CreateScope())
             {
-                Console.WriteLine(i.Name);
+                //var db = scope.ServiceProvider.GetService<ConfigContext>();
+
+                //var test = db.ChangeTracker.DebugView.ShortView;
+
+                //var r = db.Regions.Include(i => i.Locations).FirstOrDefault();
+                //db.Remove(r);
+
+                //var j = db.Jurisdictions.Include(i => i.Locations).FirstOrDefault();
+                //db.Remove(j);
+
+                //await db.SaveChangesAsync();
+
+                var regions = scope.ServiceProvider.GetService<IRegionsRepository>();
+                var r = regions.Lookup(regions.GetList().FirstOrDefault());
+                regions.Remove(r);
+
+                var jurisdictions = scope.ServiceProvider.GetService<IJurisdictionRepository>();
+                var j = jurisdictions.Lookup(jurisdictions.GetList().FirstOrDefault());
+                jurisdictions.Remove(j);
+
             }
-
-
 
             Console.ReadLine();
         }
     }
-
-
-
-    public class SendGridTest
-    {
-        public async Task SendEmailAsync()
-        {
-            //var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
-            var apiKey = ***REMOVED***;
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("AtspmWatchdog@utah.gov", "Atspm Watchdog");
-            var subject = "Hey Buffalo Bill!";
-            var to = new EmailAddress("christianbaker@utah.gov", "Christian Baker");
-            //var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, string.Empty, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-
-            Console.WriteLine($"response: {response.StatusCode} - {response.IsSuccessStatusCode}");
-        }
-
-        //public void SendSmtpEmail()
-        //{
-        //    var test = new System.Net.Mail.MailMessage();
-        //    var test2 = new System.Net.Mail.MailAddress("christianbaker@utah.gov", "Christian Baker");
-
-        //    Console.WriteLine($"{test2.Address} - {test2.User} - {test2.DisplayName} - {test2.Host}");
-
-        //    var test3 = new System.Net.Mail.SmtpClient();
-        //    test3.Credentials = new NetworkCredential
-
-        //}
-    }
-
-    //public interface IMailService
-    //{
-    //    Task SendEmailAsync(MailRequest mailRequest);
-
-    //}
-
-    //public class MailRequest
-    //{
-    //    public string ToEmail { get; set; }
-    //    public string Subject { get; set; }
-    //    public string Body { get; set; }
-    //    public List<IFormFile> Attachments { get; set; }
-    //}
-
-    //public class MailService : IMailService
-    //{
-    //    private readonly MailSettings _mailSettings;
-    //    public MailService(IOptions<MailSettings> mailSettings)
-    //    {
-    //        _mailSettings = mailSettings.Value;
-    //    }
-    //    public async Task SendEmailAsync(MailRequest mailRequest)
-    //    {
-    //        var email = new MimeMessage();
-    //        email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-    //        email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
-    //        email.Subject = mailRequest.Subject;
-    //        var builder = new BodyBuilder();
-    //        if (mailRequest.Attachments != null)
-    //        {
-    //            byte[] fileBytes;
-    //            foreach (var file in mailRequest.Attachments)
-    //            {
-    //                if (file.Length > 0)
-    //                {
-    //                    using (var ms = new MemoryStream())
-    //                    {
-    //                        file.CopyTo(ms);
-    //                        fileBytes = ms.ToArray();
-    //                    }
-    //                    builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
-    //                }
-    //            }
-    //        }
-    //        builder.HtmlBody = mailRequest.Body;
-    //        email.Body = builder.ToMessageBody();
-    //        using var smtp = new SmtpClient();
-    //        smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-    //        smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-    //        await smtp.SendAsync(email);
-    //        smtp.Disconnect(true);
-    //    }
-    //}
-
-    //public class MailSettings
-    //{
-    //    public string Mail { get; set; }
-    //    public string DisplayName { get; set; }
-    //    public string Password { get; set; }
-    //    public string Host { get; set; }
-    //    public int Port { get; set; }
-    //}
 }
