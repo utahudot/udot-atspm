@@ -59,8 +59,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OracleDatabaseProvider", "O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TempReportTests", "TempReportTests\TempReportTests.csproj", "{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArchiveLogs", "..\..\Data ETL\Data-ETL\ArchiveLogs.csproj", "{4C848DD3-8C3A-481D-ABCA-8B3159D519BF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,10 +157,6 @@ Global
 		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F3C1E0-02C0-4F3A-BF74-58D3C028CB8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4C848DD3-8C3A-481D-ABCA-8B3159D519BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4C848DD3-8C3A-481D-ABCA-8B3159D519BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4C848DD3-8C3A-481D-ABCA-8B3159D519BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4C848DD3-8C3A-481D-ABCA-8B3159D519BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
