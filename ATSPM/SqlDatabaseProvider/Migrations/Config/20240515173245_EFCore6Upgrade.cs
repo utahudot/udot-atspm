@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -113,7 +112,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
-                    Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true)
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -161,10 +160,10 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "varchar(24)", unicode: false, maxLength: 24, nullable: false),
-                    Icon = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    Name = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DisplayOrder = table.Column<int>(type: "int", nullable: false),
-                    Link = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    Link = table.Column<string>(type: "varchar(4000)", unicode: false, maxLength: 4000, nullable: true),
                     Document = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -188,7 +187,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Manufacturer = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
                     Model = table.Column<string>(type: "varchar(48)", unicode: false, maxLength: 48, nullable: false),
-                    WebPage = table.Column<string>(type: "varchar(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    WebPage = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true)
                 },
                 constraints: table =>
@@ -242,21 +241,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 comment: "Location Routes");
 
             migrationBuilder.CreateTable(
-                name: "Settings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Setting = table.Column<string>(type: "varchar(32)", unicode: false, maxLength: 32, nullable: false),
-                    Value = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Settings", x => x.Id);
-                },
-                comment: "Application Settings");
-
-            migrationBuilder.CreateTable(
                 name: "VersionHistory",
                 columns: table => new
                 {
@@ -264,7 +248,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "varchar(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2024, 1, 18, 9, 24, 20, 718, DateTimeKind.Local).AddTicks(9750)),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2024, 5, 15, 11, 32, 45, 875, DateTimeKind.Local).AddTicks(1874)),
                     Version = table.Column<int>(type: "int", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -393,7 +377,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Option = table.Column<string>(type: "varchar(128)", unicode: false, maxLength: 128, nullable: true),
                     Value = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
-                    MeasureTypeId = table.Column<int>(type: "int", nullable: true)
+                    MeasureTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -402,7 +386,8 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         name: "FK_MeasureOptions_MeasureType_MeasureTypeId",
                         column: x => x.MeasureTypeId,
                         principalTable: "MeasureType",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Measure Options");
 
@@ -423,7 +408,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     DataModel = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
                     UserName = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -432,10 +417,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         name: "FK_DeviceConfigurations_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 },
-                comment: "DeviceConfiguration");
+                comment: "Device Configuration");
 
             migrationBuilder.CreateTable(
                 name: "Locations",
@@ -453,9 +437,9 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PedsAre1to1 = table.Column<bool>(type: "bit", nullable: false),
                     LocationIdentifier = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
-                    JurisdictionId = table.Column<int>(type: "int", nullable: false, defaultValueSql: "((0))"),
+                    JurisdictionId = table.Column<int>(type: "int", nullable: true, defaultValueSql: "((0))"),
                     LocationTypeId = table.Column<int>(type: "int", nullable: false),
-                    RegionId = table.Column<int>(type: "int", nullable: false)
+                    RegionId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -464,8 +448,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         name: "FK_Locations_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "Jurisdictions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Locations_LocationTypes_LocationTypeId",
                         column: x => x.LocationTypeId,
@@ -476,8 +459,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         name: "FK_Locations_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 },
                 comment: "Locations");
 
@@ -620,12 +602,12 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     LoggingEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    Ipaddress = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false, defaultValueSql: "('10.0.0.1')"),
-                    DeviceStatus = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
-                    DeviceType = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false, defaultValue: "Unknown"),
+                    Ipaddress = table.Column<string>(type: "varchar(15)", unicode: false, maxLength: 15, nullable: false, defaultValueSql: "('0.0.0.0')"),
+                    DeviceStatus = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false, defaultValue: "Unknown"),
+                    DeviceType = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false, defaultValue: "Unknown"),
                     Notes = table.Column<string>(type: "varchar(512)", unicode: false, maxLength: 512, nullable: true),
                     LocationId = table.Column<int>(type: "int", nullable: false),
-                    DeviceConfigurationId = table.Column<int>(type: "int", nullable: false)
+                    DeviceConfigurationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -634,8 +616,7 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                         name: "FK_Devices_DeviceConfigurations_DeviceConfigurationId",
                         column: x => x.DeviceConfigurationId,
                         principalTable: "DeviceConfigurations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Devices_Locations_LocationId",
                         column: x => x.LocationId,
@@ -838,7 +819,67 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                     { 32, "WT", 113, "Wait Time", false, true },
                     { 33, "GVD", 115, "Gap Vs Demand", false, false },
                     { 34, "LTG", 114, "Left Turn Gap", true, false },
-                    { 35, "SM", 120, "Split Monitor", true, false }
+                    { 35, "SM", 120, "Split Monitor", true, false },
+                    { 36, "GTU", 130, "Green Time Utilization", false, true }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MeasureOptions",
+                columns: new[] { "Id", "MeasureTypeId", "Option", "Value" },
+                values: new object[,]
+                {
+                    { 4, 8, "binSize", "15" },
+                    { 10, 10, "binSize", "15" },
+                    { 18, 7, "binSize", "15" },
+                    { 19, 7, "showAdvanceDetection", "TRUE" },
+                    { 20, 7, "showDirectionalSplits", "TRUE" },
+                    { 21, 7, "showNbEbVolume", "TRUE" },
+                    { 22, 7, "showSbWbVolume", "TRUE" },
+                    { 23, 7, "showTMCDetection", "TRUE" },
+                    { 24, 7, "showTotalVolume", "FALSE" },
+                    { 27, 31, "binSize", "15" },
+                    { 28, 31, "gap1Max", "3.3" },
+                    { 29, 31, "gap1Min", "1" },
+                    { 30, 31, "gap2Max", "3.7" },
+                    { 31, 31, "gap2Min", "3.3" },
+                    { 32, 31, "gap3Max", "7.4" },
+                    { 33, 31, "gap3Min", "3.7" },
+                    { 34, 31, "gap4Min", "7.4" },
+                    { 35, 31, "trendLineGapThreshold", "7.4" },
+                    { 36, 6, "binSize", "15" },
+                    { 39, 6, "showPlanStatistics", "TRUE" },
+                    { 40, 6, "showVolumes", "TRUE" },
+                    { 43, 3, "pedRecallThreshold", "75" },
+                    { 44, 3, "showCycleLength", "TRUE" },
+                    { 45, 3, "showPedBeginWalk", "TRUE" },
+                    { 46, 3, "showPedRecall", "FALSE" },
+                    { 47, 3, "showPercentDelay", "TRUE" },
+                    { 48, 3, "timeBuffer", "15" },
+                    { 50, 1, "selectedConsecutiveCount", "1" },
+                    { 54, 12, "firstSecondsOfRed", "5" },
+                    { 55, 12, "showAvgLines", "TRUE" },
+                    { 56, 12, "showFailLines", "TRUE" },
+                    { 57, 12, "showPercentFailLines", "FALSE" },
+                    { 58, 2, "percentileSplit", "85" },
+                    { 69, 17, "extendStartStopSearch", "2" },
+                    { 71, 17, "showAdvancedCount", "TRUE" },
+                    { 72, 17, "showAdvancedDilemmaZone", "TRUE" },
+                    { 73, 17, "showAllLanesInfo", "FALSE" },
+                    { 76, 17, "showLaneByLaneCount", "TRUE" },
+                    { 79, 17, "showPedestrianActuation", "TRUE" },
+                    { 80, 17, "showPedestrianIntervals", "TRUE" },
+                    { 83, 17, "showStopBarPresence", "TRUE" },
+                    { 85, 5, "binSize", "15" },
+                    { 92, 11, "severeLevelSeconds", "5" },
+                    { 102, 8, "getVolume", "TRUE" },
+                    { 103, 8, "getPermissivePhase", "TRUE" },
+                    { 104, 9, "usePermissivePhase", "TRUE" },
+                    { 105, 9, "showPlanStatistics", "TRUE" },
+                    { 106, 9, "binSize", "15" },
+                    { 107, 6, "showArrivalsOnGreen", "TRUE" },
+                    { 113, 36, "xAxisBinSize", "15" },
+                    { 114, 36, "yAxisBinSize", "4" },
+                    { 115, 32, "binSize", "15" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -964,12 +1005,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Settings_Setting",
-                table: "Settings",
-                column: "Setting",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserAreas_AreaId",
                 table: "UserAreas",
                 column: "AreaId");
@@ -1025,9 +1060,6 @@ namespace ATSPM.Infrastructure.SqlDatabaseProvider.Migrations.Config
 
             migrationBuilder.DropTable(
                 name: "RouteLocations");
-
-            migrationBuilder.DropTable(
-                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "UserAreas");
