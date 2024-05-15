@@ -10,11 +10,11 @@ namespace ATSPM.Data.Relationships
         /// <summary>
         /// Related region
         /// </summary>
-        int RegionId { get; set; }
+        int? RegionId { get; set; }
         
         /// <summary>
         /// Region
         /// </summary>
-        Region Region { get; set; }
+        Region? Region { get; set; }
     }
 }
