@@ -27,9 +27,9 @@ namespace ATSPM.Data.Models
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Item uri
+        /// Item link
         /// </summary>
-        public Uri Link { get; set; }
+        public string Link { get; set; }
 
         /// <summary>
         /// Item document
