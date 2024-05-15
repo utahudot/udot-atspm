@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
