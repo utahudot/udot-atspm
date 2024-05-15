@@ -203,6 +203,16 @@ namespace ATSPM.Data
             modelBuilder.ApplyConfiguration(new UserRegionConfiguration());
             modelBuilder.ApplyConfiguration(new VersionHistoryConfiguration());
 
+            //Set keys to null for optional relationships
+            foreach (var fk in modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(w => !w.IsRequired)
+                .Where(w => !w.IsOwnership)
+                .Where(w => w.DeleteBehavior == DeleteBehavior.Cascade))
+            {
+                fk.DeleteBehavior = DeleteBehavior.ClientSetNull;
+            }
+
             OnModelCreatingPartial(modelBuilder);
             //TODO: call based class when using IdentityContext
         }
