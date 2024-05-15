@@ -40,12 +40,12 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Primary direction
         /// </summary>
-        public DirectionType PrimaryDirection { get; set; }
+        public virtual DirectionType PrimaryDirection { get; set; }
 
         /// <summary>
         /// Opposing direction
         /// </summary>
-        public DirectionType OpposingDirection { get; set; }
+        public virtual DirectionType OpposingDirection { get; set; }
 
         /// <summary>
         /// Is primary overlap
@@ -65,7 +65,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Previous location distance
         /// </summary>
-        public RouteDistance PreviousLocationDistance {get; set;}
+        public virtual RouteDistance PreviousLocationDistance {get; set;}
 
         /// <summary>
         /// Related next location distance
@@ -75,7 +75,7 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Next location distance
         /// </summary>
-        public RouteDistance NextLocationDistance { get; set; }
+        public virtual RouteDistance NextLocationDistance { get; set; }
 
         #region ILocationLayer
 

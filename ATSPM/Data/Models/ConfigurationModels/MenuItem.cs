@@ -27,7 +27,7 @@ namespace ATSPM.Data.Models
         public int DisplayOrder { get; set; }
 
         /// <summary>
-        /// Item uri
+        /// Item link
         /// </summary>
         public string Link { get; set; }
 
@@ -54,12 +54,12 @@ namespace ATSPM.Data.Models
         /// <summary>
         /// Parent menu item
         /// </summary>
-        public MenuItem Parent { get; set; }
+        public virtual MenuItem Parent { get; set; }
 
         /// <summary>
         /// Children menu items
         /// </summary>
-        public ICollection<MenuItem> Children { get; set; } = new List<MenuItem>();
+        public virtual ICollection<MenuItem> Children { get; set; } = new List<MenuItem>();
 
         /// <inheritdoc/>
         public override string ToString() => $"{Id} - {DisplayOrder} - {Name}";

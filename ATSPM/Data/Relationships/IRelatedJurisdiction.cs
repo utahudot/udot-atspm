@@ -10,11 +10,11 @@ namespace ATSPM.Data.Relationships
         /// <summary>
         /// Related jurisdiction
         /// </summary>
-        int JurisdictionId { get; set; }
+        int? JurisdictionId { get; set; }
         
         /// <summary>
         /// Jurisdiction
         /// </summary>
-        Jurisdiction Jurisdiction { get; set; }
+        Jurisdiction? Jurisdiction { get; set; }
     }
 }
