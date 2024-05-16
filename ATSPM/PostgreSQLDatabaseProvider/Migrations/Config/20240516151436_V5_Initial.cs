@@ -114,7 +114,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: false),
-                    Icon = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true)
+                    Icon = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -162,10 +162,10 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(24)", unicode: false, maxLength: 24, nullable: false),
-                    Icon = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    Name = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: false),
+                    Icon = table.Column<string>(type: "text", nullable: true),
                     DisplayOrder = table.Column<int>(type: "integer", nullable: false),
-                    Link = table.Column<string>(type: "character varying(1024)", unicode: false, maxLength: 1024, nullable: true),
+                    Link = table.Column<string>(type: "character varying(4000)", unicode: false, maxLength: 4000, nullable: true),
                     Document = table.Column<byte[]>(type: "bytea", nullable: true),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -250,7 +250,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(64)", unicode: false, maxLength: 64, nullable: false),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 5, 14, 9, 22, 6, 361, DateTimeKind.Local).AddTicks(838)),
+                    Date = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValue: new DateTime(2024, 5, 16, 9, 14, 36, 448, DateTimeKind.Local).AddTicks(4908)),
                     Version = table.Column<int>(type: "integer", nullable: false),
                     ParentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -379,7 +379,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Option = table.Column<string>(type: "character varying(128)", unicode: false, maxLength: 128, nullable: true),
                     Value = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
-                    MeasureTypeId = table.Column<int>(type: "integer", nullable: true)
+                    MeasureTypeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -388,7 +388,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         name: "FK_MeasureOptions_MeasureType_MeasureTypeId",
                         column: x => x.MeasureTypeId,
                         principalTable: "MeasureType",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 },
                 comment: "Measure Options");
 
@@ -409,7 +410,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     DataModel = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     UserName = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
                     Password = table.Column<string>(type: "character varying(50)", unicode: false, maxLength: 50, nullable: true),
-                    ProductId = table.Column<int>(type: "integer", nullable: false)
+                    ProductId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -418,8 +419,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         name: "FK_DeviceConfigurations_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 },
                 comment: "Device Configuration");
 
@@ -439,9 +439,9 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     Start = table.Column<DateTime>(type: "timestamp", nullable: false),
                     PedsAre1to1 = table.Column<bool>(type: "boolean", nullable: false),
                     LocationIdentifier = table.Column<string>(type: "character varying(10)", unicode: false, maxLength: 10, nullable: false),
-                    JurisdictionId = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "((0))"),
+                    JurisdictionId = table.Column<int>(type: "integer", nullable: true, defaultValueSql: "((0))"),
                     LocationTypeId = table.Column<int>(type: "integer", nullable: false),
-                    RegionId = table.Column<int>(type: "integer", nullable: false)
+                    RegionId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -450,8 +450,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         name: "FK_Locations_Jurisdictions_JurisdictionId",
                         column: x => x.JurisdictionId,
                         principalTable: "Jurisdictions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Locations_LocationTypes_LocationTypeId",
                         column: x => x.LocationTypeId,
@@ -462,8 +461,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         name: "FK_Locations_Regions_RegionId",
                         column: x => x.RegionId,
                         principalTable: "Regions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 },
                 comment: "Locations");
 
@@ -611,7 +609,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     DeviceType = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: false, defaultValue: "Unknown"),
                     Notes = table.Column<string>(type: "character varying(512)", unicode: false, maxLength: 512, nullable: true),
                     LocationId = table.Column<int>(type: "integer", nullable: false),
-                    DeviceConfigurationId = table.Column<int>(type: "integer", nullable: false)
+                    DeviceConfigurationId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -620,8 +618,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         name: "FK_Devices_DeviceConfigurations_DeviceConfigurationId",
                         column: x => x.DeviceConfigurationId,
                         principalTable: "DeviceConfigurations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Devices_Locations_LocationId",
                         column: x => x.LocationId,
@@ -826,6 +823,65 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     { 34, "LTG", 114, "Left Turn Gap", true, false },
                     { 35, "SM", 120, "Split Monitor", true, false },
                     { 36, "GTU", 130, "Green Time Utilization", false, true }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MeasureOptions",
+                columns: new[] { "Id", "MeasureTypeId", "Option", "Value" },
+                values: new object[,]
+                {
+                    { 4, 8, "binSize", "15" },
+                    { 10, 10, "binSize", "15" },
+                    { 18, 7, "binSize", "15" },
+                    { 19, 7, "showAdvanceDetection", "TRUE" },
+                    { 20, 7, "showDirectionalSplits", "TRUE" },
+                    { 21, 7, "showNbEbVolume", "TRUE" },
+                    { 22, 7, "showSbWbVolume", "TRUE" },
+                    { 23, 7, "showTMCDetection", "TRUE" },
+                    { 24, 7, "showTotalVolume", "FALSE" },
+                    { 27, 31, "binSize", "15" },
+                    { 28, 31, "gap1Max", "3.3" },
+                    { 29, 31, "gap1Min", "1" },
+                    { 30, 31, "gap2Max", "3.7" },
+                    { 31, 31, "gap2Min", "3.3" },
+                    { 32, 31, "gap3Max", "7.4" },
+                    { 33, 31, "gap3Min", "3.7" },
+                    { 34, 31, "gap4Min", "7.4" },
+                    { 35, 31, "trendLineGapThreshold", "7.4" },
+                    { 36, 6, "binSize", "15" },
+                    { 39, 6, "showPlanStatistics", "TRUE" },
+                    { 40, 6, "showVolumes", "TRUE" },
+                    { 43, 3, "pedRecallThreshold", "75" },
+                    { 44, 3, "showCycleLength", "TRUE" },
+                    { 45, 3, "showPedBeginWalk", "TRUE" },
+                    { 46, 3, "showPedRecall", "FALSE" },
+                    { 47, 3, "showPercentDelay", "TRUE" },
+                    { 48, 3, "timeBuffer", "15" },
+                    { 50, 1, "selectedConsecutiveCount", "1" },
+                    { 54, 12, "firstSecondsOfRed", "5" },
+                    { 55, 12, "showAvgLines", "TRUE" },
+                    { 56, 12, "showFailLines", "TRUE" },
+                    { 57, 12, "showPercentFailLines", "FALSE" },
+                    { 58, 2, "percentileSplit", "85" },
+                    { 69, 17, "extendStartStopSearch", "2" },
+                    { 71, 17, "showAdvancedCount", "TRUE" },
+                    { 72, 17, "showAdvancedDilemmaZone", "TRUE" },
+                    { 73, 17, "showAllLanesInfo", "FALSE" },
+                    { 76, 17, "showLaneByLaneCount", "TRUE" },
+                    { 79, 17, "showPedestrianActuation", "TRUE" },
+                    { 80, 17, "showPedestrianIntervals", "TRUE" },
+                    { 83, 17, "showStopBarPresence", "TRUE" },
+                    { 85, 5, "binSize", "15" },
+                    { 92, 11, "severeLevelSeconds", "5" },
+                    { 102, 8, "getVolume", "TRUE" },
+                    { 103, 8, "getPermissivePhase", "TRUE" },
+                    { 104, 9, "usePermissivePhase", "TRUE" },
+                    { 105, 9, "showPlanStatistics", "TRUE" },
+                    { 106, 9, "binSize", "15" },
+                    { 107, 6, "showArrivalsOnGreen", "TRUE" },
+                    { 113, 36, "xAxisBinSize", "15" },
+                    { 114, 36, "yAxisBinSize", "4" },
+                    { 115, 32, "binSize", "15" }
                 });
 
             migrationBuilder.CreateIndex(
