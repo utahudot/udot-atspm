@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -119,23 +120,23 @@ namespace ATSPM.Infrastructure.Extensions
                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                };
            })
-           .AddOpenIdConnect(options =>
-           {
-               options.Authority = builder.Configuration["Oidc:Authority"];
-               options.ClientId = builder.Configuration["Oidc:ClientId"];
-               options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
-               options.ResponseType = "code";
-               options.SaveTokens = true;
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = builder.Configuration["Oidc:Authority"];
+                options.ClientId = builder.Configuration["Oidc:ClientId"];
+                options.ClientSecret = builder.Configuration["Oidc:ClientSecret"];
+                options.ResponseType = OpenIdConnectResponseType.IdToken;
+                options.SaveTokens = true;
 
-               options.TokenValidationParameters = new TokenValidationParameters
-               {
-                   ValidateIssuer = true
-               };
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true
+                };
 
-               options.Scope.Add("email");
-               options.Scope.Add("profile");
-               // Additional configurations as necessary
-           });
+                options.Scope.Add("email");
+                options.Scope.Add("profile");
+                // Additional configurations as necessary
+            });
 
             return services;
         }
