@@ -91,7 +91,7 @@ namespace ATSPM.ReportApi.ReportServices
             {
                 detector = detectors.First();
             }
-            var speedEvents = speedEventRepository.GetSpeedEventsByDetector(
+            var speedEvents = speedEventRepository.GetSpeedEventsByDetector(phaseDetail.Approach.Location.LocationIdentifier,
                 detector,
                 options.Start,
                 options.End,
