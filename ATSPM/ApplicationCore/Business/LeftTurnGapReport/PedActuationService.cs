@@ -149,7 +149,11 @@ namespace ATSPM.Application.Business.LeftTurnGapReport
                 if (daysOfWeek.Contains((int)tempDate.DayOfWeek))
                     for (var tempstart = tempDate.Date.Add(startTime); tempstart < tempDate.Add(endTime); tempstart = tempstart.AddMinutes(15))
                     {
-                        cycleList.Add(tempstart, cycleAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Average(c => c.TotalRedToRedCycles));
+                        //Need to check for empty list before averaging
+                        if (cycleAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Any())
+                            cycleList.Add(tempstart, cycleAggregations.Where(c => c.Start >= tempstart && c.Start < tempstart.AddMinutes(15)).Average(c => c.TotalRedToRedCycles));
+                        else
+                            cycleList.Add(tempstart, 0);
                     }
             }
 

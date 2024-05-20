@@ -190,7 +190,7 @@ namespace ATSPM.Application.Business.Common
         }
         private async void AddPhaseDropsCallsEventsToCycles(List<IndianaEvent> phaseDropsCalls, WaitTimeCycle cycle)
         {
-            cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).ToList();
+            cycle.PhaseRegisterDroppedCalls = phaseDropsCalls.Where(d => d.Timestamp >= cycle.RedEvent && d.Timestamp < cycle.GreenEvent).OrderBy(e => e.Timestamp).ToList();
         }
 
         private RedToRedCycle.EventType GetEventType(short eventCode)

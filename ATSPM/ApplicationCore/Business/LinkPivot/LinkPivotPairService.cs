@@ -359,21 +359,30 @@ namespace ATSPM.Application.Business.LinkPivot
                 var tempStartDate = dt.ToDateTime(startTime);
                 var tempEndDate = dt.ToDateTime(endTime);
                 var upstreamPcd = await getPcd(cycleTime, linkPivotPair.UpstreamLocationApproach, tempStartDate, tempEndDate);
-                linkPivotPair.UpstreamPcd.Add(upstreamPcd);
-                linkPivotPair.AogUpstreamBefore += upstreamPcd.TotalArrivalOnGreen;
-                linkPivotPair.TotalVolumeUpstream += upstreamPcd.TotalVolume;
+                if(upstreamPcd != null)
+                {
+                    linkPivotPair.UpstreamPcd.Add(upstreamPcd);
+                    linkPivotPair.AogUpstreamBefore += upstreamPcd.TotalArrivalOnGreen;
+                    linkPivotPair.TotalVolumeUpstream += upstreamPcd.TotalVolume;
+                }
                 var downstreamPcd = await getPcd(cycleTime, linkPivotPair.DownstreamLocationApproach, tempStartDate, tempEndDate);
-                linkPivotPair.DownstreamPcd.Add(downstreamPcd);
-                linkPivotPair.AogDownstreamBefore += downstreamPcd.TotalArrivalOnGreen;
-                linkPivotPair.TotalVolumeDownstream += downstreamPcd.TotalVolume;
+                if(downstreamPcd != null)
+                {
+                    linkPivotPair.DownstreamPcd.Add(downstreamPcd);
+                    linkPivotPair.AogDownstreamBefore += downstreamPcd.TotalArrivalOnGreen;
+                    linkPivotPair.TotalVolumeDownstream += downstreamPcd.TotalVolume;
+                }
             }
-            linkPivotPair.PaogUpstreamBefore = (int)(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100);
-            linkPivotPair.PaogDownstreamBefore = (int)(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100);
+            linkPivotPair.PaogUpstreamBefore = (int)Math.Max(Math.Round(linkPivotPair.AogUpstreamBefore / linkPivotPair.TotalVolumeUpstream, 2) * 100, 0);
+            linkPivotPair.PaogDownstreamBefore = (int)Math.Max(Math.Round(linkPivotPair.AogDownstreamBefore / linkPivotPair.TotalVolumeDownstream, 2) * 100, 0);
         }
 
         private async Task<LocationPhase> getPcd(int cycleTime, Approach approach, DateTime tempStartDate, DateTime tempEndDate)
         {
             var logs = controllerEventLogRepository.GetEventsBetweenDates(approach.Location.LocationIdentifier, tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
+            if(logs.Count == 0) {
+                throw new Exception("No Controller Event Logs found for the dates provided");
+            }
             var plans = logs.GetPlanEvents(tempStartDate.AddHours(-2), tempEndDate.AddHours(2)).ToList();
             var pcd = await locationPhaseService.GetLocationPhaseDataWithApproach(approach, tempStartDate, tempEndDate, 15, 13, logs, plans, true, null, cycleTime);
             return pcd;
