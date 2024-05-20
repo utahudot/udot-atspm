@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 {
     [DbContext(typeof(ConfigContext))]
-    [Migration("20240207213129_V5_Initial")]
+    [Migration("20240516151436_V5_Initial")]
     partial class V5_Initial
     {
         /// <inheritdoc />
@@ -110,9 +110,8 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Icon")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(1024)");
+                        .IsUnicode(true)
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -365,7 +364,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DeviceConfigurationId")
+                    b.Property<int?>("DeviceConfigurationId")
                         .HasColumnType("integer");
 
                     b.Property<string>("DeviceStatus")
@@ -386,8 +385,9 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(15)
+                        .IsUnicode(false)
                         .HasColumnType("character varying(15)")
-                        .HasDefaultValueSql("('10.0.0.1')");
+                        .HasDefaultValueSql("('0.0.0.0')");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");
@@ -460,7 +460,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("bigint")
                         .HasDefaultValueSql("((0))");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Protocol")
@@ -917,7 +917,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<bool>("ChartEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("JurisdictionId")
+                    b.Property<int?>("JurisdictionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValueSql("((0))");
@@ -956,7 +956,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(100)")
                         .HasDefaultValueSql("('')");
 
-                    b.Property<int>("RegionId")
+                    b.Property<int?>("RegionId")
                         .HasColumnType("integer");
 
                     b.Property<string>("SecondaryName")
@@ -1026,7 +1026,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("MeasureTypeId")
+                    b.Property<int>("MeasureTypeId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Option")
@@ -1046,6 +1046,372 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.ToTable("MeasureOptions", t =>
                         {
                             t.HasComment("Measure Options");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 4,
+                            MeasureTypeId = 8,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            MeasureTypeId = 10,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            MeasureTypeId = 7,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            MeasureTypeId = 7,
+                            Option = "showAdvanceDetection",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            MeasureTypeId = 7,
+                            Option = "showDirectionalSplits",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            MeasureTypeId = 7,
+                            Option = "showNbEbVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            MeasureTypeId = 7,
+                            Option = "showSbWbVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            MeasureTypeId = 7,
+                            Option = "showTMCDetection",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            MeasureTypeId = 7,
+                            Option = "showTotalVolume",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            MeasureTypeId = 31,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            MeasureTypeId = 31,
+                            Option = "gap1Max",
+                            Value = "3.3"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            MeasureTypeId = 31,
+                            Option = "gap1Min",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            MeasureTypeId = 31,
+                            Option = "gap2Max",
+                            Value = "3.7"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            MeasureTypeId = 31,
+                            Option = "gap2Min",
+                            Value = "3.3"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            MeasureTypeId = 31,
+                            Option = "gap3Max",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            MeasureTypeId = 31,
+                            Option = "gap3Min",
+                            Value = "3.7"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            MeasureTypeId = 31,
+                            Option = "gap4Min",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            MeasureTypeId = 31,
+                            Option = "trendLineGapThreshold",
+                            Value = "7.4"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            MeasureTypeId = 6,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            MeasureTypeId = 6,
+                            Option = "showPlanStatistics",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            MeasureTypeId = 6,
+                            Option = "showVolumes",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            MeasureTypeId = 3,
+                            Option = "pedRecallThreshold",
+                            Value = "75"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            MeasureTypeId = 3,
+                            Option = "showCycleLength",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            MeasureTypeId = 3,
+                            Option = "showPedBeginWalk",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            MeasureTypeId = 3,
+                            Option = "showPedRecall",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            MeasureTypeId = 3,
+                            Option = "showPercentDelay",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            MeasureTypeId = 3,
+                            Option = "timeBuffer",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            MeasureTypeId = 1,
+                            Option = "selectedConsecutiveCount",
+                            Value = "1"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            MeasureTypeId = 12,
+                            Option = "firstSecondsOfRed",
+                            Value = "5"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            MeasureTypeId = 12,
+                            Option = "showAvgLines",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            MeasureTypeId = 12,
+                            Option = "showFailLines",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            MeasureTypeId = 12,
+                            Option = "showPercentFailLines",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            MeasureTypeId = 2,
+                            Option = "percentileSplit",
+                            Value = "85"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            MeasureTypeId = 17,
+                            Option = "extendStartStopSearch",
+                            Value = "2"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            MeasureTypeId = 17,
+                            Option = "showAdvancedCount",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            MeasureTypeId = 17,
+                            Option = "showAdvancedDilemmaZone",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            MeasureTypeId = 17,
+                            Option = "showAllLanesInfo",
+                            Value = "FALSE"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            MeasureTypeId = 17,
+                            Option = "showLaneByLaneCount",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            MeasureTypeId = 17,
+                            Option = "showPedestrianActuation",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            MeasureTypeId = 17,
+                            Option = "showPedestrianIntervals",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            MeasureTypeId = 17,
+                            Option = "showStopBarPresence",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            MeasureTypeId = 5,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            MeasureTypeId = 11,
+                            Option = "severeLevelSeconds",
+                            Value = "5"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            MeasureTypeId = 8,
+                            Option = "getVolume",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            MeasureTypeId = 8,
+                            Option = "getPermissivePhase",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            MeasureTypeId = 9,
+                            Option = "usePermissivePhase",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            MeasureTypeId = 9,
+                            Option = "showPlanStatistics",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            MeasureTypeId = 9,
+                            Option = "binSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            MeasureTypeId = 6,
+                            Option = "showArrivalsOnGreen",
+                            Value = "TRUE"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            MeasureTypeId = 36,
+                            Option = "xAxisBinSize",
+                            Value = "15"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            MeasureTypeId = 36,
+                            Option = "yAxisBinSize",
+                            Value = "4"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            MeasureTypeId = 32,
+                            Option = "binSize",
+                            Value = "15"
                         });
                 });
 
@@ -1407,19 +1773,19 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("bytea");
 
                     b.Property<string>("Icon")
-                        .HasMaxLength(1024)
-                        .IsUnicode(false)
-                        .HasColumnType("character varying(1024)");
+                        .IsUnicode(true)
+                        .HasColumnType("text");
 
                     b.Property<string>("Link")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(4000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(24)
+                        .HasMaxLength(128)
                         .IsUnicode(false)
-                        .HasColumnType("character varying(24)");
+                        .HasColumnType("character varying(128)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("integer");
@@ -1460,6 +1826,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                         .HasColumnType("character varying(512)");
 
                     b.Property<string>("WebPage")
+                        .IsUnicode(false)
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -1622,7 +1989,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Property<DateTime>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
-                        .HasDefaultValue(new DateTime(2024, 2, 7, 14, 31, 28, 886, DateTimeKind.Local).AddTicks(9695));
+                        .HasDefaultValue(new DateTime(2024, 5, 16, 9, 14, 36, 448, DateTimeKind.Local).AddTicks(4908));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1830,9 +2197,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.DeviceConfiguration", "DeviceConfiguration")
                         .WithMany("Devices")
-                        .HasForeignKey("DeviceConfigurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DeviceConfigurationId");
 
                     b.HasOne("ATSPM.Data.Models.Location", "Location")
                         .WithMany("Devices")
@@ -1849,9 +2214,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("Product");
                 });
@@ -1860,9 +2223,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                 {
                     b.HasOne("ATSPM.Data.Models.Jurisdiction", "Jurisdiction")
                         .WithMany("Locations")
-                        .HasForeignKey("JurisdictionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("JurisdictionId");
 
                     b.HasOne("ATSPM.Data.Models.ConfigurationModels.LocationType", "LocationType")
                         .WithMany("Locations")
@@ -1872,9 +2233,7 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
 
                     b.HasOne("ATSPM.Data.Models.Region", "Region")
                         .WithMany("Locations")
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegionId");
 
                     b.Navigation("Jurisdiction");
 
@@ -1886,8 +2245,10 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
             modelBuilder.Entity("ATSPM.Data.Models.MeasureOption", b =>
                 {
                     b.HasOne("ATSPM.Data.Models.MeasureType", "MeasureType")
-                        .WithMany()
-                        .HasForeignKey("MeasureTypeId");
+                        .WithMany("MeasureOptions")
+                        .HasForeignKey("MeasureTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MeasureType");
                 });
@@ -2059,6 +2420,11 @@ namespace ATSPM.Infrastructure.PostgreSQLDatabaseProvider.Migrations.Config
                     b.Navigation("Approaches");
 
                     b.Navigation("Devices");
+                });
+
+            modelBuilder.Entity("ATSPM.Data.Models.MeasureType", b =>
+                {
+                    b.Navigation("MeasureOptions");
                 });
 
             modelBuilder.Entity("ATSPM.Data.Models.MenuItem", b =>

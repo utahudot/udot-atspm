@@ -1,7 +1,8 @@
-﻿using ATSPM.Data.Enums;
+﻿using ATSPM.Application.Business.Common;
+using ATSPM.Application.Business.PedDelay;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
-using ATSPM.ReportApi.Business.Common;
-using ATSPM.ReportApi.Business.PedDelay;
+using ATSPM.Data.Models.EventLogModels;
 using CsvHelper;
 using Moq;
 using System.Globalization;
@@ -23,18 +24,18 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             System.DateTime start = new(2023, 5, 16, 8, 59, 0);
             System.DateTime end = new(2023, 5, 16, 12, 0, 5);
 
-            List<ControllerEventLog> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
+            List<IndianaEvent> events = LoadDetectorEventsFromCsv(@"PedDelayEventcodes.csv"); // Sampleevents
 
-            List<ControllerEventLog> cycleEvents = events.Where(e => new List<int> { 1, 8, 9 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
-            List<ControllerEventLog> pedEvents = events.Where(e => new List<int> { 21, 22, 45, 90 }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
-            List<ControllerEventLog> planEvents = events.Where(e => new List<int> { 131 }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
+            List<IndianaEvent> cycleEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PhaseBeginGreen, (short)IndianaEnumerations.PhaseBeginYellowChange, (short)IndianaEnumerations.PhaseEndYellowChange }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Sample cycle events
+            List<IndianaEvent> pedEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.PedestrianBeginWalk, (short)IndianaEnumerations.PedestrianBeginChangeInterval, (short)IndianaEnumerations.PedestrianCallRegistered, (short)IndianaEnumerations.PedDetectorOn }.Contains(e.EventCode) && e.EventParam == 2).ToList(); // Load detector events from CSV
+            List<IndianaEvent> planEvents = events.Where(e => new List<short> { (short)IndianaEnumerations.CoordPatternChange }.Contains(e.EventCode)).ToList(); // Load plan events from CSV
 
             // Create the mock Approach object
             var approach = new Mock<Approach>();
 
             // Set the properties of the mock Approach object
             approach.Object.Id = 1120; // Updated Id
-            approach.Object.SignalId = 4080; // Updated SignalId
+            approach.Object.LocationId = 4080; // Updated LocationId
             approach.Object.DirectionTypeId = DirectionTypes.NB;
             approach.Object.Description = "NBT Ph2";
             approach.Object.Mph = 35;
@@ -46,31 +47,31 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             approach.Object.IsPedestrianPhaseOverlap = false;
             approach.Object.PedestrianDetectors = null;
 
-            var mockSignal = new Mock<Signal>();
+            var mockLocation = new Mock<Location>();
 
-            // Set the properties of the mock Signal object
-            mockSignal.Object.Id = 4080; // Updated Id
-            mockSignal.Object.SignalIdentifier = "5306"; // Updated SignalId
-            mockSignal.Object.Latitude = 41.73907982;
-            mockSignal.Object.Longitude = -111.8347528;
-            mockSignal.Object.PrimaryName = "Main St.";
-            mockSignal.Object.SecondaryName = "400 North";
-            mockSignal.Object.Ipaddress = IPAddress.Parse("10.239.5.15");
-            mockSignal.Object.RegionId = 1;
-            mockSignal.Object.ControllerTypeId = 9; // Updated ControllerTypeId
-            mockSignal.Object.ChartEnabled = true;
-            mockSignal.Object.VersionAction = SignalVersionActions.Initial;
-            mockSignal.Object.Note = "10";
-            mockSignal.Object.Start = new System.DateTime(2011, 1, 1);
-            mockSignal.Object.JurisdictionId = 35;
-            mockSignal.Object.Pedsare1to1 = true;
+            // Set the properties of the mock Location object
+            mockLocation.Object.Id = 4080; // Updated Id
+            mockLocation.Object.LocationIdentifier = "5306"; // Updated LocationId
+            mockLocation.Object.Latitude = 41.73907982;
+            mockLocation.Object.Longitude = -111.8347528;
+            mockLocation.Object.PrimaryName = "Main St.";
+            mockLocation.Object.SecondaryName = "400 North";
+            //mockLocation.Object.Ipaddress = IPAddress.Parse("10.239.5.15");
+            mockLocation.Object.RegionId = 1;
+            mockLocation.Object.LocationTypeId = 9; // Updated ControllerTypeId
+            mockLocation.Object.ChartEnabled = true;
+            mockLocation.Object.VersionAction = LocationVersionActions.Initial;
+            mockLocation.Object.Note = "10";
+            mockLocation.Object.Start = new System.DateTime(2011, 1, 1);
+            mockLocation.Object.JurisdictionId = 35;
+            mockLocation.Object.PedsAre1to1 = true;
 
-            // Create the mock Approach object and set its Signal property to the mock Signal object
-            approach.Setup(a => a.Signal).Returns(mockSignal.Object);
+            // Create the mock Approach object and set its Location property to the mock Location object
+            approach.Setup(a => a.Location).Returns(mockLocation.Object);
 
             var options = new PedDelayOptions()
             {
-                SignalIdentifier = "7115",
+                LocationIdentifier = "7115",
                 PedRecallThreshold = 75,
                 ShowCycleLength = true,
                 ShowPedBeginWalk = false,
@@ -127,7 +128,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
 
         }
 
-        private List<ControllerEventLog> LoadDetectorEventsFromCsv(string fileName)
+        private List<IndianaEvent> LoadDetectorEventsFromCsv(string fileName)
         {
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestFiles", fileName);
             using (var reader = new StreamReader(filePath))
@@ -135,7 +136,7 @@ namespace ATSPM.Application.Reports.Controllers.Tests
             {
                 //csv.Context.TypeConverterCache.AddConverter<DateTime>(new CustomDateTimeConverter());
 
-                List<ControllerEventLog> detectorEvents = csv.GetRecords<ControllerEventLog>().ToList();
+                List<IndianaEvent> detectorEvents = csv.GetRecords<IndianaEvent>().ToList();
                 return detectorEvents;
             }
         }
