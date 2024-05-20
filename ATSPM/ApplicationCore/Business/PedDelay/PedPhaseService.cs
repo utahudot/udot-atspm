@@ -73,6 +73,8 @@ namespace ATSPM.Application.Business.PedDelay
 
                 plan.Events = mainEvents.Where(e => e.Timestamp > plan.Start && e.Timestamp < plan.End).ToList();
 
+                plan.PedPresses = plan.Events.Count(e => e.EventCode == 90);
+
                 plan.UniquePedDetections = CountUniquePedDetections(
                     plan.Events,
                     pedEvents.Where(e => e.EventCode == 90 && e.Timestamp < plan.Start).ToList(),

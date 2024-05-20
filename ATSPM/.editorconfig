@@ -215,3 +215,61 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix = 
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# .NET Core and Entity Framework rules
+[*.cs]
+dotnet_diagnostic.S2076.severity = error
+dotnet_diagnostic.S2091.severity = error
+dotnet_diagnostic.S2078.severity = error
+dotnet_diagnostic.S5167.severity = error
+dotnet_diagnostic.SCS0018.severity = error
+dotnet_diagnostic.S3358.severity = warning
+dotnet_diagnostic.S3776.severity = warning
+dotnet_diagnostic.S3235.severity = warning
+dotnet_diagnostic.S4457.severity = warning
+dotnet_diagnostic.S2217.severity = warning
+dotnet_diagnostic.S112.severity = warning
+dotnet_diagnostic.S125.severity = warning
+dotnet_diagnostic.S1066.severity = warning
+dotnet_diagnostic.S2325.severity = warning
+dotnet_diagnostic.S3168.severity = warning
+dotnet_diagnostic.S2076.severity = error
+dotnet_diagnostic.S2091.severity = error
+dotnet_diagnostic.S2078.severity = error
+dotnet_diagnostic.S5167.severity = error
+dotnet_diagnostic.SCS0018.severity = error
+dotnet_diagnostic.S5144.severity = error
+dotnet_diagnostic.S5146.severity = error
+dotnet_diagnostic.S5332.severity = error
+dotnet_diagnostic.S2092.severity = error
+dotnet_diagnostic.SCS0006.severity = error
+dotnet_diagnostic.SCS0008.severity = error
+dotnet_diagnostic.SCS0027.severity = error
+
+
+# JavaScript/TypeScript (React) rules
+[*.js,*.jsx,*.ts,*.tsx]
+dotnet_diagnostic.S1523.severity = error
+dotnet_diagnostic.S2611.severity = error
+dotnet_diagnostic.S3649.severity = error
+dotnet_diagnostic.S2814.severity = error
+dotnet_diagnostic.S2245.severity = error
+dotnet_diagnostic.S4328.severity = warning
+dotnet_diagnostic.S1481.severity = warning
+dotnet_diagnostic.S3776.severity = warning
+dotnet_diagnostic.S2681.severity = warning
+dotnet_diagnostic.S117.severity = warning
+dotnet_diagnostic.S1848.severity = warning
+dotnet_diagnostic.S2386.severity = warning
+dotnet_diagnostic.S2974.severity = warning
+dotnet_diagnostic.S4349.severity = warning
+dotnet_diagnostic.S1185.severity = warning
+dotnet_diagnostic.S2814.severity = error
+dotnet_diagnostic.S3649.severity = error
+dotnet_diagnostic.S2245.severity = error
+dotnet_diagnostic.S1523.severity = error
+dotnet_diagnostic.S2611.severity = error
+dotnet_diagnostic.S2078.severity = error
+dotnet_diagnostic.S2091.severity = error
+dotnet_diagnostic.S3330.severity = error
+dotnet_diagnostic.CS1584.severity = none

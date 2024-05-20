@@ -1,6 +1,8 @@
-﻿using ATSPM.Application.Extensions;
+﻿using ATSPM.Application.Enums;
+using ATSPM.Application.Extensions;
 using ATSPM.Data.Enums;
 using ATSPM.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -78,6 +80,51 @@ namespace ATSPM.Application.TempExtensions
         public static List<int> GetPedDetectorsFromApproach(this Approach approach)
         {
             return !string.IsNullOrEmpty(approach.PedestrianDetectors) ? approach.PedestrianDetectors.Split(new char[] { ',', '-' }).Select(int.Parse).ToList() : new List<int>() { approach.ProtectedPhaseNumber };
+        }
+
+        public static PhaseType GetPhaseType(this Approach approach)
+        {
+            int protectedPhaseNumber = approach.ProtectedPhaseNumber;
+            Nullable<int> permissivePhaseNumber = approach.PermissivePhaseNumber;
+
+            if (protectedPhaseNumber > 0 && permissivePhaseNumber == null)
+            {
+                return PhaseType.ProtectedOnly;
+            }
+
+            if (protectedPhaseNumber == 0 && permissivePhaseNumber > 0)
+            {
+                return PhaseType.PermissiveOnly;
+            }
+
+            return PhaseType.ProtectedPermissive;
+        }
+
+        public static SignalHeadType GetSignalHeadType(this Approach approach)
+        {
+            int protectedPhaseNumber = approach.ProtectedPhaseNumber;
+            Nullable<int> permissivePhaseNumber = approach.PermissivePhaseNumber;
+
+            if (protectedPhaseNumber > 0 && permissivePhaseNumber == null)
+            {
+                return SignalHeadType.ProtectedOnly;
+
+            }
+
+            if (protectedPhaseNumber == 0 && permissivePhaseNumber > 0)
+            {
+                return SignalHeadType.PermissiveOnly;
+            }
+
+            if (protectedPhaseNumber == 1 && permissivePhaseNumber == 6 ||
+                 protectedPhaseNumber == 3 && permissivePhaseNumber == 8 ||
+                 protectedPhaseNumber == 5 && permissivePhaseNumber == 2 ||
+                 protectedPhaseNumber == 7 && permissivePhaseNumber == 4)
+            {
+                return SignalHeadType.FiveHead;
+            }
+
+            return SignalHeadType.FYA;
         }
 
 
