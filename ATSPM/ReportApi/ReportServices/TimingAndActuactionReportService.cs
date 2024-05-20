@@ -4,8 +4,11 @@ using ATSPM.Application.Business.TimingAndActuation;
 using ATSPM.Application.Repositories.ConfigurationRepositories;
 using ATSPM.Application.Repositories.EventLogRepositories;
 using ATSPM.Application.TempExtensions;
+using ATSPM.Data.Enums;
 using ATSPM.Data.Models.EventLogModels;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace ATSPM.ReportApi.ReportServices
 {
@@ -58,12 +61,8 @@ namespace ATSPM.ReportApi.ReportServices
             foreach (var phase in phaseDetails)
             {
                 var eventCodes = new List<short> { };
-                if (parameter.ShowAdvancedCount || parameter.ShowAdvancedDilemmaZone || parameter.ShowLaneByLaneCount || parameter.ShowStopBarPresence)
-                    eventCodes.AddRange(new List<short> { 81, 82 });
-                if (parameter.ShowPedestrianActuation)
-                    eventCodes.AddRange(new List<short> { 89, 90 });
-                if (parameter.ShowPedestrianIntervals)
-                    eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
+                eventCodes.AddRange(new List<short> { 81, 82, 89, 90 });
+                eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
                 tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
@@ -95,8 +94,19 @@ namespace ATSPM.ReportApi.ReportServices
                 eventCodes).ToList();
             var viewModel = timingAndActuationsForPhaseService.GetChartData(options, phaseDetail, approachevents, usePermissivePhase);
             viewModel.LocationDescription = phaseDetail.Approach.Location.LocationDescription();
-            viewModel.ApproachDescription = phaseDetail.Approach.Description;
+            string approachDescription = GetApproachDescription(phaseDetail);
+            viewModel.ApproachDescription = approachDescription;
             return viewModel;
+        }
+
+        private static string GetApproachDescription(PhaseDetail phaseDetail)
+        {
+            DirectionTypes direction = phaseDetail.Approach.DirectionTypeId;
+            string directionTypeName = direction.GetAttributeOfType<DisplayAttribute>().Name;
+            MovementTypes movementType = phaseDetail.Approach.Detectors.ToList()[0].MovementType;
+            string movementTypeName = movementType.GetAttributeOfType<DisplayAttribute>().Name;
+            string approachDescription = $"{directionTypeName} {movementTypeName} Ph{phaseDetail.PhaseNumber}";
+            return approachDescription;
         }
     }
 }
