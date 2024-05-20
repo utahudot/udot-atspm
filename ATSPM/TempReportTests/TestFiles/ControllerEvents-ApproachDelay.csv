@@ -1,4 +1,4 @@
-﻿SignalIdentifier,Timestamp,EventCode,EventParam
+﻿LocationIdentifier,Timestamp,EventCode,EventParam
 7115,4/17/2023 7:59:18.8,9,2
 7115,4/17/2023 8:00:04.2,82,2
 7115,4/17/2023 8:00:06.3,82,2

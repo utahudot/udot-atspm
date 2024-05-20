@@ -68,9 +68,9 @@ namespace ATSPM.Application.TempExtensions
 
             return detectors.OrderBy(d => d.Id).ToList();
         }
-        public static List<DirectionType> GetAvailableDirections(this Location Location)
+        public static List<DirectionTypes> GetAvailableDirections(this Location Location)
         {
-            var directions = Location.Approaches.Select(a => a.DirectionType).Distinct().ToList();
+            var directions = Location.Approaches.Select(a => a.DirectionTypeId).Distinct().ToList();
             return directions;
         }
 

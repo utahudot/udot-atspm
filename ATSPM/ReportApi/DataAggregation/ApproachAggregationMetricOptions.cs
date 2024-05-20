@@ -105,8 +105,6 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected override List<AggregationResult> GetTimeCharts(AggregationOptions options, List<Location> signals)
         {
             var charts = new List<AggregationResult>();
-            var chart = new AggregationResult();
-            charts.Add(chart);
             switch (options.SelectedSeries)
             {
                 case SeriesType.PhaseNumber:
@@ -166,7 +164,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
             var seriesList = new List<Series>();
             var availableDirections = new List<DirectionTypes>();
             foreach (var signal in signals)
-                availableDirections.AddRange(signal.GetAvailableDirections().Select(s => s.Id));
+                availableDirections.AddRange(signal.GetAvailableDirections());
             availableDirections = availableDirections.Distinct().ToList();
             foreach (var directionType in availableDirections)
             {
@@ -193,10 +191,10 @@ namespace MOE.Common.Business.WCFServiceLibrary
 
         protected AggregationResult GetTimeXAxisDirectionSeriesChart(Location signal, AggregationOptions options)
         {
-            var charts = new List<AggregationResult>();
+            //var charts = new List<AggregationResult>();
             var chart = new AggregationResult();
-            charts.Add(chart);
-            foreach (var directionType in signal.GetAvailableDirections().Select(d => d.Id))
+            //charts.Add(chart);
+            foreach (var directionType in signal.GetAvailableDirections().Distinct().ToList())
             {
                 GetDirectionSeries(chart, directionType, signal, options);
             }
@@ -262,7 +260,7 @@ namespace MOE.Common.Business.WCFServiceLibrary
         protected AggregationResult GetTimeOfDayXAxisDirectionSeriesChart(Location signal, AggregationOptions options)
         {
             var chart = new AggregationResult();
-            var availableDirections = signal.GetAvailableDirections().Select(d => d.Id).ToList();
+            var availableDirections = signal.GetAvailableDirections().ToList();
             if (availableDirections == null) return chart;
             var seriesList = new ConcurrentBag<Series>();
             Parallel.For(0, availableDirections.Count, i => // foreach (var signal in signals)
