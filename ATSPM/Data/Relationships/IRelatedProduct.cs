@@ -10,11 +10,11 @@ namespace ATSPM.Data.Relationships
         /// <summary>
         /// Product Id
         /// </summary>
-        int ProductId { get; set; }
+        int? ProductId { get; set; }
         
         /// <summary>
         /// Product
         /// </summary>
-        Product Product { get; set; }
+        Product? Product { get; set; }
     }
 }
