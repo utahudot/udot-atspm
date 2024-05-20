@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ATSPM.Application.Business.Bins
 {
@@ -164,23 +166,66 @@ namespace ATSPM.Application.Business.Bins
                     timeOptions.TimeOfDayEndMinute.Value, 0);
             }
             var binsContainer = new BinsContainer(timeOptions.Start, timeOptions.End);
-            for (var startTime = tempStart; startTime < tempEnd; startTime = startTime.AddMinutes(minutes))
-                switch (timeOptions.TimeOption)
-                {
-                    case TimeOptions.TimePeriodOptions.StartToEnd:
-                        binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
-                        break;
-                    case TimeOptions.TimePeriodOptions.TimePeriod:
-                        var periodStartTimeSpan = new TimeSpan(0, startTime.Hour,
-                            startTime.Minute, 0);
-                        if (timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek)
-                            && periodStartTimeSpan >= startTimeSpan
-                            && periodStartTimeSpan < endTimeSpan)
-                            binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
-                        break;
-                }
+            var daysToProcess = GetDaysToProcess(timeOptions.Start, timeOptions.End, timeOptions.DaysOfWeek);
+            switch (timeOptions.TimeOption)
+            {
+                case TimeOptions.TimePeriodOptions.StartToEnd:
+                    var startTime = tempStart;
+                    while (startTime < tempEnd)
+                    {
+                        var endBin = startTime.AddMinutes(minutes);
+                        binsContainer.Bins.Add(new Bin { Start = startTime, End = endBin });
+                        startTime = endBin;
+                    }
+                    break;
+                case TimeOptions.TimePeriodOptions.TimePeriod:
+                    foreach (DateTime date in daysToProcess)
+                    {
+                        var start = date.Add(startTimeSpan);
+                        var end = date.Add(endTimeSpan);
+                        while (start < end)
+                        {
+                            var endBin = start.AddMinutes(minutes);
+                            binsContainer.Bins.Add(new Bin { Start = start, End = endBin });
+                            start = endBin;
+                        }
+                    }
+                    break;
+            }
+            //for (var startTime = tempStart; startTime < tempEnd; startTime = startTime.AddMinutes(minutes))
+            //    switch (timeOptions.TimeOption)
+            //    {
+            //        case TimeOptions.TimePeriodOptions.StartToEnd:
+            //            binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
+            //            break;
+            //        case TimeOptions.TimePeriodOptions.TimePeriod:
+            //            var periodStartTimeSpan = new TimeSpan(0, startTime.Hour,
+            //                startTime.Minute, 0);
+            //            if (timeOptions.DaysOfWeek.Contains(startTime.DayOfWeek)
+            //                && periodStartTimeSpan >= startTimeSpan
+            //                && periodStartTimeSpan < endTimeSpan)
+            //                binsContainer.Bins.Add(new Bin { Start = startTime, End = startTime.AddMinutes(minutes) });
+            //            break;
+            //    }
             binsContainers.Add(binsContainer);
             return binsContainers;
+        }
+
+        private static List<DateTime> GetDaysToProcess(DateTime startDate, DateTime endDate, List<DayOfWeek> daysOfWeek)
+        {
+            List<DateTime> datesToInclude = new List<DateTime>();
+            var days = endDate.DayOfYear - startDate.DayOfYear;
+
+            for (int i = 0; i <= days; i++)
+            {
+                var date = startDate.AddDays(i);
+                if (daysOfWeek.Contains(date.DayOfWeek))
+                {
+                    datesToInclude.Add(date);
+                }
+            }
+
+            return datesToInclude;
         }
     }
 }

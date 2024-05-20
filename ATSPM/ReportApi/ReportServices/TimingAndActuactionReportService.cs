@@ -61,12 +61,8 @@ namespace ATSPM.ReportApi.ReportServices
             foreach (var phase in phaseDetails)
             {
                 var eventCodes = new List<short> { };
-                if (parameter.ShowAdvancedCount || parameter.ShowAdvancedDilemmaZone || parameter.ShowLaneByLaneCount || parameter.ShowStopBarPresence)
-                    eventCodes.AddRange(new List<short> { 81, 82 });
-                if (parameter.ShowPedestrianActuation)
-                    eventCodes.AddRange(new List<short> { 89, 90 });
-                if (parameter.ShowPedestrianIntervals)
-                    eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
+                eventCodes.AddRange(new List<short> { 81, 82, 89, 90 });
+                eventCodes.AddRange(timingAndActuationsForPhaseService.GetPedestrianIntervalEventCodes(phase.Approach.IsPedestrianPhaseOverlap));
                 if (parameter.PhaseEventCodesList != null)
                     eventCodes.AddRange(parameter.PhaseEventCodesList);
                 tasks.Add(GetChartDataForPhase(parameter, controllerEventLogs, phase, eventCodes, phase.IsPermissivePhase));
