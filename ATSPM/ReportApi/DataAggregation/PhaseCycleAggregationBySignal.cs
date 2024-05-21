@@ -71,12 +71,14 @@ namespace MOE.Common.Business.DataAggregation
             PhaseCycleAggregationOptions phaseCycleAggregationOptions,
             Location signal,
             DirectionTypes direction,
-            AggregationOptions options
+            AggregationOptions options,
+            IPhaseCycleAggregationRepository phaseCycleAggregationRepository
             ) : base(phaseCycleAggregationOptions, signal, options)
         {
+            this.phaseCycleAggregationRepository = phaseCycleAggregationRepository;
             ApproachCycles = new List<PhaseCycleAggregationByApproach>();
             foreach (var approach in signal.Approaches)
-                if (approach.DirectionType.Id == direction)
+                if (approach.DirectionTypeId == direction)
                 {
                     ApproachCycles.Add(
                         new PhaseCycleAggregationByApproach(
